@@ -54,7 +54,16 @@ Recommended:
 - disable Merge Commit after confirming squash workflow;
 - optionally allow Rebase Merge for carefully controlled maintenance work;
 - automatically delete head branches after merge;
-- Human Owner performs merge only after Controller verdict `APPROVE_FOR_HUMAN_MERGE`.
+- Human Owner or the active D-17 Codex delegate performs merge only after an
+  independent Controller verdict `APPROVE_FOR_HUMAN_MERGE` and every gate passes.
+
+While `owner_git_workflow_guidance` is `REQUIRED` in Current State, every task
+must also follow `OWNER_GIT_WORKFLOW_GUIDE.md`: the active agent explains the
+complete lifecycle, actual current step and next Owner or active delegate action.
+This is guidance, not a GitHub approval; required approvals remain `0` during
+solo development.
+Any D-17 delegate performs only the already-authorized Ready/merge operation and
+may not self-approve or bypass the Ruleset.
 
 ## 5. Actions permissions
 

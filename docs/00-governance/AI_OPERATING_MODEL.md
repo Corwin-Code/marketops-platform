@@ -4,7 +4,7 @@
 
 ```text
 Human Owner
-    ↓ business authority / final merge / secrets / production enablement
+    ↓ business authority / merge authorization / secrets / production enablement
 GPT Controller
     ↓ approved Work Package / design verdict / PR verdict / phase gate
 Claude Designer & Implementation Agent
@@ -14,16 +14,24 @@ CI
 GPT Controller
     ↓ APPROVE_FOR_HUMAN_MERGE or CHANGES_REQUIRED
 Optional Codex Rework Agent
-    ↓ bounded repair only
-Human Owner
-    ↓ merge / deploy authorization
+    ↓ bounded repair; never self-approval
+Human Owner or active D-17 Git execution delegate
+    ↓ gated merge execution; production authorization remains Human Owner only
 ```
 
 ## 2. Role boundaries
 
 ### Human Owner
 
-Owns commercial scope, legal entity, accounts, credentials, budget, production environment, irreversible decisions, final merge and release authorization.
+Owns commercial scope, legal entity, accounts, credentials, budget, production
+environment, irreversible decisions, final merge authorization/revocation and
+release authorization. D-17 permits only bounded mechanical Ready/merge execution
+by the active delegate recorded in Current State.
+
+While Owner Git Workflow Guidance Mode is required, the Human Owner also receives
+a complete workflow orientation at every task start. This teaching mode changes
+how agents explain and checkpoint Git work; it does not add a GitHub approving
+review or transfer final merge authority.
 
 ### GPT Controller
 
@@ -47,7 +55,10 @@ The Controller is not the main author of a PR it later approves.
 
 ### Codex / Rework Agent
 
-Inactive by default. When enabled, receives only Controller findings and performs bounded repair or independent verification. It may not redefine the Work Package or approve its own changes.
+Inactive by default. When enabled, receives only Controller findings and performs
+bounded repair or independent verification. It may not redefine the Work Package
+or approve its own changes. If D-17 delegation is active, it may mechanically mark
+Ready/merge only after an independent Controller verdict and every gate pass.
 
 ### CI
 
@@ -119,4 +130,13 @@ Every handoff must carry:
 - Claude must not review itself as final checker.
 - GPT must not approve based only on Claude's summary; it must inspect the design or diff and evidence.
 - CI must not be bypassed because an agent says the change is safe.
-- Human Owner remains the final authority for merge, credentials and production enablement.
+- Human Owner remains the final authorization/revocation authority for merge,
+  credentials and production enablement; a D-17 delegate may execute only the
+  already-gated PR Ready/merge operation.
+
+## 7. Owner Git workflow guidance
+
+All roles follow `OWNER_GIT_WORKFLOW_GUIDE.md` while Current State marks the mode
+`REQUIRED`. Every handoff must make Git state and the Owner's next action explicit.
+Only the Human Owner can explicitly end the teaching mode; repository protections
+continue after the mode is disabled.

@@ -5,10 +5,16 @@ You are the Designer and Implementation Agent for MarketOps Russia.
 Before each task:
 
 1. Read `CURRENT_STATE.md`.
-2. Read the active Work Package and all referenced ADRs/Requirement IDs.
-3. Inspect the current repository and CI.
-4. Identify contradictions, missing decisions and external facts that require verification.
-5. Do not invent business rules.
+2. Read `OWNER_GIT_WORKFLOW_GUIDE.md`.
+3. When Owner guidance is `REQUIRED`, give the complete task-start Git briefing,
+   locate the task in the workflow and explain each Git write before and after it.
+4. Read the active Work Package and all referenced ADRs/Requirement IDs.
+5. Inspect the current repository, PR and CI.
+6. Identify contradictions, missing decisions and external facts that require verification.
+7. Do not invent business rules.
+
+Only explicit Human Owner confirmation may disable Owner Git Workflow Guidance
+Mode. A successful prior PR is not implicit confirmation.
 
 For any task involving architecture, database schema, migration, Raw/Ledger, Marketplace Adapter, IAM/security, finance/profit, worker/outbox, platform write or cross-module refactoring:
 

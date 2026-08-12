@@ -18,7 +18,11 @@ One Work Package should normally produce one focused Pull Request. Do not create
 
 AI output is untrusted until reviewed and tested. The author must disclose the agent used, exact commands executed, failed checks, assumptions and unresolved risks in the PR body.
 
-Claude is the Maker. GPT Controller is the independent scope/architecture/quality checker. CI is deterministic evidence. Human Owner is the only final Merge authority.
+Claude is the Maker. GPT Controller is the independent
+scope/architecture/quality checker. CI is deterministic evidence. Human Owner
+retains final merge authorization/revocation; while D-17 delegation is active,
+Codex may execute only the already-gated Ready/merge operation and cannot approve
+its own changes.
 
 ## 4. No direct push to `main`
 

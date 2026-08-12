@@ -10,7 +10,8 @@
 | Risk | Medium |
 | Controller | GPT-5.6 Sol Pro |
 | Maker | Claude Web / Claude Code |
-| Final merge authority | Human Owner |
+| Final merge authorization | Human Owner |
+| Merge execution | Human Owner or active D-17 Codex delegate after all gates |
 | Proposed branch | `feat/WP-P0-001-repository-foundation` |
 | Target branch | `main` |
 
@@ -25,6 +26,10 @@ Create an approved implementation design for a Public pre-production, reproducib
 - D-15: Public repository during pre-production, followed by Private conversion
   and repository/security-control revalidation at real production go-live, or
   earlier before confidential business material.
+- D-16: Owner Git Workflow Guidance Mode remains active at every task start until
+  explicit Human Owner confirmation disables it.
+- D-17 / DR-0001: Codex may temporarily execute gated PR Ready/merge operations;
+  independent Controller review, Ruleset/CI and Owner revocation authority remain.
 - HR-06: Secret and least-privilege control.
 - Baseline Section 7: Java 21, Spring Boot, PostgreSQL, Flyway, React + TypeScript, Docker, S3-compatible storage and observability direction.
 - Baseline Sections 18–19: test pyramid, CI Gate, structured logging and runbook expectations.
@@ -109,11 +114,16 @@ Implementation will be accepted only when all applicable criteria pass:
 
 - Exact tool versions may have changed and must be verified against current official sources.
 - The Java namespace cannot be finalized until Owner supplies a controlled company domain.
-- Solo development cannot require an approval from another human in GitHub; independent GPT review and required CI therefore remain external/technical gates, while Human Owner merges.
+- Solo development cannot require an approval from another human in GitHub;
+  independent GPT review and required CI therefore remain external/technical
+  gates, while the Human Owner or active D-17 delegate executes the merge.
 - GitHub plan/security-feature availability may differ; unavailable premium controls must be recorded, not silently assumed.
 - Public visibility makes source, history, Issues, PRs and Actions evidence public;
   confidential business material is prohibited, and the Private conversion before
   production must include repository/security-control revalidation.
+- The Owner workflow briefing is a teaching control, not an additional GitHub
+  approving-review requirement. D-17 delegates only mechanical merge execution,
+  not Owner authorization or independent Controller approval.
 - The bootstrap must remain simple; adding frameworks without a current requirement requires a Decision Request.
 
 ## 10. Controller Gate

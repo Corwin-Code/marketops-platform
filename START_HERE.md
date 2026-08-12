@@ -2,6 +2,11 @@
 
 本启动包已经完成控制面初始化。远端 GitHub 仓库、账号连接和权限设置必须由 Owner 在自己的账户中完成。
 
+Owner Git 流程指导模式当前为 `REQUIRED`。每次任务开始先阅读
+`docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md`，由当前 Agent 结合实际
+分支、PR 和 CI 状态讲解完整流程及下一步。只有 Owner 明确确认不再需要
+辅助后才可关闭该模式。
+
 ## A. 先确认项目状态
 
 打开：
@@ -65,7 +70,9 @@ git push -u origin main
 - 禁止删除 `main`；
 - 要求解决 PR conversation；
 - 个人独立开发阶段不设置“必须 1 个他人批准”，否则 Owner 自己的 PR 会被锁死；
-- Owner 仍只在 GPT Controller 给出 `APPROVE_FOR_HUMAN_MERGE` 后手工 Merge。
+- 只有独立 GPT Controller 给出 `APPROVE_FOR_HUMAN_MERGE` 且所有 Gate 通过后
+  才可 Merge；Owner 保留最终授权/撤销权，D-17 激活期间可由 Codex 代执行
+  Ready/Merge，但不得自审或绕过 Ruleset。
 
 ## D. 固定 ChatGPT Control Tower
 

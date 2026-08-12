@@ -64,6 +64,12 @@ Phase 0 establishes Data, Identity & Visibility Foundation:
 - D-15: the repository is Public during pre-production; when real production
   go-live is reached, or earlier before confidential business material, it must
   return to Private and all repository and security controls must be revalidated.
+- D-16: Owner Git Workflow Guidance Mode is mandatory at every task start until
+  the Human Owner explicitly confirms familiarity and asks to disable it.
+- D-17: while Current State records an active delegation, Codex may perform the
+  mechanical PR Ready/merge action only after all gates and an independent
+  Controller verdict; Human Owner authorization/revocation and all non-Git Owner
+  authority remain unchanged.
 
 ## 7. Governance
 
@@ -74,7 +80,8 @@ Phase 0 establishes Data, Identity & Visibility Foundation:
 | Detailed design, implementation, tests, Draft PR | Claude Maker |
 | Bounded repair and verification after findings | Codex/Rework Agent when enabled |
 | Build, lint, tests, migration checks, security checks | CI |
-| Final merge, secret provisioning, production enablement | Human Owner |
+| Final merge authorization, secret provisioning, production enablement | Human Owner |
+| Gated PR Ready/merge execution | Human Owner or active D-17 Codex delegate |
 
 ## 8. Source-of-truth policy
 

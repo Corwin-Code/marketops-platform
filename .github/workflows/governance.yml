@@ -17,4 +17,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
       - name: Validate governance, source integrity and common secret patterns
-        run: python3 scripts/validate_governance.py
+        run: |
+          python3 scripts/validate_governance.py
+          python3 -m unittest discover -s tests -p 'test_*.py'

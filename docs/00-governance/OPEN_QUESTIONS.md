@@ -7,7 +7,7 @@
 | OQ-001 | Which GitHub user/organization owns `marketops-platform`? | Repository creation | Yes | Human Owner | RESOLVED |
 | OQ-002 | What company-controlled domain defines the Java root package? | WP-P0-001 implementation | Yes | Human Owner | OPEN |
 | OQ-003 | What is the primary development OS and container runtime? | WP-P0-001 design approval | No | Human Owner | OPEN |
-| OQ-004 | Is Codex formally enabled for rework/fix/verify? | First review cycle | No | Human Owner | OPEN |
+| OQ-004 | Is Codex formally enabled for rework/fix/verify? | First review cycle | No | Human Owner | RESOLVED |
 | OQ-005 | Which authentication solution will be used for application users? | IAM design | No for WP-P0-001 | Owner + Controller | OPEN |
 | OQ-006 | Which Secret Manager and S3-compatible object storage are approved for Integration/Staging/Production? | INT-003 / Raw implementation | No for design skeleton | Owner + Security | OPEN |
 
@@ -25,6 +25,22 @@
 | OQ-108 | Hero SKU and first experiment scope | Phase 1 | No for Phase 0 | OPEN |
 
 ## Resolved bootstrap decisions
+
+### OQ-004 — Codex rework and Git execution role
+
+```text
+Decision / answer: Codex is enabled for bounded PR rework/verification and is
+  temporarily delegated mechanical Ready/merge execution under D-17, but cannot
+  approve its own authored/repaired changes or bypass any gate.
+Evidence or source: Explicit Human Owner instruction and DR-0001.
+Effective date: 2026-08-12
+Affected Work Packages / ADRs / Requirements: G0, WP-P0-001, D-12, D-16, D-17,
+  ADR-0004
+Migration or compatibility impact: No product/data migration. Governance and
+  handoff contracts distinguish Owner authorization, independent Controller
+  verdict and delegated Git execution.
+Approver: Human Owner
+```
 
 ### OQ-001 — Repository ownership and pre-production visibility
 
