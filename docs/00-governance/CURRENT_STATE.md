@@ -33,7 +33,9 @@ owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 - Human Owner accepted temporary Public visibility under D-15; conversion back to Private is required when real production go-live is reached, or earlier before confidential business material.
 - `main-governance` Ruleset is active: PR required, approving reviews `0`, `governance` required, branch up-to-date required, conversations resolved, and deletion/force-push blocked.
 - Secret Scanning, Push Protection and Dependabot security updates are enabled for the Public repository.
-- Public/G0 baseline merged through PR #1; local and remote `main` are synchronized at `09380d9`.
+- Public/G0 baseline merged through PR #1 at `09380d9`.
+- Owner Git workflow guidance and bounded D-17 delegation merged through PR #2;
+  local and remote `main` are synchronized at `d1e4cce`.
 - Owner Git Workflow Guidance Mode is required under D-16 until explicit Human Owner confirmation disables it.
 - Under D-17, Codex is temporarily delegated mechanical PR Ready/merge execution
   only after all repository gates and an independent Controller verdict pass; the
@@ -69,7 +71,6 @@ success; only explicit Human Owner confirmation can disable this mode.
 ## Next authorized action
 
 ```text
-Resolve PR #2 findings, obtain an independent Controller re-review and merge only
-after every gate passes. Then configure Claude Build Studio and run the WP-P0-001
-DESIGN prompt with Owner Git Workflow Guidance Mode active. Do not implement yet.
+Configure Claude Build Studio and repository access, then run the WP-P0-001 DESIGN
+prompt with Owner Git Workflow Guidance Mode active. Do not implement yet.
 ```
