@@ -16,6 +16,7 @@ REQUIRED_FILES = [
     "docs/00-governance/PROJECT_CHARTER.md",
     "docs/00-governance/CURRENT_STATE.md",
     "docs/00-governance/DECISION_LOG.md",
+    "docs/00-governance/DR-0001-temporary-codex-git-execution-delegation.md",
     "docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md",
     "docs/00-governance/OPEN_QUESTIONS.md",
     "docs/00-governance/QUALITY_GATES.md",
@@ -26,7 +27,16 @@ REQUIRED_FILES = [
     "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md",
     ".github/pull_request_template.md",
     ".github/workflows/governance.yml",
+    "tests/test_validate_governance.py",
 ]
+
+OWNER_GUIDANCE_ALLOWED_STATES = {"REQUIRED", "DISABLED"}
+OWNER_GUIDANCE_EXIT_AUTHORITY = "HUMAN_OWNER_EXPLICIT_CONFIRMATION"
+OWNER_DELEGATION_ALLOWED_STATES = {"ACTIVE", "INACTIVE"}
+OWNER_DELEGATION_ALLOWED_EXECUTORS = {"CODEX", "NONE"}
+OWNER_DELEGATION_SCOPE = "PR_READY_AND_MERGE_AFTER_ALL_GATES"
+OWNER_DELEGATION_INACTIVE_SCOPE = "NONE"
+OWNER_DELEGATION_EXIT_AUTHORITY = "HUMAN_OWNER_EXPLICIT_REVOCATION"
 
 WP_REQUIRED_HEADINGS = [
     "## 1. Metadata",
@@ -124,6 +134,62 @@ def validate_work_package(errors: list[str]) -> None:
         errors.append("WP-P0-001 must explicitly state DESIGN ONLY")
 
 
+def current_state_value(text: str, field: str) -> str | None:
+    match = re.search(rf"(?m)^{re.escape(field)}:\s*([^\s#]+)\s*$", text)
+    return match.group(1) if match else None
+
+
+def validate_owner_control_state_text(errors: list[str], text: str) -> None:
+    guidance_state = current_state_value(text, "owner_git_workflow_guidance")
+    if guidance_state not in OWNER_GUIDANCE_ALLOWED_STATES:
+        errors.append(
+            "CURRENT_STATE owner_git_workflow_guidance must be exactly one of: "
+            + ", ".join(sorted(OWNER_GUIDANCE_ALLOWED_STATES))
+        )
+
+    guidance_exit = current_state_value(text, "owner_git_workflow_guidance_exit")
+    if guidance_exit != OWNER_GUIDANCE_EXIT_AUTHORITY:
+        errors.append(
+            "CURRENT_STATE owner_git_workflow_guidance_exit must be exactly: "
+            + OWNER_GUIDANCE_EXIT_AUTHORITY
+        )
+
+    delegation_state = current_state_value(text, "owner_git_execution_delegation")
+    if delegation_state not in OWNER_DELEGATION_ALLOWED_STATES:
+        errors.append(
+            "CURRENT_STATE owner_git_execution_delegation must be exactly one of: "
+            + ", ".join(sorted(OWNER_DELEGATION_ALLOWED_STATES))
+        )
+
+    delegate = current_state_value(text, "owner_git_execution_delegate")
+    if delegate not in OWNER_DELEGATION_ALLOWED_EXECUTORS:
+        errors.append(
+            "CURRENT_STATE owner_git_execution_delegate must be exactly one of: "
+            + ", ".join(sorted(OWNER_DELEGATION_ALLOWED_EXECUTORS))
+        )
+
+    delegation_scope = current_state_value(text, "owner_git_execution_delegation_scope")
+    delegation_exit = current_state_value(text, "owner_git_execution_delegation_exit")
+    if delegation_exit != OWNER_DELEGATION_EXIT_AUTHORITY:
+        errors.append(
+            "Owner Git execution delegation exit must be exactly: "
+            + OWNER_DELEGATION_EXIT_AUTHORITY
+        )
+    if delegation_state == "ACTIVE":
+        if delegate == "NONE":
+            errors.append("ACTIVE Owner Git execution delegation requires a named delegate")
+        if delegation_scope != OWNER_DELEGATION_SCOPE:
+            errors.append(
+                "ACTIVE Owner Git execution delegation scope must be exactly: "
+                + OWNER_DELEGATION_SCOPE
+            )
+    elif delegation_state == "INACTIVE":
+        if delegate != "NONE":
+            errors.append("INACTIVE Owner Git execution delegation must use delegate NONE")
+        if delegation_scope != OWNER_DELEGATION_INACTIVE_SCOPE:
+            errors.append("INACTIVE Owner Git execution delegation scope must be NONE")
+
+
 def validate_current_state(errors: list[str]) -> None:
     path = ROOT / "docs/00-governance/CURRENT_STATE.md"
     if not path.exists():
@@ -136,9 +202,14 @@ def validate_current_state(errors: list[str]) -> None:
         "production_write_enabled: false",
         "owner_git_workflow_guidance:",
         "owner_git_workflow_guidance_exit:",
+        "owner_git_execution_delegation:",
+        "owner_git_execution_delegate:",
+        "owner_git_execution_delegation_scope:",
+        "owner_git_execution_delegation_exit:",
     ]:
         if required not in text:
             errors.append(f"CURRENT_STATE missing required field: {required}")
+    validate_owner_control_state_text(errors, text)
 
 
 def validate_owner_git_workflow_guidance(errors: list[str]) -> None:
@@ -148,15 +219,22 @@ def validate_owner_git_workflow_guidance(errors: list[str]) -> None:
 
     guide = guide_path.read_text(encoding="utf-8")
     for required in [
-        "status: REQUIRED",
-        "activation: every task start",
+        "state_source: docs/00-governance/CURRENT_STATE.md#owner_git_workflow_guidance",
+        "supported_states: REQUIRED | DISABLED",
+        "activation: every task start while Current State is REQUIRED",
         "exit_authority: Human Owner explicit confirmation only",
         "sync main",
-        "Human Owner merge",
+        "Owner-authorized merge execution",
         "local sync/cleanup",
     ]:
         if required not in guide:
             errors.append(f"Owner Git workflow guide missing required contract: {required}")
+
+    if re.search(r"(?m)^status:\s*(?:REQUIRED|DISABLED)\s*$", guide):
+        errors.append(
+            "Owner Git workflow guide must not duplicate runtime state; "
+            "CURRENT_STATE owner_git_workflow_guidance is canonical"
+        )
 
     instruction_files = [
         "AGENTS.md",

@@ -28,7 +28,11 @@ Only explicit Human Owner confirmation may disable the mode.
 
 ## Rules
 
-- Do not merge or push to `main`.
+- Do not push directly to `main`.
+- Do not merge while acting as Maker, Rework Agent or Controller. Mechanical merge
+  execution is allowed only in a separately requested merge task when Current
+  State records active D-17 delegation, an independent Controller has issued
+  `APPROVE_FOR_HUMAN_MERGE`, and every repository/project gate passes.
 - Do not silently expand scope or refactor unrelated areas.
 - Do not change an accepted ADR without a Decision Request.
 - Do not weaken tests, branch gates, security controls or logging merely to make CI pass.

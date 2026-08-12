@@ -1,10 +1,11 @@
 # Owner Git Workflow Guidance Mode
 
 ```yaml
-status: REQUIRED
 decision: D-16
 audience: Human Owner and every Controller, Maker or Rework Agent
-activation: every task start
+state_source: docs/00-governance/CURRENT_STATE.md#owner_git_workflow_guidance
+supported_states: REQUIRED | DISABLED
+activation: every task start while Current State is REQUIRED
 exit_authority: Human Owner explicit confirmation only
 ```
 
@@ -32,7 +33,7 @@ Before changing files or Git state, the active agent must:
    ```text
    sync main → create/reuse task branch → edit → local checks → stage/review
    → commit → push task branch → Draft PR → CI/review/rework
-   → Controller verdict → Human Owner merge → local sync/cleanup
+   → Controller verdict → Owner-authorized merge execution → local sync/cleanup
    ```
 
 4. state which lifecycle step the task is currently at and the next authorized
@@ -41,9 +42,10 @@ Before changing files or Git state, the active agent must:
    while merging the PR does;
 6. remind the Owner that GitHub approval count is `0`; the required gates are the
    PR, `governance`, an up-to-date branch and resolved review conversations;
-7. state any action that remains exclusively Human Owner authority, especially
-   final merge, credential provisioning, production enablement and any emergency
-   bypass.
+7. state that final merge authorization remains Human Owner authority, identify
+   the execution delegate recorded in Current State, and distinguish that bounded
+   delegation from credentials, production, business decisions and emergency
+   bypass, which remain exclusively Human Owner authority.
 
 This briefing must not block a read-only task or demand unnecessary confirmation.
 It should accompany the normal work and use the actual repository state rather
@@ -92,7 +94,7 @@ git switch -c codex/<short-topic>
 ```
 
 Why: the task branch is the safe workbench. Changes on it cannot update protected
-`main` until the Pull Request gates pass and the Human Owner merges.
+`main` until the Pull Request gates pass and the Owner-authorized executor merges.
 
 ### Step 3 — Edit only the authorized scope
 
@@ -181,7 +183,7 @@ PR for each correction.
 Why: the same proposed change is repeatedly evaluated against the latest accepted
 baseline until evidence and review are complete.
 
-### Step 10 — Human Owner merge
+### Step 10 — Owner-authorized merge execution
 
 Preferred method:
 
@@ -189,12 +191,32 @@ Preferred method:
 Squash and merge
 ```
 
-Why: the Human Owner retains final authority, while squash merge turns iterative
-branch commits into one clear outcome on `main`. GitHub approving reviews remain
-at `0`; the Owner is not waiting for another GitHub user to approve.
+Why: the Human Owner retains final decision and revocation authority, while squash
+merge turns iterative branch commits into one clear outcome on `main`. GitHub
+approving reviews remain at `0`; the Owner is not waiting for another GitHub user
+to approve.
 
-Agents must not perform the final merge unless the Human Owner explicitly requests
-that exact merge action and all repository/project gates are satisfied.
+The Human Owner normally performs the merge. Under accepted D-17, Codex may
+perform the mechanical Ready/merge operation only while Current State records:
+
+```yaml
+owner_git_execution_delegation: ACTIVE
+owner_git_execution_delegate: CODEX
+owner_git_execution_delegation_scope: PR_READY_AND_MERGE_AFTER_ALL_GATES
+```
+
+Before delegated execution, all of the following must be true:
+
+- an independent GPT Controller has issued `APPROVE_FOR_HUMAN_MERGE` after
+  inspecting the current PR head;
+- the PR is or can now be marked Ready and is up to date with `main`;
+- every required check passes and all review conversations are resolved;
+- no unresolved BLOCKER/MAJOR finding or missing Work Package evidence remains;
+- no Ruleset bypass, direct push to `main` or self-approval is involved.
+
+Codex cannot supply the independent approving verdict for a PR it authored or
+repaired. Delegation changes who performs the already-authorized GitHub action;
+it does not transfer Owner business/production authority or weaken any gate.
 
 ### Step 11 — Synchronize and clean up locally
 
@@ -232,7 +254,8 @@ an unexplained warning or while unmerged work is uncertain.
 | Push task branch | Remote task branch only | Authorized task workflow |
 | Create/update Draft PR | Remote review record | Authorized task workflow |
 | Push directly to `main` | Rejected by Ruleset | Prohibited |
-| Merge PR into `main` | Changes accepted baseline | Human Owner final authority |
+| Authorize PR merge | Permits baseline change after all gates | Human Owner only |
+| Execute gated PR merge | Changes accepted baseline | Human Owner or active D-17 delegate |
 | Bypass Ruleset | Weakens audit/control | Human Owner emergency decision only |
 | Production enablement/secrets | External high-risk state | Human Owner only |
 
@@ -259,8 +282,8 @@ Every change-task handoff must state:
 - commit status and SHA, if any;
 - push/upstream status, if any;
 - PR URL/state and required checks, if any;
-- whether Human Owner merge is now allowed or what remains blocking;
-- exact commands or UI action for the Owner's next step;
+- whether Owner-authorized merge execution is now allowed or what remains blocking;
+- exact commands or UI action for the Owner or active delegate's next step;
 - cleanup remaining after merge.
 
 ## 7. Exit protocol
@@ -269,12 +292,39 @@ Guidance mode may be disabled only after the Human Owner explicitly states that
 the workflow is understood and task-start assistance is no longer required.
 Silence, successful PRs or inferred familiarity are not confirmation.
 
+`CURRENT_STATE.md` is the only runtime state source. The guide and Agent
+instructions remain as reference/conditional contracts and must not duplicate the
+runtime value.
+
 On explicit confirmation, update in one governance PR:
 
 ```yaml
 owner_git_workflow_guidance: DISABLED
 ```
 
-Record the effective date and Owner confirmation in `CURRENT_STATE.md` and the
-Decision Log or phase evidence. Disabling the teaching mode does not disable the
-branch Ruleset, PR requirement, CI checks or Human Owner merge authority.
+The same PR must:
+
+1. record the effective date and Owner confirmation in `CURRENT_STATE.md`;
+2. record the transition in the Decision Log or phase evidence;
+3. run governance validation and its state-machine tests, including the explicit
+   `DISABLED` path;
+4. preserve the conditional references in every Agent instruction so the mode can
+   be re-enabled without rebuilding the contract.
+
+The validator accepts exactly `REQUIRED` or `DISABLED` and rejects other values.
+Disabling the teaching mode does not disable the branch Ruleset, PR requirement,
+CI checks, independent Controller gate or Human Owner merge authorization.
+
+## 8. Temporary merge-execution delegation exit
+
+D-17 delegation is independent from D-16 teaching-mode state. Only an explicit
+Human Owner revocation may deactivate it. On revocation, update Current State to:
+
+```yaml
+owner_git_execution_delegation: INACTIVE
+owner_git_execution_delegate: NONE
+owner_git_execution_delegation_scope: NONE
+```
+
+Record the effective date and Owner confirmation, rerun governance validation and
+leave all PR/CI/Controller gates in place.

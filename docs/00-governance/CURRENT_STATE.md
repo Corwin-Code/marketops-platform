@@ -8,13 +8,17 @@ phase: Phase 0 — Data, Identity & Visibility Foundation
 sprint: Sprint 0
 controller: GPT-5.6 Sol Pro / current ChatGPT Project
 maker: Claude Web / Claude Code
-rework_agent: Codex (inactive until explicitly enabled)
+rework_agent: Codex (active for bounded PR rework and delegated Git execution)
 active_work_package: WP-P0-001
 active_gate: G0 — Repository & Collaboration Foundation
 authorization: DESIGN_ONLY
 production_write_enabled: false
 owner_git_workflow_guidance: REQUIRED
 owner_git_workflow_guidance_exit: HUMAN_OWNER_EXPLICIT_CONFIRMATION
+owner_git_execution_delegation: ACTIVE
+owner_git_execution_delegate: CODEX
+owner_git_execution_delegation_scope: PR_READY_AND_MERGE_AFTER_ALL_GATES
+owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 ```
 
 ## Completed
@@ -31,6 +35,10 @@ owner_git_workflow_guidance_exit: HUMAN_OWNER_EXPLICIT_CONFIRMATION
 - Secret Scanning, Push Protection and Dependabot security updates are enabled for the Public repository.
 - Public/G0 baseline merged through PR #1; local and remote `main` are synchronized at `09380d9`.
 - Owner Git Workflow Guidance Mode is required under D-16 until explicit Human Owner confirmation disables it.
+- Under D-17, Codex is temporarily delegated mechanical PR Ready/merge execution
+  only after all repository gates and an independent Controller verdict pass; the
+  Human Owner retains authorization/revocation, business, credential and
+  production authority.
 
 ## Not completed
 
@@ -57,11 +65,11 @@ success; only explicit Human Owner confirmation can disable this mode.
 | --- | --- | --- | --- |
 | OQ-002 | Actual company-controlled Java namespace, e.g. `com.<company>.marketops` | Before backend implementation | OPEN |
 | OQ-003 | Primary developer OS and local container runtime | Before finalizing bootstrap commands | OPEN |
-| OQ-004 | Whether Codex is enabled as a formal rework agent | Before first rework cycle | OPEN |
 
 ## Next authorized action
 
 ```text
-Configure Claude Build Studio and run the WP-P0-001 DESIGN prompt with Owner Git
-Workflow Guidance Mode active. Do not implement yet.
+Resolve PR #2 findings, obtain an independent Controller re-review and merge only
+after every gate passes. Then configure Claude Build Studio and run the WP-P0-001
+DESIGN prompt with Owner Git Workflow Guidance Mode active. Do not implement yet.
 ```

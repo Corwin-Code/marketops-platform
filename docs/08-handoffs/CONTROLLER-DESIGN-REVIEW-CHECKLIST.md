@@ -11,7 +11,8 @@
 - [ ] Architecture test has a concrete prohibited-dependency example.
 - [ ] Secret, PII and fixture policies are explicit.
 - [ ] Health, logging, test and rollback evidence are specified.
-- [ ] Solo-owner GitHub approval constraint is handled without weakening human merge control.
+- [ ] Solo-owner GitHub approval constraint separates independent Controller
+      verdict, Human Owner authorization and any bounded D-17 merge executor.
 - [ ] Unknowns and Owner decisions are visible.
 - [ ] Implementation is split into reviewable commits/PR scope.
 

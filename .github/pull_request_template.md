@@ -62,8 +62,8 @@
 - Current lifecycle step:
 - Branch and upstream:
 - PR and required-check state:
-- Is Human Owner merge allowed now? Why or why not?
-- Exact next Owner action:
+- Is Owner-authorized merge execution allowed now? Why or why not?
+- Exact next Owner or active delegate action:
 - Post-merge local synchronization / cleanup:
 
 ## Reviewer checklist
@@ -72,4 +72,4 @@
 - [ ] Acceptance criteria have reproducible evidence.
 - [ ] Documentation and traceability are updated.
 - [ ] No unresolved BLOCKER or MAJOR finding remains.
-- [ ] Controller verdict is attached before Human Owner merge.
+- [ ] Independent Controller verdict is attached before Owner-authorized merge execution.
