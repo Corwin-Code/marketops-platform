@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-08-07
+as_of: 2026-08-12
 project: MarketOps Russia
 lifecycle_state: INITIATING
 phase: Phase 0 — Data, Identity & Visibility Foundation
@@ -22,11 +22,14 @@ production_write_enabled: false
 - Controller–Maker–CI–Owner operating model established.
 - Repository bootstrap/governance pack created.
 - Initial ADRs, Phase 0 backlog, traceability seed and WP-P0-001 design prompt created.
+- Public pre-production repository created at `Corwin-Code/marketops-platform`, connected as `origin`, and seeded on `main`.
+- Initial GitHub Actions job `governance` passed for bootstrap commit `3b35977`.
+- Human Owner accepted temporary Public visibility under D-15; conversion back to Private is required when real production go-live is reached, or earlier before confidential business material.
 
 ## Not completed
 
-- GitHub private repository has not yet been created or connected.
 - `main` Ruleset and required status check have not yet been configured.
+- Public-repository Secret Scanning, Push Protection and Dependabot security settings have not yet been enabled.
 - Claude Project and repository access have not yet been configured.
 - WP-P0-001 design has not yet been produced or reviewed.
 - No backend, frontend, database or product code has been authorized.
@@ -34,13 +37,12 @@ production_write_enabled: false
 
 ## Active objective
 
-Pass Gate G0 and approve WP-P0-001 design. The result must be a protected repository, deterministic governance CI, and an approved implementation plan for the minimal production-grade project skeleton.
+Pass Gate G0 and approve WP-P0-001 design. The result must be a protected Public pre-production repository, deterministic governance CI, Public-repository security controls and an approved implementation plan for the minimal production-grade project skeleton.
 
 ## Current blockers / Owner inputs
 
 | ID | Input | Blocking point | Status |
 | --- | --- | --- | --- |
-| OQ-001 | GitHub account or organization that will own the private repository | Before remote creation | OPEN |
 | OQ-002 | Actual company-controlled Java namespace, e.g. `com.<company>.marketops` | Before backend implementation | OPEN |
 | OQ-003 | Primary developer OS and local container runtime | Before finalizing bootstrap commands | OPEN |
 | OQ-004 | Whether Codex is enabled as a formal rework agent | Before first rework cycle | OPEN |
@@ -48,6 +50,6 @@ Pass Gate G0 and approve WP-P0-001 design. The result must be a protected reposi
 ## Next authorized action
 
 ```text
-Create the private repository, install governance controls, configure Claude Build Studio,
-and run the WP-P0-001 DESIGN prompt. Do not implement yet.
+Install the `main` Ruleset and Public-repository security controls, configure
+Claude Build Studio, and run the WP-P0-001 DESIGN prompt. Do not implement yet.
 ```

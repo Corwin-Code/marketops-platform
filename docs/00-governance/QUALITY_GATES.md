@@ -4,7 +4,8 @@
 
 All items must pass before product implementation begins:
 
-- private repository created and source files committed;
+- Public pre-production repository created and source files committed under D-15;
+- Human Owner has explicitly accepted the Public exposure boundary;
 - `main` protected by a Ruleset;
 - Pull Request required for changes;
 - required status check `governance` passes;
@@ -13,6 +14,11 @@ All items must pass before product implementation begins:
 - ChatGPT and Claude Project instructions installed;
 - no secret or production PII in repository or AI knowledge base;
 - WP-P0-001 design reviewed and verdict is `APPROVED_FOR_IMPLEMENTATION`.
+
+Public visibility is valid for G0 during pre-production. At real production
+go-live, or earlier before confidential business material is committed, the
+repository must be converted to Private and repository/security controls must be
+revalidated as required by D-15.
 
 ## Design Gate
 

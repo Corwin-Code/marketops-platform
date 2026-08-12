@@ -1,16 +1,36 @@
-# GitHub Setup — Initial Private Repository
+# GitHub Setup — Public Pre-production Repository
 
 ## 1. Repository
 
 ```text
 Name: marketops-platform
-Visibility: Private
+Owner: Corwin-Code
+Visibility: Public during pre-production
 Default branch: main
 ```
 
 Do not add a separate README, .gitignore or License during remote creation; this bootstrap already contains them.
 
-## 2. Repository Ruleset for `main`
+Public visibility is a temporary Human Owner decision recorded as D-15. When real
+production go-live is reached, or earlier before any confidential business material
+is committed, upgrade the GitHub plan as needed, change the repository to Private
+and revalidate the Ruleset, required checks and security features.
+
+## 2. Public repository boundary
+
+Treat every commit, branch, Issue, Pull Request, review comment, Actions log and
+artifact as publicly accessible. Never add:
+
+- credentials, tokens, cookies, private keys or environment files with values;
+- buyer PII, production payloads or unredacted operational exports;
+- confidential commercial terms, supplier contracts, internal cost details or
+  legal documents that the Human Owner has not approved for publication.
+
+Changing the repository to Private later does not make prior public disclosure an
+acceptable secret-handling strategy. Any accidental disclosure must be treated as
+an incident, with credential rotation and history remediation where applicable.
+
+## 3. Repository Ruleset for `main`
 
 Create a branch Ruleset targeting the default branch and enable:
 
@@ -26,7 +46,7 @@ Create a branch Ruleset targeting the default branch and enable:
 
 Do not rely on a permanent administrator bypass for normal work. Any emergency bypass must be recorded in the Decision Log and reviewed afterward.
 
-## 3. Merge policy
+## 4. Merge policy
 
 Recommended:
 
@@ -36,7 +56,7 @@ Recommended:
 - automatically delete head branches after merge;
 - Human Owner performs merge only after Controller verdict `APPROVE_FOR_HUMAN_MERGE`.
 
-## 4. Actions permissions
+## 5. Actions permissions
 
 Start with least privilege:
 
@@ -47,16 +67,20 @@ permissions:
 
 Grant write permissions only to a specific workflow that demonstrably requires them. AI coding integrations must work on feature branches or PRs, not direct pushes to `main`.
 
-## 5. Security settings
+## 6. Security settings
 
-Enable where available for the repository plan:
+While the repository is Public, enable and verify:
 
 - Secret scanning and push protection;
 - Dependabot alerts and security updates;
 - Dependency review as a required PR check after Maven/npm manifests exist;
 - Code scanning / CodeQL after the language scaffold is merged.
 
-## 6. Templates
+Repository visibility changes do not replace explicit verification. When the
+repository returns to Private, re-check feature availability and required-check
+behavior under the selected GitHub plan during the production go-live transition.
+
+## 7. Templates
 
 This bootstrap provides:
 
@@ -67,7 +91,7 @@ This bootstrap provides:
 
 They must be present on the default branch before collaborators receive them automatically.
 
-## 7. Required check naming
+## 8. Required check naming
 
 Keep workflow job names unique. The initial required check is exactly:
 
@@ -87,3 +111,18 @@ frontend-e2e
 security-scan
 traceability
 ```
+
+## 9. Production go-live transition
+
+When real production go-live is reached, or earlier before confidential business
+material is committed:
+
+1. upgrade the GitHub plan or move ownership to an approved account/organization
+   that supports the required controls for a Private repository;
+2. change repository visibility to Private;
+3. verify `main` remains protected and all required checks still apply;
+4. verify Secret Scanning, Push Protection, Dependabot and CodeQL/dependency
+   controls remain enabled or record an approved replacement control;
+5. review public history for material that must never enter production context;
+6. record the transition, evidence and Human Owner approval in Current State,
+   Decision Log and `docs/07-phase-evidence/Production-Go-Live/`.

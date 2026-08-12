@@ -12,10 +12,11 @@
 | D-08 | 2026-08-06 | ACCEPTED | Official APIs are the only permitted programmatic integration. | Baseline v1.0 |
 | D-09 | 2026-08-06 | ACCEPTED | Metrics and Mapping are versioned. | Baseline v1.0 |
 | D-10 | 2026-08-06 | ACCEPTED | Automation cannot expand before the relevant Phase Gate passes. | Baseline v1.0 |
-| D-11 | 2026-08-07 | PROPOSED | Use a private monorepo named `marketops-platform`. | Naming recommendation; pending repository creation |
+| D-11 | 2026-08-07 | SUPERSEDED | Use a private monorepo named `marketops-platform`. | Superseded before acceptance by D-15 |
 | D-12 | 2026-08-07 | ACCEPTED | GPT is Controller; Claude is Designer/Maker; CI is evidence; Human Owner performs final merge. | Owner request and collaboration plan |
 | D-13 | 2026-08-07 | PROPOSED | Use GitHub Issues/PRs/Rulesets as the execution ledger for Work Packages and code changes. | Needed for auditable Maker–Checker workflow |
 | D-14 | 2026-08-07 | PROPOSED | No long-lived `develop` branch during initial individual development; use short-lived WP branches into protected `main`. | Reduce drift and merge complexity |
+| D-15 | 2026-08-12 | ACCEPTED | Use `Corwin-Code/marketops-platform` as a Public repository during pre-production. When real production go-live is reached, or earlier before committing confidential business material, upgrade the GitHub plan as needed, change the repository to Private and revalidate all repository rules and security gates. | Human Owner instruction; temporary cost/capability tradeoff that enables Public-repository Rulesets and security controls before GitHub Pro is adopted |
 
 ## Change rule
 

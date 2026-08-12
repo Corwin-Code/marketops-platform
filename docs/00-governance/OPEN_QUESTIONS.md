@@ -4,7 +4,7 @@
 
 | ID | Question | Needed by | Blocking | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| OQ-001 | Which GitHub user/organization owns `marketops-platform`? | Repository creation | Yes | Human Owner | OPEN |
+| OQ-001 | Which GitHub user/organization owns `marketops-platform`? | Repository creation | Yes | Human Owner | RESOLVED |
 | OQ-002 | What company-controlled domain defines the Java root package? | WP-P0-001 implementation | Yes | Human Owner | OPEN |
 | OQ-003 | What is the primary development OS and container runtime? | WP-P0-001 design approval | No | Human Owner | OPEN |
 | OQ-004 | Is Codex formally enabled for rework/fix/verify? | First review cycle | No | Human Owner | OPEN |
@@ -23,6 +23,24 @@
 | OQ-106 | Existing ERP/WMS/accounting systems and export/API availability | Integration scope | No | OPEN |
 | OQ-107 | Russia hosting, backup, personal-data and cross-border access legal confirmation | Staging/Production | Yes before production | OPEN |
 | OQ-108 | Hero SKU and first experiment scope | Phase 1 | No for Phase 0 | OPEN |
+
+## Resolved bootstrap decisions
+
+### OQ-001 — Repository ownership and pre-production visibility
+
+```text
+Decision / answer: The personal GitHub account Corwin-Code owns
+  https://github.com/Corwin-Code/marketops-platform. The repository is Public
+  during pre-production under D-15 and must return to Private when real production
+  go-live is reached, or earlier before confidential business material is committed.
+Evidence or source: Live GitHub repository and Human Owner instruction.
+Effective date: 2026-08-12
+Affected Work Packages / ADRs / Requirements: G0, WP-P0-001, D-11, D-15, HR-06
+Migration or compatibility impact: No application/data migration. Repository
+  visibility, Rulesets and security controls must be revalidated when converting
+  to Private.
+Approver: Human Owner
+```
 
 ## Resolution format
 

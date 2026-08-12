@@ -9,6 +9,7 @@ D-07,Owner Decision,0,AI recommends only,WP-P0-001,ADR-0003,,,,IN_PROGRESS,No AI
 D-08,Owner Decision,0,Official APIs only,WP-P0-005;WP-P0-006,ADR-0003,,,,PLANNED,
 D-09,Owner Decision,0,Metrics and mappings are versioned,WP-P0-004;WP-P0-008,,,,,PLANNED,
 D-10,Owner Decision,0,Phase Gate before automation expansion,WP-P0-001,ADR-0004,,TC-GOV-001,,IN_PROGRESS,G0 active
+D-15,Owner Decision,0,Public repository during pre-production; Private at real production go-live,WP-P0-001,,,,,IN_PROGRESS,Owner-approved temporary visibility; G0 Ruleset and public security controls pending
 HR-01,Hard Rule,0,Raw cannot be lost,WP-P0-003,ADR-0002,,,,PLANNED,
 HR-02,Hard Rule,0,All synchronization is idempotent,WP-P0-003,ADR-0002,,,,PLANNED,
 HR-06,Hard Rule,0,Secret and least privilege,WP-P0-001,ADR-0004,.github/workflows/governance.yml,TC-GOV-003,,IN_PROGRESS,Common-pattern scan plus GitHub security settings
