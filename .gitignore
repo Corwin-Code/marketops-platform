@@ -1,0 +1,43 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.iml
+
+# Java
+**/target/
+.gradle/
+build/
+
+# Node
+**/node_modules/
+**/dist/
+**/.vite/
+**/coverage/
+
+# Python / governance tooling
+__pycache__/
+*.pyc
+.venv/
+
+# Runtime / local data
+local-data/
+logs/
+*.log
+.tmp/
+
+# Generated archives
+*.zip

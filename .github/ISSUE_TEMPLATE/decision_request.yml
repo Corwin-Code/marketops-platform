@@ -1,0 +1,44 @@
+name: Decision Request
+description: Request an Owner or Architecture decision before changing a fixed boundary
+title: "[DR-] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and trigger
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current decision / rule
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed decision and alternatives
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Requirements, modules, migration, security and compatibility impact
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence, tests and rollback
+    validations:
+      required: true
+  - type: dropdown
+    id: authority
+    attributes:
+      label: Decision authority
+      options:
+        - Human Owner
+        - GPT Controller / Architecture
+        - Joint Owner + Controller
+    validations:
+      required: true

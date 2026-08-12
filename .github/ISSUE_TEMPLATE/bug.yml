@@ -1,0 +1,47 @@
+name: Bug / Defect
+description: Report reproducible incorrect behavior or failed evidence
+title: "[BUG] "
+body:
+  - type: input
+    id: wp
+    attributes:
+      label: Related Work Package / Requirement ID
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps and safe evidence
+      description: Redact credentials, buyer PII and production payloads.
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - BLOCKER
+        - MAJOR
+        - MINOR
+        - INFORMATIONAL
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Data safety
+      options:
+        - label: Evidence is synthetic or approved/redacted and contains no secret or buyer PII.
+          required: true

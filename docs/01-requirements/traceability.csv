@@ -1,0 +1,26 @@
+source_id,source_type,phase,title,work_package,design_record,code_location,test_case,evidence,status,notes
+D-01,Owner Decision,0,"Ozon-first, WB Read-parallel",WP-P0-005;WP-P0-006,ADR-0003,,,,PLANNED,Dual-platform delivery boundary
+D-02,Owner Decision,0,No unattended platform writes,WP-P0-001,ADR-0003,,TC-GOV-003,,IN_PROGRESS,Production write false in Current State
+D-03,Owner Decision,0,Modular Monolith + PostgreSQL Worker,WP-P0-001,ADR-0001,,TC-ARCH-001,,IN_PROGRESS,Design pending
+D-04,Owner Decision,0,Immutable Raw and Ledgers,WP-P0-003;WP-P0-007,ADR-0002,,,,PLANNED,
+D-05,Owner Decision,0,Variant/Color/Size/Purchase Batch granularity,WP-P0-004,ADR-0002,,,,PLANNED,
+D-06,Owner Decision,0,Third-party competitor data is trend-only,WP-P0-008,,,,,PLANNED,
+D-07,Owner Decision,0,AI recommends only,WP-P0-001,ADR-0003,,,,IN_PROGRESS,No AI write permission
+D-08,Owner Decision,0,Official APIs only,WP-P0-005;WP-P0-006,ADR-0003,,,,PLANNED,
+D-09,Owner Decision,0,Metrics and mappings are versioned,WP-P0-004;WP-P0-008,,,,,PLANNED,
+D-10,Owner Decision,0,Phase Gate before automation expansion,WP-P0-001,ADR-0004,,TC-GOV-001,,IN_PROGRESS,G0 active
+HR-01,Hard Rule,0,Raw cannot be lost,WP-P0-003,ADR-0002,,,,PLANNED,
+HR-02,Hard Rule,0,All synchronization is idempotent,WP-P0-003,ADR-0002,,,,PLANNED,
+HR-06,Hard Rule,0,Secret and least privilege,WP-P0-001,ADR-0004,.github/workflows/governance.yml,TC-GOV-003,,IN_PROGRESS,Common-pattern scan plus GitHub security settings
+IAM-001,Requirement,0,Organization/account/store/warehouse hierarchy,WP-P0-002,,,,,PLANNED,
+IAM-004,Requirement,0,Separate read/write/finance/ads/credential permissions,WP-P0-002,,,,,PLANNED,
+IAM-006,Requirement,0,Scoped service accounts,WP-P0-002,,,,,PLANNED,
+IAM-007,Requirement,0,Audit login/permission/credential metadata changes,WP-P0-002,,,,,PLANNED,
+INT-001,Requirement,0,Unified Marketplace Adapter contract,WP-P0-003,,,,,PLANNED,
+INT-003,Requirement,0,Secret Manager references only,WP-P0-002,,,,,PLANNED,
+INT-009,Requirement,0,Idempotent ingestion,WP-P0-003,ADR-0002,,,,PLANNED,
+INT-010,Requirement,0,Immutable Raw API/report/push/manual import,WP-P0-003,ADR-0002,,,,PLANNED,
+PIM-001,Requirement,0,Internal SPU/SKU/Color/Size/Barcode,WP-P0-004,,,,,PLANNED,
+PIM-002,Requirement,0,Preserve Ozon/WB native product IDs,WP-P0-004,,,,,PLANNED,
+ADM-003,Requirement,0,Data Quality Dashboard,WP-P0-008,,,,,PLANNED,
+ANL-001,Requirement,0,Daily Command Center,WP-P0-008,,,,,PLANNED,

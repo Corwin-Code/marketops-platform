@@ -1,0 +1,253 @@
+{
+  "project": "MarketOps Russia",
+  "generated_at": "2026-08-07",
+  "state": "INITIATING",
+  "authorization": "DESIGN_ONLY",
+  "files": [
+    {
+      "path": ".editorconfig",
+      "sha256": "31c1f1733846e2997ab0ddf3a7471dc53ee99142f6743a6a2eefabab963c9824",
+      "bytes": 266
+    },
+    {
+      "path": ".gitattributes",
+      "sha256": "3822d3b046cf8424c44d944111e3acd4a811d2f1cd06451438c06289db3cf523",
+      "bytes": 164
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug.yml",
+      "sha256": "4b851e68efac003b0b9985651025ae12ec9a99b5790b9e2d8f996d3036c9de71",
+      "bytes": 1116
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "sha256": "8b09e7df09fc7534371988062769ee427af2954a02c04c763e8a8005be0f2be4",
+      "bytes": 46
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/decision_request.yml",
+      "sha256": "fc1cc33bcee960c0c50a978bd51f32e8972c1baf95205679c29d5e15359771e2",
+      "bytes": 1055
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/work_package.yml",
+      "sha256": "f75eb6d999c9bd9bfc2f859a8c8304ce3f88af549d300d9d938d4cd0e1247398",
+      "bytes": 1582
+    },
+    {
+      "path": ".github/pull_request_template.md",
+      "sha256": "f05c2af249b5c039639d2541f6223a26367556c53db7a79b00347da646117d4d",
+      "bytes": 1563
+    },
+    {
+      "path": ".github/workflows/governance.yml",
+      "sha256": "488d6190d1f29f7e29d78d44e57e22308e3c1df740a0540d76844c17fb60d05b",
+      "bytes": 383
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "613513ec17285c9e4cd0373d54048ef60a3d54b50fcac85b6ac56a458a9e8159",
+      "bytes": 395
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "93444b70e5505e1162918b048c1933a4589dd0f746fd37e2b1c250f921502ed3",
+      "bytes": 1007
+    },
+    {
+      "path": "CLAUDE.md",
+      "sha256": "bac61ef23e16cbc4903da3951ecc5571c00370db2f001c324a95de1e33edd91a",
+      "bytes": 1926
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "sha256": "c7aca99a7a03ede7202596b55c560ed1dc5791597edb30349f23a1f58dfeac3f",
+      "bytes": 1646
+    },
+    {
+      "path": "NOTICE.md",
+      "sha256": "7d32021e84bc3be00b54f46dcbe4c12e00807278f64d130ada0c6eac613acfda",
+      "bytes": 300
+    },
+    {
+      "path": "README.md",
+      "sha256": "6b2f072eed309fae4bc916c91d6400730b9dffc753fc35756c3822bc327fb27b",
+      "bytes": 3355
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "c82777718b5f363d48ec8723ce961da4ad3caf66fce49e0edab4436221d55465",
+      "bytes": 762
+    },
+    {
+      "path": "START_HERE.md",
+      "sha256": "7eae558eebe020ebc4430310f78f28674c51a3019a4332c7e29c7acc05741858",
+      "bytes": 3509
+    },
+    {
+      "path": "docs/00-governance/AI_OPERATING_MODEL.md",
+      "sha256": "c141a98c52c755937563008e654f678901b47f6ade22d9e99155216dab3c4259",
+      "bytes": 3305
+    },
+    {
+      "path": "docs/00-governance/CHANGE_CONTROL.md",
+      "sha256": "9c7d0f9c67a3729fc839911fc9e41b8cf68fd9400dc4dc15f97a573b56dfe77c",
+      "bytes": 1184
+    },
+    {
+      "path": "docs/00-governance/CHATGPT_PROJECT_INSTRUCTIONS.md",
+      "sha256": "2484c96d0fba8d3e482b80a6776a4b8344f51e58b05b20eeb51950fe0ec8cdb9",
+      "bytes": 1981
+    },
+    {
+      "path": "docs/00-governance/CLAUDE_PROJECT_INSTRUCTIONS.md",
+      "sha256": "0918f74c80fe545c2eaedca40bccc5db15ce70a89c0d2b0b0ce60c17f145ad83",
+      "bytes": 1353
+    },
+    {
+      "path": "docs/00-governance/CONTROL_SESSION_0001.md",
+      "sha256": "0dd36c862ce8b7d3901cb0b372e2976b5a3ea553cbb7b96db8981eca08c21aec",
+      "bytes": 1872
+    },
+    {
+      "path": "docs/00-governance/CURRENT_STATE.md",
+      "sha256": "7788609c25a0d39fa21afe72664a3cb2269092cb72a1e4c3f3cc9eb9d31eb571",
+      "bytes": 2251
+    },
+    {
+      "path": "docs/00-governance/DECISION_LOG.md",
+      "sha256": "c157fed8bb4430097eac22c4eff50d65d25e75c7b2c029dd2c920ff5680e159e",
+      "bytes": 2100
+    },
+    {
+      "path": "docs/00-governance/GITHUB_SETUP.md",
+      "sha256": "5d1120cc3ba7f73ccb1f9e70b0199dc9b353e23c8faae4aa52c998f5a43e4774",
+      "bytes": 2491
+    },
+    {
+      "path": "docs/00-governance/HANDOFF_PROTOCOL.md",
+      "sha256": "6de908e51d57176a6e088d8198fe2edb9a9ed870112d33a411d49eb0e5d9b8f8",
+      "bytes": 1653
+    },
+    {
+      "path": "docs/00-governance/OPEN_QUESTIONS.md",
+      "sha256": "94b0bc15787fadc0f8f4e99e435cb9bbec905887ba7794d602463ee9e9b05c37",
+      "bytes": 2215
+    },
+    {
+      "path": "docs/00-governance/PROJECT_CHARTER.md",
+      "sha256": "1ba88b7d63557336a1acad2e3c6ce25270eb70e22812f0ca2a7c3ed689784412",
+      "bytes": 4000
+    },
+    {
+      "path": "docs/00-governance/QUALITY_GATES.md",
+      "sha256": "d554d133ea22fdac18f9916ea7606688150ea0bd211cbfbbd5d969f042f81f44",
+      "bytes": 2834
+    },
+    {
+      "path": "docs/01-requirements/SHA256SUMS.txt",
+      "sha256": "0aa37db0d0f5b404b6cbefd26968abd97f16ab9a779ba764d4c2308251b254ed",
+      "bytes": 174
+    },
+    {
+      "path": "docs/01-requirements/SOURCE_MANIFEST.md",
+      "sha256": "bbf7b37c22769edf44b044221bc5b66dc946425ccd3e2d994ede57bdf72dadd5",
+      "bytes": 618
+    },
+    {
+      "path": "docs/01-requirements/baseline-v1.0-cn.md",
+      "sha256": "63400dc18aa690a1a627424256fac92f34f8af55cf54f321711dda259faccb64",
+      "bytes": 96879
+    },
+    {
+      "path": "docs/01-requirements/naming-baseline-cn.md",
+      "sha256": "be1162640f40726289222a49e874fbe1818925dcec981248df971d1170cb1f51",
+      "bytes": 12846
+    },
+    {
+      "path": "docs/01-requirements/traceability.csv",
+      "sha256": "33f1e87e444fe7d5a0ad8c0ce81d8c4af73dc0b0e4cc13dac5f4c67d62f3e6ac",
+      "bytes": 2477
+    },
+    {
+      "path": "docs/02-architecture/README.md",
+      "sha256": "c953a561b3a355243434db2febd2ae84089c5df98d107e8875fa5d7245fafa7a",
+      "bytes": 344
+    },
+    {
+      "path": "docs/02-architecture/adr/ADR-0001-modular-monolith-and-technology-baseline.md",
+      "sha256": "352c7646b586c2508ffa3403dabf855199ce3ee7f61e1620c3bbf0bf3c94d9cb",
+      "bytes": 1311
+    },
+    {
+      "path": "docs/02-architecture/adr/ADR-0002-immutable-raw-and-ledgers.md",
+      "sha256": "39a95879d60bc66fd7212980347535a3981e58dea6555238d0a0ce8cb9b83898",
+      "bytes": 833
+    },
+    {
+      "path": "docs/02-architecture/adr/ADR-0003-read-first-controlled-write.md",
+      "sha256": "896c32bb863eac11139521ff6d36d94ee3ffc96907c636dc1485e403a7d3ce7e",
+      "bytes": 927
+    },
+    {
+      "path": "docs/02-architecture/adr/ADR-0004-ai-maker-checker-development-model.md",
+      "sha256": "2f929ae910f763612f511426e2a026327d7f7c351813eb2619b06bcb5eb3c3dd",
+      "bytes": 898
+    },
+    {
+      "path": "docs/03-work-items/BACKLOG-PHASE-0.md",
+      "sha256": "916ce87b3b47138b00ce3fc92e796b530cc514726ddfcb2f80b30a46adafcd18",
+      "bytes": 1754
+    },
+    {
+      "path": "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md",
+      "sha256": "3f3108c66dd1df82644cff306b9b37aefc49989bc07c6ccf40d2af9f83901341",
+      "bytes": 5974
+    },
+    {
+      "path": "docs/04-api/README.md",
+      "sha256": "63c0908475bb5b430212ffd3864d9c5498feaf3baf53c763444e44c7618b2472",
+      "bytes": 214
+    },
+    {
+      "path": "docs/05-testing/TEST_STRATEGY.md",
+      "sha256": "6c45dfef12dc6075c003ac6e484f8220772e11842c269517cfcff8b7649224fe",
+      "bytes": 1747
+    },
+    {
+      "path": "docs/06-runbooks/README.md",
+      "sha256": "4271d75fb744c54c1df788294fe231ec530c253c5460497909ab372a9daf85a4",
+      "bytes": 367
+    },
+    {
+      "path": "docs/07-phase-evidence/README.md",
+      "sha256": "ada07143ca0a38cf2acc10d77f9bf56eaf7f8589435e0f9993468f467fd844e4",
+      "bytes": 438
+    },
+    {
+      "path": "docs/08-handoffs/CLAUDE-WP-P0-001-DESIGN-PROMPT.md",
+      "sha256": "11c51c4ea5cfa18721e159ad06e7bfeeae32533579f8a29097dc21dcc0f4fae0",
+      "bytes": 2303
+    },
+    {
+      "path": "docs/08-handoffs/CONTROLLER-DESIGN-REVIEW-CHECKLIST.md",
+      "sha256": "6d60da25bee118c3437445e060b5c76bd59c766679c6e8dd872c51b75ba3fb5b",
+      "bytes": 999
+    },
+    {
+      "path": "scripts/bootstrap-repo.ps1",
+      "sha256": "35418e7419ca1115c3b9cd552d2b5501ff3d57f6572f199cb01e92853b332e26",
+      "bytes": 903
+    },
+    {
+      "path": "scripts/bootstrap-repo.sh",
+      "sha256": "20aa4e2a7e2e8c834fae4e040b31d8908120787d1316bc4b9d65eea86de36f42",
+      "bytes": 794
+    },
+    {
+      "path": "scripts/validate_governance.py",
+      "sha256": "08368708733168536907977bd65abdb79b83f0eb0b636eb242f7a722314e61e1",
+      "bytes": 6231
+    }
+  ]
+}

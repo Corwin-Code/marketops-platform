@@ -1,0 +1,59 @@
+name: Work Package
+description: Create a controlled unit of design and implementation work
+title: "[WP-] "
+body:
+  - type: input
+    id: wp_id
+    attributes:
+      label: Work Package ID
+      placeholder: WP-P0-001
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Business / engineering outcome
+      description: State the observable result, not merely the implementation activity.
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Source Requirement IDs / Owner Decisions / ADRs
+      placeholder: D-03, HR-06, INT-003, ADR-0001
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: In scope
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Include observable behavior and required tests/evidence.
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks, dependencies and open decisions
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: No secret, credential, buyer PII or unredacted production data is included.
+          required: true
+        - label: This Work Package does not silently change an accepted Owner Decision or ADR.
+          required: true
