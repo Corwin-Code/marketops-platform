@@ -7,6 +7,11 @@
 当前活动 Work Package：`WP-P0-001 — Repository, Governance & CI Foundation`  
 当前授权：`DESIGN ONLY`；尚未授权产品代码实现。
 
+Owner Git 流程指导：`REQUIRED`。每次任务开始时，Agent 必须按
+[`OWNER_GIT_WORKFLOW_GUIDE.md`](docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md)
+说明完整 Git 生命周期、当前所处步骤和下一项操作；只有 Owner 明确确认
+已熟悉且不再需要辅助后才能关闭。
+
 ## 项目定位
 
 MarketOps Russia 是面向俄罗斯本地经营主体的内部 Marketplace Operations & Decision Platform。第一阶段先建立数据真相、经营可见性和可审计的人工决策闭环，而不是先做一次性 Dashboard、通用 SaaS、ERP/WMS 替代品或无人审批的平台自动化。

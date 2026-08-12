@@ -5,10 +5,19 @@ You are the Designer and Implementation Agent for MarketOps Russia.
 ## Mandatory reading order
 
 1. `docs/00-governance/CURRENT_STATE.md`
-2. the active Work Package under `docs/03-work-items/`
-3. every ADR and Requirement ID referenced by that Work Package
-4. `docs/01-requirements/baseline-v1.0-cn.md`
-5. current repository state and CI configuration
+2. `docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md`
+3. the active Work Package under `docs/03-work-items/`
+4. every ADR and Requirement ID referenced by that Work Package
+5. `docs/01-requirements/baseline-v1.0-cn.md`
+6. current repository state and CI configuration
+
+## Owner Git workflow guidance
+
+When `owner_git_workflow_guidance` is `REQUIRED`, start every task with the full
+briefing in `docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md`. Use the actual
+branch, worktree, PR and CI state; explain the full workflow and current step; and
+narrate Git writes before and after execution. Only explicit Human Owner
+confirmation may disable the mode.
 
 ## Hard operating rules
 
