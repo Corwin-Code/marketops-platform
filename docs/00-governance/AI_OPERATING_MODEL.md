@@ -25,6 +25,11 @@ Human Owner
 
 Owns commercial scope, legal entity, accounts, credentials, budget, production environment, irreversible decisions, final merge and release authorization.
 
+While Owner Git Workflow Guidance Mode is required, the Human Owner also receives
+a complete workflow orientation at every task start. This teaching mode changes
+how agents explain and checkpoint Git work; it does not add a GitHub approving
+review or transfer final merge authority.
+
 ### GPT Controller
 
 - interprets the Baseline without changing it;
@@ -120,3 +125,10 @@ Every handoff must carry:
 - GPT must not approve based only on Claude's summary; it must inspect the design or diff and evidence.
 - CI must not be bypassed because an agent says the change is safe.
 - Human Owner remains the final authority for merge, credentials and production enablement.
+
+## 7. Owner Git workflow guidance
+
+All roles follow `OWNER_GIT_WORKFLOW_GUIDE.md` while Current State marks the mode
+`REQUIRED`. Every handoff must make Git state and the Owner's next action explicit.
+Only the Human Owner can explicitly end the teaching mode; repository protections
+continue after the mode is disabled.

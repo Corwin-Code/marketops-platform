@@ -16,6 +16,7 @@ REQUIRED_FILES = [
     "docs/00-governance/PROJECT_CHARTER.md",
     "docs/00-governance/CURRENT_STATE.md",
     "docs/00-governance/DECISION_LOG.md",
+    "docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md",
     "docs/00-governance/OPEN_QUESTIONS.md",
     "docs/00-governance/QUALITY_GATES.md",
     "docs/01-requirements/baseline-v1.0-cn.md",
@@ -128,9 +129,45 @@ def validate_current_state(errors: list[str]) -> None:
     if not path.exists():
         return
     text = path.read_text(encoding="utf-8")
-    for required in ["lifecycle_state:", "active_work_package:", "authorization:", "production_write_enabled: false"]:
+    for required in [
+        "lifecycle_state:",
+        "active_work_package:",
+        "authorization:",
+        "production_write_enabled: false",
+        "owner_git_workflow_guidance:",
+        "owner_git_workflow_guidance_exit:",
+    ]:
         if required not in text:
             errors.append(f"CURRENT_STATE missing required field: {required}")
+
+
+def validate_owner_git_workflow_guidance(errors: list[str]) -> None:
+    guide_path = ROOT / "docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md"
+    if not guide_path.exists():
+        return
+
+    guide = guide_path.read_text(encoding="utf-8")
+    for required in [
+        "status: REQUIRED",
+        "activation: every task start",
+        "exit_authority: Human Owner explicit confirmation only",
+        "sync main",
+        "Human Owner merge",
+        "local sync/cleanup",
+    ]:
+        if required not in guide:
+            errors.append(f"Owner Git workflow guide missing required contract: {required}")
+
+    instruction_files = [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "docs/00-governance/CHATGPT_PROJECT_INSTRUCTIONS.md",
+        "docs/00-governance/CLAUDE_PROJECT_INSTRUCTIONS.md",
+    ]
+    for relative in instruction_files:
+        path = ROOT / relative
+        if path.exists() and "OWNER_GIT_WORKFLOW_GUIDE.md" not in path.read_text(encoding="utf-8"):
+            errors.append(f"agent instruction does not load Owner Git workflow guide: {relative}")
 
 
 def validate_traceability(errors: list[str]) -> None:
@@ -181,6 +218,7 @@ def main() -> int:
     validate_source_checksums(errors)
     validate_work_package(errors)
     validate_current_state(errors)
+    validate_owner_git_workflow_guidance(errors)
     validate_traceability(errors)
     validate_common_secrets(errors)
 

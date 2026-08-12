@@ -25,6 +25,8 @@ Create an approved implementation design for a Public pre-production, reproducib
 - D-15: Public repository during pre-production, followed by Private conversion
   and repository/security-control revalidation at real production go-live, or
   earlier before confidential business material.
+- D-16: Owner Git Workflow Guidance Mode remains active at every task start until
+  explicit Human Owner confirmation disables it.
 - HR-06: Secret and least-privilege control.
 - Baseline Section 7: Java 21, Spring Boot, PostgreSQL, Flyway, React + TypeScript, Docker, S3-compatible storage and observability direction.
 - Baseline Sections 18–19: test pyramid, CI Gate, structured logging and runbook expectations.
@@ -114,6 +116,8 @@ Implementation will be accepted only when all applicable criteria pass:
 - Public visibility makes source, history, Issues, PRs and Actions evidence public;
   confidential business material is prohibited, and the Private conversion before
   production must include repository/security-control revalidation.
+- The Owner workflow briefing is a teaching control, not an additional GitHub
+  approving-review requirement or a transfer of final merge authority.
 - The bootstrap must remain simple; adding frameworks without a current requirement requires a Decision Request.
 
 ## 10. Controller Gate

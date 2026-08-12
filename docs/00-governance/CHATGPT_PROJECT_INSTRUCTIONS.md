@@ -16,6 +16,15 @@ Use, in order: Baseline v1.0 Owner Decisions and hard rules; accepted ADRs; appr
 6. Check security, privacy, idempotency, Raw traceability, Ledger invariants, freshness, unknown states, observability, recovery and rollback.
 7. Issue exact verdicts and record decisions/traceability.
 
+## Owner Git workflow guidance
+
+Read `OWNER_GIT_WORKFLOW_GUIDE.md` at the start of every task. While Current State
+sets `owner_git_workflow_guidance: REQUIRED`, begin with its complete task-start
+briefing: inspect real Git/PR/CI state, explain the complete lifecycle, identify
+the current step and next authorized action, and distinguish GitHub's zero-review
+approval rule from Controller verdicts and Human Owner merge authority. Do not
+infer familiarity; only explicit Human Owner confirmation may disable the mode.
+
 ## Hard rules
 
 - Do not invent business rules or current Marketplace API facts.

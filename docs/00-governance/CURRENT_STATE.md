@@ -13,6 +13,8 @@ active_work_package: WP-P0-001
 active_gate: G0 — Repository & Collaboration Foundation
 authorization: DESIGN_ONLY
 production_write_enabled: false
+owner_git_workflow_guidance: REQUIRED
+owner_git_workflow_guidance_exit: HUMAN_OWNER_EXPLICIT_CONFIRMATION
 ```
 
 ## Completed
@@ -25,11 +27,13 @@ production_write_enabled: false
 - Public pre-production repository created at `Corwin-Code/marketops-platform`, connected as `origin`, and seeded on `main`.
 - Initial GitHub Actions job `governance` passed for bootstrap commit `3b35977`.
 - Human Owner accepted temporary Public visibility under D-15; conversion back to Private is required when real production go-live is reached, or earlier before confidential business material.
+- `main-governance` Ruleset is active: PR required, approving reviews `0`, `governance` required, branch up-to-date required, conversations resolved, and deletion/force-push blocked.
+- Secret Scanning, Push Protection and Dependabot security updates are enabled for the Public repository.
+- Public/G0 baseline merged through PR #1; local and remote `main` are synchronized at `09380d9`.
+- Owner Git Workflow Guidance Mode is required under D-16 until explicit Human Owner confirmation disables it.
 
 ## Not completed
 
-- `main` Ruleset and required status check have not yet been configured.
-- Public-repository Secret Scanning, Push Protection and Dependabot security settings have not yet been enabled.
 - Claude Project and repository access have not yet been configured.
 - WP-P0-001 design has not yet been produced or reviewed.
 - No backend, frontend, database or product code has been authorized.
@@ -38,6 +42,14 @@ production_write_enabled: false
 ## Active objective
 
 Pass Gate G0 and approve WP-P0-001 design. The result must be a protected Public pre-production repository, deterministic governance CI, Public-repository security controls and an approved implementation plan for the minimal production-grade project skeleton.
+
+## Owner workflow guidance
+
+Every task must start with the briefing defined in
+`docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md`. The active agent must explain
+the complete branch/PR/CI/merge lifecycle, locate the current task within it and
+guide the Owner through the next Git step. Do not infer familiarity from prior
+success; only explicit Human Owner confirmation can disable this mode.
 
 ## Current blockers / Owner inputs
 
@@ -50,6 +62,6 @@ Pass Gate G0 and approve WP-P0-001 design. The result must be a protected Public
 ## Next authorized action
 
 ```text
-Install the `main` Ruleset and Public-repository security controls, configure
-Claude Build Studio, and run the WP-P0-001 DESIGN prompt. Do not implement yet.
+Configure Claude Build Studio and run the WP-P0-001 DESIGN prompt with Owner Git
+Workflow Guidance Mode active. Do not implement yet.
 ```

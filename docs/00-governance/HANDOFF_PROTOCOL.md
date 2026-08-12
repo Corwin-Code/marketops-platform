@@ -45,3 +45,7 @@ Claude or the designated rework agent fixes only stated findings. Any necessary 
 ## 7. Merge and synchronization
 
 Human Owner merges after `APPROVE_FOR_HUMAN_MERGE`. The merged PR must update Current State, Decision Log, Traceability and Phase Evidence as applicable.
+
+While Owner Git Workflow Guidance Mode is required, the merge handoff must also
+state the current branch/PR/check state, why merge is or is not allowed, the exact
+Owner UI action, and the post-merge local synchronization/cleanup commands.

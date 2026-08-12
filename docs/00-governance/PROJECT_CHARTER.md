@@ -64,6 +64,8 @@ Phase 0 establishes Data, Identity & Visibility Foundation:
 - D-15: the repository is Public during pre-production; when real production
   go-live is reached, or earlier before confidential business material, it must
   return to Private and all repository and security controls must be revalidated.
+- D-16: Owner Git Workflow Guidance Mode is mandatory at every task start until
+  the Human Owner explicitly confirms familiarity and asks to disable it.
 
 ## 7. Governance
 

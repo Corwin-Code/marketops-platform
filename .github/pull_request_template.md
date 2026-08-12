@@ -57,6 +57,15 @@
 - Assumptions / unknowns:
 - Deferred items:
 
+## Owner Git workflow handoff
+
+- Current lifecycle step:
+- Branch and upstream:
+- PR and required-check state:
+- Is Human Owner merge allowed now? Why or why not?
+- Exact next Owner action:
+- Post-merge local synchronization / cleanup:
+
 ## Reviewer checklist
 
 - [ ] Diff matches the approved Work Package and no hidden scope expansion exists.

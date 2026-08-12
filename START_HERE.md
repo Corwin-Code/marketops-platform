@@ -2,6 +2,11 @@
 
 本启动包已经完成控制面初始化。远端 GitHub 仓库、账号连接和权限设置必须由 Owner 在自己的账户中完成。
 
+Owner Git 流程指导模式当前为 `REQUIRED`。每次任务开始先阅读
+`docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md`，由当前 Agent 结合实际
+分支、PR 和 CI 状态讲解完整流程及下一步。只有 Owner 明确确认不再需要
+辅助后才可关闭该模式。
+
 ## A. 先确认项目状态
 
 打开：

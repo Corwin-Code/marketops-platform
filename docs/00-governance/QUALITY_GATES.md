@@ -12,6 +12,8 @@ All items must pass before product implementation begins:
 - force push and branch deletion disabled;
 - issue/PR templates available;
 - ChatGPT and Claude Project instructions installed;
+- Owner Git Workflow Guidance Mode installed and marked `REQUIRED` until explicit
+  Human Owner confirmation disables it;
 - no secret or production PII in repository or AI knowledge base;
 - WP-P0-001 design reviewed and verdict is `APPROVED_FOR_IMPLEMENTATION`.
 

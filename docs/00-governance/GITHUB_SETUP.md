@@ -56,6 +56,11 @@ Recommended:
 - automatically delete head branches after merge;
 - Human Owner performs merge only after Controller verdict `APPROVE_FOR_HUMAN_MERGE`.
 
+While `owner_git_workflow_guidance` is `REQUIRED` in Current State, every task
+must also follow `OWNER_GIT_WORKFLOW_GUIDE.md`: the active agent explains the
+complete lifecycle, actual current step and next Owner action. This is guidance,
+not a GitHub approval; required approvals remain `0` during solo development.
+
 ## 5. Actions permissions
 
 Start with least privilege:
