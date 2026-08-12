@@ -18,7 +18,7 @@ AUTHORIZED_TO_START_WP-P0-001_DESIGN
 
 这意味着 Claude 先设计，不得修改产品代码、创建 Migration 或提交 PR。
 
-## B. 创建 GitHub 私有仓库
+## B. 创建 GitHub Public 预生产仓库
 
 建议仓库名：
 
@@ -28,17 +28,21 @@ marketops-platform
 
 建议设置：
 
-- Visibility：Private；
+- Visibility：Public（仅限预生产，见 D-15）；
 - Default branch：`main`；
 - 不自动添加 README、License 或 .gitignore，避免与本包冲突；
 - 完成首次推送后再配置 Ruleset。
+
+所有提交、Issue、PR、Review 和 Actions 日志都按公开信息处理。项目达到真实生产上线时，
+或更早需要引入机密业务资料前，必须升级所需 GitHub 套餐、将仓库改回 Private，
+并重新验证 Ruleset、Required Checks 和安全功能。
 
 本地执行：
 
 ```bash
 cd marketops-platform-bootstrap
 bash scripts/bootstrap-repo.sh
-git remote add origin <YOUR_PRIVATE_REPOSITORY_REMOTE>
+git remote add origin <YOUR_REPOSITORY_REMOTE>
 git push -u origin main
 ```
 
@@ -47,7 +51,7 @@ Windows PowerShell：
 ```powershell
 Set-Location marketops-platform-bootstrap
 ./scripts/bootstrap-repo.ps1
-git remote add origin <YOUR_PRIVATE_REPOSITORY_REMOTE>
+git remote add origin <YOUR_REPOSITORY_REMOTE>
 git push -u origin main
 ```
 

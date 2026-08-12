@@ -61,6 +61,9 @@ Phase 0 establishes Data, Identity & Visibility Foundation:
 - D-08: official APIs are the only permitted programmatic Marketplace integration.
 - D-09: Metrics and Mapping are versioned.
 - D-10: no automation expansion before the relevant Phase Gate passes.
+- D-15: the repository is Public during pre-production; when real production
+  go-live is reached, or earlier before confidential business material, it must
+  return to Private and all repository and security controls must be revalidated.
 
 ## 7. Governance
 
@@ -79,4 +82,4 @@ Chat history is not the project database. Every accepted decision, current state
 
 ## 9. Initial success condition
 
-The project may leave `INITIATING` and enter `EXECUTING_PHASE_0` only after Gate G0 passes: repository created, governance files versioned, `main` protected, governance CI required, Claude/ChatGPT instructions installed, and WP-P0-001 design approved.
+The project may leave `INITIATING` and enter `EXECUTING_PHASE_0` only after Gate G0 passes: the Public pre-production repository under D-15 is created, governance files are versioned, `main` is protected, governance CI is required, Claude/ChatGPT instructions are installed, and the WP-P0-001 design is approved.

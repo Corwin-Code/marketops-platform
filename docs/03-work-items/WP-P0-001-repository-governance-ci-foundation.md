@@ -16,12 +16,15 @@
 
 ## 2. Outcome
 
-Create an approved implementation design for a private, reproducible, production-oriented monorepo foundation. After later implementation, a fresh clone must be able to build, test and run a minimal backend/frontend/database slice with deterministic CI, without platform credentials or production data.
+Create an approved implementation design for a Public pre-production, reproducible, production-oriented monorepo foundation under D-15. When real production go-live is reached, or earlier before confidential business material, the repository must return to Private and all repository/security controls must be revalidated. After later implementation, a fresh clone must be able to build, test and run a minimal backend/frontend/database slice with deterministic CI, without platform credentials or production data.
 
 ## 3. Source Requirements
 
 - D-03: Modular Monolith + PostgreSQL Worker.
 - D-10: Phase Gate before automation expansion.
+- D-15: Public repository during pre-production, followed by Private conversion
+  and repository/security-control revalidation at real production go-live, or
+  earlier before confidential business material.
 - HR-06: Secret and least-privilege control.
 - Baseline Section 7: Java 21, Spring Boot, PostgreSQL, Flyway, React + TypeScript, Docker, S3-compatible storage and observability direction.
 - Baseline Sections 18–19: test pyramid, CI Gate, structured logging and runbook expectations.
@@ -108,6 +111,9 @@ Implementation will be accepted only when all applicable criteria pass:
 - The Java namespace cannot be finalized until Owner supplies a controlled company domain.
 - Solo development cannot require an approval from another human in GitHub; independent GPT review and required CI therefore remain external/technical gates, while Human Owner merges.
 - GitHub plan/security-feature availability may differ; unavailable premium controls must be recorded, not silently assumed.
+- Public visibility makes source, history, Issues, PRs and Actions evidence public;
+  confidential business material is prohibited, and the Private conversion before
+  production must include repository/security-control revalidation.
 - The bootstrap must remain simple; adding frameworks without a current requirement requires a Decision Request.
 
 ## 10. Controller Gate

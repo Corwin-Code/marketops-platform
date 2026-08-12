@@ -49,7 +49,7 @@ python3 scripts/validate_governance.py
 bash scripts/bootstrap-repo.sh
 ```
 
-4. 在 GitHub 创建私有仓库 `marketops-platform`，推送 `main`；
+4. 按 D-15 在 GitHub 创建 Public 预生产仓库 `marketops-platform`，推送 `main`；真实生产上线时（或更早引入机密业务资料前）改回 Private 并重新验证仓库控制；
 5. 按 `docs/00-governance/GITHUB_SETUP.md` 配置 Ruleset；
 6. 在 Claude Project 中加载指定知识文件并执行 `docs/08-handoffs/CLAUDE-WP-P0-001-DESIGN-PROMPT.md`；
 7. 将 Claude 的设计输出提交回总控窗口，等待明确的 Controller Verdict。

@@ -28,7 +28,7 @@ fi
 cat <<'EOF'
 Local repository initialized.
 Next:
-  git remote add origin <YOUR_PRIVATE_REPOSITORY_REMOTE>
+  git remote add origin <YOUR_REPOSITORY_REMOTE>
   git push -u origin main
 Then configure the GitHub Ruleset in docs/00-governance/GITHUB_SETUP.md.
 EOF

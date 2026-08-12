@@ -23,6 +23,6 @@ if ([string]::IsNullOrWhiteSpace(($staged -join ""))) {
 }
 
 Write-Host "Local repository initialized."
-Write-Host "Next: git remote add origin <YOUR_PRIVATE_REPOSITORY_REMOTE>"
+Write-Host "Next: git remote add origin <YOUR_REPOSITORY_REMOTE>"
 Write-Host "Then: git push -u origin main"
 Write-Host "Configure the Ruleset described in docs/00-governance/GITHUB_SETUP.md."
