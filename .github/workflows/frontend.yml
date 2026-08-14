@@ -1,0 +1,171 @@
+name: Frontend
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  TZ: UTC
+  LANG: C.UTF-8
+  # CI publishes explicit security and supply-chain results, so npm's optional
+  # funding and inline audit network calls add noise without owning a Gate.
+  npm_config_fund: 'false'
+  npm_config_audit: 'false'
+
+defaults:
+  run:
+    working-directory: frontend/marketops-console
+
+jobs:
+  frontend-lint:
+    name: frontend-lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: frontend/marketops-console/.node-version
+          cache: npm
+          cache-dependency-path: frontend/marketops-console/package-lock.json
+      - name: Install from the lockfile
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Check formatting
+        run: npm run format:check
+
+  frontend-typecheck:
+    name: frontend-typecheck
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: frontend/marketops-console/.node-version
+          cache: npm
+          cache-dependency-path: frontend/marketops-console/package-lock.json
+      - name: Install from the lockfile
+        run: npm ci
+      - name: Type-check
+        run: npm run typecheck
+
+  frontend-test:
+    name: frontend-test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: frontend/marketops-console/.node-version
+          cache: npm
+          cache-dependency-path: frontend/marketops-console/package-lock.json
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: backend/marketops-server/pom.xml
+      - name: Install from the lockfile
+        run: npm ci
+      - name: Run the tests with coverage
+        run: npm run test:ci
+      - name: Prove the frontend coverage gate rejects an unmet threshold
+        working-directory: .
+        run: bash scripts/verify_coverage_thresholds.sh frontend
+      - name: Install the Chromium runtime
+        run: npx playwright install --with-deps chromium
+      - name: Generate isolated local configuration
+        working-directory: .
+        run: make env-init
+      - name: Start PostgreSQL
+        working-directory: .
+        run: make up
+      - name: Exercise the rendered shell against backend metadata
+        run: npm run test:browser
+      - name: Stop the isolated database
+        if: always()
+        working-directory: .
+        run: |
+          if [ -f .env.local ]; then
+            docker compose --project-name marketops-local \
+              --env-file .env.local \
+              -f infra/compose/docker-compose.yml \
+              down --volumes --remove-orphans
+          fi
+      - name: Publish the coverage report
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: frontend-coverage
+          if-no-files-found: warn
+          retention-days: 14
+          path: frontend/marketops-console/coverage/
+
+  frontend-build:
+    name: frontend-build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: frontend/marketops-console/.node-version
+          cache: npm
+          cache-dependency-path: frontend/marketops-console/package-lock.json
+      - name: Install from the lockfile
+        run: npm ci
+      - name: Build the console
+        run: npm run build
+        env:
+          MARKETOPS_BUILD_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+          MARKETOPS_BUILD_VERSION: ${{ github.ref_name }}
+          VITE_MARKETOPS_API_BASE_URL: http://127.0.0.1:8080
+          VITE_MARKETOPS_ENVIRONMENT: ci
+      - name: Prove that only prefixed values reached the bundle
+        # The canary rebuilds with withheld values in the environment and
+        # searches the output for them, which is the only way to observe a
+        # broadened prefix before someone opens the published file.
+        run: npm run verify:bundle
+      - name: Produce the CycloneDX and dependency inventories
+        run: |
+          npm run sbom
+          npm ls --all --json > npm-dependency-inventory.json
+      - name: Publish the console and its inventory
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: frontend-distribution
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            frontend/marketops-console/dist/
+            frontend/marketops-console/npm-dependency-inventory.json
+            build/supply-chain/frontend-sbom.json

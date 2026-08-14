@@ -1,14 +1,37 @@
 from __future__ import annotations
 
+import subprocess
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from scripts.validate_governance import (
     CANONICAL_DESIGN_RELATIVE_PATH,
+    git_scan_paths,
     validate_approved_design_state_text,
     validate_authorization_state_text,
     validate_lifecycle_state_text,
     validate_owner_control_state_text,
 )
+
+
+class SecretScanScopeTests(unittest.TestCase):
+    def test_ignored_dependency_tree_is_not_a_scan_candidate(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / ".gitignore").write_text("node_modules/\n", encoding="utf-8")
+            (root / "tracked.ts").write_text("export const value = 1;\n", encoding="utf-8")
+            dependency = root / "node_modules" / "dependency.ts"
+            dependency.parent.mkdir()
+            dependency.write_text("third party source\n", encoding="utf-8")
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(
+                ["git", "add", ".gitignore", "tracked.ts"], cwd=root, check=True
+            )
+
+            relative = {path.relative_to(root) for path in git_scan_paths(root)}
+
+            self.assertEqual({Path(".gitignore"), Path("tracked.ts")}, relative)
 
 
 def current_state(

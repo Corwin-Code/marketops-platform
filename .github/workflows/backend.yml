@@ -1,0 +1,144 @@
+# Three commit identifiers appear in a pull request build and they are not the
+# same thing:
+#
+#   github.event.pull_request.head.sha  the commit a contributor authored
+#   github.sha                          a merge commit Actions generated, which
+#                                       is what the checkout and the tests use
+#   github.event.pull_request.base.sha  the commit being merged into
+#
+# Stamping an artefact with github.sha would record an object that exists only
+# inside this run, so the build metadata carries the head commit while the
+# evidence records the merge commit that was actually tested.
+name: Backend
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Reproducible builds need a fixed time zone and locale; a runner's defaults
+  # are not guaranteed to stay the same between images.
+  TZ: UTC
+  LANG: C.UTF-8
+  MAVEN_OPTS: -Dstyle.color=never
+
+defaults:
+  run:
+    working-directory: backend/marketops-server
+
+jobs:
+  backend-build:
+    name: backend-build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: backend/marketops-server/pom.xml
+
+      - name: Compile and run the unit, architecture and configuration tests
+        run: |
+          ./mvnw -B -ntp -DskipITs \
+            -Dmarketops.build.gitCommit="${SOURCE_HEAD_SHA}" \
+            verify
+        env:
+          # The commit a contributor authored, not the merge commit this run
+          # generated. See the note in the workflow header.
+          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Prove the backend coverage gate rejects an unmet threshold
+        working-directory: .
+        run: bash scripts/verify_coverage_thresholds.sh backend
+
+      - name: Publish the dependency inventory and the software bill of materials
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: backend-supply-chain
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            backend/marketops-server/target/*-sbom.json
+            backend/marketops-server/target/licenses/backend-license-inventory.txt
+
+      - name: Publish the test reports
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: backend-test-reports
+          if-no-files-found: warn
+          retention-days: 14
+          path: backend/marketops-server/target/surefire-reports/
+
+  architecture-boundary:
+    name: architecture-boundary
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: backend/marketops-server/pom.xml
+
+      - name: Run the boundary rules, their fixtures and the module verification
+        # A separate job so a boundary failure is legible on the checks list
+        # without opening a build log that also contains unrelated failures.
+        run: ./mvnw -B -ntp -Dtest='*ArchitectureTest' -DfailIfNoTests=true test
+
+  backend-integration:
+    name: backend-integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: backend/marketops-server/pom.xml
+
+      - name: Run the database and application integration tests
+        # The container runtime is provided by the runner image. The tests start
+        # PostgreSQL themselves and mount the same initialisation scripts a
+        # workstation mounts, so a privilege that only holds here cannot pass.
+        run: ./mvnw -B -ntp verify
+
+      - name: Publish the integration test reports
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: backend-integration-reports
+          if-no-files-found: warn
+          retention-days: 14
+          path: backend/marketops-server/target/failsafe-reports/

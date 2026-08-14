@@ -1,0 +1,17 @@
+# Continuous integration profile.
+#
+# Integration tests supply their own data source through the container lifecycle,
+# so this file deliberately sets no connection properties. It exists to name the
+# environment and to keep test output readable when a job fails.
+
+marketops:
+  environment: ci
+  web:
+    cors:
+      allowed-origins: http://127.0.0.1:5173,http://127.0.0.1:4173
+
+logging:
+  level:
+    root: WARN
+    com.mimococo.marketops: INFO
+    org.flywaydb: INFO

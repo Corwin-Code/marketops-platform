@@ -1,0 +1,69 @@
+import { describe, expect, it } from 'vitest';
+import {
+  BUILD_COMMIT_KEY,
+  BUILD_VERSION_KEY,
+  buildTimeConstants,
+  ENV_PREFIX,
+  UNKNOWN_COMMIT,
+  UNKNOWN_VERSION,
+} from '../../vite.constants';
+
+/**
+ * The bundler decisions that decide what becomes public.
+ *
+ * A bundle is served to anyone who opens the console, so the prefix that
+ * governs which variables are inlined, and the set of identifiers replaced at
+ * build time, are asserted rather than reviewed.
+ */
+describe('bundle configuration', () => {
+  it('publishes only variables named for this console', () => {
+    expect(ENV_PREFIX).toBe('VITE_MARKETOPS_');
+  });
+
+  it('replaces exactly two identifiers', () => {
+    const constants = buildTimeConstants({});
+
+    expect(Object.keys(constants).sort()).toEqual([BUILD_COMMIT_KEY, BUILD_VERSION_KEY].sort());
+  });
+
+  it('reports the agreed fallbacks when the build supplied nothing', () => {
+    const constants = buildTimeConstants({});
+
+    expect(constants[BUILD_VERSION_KEY]).toBe(JSON.stringify(UNKNOWN_VERSION));
+    expect(constants[BUILD_COMMIT_KEY]).toBe(JSON.stringify(UNKNOWN_COMMIT));
+  });
+
+  it('publishes a commit only when it is an object name', () => {
+    const accepted = buildTimeConstants({
+      MARKETOPS_BUILD_COMMIT: '3ecc72ae509664ff0550f80ece98d4f50dbb0bc0',
+    });
+    expect(accepted[BUILD_COMMIT_KEY]).toBe(
+      JSON.stringify('3ecc72ae509664ff0550f80ece98d4f50dbb0bc0'),
+    );
+
+    for (const rejected of [
+      'not-a-commit',
+      '<script>alert(1)</script>',
+      '../../etc/passwd',
+      '3ECC72AE509664FF0550F80ECE98D4F50DBB0BC0',
+      '3ecc72',
+    ]) {
+      expect(buildTimeConstants({ MARKETOPS_BUILD_COMMIT: rejected })[BUILD_COMMIT_KEY]).toBe(
+        JSON.stringify(UNKNOWN_COMMIT),
+      );
+    }
+  });
+
+  it('carries no third identifier that a later change could smuggle a value into', () => {
+    // The literal is held in a constant so this file states a variable name and
+    // a marker separately, and never the two joined as an assignment.
+    const withheld = 'must-not-appear';
+    const constants = buildTimeConstants({
+      MARKETOPS_DB_APP_PASSWORD: withheld,
+      VITE_UNRELATED_SETTING: withheld,
+      MARKETOPS_BUILD_TIME: withheld,
+    });
+
+    expect(JSON.stringify(constants)).not.toContain(withheld);
+  });
+});

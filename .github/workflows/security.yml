@@ -1,0 +1,108 @@
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    # A weekly run catches an advisory published after a change merged. Without
+    # it the newest finding is only ever as fresh as the last pull request.
+    - cron: '17 3 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-review:
+    name: dependency-review
+    # The action compares two commits, which exists only on a pull request.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Review the dependencies this change introduces
+        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4
+        with:
+          fail-on-severity: moderate
+          # A dependency whose licence is unknown is reviewed by a person rather
+          # than accepted by a default.
+          comment-summary-in-pr: on-failure
+
+  codeql-java:
+    name: codeql-java
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: backend/marketops-server/pom.xml
+
+      - name: Initialise CodeQL
+        uses: github/codeql-action/init@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
+        with:
+          languages: java-kotlin
+          # A compiled language needs its build observed. Autobuild would guess
+          # at the command; naming it here means the database is built from the
+          # same invocation the build job uses.
+          build-mode: manual
+          queries: security-and-quality
+
+      - name: Build the backend for analysis
+        run: ./mvnw -B -ntp -DskipTests clean package
+        working-directory: backend/marketops-server
+
+      - name: Analyse
+        uses: github/codeql-action/analyze@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
+        with:
+          category: /language:java-kotlin
+
+  codeql-typescript:
+    name: codeql-typescript
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Initialise CodeQL
+        uses: github/codeql-action/init@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
+        with:
+          languages: javascript-typescript
+          # An interpreted language has no build to observe, and asking for one
+          # makes the job fail on a step that has nothing to do.
+          build-mode: none
+          queries: security-and-quality
+
+      - name: Analyse
+        uses: github/codeql-action/analyze@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
+        with:
+          category: /language:javascript-typescript

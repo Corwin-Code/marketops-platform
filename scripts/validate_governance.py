@@ -4,6 +4,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -569,14 +570,31 @@ def validate_traceability(errors: list[str]) -> None:
             errors.append("traceability.csv contains duplicate source_id rows")
 
 
+def git_scan_paths(root: Path = ROOT) -> list[Path]:
+    """Return tracked and new candidate paths, excluding ignored build outputs."""
+    result = subprocess.run(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+        cwd=root,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        detail = result.stderr.decode("utf-8", errors="replace").strip()
+        raise RuntimeError(detail or "git ls-files failed")
+    return [root / item.decode("utf-8") for item in result.stdout.split(b"\0") if item]
+
+
 def validate_common_secrets(errors: list[str]) -> None:
     excluded = {
         ROOT / "scripts/validate_governance.py",
     }
-    for path in ROOT.rglob("*"):
+    try:
+        paths = git_scan_paths()
+    except RuntimeError as error:
+        errors.append(f"cannot enumerate tracked files for secret scan: {error}")
+        return
+    for path in paths:
         if not path.is_file() or path in excluded:
-            continue
-        if ".git" in path.parts:
             continue
         if path.suffix.lower() not in SCAN_EXTENSIONS and path.name != ".env":
             continue

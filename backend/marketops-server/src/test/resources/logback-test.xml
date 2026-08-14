@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Test logging.
+
+  Output is reduced to warnings so a failing assertion is the first thing a
+  reader sees. This project's own logger stays at INFO so a test that exercises
+  a degraded path still shows why the path was taken.
+-->
+<configuration>
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} %-5level [%X{correlationId:-}] %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="com.mimococo.marketops" level="INFO"/>
+  <logger name="org.springframework" level="WARN"/>
+  <logger name="org.flywaydb" level="WARN"/>
+  <logger name="org.testcontainers" level="WARN"/>
+  <logger name="com.zaxxer.hikari" level="WARN"/>
+
+  <root level="WARN">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+</configuration>

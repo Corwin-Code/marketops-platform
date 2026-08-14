@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>4.1.0</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.mimococo.marketops</groupId>
+  <artifactId>marketops-server</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <name>MarketOps Server</name>
+  <description>Repository, governance and CI foundation for MarketOps Russia</description>
+
+  <properties>
+    <java.version>21</java.version>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <!-- Reproducible archive entries: without a fixed timestamp two builds of one
+         source tree produce different bytes. -->
+    <project.build.outputTimestamp>2026-01-01T00:00:00Z</project.build.outputTimestamp>
+
+    <!-- Continuous integration supplies the commit a contributor authored. A local
+         build leaves the literal below, which the metadata endpoint reports as-is. -->
+    <marketops.build.gitCommit>unknown</marketops.build.gitCommit>
+
+    <spring-modulith.version>2.1.0</spring-modulith.version>
+
+    <!-- Plugins the Spring Boot parent does not manage. Verified against
+         https://repo1.maven.org/maven2/ on 2026-08-14; refreshed with the
+         volatile version snapshot. -->
+    <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+    <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
+    <cyclonedx-maven-plugin.version>2.9.3</cyclonedx-maven-plugin.version>
+    <license-maven-plugin.version>2.7.1</license-maven-plugin.version>
+
+    <jacoco.line.coverage>0.80</jacoco.line.coverage>
+    <jacoco.branch.coverage>0.70</jacoco.branch.coverage>
+
+    <!-- Replaced by JaCoCo before the integration phase. Declaring it empty keeps
+         a build that skips integration tests from failing on an unresolved
+         property rather than on a real defect. -->
+    <failsafeArgLine/>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.modulith</groupId>
+        <artifactId>spring-modulith-bom</artifactId>
+        <version>${spring-modulith.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-flyway</artifactId>
+    </dependency>
+
+    <!-- PostgreSQL support for Flyway ships as a database-specific module. The
+         version comes from the Spring Boot BOM so it matches the Flyway core the
+         starter resolves. -->
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.modulith</groupId>
+      <artifactId>spring-modulith-starter-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.modulith</groupId>
+      <artifactId>spring-modulith-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit6</artifactId>
+      <version>1.5.0</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>build-info</id>
+            <goals>
+              <goal>build-info</goal>
+            </goals>
+            <configuration>
+              <additionalProperties>
+                <gitCommit>${marketops.build.gitCommit}</gitCommit>
+              </additionalProperties>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgs>
+            <arg>-Xlint:all,-processing</arg>
+            <arg>-parameters</arg>
+          </compilerArgs>
+          <showDeprecation>true</showDeprecation>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>${maven-enforcer-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>enforce-toolchain-and-dependencies</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[21,22)</version>
+                  <message>This project builds with Java 21.</message>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>[3.9,4)</version>
+                  <message>This project builds with the Maven 3.9 line.</message>
+                </requireMavenVersion>
+                <bannedDependencies>
+                  <excludes>
+                    <exclude>org.springframework.boot:spring-boot-starter-data-jdbc</exclude>
+                    <exclude>org.springframework.boot:spring-boot-starter-data-jpa</exclude>
+                    <exclude>org.hibernate.orm:*</exclude>
+                    <exclude>jakarta.persistence:*</exclude>
+                  </excludes>
+                  <message>
+                    The foundation uses plain JDBC. Object-relational mapping is a
+                    separate decision and is not part of this scope.
+                  </message>
+                </bannedDependencies>
+                <dependencyConvergence/>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>prepare-coverage</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>prepare-coverage-integration</id>
+            <goals>
+              <goal>prepare-agent-integration</goal>
+            </goals>
+            <configuration>
+              <!-- Integration coverage is appended to the same file the unit run
+                   produced, so the threshold below is checked against everything
+                   the build actually exercised rather than against half of it. -->
+              <destFile>${project.build.directory}/jacoco.exec</destFile>
+              <append>true</append>
+              <propertyName>failsafeArgLine</propertyName>
+            </configuration>
+          </execution>
+          <execution>
+            <id>verify-coverage</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <rule>
+                  <element>BUNDLE</element>
+                  <limits>
+                    <limit>
+                      <counter>LINE</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>${jacoco.line.coverage}</minimum>
+                    </limit>
+                    <limit>
+                      <counter>BRANCH</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>${jacoco.branch.coverage}</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+              <excludes>
+                <!-- The bootstrap class only calls SpringApplication.run and has no
+                     branch to exercise; including it would measure the framework. -->
+                <exclude>com/mimococo/marketops/MarketOpsServerApplication.class</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- Names ending in IT need a container runtime, so they are run by
+               failsafe in the integration phase and never by this plugin. -->
+          <excludes>
+            <exclude>**/*IT.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <includes>
+            <include>**/*IT.java</include>
+          </includes>
+          <argLine>@{failsafeArgLine}</argLine>
+        </configuration>
+        <executions>
+          <execution>
+            <!-- Merge with Spring Boot's default Failsafe execution instead of
+                 running every integration test twice. -->
+            <id>default</id>
+            <goals>
+              <goal>integration-test</goal>
+              <!-- The verify goal is what turns a failed integration test into a
+                   failed build; without it the failure is only recorded. -->
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.cyclonedx</groupId>
+        <artifactId>cyclonedx-maven-plugin</artifactId>
+        <version>${cyclonedx-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <!-- Spring Boot's parent already binds this execution. Reuse its
+                 default id so one canonical external SBOM is built once. -->
+            <id>default</id>
+            <phase>package</phase>
+            <goals>
+              <goal>makeAggregateBom</goal>
+            </goals>
+            <configuration>
+              <outputFormat>json</outputFormat>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <outputName>marketops-server-sbom</outputName>
+              <projectType>application</projectType>
+              <schemaVersion>1.6</schemaVersion>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <outputFormat>json</outputFormat>
+          <outputDirectory>${project.build.directory}</outputDirectory>
+          <outputName>marketops-server-sbom</outputName>
+          <projectType>application</projectType>
+          <schemaVersion>1.6</schemaVersion>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>${license-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>dependency-license-inventory</id>
+            <phase>package</phase>
+            <goals>
+              <goal>add-third-party</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <outputDirectory>${project.build.directory}/licenses</outputDirectory>
+          <thirdPartyFilename>backend-license-inventory.txt</thirdPartyFilename>
+          <useMissingFile>false</useMissingFile>
+          <sortArtifactByName>true</sortArtifactByName>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

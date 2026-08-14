@@ -6,17 +6,38 @@ on:
     branches:
       - main
 
+# Read-only by default. A job that needs more says so for itself, so a change
+# that starts writing has to be visible in the diff.
 permissions:
   contents: read
+
+concurrency:
+  group: governance-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   governance:
     name: governance
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
-      - name: Validate governance, source integrity and common secret patterns
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Record the identifiers this run is about
         run: |
-          python3 scripts/validate_governance.py
-          python3 -m unittest discover -s tests -p 'test_*.py'
+          echo "tested_merge_sha=${GITHUB_SHA}" >> "${GITHUB_STEP_SUMMARY}"
+          echo "source_head_sha=${SOURCE_HEAD_SHA:-not-a-pull-request}" >> "${GITHUB_STEP_SUMMARY}"
+        env:
+          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+      - name: Validate governance, source integrity and common secret patterns
+        run: python3 scripts/validate_governance.py
+
+      - name: Validate the three production readiness rules
+        run: python3 scripts/validate_production_readiness.py
+
+      - name: Run the validator's own tests
+        run: python3 -m unittest discover -s tests -p 'test_*.py'

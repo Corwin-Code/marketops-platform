@@ -1,0 +1,752 @@
+#!/usr/bin/env python3
+"""Enforce the three global production-readiness rules for this repository.
+
+The rules exist because a foundation that ships an unfinished path, a
+history-narrating comment, or a scaffold identifier teaches every later work
+package to do the same.
+
+============  ===========================================================
+Rule          Question it answers
+============  ===========================================================
+TC-GLOBAL-001 Does any compromise, placeholder, or superseded parallel
+              implementation remain in a production path?
+TC-GLOBAL-002 Does any comment describe project history or a future cleanup
+              instead of current behaviour?
+TC-GLOBAL-003 Does any production identifier use a placeholder or scaffold
+              name instead of the agreed production name?
+============  ===========================================================
+
+Scope is explicit rather than repository-wide. Governance records, work items,
+requirements, and phase evidence legitimately describe history and superseded
+decisions, so they are excluded from the comment and naming rules while
+remaining subject to the secret and placeholder rules that apply everywhere.
+Test sources may use deliberately invalid names, because architecture fixtures
+have to violate the rules they protect.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import re
+import sys
+import xml.etree.ElementTree as ElementTree
+from dataclasses import dataclass, field
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+BACKEND = "backend/marketops-server"
+FRONTEND = "frontend/marketops-console"
+
+# Directories whose contents are production behaviour.
+PRODUCTION_ROOTS = (
+    f"{BACKEND}/src/main",
+    f"{FRONTEND}/src",
+    "infra",
+    "scripts",
+    ".github/workflows",
+)
+
+# Directories whose contents are tests or deliberately invalid fixtures.
+TEST_ROOTS = (
+    f"{BACKEND}/src/test",
+    f"{FRONTEND}/src/__tests__",
+    f"{FRONTEND}/tests",
+    "tests",
+)
+
+# Documents that describe the current system and must not narrate history.
+CANONICAL_DOC_PATHS = (
+    "docs/02-architecture/designs",
+    "docs/06-runbooks",
+    "README.md",
+)
+
+# Documents whose purpose is to record history, decisions, or evidence.
+HISTORICAL_DOC_ROOTS = (
+    "docs/00-governance",
+    "docs/01-requirements",
+    "docs/02-architecture/adr",
+    "docs/03-work-items",
+    "docs/07-phase-evidence",
+    "docs/08-handoffs",
+    "CHANGELOG.md",
+)
+
+SOURCE_SUFFIXES = {".java", ".ts", ".tsx", ".js", ".mjs", ".py", ".sh", ".sql", ".yml", ".yaml"}
+COMMENT_SUFFIXES = {".java", ".ts", ".tsx", ".js", ".mjs"}
+
+SKIP_DIR_NAMES = {
+    ".git", "node_modules", "target", "dist", "coverage", ".vite",
+    "__pycache__", ".venv", ".mvn",
+}
+
+# --------------------------------------------------------------------------
+# TC-GLOBAL-001 — compromise retirement
+# --------------------------------------------------------------------------
+
+# A marker counts only in annotation form. A mention wrapped in backticks or
+# quotes is documentation or test data describing the rule, not unfinished work,
+# so a plain word search would report the rule's own definition forever and train
+# reviewers to ignore the result.
+UNRESOLVED_MARKERS = re.compile(r"""(?<![`'"\w])(?:TODO|FIXME|HACK|XXX)(?![`'"\w])""")
+
+# The files that define these rules necessarily contain every pattern the rules
+# search for. They are the rule definition, not a subject of it. This is the only
+# exclusion in this validator: it is an exact path list, it is asserted by a test
+# so it cannot be widened silently, and every other file in the repository —
+# including all documentation — is scanned.
+RULE_DEFINITION_PATHS = (
+    "scripts/validate_production_readiness.py",
+    "tests/test_validate_production_readiness.py",
+)
+
+# Retired designs. Each entry states what must not reappear and why.
+RETIRED_ARTEFACTS = (
+    ("ops.health_probe", "a probe table was replaced by the datasource health indicator"),
+    ("health_probe", "a probe table was replaced by the datasource health indicator"),
+    ("spring-boot-starter-data-jdbc", "the plain JDBC starter is the approved dependency"),
+    ("Type.OPEN", "modules are closed; an open module disables encapsulation and cycle detection"),
+    ("failOnEmptyShould", "empty-subject handling is per rule, never a global override"),
+    ("com.<company>", "the Java root package is com.mimococo.marketops"),
+    ("<company>", "the Java root package is com.mimococo.marketops"),
+)
+
+# Files that may never exist, keyed by the design they belonged to.
+RETIRED_PATHS = (
+    ("archunit.properties", "empty-subject handling is per rule, never a global override"),
+    (
+        "docs/02-architecture/designs/WP-P0-001-foundation-design-v1.1.md",
+        "the canonical design carries no review-version suffix",
+    ),
+    (
+        "docs/02-architecture/designs/WP-P0-001-foundation-design-v1.2.md",
+        "the canonical design carries no review-version suffix",
+    ),
+    (
+        "docs/02-architecture/designs/WP-P0-001-foundation-design-v1.3.md",
+        "the canonical design carries no review-version suffix",
+    ),
+)
+
+# Dependencies that must not appear in the backend build.
+FORBIDDEN_BACKEND_DEPENDENCIES = (
+    ("spring-boot-starter-data-jdbc", "use spring-boot-starter-jdbc"),
+    ("spring-boot-starter-data-jpa", "JPA is out of scope for this foundation"),
+    ("hibernate-core", "JPA is out of scope for this foundation"),
+)
+
+# --------------------------------------------------------------------------
+# TC-GLOBAL-002 — functional comments
+# --------------------------------------------------------------------------
+
+HISTORY_COMMENT_PATTERNS = (
+    (re.compile(r"\bWP-P0-00\d\b"), "work package narration"),
+    (re.compile(r"(?<![A-Za-z0-9])C(?:[1-9]|10)\b(?=[^A-Za-z0-9]*(?:commit|stage|step|later|phase))", re.I), "commit-stage narration"),
+    (re.compile(r"\bv1\.[0-3]\b"), "review-revision narration"),
+    (re.compile(r"\bremove (?:this )?(?:in a )?(?:future|later)\b", re.I), "future cleanup instruction"),
+    (re.compile(r"\bremove later\b", re.I), "future cleanup instruction"),
+    (re.compile(r"\bfor now\b", re.I), "provisional wording"),
+    (re.compile(r"\btemporary (?:compromise|workaround|shim)\b", re.I), "compromise wording"),
+    (re.compile(r"\breview finding\b", re.I), "review narration"),
+    (re.compile(r"\bcontroller requested\b", re.I), "review narration"),
+    (re.compile(r"\blegacy compatibility\b", re.I), "compatibility narration"),
+)
+
+# --------------------------------------------------------------------------
+# TC-GLOBAL-003 — production naming
+# --------------------------------------------------------------------------
+
+REQUIRED_NAMES = {
+    "product_display_name": "MarketOps Russia",
+    "repository": "marketops-platform",
+    "backend_application": "marketops-server",
+    "frontend_package": "marketops-console",
+    "java_root_package": "com.mimococo.marketops",
+    "database": "marketops",
+    "migration_role": "marketops_migration",
+    "application_role": "marketops_app",
+    "backend_env_prefix": "MARKETOPS_",
+    "frontend_env_prefix": "VITE_MARKETOPS_",
+}
+
+SCAFFOLD_TERMS = (
+    "hello-world", "helloworld", "hello world",
+    "foo", "bar", "prototype",
+)
+
+# Scaffold terms that are only rejected when they name an identifier, because the
+# same words appear legitimately in prose such as "for example" or "a sample of".
+IDENTIFIER_SCAFFOLD_TERMS = ("example", "demo", "sample", "temp", "temporary")
+
+IDENTIFIER_CONTEXT = re.compile(
+    r"(?:package|class|interface|enum|record|artifactId|groupId|name|id)\s*[:=> ]\s*"
+    r"[\"'<]?([A-Za-z0-9_.\-]*)",
+    re.I,
+)
+
+ACTION_REFERENCE = re.compile(
+    r"^\s*(?:-\s*)?uses:\s*[^@\s]+@(?P<ref>[^\s#]+)"
+    r"(?:\s+#\s*(?P<version>v\d+(?:\.\d+)*))?\s*$"
+)
+IMMUTABLE_ACTION_REF = re.compile(r"^[0-9a-f]{40}$")
+PATH_RESTRICTION = re.compile(
+    r"guard-repo-path|path (?:contains|without) (?:whitespace|spaces?|a single quote)|"
+    r"move the clone to a path without",
+    re.I,
+)
+PENDING_EVIDENCE = re.compile(r"PENDING_(?:LOCAL|CODEX_GITHUB)_EXECUTION")
+
+
+@dataclass
+class Violation:
+    rule: str
+    path: str
+    line: int
+    detail: str
+
+
+@dataclass
+class Report:
+    violations: list[Violation] = field(default_factory=list)
+    inspected_files: int = 0
+
+    def add(self, rule: str, path: Path | str, line: int, detail: str) -> None:
+        relative = path if isinstance(path, str) else str(path.relative_to(ROOT))
+        self.violations.append(Violation(rule, relative, line, detail))
+
+    def for_rule(self, rule: str) -> list[Violation]:
+        return [violation for violation in self.violations if violation.rule == rule]
+
+
+def is_rule_definition(path: Path) -> bool:
+    """Report whether ``path`` defines the rules rather than being subject to them."""
+    return str(path.relative_to(ROOT)) in RULE_DEFINITION_PATHS
+
+
+def under(path: Path, roots: tuple[str, ...]) -> bool:
+    relative = str(path.relative_to(ROOT))
+    return any(relative == root or relative.startswith(root + "/") for root in roots)
+
+
+def iter_files() -> list[Path]:
+    files: list[Path] = []
+    for path in sorted(ROOT.rglob("*")):
+        if not path.is_file():
+            continue
+        if any(part in SKIP_DIR_NAMES for part in path.relative_to(ROOT).parts):
+            continue
+        files.append(path)
+    return files
+
+
+def read_text(path: Path) -> str | None:
+    try:
+        return path.read_text(encoding="utf-8")
+    except (UnicodeDecodeError, OSError):
+        return None
+
+
+def matching_lines(text: str, pattern: re.Pattern[str]) -> list[tuple[int, str]]:
+    """Return every line matched by a repository-contract pattern."""
+    return [
+        (number, line)
+        for number, line in enumerate(text.splitlines(), start=1)
+        if pattern.search(line)
+    ]
+
+
+def action_reference_violations(text: str) -> list[tuple[int, str]]:
+    """Return mutable or unlabelled external action references."""
+    violations: list[tuple[int, str]] = []
+    for number, line in enumerate(text.splitlines(), start=1):
+        match = ACTION_REFERENCE.match(line)
+        if match is None:
+            continue
+        reference = match.group("ref")
+        version = match.group("version")
+        if IMMUTABLE_ACTION_REF.fullmatch(reference) is None or version is None:
+            violations.append((number, line.strip()))
+    return violations
+
+
+def runner_reference_violations(text: str) -> list[tuple[int, str]]:
+    """Return workflow runner declarations that do not pin Ubuntu 24.04."""
+    return [
+        (number, line.strip())
+        for number, line in enumerate(text.splitlines(), start=1)
+        if "runs-on:" in line and "ubuntu-24.04" not in line
+    ]
+
+
+def require_tokens(report: Report, rule: str, path: Path, tokens: tuple[str, ...]) -> None:
+    """Report each required contract token absent from a text file."""
+    text = read_text(path)
+    if text is None:
+        report.add(rule, path, 0, "required contract file is missing or unreadable")
+        return
+    for token in tokens:
+        if token not in text:
+            report.add(rule, path, 0, f"required contract is absent: {token}")
+
+
+def check_repository_contracts(report: Report) -> None:
+    """Enforce the foundation capabilities whose absence previously looked green."""
+    rule = "TC-GLOBAL-001"
+
+    required_paths = (
+        f"{BACKEND}/.mvn/wrapper/maven-wrapper.jar",
+        f"{FRONTEND}/package-lock.json",
+        f"{FRONTEND}/playwright.config.ts",
+        f"{FRONTEND}/tests/browser/health-shell.spec.ts",
+    )
+    for relative in required_paths:
+        if not (ROOT / relative).is_file():
+            report.add(rule, relative, 0, "required foundation artefact is absent")
+
+    for relative in ("Makefile", "scripts/dev_doctor.py", "scripts/fresh_clone_check.sh"):
+        path = ROOT / relative
+        text = read_text(path) or ""
+        for number, line in matching_lines(text, PATH_RESTRICTION):
+            report.add(rule, path, number, f"repository path restriction: {line.strip()[:100]}")
+
+    workflows = ROOT / ".github" / "workflows"
+    if workflows.exists():
+        for path in sorted(workflows.glob("*.yml")) + sorted(workflows.glob("*.yaml")):
+            text = read_text(path) or ""
+            for number, line in runner_reference_violations(text):
+                report.add(
+                    rule,
+                    path,
+                    number,
+                    f"workflow runner must be ubuntu-24.04: {line}",
+                )
+            for number, line in action_reference_violations(text):
+                report.add(rule, path, number, f"action is not a full SHA with version comment: {line}")
+
+    evidence = ROOT / "docs" / "07-phase-evidence" / "WP-P0-001"
+    if evidence.exists():
+        for path in sorted(evidence.glob("*.md")):
+            text = read_text(path) or ""
+            for number, line in matching_lines(text, PENDING_EVIDENCE):
+                report.add(rule, path, number, f"implementation evidence remains pending: {line.strip()[:100]}")
+
+    wrapper_properties = ROOT / BACKEND / ".mvn" / "wrapper" / "maven-wrapper.properties"
+    require_tokens(
+        report,
+        rule,
+        wrapper_properties,
+        (
+            "wrapperVersion=3.3.4",
+            "distributionType=bin",
+            "apache-maven/3.9.16/apache-maven-3.9.16-bin.zip",
+            "distributionSha256Sum=",
+            "maven-wrapper/3.3.4/maven-wrapper-3.3.4.jar",
+            "wrapperSha256Sum=",
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / "scripts/verify_coverage_thresholds.sh",
+        ("-Djacoco.line.coverage=1.00", "--coverage.thresholds.lines=100"),
+    )
+    wrapper_jar = ROOT / BACKEND / ".mvn" / "wrapper" / "maven-wrapper.jar"
+    properties_text = read_text(wrapper_properties) or ""
+    expected_wrapper_hash = re.search(r"(?m)^wrapperSha256Sum=([0-9a-f]{64})$", properties_text)
+    if wrapper_jar.is_file() and expected_wrapper_hash is not None:
+        actual = hashlib.sha256(wrapper_jar.read_bytes()).hexdigest()
+        if actual != expected_wrapper_hash.group(1):
+            report.add(rule, wrapper_jar, 0, "wrapper JAR does not match wrapperSha256Sum")
+
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "pom.xml",
+        (
+            "<propertyName>failsafeArgLine</propertyName>",
+            "<argLine>@{failsafeArgLine}</argLine>",
+            "<jacoco.line.coverage>0.80</jacoco.line.coverage>",
+            "<jacoco.branch.coverage>0.70</jacoco.branch.coverage>",
+        ),
+    )
+
+    architecture_rules = ROOT / BACKEND / "src/test/java/com/mimococo/marketops/architecture/ArchitectureRules.java"
+    architecture_text = read_text(architecture_rules) or ""
+    for method in (
+        "moduleInternalsAreNotAccessedFromOtherModules",
+        "theSharedModuleDependsOnNoOtherModule",
+    ):
+        if re.search(rf"{method}\(String basePackage\).*?return classes\(\)", architecture_text, re.S) is None:
+            report.add(rule, architecture_rules, 0, f"custom ArchUnit condition is not a positive classes() rule: {method}")
+
+    for path in (ROOT / BACKEND / "src/test").rglob("*.java") if (ROOT / BACKEND / "src/test").exists() else ():
+        text = read_text(path) or ""
+        if "org.testcontainers.containers.PostgreSQLContainer" in text:
+            report.add(rule, path, 0, "Testcontainers 2.x PostgreSQL import uses the retired package")
+
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/main/java/com/mimococo/marketops/shared/internal/config/CorsProperties.java",
+        (
+            "@ConfigurationProperties(prefix = \"marketops.web.cors\")",
+            "http://127\\\\.0\\\\.0\\\\.1:(?:5173|4173)",
+            "@Size(max = 2)",
+            "@Pattern(regexp = LOCAL_CONSOLE_ORIGIN)",
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/main/java/com/mimococo/marketops/shared/internal/config/WebConfig.java",
+        (
+            'policy.setAllowedMethods(List.of("GET", "OPTIONS"))',
+            'policy.setAllowedHeaders(List.of("Accept", CorrelationId.HEADER_NAME))',
+            "policy.setAllowCredentials(false)",
+            'source.registerCorsConfiguration("/api/**", policy)',
+        ),
+    )
+    base_configuration = read_text(ROOT / BACKEND / "src/main/resources/application.yaml") or ""
+    if "allowed-origins" in base_configuration:
+        report.add(rule, ROOT / BACKEND / "src/main/resources/application.yaml", 0, "base profile must enable no CORS origin")
+    finite_origins = (
+        "allowed-origins: http://127.0.0.1:5173,http://127.0.0.1:4173",
+    )
+    for profile in ("application-local.yaml", "application-ci.yaml"):
+        require_tokens(
+            report,
+            rule,
+            ROOT / BACKEND / "src/main/resources" / profile,
+            finite_origins,
+        )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/test/java/com/mimococo/marketops/shared/internal/config/CorsContractTest.java",
+        (
+            "emptyOriginListDisablesCors",
+            "localConsoleOriginsAreAllowed",
+            "unknownOriginIsRejected",
+            "unknownConfiguredOriginFailsBindingValidation",
+            "preflightContractIsFinite",
+        ),
+    )
+
+    frontend_manifest = ROOT / FRONTEND / "package.json"
+    require_tokens(
+        report,
+        rule,
+        frontend_manifest,
+        (
+            '"@cyclonedx/cyclonedx-npm"',
+            '"@playwright/test"',
+            '"fsevents": false',
+            '"libxmljs2": false',
+            '"test:browser"',
+            '"sbom"',
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / FRONTEND / "vite.config.ts",
+        ("lines: 80", "branches: 70", "functions: 80", "statements: 80"),
+    )
+    frontend_config = ROOT / FRONTEND / "src/config.ts"
+    config_text = read_text(frontend_config) or ""
+    for retired_default in ("DEFAULT_API_BASE_URL", "DEFAULT_ENVIRONMENT"):
+        if retired_default in config_text:
+            report.add(rule, frontend_config, 0, f"frontend silently defaults {retired_default}")
+    require_tokens(
+        report,
+        rule,
+        frontend_config,
+        ("REQUIRED_CONFIG_KEYS", "missingKeys", "ok: false"),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / FRONTEND / "tests/browser/health-shell.spec.ts",
+        (
+            "response.request().headers()['x-correlation-id']",
+            "compose('stop', 'postgres')",
+            "database?.status).toBe('DOWN')",
+            "'data-state',\n      'degraded'",
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / "scripts/collect_supply_chain.py",
+        ("frontend-sbom.json", 'sbom.get("bomFormat") != "CycloneDX"'),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / "scripts/fresh_clone_check.sh",
+        (
+            "MarketOps clone's verification",
+            "make env-init",
+            "./mvnw -B -ntp verify",
+            "npm ci",
+            "npm ls --all",
+            "npm run lint",
+            "npm run format:check",
+            "npm run typecheck",
+            "npm run test:ci",
+            "npm run build",
+            "npm run verify:bundle",
+            "scripts/verify_coverage_thresholds.sh all",
+            "npm run test:browser",
+            "scripts/collect_supply_chain.py",
+            "scripts/verify_local_config.sh",
+            "down --volumes --remove-orphans",
+        ),
+    )
+
+
+def declared_dependency_artifacts(pom_text: str) -> list[tuple[str, str]]:
+    """Return the group and artifact of every dependency a POM declares.
+
+    The document is parsed rather than searched as text. A build file names a
+    forbidden coordinate twice for opposite purposes: once if it depends on it,
+    and once inside the enforcer rule that bans it. Only an element named
+    ``dependency`` expresses the first, so a substring scan would report the ban
+    as the very thing the ban prevents.
+
+    :raises ElementTree.ParseError: if the document is not well-formed XML
+    """
+    root = ElementTree.fromstring(pom_text)
+    namespace = ""
+    if root.tag.startswith("{"):
+        namespace = root.tag[: root.tag.index("}") + 1]
+    declared: list[tuple[str, str]] = []
+    for element in root.iter(f"{namespace}dependency"):
+        group = (element.findtext(f"{namespace}groupId") or "").strip()
+        artifact = (element.findtext(f"{namespace}artifactId") or "").strip()
+        declared.append((group, artifact))
+    return declared
+
+
+def comment_lines(text: str, suffix: str) -> list[tuple[int, str]]:
+    """Return the comment lines of a source file with their line numbers.
+
+    Only comments are examined, so a rule name or an identifier that legitimately
+    contains a matching word in executable code is never reported.
+    """
+    results: list[tuple[int, str]] = []
+    in_block = False
+    for number, raw in enumerate(text.splitlines(), start=1):
+        line = raw.strip()
+        if in_block:
+            results.append((number, line))
+            if "*/" in line:
+                in_block = False
+            continue
+        if line.startswith("/*"):
+            results.append((number, line))
+            if "*/" not in line:
+                in_block = True
+            continue
+        if line.startswith("//"):
+            results.append((number, line))
+            continue
+        if "//" in line and suffix in COMMENT_SUFFIXES:
+            index = line.find("//")
+            if line.count('"', 0, index) % 2 == 0:
+                results.append((number, line[index:]))
+    return results
+
+
+def check_compromise_retirement(report: Report, files: list[Path]) -> None:
+    """TC-GLOBAL-001 — no unresolved or superseded implementation in production."""
+    rule = "TC-GLOBAL-001"
+
+    for retired_path, reason in RETIRED_PATHS:
+        candidate = ROOT / retired_path
+        if candidate.exists():
+            report.add(rule, retired_path, 0, f"retired artefact present: {reason}")
+        if "/" not in retired_path:
+            for path in files:
+                if path.name == retired_path:
+                    report.add(rule, path, 0, f"retired artefact present: {reason}")
+
+    for path in files:
+        if path.suffix.lower() not in SOURCE_SUFFIXES and path.suffix.lower() != ".md":
+            continue
+        if is_rule_definition(path):
+            continue
+        text = read_text(path)
+        if text is None:
+            continue
+
+        is_production = under(path, PRODUCTION_ROOTS)
+        is_test = under(path, TEST_ROOTS)
+        is_canonical_doc = any(
+            str(path.relative_to(ROOT)) == doc or str(path.relative_to(ROOT)).startswith(doc + "/")
+            for doc in CANONICAL_DOC_PATHS
+        )
+
+        if is_production or is_test or is_canonical_doc:
+            for number, line in enumerate(text.splitlines(), start=1):
+                if UNRESOLVED_MARKERS.search(line):
+                    report.add(rule, path, number, f"unresolved marker: {line.strip()[:80]}")
+
+        if not is_production and not is_canonical_doc:
+            continue
+
+        for marker, reason in RETIRED_ARTEFACTS:
+            for number, line in enumerate(text.splitlines(), start=1):
+                if marker in line:
+                    report.add(rule, path, number, f"retired construct '{marker}': {reason}")
+
+    pom = ROOT / BACKEND / "pom.xml"
+    if pom.exists():
+        pom_text = read_text(pom) or ""
+        try:
+            declared = declared_dependency_artifacts(pom_text)
+        except ElementTree.ParseError as error:
+            report.add(rule, pom, 0, f"the build file is not well-formed XML: {error}")
+            declared = []
+        artifacts = {artifact for _, artifact in declared}
+        for dependency, reason in FORBIDDEN_BACKEND_DEPENDENCIES:
+            if dependency in artifacts:
+                report.add(rule, pom, 0, f"forbidden dependency '{dependency}': {reason}")
+        if "flyway-core" in artifacts and "spring-boot-starter-flyway" in artifacts:
+            report.add(
+                rule, pom, 0,
+                "flyway-core is provided by the Boot starter and must not be declared",
+            )
+
+    migrations = ROOT / BACKEND / "src/main/resources/db/migration"
+    if migrations.exists():
+        versioned = sorted(p.name for p in migrations.glob("V*.sql"))
+        if versioned != ["V0001__create_foundation_schemas.sql"]:
+            report.add(
+                rule, "db/migration", 0,
+                f"the foundation defines exactly one migration; found {versioned}",
+            )
+        for path in migrations.glob("*.sql"):
+            text = read_text(path) or ""
+            if "IF NOT EXISTS" in text.upper():
+                report.add(
+                    rule, path, 0,
+                    "foundation schema creation is strict and must not tolerate an existing schema",
+                )
+
+    check_repository_contracts(report)
+
+
+def check_functional_comments(report: Report, files: list[Path]) -> None:
+    """TC-GLOBAL-002 — comments describe behaviour, not project history."""
+    rule = "TC-GLOBAL-002"
+    for path in files:
+        relative = str(path.relative_to(ROOT))
+        if under(path, HISTORICAL_DOC_ROOTS) or relative in HISTORICAL_DOC_ROOTS:
+            continue
+        if is_rule_definition(path):
+            continue
+        if path.suffix.lower() not in COMMENT_SUFFIXES:
+            continue
+        if not (under(path, PRODUCTION_ROOTS) or under(path, TEST_ROOTS)):
+            continue
+        text = read_text(path)
+        if text is None:
+            continue
+        for number, line in comment_lines(text, path.suffix.lower()):
+            for pattern, label in HISTORY_COMMENT_PATTERNS:
+                if pattern.search(line):
+                    report.add(rule, path, number, f"{label}: {line.strip()[:80]}")
+
+
+def check_production_naming(report: Report, files: list[Path]) -> None:
+    """TC-GLOBAL-003 — production identifiers use the agreed production names."""
+    rule = "TC-GLOBAL-003"
+
+    pom = ROOT / BACKEND / "pom.xml"
+    if pom.exists():
+        pom_text = read_text(pom) or ""
+        if f"<groupId>{REQUIRED_NAMES['java_root_package']}</groupId>" not in pom_text:
+            report.add(rule, pom, 0, "groupId must be com.mimococo.marketops")
+        if f"<artifactId>{REQUIRED_NAMES['backend_application']}</artifactId>" not in pom_text:
+            report.add(rule, pom, 0, "artifactId must be marketops-server")
+
+    package_json = ROOT / FRONTEND / "package.json"
+    if package_json.exists():
+        try:
+            manifest = json.loads(read_text(package_json) or "{}")
+        except json.JSONDecodeError as error:
+            report.add(rule, package_json, 0, f"package.json is not valid JSON: {error}")
+            manifest = {}
+        if manifest.get("name") != REQUIRED_NAMES["frontend_package"]:
+            report.add(rule, package_json, 0, "package name must be marketops-console")
+        if manifest.get("private") is not True:
+            report.add(rule, package_json, 0, "the frontend package must be private")
+
+    for path in files:
+        if not under(path, PRODUCTION_ROOTS):
+            continue
+        if path.suffix.lower() not in SOURCE_SUFFIXES:
+            continue
+        if is_rule_definition(path):
+            continue
+        text = read_text(path)
+        if text is None:
+            continue
+        for term in SCAFFOLD_TERMS:
+            pattern = re.compile(rf"(?<![A-Za-z0-9]){re.escape(term)}(?![A-Za-z0-9])", re.I)
+            for number, line in enumerate(text.splitlines(), start=1):
+                if pattern.search(line):
+                    report.add(rule, path, number, f"scaffold term '{term}' in a production path")
+        for number, line in enumerate(text.splitlines(), start=1):
+            for match in IDENTIFIER_CONTEXT.finditer(line):
+                identifier = (match.group(1) or "").lower()
+                if not identifier:
+                    continue
+                for term in IDENTIFIER_SCAFFOLD_TERMS:
+                    if identifier == term or identifier.startswith(term + "-") or identifier.startswith(term + "."):
+                        report.add(
+                            rule, path, number,
+                            f"scaffold identifier '{match.group(1)}' in a production path",
+                        )
+
+
+def main() -> int:
+    files = iter_files()
+    report = Report(inspected_files=len(files))
+
+    check_compromise_retirement(report, files)
+    check_functional_comments(report, files)
+    check_production_naming(report, files)
+
+    rules = ("TC-GLOBAL-001", "TC-GLOBAL-002", "TC-GLOBAL-003")
+    labels = {
+        "TC-GLOBAL-001": "Compromise Retirement Check",
+        "TC-GLOBAL-002": "Functional Comment Check",
+        "TC-GLOBAL-003": "Production Naming Check",
+    }
+
+    print(f"Production readiness validation over {report.inspected_files} files.")
+    failed = False
+    for rule in rules:
+        violations = report.for_rule(rule)
+        if violations:
+            failed = True
+            print(f"{rule} {labels[rule]}: {len(violations)} violation(s)", file=sys.stderr)
+            for violation in violations:
+                location = f"{violation.path}:{violation.line}" if violation.line else violation.path
+                print(f"  {location}: {violation.detail}", file=sys.stderr)
+        else:
+            print(f"{rule} {labels[rule]}: PASS")
+
+    if failed:
+        print("Production readiness validation failed.", file=sys.stderr)
+        return 1
+    print("Production readiness validation passed.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

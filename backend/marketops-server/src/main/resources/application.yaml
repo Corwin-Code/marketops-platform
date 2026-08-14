@@ -1,0 +1,121 @@
+# Base configuration shared by every environment.
+#
+# Values that differ between workstations live in the ignored local file the
+# generator writes; this file references them by name so a missing value fails
+# startup with the name of what is missing rather than silently defaulting.
+#
+# Database role names are checked in here on purpose. They are identical in every
+# environment and are not secrets, so keeping them in one authoritative place
+# removes the class of failure where a workstation and continuous integration
+# disagree about who owns a schema.
+
+spring:
+  application:
+    name: marketops-server
+  # An empty profile list would activate "default" and load any file named after
+  # it. Naming a profile that owns no file makes an unprofiled start explicit.
+  profiles:
+    default: none
+  main:
+    banner-mode: "off"
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:${MARKETOPS_DB_PORT:5432}/marketops
+    username: marketops_app
+    password: ${MARKETOPS_DB_APP_PASSWORD}
+    hikari:
+      pool-name: marketops-app-pool
+      maximum-pool-size: 10
+      minimum-idle: 2
+      # The console abandons a metadata request after five seconds. Keep the
+      # pool's acquisition and validation windows inside that observable bound
+      # so a database outage can be returned as DOWN instead of looking like an
+      # unreachable backend.
+      connection-timeout: 1000
+      validation-timeout: 750
+      # The application role owns nothing and creates nothing, so a connection
+      # that is handed back must not carry a transaction the next borrower joins.
+      auto-commit: true
+  flyway:
+    enabled: true
+    # Migration runs as the owning role, which is the only role allowed to create
+    # a schema. Supplying credentials here makes Spring derive a separate data
+    # source, so the application pool never holds the elevated identity.
+    user: marketops_migration
+    password: ${MARKETOPS_DB_MIGRATION_PASSWORD}
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+    validate-on-migrate: true
+    # Nothing in this project may drop a schema. Disabling clean removes the
+    # command rather than relying on nobody typing it.
+    clean-disabled: true
+    out-of-order: false
+  jackson:
+    default-property-inclusion: always
+
+server:
+  # Loopback only. The foundation has no authentication, so the metadata resource
+  # must not be reachable from another host on the network.
+  address: 127.0.0.1
+  port: 8080
+  shutdown: graceful
+  error:
+    whitelabel:
+      enabled: false
+  tomcat:
+    max-http-form-post-size: 64KB
+    max-swallow-size: 64KB
+
+marketops:
+  product: MarketOps Russia
+  # Overridden by every profile. The literal below is what an unprofiled start
+  # reports, which makes such a start visible in the payload rather than silent.
+  environment: unspecified
+
+management:
+  # Nothing is reachable unless it is named below.
+  endpoints:
+    access:
+      default: none
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      access: read-only
+      # Component detail names the data source, its pool and its validation query.
+      # The console needs the aggregate state, not the internals.
+      show-details: never
+      show-components: never
+      probes:
+        enabled: true
+      group:
+        readiness:
+          # Readiness includes the datasource: an instance that cannot reach its
+          # database must not be sent traffic.
+          include: readinessState,db
+        liveness:
+          # Liveness deliberately excludes the datasource. A database outage is
+          # not a reason to restart a healthy process.
+          include: livenessState
+    info:
+      access: read-only
+  info:
+    build:
+      enabled: true
+    env:
+      enabled: false
+    java:
+      enabled: false
+    os:
+      enabled: false
+    process:
+      enabled: false
+
+logging:
+  # Every record carries the identifier of the request that produced it, so a
+  # console report can be traced to its server-side records.
+  pattern:
+    correlation: "[%X{correlationId:-}] "
+  level:
+    root: INFO
+    com.mimococo.marketops: INFO

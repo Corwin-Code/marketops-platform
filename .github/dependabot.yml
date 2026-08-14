@@ -1,0 +1,75 @@
+# Dependency updates.
+#
+# Grouping keeps a routine bump to one pull request per ecosystem per week, so a
+# reviewer reads one diff instead of a dozen. Major versions stay ungrouped:
+# each one changes behaviour and deserves its own review and its own revert.
+
+version: 2
+
+updates:
+  - package-ecosystem: maven
+    directory: /backend/marketops-server
+    schedule:
+      interval: weekly
+      day: monday
+      time: '04:00'
+      timezone: Etc/UTC
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - backend
+    commit-message:
+      prefix: 'build'
+      include: scope
+    groups:
+      backend-patch-and-minor:
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: npm
+    directory: /frontend/marketops-console
+    schedule:
+      interval: weekly
+      day: monday
+      time: '04:00'
+      timezone: Etc/UTC
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - frontend
+    commit-message:
+      prefix: 'build'
+      include: scope
+    versioning-strategy: increase
+    groups:
+      frontend-patch-and-minor:
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '04:00'
+      timezone: Etc/UTC
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - continuous-integration
+    commit-message:
+      prefix: 'ci'
+      include: scope
+    groups:
+      actions-patch-and-minor:
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
