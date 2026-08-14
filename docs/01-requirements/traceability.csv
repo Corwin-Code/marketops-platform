@@ -8,7 +8,7 @@ D-06,Owner Decision,0,Third-party competitor data is trend-only,WP-P0-008,,,,,PL
 D-07,Owner Decision,0,AI recommends only,WP-P0-001,ADR-0003;docs/02-architecture/designs/WP-P0-001-foundation-design.md,,,,IN_PROGRESS,No AI write permission
 D-08,Owner Decision,0,Official APIs only,WP-P0-005;WP-P0-006,ADR-0003,,,,PLANNED,
 D-09,Owner Decision,0,Metrics and mappings are versioned,WP-P0-004;WP-P0-008,,,,,PLANNED,
-D-10,Owner Decision,0,Phase Gate before automation expansion,WP-P0-001,ADR-0004;docs/02-architecture/designs/WP-P0-001-foundation-design.md,,TC-GOV-001,,IN_PROGRESS,G0 active
+D-10,Owner Decision,0,Phase Gate before automation expansion,WP-P0-001,ADR-0004;docs/02-architecture/designs/WP-P0-001-foundation-design.md,,TC-GOV-001,,IN_PROGRESS,G0 approval transition recorded; WP-P0-001 implementation under Pull Request Gate
 D-15,Owner Decision,0,Public repository during pre-production; Private at real production go-live,WP-P0-001,docs/02-architecture/designs/WP-P0-001-foundation-design.md,,,,IN_PROGRESS,Public baseline and G0 controls active; Private conversion remains due before production or confidential material
 D-16,Owner Decision,0,Owner Git workflow guidance required at every task start,WP-P0-001,ADR-0004;docs/02-architecture/designs/WP-P0-001-foundation-design.md,docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md,TC-GOV-001,,IN_PROGRESS,Exit requires explicit Human Owner confirmation
 D-17,Owner Decision,0,Temporary Codex execution of gated PR Ready and merge,WP-P0-001,ADR-0004;docs/02-architecture/designs/WP-P0-001-foundation-design.md,docs/00-governance/DR-0001-temporary-codex-git-execution-delegation.md,TC-GOV-001,,IN_PROGRESS,No self-approval bypass credential production or business authority

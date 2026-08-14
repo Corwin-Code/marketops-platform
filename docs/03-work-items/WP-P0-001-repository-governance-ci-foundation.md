@@ -9,7 +9,8 @@
 | Phase | Sprint 0 / Phase 0 |
 | Risk | Medium |
 | Controller | GPT-5.6 Sol Pro |
-| Maker | Claude Web / Claude Code |
+| Maker | Claude Cowork / Claude Code — complete initial implementation artifact |
+| Repository writer / Rework | Mac Codex |
 | Final merge authorization | Human Owner |
 | Merge execution | Human Owner or active D-17 Codex delegate after all gates |
 | Proposed branch | `feat/WP-P0-001-repository-foundation` |
@@ -72,7 +73,9 @@ Implementation must deliver:
 The approved canonical design at
 `docs/02-architecture/designs/WP-P0-001-foundation-design.md` defines:
 
-- `Version Matrix`: chosen versions, support status, official references and last-verified date;
+- technology lines and support posture;
+- pinning rules and official-source refresh policy;
+- implementation evidence requirements for exact resolved versions and verification dates;
 - proposed repository tree and naming;
 - backend build/module/package plan using `com.mimococo.marketops`;
 - frontend build/package plan and rationale;

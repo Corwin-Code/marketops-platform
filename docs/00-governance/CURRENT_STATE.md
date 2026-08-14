@@ -3,14 +3,14 @@
 ```yaml
 as_of: 2026-08-14
 project: MarketOps Russia
-lifecycle_state: INITIATING
+lifecycle_state: EXECUTING_PHASE_0
 phase: Phase 0 — Data, Identity & Visibility Foundation
 sprint: Sprint 0
 controller: GPT-5.6 Sol Pro / current ChatGPT Project
 maker: Claude Cowork / Claude Code (artifact producer; no authoritative repository writes in current trial)
 rework_agent: Mac Codex (authoritative repository writer, rework/fix/verify, delegated Git execution)
 active_work_package: WP-P0-001
-active_gate: G0 — Repository & Collaboration Foundation
+active_gate: Pull Request Gate — WP-P0-001 Implementation
 authorization: APPROVED_FOR_IMPLEMENTATION
 production_write_enabled: false
 owner_git_workflow_guidance: REQUIRED
@@ -25,8 +25,8 @@ owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 
 ```text
 Controller design verdict: APPROVED_FOR_IMPLEMENTATION
-Approved design SHA-256: 6dcb59abbee843fd93950edb6dff7bb052b213b17279c36884d167e844c89bd4
-Reviewed repository base: acccc6172cdad626844d99d085eabcc8fb2381ca
+Source reviewed Design v1.3 artifact SHA-256: 6dcb59abbee843fd93950edb6dff7bb052b213b17279c36884d167e844c89bd4
+Source design reviewed repository base: acccc6172cdad626844d99d085eabcc8fb2381ca
 Java root package: com.mimococo.marketops
 Canonical design: docs/02-architecture/designs/WP-P0-001-foundation-design.md
 ```
@@ -50,6 +50,11 @@ Canonical design: docs/02-architecture/designs/WP-P0-001-foundation-design.md
 - WP-P0-001 design reviewed and approved by the Controller; the canonical functional
   design is recorded at `docs/02-architecture/designs/WP-P0-001-foundation-design.md`.
 - OQ-002 resolved: the Java root package and Maven groupId are `com.mimococo.marketops`.
+- OQ-003 resolved: the primary development OS is macOS; local containers use a
+  Docker-compatible CLI with Compose v2 support, without mandating a runtime vendor.
+- Gate G0 is complete when this design-approval and authorization transition is
+  merged.
+- The project is executing Phase 0 under the Pull Request Gate.
 - Under D-17, Codex is temporarily delegated mechanical PR Ready/merge execution
   only after all repository gates and an independent Controller verdict pass; the
   Human Owner retains authorization/revocation, business, credential and
@@ -57,18 +62,18 @@ Canonical design: docs/02-architecture/designs/WP-P0-001-foundation-design.md
 
 ## Not completed
 
-- No backend, frontend, database or product code has been implemented yet;
-  implementation is authorized and proceeds only through a Pull Request.
+- WP-P0-001 product implementation has not started. Implementation is authorized
+  and proceeds only through the Pull Request Gate.
 - The WP-P0-001 C1-C10 implementation artifact has not yet been produced or
   imported into the authoritative repository.
 - No Ozon/WB credential, account or production data has been introduced.
 
 ## Active objective
 
-Complete the production-grade WP-P0-001 foundation and its required evidence so
-Gate G0 can pass. The result must be a protected Public pre-production repository,
-reproducible backend/frontend/database foundation, deterministic CI and verified
-Public-repository security controls.
+Execute Phase 0 by completing the production-grade WP-P0-001 implementation and
+its required evidence under the Pull Request Gate. The result must be a
+reproducible backend/frontend/database foundation with deterministic CI and
+verified Public-repository security controls.
 
 ## Temporary trial execution mode
 
@@ -96,9 +101,9 @@ success; only explicit Human Owner confirmation can disable this mode.
 
 ## Current blockers / Owner inputs
 
-| ID | Input | Blocking point | Status |
-| --- | --- | --- | --- |
-| OQ-003 | Primary developer OS and local container runtime | Before finalizing bootstrap commands | OPEN |
+None block the start of WP-P0-001 implementation. Later Work Packages retain
+their own open business, credential and production questions in
+`docs/00-governance/OPEN_QUESTIONS.md`.
 
 ## Next authorized action
 
