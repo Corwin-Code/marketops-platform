@@ -12,7 +12,7 @@ Fresh Clone, and GitHub Pull Request.
 | `local-verification.md` | PASS | Backend, frontend, database, coverage, supply-chain and local configuration Gates ran |
 | `browser-smoke.md` | PASS | A real browser proved ready and database-outage transitions |
 | `fresh-clone.md` | PASS | A clean committed Head passed the full whitespace-and-apostrophe path with trap cleanup |
-| `ci-checks.md` | PR_GATE_OPEN | The exact eleven checks are defined; run identifiers are recorded after the Draft PR exists |
+| `ci-checks.md` | PASS_ON_CERTIFIED_IMPLEMENTATION_HEAD | Draft PR #5 passed all eleven stable jobs; source/base/tested-merge identities, run URLs, security alerts and Ruleset state are recorded |
 | `unavailable-capabilities.md` | RESOLVED_LOCALLY | The original environment limitations and their disposition |
 
 The production-readiness validator inspected 188 non-generated workspace files
