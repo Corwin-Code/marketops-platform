@@ -4,12 +4,13 @@
 
 | Field | Value |
 | --- | --- |
-| Status | READY_FOR_DESIGN |
-| Authorization | DESIGN ONLY |
+| Status | READY_FOR_IMPLEMENTATION |
+| Authorization | APPROVED_FOR_IMPLEMENTATION |
 | Phase | Sprint 0 / Phase 0 |
 | Risk | Medium |
 | Controller | GPT-5.6 Sol Pro |
-| Maker | Claude Web / Claude Code |
+| Maker | Claude Cowork / Claude Code — complete initial implementation artifact |
+| Repository writer / Rework | Mac Codex |
 | Final merge authorization | Human Owner |
 | Merge execution | Human Owner or active D-17 Codex delegate after all gates |
 | Proposed branch | `feat/WP-P0-001-repository-foundation` |
@@ -17,7 +18,12 @@
 
 ## 2. Outcome
 
-Create an approved implementation design for a Public pre-production, reproducible, production-oriented monorepo foundation under D-15. When real production go-live is reached, or earlier before confidential business material, the repository must return to Private and all repository/security controls must be revalidated. After later implementation, a fresh clone must be able to build, test and run a minimal backend/frontend/database slice with deterministic CI, without platform credentials or production data.
+Implement the approved, Public pre-production, reproducible and production-grade
+monorepo foundation under D-15. A fresh clone must build, test and run the complete
+WP-P0-001 backend/frontend/database foundation with deterministic CI, without
+Marketplace credentials or production data. At real production go-live, or
+earlier before confidential business material, the repository must return to
+Private and all repository/security controls must be revalidated.
 
 ## 3. Source Requirements
 
@@ -38,12 +44,12 @@ Create an approved implementation design for a Public pre-production, reproducib
 
 ## 4. Scope
 
-The design must cover the later implementation of:
+Implementation must deliver:
 
 1. monorepo structure for `marketops-server`, `marketops-console`, infrastructure, fixtures, scripts and docs;
 2. current supported versions of Java/Spring Boot/Maven or Gradle, Node/package manager, React toolchain, PostgreSQL, Flyway and Docker, with official-source verification date;
-3. minimal Spring Boot application with health/readiness endpoint and package/module boundary starter;
-4. minimal React + TypeScript application shell displaying `MarketOps Russia` and backend connectivity/data-health state;
+3. Spring Boot application with health/readiness endpoint and enforced package/module boundaries under `com.mimococo.marketops`;
+4. React + TypeScript application shell displaying `MarketOps Russia` and backend connectivity/data-health state;
 5. PostgreSQL local service and Flyway execution, including the Baseline schemas `iam`, `platform`, `raw`, `staging`, `core`, `ledger`, `mart`, `ops` without domain tables beyond this WP;
 6. Docker Compose or equivalent local orchestration;
 7. configuration/secret separation with `.env.example` containing names only, never real values;
@@ -59,16 +65,19 @@ The design must cover the later implementation of:
 - no domain tables for product/order/inventory/finance;
 - no authentication/authorization implementation beyond documenting the future boundary;
 - no Marketplace write capability;
-- no dashboard feature beyond a minimal shell/health signal;
+- no dashboard feature beyond the required health shell;
 - no Kafka, Kubernetes, microservice split or broad design-system work.
 
 ## 6. Design Deliverables
 
-Claude must return, without editing product code:
+The approved canonical design at
+`docs/02-architecture/designs/WP-P0-001-foundation-design.md` defines:
 
-- `Version Matrix`: chosen versions, support status, official references and last-verified date;
+- technology lines and support posture;
+- pinning rules and official-source refresh policy;
+- implementation evidence requirements for exact resolved versions and verification dates;
 - proposed repository tree and naming;
-- backend build/module/package plan, including placeholder for `com.<company>.marketops` decision;
+- backend build/module/package plan using `com.mimococo.marketops`;
 - frontend build/package plan and rationale;
 - PostgreSQL/Flyway schema bootstrap and migration numbering strategy;
 - local run commands and dependency prerequisites;
@@ -78,7 +87,7 @@ Claude must return, without editing product code:
 - test matrix and expected evidence;
 - observability/health/logging baseline;
 - upgrade/rollback and cleanup plan;
-- risks, assumptions, alternatives and Decision Requests.
+- risks, assumptions and accepted constraints.
 
 ## 7. Acceptance Criteria
 
@@ -107,13 +116,13 @@ Implementation will be accepted only when all applicable criteria pass:
 - Flyway clean-database evidence;
 - backend health response and frontend smoke evidence;
 - secret/PII review statement;
-- known limitations and deferred items;
+- known limitations and explicit confirmation that no in-scope item is deferred;
 - updated traceability and Current State.
 
 ## 9. Risks and Constraints
 
 - Exact tool versions may have changed and must be verified against current official sources.
-- The Java namespace cannot be finalized until Owner supplies a controlled company domain.
+- The Java namespace and Maven groupId are resolved as `com.mimococo.marketops`.
 - Solo development cannot require an approval from another human in GitHub;
   independent GPT review and required CI therefore remain external/technical
   gates, while the Human Owner or active D-17 delegate executes the merge.
@@ -131,11 +140,9 @@ Implementation will be accepted only when all applicable criteria pass:
 Current verdict:
 
 ```text
-AUTHORIZED_TO_START_DESIGN
-```
-
-Implementation is prohibited until a reviewed design receives exactly:
-
-```text
 APPROVED_FOR_IMPLEMENTATION
 ```
+
+This verdict authorizes only the scoped WP-P0-001 implementation through a
+protected Draft Pull Request. It does not authorize direct push to `main`, merge,
+production enablement, Marketplace credentials or production data.

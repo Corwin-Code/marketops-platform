@@ -11,7 +11,7 @@
 | Proposed monorepo | marketops-platform |
 | Baseline | Development Baseline v1.0, 2026-08-06 |
 | Current phase | Sprint 0 / Phase 0 |
-| Status | INITIATING |
+| Status | EXECUTING_PHASE_0 |
 
 ## 2. Mission
 

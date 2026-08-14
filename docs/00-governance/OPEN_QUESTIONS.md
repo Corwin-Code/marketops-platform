@@ -5,11 +5,11 @@
 | ID | Question | Needed by | Blocking | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
 | OQ-001 | Which GitHub user/organization owns `marketops-platform`? | Repository creation | Yes | Human Owner | RESOLVED |
-| OQ-002 | What company-controlled domain defines the Java root package? | WP-P0-001 implementation | Yes | Human Owner | OPEN |
-| OQ-003 | What is the primary development OS and container runtime? | WP-P0-001 design approval | No | Human Owner | OPEN |
+| OQ-002 | What company-controlled domain defines the Java root package? | WP-P0-001 implementation | Yes | Human Owner | RESOLVED |
+| OQ-003 | What is the primary development OS and container runtime? | WP-P0-001 design approval | No | Human Owner | RESOLVED |
 | OQ-004 | Is Codex formally enabled for rework/fix/verify? | First review cycle | No | Human Owner | RESOLVED |
 | OQ-005 | Which authentication solution will be used for application users? | IAM design | No for WP-P0-001 | Owner + Controller | OPEN |
-| OQ-006 | Which Secret Manager and S3-compatible object storage are approved for Integration/Staging/Production? | INT-003 / Raw implementation | No for design skeleton | Owner + Security | OPEN |
+| OQ-006 | Which Secret Manager and S3-compatible object storage are approved for Integration/Staging/Production? | INT-003 / Raw implementation | No for WP-P0-001 foundation | Owner + Security | OPEN |
 
 ## Sprint 0 business and platform questions from the Baseline
 
@@ -25,6 +25,37 @@
 | OQ-108 | Hero SKU and first experiment scope | Phase 1 | No for Phase 0 | OPEN |
 
 ## Resolved bootstrap decisions
+
+### OQ-003 — Primary development platform and local container contract
+
+```text
+Decision / answer: The primary development OS is macOS. Local container commands
+  target a Docker-compatible CLI with Compose v2 support. WP-P0-001 does not
+  mandate a specific runtime vendor.
+Evidence or source: Human Owner platform direction, the approved WP-P0-001
+  canonical design operational constraints, and Controller PR #4 rework verdict.
+Effective date: 2026-08-14
+Affected Work Packages / ADRs / Requirements: WP-P0-001, ADR-0001, G0, local
+  developer setup and fresh-clone acceptance.
+Migration or compatibility impact: No product or data migration. Implementation
+  commands and tests remain vendor-neutral within the Docker-compatible Compose
+  v2 contract.
+Approver: Human Owner
+```
+
+### OQ-002 — Java root package and Maven groupId
+
+```text
+Decision / answer: com.mimococo.marketops
+  This is the Java root package and Maven groupId.
+Evidence or source: Human Owner decision, Controller approval, and naming baseline.
+Effective date: 2026-08-14
+Affected Work Packages / ADRs / Requirements: WP-P0-001, ADR-0001, naming baseline,
+  traceability.
+Migration or compatibility impact: No product or data migration. No Java source exists
+  before this decision is recorded.
+Approver: Human Owner
+```
 
 ### OQ-004 — Codex rework and Git execution role
 
