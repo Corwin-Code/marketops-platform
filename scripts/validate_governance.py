@@ -30,6 +30,11 @@ REQUIRED_FILES = [
     "tests/test_validate_governance.py",
 ]
 
+AUTHORIZATION_ALLOWED_STATES = {"DESIGN_ONLY", "APPROVED_FOR_IMPLEMENTATION"}
+CONTROLLER_VERDICT_BY_AUTHORIZATION = {
+    "DESIGN_ONLY": "AUTHORIZED_TO_START_DESIGN",
+    "APPROVED_FOR_IMPLEMENTATION": "APPROVED_FOR_IMPLEMENTATION",
+}
 OWNER_GUIDANCE_ALLOWED_STATES = {"REQUIRED", "DISABLED"}
 OWNER_GUIDANCE_EXIT_AUTHORITY = "HUMAN_OWNER_EXPLICIT_CONFIRMATION"
 OWNER_DELEGATION_ALLOWED_STATES = {"ACTIVE", "INACTIVE"}
@@ -130,13 +135,125 @@ def validate_work_package(errors: list[str]) -> None:
     for heading in WP_REQUIRED_HEADINGS:
         if heading not in text:
             errors.append(f"WP-P0-001 missing heading: {heading}")
-    if "DESIGN ONLY" not in text:
-        errors.append("WP-P0-001 must explicitly state DESIGN ONLY")
+
+
+def fenced_yaml_body(text: str) -> str | None:
+    match = re.search(
+        r"(?ms)\A# Current State\s*$\n\s*```yaml\s*$\n(?P<body>.*?)^```\s*$",
+        text,
+    )
+    return match.group("body") if match else None
+
+
+def unique_yaml_value(text: str, field: str) -> str | None:
+    matches = re.findall(
+        rf"(?m)^{re.escape(field)}:\s*([^\s#]+)\s*$",
+        text,
+    )
+    return matches[0] if len(matches) == 1 else None
 
 
 def current_state_value(text: str, field: str) -> str | None:
-    match = re.search(rf"(?m)^{re.escape(field)}:\s*([^\s#]+)\s*$", text)
-    return match.group(1) if match else None
+    metadata = fenced_yaml_body(text)
+    return unique_yaml_value(metadata if metadata is not None else text, field)
+
+
+def current_state_metadata_value(text: str, field: str) -> str | None:
+    metadata = fenced_yaml_body(text)
+    return unique_yaml_value(metadata, field) if metadata is not None else None
+
+
+def work_package_metadata_value(text: str, field: str) -> str | None:
+    section = re.search(
+        r"(?ms)^## 1\. Metadata\s*$\n(?P<body>.*?)(?=^## \d+\.)",
+        text,
+    )
+    if section is None:
+        return None
+
+    values: list[str] = []
+    for line in section.group("body").splitlines():
+        if not line.startswith("|") or not line.endswith("|"):
+            continue
+        cells = [cell.strip() for cell in line[1:-1].split("|")]
+        if len(cells) == 2 and cells[0] == field:
+            values.append(cells[1])
+    return values[0] if len(values) == 1 else None
+
+
+def work_package_controller_verdict(text: str) -> str | None:
+    section = re.search(
+        r"(?ms)^## 10\. Controller Gate\s*$\n(?P<body>.*?)(?=^## \d+\.|\Z)",
+        text,
+    )
+    if section is None:
+        return None
+    matches = re.findall(
+        r"(?ms)^Current verdict:\s*$\n\s*```text\s*$\n"
+        r"\s*([A-Z][A-Z0-9_]*)\s*$\n```\s*$",
+        section.group("body"),
+    )
+    return matches[0] if len(matches) == 1 else None
+
+
+def validate_authorization_state_text(
+    errors: list[str],
+    current_state_text: str,
+    work_package_text: str,
+) -> None:
+    current_authorization = current_state_metadata_value(
+        current_state_text,
+        "authorization",
+    )
+    wp_authorization = work_package_metadata_value(work_package_text, "Authorization")
+    controller_verdict = work_package_controller_verdict(work_package_text)
+
+    if current_authorization is None:
+        errors.append("CURRENT_STATE authorization metadata is missing or duplicated")
+    elif current_authorization not in AUTHORIZATION_ALLOWED_STATES:
+        errors.append(
+            "CURRENT_STATE authorization must be exactly one of: "
+            + ", ".join(sorted(AUTHORIZATION_ALLOWED_STATES))
+        )
+
+    if wp_authorization is None:
+        errors.append("WP-P0-001 Authorization metadata is missing or duplicated")
+    elif wp_authorization not in AUTHORIZATION_ALLOWED_STATES:
+        errors.append(
+            "WP-P0-001 Authorization must be exactly one of: "
+            + ", ".join(sorted(AUTHORIZATION_ALLOWED_STATES))
+        )
+
+    allowed_controller_verdicts = set(CONTROLLER_VERDICT_BY_AUTHORIZATION.values())
+    if controller_verdict is None:
+        errors.append("WP-P0-001 current Controller verdict is missing or duplicated")
+    elif controller_verdict not in allowed_controller_verdicts:
+        errors.append(
+            "WP-P0-001 current Controller verdict must be exactly one of: "
+            + ", ".join(sorted(allowed_controller_verdicts))
+        )
+
+    if (
+        current_authorization in AUTHORIZATION_ALLOWED_STATES
+        and wp_authorization in AUTHORIZATION_ALLOWED_STATES
+        and current_authorization != wp_authorization
+    ):
+        errors.append(
+            "authorization mismatch: CURRENT_STATE "
+            f"{current_authorization} != WP-P0-001 {wp_authorization}"
+        )
+
+    if (
+        wp_authorization in AUTHORIZATION_ALLOWED_STATES
+        and controller_verdict in allowed_controller_verdicts
+        and controller_verdict != CONTROLLER_VERDICT_BY_AUTHORIZATION[wp_authorization]
+    ):
+        errors.append(
+            "controller gate mismatch: WP-P0-001 Authorization "
+            f"{wp_authorization} requires verdict "
+            f"{CONTROLLER_VERDICT_BY_AUTHORIZATION[wp_authorization]}, got "
+            f"{controller_verdict}"
+        )
 
 
 def validate_owner_control_state_text(errors: list[str], text: str) -> None:
@@ -198,7 +315,6 @@ def validate_current_state(errors: list[str]) -> None:
     for required in [
         "lifecycle_state:",
         "active_work_package:",
-        "authorization:",
         "production_write_enabled: false",
         "owner_git_workflow_guidance:",
         "owner_git_workflow_guidance_exit:",
@@ -210,6 +326,20 @@ def validate_current_state(errors: list[str]) -> None:
         if required not in text:
             errors.append(f"CURRENT_STATE missing required field: {required}")
     validate_owner_control_state_text(errors, text)
+
+
+def validate_authorization_state(errors: list[str]) -> None:
+    current_state_path = ROOT / "docs/00-governance/CURRENT_STATE.md"
+    work_package_path = (
+        ROOT / "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md"
+    )
+    if not current_state_path.exists() or not work_package_path.exists():
+        return
+    validate_authorization_state_text(
+        errors,
+        current_state_path.read_text(encoding="utf-8"),
+        work_package_path.read_text(encoding="utf-8"),
+    )
 
 
 def validate_owner_git_workflow_guidance(errors: list[str]) -> None:
@@ -296,6 +426,7 @@ def main() -> int:
     validate_source_checksums(errors)
     validate_work_package(errors)
     validate_current_state(errors)
+    validate_authorization_state(errors)
     validate_owner_git_workflow_guidance(errors)
     validate_traceability(errors)
     validate_common_secrets(errors)

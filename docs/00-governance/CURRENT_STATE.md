@@ -1,17 +1,17 @@
 # Current State
 
 ```yaml
-as_of: 2026-08-12
+as_of: 2026-08-14
 project: MarketOps Russia
 lifecycle_state: INITIATING
 phase: Phase 0 — Data, Identity & Visibility Foundation
 sprint: Sprint 0
 controller: GPT-5.6 Sol Pro / current ChatGPT Project
-maker: Claude Web / Claude Code
-rework_agent: Codex (active for bounded PR rework and delegated Git execution)
+maker: Claude Cowork / Claude Code (artifact producer; no authoritative repository writes in current trial)
+rework_agent: Mac Codex (authoritative repository writer, rework/fix/verify, delegated Git execution)
 active_work_package: WP-P0-001
 active_gate: G0 — Repository & Collaboration Foundation
-authorization: DESIGN_ONLY
+authorization: APPROVED_FOR_IMPLEMENTATION
 production_write_enabled: false
 owner_git_workflow_guidance: REQUIRED
 owner_git_workflow_guidance_exit: HUMAN_OWNER_EXPLICIT_CONFIRMATION
@@ -19,6 +19,16 @@ owner_git_execution_delegation: ACTIVE
 owner_git_execution_delegate: CODEX
 owner_git_execution_delegation_scope: PR_READY_AND_MERGE_AFTER_ALL_GATES
 owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
+```
+
+## Approved design of record
+
+```text
+Controller design verdict: APPROVED_FOR_IMPLEMENTATION
+Approved design SHA-256: 6dcb59abbee843fd93950edb6dff7bb052b213b17279c36884d167e844c89bd4
+Reviewed repository base: acccc6172cdad626844d99d085eabcc8fb2381ca
+Java root package: com.mimococo.marketops
+Canonical design: docs/02-architecture/designs/WP-P0-001-foundation-design.md
 ```
 
 ## Completed
@@ -35,8 +45,11 @@ owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 - Secret Scanning, Push Protection and Dependabot security updates are enabled for the Public repository.
 - Public/G0 baseline merged through PR #1 at `09380d9`.
 - Owner Git workflow guidance and bounded D-17 delegation merged through PR #2;
-  local and remote `main` are synchronized at `d1e4cce`.
+  Current State reconciliation merged through PR #3.
 - Owner Git Workflow Guidance Mode is required under D-16 until explicit Human Owner confirmation disables it.
+- WP-P0-001 design reviewed and approved by the Controller; the canonical functional
+  design is recorded at `docs/02-architecture/designs/WP-P0-001-foundation-design.md`.
+- OQ-002 resolved: the Java root package and Maven groupId are `com.mimococo.marketops`.
 - Under D-17, Codex is temporarily delegated mechanical PR Ready/merge execution
   only after all repository gates and an independent Controller verdict pass; the
   Human Owner retains authorization/revocation, business, credential and
@@ -44,14 +57,34 @@ owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 
 ## Not completed
 
-- Claude Project and repository access have not yet been configured.
-- WP-P0-001 design has not yet been produced or reviewed.
-- No backend, frontend, database or product code has been authorized.
+- No backend, frontend, database or product code has been implemented yet;
+  implementation is authorized and proceeds only through a Pull Request.
+- The WP-P0-001 C1-C10 implementation artifact has not yet been produced or
+  imported into the authoritative repository.
 - No Ozon/WB credential, account or production data has been introduced.
 
 ## Active objective
 
-Pass Gate G0 and approve WP-P0-001 design. The result must be a protected Public pre-production repository, deterministic governance CI, Public-repository security controls and an approved implementation plan for the minimal production-grade project skeleton.
+Complete the production-grade WP-P0-001 foundation and its required evidence so
+Gate G0 can pass. The result must be a protected Public pre-production repository,
+reproducible backend/frontend/database foundation, deterministic CI and verified
+Public-repository security controls.
+
+## Temporary trial execution mode
+
+- Claude Cowork / Claude Code reads and cross-checks the repository, performs
+  Design, completes the initial implementation in a disposable/local workspace,
+  and produces reviewable artifacts, patches or bundles. In the current trial it
+  does not write the authoritative repository, push, open Pull Requests, change
+  Rulesets or merge.
+- Mac Codex is the authoritative local repository writer. It imports patches or
+  bundles, cross-checks the repository, performs local Rework/Fix/Verify, commits,
+  pushes and maintains Draft Pull Requests. It may execute a gated merge only
+  under active D-17 delegation, explicit Owner authorization and every required
+  repository/project gate.
+
+This describes the temporary execution mode for the current trial; it is not an
+accepted long-term operating-model decision.
 
 ## Owner workflow guidance
 
@@ -65,12 +98,13 @@ success; only explicit Human Owner confirmation can disable this mode.
 
 | ID | Input | Blocking point | Status |
 | --- | --- | --- | --- |
-| OQ-002 | Actual company-controlled Java namespace, e.g. `com.<company>.marketops` | Before backend implementation | OPEN |
 | OQ-003 | Primary developer OS and local container runtime | Before finalizing bootstrap commands | OPEN |
 
 ## Next authorized action
 
 ```text
-Configure Claude Build Studio and repository access, then run the WP-P0-001 DESIGN
-prompt with Owner Git Workflow Guidance Mode active. Do not implement yet.
+After the C0 design approval and authorization-state transition is merged, Claude
+produces the complete WP-P0-001 C1-C10 initial implementation artifact against the
+newly merged `main`; Codex later imports, verifies, fixes, commits, pushes, and
+opens or maintains the Draft implementation Pull Request.
 ```
