@@ -4,6 +4,7 @@
 # an absolute clone path that contains whitespace or punctuation.
 
 ENV_LOCAL := .env.local
+FRONTEND_ENV_LOCAL := frontend/marketops-console/.env.local
 COMPOSE_FILE := infra/compose/docker-compose.yml
 BACKEND_DIR := backend/marketops-server
 FRONTEND_DIR := frontend/marketops-console
@@ -38,7 +39,14 @@ env-init: require-repo-root ## Generate the ignored local environment files
 	@python3 scripts/init_local_env.py --target all
 
 bootstrap: require-repo-root ## Prepare local configuration and report prerequisites
-	@python3 scripts/init_local_env.py --target all
+	@if test -f "$(ENV_LOCAL)" && test -f "$(FRONTEND_ENV_LOCAL)"; then \
+	  echo 'bootstrap: preserving the complete existing ignored configuration'; \
+	elif test ! -e "$(ENV_LOCAL)" && test ! -e "$(FRONTEND_ENV_LOCAL)"; then \
+	  python3 scripts/init_local_env.py --target all; \
+	else \
+	  echo 'FATAL: local configuration is incomplete; restore or remove both ignored files before bootstrap.' >&2; \
+	  exit 1; \
+	fi
 	@python3 scripts/dev_doctor.py
 
 up: require-env-local ## Start the local database

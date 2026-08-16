@@ -13,13 +13,21 @@ from scripts.validate_production_readiness import (
     SCAFFOLD_TERMS,
     UNRESOLVED_MARKERS,
     ACTION_REFERENCE,
+    ARCHITECTURE_RULE_TOKENS,
+    BUILT_PREVIEW_COMMAND,
     PATH_RESTRICTION,
     PENDING_EVIDENCE,
+    POLLING_CONTRACT_TOKENS,
+    PR_SECURITY_EVIDENCE_TOKENS,
     action_reference_violations,
+    browser_acceptance_contract_violations,
     comment_lines,
+    contract_token_violations,
     declared_dependency_artifacts,
     matching_lines,
+    pr_security_evidence_violations,
     runner_reference_violations,
+    unsafe_throwable_logging_violations,
 )
 
 
@@ -91,6 +99,65 @@ class RepositoryContractPatternTests(unittest.TestCase):
             [],
             runner_reference_violations("  runs-on: ubuntu-24.04\n"),
         )
+
+    def test_missing_approved_architecture_rule_is_rejected(self) -> None:
+        source = "\n".join(ARCHITECTURE_RULE_TOKENS)
+        mutated = source.replace("domainDoesNotDependOutward", "")
+        self.assertTrue(
+            any(
+                "domainDoesNotDependOutward" in violation
+                for violation in contract_token_violations(
+                    mutated, required=ARCHITECTURE_RULE_TOKENS
+                )
+            )
+        )
+
+    def test_missing_prefix_collision_contract_is_rejected(self) -> None:
+        source = "\n".join(ARCHITECTURE_RULE_TOKENS)
+        mutated = source.replace("isWithin(item.getPackageName(), owningModulePackage)", "")
+        self.assertTrue(
+            any("owningModulePackage" in violation for violation in contract_token_violations(
+                mutated, required=ARCHITECTURE_RULE_TOKENS
+            ))
+        )
+
+    def test_throwable_logger_argument_is_rejected(self) -> None:
+        source = 'log.error("request failed", exception);\n'
+        self.assertEqual([1], unsafe_throwable_logging_violations(source))
+
+    def test_profile_database_logger_override_is_rejected(self) -> None:
+        violations = contract_token_violations(
+            "logging:\n  level:\n    org.flywaydb: INFO\n",
+            prohibited=("org.flywaydb:", "com.zaxxer.hikari:", "org.postgresql:"),
+        )
+        self.assertTrue(any("org.flywaydb:" in violation for violation in violations))
+
+    def test_safe_structured_logger_fields_are_accepted(self) -> None:
+        source = 'log.atError().addKeyValue("exception_class", exception.getClass().getName()).log("failed");\n'
+        self.assertEqual([], unsafe_throwable_logging_violations(source))
+
+    def test_dev_server_browser_acceptance_is_rejected(self) -> None:
+        config = "baseURL: 'http://127.0.0.1:5173'\ncommand: 'npm run dev'\n"
+        violations = browser_acceptance_contract_violations(config, "")
+        self.assertTrue(any("npm run dev" in violation for violation in violations))
+
+    def test_missing_recovery_assertion_is_rejected(self) -> None:
+        config = f"baseURL: 'http://127.0.0.1:4173'\n{BUILT_PREVIEW_COMMAND}\n"
+        scenario = "compose('stop', 'postgres')\nwaitForDatabaseStatus(page, 'DOWN')\n"
+        violations = browser_acceptance_contract_violations(config, scenario)
+        self.assertTrue(any("waitForDatabaseStatus(page, 'UP')" in violation for violation in violations))
+
+    def test_missing_polling_backoff_contract_is_rejected(self) -> None:
+        source = "\n".join(POLLING_CONTRACT_TOKENS).replace("failedAttempts", "")
+        violations = contract_token_violations(source, required=POLLING_CONTRACT_TOKENS)
+        self.assertTrue(any("failedAttempts" in violation for violation in violations))
+
+    def test_stale_pr_security_evidence_is_rejected(self) -> None:
+        expected_head = "a" * 40
+        evidence = "\n".join(PR_SECURITY_EVIDENCE_TOKENS) + f"\n{expected_head}\n"
+        self.assertEqual([], pr_security_evidence_violations(evidence, expected_head))
+        violations = pr_security_evidence_violations(evidence, "b" * 40)
+        self.assertTrue(any("security evidence is stale" in violation for violation in violations))
 
 
 class CommentExtractionTests(unittest.TestCase):

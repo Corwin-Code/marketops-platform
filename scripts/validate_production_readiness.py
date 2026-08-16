@@ -117,6 +117,10 @@ RETIRED_ARTEFACTS = (
 RETIRED_PATHS = (
     ("archunit.properties", "empty-subject handling is per rule, never a global override"),
     (
+        "docs/00-governance/CURRENT_STATE_PROPOSAL_WP-P0-001.md",
+        "CURRENT_STATE.md is the only canonical runtime state source",
+    ),
+    (
         "docs/02-architecture/designs/WP-P0-001-foundation-design-v1.1.md",
         "the canonical design carries no review-version suffix",
     ),
@@ -197,6 +201,48 @@ PATH_RESTRICTION = re.compile(
     re.I,
 )
 PENDING_EVIDENCE = re.compile(r"PENDING_(?:LOCAL|CODEX_GITHUB)_EXECUTION")
+UNSAFE_THROWABLE_LOGGING = re.compile(
+    r"\b(?:log|logger)\.(?:trace|debug|info|warn|error)\s*\([^;]*,\s*"
+    r"(?:exception|throwable|error|failure)\s*\)|\.setCause\s*\(",
+    re.S,
+)
+
+ARCHITECTURE_RULE_TOKENS = (
+    "moduleInternalsAreNotAccessedFromOtherModules",
+    "modulesAreFreeOfCycles",
+    "theSharedModuleDependsOnNoBusinessModule",
+    "domainDoesNotDependOutward",
+    "applicationAndPortDoNotDependOutward",
+    "vendorSdkTypesStayInsidePlatformAdapters",
+    "vendorSdkTypesDoNotAppearInDomainOrModuleApiSignatures",
+    "marketplaceintegration.adapter.<platform>",
+    "isWithin(item.getPackageName(), owningModulePackage)",
+)
+
+POLLING_CONTRACT_TOKENS = (
+    "HEALTH_REFRESH_INTERVAL_MS",
+    "HEALTH_RETRY_DELAYS_MS",
+    "failedAttempts",
+    "retryDelaysMs",
+    "inFlight",
+    "setTimeout",
+    "lifecycle.abort()",
+    "manualRefresh.current",
+)
+
+BUILT_PREVIEW_COMMAND = (
+    "npm run build && npm run preview -- --host 127.0.0.1 --port 4173 --strictPort"
+)
+
+PR_SECURITY_EVIDENCE_TOKENS = (
+    "source_head_sha",
+    "tested_merge_sha",
+    "PR review threads",
+    "CodeQL PR annotations",
+    "Code scanning",
+    "Dependabot",
+    "Secret scanning",
+)
 
 
 @dataclass
@@ -257,6 +303,56 @@ def matching_lines(text: str, pattern: re.Pattern[str]) -> list[tuple[int, str]]
     ]
 
 
+def contract_token_violations(
+    text: str,
+    required: tuple[str, ...] = (),
+    prohibited: tuple[str, ...] = (),
+) -> list[str]:
+    """Return absent requirements and present retired contract markers."""
+    violations = [f"required contract is absent: {token}" for token in required if token not in text]
+    violations.extend(
+        f"prohibited contract is present: {token}" for token in prohibited if token in text
+    )
+    return violations
+
+
+def unsafe_throwable_logging_violations(text: str) -> list[int]:
+    """Return source lines that hand an exception object to a logger."""
+    return [text.count("\n", 0, match.start()) + 1 for match in UNSAFE_THROWABLE_LOGGING.finditer(text)]
+
+
+def browser_acceptance_contract_violations(config_text: str, scenario_text: str) -> list[str]:
+    """Check that browser acceptance covers the built artifact and full recovery."""
+    violations = contract_token_violations(
+        config_text,
+        required=(BUILT_PREVIEW_COMMAND, "baseURL: 'http://127.0.0.1:4173'"),
+        prohibited=("npm run dev", "127.0.0.1:5173"),
+    )
+    violations.extend(
+        contract_token_violations(
+            scenario_text,
+            required=(
+                "compose('stop', 'postgres')",
+                "waitForDatabaseStatus(page, 'DOWN')",
+                "compose('up', '-d', '--wait', 'postgres')",
+                "waitForDatabaseStatus(page, 'UP')",
+                "expectCorrelation(recovered.response, recovered.body)",
+            ),
+        )
+    )
+    if len(re.findall(r"'data-state',\s*'ready'", scenario_text)) < 2:
+        violations.append("initial and recovered Ready UI assertions are both required")
+    return violations
+
+
+def pr_security_evidence_violations(text: str, expected_source_head: str) -> list[str]:
+    """Check that PR security evidence covers every surface on the tested source Head."""
+    violations = contract_token_violations(text, required=PR_SECURITY_EVIDENCE_TOKENS)
+    if expected_source_head not in text:
+        violations.append(f"security evidence is stale for source Head {expected_source_head}")
+    return violations
+
+
 def action_reference_violations(text: str) -> list[tuple[int, str]]:
     """Return mutable or unlabelled external action references."""
     violations: list[tuple[int, str]] = []
@@ -286,9 +382,18 @@ def require_tokens(report: Report, rule: str, path: Path, tokens: tuple[str, ...
     if text is None:
         report.add(rule, path, 0, "required contract file is missing or unreadable")
         return
-    for token in tokens:
-        if token not in text:
-            report.add(rule, path, 0, f"required contract is absent: {token}")
+    for detail in contract_token_violations(text, required=tokens):
+        report.add(rule, path, 0, detail)
+
+
+def reject_tokens(report: Report, rule: str, path: Path, tokens: tuple[str, ...]) -> None:
+    """Report each prohibited contract token present in a text file."""
+    text = read_text(path)
+    if text is None:
+        report.add(rule, path, 0, "prohibited-contract file is missing or unreadable")
+        return
+    for detail in contract_token_violations(text, prohibited=tokens):
+        report.add(rule, path, 0, detail)
 
 
 def check_repository_contracts(report: Report) -> None:
@@ -310,6 +415,16 @@ def check_repository_contracts(report: Report) -> None:
         text = read_text(path) or ""
         for number, line in matching_lines(text, PATH_RESTRICTION):
             report.add(rule, path, number, f"repository path restriction: {line.strip()[:100]}")
+
+    require_tokens(
+        report,
+        rule,
+        ROOT / "Makefile",
+        (
+            "bootstrap: preserving the complete existing ignored configuration",
+            "local configuration is incomplete",
+        ),
+    )
 
     workflows = ROOT / ".github" / "workflows"
     if workflows.exists():
@@ -366,20 +481,60 @@ def check_repository_contracts(report: Report) -> None:
         ROOT / BACKEND / "pom.xml",
         (
             "<propertyName>failsafeArgLine</propertyName>",
-            "<argLine>@{failsafeArgLine}</argLine>",
+            "<proc>full</proc>",
+            "<argLine>@{argLine} -javaagent:",
+            "<argLine>@{failsafeArgLine} -javaagent:",
             "<jacoco.line.coverage>0.80</jacoco.line.coverage>",
             "<jacoco.branch.coverage>0.70</jacoco.branch.coverage>",
         ),
     )
 
     architecture_rules = ROOT / BACKEND / "src/test/java/com/mimococo/marketops/architecture/ArchitectureRules.java"
+    require_tokens(report, rule, architecture_rules, ARCHITECTURE_RULE_TOKENS)
     architecture_text = read_text(architecture_rules) or ""
     for method in (
         "moduleInternalsAreNotAccessedFromOtherModules",
-        "theSharedModuleDependsOnNoOtherModule",
+        "theSharedModuleDependsOnNoBusinessModule",
+        "vendorSdkTypesStayInsidePlatformAdapters",
+        "vendorSdkTypesDoNotAppearInDomainOrModuleApiSignatures",
     ):
         if re.search(rf"{method}\(String basePackage\).*?return classes\(\)", architecture_text, re.S) is None:
             report.add(rule, architecture_rules, 0, f"custom ArchUnit condition is not a positive classes() rule: {method}")
+
+    required_architecture_fixtures = (
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/moduleinternals/alphabeta/AlphaBetaReadsAlphaInternals.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/domainoutward/orders/domain/DomainOrder.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/applicationoutward/orders/application/OrderUseCase.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/portoutward/orders/port/OrderPort.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/vendorlocation/orders/other/SdkUseOutsideAdapter.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/vendorapi/orders/OrderFacade.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/vendorapi/orders/domain/DomainOffer.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/conforming/architecture/marketplaceintegration/adapter/ozon/OzonMarketplaceAdapter.java",
+    )
+    for relative in required_architecture_fixtures:
+        if not (ROOT / relative).is_file():
+            report.add(rule, relative, 0, "required architecture sensitivity fixture is absent")
+
+    for relative in (
+        f"{BACKEND}/src/main/java/com/mimococo/marketops/shared/internal/errors/GlobalExceptionHandler.java",
+        f"{BACKEND}/src/main/java/com/mimococo/marketops/adminobservability/internal/MetaStatusAssembler.java",
+    ):
+        path = ROOT / relative
+        text = read_text(path) or ""
+        for line in unsafe_throwable_logging_violations(text):
+            report.add(rule, path, line, "public boundary passes a throwable object to the logger")
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/test/java/com/mimococo/marketops/shared/internal/errors/GlobalExceptionHandlerTest.java",
+        ("getThrowableProxy()).isNull()", "logsContainOnlySanitizedFailureCategories"),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/test/java/com/mimococo/marketops/adminobservability/internal/MetaStatusAssemblerTest.java",
+        ("getThrowableProxy()).isNull()", "probeLogsContainOnlySanitizedFailureCategories"),
+    )
 
     for path in (ROOT / BACKEND / "src/test").rglob("*.java") if (ROOT / BACKEND / "src/test").exists() else ():
         text = read_text(path) or ""
@@ -424,6 +579,31 @@ def check_repository_contracts(report: Report) -> None:
     require_tokens(
         report,
         rule,
+        ROOT / BACKEND / "src/main/resources/application.yaml",
+        (
+            "show-details: never",
+            "show-components: always",
+            "org.flywaydb: WARN",
+            "com.zaxxer.hikari: WARN",
+            "org.postgresql: WARN",
+        ),
+    )
+    for profile in ("application-local.yaml", "application-ci.yaml"):
+        reject_tokens(
+            report,
+            rule,
+            ROOT / BACKEND / "src/main/resources" / profile,
+            ("org.flywaydb:", "com.zaxxer.hikari:", "org.postgresql:"),
+        )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/test/java/com/mimococo/marketops/ApplicationSmokeIT.java",
+        ("healthResponseNamesComponentsButWithholdsDetails", 'doesNotContain("\\\"details\\\""'),
+    )
+    require_tokens(
+        report,
+        rule,
         ROOT / BACKEND / "src/test/java/com/mimococo/marketops/shared/internal/config/CorsContractTest.java",
         (
             "emptyOriginListDisablesCors",
@@ -465,17 +645,48 @@ def check_repository_contracts(report: Report) -> None:
         frontend_config,
         ("REQUIRED_CONFIG_KEYS", "missingKeys", "ok: false"),
     )
+    playwright_config = ROOT / FRONTEND / "playwright.config.ts"
+    browser_scenario = ROOT / FRONTEND / "tests/browser/health-shell.spec.ts"
+    for detail in browser_acceptance_contract_violations(
+        read_text(playwright_config) or "", read_text(browser_scenario) or ""
+    ):
+        report.add(rule, browser_scenario, 0, detail)
     require_tokens(
         report,
         rule,
-        ROOT / FRONTEND / "tests/browser/health-shell.spec.ts",
+        ROOT / FRONTEND / "src/health/HealthShell.tsx",
+        POLLING_CONTRACT_TOKENS,
+    )
+    health_shell_text = read_text(ROOT / FRONTEND / "src/health/HealthShell.tsx") or ""
+    if "setInterval" in health_shell_text:
+        report.add(rule, ROOT / FRONTEND / "src/health/HealthShell.tsx", 0, "polling must self-schedule after settlement, not overlap through setInterval")
+    require_tokens(
+        report,
+        rule,
+        ROOT / FRONTEND / "src/__tests__/HealthShell.test.tsx",
         (
-            "response.request().headers()['x-correlation-id']",
-            "compose('stop', 'postgres')",
-            "database?.status).toBe('DOWN')",
-            "'data-state',\n      'degraded'",
+            "refreshes automatically at the bounded normal interval",
+            "uses three bounded backoff retries",
+            "never overlaps a scheduled or manual refresh",
+            "aborts the active request and schedules nothing after unmount",
+            "leaves one scheduler under StrictMode",
         ),
     )
+
+    workflow_contracts = {
+        ROOT / ".github/workflows/frontend.yml": (
+            "actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7",
+            "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7",
+        ),
+        ROOT / ".github/workflows/backend.yml": (
+            "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7",
+        ),
+        ROOT / ".github/workflows/security.yml": (
+            "actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5",
+        ),
+    }
+    for path, tokens in workflow_contracts.items():
+        require_tokens(report, rule, path, tokens)
     require_tokens(
         report,
         rule,
