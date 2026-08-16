@@ -15,12 +15,17 @@ from scripts.validate_production_readiness import (
     ACTION_REFERENCE,
     ARCHITECTURE_RULE_TOKENS,
     BUILT_PREVIEW_COMMAND,
+    COMPLETED_WORK_PACKAGE_TOKENS,
+    COMPLETION_STATE_TOKENS,
+    LOCAL_LOGGING_TOKENS,
     PATH_RESTRICTION,
     PENDING_EVIDENCE,
     POLLING_CONTRACT_TOKENS,
     PR_SECURITY_EVIDENCE_TOKENS,
+    STRUCTURED_LOGGING_TOKENS,
     action_reference_violations,
     browser_acceptance_contract_violations,
+    base_environment_identity_violations,
     comment_lines,
     contract_token_violations,
     declared_dependency_artifacts,
@@ -121,6 +126,18 @@ class RepositoryContractPatternTests(unittest.TestCase):
             ))
         )
 
+    def test_missing_named_interface_contract_is_rejected(self) -> None:
+        source = "\n".join(ARCHITECTURE_RULE_TOKENS)
+        mutated = source.replace("isNamedInterface(item)", "")
+        violations = contract_token_violations(mutated, required=ARCHITECTURE_RULE_TOKENS)
+        self.assertTrue(any("isNamedInterface(item)" in violation for violation in violations))
+
+    def test_missing_exact_internal_segment_contract_is_rejected(self) -> None:
+        source = "\n".join(ARCHITECTURE_RULE_TOKENS)
+        mutated = source.replace("segment.equals(INTERNAL_SEGMENT)", "")
+        violations = contract_token_violations(mutated, required=ARCHITECTURE_RULE_TOKENS)
+        self.assertTrue(any("segment.equals" in violation for violation in violations))
+
     def test_throwable_logger_argument_is_rejected(self) -> None:
         source = 'log.error("request failed", exception);\n'
         self.assertEqual([1], unsafe_throwable_logging_violations(source))
@@ -131,6 +148,50 @@ class RepositoryContractPatternTests(unittest.TestCase):
             prohibited=("org.flywaydb:", "com.zaxxer.hikari:", "org.postgresql:"),
         )
         self.assertTrue(any("org.flywaydb:" in violation for violation in violations))
+
+    def test_missing_non_local_structured_logging_is_rejected(self) -> None:
+        source = "\n".join(STRUCTURED_LOGGING_TOKENS)
+        mutated = source.replace("console: ecs", "")
+        violations = contract_token_violations(mutated, required=STRUCTURED_LOGGING_TOKENS)
+        self.assertTrue(any("console: ecs" in violation for violation in violations))
+
+    def test_missing_structured_identity_field_is_rejected(self) -> None:
+        source = "\n".join(STRUCTURED_LOGGING_TOKENS)
+        mutated = source.replace("environment: ${marketops.environment}", "")
+        violations = contract_token_violations(mutated, required=STRUCTURED_LOGGING_TOKENS)
+        self.assertTrue(any("environment:" in violation for violation in violations))
+
+    def test_missing_local_safe_key_values_is_rejected(self) -> None:
+        source = "\n".join(LOCAL_LOGGING_TOKENS).replace("%kvp", "")
+        violations = contract_token_violations(source, required=LOCAL_LOGGING_TOKENS)
+        self.assertTrue(any("%kvp" in violation for violation in violations))
+
+    def test_base_environment_fallback_is_rejected(self) -> None:
+        base = "marketops:\n  product: MarketOps Russia\n  environment: unspecified\n"
+        self.assertEqual([3], base_environment_identity_violations(base))
+        self.assertEqual(
+            [],
+            base_environment_identity_violations("marketops:\n  product: MarketOps Russia\n"),
+        )
+
+    def test_open_authorization_with_no_active_work_package_is_rejected(self) -> None:
+        source = "\n".join(COMPLETION_STATE_TOKENS)
+        mutated = source.replace("authorization: PLANNING_ONLY", "authorization: APPROVED_FOR_IMPLEMENTATION")
+        violations = contract_token_violations(mutated, required=COMPLETION_STATE_TOKENS)
+        self.assertTrue(any("PLANNING_ONLY" in violation for violation in violations))
+
+    def test_candidate_completed_work_package_is_rejected(self) -> None:
+        source = "\n".join(COMPLETED_WORK_PACKAGE_TOKENS)
+        mutated = source.replace("| Status | COMPLETED |", "| Status | IMPLEMENTED_CANDIDATE |")
+        violations = contract_token_violations(mutated, required=COMPLETED_WORK_PACKAGE_TOKENS)
+        self.assertTrue(any("Status | COMPLETED" in violation for violation in violations))
+
+    def test_transient_frontend_ref_version_is_rejected(self) -> None:
+        violations = contract_token_violations(
+            "MARKETOPS_BUILD_VERSION: ${{ github.ref_name }}",
+            prohibited=("MARKETOPS_BUILD_VERSION", "github.ref_name"),
+        )
+        self.assertEqual(2, len(violations))
 
     def test_safe_structured_logger_fields_are_accepted(self) -> None:
         source = 'log.atError().addKeyValue("exception_class", exception.getClass().getName()).log("failed");\n'
@@ -200,6 +261,12 @@ class HistoryCommentTests(unittest.TestCase):
             "// temporary workaround until the adapter lands",
             "// review finding from the controller",
             "// legacy compatibility with the old path",
+            "// historically this case was fragile",
+            "// previously this used a fallback",
+            "// former implementation used the old path",
+            "// review iteration introduced this branch",
+            "// a work package that introduces an SDK updates this list",
+            "// rework finding changed the assertion",
         ):
             with self.subTest(line=line):
                 self.assertTrue(self.matches(line))

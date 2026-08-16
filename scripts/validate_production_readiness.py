@@ -156,6 +156,16 @@ HISTORY_COMMENT_PATTERNS = (
     (re.compile(r"\breview finding\b", re.I), "review narration"),
     (re.compile(r"\bcontroller requested\b", re.I), "review narration"),
     (re.compile(r"\blegacy compatibility\b", re.I), "compatibility narration"),
+    (re.compile(r"\bhistorically\b", re.I), "history narration"),
+    (re.compile(r"\bpreviously\b", re.I), "history narration"),
+    (re.compile(r"\bformer implementation\b", re.I), "history narration"),
+    (re.compile(r"\bold path\b", re.I), "history narration"),
+    (re.compile(r"\breview iteration\b", re.I), "review narration"),
+    (re.compile(r"\ba work package that introduces\b", re.I), "work package narration"),
+    (
+        re.compile(r"\b(?:controller|rework|revision) (?:finding|request|iteration|stage)\b", re.I),
+        "review narration",
+    ),
 )
 
 # --------------------------------------------------------------------------
@@ -217,6 +227,38 @@ ARCHITECTURE_RULE_TOKENS = (
     "vendorSdkTypesDoNotAppearInDomainOrModuleApiSignatures",
     "marketplaceintegration.adapter.<platform>",
     "isWithin(item.getPackageName(), owningModulePackage)",
+    "isNamedInterface(item)",
+    "item.getPackage().isAnnotatedWith(NamedInterface.class)",
+    "segment.equals(INTERNAL_SEGMENT)",
+)
+
+STRUCTURED_LOGGING_TOKENS = (
+    "console: ecs",
+    "exclude: tags",
+    "application: ${spring.application.name}",
+    "environment: ${marketops.environment}",
+    "buildVersion: ${spring.application.version}",
+)
+
+LOCAL_LOGGING_TOKENS = (
+    "application=${spring.application.name}",
+    "environment=${marketops.environment}",
+    "buildVersion=${spring.application.version}",
+    "correlationId=%X{correlationId:-none}",
+    "%kvp",
+)
+
+COMPLETION_STATE_TOKENS = (
+    "active_work_package: NONE",
+    "active_gate: CONTROLLER_PHASE_0_PLANNING",
+    "authorization: PLANNING_ONLY",
+)
+
+COMPLETED_WORK_PACKAGE_TOKENS = (
+    "| Status | COMPLETED |",
+    "| Historic design verdict | APPROVED_FOR_IMPLEMENTATION |",
+    "| Current execution authorization | CLOSED |",
+    "| Implementation result | VERIFIED |",
 )
 
 POLLING_CONTRACT_TOKENS = (
@@ -313,6 +355,19 @@ def contract_token_violations(
     violations.extend(
         f"prohibited contract is present: {token}" for token in prohibited if token in text
     )
+    return violations
+
+
+def base_environment_identity_violations(text: str) -> list[int]:
+    """Return base-config lines that commit a marketops environment fallback."""
+    violations: list[int] = []
+    in_marketops = False
+    for number, line in enumerate(text.splitlines(), start=1):
+        if line and not line[0].isspace() and not line.lstrip().startswith("#"):
+            in_marketops = line.strip() == "marketops:"
+            continue
+        if in_marketops and re.match(r"^\s{2}environment\s*:", line):
+            violations.append(number)
     return violations
 
 
@@ -509,7 +564,12 @@ def check_repository_contracts(report: Report) -> None:
         f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/vendorlocation/orders/other/SdkUseOutsideAdapter.java",
         f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/vendorapi/orders/OrderFacade.java",
         f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/vendorapi/orders/domain/DomainOffer.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/vendorapi/namedinterface/orders/api/package-info.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/vendorapi/namedinterface/orders/api/NamedInterfaceVendorApi.java",
         f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/conforming/architecture/marketplaceintegration/adapter/ozon/OzonMarketplaceAdapter.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/conforming/architecture/orders/api/package-info.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/conforming/architecture/orders/api/PlatformOrderApi.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/conforming/internalization/beta/InternalizationConsumer.java",
     )
     for relative in required_architecture_fixtures:
         if not (ROOT / relative).is_file():
@@ -533,7 +593,36 @@ def check_repository_contracts(report: Report) -> None:
         report,
         rule,
         ROOT / BACKEND / "src/test/java/com/mimococo/marketops/adminobservability/internal/MetaStatusAssemblerTest.java",
-        ("getThrowableProxy()).isNull()", "probeLogsContainOnlySanitizedFailureCategories"),
+        (
+            "getThrowableProxy()).isNull()",
+            "probeLogsContainOnlySanitizedFailureCategories",
+            "repeatedProbeFailureIsBoundedAndRecoveryRearmsIt",
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/main/java/com/mimococo/marketops/adminobservability/internal/MetaStatusAssembler.java",
+        (
+            "AtomicBoolean",
+            "compareAndSet(false, true)",
+            'addKeyValue("correlationId"',
+            'addKeyValue("exceptionClass"',
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/main/java/com/mimococo/marketops/shared/internal/errors/GlobalExceptionHandler.java",
+        (
+            "log.atWarn()",
+            "log.atInfo()",
+            "log.atError()",
+            'addKeyValue("event"',
+            'addKeyValue("errorCode"',
+            'addKeyValue("correlationId"',
+            'addKeyValue("exceptionClass"',
+        ),
     )
 
     for path in (ROOT / BACKEND / "src/test").rglob("*.java") if (ROOT / BACKEND / "src/test").exists() else ():
@@ -564,6 +653,13 @@ def check_repository_contracts(report: Report) -> None:
         ),
     )
     base_configuration = read_text(ROOT / BACKEND / "src/main/resources/application.yaml") or ""
+    for line in base_environment_identity_violations(base_configuration):
+        report.add(
+            rule,
+            ROOT / BACKEND / "src/main/resources/application.yaml",
+            line,
+            "base configuration must not provide marketops.environment",
+        )
     if "allowed-origins" in base_configuration:
         report.add(rule, ROOT / BACKEND / "src/main/resources/application.yaml", 0, "base profile must enable no CORS origin")
     finite_origins = (
@@ -576,6 +672,36 @@ def check_repository_contracts(report: Report) -> None:
             ROOT / BACKEND / "src/main/resources" / profile,
             finite_origins,
         )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/main/resources/application-ci.yaml",
+        STRUCTURED_LOGGING_TOKENS,
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/main/resources/application-local.yaml",
+        LOCAL_LOGGING_TOKENS,
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/test/java/com/mimococo/marketops/LoggingContractTest.java",
+        (
+            "StructuredLogEncoder",
+            "new ObjectMapper().readTree",
+            'record.has("tags")',
+            'record.has("error")',
+            "localPatternProducesReadableSafeOutput",
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/test/java/com/mimococo/marketops/ApplicationEnvironmentFailClosedTest.java",
+        ("unprofiledStartFailsClosed", 'hasMessageContaining("marketops.environment")'),
+    )
     require_tokens(
         report,
         rule,
@@ -632,7 +758,14 @@ def check_repository_contracts(report: Report) -> None:
         report,
         rule,
         ROOT / FRONTEND / "vite.config.ts",
-        ("lines: 80", "branches: 70", "functions: 80", "statements: 80"),
+        (
+            "lines: 80",
+            "branches: 70",
+            "functions: 80",
+            "statements: 80",
+            "readFileSync(new URL('./package.json'",
+            "frontendPackageVersion(packageManifest)",
+        ),
     )
     frontend_config = ROOT / FRONTEND / "src/config.ts"
     config_text = read_text(frontend_config) or ""
@@ -651,6 +784,60 @@ def check_repository_contracts(report: Report) -> None:
         read_text(playwright_config) or "", read_text(browser_scenario) or ""
     ):
         report.add(rule, browser_scenario, 0, detail)
+    require_tokens(
+        report,
+        rule,
+        playwright_config,
+        (
+            "execFileSync('git', ['rev-parse', 'HEAD']",
+            "MARKETOPS_BUILD_COMMIT: sourceHead",
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        browser_scenario,
+        (
+            "frontendPackageVersion(packageManifest)",
+            "`Console ${frontendVersion} (${sourceHead})`",
+        ),
+    )
+    reject_tokens(
+        report,
+        rule,
+        ROOT / ".github/workflows/frontend.yml",
+        ("MARKETOPS_BUILD_VERSION", "github.ref_name"),
+    )
+
+    require_tokens(
+        report,
+        rule,
+        ROOT / "docs/00-governance/CURRENT_STATE.md",
+        COMPLETION_STATE_TOKENS,
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md",
+        COMPLETED_WORK_PACKAGE_TOKENS,
+    )
+    reject_tokens(
+        report,
+        rule,
+        ROOT / "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md",
+        ("IMPLEMENTED_CANDIDATE",),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / "docs/01-requirements/traceability.csv",
+        (
+            "D-03,Owner Decision",
+            "WP-P0-001;WP-P0-003",
+            "ACTIVE_CONTROL",
+            "PostgreSQL Task/Outbox Worker",
+        ),
+    )
     require_tokens(
         report,
         rule,
