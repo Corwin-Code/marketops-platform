@@ -1,7 +1,7 @@
 # TC-GLOBAL-003 — production names
 
-**Result: PASS**; the clean committed-head validator inspected 191
-non-generated files and the Python discovery ran 104 tests.
+**Result: PASS**; the committed-head Fresh Clone validator inspected 200
+non-generated files and Python discovery ran 122 tests.
 
 | Identifier | Approved value |
 | --- | --- |

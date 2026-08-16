@@ -1,28 +1,30 @@
 # WP-P0-001 evidence
 
-Evidence for the project-grade repository-foundation rework, regenerated on
+Evidence for the final project-foundation closure rework, regenerated on
 2026-08-17 for implementation Head
-`4001a8d2717739967bf48a71c6a4f82bd2e5c50f`. Results are separated by
+`3a7575ad8f3a75b94210dc394f154bf4780283f2` with tree
+`4c4953632a33834052608ec20086c5afe9b791ab`. Results are separated by
 execution boundary: local workspace, committed-head Fresh Clone and GitHub Draft
 Pull Request.
 
 | Evidence | State | What it establishes |
 | --- | --- | --- |
-| `compromise-retirement-check.md` | PASS | No parallel state, known compromise, mutable workflow reference, missing architecture/logging/polling contract or incomplete recovery path remains |
-| `functional-javadoc-rewrite-check.md` | PASS | Production comments describe current behaviour and safety boundaries |
+| `compromise-retirement-check.md` | PASS | The governance, architecture, logging, fail-closed and build-identity contracts cannot silently regress |
+| `functional-javadoc-rewrite-check.md` | PASS | Executable comments describe current behaviour and safety boundaries |
 | `production-naming-check.md` | PASS | Production identifiers use the approved names |
-| `local-verification.md` | PASS | Backend, frontend, database, coverage, supply-chain and local configuration Gates ran |
-| `browser-smoke.md` | PASS | The built console automatically reached Ready → Degraded → Ready in a real browser |
-| `fresh-clone.md` | PASS | The committed Head passed the full whitespace-and-apostrophe path and trap cleanup |
-| `ci-checks.md` | PASS | All eleven stable jobs passed and Ruleset 20734984 requires all eleven exact contexts |
-| `traceability.md` | VERIFIED | Each foundation contract names its implementation and a test that detects removal |
-| `unavailable-capabilities.md` | PASS | Every technical capability and the explicitly Owner-authorized Ruleset action are resolved |
+| `local-verification.md` | PASS | Backend, frontend, database, coverage, supply-chain and configuration Gates ran |
+| `browser-smoke.md` | PASS | The built console rendered package version and source Head and recovered Ready → Degraded → Ready |
+| `fresh-clone.md` | PASS | The committed Head passed the complete whitespace-and-apostrophe acceptance path |
+| `ci-checks.md` | PENDING_RECHECK | The previous review is invalidated by this rework; all eleven checks must rerun after push |
+| `traceability.md` | VERIFIED | Each foundation contract names its implementation and removal detector; D-03 Worker ownership is explicit |
+| `unavailable-capabilities.md` | LOCAL_PASS_CI_PENDING | Every local capability is resolved; GitHub observations await the new Head |
 
-The clean committed-head validator inspected 191 non-generated files and its
-Python discovery ran 104 tests. Generated environments, dependencies, reports,
+The committed-head Fresh Clone validator inspected 200 non-generated files and
+Python discovery ran 122 tests. The implementation run also passed 109 backend
+unit/configuration/architecture tests, 22 integration tests, 46 frontend tests
+and one real-browser scenario. Generated environments, dependencies, reports,
 browser traces and supply-chain output remain ignored.
 
-Ruleset closure was verified on unchanged PR Head
-`58dc6e4bc2eabad19f7d150e465749a85266b7ff` before the documentation-only
-evidence commit that records it. The later evidence Head and its fresh eleven-job
-rerun are recorded in the Draft PR body to avoid a self-referential commit hash.
+The checked-in local evidence certifies the immutable implementation Head above.
+The later evidence commit and its self-referential final CI rerun are recorded in
+the Draft PR body and Controller handoff, as required by the closure protocol.

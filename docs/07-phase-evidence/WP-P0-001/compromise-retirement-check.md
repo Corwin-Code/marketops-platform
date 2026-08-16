@@ -1,24 +1,28 @@
 # TC-GLOBAL-001 — compromise retirement
 
-**Result: PASS**; the clean committed-head validator inspected 191
-non-generated files and the Python discovery ran 104 tests.
+**Result: PASS**; the committed-head Fresh Clone validator inspected 200
+non-generated files and Python discovery ran 122 tests.
 
-The validator rejects unresolved annotation markers, retired dependencies and
-paths, parallel Current State proposals, stale completed-state records, multiple
-migrations, path restrictions, absent lock/wrapper/browser files, mutable
-Actions references, floating runners, incomplete coverage wiring, absent
-approved layer/vendor rules or fixtures, unsafe throwable logging, Actuator
-detail exposure, a Playwright development-server target, absent recovery,
-missing polling/backoff, incomplete Fresh Clone/SBOM output and stale PR security
-evidence contracts.
+The repository hard rule now rejects regression of every final-closure repair:
 
-The seven approved architecture factories share their definitions between
-production and sensitivity tests. Ten invalid observations exercise ordinary
-and prefix-collision internal access, cycle/shared/domain/application/port/vendor
-location and two vendor-signature leaks; one conforming inward arrangement passes
-all seven. The four general Java safeguards are named and counted separately.
+- parallel/stale governance state, open authorization with no active WP,
+  candidate status, or a falsely completed D-03 Worker;
+- missing NamedInterface API coverage, non-exact `internal` matching, absent
+  vendor-signature shapes or missing positive/negative architecture fixtures;
+- missing ECS JSON/local single-line identity fields, unsafe throwable logging,
+  incorrect safe severity levels or unbounded repeated degradation warnings;
+- a base `marketops.environment` fallback or removal of the unprofiled
+  fail-closed startup test;
+- a transient workflow ref as frontend version, missing package-version source,
+  or missing full source-Head browser assertion;
+- mutable Actions, floating runners, weakened coverage, incomplete Fresh Clone,
+  browser, SBOM, polling or recovery contracts.
 
-Command result after rework:
+The seven approved architecture factories have eleven deliberately invalid
+observations. Named-interface fixtures exercise public/protected fields,
+constructor, return, parameter, generic, superclass and interface shapes; exact
+segment fixtures prove `internalization` remains public. Conforming arrangements
+pass, and four general Java safeguards remain separately named and counted.
 
 ```text
 python3 scripts/validate_production_readiness.py
