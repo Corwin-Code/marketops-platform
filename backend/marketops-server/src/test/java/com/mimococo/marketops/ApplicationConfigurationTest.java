@@ -137,10 +137,42 @@ class ApplicationConfigurationTest {
     }
 
     @Test
-    @DisplayName("every log record can be traced to the request that produced it")
+    @DisplayName("the base logging contract carries the correlation identifier")
     void logRecordsCarryTheCorrelationIdentifier() {
         assertThat(String.valueOf(base.getProperty("logging.pattern.correlation")))
                 .contains("correlationId");
+    }
+
+    @Test
+    @DisplayName("the CI profile uses the built-in ECS encoder with stable identity fields")
+    void ciLogsAreStructuredAndIdentified() {
+        PropertySource<?> ci = load("application-ci.yaml");
+
+        assertThat(ci.getProperty("logging.structured.format.console")).isEqualTo("ecs");
+        assertThat(ci.getProperty("logging.structured.json.exclude")).isEqualTo("tags");
+        assertThat(ci.getProperty("logging.structured.json.add.application"))
+                .isEqualTo("${spring.application.name}");
+        assertThat(ci.getProperty("logging.structured.json.add.environment"))
+                .isEqualTo("${marketops.environment}");
+        assertThat(ci.getProperty("logging.structured.json.add.buildVersion"))
+                .isEqualTo("${spring.application.version}");
+    }
+
+    @Test
+    @DisplayName("the local profile is single-line readable and renders safe key-values")
+    void localLogsAreReadableAndCarrySafeFields() {
+        String pattern = String.valueOf(
+                load("application-local.yaml").getProperty("logging.pattern.console"));
+
+        assertThat(pattern)
+                .contains(
+                        "application=${spring.application.name}",
+                        "environment=${marketops.environment}",
+                        "buildVersion=${spring.application.version}",
+                        "correlationId=%X{correlationId:-none}",
+                        "%msg",
+                        "%kvp")
+                .doesNotContain("%ex", "%wEx", "%throwable");
     }
 
     @Test
@@ -163,7 +195,7 @@ class ApplicationConfigurationTest {
     @Test
     @DisplayName("each profile names the environment it configures")
     void profilesNameTheirEnvironment() {
-        assertThat(base.getProperty("marketops.environment")).isEqualTo("unspecified");
+        assertThat(base.getProperty("marketops.environment")).isNull();
         assertThat(load("application-local.yaml").getProperty("marketops.environment"))
                 .isEqualTo("local");
         assertThat(load("application-ci.yaml").getProperty("marketops.environment")).isEqualTo("ci");

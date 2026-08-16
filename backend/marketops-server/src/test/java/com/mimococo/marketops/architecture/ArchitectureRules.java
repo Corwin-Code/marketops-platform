@@ -14,6 +14,7 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
 import java.util.Set;
+import org.springframework.modulith.NamedInterface;
 
 /**
  * The seven approved dependency-boundary rules for the modular monolith.
@@ -34,15 +35,15 @@ final class ArchitectureRules {
     static final String VENDOR_STANDIN_PACKAGE =
             "com.mimococo.marketops.testfixture.vendorsdk";
 
-    private static final String INTERNAL_SEGMENT = ".internal";
+    private static final String INTERNAL_SEGMENT = "internal";
     private static final String SHARED_MODULE = "shared";
 
     /**
      * Vendor namespaces known to this foundation.
      *
-     * <p>A work package that introduces a Marketplace SDK must register its
-     * namespace here in the same change. The stand-in namespace makes the rule
-     * executable before any real SDK or credential is introduced.
+     * <p>Every Marketplace SDK namespace is registered here in the same change
+     * that adds the dependency. The stand-in namespace makes the rule executable
+     * without a real SDK or credential.
      */
     private static final Set<String> VENDOR_SDK_PREFIXES = Set.of(
             VENDOR_STANDIN_PACKAGE + ".",
@@ -63,11 +64,11 @@ final class ArchitectureRules {
                     public void check(JavaClass item, ConditionEvents events) {
                         for (Dependency dependency : item.getDirectDependenciesFromSelf()) {
                             String targetPackage = dependency.getTargetClass().getPackageName();
-                            int internal = targetPackage.indexOf(INTERNAL_SEGMENT);
-                            if (!isWithin(targetPackage, basePackage) || internal < 0) {
+                            String owningModulePackage = internalOwner(targetPackage);
+                            if (!isWithin(targetPackage, basePackage)
+                                    || owningModulePackage == null) {
                                 continue;
                             }
-                            String owningModulePackage = targetPackage.substring(0, internal);
                             if (!isWithin(item.getPackageName(), owningModulePackage)) {
                                 events.add(SimpleConditionEvent.violated(
                                         item, dependency.getDescription()));
@@ -174,8 +175,11 @@ final class ArchitectureRules {
                     @Override
                     public void check(JavaClass item, ConditionEvents events) {
                         boolean domain = hasPackageSegment(item.getPackageName(), "domain");
-                        boolean moduleApi = isDirectModulePackage(item.getPackageName(), basePackage)
-                                && item.getModifiers().contains(JavaModifier.PUBLIC);
+                        boolean exposedType = item.getModifiers().contains(JavaModifier.PUBLIC)
+                                || item.getModifiers().contains(JavaModifier.PROTECTED);
+                        boolean moduleApi = exposedType
+                                && (isDirectModulePackage(item.getPackageName(), basePackage)
+                                || isNamedInterface(item));
                         if (!domain && !moduleApi) {
                             return;
                         }
@@ -257,6 +261,24 @@ final class ArchitectureRules {
             return false;
         }
         return !packageName.substring(basePackage.length() + 1).contains(".");
+    }
+
+    private static boolean isNamedInterface(JavaClass item) {
+        return item.isAnnotatedWith(NamedInterface.class)
+                || item.getPackage().isAnnotatedWith(NamedInterface.class);
+    }
+
+    /** Return the package that owns an exact {@code internal} segment. */
+    private static String internalOwner(String packageName) {
+        String[] segments = packageName.split("\\.");
+        int end = 0;
+        for (String segment : segments) {
+            if (segment.equals(INTERNAL_SEGMENT)) {
+                return packageName.substring(0, end - 1);
+            }
+            end += segment.length() + 1;
+        }
+        return null;
     }
 
     private static boolean hasPackageSegment(String packageName, String segment) {

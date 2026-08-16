@@ -11,6 +11,10 @@ marketops:
       allowed-origins: http://127.0.0.1:5173,http://127.0.0.1:4173
 
 logging:
+  pattern:
+    # Workstation output is one readable line and includes every safe identity
+    # and event field needed to correlate it with non-local JSON records.
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level application=${spring.application.name} environment=${marketops.environment} buildVersion=${spring.application.version} correlationId=%X{correlationId:-none} %logger{36} - %msg %kvp%n"
   level:
     com.mimococo.marketops: DEBUG
 

@@ -3,6 +3,7 @@ package com.mimococo.marketops.shared.internal.errors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.mimococo.marketops.shared.CorrelationId;
@@ -127,7 +128,19 @@ class GlobalExceptionHandlerTest {
             assertThat(event.getThrowableProxy()).isNull();
             assertThat(event.getFormattedMessage()).isEqualTo("Request processing failed");
         });
+        assertThat(appender.list)
+                .extracting(ILoggingEvent::getLevel)
+                .containsExactly(Level.WARN, Level.INFO, Level.ERROR);
         assertThat(rendered(appender.list))
+                .contains(
+                        "event=\"request_validation_failed\"",
+                        "errorCode=\"VALIDATION_FAILED\"",
+                        "event=\"request_resource_not_found\"",
+                        "errorCode=\"RESOURCE_NOT_FOUND\"",
+                        "event=\"request_unhandled_failure\"",
+                        "errorCode=\"INTERNAL_ERROR\"",
+                        "correlationId=",
+                        "exceptionClass=")
                 .doesNotContain("password", "marketops_app", "10.0.0.7", "5432", "SELECT",
                         "secretRule", "/private/");
     }

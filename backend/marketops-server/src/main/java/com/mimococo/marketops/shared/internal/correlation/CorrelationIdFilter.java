@@ -34,15 +34,18 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
         CorrelationId.Result result =
                 CorrelationId.validateOrGenerate(request.getHeader(CorrelationId.HEADER_NAME));
 
-        if (!result.acceptedInbound()) {
-            // The rejected value itself is never recorded: it is untrusted input that
-            // would land in the log it was rejected for being able to corrupt.
-            log.debug("Replaced inbound correlation identifier; reason={}", result.rejectionReason());
-        }
-
         MDC.put(CorrelationId.LOG_CONTEXT_KEY, result.value());
         response.setHeader(CorrelationId.HEADER_NAME, result.value());
         try {
+            if (!result.acceptedInbound()) {
+                // The rejected value itself is never recorded: it is untrusted input that
+                // would land in the log it was rejected for being able to corrupt.
+                log.atDebug()
+                        .addKeyValue("event", "correlation_identifier_replaced")
+                        .addKeyValue("correlationId", result.value())
+                        .addKeyValue("rejectionCategory", result.rejectionReason().name())
+                        .log("Inbound correlation identifier replaced");
+            }
             chain.doFilter(request, response);
         } finally {
             MDC.remove(CorrelationId.LOG_CONTEXT_KEY);

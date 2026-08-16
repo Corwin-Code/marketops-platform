@@ -4,6 +4,7 @@ import com.mimococo.marketops.shared.CorrelationId;
 import com.mimococo.marketops.shared.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -27,30 +28,33 @@ public class GlobalExceptionHandler {
     /** Report a rejected request body or parameter without repeating its content. */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ProblemDetail handleValidationFailure(MethodArgumentNotValidException exception) {
-        logSafely("request_validation_failed", ErrorCode.VALIDATION_FAILED, exception);
+        logSafely(log.atWarn(), "request_validation_failed", ErrorCode.VALIDATION_FAILED, exception);
         return problem(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED);
     }
 
     /** Report an unmapped path without disclosing which paths exist. */
     @ExceptionHandler(NoResourceFoundException.class)
     ProblemDetail handleUnknownResource(NoResourceFoundException exception) {
-        logSafely("request_resource_not_found", ErrorCode.RESOURCE_NOT_FOUND, exception);
+        logSafely(log.atInfo(), "request_resource_not_found", ErrorCode.RESOURCE_NOT_FOUND, exception);
         return problem(HttpStatus.NOT_FOUND, ErrorCode.RESOURCE_NOT_FOUND);
     }
 
     /** Report any other failure as a fixed message and a sanitized log event. */
     @ExceptionHandler(Exception.class)
     ProblemDetail handleUnexpectedFailure(Exception exception) {
-        logSafely("request_unhandled_failure", ErrorCode.INTERNAL_ERROR, exception);
+        logSafely(log.atError(), "request_unhandled_failure", ErrorCode.INTERNAL_ERROR, exception);
         return problem(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_ERROR);
     }
 
-    private void logSafely(String event, ErrorCode code, Exception exception) {
-        log.atError()
+    private void logSafely(LoggingEventBuilder builder,
+                           String event,
+                           ErrorCode code,
+                           Exception exception) {
+        builder
                 .addKeyValue("event", event)
-                .addKeyValue("error_code", code.name())
-                .addKeyValue("correlation_id", CorrelationId.current())
-                .addKeyValue("exception_class", exception.getClass().getName())
+                .addKeyValue("errorCode", code.name())
+                .addKeyValue("correlationId", CorrelationId.current())
+                .addKeyValue("exceptionClass", exception.getClass().getName())
                 .log("Request processing failed");
     }
 

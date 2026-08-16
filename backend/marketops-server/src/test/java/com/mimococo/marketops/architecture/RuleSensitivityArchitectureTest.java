@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.lang.EvaluationResult;
 import java.util.function.Function;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,12 +16,12 @@ import org.junit.jupiter.api.Test;
 /**
  * Proves that every production rule can fail for its intended reason and pass.
  *
- * <p>The approved suite covers seven rule factories with ten invalid observations:
+ * <p>The approved suite covers seven rule factories with eleven invalid observations:
  * application and port exercise the two halves of one composite rule, while the
  * internal-access scenario proves both an ordinary cross-module access and the
- * historically fragile {@code alpha}/{@code alphabeta} prefix collision. A
- * vendor-signature scenario checks domain and module API leakage separately. A
- * shared inward-dependency arrangement must pass all seven rules.
+ * {@code alpha}/{@code alphabeta} prefix-collision case. Vendor-signature
+ * scenarios check domain, direct module API and named-interface leakage. A shared
+ * inward-dependency arrangement must pass all seven rules.
  *
  * <p>The separately named quality suite supplies the same mutation protection
  * for the four optional safeguards without counting them as approved boundaries.
@@ -39,6 +40,18 @@ class RuleSensitivityArchitectureTest {
                 VIOLATION + ".moduleinternals",
                 "BetaReadsAlphaInternals",
                 "AlphaBetaReadsAlphaInternals");
+    }
+
+    @Test
+    @DisplayName("F-ARCH-001P an internalization package remains public")
+    void internalizationPackageIsNotTreatedAsInternal() {
+        String fixture = FIXTURES + ".conforming.internalization";
+        JavaClasses classes = importFixture(fixture);
+
+        assertThatCode(() -> ArchitectureRules
+                .moduleInternalsAreNotAccessedFromOtherModules(fixture)
+                .check(classes))
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -93,13 +106,47 @@ class RuleSensitivityArchitectureTest {
     }
 
     @Test
-    @DisplayName("F-ARCH-007 SDK types in domain and module API signatures are rejected")
+    @DisplayName("F-ARCH-007 SDK types in domain, direct and named module APIs are rejected")
     void vendorSignatureRuleFails() {
         assertRejects(
                 ArchitectureRules::vendorSdkTypesDoNotAppearInDomainOrModuleApiSignatures,
                 VIOLATION + ".vendorapi",
                 "DomainOffer",
-                "OrderFacade");
+                "OrderFacade",
+                "NamedInterfaceVendorApi");
+    }
+
+    @Test
+    @DisplayName("F-ARCH-007N every named-interface signature shape is inspected")
+    void namedInterfaceSignatureShapesAreRejected() {
+        String fixture = VIOLATION + ".vendorapi.namedinterface";
+        JavaClasses classes = importFixture(fixture);
+        EvaluationResult result = ArchitectureRules
+                .vendorSdkTypesDoNotAppearInDomainOrModuleApiSignatures(fixture)
+                .evaluate(classes);
+
+        assertThat(result.hasViolation()).isTrue();
+        String report = String.join("\n", result.getFailureReport().getDetails());
+        assertThat(report).contains(
+                "vendorField",
+                "protectedVendorField",
+                "NamedInterfaceVendorApi",
+                "returnOrder",
+                "acceptOrder",
+                "genericOrders",
+                "extends vendor SDK type",
+                "implements vendor SDK type");
+    }
+
+    @Test
+    @DisplayName("F-ARCH-007P named interfaces may expose platform-owned contracts")
+    void platformOwnedNamedInterfacePasses() {
+        JavaClasses classes = importFixture(CONFORMING);
+
+        assertThatCode(() -> ArchitectureRules
+                .vendorSdkTypesDoNotAppearInDomainOrModuleApiSignatures(CONFORMING)
+                .check(classes))
+                .doesNotThrowAnyException();
     }
 
     @Test

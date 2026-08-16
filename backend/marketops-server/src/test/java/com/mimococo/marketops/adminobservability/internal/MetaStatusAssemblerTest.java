@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.mimococo.marketops.shared.CorrelationId;
@@ -218,7 +219,8 @@ class MetaStatusAssemblerTest {
 
         assertThat(appender.list).hasSize(2).allSatisfy(event -> {
             assertThat(event.getThrowableProxy()).isNull();
-            assertThat(event.getFormattedMessage()).isEqualTo("Metadata dependency probe failed");
+            assertThat(event.getFormattedMessage()).isEqualTo("Metadata dependency probe degraded");
+            assertThat(event.getLevel()).isEqualTo(Level.WARN);
         });
         String rendered = appender.list.stream()
                 .map(event -> event.getFormattedMessage() + " " + event.getKeyValuePairs())
@@ -226,6 +228,42 @@ class MetaStatusAssemblerTest {
         assertThat(rendered)
                 .doesNotContain("credential-value", "10.0.0.7", "5432", "marketops_app",
                         "SELECT", "private_table", "jdbc:postgresql", "unreadable");
+    }
+
+    @Test
+    @DisplayName("repeated degraded polling emits one warning until recovery")
+    void repeatedProbeFailureIsBoundedAndRecoveryRearmsIt() throws SQLException {
+        Connection valid = mock(Connection.class);
+        when(valid.isValid(anyInt())).thenReturn(true);
+        DataSource source = mock(DataSource.class);
+        when(source.getConnection())
+                .thenThrow(new SQLException("first private failure"))
+                .thenThrow(new SQLException("repeated private failure"))
+                .thenReturn(valid)
+                .thenThrow(new SQLException("new private failure"));
+        MetaStatusAssembler subject = assembler(null, source, null);
+
+        Logger logger = (Logger) LoggerFactory.getLogger(MetaStatusAssembler.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+        try {
+            assertThat(subject.assemble().database().status()).isEqualTo(MetaStatusAssembler.STATUS_DOWN);
+            assertThat(subject.assemble().database().status()).isEqualTo(MetaStatusAssembler.STATUS_DOWN);
+            assertThat(subject.assemble().database().status()).isEqualTo(MetaStatusAssembler.STATUS_UP);
+            assertThat(subject.assemble().database().status()).isEqualTo(MetaStatusAssembler.STATUS_DOWN);
+        } finally {
+            logger.detachAppender(appender);
+            appender.stop();
+        }
+
+        assertThat(appender.list).hasSize(2).allSatisfy(event -> {
+            assertThat(event.getLevel()).isEqualTo(Level.WARN);
+            assertThat(event.getThrowableProxy()).isNull();
+            assertThat(event.getKeyValuePairs().toString())
+                    .contains("event=\"database_probe_failed\"", "correlationId=")
+                    .doesNotContain("private failure");
+        });
     }
 
     @Test

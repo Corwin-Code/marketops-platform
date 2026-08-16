@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
@@ -69,6 +70,8 @@ public class MetaStatusAssembler {
     private final ObjectProvider<BuildProperties> buildProperties;
     private final ObjectProvider<DataSource> dataSource;
     private final ObjectProvider<Flyway> flyway;
+    private final AtomicBoolean databaseProbeDegraded = new AtomicBoolean();
+    private final AtomicBoolean migrationProbeDegraded = new AtomicBoolean();
 
     MetaStatusAssembler(Clock clock,
                         Environment springEnvironment,
@@ -129,12 +132,20 @@ public class MetaStatusAssembler {
     private String resolveDatabaseStatus() {
         DataSource source = dataSource.getIfAvailable();
         if (source == null) {
+            databaseProbeDegraded.set(false);
             return STATUS_UNKNOWN;
         }
         try (Connection connection = source.getConnection()) {
-            return connection.isValid(PROBE_TIMEOUT_SECONDS) ? STATUS_UP : STATUS_DOWN;
+            if (connection.isValid(PROBE_TIMEOUT_SECONDS)) {
+                databaseProbeDegraded.set(false);
+                return STATUS_UP;
+            }
+            logSanitizedProbeFailure(
+                    "database_probe_failed", null, databaseProbeDegraded);
+            return STATUS_DOWN;
         } catch (SQLException | RuntimeException exception) {
-            logSanitizedProbeFailure("database_probe_failed", exception);
+            logSanitizedProbeFailure(
+                    "database_probe_failed", exception, databaseProbeDegraded);
             return STATUS_DOWN;
         }
     }
@@ -142,10 +153,12 @@ public class MetaStatusAssembler {
     private String resolveMigrationVersion() {
         Flyway instance = flyway.getIfAvailable();
         if (instance == null) {
+            migrationProbeDegraded.set(false);
             return UNKNOWN_VERSION;
         }
         try {
             MigrationInfo current = instance.info().current();
+            migrationProbeDegraded.set(false);
             if (current == null || current.getVersion() == null) {
                 return UNKNOWN_VERSION;
             }
@@ -153,7 +166,8 @@ public class MetaStatusAssembler {
             // reveal the migration content to an unauthenticated caller.
             return current.getVersion().getVersion();
         } catch (RuntimeException exception) {
-            logSanitizedProbeFailure("migration_version_probe_failed", exception);
+            logSanitizedProbeFailure(
+                    "migration_version_probe_failed", exception, migrationProbeDegraded);
             return UNKNOWN_VERSION;
         }
     }
@@ -165,11 +179,18 @@ public class MetaStatusAssembler {
      * ports, role names and SQL. The exception object is therefore never handed
      * to the logger and no stack trace is attached to this unauthenticated path.
      */
-    private void logSanitizedProbeFailure(String event, Exception exception) {
-        log.atWarn()
+    private void logSanitizedProbeFailure(String event,
+                                          Exception exception,
+                                          AtomicBoolean degraded) {
+        if (!degraded.compareAndSet(false, true)) {
+            return;
+        }
+        var builder = log.atWarn()
                 .addKeyValue("event", event)
-                .addKeyValue("correlation_id", CorrelationId.current())
-                .addKeyValue("exception_class", exception.getClass().getName())
-                .log("Metadata dependency probe failed");
+                .addKeyValue("correlationId", CorrelationId.current());
+        if (exception != null) {
+            builder.addKeyValue("exceptionClass", exception.getClass().getName());
+        }
+        builder.log("Metadata dependency probe degraded");
     }
 }

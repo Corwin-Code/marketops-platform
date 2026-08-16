@@ -2,7 +2,8 @@
 #
 # Integration tests supply their own data source through the container lifecycle,
 # so this file deliberately sets no connection properties. It exists to name the
-# environment and to keep test output readable when a job fails.
+# environment and to exercise the same structured-output contract used by every
+# non-local deployment profile.
 
 marketops:
   environment: ci
@@ -11,6 +12,20 @@ marketops:
       allowed-origins: http://127.0.0.1:5173,http://127.0.0.1:4173
 
 logging:
+  structured:
+    format:
+      console: ecs
+    json:
+      # Markers can be supplied by libraries and are not part of the stable
+      # application event schema. Safe application key-values remain included.
+      exclude: tags
+      add:
+        application: ${spring.application.name}
+        environment: ${marketops.environment}
+        buildVersion: ${spring.application.version}
+    ecs:
+      service:
+        environment: ${marketops.environment}
   level:
     root: WARN
     com.mimococo.marketops: INFO

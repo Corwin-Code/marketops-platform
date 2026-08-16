@@ -12,6 +12,7 @@
 spring:
   application:
     name: marketops-server
+    version: "@project.version@"
   # An empty profile list would activate "default" and load any file named after
   # it. Naming a profile that owns no file makes an unprofiled start explicit.
   profiles:
@@ -67,9 +68,6 @@ server:
 
 marketops:
   product: MarketOps Russia
-  # Overridden by every profile. The literal below is what an unprofiled start
-  # reports, which makes such a start visible in the payload rather than silent.
-  environment: unspecified
 
 management:
   # Nothing is reachable unless it is named below.
