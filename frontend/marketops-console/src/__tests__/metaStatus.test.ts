@@ -139,4 +139,30 @@ describe('reading the platform metadata', () => {
       expect(outcome.failure.kind).toBe('unreachable');
     }
   });
+
+  it('lets an unmounted caller cancel a request before its timeout', async () => {
+    const cancellation = new AbortController();
+    const fetchImpl = vi.fn().mockImplementation(
+      (_url: string, init: RequestInit) =>
+        new Promise((_resolve, reject) => {
+          init.signal?.addEventListener('abort', () => {
+            reject(new DOMException('aborted', 'AbortError'));
+          });
+        }),
+    );
+
+    const pending = fetchMetaStatus(
+      'http://127.0.0.1:8080',
+      fetchImpl as unknown as typeof fetch,
+      5000,
+      cancellation.signal,
+    );
+    cancellation.abort();
+    const outcome = await pending;
+
+    expect(outcome.ok).toBe(false);
+    if (!outcome.ok) {
+      expect(outcome.failure).toEqual({ kind: 'unreachable', detail: 'AbortError' });
+    }
+  });
 });

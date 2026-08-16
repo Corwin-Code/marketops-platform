@@ -1,56 +1,52 @@
 # Browser smoke check
 
-The automated tests render the console into a simulated document. That is enough
-to establish what it does with each answer the backend can give, and it is not
-enough to establish that the built bundle loads in a browser, that the request
-crosses an origin boundary, or that the page is legible.
+Component tests establish how the console maps every backend outcome. The
+browser Gate separately proves that the production bundle loads, crosses the
+configured origin boundary, observes a real PostgreSQL outage and recovers
+without an operator click.
 
-This check is performed by a person against a real browser, and its result is
-recorded as evidence. It is short on purpose: five observations, each of which
-has failed in some project for a reason no unit test could have caught.
+## Automated acceptance
 
-## Preparation
+From a repository with ignored local configuration and a healthy Compose
+database:
 
-```
+```bash
 make up
-make backend-run
-cd frontend/marketops-console && npm run build && npm run preview
+make frontend-browser
 ```
 
-The preview server binds `127.0.0.1:4173` and serves the built bundle, not the
-development server. A development server resolves modules differently and can
-hide a build defect entirely.
+Playwright performs `npm run build`, starts `vite preview` on strict loopback port
+`4173`, and starts the real Spring Boot backend. It never uses the Vite
+development server as an acceptance target.
 
-## Observations
+The single scenario must prove, in order:
 
-| # | What to do | What must be true |
-| --- | --- | --- |
-| 1 | Open <http://127.0.0.1:4173> | The page renders. The heading and a platform state are visible without scrolling |
-| 2 | Read the state section | It reports `ready`, and the details section names the application, environment, backend version, schema version and correlation identifier |
-| 3 | Open the browser's network view and reload | Exactly one request to `/api/v1/meta/status`. It carries an `X-Correlation-ID` header, and the response carries the same value back |
-| 4 | Open the browser's console | No error and no warning. In particular no content-security-policy violation, which would mean the page loaded something the policy did not allow |
-| 5 | Stop the backend and press "Check again" | The state becomes `unreachable`, the details section disappears, and no platform value from the previous answer is left on the screen |
+1. the built console loads and reaches `ready`;
+2. the metadata request and response carry the same valid correlation identifier;
+3. CORS permits exactly the preview origin and exposes the correlation header;
+4. stopping PostgreSQL makes an automatic, non-overlapping poll report `DOWN`
+   and move the UI to `degraded`;
+5. restarting PostgreSQL with Compose health waiting lets another automatic poll
+   return the UI to `ready`;
+6. the recovered response still preserves the correlation contract.
 
-Observation 5 is the one worth being slow about. A console that keeps the last
-good answer visible while the backend is down reports a healthy platform during
-an outage, which is precisely when someone is relying on it.
+The scenario restores PostgreSQL in `finally`, including after an assertion
+failure. Failure traces, screenshots and the HTML report remain ignored local
+artifacts.
+
+## Manual diagnostic use
+
+The same page may be opened at <http://127.0.0.1:4173> while investigating a
+failure. “Check again” remains available, but acceptance never depends on a
+manual click. The screen polls every two seconds after success; failures use
+250 ms, 500 ms and 1000 ms retry delays before returning to the normal interval.
+
+Do not attach screenshots to evidence. The console displays environment and
+correlation data that are useful locally but unnecessary in the repository.
 
 ## Recording the result
 
-Write the outcome to
-`docs/07-phase-evidence/WP-P0-001/browser-smoke.md` using this shape:
-
-```
-Date:        <date>
-Commit:      <full object name of the commit that was built>
-Browser:     <name and version>
-Observation: 1 PASS / 2 PASS / 3 PASS / 4 PASS / 5 PASS
-Notes:       <anything surprising, or "none">
-```
-
-Record the commit, not the branch. A branch moves, and evidence that names one
-describes whatever it happens to point at when it is read.
-
-No screenshot is attached. A screenshot of an operations console carries
-whatever was on the screen, and this one displays an environment name, a host
-and a correlation identifier.
+Record the exact source commit, browser/runtime version, built preview origin,
+Ready → Degraded → Ready result, correlation result and elapsed time in
+`docs/07-phase-evidence/WP-P0-001/browser-smoke.md`. A branch name alone is not
+evidence because it moves.

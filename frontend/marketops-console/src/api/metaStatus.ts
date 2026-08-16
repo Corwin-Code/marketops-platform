@@ -143,8 +143,17 @@ export async function fetchMetaStatus(
   apiBaseUrl: string,
   fetchImpl: typeof fetch = fetch,
   timeoutMs: number = REQUEST_TIMEOUT_MS,
+  cancellation?: AbortSignal,
 ): Promise<MetaStatusOutcome> {
   const controller = new AbortController();
+  const cancelFromCaller = (): void => {
+    controller.abort(cancellation?.reason);
+  };
+  if (cancellation?.aborted === true) {
+    cancelFromCaller();
+  } else {
+    cancellation?.addEventListener('abort', cancelFromCaller, { once: true });
+  }
   const timer = setTimeout(() => {
     controller.abort();
   }, timeoutMs);
@@ -176,9 +185,10 @@ export async function fetchMetaStatus(
   } catch (error) {
     // The message of a network error can name an internal host. Only the class
     // of failure is kept, which is what the operator acts on.
-    const detail = error instanceof Error ? error.name : 'unknown';
+    const detail = error instanceof Error || error instanceof DOMException ? error.name : 'unknown';
     return { ok: false, failure: { kind: 'unreachable', detail } };
   } finally {
     clearTimeout(timer);
+    cancellation?.removeEventListener('abort', cancelFromCaller);
   }
 }

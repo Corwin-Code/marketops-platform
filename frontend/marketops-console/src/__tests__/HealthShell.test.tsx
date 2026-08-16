@@ -1,6 +1,6 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { StrictMode } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ConsoleConfig } from '../config';
 import { HealthShell } from '../health/HealthShell';
 
@@ -22,12 +22,24 @@ const COMPLETE = {
 };
 
 function respondWith(body: unknown, status = 200): typeof fetch {
-  return vi.fn().mockResolvedValue(
-    new Response(JSON.stringify(body), {
-      status,
-      headers: { 'Content-Type': 'application/json' },
-    }),
+  return vi.fn().mockImplementation(() =>
+    Promise.resolve(
+      new Response(JSON.stringify(body), {
+        status,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    ),
   ) as unknown as typeof fetch;
+}
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+async function flushAsyncWork(): Promise<void> {
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(0);
+  });
 }
 
 async function stateOf(container: HTMLElement): Promise<string> {
@@ -135,5 +147,148 @@ describe('the console screen', () => {
     const footer = container.querySelector('footer');
     expect(footer?.textContent).toContain('http://127.0.0.1:8080');
     expect(footer?.textContent).toContain('local');
+  });
+
+  it('refreshes automatically at the bounded normal interval', async () => {
+    vi.useFakeTimers();
+    const fetchImpl = respondWith(COMPLETE);
+    const retryDelays = [100, 200, 400] as const;
+    const { unmount } = render(
+      <HealthShell
+        config={CONFIG}
+        fetchImpl={fetchImpl}
+        refreshIntervalMs={1000}
+        retryDelaysMs={retryDelays}
+      />,
+    );
+
+    await flushAsyncWork();
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    await act(async () => vi.advanceTimersByTimeAsync(999));
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    await act(async () => vi.advanceTimersByTimeAsync(1));
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+
+    unmount();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('uses three bounded backoff retries and then returns to the normal interval', async () => {
+    vi.useFakeTimers();
+    const fetchImpl = vi.fn().mockRejectedValue(new TypeError('offline'));
+    const retryDelays = [100, 200, 400] as const;
+    const { unmount } = render(
+      <HealthShell
+        config={CONFIG}
+        fetchImpl={fetchImpl as unknown as typeof fetch}
+        refreshIntervalMs={1000}
+        retryDelaysMs={retryDelays}
+      />,
+    );
+
+    await flushAsyncWork();
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    await act(async () => vi.advanceTimersByTimeAsync(100));
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    await act(async () => vi.advanceTimersByTimeAsync(200));
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
+    await act(async () => vi.advanceTimersByTimeAsync(400));
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
+    await act(async () => vi.advanceTimersByTimeAsync(999));
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
+    await act(async () => vi.advanceTimersByTimeAsync(1));
+    expect(fetchImpl).toHaveBeenCalledTimes(5);
+
+    unmount();
+  });
+
+  it('never overlaps a scheduled or manual refresh with an active request', async () => {
+    vi.useFakeTimers();
+    let finish: ((response: Response) => void) | undefined;
+    const fetchImpl = vi.fn().mockImplementation(
+      () =>
+        new Promise<Response>((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const retryDelays = [100, 200, 400] as const;
+    const { unmount } = render(
+      <HealthShell
+        config={CONFIG}
+        fetchImpl={fetchImpl as unknown as typeof fetch}
+        refreshIntervalMs={1000}
+        retryDelaysMs={retryDelays}
+      />,
+    );
+
+    await flushAsyncWork();
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('button', { name: 'Checking…' })).toBeDisabled();
+    await act(async () => vi.advanceTimersByTimeAsync(10_000));
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      finish?.(new Response(JSON.stringify(COMPLETE), { status: 200 }));
+      await Promise.resolve();
+    });
+    await act(async () => vi.advanceTimersByTimeAsync(999));
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    await act(async () => vi.advanceTimersByTimeAsync(1));
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+
+    unmount();
+  });
+
+  it('aborts the active request and schedules nothing after unmount', async () => {
+    vi.useFakeTimers();
+    let observedSignal: AbortSignal | undefined;
+    const fetchImpl = vi.fn().mockImplementation(
+      (_url: string, init: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          observedSignal = init.signal ?? undefined;
+          init.signal?.addEventListener('abort', () => {
+            reject(new DOMException('aborted', 'AbortError'));
+          });
+        }),
+    );
+    const retryDelays = [100, 200, 400] as const;
+    const { unmount } = render(
+      <HealthShell
+        config={CONFIG}
+        fetchImpl={fetchImpl as unknown as typeof fetch}
+        refreshIntervalMs={1000}
+        retryDelaysMs={retryDelays}
+      />,
+    );
+
+    await flushAsyncWork();
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    unmount();
+    expect(observedSignal?.aborted).toBe(true);
+    await act(async () => vi.advanceTimersByTimeAsync(10_000));
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('leaves one scheduler under StrictMode and none after cleanup', async () => {
+    vi.useFakeTimers();
+    const fetchImpl = respondWith(COMPLETE);
+    const retryDelays = [100, 200, 400] as const;
+    const { unmount } = render(
+      <StrictMode>
+        <HealthShell
+          config={CONFIG}
+          fetchImpl={fetchImpl}
+          refreshIntervalMs={1000}
+          retryDelaysMs={retryDelays}
+        />
+      </StrictMode>,
+    );
+
+    await flushAsyncWork();
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(vi.getTimerCount()).toBe(1);
+    unmount();
+    expect(vi.getTimerCount()).toBe(0);
   });
 });

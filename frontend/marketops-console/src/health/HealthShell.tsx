@@ -1,17 +1,23 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { fetchMetaStatus } from '../api/metaStatus';
 import { buildInfo } from '../buildInfo';
 import type { ConsoleConfig } from '../config';
 import { INITIALISING, toHealthState } from './healthState';
 import type { HealthState } from './healthState';
 
+/** Normal polling interval after a successful answer or an exhausted retry burst. */
+export const HEALTH_REFRESH_INTERVAL_MS = 2000;
+
+/** Three bounded retries; the fourth failure returns to the normal polling interval. */
+export const HEALTH_RETRY_DELAYS_MS: readonly number[] = [250, 500, 1000];
+
 /**
  * The console's only screen.
  *
- * It reports what the platform says about itself and what an operator should do
- * about it. Nothing is rendered from a value the backend did not send, and no
- * value is rendered without the state that explains it, so the screen cannot
- * show a reassuring version number next to an unreachable backend.
+ * <p>One self-scheduling timer starts only after the prior request settles, so
+ * refreshes never overlap. A failure receives three bounded backoff retries and
+ * then returns to the normal interval. Unmount clears the timer and aborts the
+ * active request, including when React StrictMode mounts the effect twice.
  */
 
 /** Properties the shell needs. */
@@ -20,33 +26,93 @@ export interface HealthShellProps {
   readonly config: ConsoleConfig;
   /** Request implementation, replaced in tests. */
   readonly fetchImpl?: typeof fetch;
+  /** Normal interval override used only for deterministic component tests. */
+  readonly refreshIntervalMs?: number;
+  /** Backoff override used only for deterministic component tests. */
+  readonly retryDelaysMs?: readonly number[];
 }
 
 /** Render the console. */
-export function HealthShell({ config, fetchImpl }: HealthShellProps): React.JSX.Element {
+export function HealthShell({
+  config,
+  fetchImpl,
+  refreshIntervalMs = HEALTH_REFRESH_INTERVAL_MS,
+  retryDelaysMs = HEALTH_RETRY_DELAYS_MS,
+}: HealthShellProps): React.JSX.Element {
   const [state, setState] = useState<HealthState>(INITIALISING);
   const [checking, setChecking] = useState(false);
-  const mounted = useRef(true);
+  const manualRefresh = useRef<() => void>(() => undefined);
 
   useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
+    const lifecycle = new AbortController();
+    let inFlight = false;
+    let failedAttempts = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
 
-  const refresh = useCallback(async () => {
-    setChecking(true);
-    const outcome = await fetchMetaStatus(config.apiBaseUrl, fetchImpl);
-    if (mounted.current) {
+    const isInactive = (): boolean => lifecycle.signal.aborted;
+
+    const schedule = (delayMs: number): void => {
+      if (isInactive()) {
+        return;
+      }
+      timer = setTimeout(() => {
+        void refresh();
+      }, delayMs);
+    };
+
+    const refresh = async (): Promise<void> => {
+      if (isInactive() || inFlight) {
+        return;
+      }
+      inFlight = true;
+      setChecking(true);
+      const outcome = await fetchMetaStatus(
+        config.apiBaseUrl,
+        fetchImpl,
+        undefined,
+        lifecycle.signal,
+      );
+      inFlight = false;
+
+      if (isInactive()) {
+        return;
+      }
       setState(toHealthState(outcome));
       setChecking(false);
-    }
-  }, [config.apiBaseUrl, fetchImpl]);
 
-  useEffect(() => {
+      if (outcome.ok) {
+        failedAttempts = 0;
+        schedule(refreshIntervalMs);
+      } else if (failedAttempts < retryDelaysMs.length) {
+        schedule(retryDelaysMs[failedAttempts] ?? refreshIntervalMs);
+        failedAttempts += 1;
+      } else {
+        failedAttempts = 0;
+        schedule(refreshIntervalMs);
+      }
+    };
+
+    manualRefresh.current = () => {
+      if (isInactive() || inFlight) {
+        return;
+      }
+      if (timer !== undefined) {
+        clearTimeout(timer);
+        timer = undefined;
+      }
+      void refresh();
+    };
+
     void refresh();
-  }, [refresh]);
+
+    return () => {
+      lifecycle.abort();
+      manualRefresh.current = () => undefined;
+      if (timer !== undefined) {
+        clearTimeout(timer);
+      }
+    };
+  }, [config.apiBaseUrl, fetchImpl, refreshIntervalMs, retryDelaysMs]);
 
   const build = buildInfo();
   const status = state.status;
@@ -60,7 +126,13 @@ export function HealthShell({ config, fetchImpl }: HealthShellProps): React.JSX.
         <p role="status">{state.summary}</p>
         <p>{state.action}</p>
         <p>{state.usable ? 'The platform is usable.' : 'The platform is not usable yet.'}</p>
-        <button type="button" onClick={() => void refresh()} disabled={checking}>
+        <button
+          type="button"
+          onClick={() => {
+            manualRefresh.current();
+          }}
+          disabled={checking}
+        >
           {checking ? 'Checking…' : 'Check again'}
         </button>
       </section>
