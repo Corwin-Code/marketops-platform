@@ -1,6 +1,6 @@
 # Pull Request checks
 
-**State: OWNER_RULESET_ACTION_REQUIRED**
+**State: PASS**
 
 The workflows define exactly eleven stable job names. Every external action is
 pinned to a 40-character commit SHA with a version comment, every runner is
@@ -11,25 +11,25 @@ every expected job successfully against the certified implementation Head.
 GitHub also emitted a separate successful `CodeQL` summary check; it is not one
 of the eleven stable job names.
 
-- `source_head_sha`: `4001a8d2717739967bf48a71c6a4f82bd2e5c50f`
+- `source_head_sha`: `58dc6e4bc2eabad19f7d150e465749a85266b7ff`
 - `base_sha`: `3ecc72ae509664ff0550f80ece98d4f50dbb0bc0`
-- `tested_merge_sha`: `05e5cdd957603ee4a946dd4085c666dae23b00c6`
+- `tested_merge_sha`: `bdc66bf89428e8864fd847c90d03799f4eeaafa7`
 - observed PR state: `OPEN`, `DRAFT`
-- observed at: 2026-08-16 Asia/Taipei
+- observed at: 2026-08-17 Asia/Taipei
 
 | # | Check | Workflow | Conclusion | Run |
 | --- | --- | --- | --- | --- |
-| 1 | `governance` | `governance.yml` | SUCCESS | [job 95189101608](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957026229/job/95189101608) |
-| 2 | `backend-build` | `backend.yml` | SUCCESS | [job 95189101920](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957026226/job/95189101920) |
-| 3 | `architecture-boundary` | `backend.yml` | SUCCESS | [job 95189101996](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957026226/job/95189101996) |
-| 4 | `backend-integration` | `backend.yml` | SUCCESS | [job 95189101897](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957026226/job/95189101897) |
-| 5 | `frontend-lint` | `frontend.yml` | SUCCESS | [job 95189101632](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957026227/job/95189101632) |
-| 6 | `frontend-typecheck` | `frontend.yml` | SUCCESS | [job 95189101688](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957026227/job/95189101688) |
-| 7 | `frontend-test` | `frontend.yml` | SUCCESS | [job 95189101612](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957026227/job/95189101612) |
-| 8 | `frontend-build` | `frontend.yml` | SUCCESS | [job 95189101747](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957026227/job/95189101747) |
-| 9 | `dependency-review` | `security.yml` | SUCCESS | [job 95189101993](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957026283/job/95189101993) |
-| 10 | `codeql-java` | `security.yml` | SUCCESS | [job 95189102073](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957026283/job/95189102073) |
-| 11 | `codeql-typescript` | `security.yml` | SUCCESS | [job 95189101990](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957026283/job/95189101990) |
+| 1 | `governance` | `governance.yml` | SUCCESS | [job 95190124429](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957450215/job/95190124429) |
+| 2 | `backend-build` | `backend.yml` | SUCCESS | [job 95190124396](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957450181/job/95190124396) |
+| 3 | `architecture-boundary` | `backend.yml` | SUCCESS | [job 95190124393](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957450181/job/95190124393) |
+| 4 | `backend-integration` | `backend.yml` | SUCCESS | [job 95190124452](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957450181/job/95190124452) |
+| 5 | `frontend-lint` | `frontend.yml` | SUCCESS | [job 95190124357](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957450174/job/95190124357) |
+| 6 | `frontend-typecheck` | `frontend.yml` | SUCCESS | [job 95190124344](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957450174/job/95190124344) |
+| 7 | `frontend-test` | `frontend.yml` | SUCCESS | [job 95190124354](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957450174/job/95190124354) |
+| 8 | `frontend-build` | `frontend.yml` | SUCCESS | [job 95190124331](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957450174/job/95190124331) |
+| 9 | `dependency-review` | `security.yml` | SUCCESS | [job 95190124304](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957450165/job/95190124304) |
+| 10 | `codeql-java` | `security.yml` | SUCCESS | [job 95190124251](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957450165/job/95190124251) |
+| 11 | `codeql-typescript` | `security.yml` | SUCCESS | [job 95190124280](https://github.com/Corwin-Code/marketops-platform/actions/runs/31957450165/job/95190124280) |
 
 ## Review and security observation
 
@@ -54,19 +54,32 @@ recorded rather than misreported as zero warnings.
 
 ## Ruleset observation
 
-Ruleset `main-governance` (ID `20734984`) is active on the default branch. It
-blocks deletion and non-fast-forward updates, requires a pull request with
-resolved review threads, and keeps strict branch-up-to-date enforcement. Its
-required-status-check set is currently only:
+After explicit Human Owner authorization, Ruleset `main-governance` (ID
+`20734984`) was updated and independently read back on 2026-08-17. It remains
+active on the default branch with an empty bypass list, blocks deletion and
+non-fast-forward updates, requires a pull request with resolved review threads,
+and keeps strict branch-up-to-date enforcement. Its exact required-status-check
+set is:
 
 ```text
 governance
+backend-build
+architecture-boundary
+backend-integration
+frontend-lint
+frontend-typecheck
+frontend-test
+frontend-build
+dependency-review
+codeql-java
+codeql-typescript
 ```
 
-The required final set is the eleven job names in the table. Controller has
-authorized only the Human Owner to add the remaining ten; Codex did not mutate
-the Ruleset. Therefore repository-gate completion remains
-`OWNER_RULESET_ACTION_REQUIRED` even though all eleven jobs are green.
+Each context is bound to GitHub Actions integration ID `15368`. The Ruleset API
+reported `updated_at: 2026-08-17T00:18:40.502+08:00`, and
+`gh pr checks 5 --required` reported all eleven successful on unchanged Head
+`58dc6e4bc2eabad19f7d150e465749a85266b7ff`. The repository Gate is complete
+for Controller re-review; the PR remains Draft and unmerged.
 
 The evidence commit that records this observation is documentation-only and
 creates a later PR Head. That Head's rerun is reported in the Controller handoff

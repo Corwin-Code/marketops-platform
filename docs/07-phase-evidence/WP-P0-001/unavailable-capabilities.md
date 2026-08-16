@@ -1,10 +1,11 @@
 # Capability availability resolution
 
-**State: OWNER_RULESET_ACTION_REQUIRED**
+**State: PASS**
 
 The imported artifact documented 28 capabilities its authoring environment
-could not execute. Codex exercised every local and GitHub technical capability;
-the only remaining boundary is an authority-gated repository setting.
+could not execute. Codex exercised every local and GitHub technical capability,
+and completed the repository setting change only after explicit Human Owner
+authorization.
 
 | Boundary | Disposition |
 | --- | --- |
@@ -16,9 +17,10 @@ the only remaining boundary is an authority-gated repository setting.
 | Special-character Fresh Clone | RESOLVED — clean Head passed the complete whitespace-and-apostrophe path and trap cleanup |
 | GitHub Actions | RESOLVED — all eleven stable jobs pass on the implementation Head |
 | PR review/security evidence | RESOLVED — 0 unresolved threads, 0 CodeQL PR annotations and 0 open Code scanning/Dependabot/Secret Scanning alerts |
-| Ruleset required checks | OWNER ACTION REQUIRED — active Ruleset 20734984 requires only `governance`; Controller permits only Human Owner to add the remaining ten |
+| Ruleset required checks | RESOLVED — after explicit Owner authorization, active Ruleset 20734984 requires all eleven exact contexts and preserves every existing protection |
 
 There is no remaining local capability gap, no inaccessible GitHub evidence and
-no in-scope technical deferral. Ruleset mutation is not a capability workaround:
-it is deliberately outside Codex authority and must be performed or explicitly
-authorized by the Human Owner before the repository Gate can be called complete.
+no in-scope technical deferral. The Ruleset write was a bounded Owner-authorized
+action, not a bypass: deletion and non-fast-forward protection, Pull Requests,
+conversation resolution, strict branch-up-to-date enforcement and the empty
+bypass list remain active.
