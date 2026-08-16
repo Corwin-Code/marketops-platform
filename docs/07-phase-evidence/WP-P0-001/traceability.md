@@ -20,14 +20,14 @@ is a row that is not enforced, and there are none here by design.
 | CORS permits only loopback console origins and read requests | `CorsProperties`, `WebConfig` | `CorsContractTest` proves origin, method, request-header, exposed-header and credential policy |
 | The server binds to loopback | `application.yaml` | `ApplicationConfigurationTest` |
 | Only health and info are reachable | `application.yaml` | `ApplicationConfigurationTest` |
-| Health reports no component detail | `application.yaml` | `ApplicationConfigurationTest` |
+| Health names components/status but reports no detail | `application.yaml` | `ApplicationConfigurationTest`, `ApplicationSmokeIT.healthResponseNamesComponentsButWithholdsDetails` |
 | Readiness includes the datasource, liveness does not | `application.yaml` | `ApplicationConfigurationTest` |
 | Migration runs as the owning role, the application as its own | `application.yaml` | `ApplicationConfigurationTest`, `ApplicationSmokeIT` |
 | Schema destruction is disabled | `application.yaml` | `ApplicationConfigurationTest`, `FlywayMigrationIT` TC-DB-114 |
 | A correlation identifier exists for every request | `CorrelationIdFilter` | `CorrelationIdTest`, `MetaStatusControllerTest` |
 | A hostile identifier is replaced, never echoed | `CorrelationId` | `CorrelationIdTest`, `MetaStatusControllerTest` |
 | The logging context does not leak between requests | `CorrelationIdFilter` | `MetaStatusControllerTest`, including the failure path |
-| A failure response carries no internal detail | `GlobalExceptionHandler` | `GlobalExceptionHandlerTest`, `MetaStatusControllerTest` |
+| A failure response or public-boundary log carries no internal detail | `GlobalExceptionHandler`, `MetaStatusAssembler` | Captured-appender tests prove no throwable proxy, message, credential, host, port, role or SQL marker; response tests prove the allowlist |
 | The metadata field set is an allowlist | `MetaStatusResponse` | `MetaStatusControllerTest` |
 | A degraded source degrades one field, not the request | `MetaStatusAssembler` | `MetaStatusAssemblerTest` |
 | An unexpected commit value is not published | `MetaStatusAssembler` | `MetaStatusAssemblerTest` |
@@ -40,18 +40,21 @@ is a row that is not enforced, and there are none here by design.
 | Neither role holds cluster authority | `01-roles.sql` | TC-DB-116, TC-DB-117 |
 | The foundation creates no application table | `V0001` | TC-DB-110 |
 | Exactly one migration exists | `db/migration` | TC-DB-113, TC-GLOBAL-001 |
-| Module internals are encapsulated | `ArchitectureRules` | TC-ARCH-001 and fixture F-1 |
-| Modules are free of cycles | same | TC-ARCH-002 and fixture F-2 |
-| A web resource does not reach the database | same | TC-ARCH-003 and fixture F-3 |
-| Dependencies arrive through the constructor | same | TC-ARCH-004 and fixture F-4 |
-| Time comes from the injected clock | same | TC-ARCH-005 and fixture F-5 |
-| Diagnostics go to the logger | same | TC-ARCH-006 and fixture F-6 |
-| The shared module depends on no other | same | TC-ARCH-007 and fixture F-7 |
-| Every rule can still pass | `RuleSensitivityArchitectureTest` | Fixture F-8, all seven rules |
+| Exact module internals are closed, including `alpha`/`alphabeta` | `ArchitectureRules` | TC-ARCH-001; ordinary and prefix-collision F-ARCH-001 fixtures |
+| Modules are free of cycles | same | TC-ARCH-002 and F-ARCH-002 |
+| Shared depends on no business module | same | TC-ARCH-003 and F-ARCH-003 |
+| Domain does not depend on adapter, infrastructure or SDK | same | TC-ARCH-004 and F-ARCH-004 |
+| Application and port do not depend on concrete implementations or SDK | same | TC-ARCH-005; F-ARCH-005a and F-ARCH-005b independently exercise the composite halves |
+| Vendor SDK types stay under `marketplaceintegration.adapter.<platform>` | same | TC-ARCH-006 and F-ARCH-006 |
+| Vendor SDK types never enter domain or module API signatures | same | TC-ARCH-007 and F-ARCH-007 checks both signature locations |
+| Valid adapter/infrastructure dependencies point inward | `RuleSensitivityArchitectureTest` | F-ARCH-PASS passes all seven approved factories using only a local SDK stand-in |
+| REST/database, constructor injection, clock and logger quality safeguards remain separate | `CodeQualityArchitectureRules` | TC-QUALITY-ARCH-001–004, F-QUALITY-001–004 and F-QUALITY-PASS; none count as an approved boundary |
 | The module structure verifies from its own model | `ModulithArchitectureTest` | TC-ARCH-008 |
 | The console refuses missing or blank runtime configuration | `config.ts`, `App.tsx` | `config.test.ts`, `App.test.tsx`; no request is made and no platform value is rendered |
 | The console reports seven states | `healthState.ts` | `healthState.test.ts` |
 | A partial payload is not rendered | `metaStatus.ts` | `metaStatus.test.ts`, `HealthShell.test.tsx` |
+| Automatic polling is non-overlapping and bounded | `HealthShell.tsx` | Fake-timer tests prove normal interval, three-stage backoff, overlap prevention, manual refresh and StrictMode singleton scheduling |
+| No timer or request survives unmount | `HealthShell.tsx`, `metaStatus.ts` | Component/API cancellation tests assert abort and zero remaining timers/requests |
 | No stale platform value survives an outage | `HealthShell.tsx` | `HealthShell.test.tsx` |
 | Only prefixed variables reach the bundle | `vite.config.ts` | `viteConfig.test.ts`, `verify-bundle-isolation.mjs` |
 | Exactly two identifiers are replaced at build time | `vite.constants.ts` | `viteConfig.test.ts` |
@@ -61,5 +64,5 @@ is a row that is not enforced, and there are none here by design.
 | Workflow actions and runners are immutable | `.github/workflows/` | TC-GLOBAL-001 and its negative tests reject mutable action refs, absent version comments and floating runners |
 | Build metadata records the authored commit | `backend.yml` | The workflow passes the head commit, not the generated merge commit |
 | Both ecosystems emit validated CycloneDX inventories | `pom.xml`, `package.json`, `collect_supply_chain.py` | `make supply-chain`; collector tests reject absent or malformed SBOMs and incomplete installed-package licences |
-| A real browser proves the ready and database-outage paths | `playwright.config.ts`, `health-shell.spec.ts` | The scenario verifies correlation/CORS, stops PostgreSQL, observes `DOWN`/`degraded`, then restores it |
+| A real browser proves built-console outage and recovery | `playwright.config.ts`, `health-shell.spec.ts` | Production build on preview 4173 verifies correlation/CORS, Ready → `DOWN`/Degraded → healthy restart/Ready and correlation after recovery |
 | A clone verifies with no local state or path restriction | `scripts/fresh_clone_check.sh` | The full check clones into a whitespace-and-apostrophe path, runs every Gate and rejects tracked-file mutation |

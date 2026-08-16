@@ -479,21 +479,26 @@ discards its container rather than repairing or reusing it.
 
 ### 9.2 Architecture rules
 
-Nine boundary principles are realised as seven executable dependency rules, one
-conformance scenario, and one module-verification rule.
+Eight dependency prohibitions are realised as seven executable rule factories:
+the application and port prohibitions are the two independently exercised halves
+of one composite rule. A shared conformance scenario proves the permitted inward
+adapter/infrastructure dependencies, and an independent Modulith rule verifies
+the framework-derived module model.
 
 Rules are defined once in a shared factory and used unchanged by both the
 production check and the sensitivity check. The production check runs the seven
 rules against production classes. The sensitivity check runs the same rule
-objects against fixtures: seven deliberately non-conforming fixtures must each be
-flagged, and one conforming fixture must not be flagged by any of the relevant
-prohibitions.
+objects against ten deliberately invalid observations: ordinary and
+prefix-collision internal access, a cycle, shared reaching outward, domain
+reaching outward, application and port reaching outward independently, an SDK
+outside a platform adapter, and SDK signatures in both domain and a module API.
+One conforming fixture must pass every prohibition.
 
-Rules that protect a layer which legitimately has no classes yet permit an empty
-subject on a per-rule basis. This changes behaviour only while the protected
-layer is empty; once matching classes exist the rule is fully enforced. The
-global setting that would disable this protection for every rule is never used,
-and rules covering layers that already contain classes keep the default.
+Only the domain rule and the application and port halves of the composite rule
+permit an empty subject, because the foundation legitimately contains no
+business layers yet. Once a matching layer exists the corresponding rule is
+fully enforced. The global setting that would disable empty-subject protection
+is never used; every rule over the existing application tree keeps the default.
 
 The conformance scenario expresses a permission — that inward dependencies from
 adapters and infrastructure are legitimate. A permission has no assertion of its

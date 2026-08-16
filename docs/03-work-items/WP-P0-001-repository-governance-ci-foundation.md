@@ -4,7 +4,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | READY_FOR_IMPLEMENTATION |
+| Status | IMPLEMENTED_CANDIDATE |
 | Authorization | APPROVED_FOR_IMPLEMENTATION |
 | Phase | Sprint 0 / Phase 0 |
 | Risk | Medium |
@@ -143,6 +143,9 @@ Current verdict:
 APPROVED_FOR_IMPLEMENTATION
 ```
 
-This verdict authorizes only the scoped WP-P0-001 implementation through a
-protected Draft Pull Request. It does not authorize direct push to `main`, merge,
-production enablement, Marketplace credentials or production data.
+This remains the design authorization of record; it is not a self-issued
+implementation merge verdict. The scoped implementation is complete as a
+candidate and proceeds through independent Controller re-review, all repository
+and project Gates, and separate Human Owner merge authorization. It does not
+authorize direct push to `main`, production enablement, Marketplace credentials
+or production data.

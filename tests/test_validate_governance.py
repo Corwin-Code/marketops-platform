@@ -10,8 +10,10 @@ from scripts.validate_governance import (
     git_scan_paths,
     validate_approved_design_state_text,
     validate_authorization_state_text,
+    validate_completion_state_text,
     validate_lifecycle_state_text,
     validate_owner_control_state_text,
+    validate_parallel_current_state_paths,
 )
 
 
@@ -32,6 +34,21 @@ class SecretScanScopeTests(unittest.TestCase):
             relative = {path.relative_to(root) for path in git_scan_paths(root)}
 
             self.assertEqual({Path(".gitignore"), Path("tracked.ts")}, relative)
+
+
+class ParallelCurrentStateTests(unittest.TestCase):
+    def test_no_parallel_state_source_is_valid(self) -> None:
+        errors: list[str] = []
+        validate_parallel_current_state_paths(errors, set())
+        self.assertEqual([], errors)
+
+    def test_proposal_state_source_is_rejected(self) -> None:
+        errors: list[str] = []
+        validate_parallel_current_state_paths(
+            errors,
+            {"docs/00-governance/CURRENT_STATE_PROPOSAL_WP-P0-001.md"},
+        )
+        self.assertTrue(any("parallel Current State" in error for error in errors))
 
 
 def current_state(
@@ -590,6 +607,118 @@ class ApprovedDesignStateTests(unittest.TestCase):
             None,
         )
         self.assertEqual([], errors)
+
+
+def completed_current_state(
+    active_work_package: str = "NONE",
+    active_gate: str = "CONTROLLER_PHASE_0_PLANNING",
+    objective: str = "Controller performs Phase 0 planning for the next Work Package.",
+) -> str:
+    return f"""# Current State
+
+```yaml
+active_work_package: {active_work_package}
+active_gate: {active_gate}
+production_write_enabled: false
+```
+
+## Active objective
+
+{objective}
+
+## Next authorized action
+
+Controller performs Phase 0 planning for the next Work Package.
+"""
+
+
+def completed_work_package(status: str = "IMPLEMENTED_CANDIDATE") -> str:
+    return f"""# WP-P0-001
+
+## 1. Metadata
+
+| Field | Value |
+| --- | --- |
+| Status | {status} |
+"""
+
+
+def completed_traceability(
+    changed_id: str | None = None,
+    changed_field: str | None = None,
+    changed_value: str = "",
+) -> str:
+    header = (
+        "source_id,source_type,phase,title,work_package,design_record,"
+        "code_location,test_case,evidence,status,notes"
+    )
+    rows = []
+    for source_id in ("D-02", "D-03", "D-07", "D-10", "D-15", "D-16", "D-17", "HR-06"):
+        row = {
+            "source_id": source_id,
+            "source_type": "Owner Decision",
+            "phase": "0",
+            "title": "completed control",
+            "work_package": "WP-P0-001",
+            "design_record": "design.md",
+            "code_location": "code.java",
+            "test_case": "TC-GOV-001",
+            "evidence": "evidence.md",
+            "status": "VERIFIED" if source_id not in {"D-15", "D-16", "D-17"} else "ACTIVE_CONTROL",
+            "notes": "complete",
+        }
+        if source_id == changed_id and changed_field is not None:
+            row[changed_field] = changed_value
+        rows.append(",".join(row[field] for field in header.split(",")))
+    return header + "\n" + "\n".join(rows) + "\n"
+
+
+class CompletionStateTests(unittest.TestCase):
+    def validate(
+        self,
+        current: str | None = None,
+        work_package: str | None = None,
+        traceability: str | None = None,
+    ) -> list[str]:
+        errors: list[str] = []
+        validate_completion_state_text(
+            errors,
+            current or completed_current_state(),
+            work_package or completed_work_package(),
+            traceability or completed_traceability(),
+        )
+        return errors
+
+    def test_completed_transition_is_valid(self) -> None:
+        self.assertEqual([], self.validate())
+
+    def test_ready_for_implementation_regression_is_rejected(self) -> None:
+        errors = self.validate(work_package=completed_work_package("READY_FOR_IMPLEMENTATION"))
+        self.assertTrue(any("Status must be exactly" in error for error in errors))
+
+    def test_stale_active_work_package_is_rejected(self) -> None:
+        errors = self.validate(current=completed_current_state(active_work_package="WP-P0-001"))
+        self.assertTrue(any("active_work_package" in error for error in errors))
+
+    def test_stale_gate_is_rejected(self) -> None:
+        errors = self.validate(current=completed_current_state(active_gate="PULL_REQUEST_GATE"))
+        self.assertTrue(any("active_gate" in error for error in errors))
+
+    def test_stale_objective_is_rejected(self) -> None:
+        errors = self.validate(current=completed_current_state(objective="Produce the artifact."))
+        self.assertTrue(any("Active objective" in error for error in errors))
+
+    def test_in_progress_traceability_is_rejected(self) -> None:
+        errors = self.validate(
+            traceability=completed_traceability("D-03", "status", "IN_PROGRESS")
+        )
+        self.assertTrue(any("D-03 status" in error for error in errors))
+
+    def test_missing_traceability_evidence_is_rejected(self) -> None:
+        errors = self.validate(
+            traceability=completed_traceability("HR-06", "evidence", "")
+        )
+        self.assertTrue(any("HR-06 missing evidence" in error for error in errors))
 
 
 if __name__ == "__main__":

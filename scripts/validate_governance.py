@@ -55,6 +55,13 @@ OWNER_DELEGATION_ALLOWED_EXECUTORS = {"CODEX", "NONE"}
 OWNER_DELEGATION_SCOPE = "PR_READY_AND_MERGE_AFTER_ALL_GATES"
 OWNER_DELEGATION_INACTIVE_SCOPE = "NONE"
 OWNER_DELEGATION_EXIT_AUTHORITY = "HUMAN_OWNER_EXPLICIT_REVOCATION"
+COMPLETED_WP_STATUS = "IMPLEMENTED_CANDIDATE"
+POST_WP_ACTIVE_GATE = "CONTROLLER_PHASE_0_PLANNING"
+COMPLETED_TRACEABILITY_STATES = {"VERIFIED", "ACTIVE_CONTROL"}
+COMPLETED_TRACEABILITY_IDS = {"D-02", "D-03", "D-07", "D-10", "D-15", "D-16", "D-17", "HR-06"}
+PARALLEL_CURRENT_STATE_PATHS = {
+    "docs/00-governance/CURRENT_STATE_PROPOSAL_WP-P0-001.md",
+}
 
 WP_REQUIRED_HEADINGS = [
     "## 1. Metadata",
@@ -148,6 +155,14 @@ def validate_work_package(errors: list[str]) -> None:
     for heading in WP_REQUIRED_HEADINGS:
         if heading not in text:
             errors.append(f"WP-P0-001 missing heading: {heading}")
+
+
+def validate_parallel_current_state_paths(
+    errors: list[str], existing_paths: set[str]
+) -> None:
+    """Reject a second state source even when it calls itself a proposal."""
+    for relative in sorted(PARALLEL_CURRENT_STATE_PATHS & existing_paths):
+        errors.append(f"parallel Current State source is prohibited: {relative}")
 
 
 def leading_yaml_body(text: str, expected_heading: str | None = None) -> str | None:
@@ -570,6 +585,87 @@ def validate_traceability(errors: list[str]) -> None:
             errors.append("traceability.csv contains duplicate source_id rows")
 
 
+def validate_completion_state_text(
+    errors: list[str],
+    current_state_text: str,
+    work_package_text: str,
+    traceability_text: str,
+) -> None:
+    """Keep the canonical records at the implemented WP-P0-001 transition."""
+    status = work_package_metadata_value(work_package_text, "Status")
+    if status != COMPLETED_WP_STATUS:
+        errors.append(f"WP-P0-001 Status must be exactly: {COMPLETED_WP_STATUS}")
+
+    active_work_package = current_state_metadata_value(
+        current_state_text, "active_work_package"
+    )
+    if active_work_package != "NONE":
+        errors.append("CURRENT_STATE active_work_package must be NONE after WP-P0-001")
+
+    active_gate = current_state_metadata_value(current_state_text, "active_gate")
+    if active_gate != POST_WP_ACTIVE_GATE:
+        errors.append(
+            f"CURRENT_STATE active_gate must be exactly: {POST_WP_ACTIVE_GATE}"
+        )
+
+    active_objective = h2_section_body(current_state_text, "## Active objective") or ""
+    next_action = h2_section_body(current_state_text, "## Next authorized action") or ""
+    for section_name, section in (
+        ("Active objective", active_objective),
+        ("Next authorized action", next_action),
+    ):
+        if "Controller" not in section or "Phase 0 planning" not in section:
+            errors.append(
+                f"CURRENT_STATE {section_name} must direct Controller Phase 0 planning"
+            )
+
+    stale_claims = {
+        "WP-P0-001 product implementation has not started": "implementation-not-started claim",
+        "C1-C10 implementation artifact has not yet been produced": "missing-artifact claim",
+        "READY_FOR_IMPLEMENTATION": "ready-for-implementation state",
+    }
+    for marker, description in stale_claims.items():
+        if marker in current_state_text:
+            errors.append(f"CURRENT_STATE retains stale {description}")
+
+    try:
+        rows = list(csv.DictReader(traceability_text.splitlines()))
+    except csv.Error as error:
+        errors.append(f"traceability completion state is unreadable: {error}")
+        return
+    by_id = {row.get("source_id", ""): row for row in rows}
+    for source_id in sorted(COMPLETED_TRACEABILITY_IDS):
+        row = by_id.get(source_id)
+        if row is None:
+            errors.append(f"traceability completion row is missing: {source_id}")
+            continue
+        if row.get("status") not in COMPLETED_TRACEABILITY_STATES:
+            errors.append(
+                f"traceability {source_id} status must be VERIFIED or ACTIVE_CONTROL"
+            )
+        for field in ("code_location", "test_case", "evidence"):
+            if not row.get(field, "").strip():
+                errors.append(f"traceability {source_id} missing {field}")
+
+
+def validate_completion_state(errors: list[str]) -> None:
+    current_state_path = ROOT / "docs/00-governance/CURRENT_STATE.md"
+    work_package_path = (
+        ROOT / "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md"
+    )
+    traceability_path = ROOT / "docs/01-requirements/traceability.csv"
+    if not all(path.exists() for path in (
+        current_state_path, work_package_path, traceability_path
+    )):
+        return
+    validate_completion_state_text(
+        errors,
+        current_state_path.read_text(encoding="utf-8"),
+        work_package_path.read_text(encoding="utf-8"),
+        traceability_path.read_text(encoding="utf-8-sig"),
+    )
+
+
 def git_scan_paths(root: Path = ROOT) -> list[Path]:
     """Return tracked and new candidate paths, excluding ignored build outputs."""
     result = subprocess.run(
@@ -610,6 +706,14 @@ def validate_common_secrets(errors: list[str]) -> None:
 
 def main() -> int:
     errors: list[str] = []
+    validate_parallel_current_state_paths(
+        errors,
+        {
+            relative
+            for relative in PARALLEL_CURRENT_STATE_PATHS
+            if (ROOT / relative).exists()
+        },
+    )
     validate_required_files(errors)
     validate_source_checksums(errors)
     validate_work_package(errors)
@@ -619,6 +723,7 @@ def main() -> int:
     validate_approved_design_state(errors)
     validate_owner_git_workflow_guidance(errors)
     validate_traceability(errors)
+    validate_completion_state(errors)
     validate_common_secrets(errors)
 
     if errors:
