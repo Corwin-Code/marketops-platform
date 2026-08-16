@@ -1,6 +1,7 @@
 # TC-GLOBAL-003 — production names
 
-**Result: PASS**; the validator inspected 188 non-generated workspace files.
+**Result: PASS**; the clean committed-head validator inspected 191
+non-generated files and the Python discovery ran 104 tests.
 
 | Identifier | Approved value |
 | --- | --- |

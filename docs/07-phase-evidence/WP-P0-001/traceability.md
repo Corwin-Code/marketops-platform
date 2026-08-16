@@ -1,5 +1,11 @@
 # WP-P0-001 traceability
 
+**Verification state: PASS on implementation Head
+`4001a8d2717739967bf48a71c6a4f82bd2e5c50f` (2026-08-16).** The clean-head
+run comprised 104 governance/readiness tests, 100 backend unit tests, 22 backend
+integration tests, 28 architecture tests within the unit total, 45 frontend
+tests and one real-browser recovery scenario.
+
 Each requirement, the commit that implements it, and the test that would catch
 its removal. A row whose verification column names a document rather than a test
 is a row that is not enforced, and there are none here by design.

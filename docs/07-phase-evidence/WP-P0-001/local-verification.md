@@ -2,15 +2,17 @@
 
 **Result: PASS**
 
-Execution date: 2026-08-15. The evidence is sanitized: it records commands,
-versions and aggregate results, not environment values, local paths, user names,
-ports selected by Testcontainers, or raw logs.
+Execution date: 2026-08-16. Implementation Head:
+`4001a8d2717739967bf48a71c6a4f82bd2e5c50f`. Evidence records commands,
+versions and aggregate results, never environment values, local user paths,
+Testcontainers ports or raw credentials.
 
 ## Toolchain
 
 | Tool | Version |
 | --- | --- |
-| Java | 21.0.10 |
+| macOS | 26.6.1 (25G76), arm64 |
+| Java | Azul OpenJDK 21.0.10 LTS |
 | Maven Wrapper distribution | 3.9.16; Wrapper 3.3.4 |
 | Node | 24.19.0 |
 | npm | 11.17.0 |
@@ -18,49 +20,57 @@ ports selected by Testcontainers, or raw logs.
 | PostgreSQL image | 18.4 |
 | Python | 3.9.6 |
 | Git | 2.50.1 |
+| Playwright / Chromium | 1.62.1 / 151.0.7922.34 |
 
 ## Backend
 
 | Command | Result |
 | --- | --- |
 | `./mvnw -B -ntp -DskipITs verify` | PASS |
-| `./mvnw -B -ntp -Dtest='*ArchitectureTest' -DfailIfNoTests=true test` | PASS, 18 tests |
-| `./mvnw -B -ntp verify` | PASS, 87 unit/configuration/architecture + 21 integration tests |
-| effective POM and dependency tree | PASS; dependency convergence PASS; Testcontainers 2.0.5 resolved |
+| `./mvnw -B -ntp -Dtest='*ArchitectureTest' -DfailIfNoTests=true test` | PASS, 28 tests in exactly 3 Surefire suites |
+| `./mvnw -B -ntp verify` | PASS, 100 unit/configuration/architecture + 22 integration tests |
 | negative JaCoCo threshold mutation | PASS; the deliberately impossible threshold failed for coverage |
 
-JaCoCo totals from the full verify: lines 122/122 (100%), branches 32/34
-(94.12%), methods 38/38, classes 13/13. The contaminated-migration rollback,
-eight foundation schemas, role ownership, application-role restrictions,
-`PUBLIC` revocation and cluster-authority restrictions all passed.
+JaCoCo totals: lines 135/135 (100%), branches 32/34 (94.12%), methods 40/40
+and classes 13/13. The contaminated-migration rollback, eight foundation
+schemas, role ownership, application-role restrictions, `PUBLIC` revocation and
+cluster-authority restrictions all passed. Captured log tests assert no throwable
+proxy and no credential, host, port, role, SQL or exception-message marker; the
+final public CI logs contain none of those injected markers.
 
 ## Frontend
 
 | Command | Result |
 | --- | --- |
-| `npm ci` | PASS, 375 packages from the committed lockfile in a clean clone |
-| `npm ls --all` | PASS; unmet entries are optional platform/peer packages |
-| lint, format check, type-check | PASS |
-| `npm run test:ci` | PASS, 39 tests in 7 files |
-| build and bundle-isolation canary | PASS |
+| `npm ci` | PASS, 375 packages from the committed lockfile in the clean clone |
+| `npm ls --all` | PASS; displayed unmet entries are optional platform/peer packages |
+| `npm run lint` | PASS |
+| `npm run format:check` | PASS |
+| `npm run typecheck` | PASS |
+| `npm run test:ci` | PASS, 45 tests in 7 files |
+| `npm run build` | PASS, production bundle |
+| `npm run verify:bundle` | PASS, only prefixed values reached the bundle |
+| `npm run test:browser` | PASS, one built-console Ready → Degraded → Ready scenario |
 | negative Vitest threshold mutation | PASS |
-| `npm audit --audit-level=high` | PASS, 0 vulnerabilities at every severity |
 
-Frontend coverage: statements 93/94 (98.93%), branches 58/65 (89.23%),
-functions 23/23, lines 92/93 (98.92%). Clean installation reported lifecycle
-scripts for `fsevents` and `libxmljs2`; both were reviewed and explicitly denied
-through `allowScripts`. Runtime and JSON SBOM generation do not require those
-optional native build steps.
+Frontend coverage: statements 128/135 (94.81%), branches 78/91 (85.71%),
+functions 27/29 (93.10%) and lines 126/131 (96.18%). Polling tests cover the
+normal interval, three bounded retries, no overlap, cancellation, manual refresh
+and React StrictMode cleanup.
 
-## Runtime and supply chain
+## Repository, runtime and supply chain
 
-`make bootstrap`, `make up`, `make verify-local-config`, `make supply-chain`,
-and the automated Playwright acceptance passed. The backend and frontend SBOMs
-validate as CycloneDX 1.6 with 76 and 244 components. Licence inventories contain
-130 Maven dependencies and 254 installed npm packages; no installed npm package
-has an unknown licence. MPL/EPL/LGPL-or-permissive dual-licence entries are
-weak/file-level or offer a permissive choice; no strong/network-copyleft-only
-or unknown case requires an Owner decision.
+The following required commands passed: `make bootstrap`, `make up`,
+`make verify-local-config`, `make supply-chain`, full special-character
+`scripts/fresh_clone_check.sh`, final `make down`, `git diff --check` and clean
+Git status. Bootstrap preserved an existing complete ignored configuration and
+rejects a partial pair.
 
-The Python governance suite passed 86 tests. Workflow YAML, shell syntax,
-Python compilation and `git diff --check` also passed.
+Backend and frontend SBOMs validate as CycloneDX 1.6 with 76 and 341 components.
+Licence inventories cover 130 Maven dependencies and 366 installed npm packages;
+no installed npm package is undeclared. The Python governance/readiness suite
+passed 104 tests. The three global hard rules passed.
+
+Controller's four actionable log warnings are retired. Remaining upstream
+output is explicitly recorded in `ci-checks.md`; no warning was suppressed merely
+to make a Gate green.

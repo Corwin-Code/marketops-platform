@@ -1,21 +1,24 @@
 # TC-GLOBAL-001 — compromise retirement
 
-**Result: PASS**; the validator inspected 188 non-generated workspace files.
+**Result: PASS**; the clean committed-head validator inspected 191
+non-generated files and the Python discovery ran 104 tests.
 
 The validator rejects unresolved annotation markers, retired dependencies and
-paths, multiple migrations, path restrictions, absent lock/wrapper/browser
-files, mutable Actions references, floating runners, incomplete coverage
-wiring, inverted custom ArchUnit rules, Testcontainers 1.x imports, silent
-frontend defaults, incomplete CORS/browser/Fresh Clone contracts, missing
-CycloneDX output, and incomplete final-acceptance evidence.
+paths, parallel Current State proposals, stale completed-state records, multiple
+migrations, path restrictions, absent lock/wrapper/browser files, mutable
+Actions references, floating runners, incomplete coverage wiring, absent
+approved layer/vendor rules or fixtures, unsafe throwable logging, Actuator
+detail exposure, a Playwright development-server target, absent recovery,
+missing polling/backoff, incomplete Fresh Clone/SBOM output and stale PR security
+evidence contracts.
 
-The two custom ArchUnit conditions use positive `classes()` subjects. Seven
-violation fixtures prove every rule can fail, and one conforming fixture proves
-all seven can pass. Global-validator negative tests cover mutable action refs,
-missing version comments, floating runners, path-avoidance language and
-incomplete evidence markers.
+The seven approved architecture factories share their definitions between
+production and sensitivity tests. Ten invalid observations exercise ordinary
+and prefix-collision internal access, cycle/shared/domain/application/port/vendor
+location and two vendor-signature leaks; one conforming inward arrangement passes
+all seven. The four general Java safeguards are named and counted separately.
 
-Command result after evidence regeneration:
+Command result after rework:
 
 ```text
 python3 scripts/validate_production_readiness.py
