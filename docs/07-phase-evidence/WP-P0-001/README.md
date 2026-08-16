@@ -15,9 +15,9 @@ Pull Request.
 | `local-verification.md` | PASS | Backend, frontend, database, coverage, supply-chain and configuration Gates ran |
 | `browser-smoke.md` | PASS | The built console rendered package version and source Head and recovered Ready → Degraded → Ready |
 | `fresh-clone.md` | PASS | The committed Head passed the complete whitespace-and-apostrophe acceptance path |
-| `ci-checks.md` | PENDING_RECHECK | The previous review is invalidated by this rework; all eleven checks must rerun after push |
+| `ci-checks.md` | PASS | All eleven required jobs passed on the evidence Head; final doc-only rerun belongs in the PR handoff |
 | `traceability.md` | VERIFIED | Each foundation contract names its implementation and removal detector; D-03 Worker ownership is explicit |
-| `unavailable-capabilities.md` | LOCAL_PASS_CI_PENDING | Every local capability is resolved; GitHub observations await the new Head |
+| `unavailable-capabilities.md` | PASS | Every local and GitHub technical capability was exercised; no in-scope gap remains |
 
 The committed-head Fresh Clone validator inspected 200 non-generated files and
 Python discovery ran 122 tests. The implementation run also passed 109 backend
