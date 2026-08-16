@@ -147,7 +147,6 @@ jobs:
         run: npm run build
         env:
           MARKETOPS_BUILD_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
-          MARKETOPS_BUILD_VERSION: ${{ github.ref_name }}
           VITE_MARKETOPS_API_BASE_URL: http://127.0.0.1:8080
           VITE_MARKETOPS_ENVIRONMENT: ci
       - name: Prove that only prefixed values reached the bundle

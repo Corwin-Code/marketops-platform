@@ -23,11 +23,24 @@ export const BUILD_COMMIT_KEY = '__MARKETOPS_BUILD_COMMIT__';
 /** Value reported when the build did not supply the commit. */
 export const UNKNOWN_COMMIT = 'unknown';
 
-/** Value reported when the build did not supply a version. */
-export const UNKNOWN_VERSION = 'UNKNOWN';
-
 /** A commit is a hexadecimal object name, or it is not reported at all. */
 const COMMIT_PATTERN = /^[0-9a-f]{7,40}$/;
+
+/** Accepted package versions follow npm's numeric semantic-version core. */
+const PACKAGE_VERSION_PATTERN =
+  /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
+
+/** Read the console version from its canonical package manifest. */
+export function frontendPackageVersion(manifest: unknown): string {
+  const version =
+    typeof manifest === 'object' && manifest !== null
+      ? (manifest as { readonly version?: unknown }).version
+      : undefined;
+  if (typeof version !== 'string' || !PACKAGE_VERSION_PATTERN.test(version)) {
+    throw new Error('package.json must contain a valid semantic version');
+  }
+  return version;
+}
 
 /**
  * Return the two identifiers the bundle may carry.
@@ -36,14 +49,16 @@ const COMMIT_PATTERN = /^[0-9a-f]{7,40}$/;
  * parameter and is rendered in a page that anyone with the console open can
  * read, so an unexpected string must not be published verbatim.
  */
-export function buildTimeConstants(environment: Record<string, string | undefined>): {
+export function buildTimeConstants(
+  environment: Record<string, string | undefined>,
+  packageVersion: string,
+): {
   [BUILD_VERSION_KEY]: string;
   [BUILD_COMMIT_KEY]: string;
 } {
   const commit = environment.MARKETOPS_BUILD_COMMIT ?? '';
-  const version = environment.MARKETOPS_BUILD_VERSION ?? '';
   return {
-    [BUILD_VERSION_KEY]: JSON.stringify(version === '' ? UNKNOWN_VERSION : version),
+    [BUILD_VERSION_KEY]: JSON.stringify(packageVersion),
     [BUILD_COMMIT_KEY]: JSON.stringify(COMMIT_PATTERN.test(commit) ? commit : UNKNOWN_COMMIT),
   };
 }

@@ -1,9 +1,19 @@
 import { expect, test } from '@playwright/test';
 import type { Page, Response } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { frontendPackageVersion } from '../../vite.constants';
 
 const repositoryRoot = resolve(process.cwd(), '../..');
+const sourceHead = execFileSync('git', ['rev-parse', 'HEAD'], {
+  cwd: repositoryRoot,
+  encoding: 'utf8',
+}).trim();
+const packageManifest: unknown = JSON.parse(
+  readFileSync(resolve(process.cwd(), 'package.json'), 'utf8'),
+);
+const frontendVersion = frontendPackageVersion(packageManifest);
 const composeProject = process.env.COMPOSE_PROJECT_NAME ?? 'marketops-local';
 const composeArguments = [
   'compose',
@@ -73,6 +83,9 @@ test('the built console recovers across a real database outage', async ({ page }
   );
   await expect(page.getByText('marketops-server')).toBeVisible();
   await expect(page.getByText('The platform is usable.')).toBeVisible();
+  await expect(page.getByRole('contentinfo', { name: 'Console build' })).toContainText(
+    `Console ${frontendVersion} (${sourceHead})`,
+  );
 
   try {
     compose('stop', 'postgres');

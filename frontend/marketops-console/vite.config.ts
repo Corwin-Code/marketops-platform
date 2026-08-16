@@ -1,7 +1,12 @@
 /// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react';
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
-import { buildTimeConstants, ENV_PREFIX } from './vite.constants.ts';
+import { buildTimeConstants, ENV_PREFIX, frontendPackageVersion } from './vite.constants.ts';
+
+const packageManifest: unknown = JSON.parse(
+  readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
+);
 
 /**
  * Bundler configuration for the operations console.
@@ -19,7 +24,7 @@ export default defineConfig({
   // Exactly two identifiers are replaced at build time. Anything else the
   // application needs is read at run time from the backend, where it can be
   // withheld; a value baked in here cannot.
-  define: buildTimeConstants(process.env),
+  define: buildTimeConstants(process.env, frontendPackageVersion(packageManifest)),
 
   build: {
     outDir: 'dist',

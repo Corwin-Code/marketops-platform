@@ -4,9 +4,11 @@ import {
   BUILD_VERSION_KEY,
   buildTimeConstants,
   ENV_PREFIX,
+  frontendPackageVersion,
   UNKNOWN_COMMIT,
-  UNKNOWN_VERSION,
 } from '../../vite.constants';
+
+const PACKAGE_VERSION = frontendPackageVersion({ version: '0.1.0' });
 
 /**
  * The bundler decisions that decide what becomes public.
@@ -21,22 +23,36 @@ describe('bundle configuration', () => {
   });
 
   it('replaces exactly two identifiers', () => {
-    const constants = buildTimeConstants({});
+    const constants = buildTimeConstants({}, PACKAGE_VERSION);
 
     expect(Object.keys(constants).sort()).toEqual([BUILD_COMMIT_KEY, BUILD_VERSION_KEY].sort());
   });
 
-  it('reports the agreed fallbacks when the build supplied nothing', () => {
-    const constants = buildTimeConstants({});
+  it('uses the package version and the agreed commit fallback', () => {
+    const constants = buildTimeConstants(
+      { MARKETOPS_BUILD_VERSION: 'pull-request-ref' },
+      PACKAGE_VERSION,
+    );
 
-    expect(constants[BUILD_VERSION_KEY]).toBe(JSON.stringify(UNKNOWN_VERSION));
+    expect(constants[BUILD_VERSION_KEY]).toBe(JSON.stringify('0.1.0'));
     expect(constants[BUILD_COMMIT_KEY]).toBe(JSON.stringify(UNKNOWN_COMMIT));
   });
 
+  it('rejects a missing or non-semantic package version', () => {
+    for (const manifest of [{}, { version: '' }, { version: 'branch/main' }, null]) {
+      expect(() => frontendPackageVersion(manifest)).toThrow(
+        'package.json must contain a valid semantic version',
+      );
+    }
+  });
+
   it('publishes a commit only when it is an object name', () => {
-    const accepted = buildTimeConstants({
-      MARKETOPS_BUILD_COMMIT: '3ecc72ae509664ff0550f80ece98d4f50dbb0bc0',
-    });
+    const accepted = buildTimeConstants(
+      {
+        MARKETOPS_BUILD_COMMIT: '3ecc72ae509664ff0550f80ece98d4f50dbb0bc0',
+      },
+      PACKAGE_VERSION,
+    );
     expect(accepted[BUILD_COMMIT_KEY]).toBe(
       JSON.stringify('3ecc72ae509664ff0550f80ece98d4f50dbb0bc0'),
     );
@@ -48,9 +64,9 @@ describe('bundle configuration', () => {
       '3ECC72AE509664FF0550F80ECE98D4F50DBB0BC0',
       '3ecc72',
     ]) {
-      expect(buildTimeConstants({ MARKETOPS_BUILD_COMMIT: rejected })[BUILD_COMMIT_KEY]).toBe(
-        JSON.stringify(UNKNOWN_COMMIT),
-      );
+      expect(
+        buildTimeConstants({ MARKETOPS_BUILD_COMMIT: rejected }, PACKAGE_VERSION)[BUILD_COMMIT_KEY],
+      ).toBe(JSON.stringify(UNKNOWN_COMMIT));
     }
   });
 
@@ -58,11 +74,14 @@ describe('bundle configuration', () => {
     // The literal is held in a constant so this file states a variable name and
     // a marker separately, and never the two joined as an assignment.
     const withheld = 'must-not-appear';
-    const constants = buildTimeConstants({
-      MARKETOPS_DB_APP_PASSWORD: withheld,
-      VITE_UNRELATED_SETTING: withheld,
-      MARKETOPS_BUILD_TIME: withheld,
-    });
+    const constants = buildTimeConstants(
+      {
+        MARKETOPS_DB_APP_PASSWORD: withheld,
+        VITE_UNRELATED_SETTING: withheld,
+        MARKETOPS_BUILD_TIME: withheld,
+      },
+      PACKAGE_VERSION,
+    );
 
     expect(JSON.stringify(constants)).not.toContain(withheld);
   });

@@ -144,9 +144,9 @@ describe('the console screen', () => {
     const { container } = render(<HealthShell config={CONFIG} fetchImpl={respondWith(COMPLETE)} />);
 
     await stateOf(container);
-    const footer = container.querySelector('footer');
-    expect(footer?.textContent).toContain('http://127.0.0.1:8080');
-    expect(footer?.textContent).toContain('local');
+    const footer = screen.getByRole('contentinfo', { name: 'Console build' });
+    expect(footer).toHaveTextContent('http://127.0.0.1:8080');
+    expect(footer).toHaveTextContent('local');
   });
 
   it('refreshes automatically at the bounded normal interval', async () => {
