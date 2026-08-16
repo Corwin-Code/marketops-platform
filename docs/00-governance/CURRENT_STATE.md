@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-08-16
+as_of: 2026-08-17
 project: MarketOps Russia
 lifecycle_state: EXECUTING_PHASE_0
 phase: Phase 0 — Data, Identity & Visibility Foundation
@@ -11,7 +11,7 @@ maker: Claude Cowork / Claude Code (initial artifact producer; no authoritative 
 rework_agent: Mac Codex (authoritative repository writer, rework/fix/verify, delegated Git execution)
 active_work_package: NONE
 active_gate: CONTROLLER_PHASE_0_PLANNING
-authorization: APPROVED_FOR_IMPLEMENTATION
+authorization: PLANNING_ONLY
 production_write_enabled: false
 owner_git_workflow_guidance: REQUIRED
 owner_git_workflow_guidance_exit: HUMAN_OWNER_EXPLICIT_CONFIRMATION
@@ -43,8 +43,10 @@ Canonical design: docs/02-architecture/designs/WP-P0-001-foundation-design.md
   verified. Exact results and immutable CI links are recorded under
   `docs/07-phase-evidence/WP-P0-001/`.
 - The eleven stable CI jobs and the active Ruleset constitute the repository
-  Gate. WP-P0-001 is complete when the approved implementation candidate is
-  merged after independent Controller review and Human Owner authorization.
+  Gate. WP-P0-001 is complete, its implementation result is verified, and its
+  execution authorization is closed. The Draft PR remains subject to independent
+  Controller review, every repository Gate and separate Human Owner merge
+  authorization.
 - Baseline v1.0, the naming baseline, the Controller–Maker–CI–Owner model, the
   repository governance pack and ADRs are established.
 - The Public pre-production repository at `Corwin-Code/marketops-platform` is
@@ -71,8 +73,9 @@ Canonical design: docs/02-architecture/designs/WP-P0-001-foundation-design.md
 ## Active objective
 
 Run independent Controller Phase 0 planning, select the next bounded Work Package
-from the approved backlog, and establish its design/authorization Gate. Do not
-extend WP-P0-001 or infer authorization for production or Marketplace writes.
+from the approved backlog, and establish a new design/authorization Gate before
+any implementation begins. Do not extend WP-P0-001 or infer authorization for
+production or Marketplace writes.
 
 ## Temporary trial execution mode
 

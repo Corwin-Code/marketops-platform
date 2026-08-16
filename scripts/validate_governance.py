@@ -32,7 +32,9 @@ REQUIRED_FILES = [
     "tests/test_validate_governance.py",
 ]
 
-AUTHORIZATION_ALLOWED_STATES = {"DESIGN_ONLY", "APPROVED_FOR_IMPLEMENTATION"}
+ACTIVE_AUTHORIZATION_STATES = {"DESIGN_ONLY", "APPROVED_FOR_IMPLEMENTATION"}
+CURRENT_AUTHORIZATION_ALLOWED_STATES = ACTIVE_AUTHORIZATION_STATES | {"PLANNING_ONLY"}
+WP_EXECUTION_AUTHORIZATION_ALLOWED_STATES = ACTIVE_AUTHORIZATION_STATES | {"CLOSED"}
 LIFECYCLE_ALLOWED_STATES = {"INITIATING", "EXECUTING_PHASE_0"}
 CANONICAL_DESIGN_RELATIVE_PATH = (
     "docs/02-architecture/designs/WP-P0-001-foundation-design.md"
@@ -44,10 +46,6 @@ CANONICAL_DESIGN_METADATA = {
     "product": "MarketOps Russia",
     "repository": "marketops-platform",
 }
-CONTROLLER_VERDICT_BY_AUTHORIZATION = {
-    "DESIGN_ONLY": "AUTHORIZED_TO_START_DESIGN",
-    "APPROVED_FOR_IMPLEMENTATION": "APPROVED_FOR_IMPLEMENTATION",
-}
 OWNER_GUIDANCE_ALLOWED_STATES = {"REQUIRED", "DISABLED"}
 OWNER_GUIDANCE_EXIT_AUTHORITY = "HUMAN_OWNER_EXPLICIT_CONFIRMATION"
 OWNER_DELEGATION_ALLOWED_STATES = {"ACTIVE", "INACTIVE"}
@@ -55,10 +53,15 @@ OWNER_DELEGATION_ALLOWED_EXECUTORS = {"CODEX", "NONE"}
 OWNER_DELEGATION_SCOPE = "PR_READY_AND_MERGE_AFTER_ALL_GATES"
 OWNER_DELEGATION_INACTIVE_SCOPE = "NONE"
 OWNER_DELEGATION_EXIT_AUTHORITY = "HUMAN_OWNER_EXPLICIT_REVOCATION"
-COMPLETED_WP_STATUS = "IMPLEMENTED_CANDIDATE"
+COMPLETED_WP_STATUS = "COMPLETED"
+COMPLETED_WP_AUTHORIZATION = "CLOSED"
+COMPLETED_WP_RESULT = "VERIFIED"
+HISTORIC_DESIGN_VERDICT = "APPROVED_FOR_IMPLEMENTATION"
 POST_WP_ACTIVE_GATE = "CONTROLLER_PHASE_0_PLANNING"
 COMPLETED_TRACEABILITY_STATES = {"VERIFIED", "ACTIVE_CONTROL"}
 COMPLETED_TRACEABILITY_IDS = {"D-02", "D-03", "D-07", "D-10", "D-15", "D-16", "D-17", "HR-06"}
+D03_WORK_PACKAGES = "WP-P0-001;WP-P0-003"
+D03_WORKER_WORK_PACKAGE = "WP-P0-003"
 PARALLEL_CURRENT_STATE_PATHS = {
     "docs/00-governance/CURRENT_STATE_PROPOSAL_WP-P0-001.md",
 }
@@ -224,19 +227,18 @@ def work_package_metadata_value(text: str, field: str) -> str | None:
     return markdown_table_value(text, "## 1. Metadata", field)
 
 
-def work_package_controller_verdict(text: str) -> str | None:
-    section = re.search(
-        r"(?ms)^## 10\. Controller Gate\s*$\n(?P<body>.*?)(?=^## \d+\.|\Z)",
-        text,
-    )
-    if section is None:
+def work_package_execution_authorization(text: str) -> str | None:
+    """Return the unambiguous current authorization of a Work Package.
+
+    Completed packages use the explicit field so their historic design verdict
+    cannot be mistaken for current permission. Active-package records may use
+    the generic field, but both fields at once are ambiguous and invalid.
+    """
+    explicit = work_package_metadata_value(text, "Current execution authorization")
+    generic = work_package_metadata_value(text, "Authorization")
+    if explicit is not None and generic is not None:
         return None
-    matches = re.findall(
-        r"(?ms)^Current verdict:\s*$\n\s*```text\s*$\n"
-        r"\s*([A-Z][A-Z0-9_]*)\s*$\n```\s*$",
-        section.group("body"),
-    )
-    return matches[0] if len(matches) == 1 else None
+    return explicit if explicit is not None else generic
 
 
 def project_charter_status(text: str) -> str | None:
@@ -307,8 +309,14 @@ def validate_approved_design_state_text(
     work_package_text: str,
     canonical_design_text: str | None,
 ) -> None:
-    wp_authorization = work_package_metadata_value(work_package_text, "Authorization")
-    if wp_authorization != "APPROVED_FOR_IMPLEMENTATION":
+    historic_verdict = work_package_metadata_value(
+        work_package_text, "Historic design verdict"
+    )
+    execution_authorization = work_package_execution_authorization(work_package_text)
+    if (
+        historic_verdict != HISTORIC_DESIGN_VERDICT
+        and execution_authorization != "APPROVED_FOR_IMPLEMENTATION"
+    ):
         return
 
     current_path = current_state_canonical_design_path(current_state_text)
@@ -355,59 +363,83 @@ def validate_authorization_state_text(
     current_state_text: str,
     work_package_text: str,
 ) -> None:
-    current_authorization = current_state_metadata_value(
-        current_state_text,
-        "authorization",
+    current_authorization = current_state_metadata_value(current_state_text, "authorization")
+    active_work_package = current_state_metadata_value(
+        current_state_text, "active_work_package"
     )
-    wp_authorization = work_package_metadata_value(work_package_text, "Authorization")
-    controller_verdict = work_package_controller_verdict(work_package_text)
+    wp_status = work_package_metadata_value(work_package_text, "Status")
+    wp_authorization = work_package_execution_authorization(work_package_text)
+    historic_verdict = work_package_metadata_value(
+        work_package_text, "Historic design verdict"
+    )
+    implementation_result = work_package_metadata_value(
+        work_package_text, "Implementation result"
+    )
 
     if current_authorization is None:
         errors.append("CURRENT_STATE authorization metadata is missing or duplicated")
-    elif current_authorization not in AUTHORIZATION_ALLOWED_STATES:
+    elif current_authorization not in CURRENT_AUTHORIZATION_ALLOWED_STATES:
         errors.append(
             "CURRENT_STATE authorization must be exactly one of: "
-            + ", ".join(sorted(AUTHORIZATION_ALLOWED_STATES))
+            + ", ".join(sorted(CURRENT_AUTHORIZATION_ALLOWED_STATES))
         )
+
+    if active_work_package is None:
+        errors.append("CURRENT_STATE active_work_package metadata is missing or duplicated")
 
     if wp_authorization is None:
-        errors.append("WP-P0-001 Authorization metadata is missing or duplicated")
-    elif wp_authorization not in AUTHORIZATION_ALLOWED_STATES:
         errors.append(
-            "WP-P0-001 Authorization must be exactly one of: "
-            + ", ".join(sorted(AUTHORIZATION_ALLOWED_STATES))
+            "WP-P0-001 current execution authorization is missing, duplicated or ambiguous"
+        )
+    elif wp_authorization not in WP_EXECUTION_AUTHORIZATION_ALLOWED_STATES:
+        errors.append(
+            "WP-P0-001 current execution authorization must be exactly one of: "
+            + ", ".join(sorted(WP_EXECUTION_AUTHORIZATION_ALLOWED_STATES))
         )
 
-    allowed_controller_verdicts = set(CONTROLLER_VERDICT_BY_AUTHORIZATION.values())
-    if controller_verdict is None:
-        errors.append("WP-P0-001 current Controller verdict is missing or duplicated")
-    elif controller_verdict not in allowed_controller_verdicts:
-        errors.append(
-            "WP-P0-001 current Controller verdict must be exactly one of: "
-            + ", ".join(sorted(allowed_controller_verdicts))
-        )
-
-    if (
-        current_authorization in AUTHORIZATION_ALLOWED_STATES
-        and wp_authorization in AUTHORIZATION_ALLOWED_STATES
-        and current_authorization != wp_authorization
-    ):
-        errors.append(
-            "authorization mismatch: CURRENT_STATE "
-            f"{current_authorization} != WP-P0-001 {wp_authorization}"
-        )
-
-    if (
-        wp_authorization in AUTHORIZATION_ALLOWED_STATES
-        and controller_verdict in allowed_controller_verdicts
-        and controller_verdict != CONTROLLER_VERDICT_BY_AUTHORIZATION[wp_authorization]
-    ):
-        errors.append(
-            "controller gate mismatch: WP-P0-001 Authorization "
-            f"{wp_authorization} requires verdict "
-            f"{CONTROLLER_VERDICT_BY_AUTHORIZATION[wp_authorization]}, got "
-            f"{controller_verdict}"
-        )
+    if active_work_package == "NONE":
+        if current_authorization != "PLANNING_ONLY":
+            errors.append(
+                "CURRENT_STATE active_work_package NONE requires authorization PLANNING_ONLY"
+            )
+        if wp_status != COMPLETED_WP_STATUS:
+            errors.append(
+                f"completed WP-P0-001 Status must be exactly: {COMPLETED_WP_STATUS}"
+            )
+        if wp_authorization != COMPLETED_WP_AUTHORIZATION:
+            errors.append(
+                "completed WP-P0-001 current execution authorization must be CLOSED"
+            )
+        if historic_verdict != HISTORIC_DESIGN_VERDICT:
+            errors.append(
+                "completed WP-P0-001 Historic design verdict must be exactly: "
+                + HISTORIC_DESIGN_VERDICT
+            )
+        if implementation_result != COMPLETED_WP_RESULT:
+            errors.append(
+                "completed WP-P0-001 Implementation result must be exactly: "
+                + COMPLETED_WP_RESULT
+            )
+    elif active_work_package is not None:
+        if current_authorization not in ACTIVE_AUTHORIZATION_STATES:
+            errors.append(
+                "an active Work Package requires DESIGN_ONLY or APPROVED_FOR_IMPLEMENTATION"
+            )
+        if wp_authorization not in ACTIVE_AUTHORIZATION_STATES:
+            errors.append(
+                "an active Work Package cannot have CLOSED execution authorization"
+            )
+        if (
+            current_authorization in ACTIVE_AUTHORIZATION_STATES
+            and wp_authorization in ACTIVE_AUTHORIZATION_STATES
+            and current_authorization != wp_authorization
+        ):
+            errors.append(
+                "authorization mismatch: CURRENT_STATE "
+                f"{current_authorization} != active Work Package {wp_authorization}"
+            )
+        if wp_status == COMPLETED_WP_STATUS:
+            errors.append("a COMPLETED Work Package cannot remain active")
 
 
 def validate_owner_control_state_text(errors: list[str], text: str) -> None:
@@ -591,7 +623,7 @@ def validate_completion_state_text(
     work_package_text: str,
     traceability_text: str,
 ) -> None:
-    """Keep the canonical records at the implemented WP-P0-001 transition."""
+    """Keep canonical records at the closed WP-P0-001 planning transition."""
     status = work_package_metadata_value(work_package_text, "Status")
     if status != COMPLETED_WP_STATUS:
         errors.append(f"WP-P0-001 Status must be exactly: {COMPLETED_WP_STATUS}")
@@ -646,6 +678,27 @@ def validate_completion_state_text(
         for field in ("code_location", "test_case", "evidence"):
             if not row.get(field, "").strip():
                 errors.append(f"traceability {source_id} missing {field}")
+
+    d03 = by_id.get("D-03")
+    if d03 is not None:
+        if d03.get("status") != "ACTIVE_CONTROL":
+            errors.append(
+                "traceability D-03 must remain ACTIVE_CONTROL until the PostgreSQL "
+                "Task/Outbox Worker is implemented and verified"
+            )
+        if d03.get("work_package") != D03_WORK_PACKAGES:
+            errors.append(
+                f"traceability D-03 work_package must be exactly: {D03_WORK_PACKAGES}"
+            )
+        notes = d03.get("notes", "")
+        for token in (
+            "Modular Monolith",
+            "PostgreSQL Task/Outbox Worker",
+            D03_WORKER_WORK_PACKAGE,
+            "outside WP-P0-001 scope",
+        ):
+            if token not in notes:
+                errors.append(f"traceability D-03 notes missing disposition: {token}")
 
 
 def validate_completion_state(errors: list[str]) -> None:
