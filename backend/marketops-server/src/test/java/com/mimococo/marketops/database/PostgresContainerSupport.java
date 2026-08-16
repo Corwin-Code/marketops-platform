@@ -148,8 +148,14 @@ abstract class PostgresContainerSupport {
 
     /** Return the number produced by a counting query. */
     static long count(Connection connection, String sql) throws SQLException {
-        String value = single(connection, sql);
-        return value == null ? 0L : Long.parseLong(value);
+        try (Statement statement = connection.createStatement();
+             ResultSet rows = statement.executeQuery(sql)) {
+            if (!rows.next()) {
+                return 0L;
+            }
+            long value = rows.getLong(1);
+            return rows.wasNull() ? 0L : value;
+        }
     }
 
     /**

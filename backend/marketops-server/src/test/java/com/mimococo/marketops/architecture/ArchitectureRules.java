@@ -2,203 +2,278 @@ package com.mimococo.marketops.architecture;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields;
 
 import com.tngtech.archunit.core.domain.Dependency;
 import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaMember;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.lang.CompositeArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.util.Set;
 
 /**
- * The architecture rules this project is willing to enforce.
+ * The seven approved dependency-boundary rules for the modular monolith.
  *
- * <p>There are seven, each stated once and applied twice: to the production
- * classes, and to a fixture built to break it. The second application is what
- * makes the first meaningful. A rule whose subject set turns out to be empty
- * reports success, and a rule that has never been observed failing is
- * indistinguishable from one that cannot fail.
+ * <p>These are the architecture contract from the canonical foundation design,
+ * not a collection of general Java style preferences. Every factory accepts a
+ * base package so the identical rule instance can check production code, a
+ * deliberately invalid fixture and the shared conforming fixture.
  *
- * <p>Every rule takes the package it applies to, so the same definition can be
- * evaluated against the production tree and against a fixture tree without a
- * second copy of the rule existing anywhere.
+ * <p>The domain rule and each half of the application/port composite permit an
+ * empty layer because the foundation intentionally has no business module yet.
+ * All other rules select the non-empty application tree and retain ArchUnit's
+ * normal empty-subject protection.
  */
 final class ArchitectureRules {
+
+    /** Locally declared stand-ins for Marketplace SDK types used by sensitivity tests. */
+    static final String VENDOR_STANDIN_PACKAGE =
+            "com.mimococo.marketops.testfixture.vendorsdk";
+
+    private static final String INTERNAL_SEGMENT = ".internal";
+    private static final String SHARED_MODULE = "shared";
+
+    /**
+     * Vendor namespaces known to this foundation.
+     *
+     * <p>A work package that introduces a Marketplace SDK must register its
+     * namespace here in the same change. The stand-in namespace makes the rule
+     * executable before any real SDK or credential is introduced.
+     */
+    private static final Set<String> VENDOR_SDK_PREFIXES = Set.of(
+            VENDOR_STANDIN_PACKAGE + ".",
+            "com.ozon.",
+            "ru.ozon.",
+            "com.wildberries.",
+            "ru.wildberries.");
 
     private ArchitectureRules() {
     }
 
-    /** Package segment that marks a module's private implementation. */
-    private static final String INTERNAL = ".internal";
-
-    /** Name of the module that may be depended on by every other module. */
-    private static final String SHARED = "shared";
-
-    /**
-     * A module's private implementation is reachable only from that module.
-     *
-     * <p>The condition derives the owning module from the position of the
-     * internal segment, so it holds for any depth of package nesting and needs no
-     * list of module names to be kept current.
-     */
+    /** A module's {@code internal} packages are reachable only from that module. */
     static ArchRule moduleInternalsAreNotAccessedFromOtherModules(String basePackage) {
         return classes()
                 .that().resideInAPackage(basePackage + "..")
-                .should(new ArchCondition<>("reach into the internals of another module") {
+                .should(new ArchCondition<>("reach only their own module internals") {
                     @Override
                     public void check(JavaClass item, ConditionEvents events) {
                         for (Dependency dependency : item.getDirectDependenciesFromSelf()) {
-                            String target = dependency.getTargetClass().getPackageName();
-                            if (!target.startsWith(basePackage) || !target.contains(INTERNAL)) {
+                            String targetPackage = dependency.getTargetClass().getPackageName();
+                            int internal = targetPackage.indexOf(INTERNAL_SEGMENT);
+                            if (!isWithin(targetPackage, basePackage) || internal < 0) {
                                 continue;
                             }
-                            String owner = target.substring(0, target.indexOf(INTERNAL));
-                            if (!item.getPackageName().startsWith(owner)) {
-                                events.add(SimpleConditionEvent.violated(item, dependency.getDescription()));
+                            String owningModulePackage = targetPackage.substring(0, internal);
+                            if (!isWithin(item.getPackageName(), owningModulePackage)) {
+                                events.add(SimpleConditionEvent.violated(
+                                        item, dependency.getDescription()));
                             }
                         }
                     }
                 })
-                .as("a module's internals are reachable only from that module")
-                .because("a package another module may call is a published contract, "
-                        + "and publishing one by accident is how a boundary stops holding");
+                .as("a module's internals are reachable only from that exact module")
+                .because("package prefixes such as alpha and alphabeta are different modules");
     }
 
-    /**
-     * Modules do not depend on each other in a circle.
-     *
-     * <p>A cycle removes the possibility of understanding, testing, or extracting
-     * either participant on its own, and it forms one dependency at a time.
-     */
+    /** Direct child packages of the application root form an acyclic module graph. */
     static ArchRule modulesAreFreeOfCycles(String basePackage) {
         return SlicesRuleDefinition.slices()
                 .matching(basePackage + ".(*)..")
                 .should().beFreeOfCycles()
-                .as("modules are free of cycles")
-                .because("a cycle makes two modules one, and it is formed one dependency at a time");
+                .as("modules are free of dependency cycles")
+                .because("a cycle erases the boundary between every module in the cycle");
     }
 
-    /**
-     * A resource does not open a connection.
-     *
-     * <p>The web layer translates between the outside world and the application.
-     * A controller that reaches the database directly has no place left to put a
-     * transaction boundary, and its behaviour can only be exercised through HTTP.
-     */
-    static ArchRule theWebLayerDoesNotReachTheDatabase(String basePackage) {
-        return noClasses()
-                .that().resideInAPackage(basePackage + "..")
-                .and().areAnnotatedWith("org.springframework.web.bind.annotation.RestController")
-                .should().dependOnClassesThat()
-                .resideInAnyPackage("java.sql..", "javax.sql..", "org.springframework.jdbc..",
-                        "org.flywaydb..", "com.zaxxer.hikari..")
-                // A tree with no resource in it has nothing to say about this rule.
-                // The fixture below is what proves the rule still fails when a
-                // resource does reach the database.
-                .allowEmptyShould(true)
-                .as("a web resource does not reach the database directly")
-                .because("a resource that opens its own connection leaves nowhere to put "
-                        + "a transaction boundary and can only be exercised over HTTP");
-    }
-
-    /**
-     * Dependencies arrive through the constructor.
-     *
-     * <p>A field-injected dependency cannot be supplied by a caller, so the class
-     * cannot be constructed in a test without a container, and its requirements
-     * are invisible in its signature.
-     */
-    static ArchRule dependenciesAreNotInjectedIntoFields(String basePackage) {
-        return noFields()
-                .that().areDeclaredInClassesThat().resideInAPackage(basePackage + "..")
-                .should().beAnnotatedWith("org.springframework.beans.factory.annotation.Autowired")
-                .orShould().beAnnotatedWith("org.springframework.beans.factory.annotation.Value")
-                .orShould().beAnnotatedWith("jakarta.annotation.Resource")
-                .orShould().beAnnotatedWith("jakarta.inject.Inject")
-                .allowEmptyShould(true)
-                .as("dependencies are supplied through the constructor")
-                .because("a field-injected dependency is invisible in the signature and "
-                        + "cannot be supplied without a container");
-    }
-
-    /**
-     * Time is read from the injected clock.
-     *
-     * <p>A class that reads the ambient clock cannot be tested at a chosen
-     * instant, so behaviour that depends on time is exercised by whatever moment
-     * the test happens to run at.
-     */
-    static ArchRule timeIsReadFromAnInjectedClock(String basePackage) {
-        return noClasses()
-                .that().resideInAPackage(basePackage + "..")
-                .should().callMethod(Instant.class, "now")
-                .orShould().callMethod(LocalDate.class, "now")
-                .orShould().callMethod(LocalTime.class, "now")
-                .orShould().callMethod(LocalDateTime.class, "now")
-                .orShould().callMethod(ZonedDateTime.class, "now")
-                .orShould().callMethod(System.class, "currentTimeMillis")
-                .orShould().callConstructor(java.util.Date.class)
-                .allowEmptyShould(true)
-                .as("time is read from the injected clock")
-                .because("a class that reads the ambient clock cannot be exercised "
-                        + "at a chosen instant");
-    }
-
-    /**
-     * Diagnostics go to the logger.
-     *
-     * <p>Output written to the console carries no level, no timestamp and no
-     * correlation identifier, so it cannot be filtered, correlated, or turned off
-     * where it is deployed.
-     */
-    static ArchRule diagnosticsAreWrittenThroughTheLogger(String basePackage) {
-        return noClasses()
-                .that().resideInAPackage(basePackage + "..")
-                .should().accessField(System.class, "out")
-                .orShould().accessField(System.class, "err")
-                .orShould().callMethod(Throwable.class, "printStackTrace")
-                .allowEmptyShould(true)
-                .as("diagnostics are written through the logger")
-                .because("console output carries no level, no time and no correlation "
-                        + "identifier, so it can be neither filtered nor correlated");
-    }
-
-    /**
-     * The shared module depends on no other module.
-     *
-     * <p>Every module may depend on {@code shared}. If {@code shared} depended
-     * back on one of them, that module would be reachable from all of the others,
-     * and the encapsulation each of them has would be worth nothing.
-     */
-    static ArchRule theSharedModuleDependsOnNoOtherModule(String basePackage) {
-        String sharedPackage = basePackage + "." + SHARED;
+    /** The shared module is a dependency leaf and never reaches a business module. */
+    static ArchRule theSharedModuleDependsOnNoBusinessModule(String basePackage) {
+        String sharedPackage = basePackage + "." + SHARED_MODULE;
         return classes()
                 .that().resideInAPackage(sharedPackage + "..")
-                .should(new ArchCondition<>("depend on another module") {
+                .should(new ArchCondition<>("depend only on shared or external libraries") {
                     @Override
                     public void check(JavaClass item, ConditionEvents events) {
                         for (Dependency dependency : item.getDirectDependenciesFromSelf()) {
                             String target = dependency.getTargetClass().getPackageName();
-                            if (!target.startsWith(basePackage + ".")) {
-                                continue;
+                            if (isWithin(target, basePackage) && !isWithin(target, sharedPackage)) {
+                                events.add(SimpleConditionEvent.violated(
+                                        item, dependency.getDescription()));
                             }
-                            if (target.equals(sharedPackage) || target.startsWith(sharedPackage + ".")) {
-                                continue;
-                            }
-                            events.add(SimpleConditionEvent.violated(item, dependency.getDescription()));
                         }
                     }
                 })
+                .as("the shared module depends on no business module")
+                .because("everything may depend on shared, so shared must remain a leaf");
+    }
+
+    /** Domain code does not depend on adapters, infrastructure or vendor SDKs. */
+    static ArchRule domainDoesNotDependOutward(String basePackage) {
+        return noClasses()
+                .that().resideInAPackage(basePackage + "..domain..")
+                .should().dependOnClassesThat()
+                .resideInAnyPackage(outwardAndVendorPackages(basePackage))
                 .allowEmptyShould(true)
-                .as("the shared module depends on no other module")
-                .because("everything may depend on shared, so a dependency out of it "
-                        + "makes its target reachable from everywhere");
+                .as("domain does not depend on adapter, infrastructure or vendor SDK types")
+                .because("the domain must remain independent of delivery and vendor mechanisms");
+    }
+
+    /**
+     * Application and port layers do not point to their concrete implementations.
+     *
+     * <p>The two layer-specific prohibitions form one approved dependency rule.
+     * They remain separate inside the composite because application may use
+     * ordinary infrastructure ports while a port must not use any implementation.
+     */
+    static ArchRule applicationAndPortDoNotDependOutward(String basePackage) {
+        ArchRule application = noClasses()
+                .that().resideInAPackage(basePackage + "..application..")
+                .should().dependOnClassesThat()
+                .resideInAnyPackage(marketplaceAdaptersAndVendorPackages(basePackage))
+                .allowEmptyShould(true)
+                .as("application does not depend on concrete Marketplace adapters or vendor SDKs");
+        ArchRule port = noClasses()
+                .that().resideInAPackage(basePackage + "..port..")
+                .should().dependOnClassesThat()
+                .resideInAnyPackage(outwardAndVendorPackages(basePackage))
+                .allowEmptyShould(true)
+                .as("port does not depend on adapter, infrastructure or vendor SDK types");
+        return CompositeArchRule.of(application)
+                .and(port)
+                .as("application and port dependencies point inward, never to implementations");
+    }
+
+    /** Vendor SDK dependencies occur only in a platform-specific Marketplace adapter. */
+    static ArchRule vendorSdkTypesStayInsidePlatformAdapters(String basePackage) {
+        return classes()
+                .that().resideInAPackage(basePackage + "..")
+                .should(new ArchCondition<>(
+                        "use vendor SDK types only below marketplaceintegration.adapter.<platform>") {
+                    @Override
+                    public void check(JavaClass item, ConditionEvents events) {
+                        for (Dependency dependency : item.getDirectDependenciesFromSelf()) {
+                            if (isVendorSdk(dependency.getTargetClass())
+                                    && !isPlatformAdapter(item.getPackageName(), basePackage)) {
+                                events.add(SimpleConditionEvent.violated(
+                                        item, dependency.getDescription()));
+                            }
+                        }
+                    }
+                })
+                .as("vendor SDK types occur only under marketplaceintegration.adapter.<platform>")
+                .because("vendor models and clients must terminate at the anti-corruption adapter");
+    }
+
+    /** Vendor SDK types never form a domain signature or a module's public contract. */
+    static ArchRule vendorSdkTypesDoNotAppearInDomainOrModuleApiSignatures(String basePackage) {
+        return classes()
+                .that().resideInAPackage(basePackage + "..")
+                .should(new ArchCondition<>("expose no vendor SDK type from domain or module APIs") {
+                    @Override
+                    public void check(JavaClass item, ConditionEvents events) {
+                        boolean domain = hasPackageSegment(item.getPackageName(), "domain");
+                        boolean moduleApi = isDirectModulePackage(item.getPackageName(), basePackage)
+                                && item.getModifiers().contains(JavaModifier.PUBLIC);
+                        if (!domain && !moduleApi) {
+                            return;
+                        }
+
+                        for (JavaMember member : item.getMembers()) {
+                            if (!domain && !isPublicOrProtected(member)) {
+                                continue;
+                            }
+                            for (JavaClass involved : member.getAllInvolvedRawTypes()) {
+                                if (isVendorSdk(involved)) {
+                                    events.add(SimpleConditionEvent.violated(item,
+                                            member.getDescription() + " exposes vendor SDK type <"
+                                                    + involved.getName() + ">"));
+                                }
+                            }
+                        }
+                        if (domain || moduleApi) {
+                            item.getRawSuperclass().filter(ArchitectureRules::isVendorSdk)
+                                    .ifPresent(type -> events.add(SimpleConditionEvent.violated(
+                                            item, item.getDescription() + " extends vendor SDK type <"
+                                                    + type.getName() + ">")));
+                            item.getRawInterfaces().stream()
+                                    .filter(ArchitectureRules::isVendorSdk)
+                                    .forEach(type -> events.add(SimpleConditionEvent.violated(
+                                            item, item.getDescription() + " implements vendor SDK type <"
+                                                    + type.getName() + ">")));
+                        }
+                    }
+                })
+                .as("vendor SDK types never appear in domain or module API signatures")
+                .because("module callers must depend on platform-owned contracts");
+    }
+
+    private static String[] outwardAndVendorPackages(String basePackage) {
+        return new String[] {
+                basePackage + "..adapter..",
+                basePackage + "..infrastructure..",
+                VENDOR_STANDIN_PACKAGE + "..",
+                "com.ozon..",
+                "ru.ozon..",
+                "com.wildberries..",
+                "ru.wildberries.."
+        };
+    }
+
+    private static String[] marketplaceAdaptersAndVendorPackages(String basePackage) {
+        return new String[] {
+                basePackage + "..marketplaceintegration.adapter..",
+                VENDOR_STANDIN_PACKAGE + "..",
+                "com.ozon..",
+                "ru.ozon..",
+                "com.wildberries..",
+                "ru.wildberries.."
+        };
+    }
+
+    private static boolean isVendorSdk(JavaClass type) {
+        String packageName = type.getPackageName() + ".";
+        return VENDOR_SDK_PREFIXES.stream().anyMatch(packageName::startsWith);
+    }
+
+    private static boolean isPlatformAdapter(String packageName, String basePackage) {
+        if (!isWithin(packageName, basePackage)) {
+            return false;
+        }
+        String[] segments = packageName.substring(basePackage.length() + 1).split("\\.");
+        for (int index = 0; index + 2 < segments.length; index++) {
+            if (segments[index].equals("marketplaceintegration")
+                    && segments[index + 1].equals("adapter")
+                    && !segments[index + 2].isBlank()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isDirectModulePackage(String packageName, String basePackage) {
+        if (!isWithin(packageName, basePackage) || packageName.equals(basePackage)) {
+            return false;
+        }
+        return !packageName.substring(basePackage.length() + 1).contains(".");
+    }
+
+    private static boolean hasPackageSegment(String packageName, String segment) {
+        for (String candidate : packageName.split("\\.")) {
+            if (candidate.equals(segment)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isPublicOrProtected(JavaMember member) {
+        return member.getModifiers().contains(JavaModifier.PUBLIC)
+                || member.getModifiers().contains(JavaModifier.PROTECTED);
+    }
+
+    private static boolean isWithin(String packageName, String parentPackage) {
+        return packageName.equals(parentPackage) || packageName.startsWith(parentPackage + ".");
     }
 }

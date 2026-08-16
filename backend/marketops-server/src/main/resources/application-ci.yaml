@@ -14,4 +14,3 @@ logging:
   level:
     root: WARN
     com.mimococo.marketops: INFO
-    org.flywaydb: INFO

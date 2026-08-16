@@ -5,6 +5,9 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.mimococo.marketops.shared.CorrelationId;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,6 +24,7 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.info.BuildProperties;
@@ -188,6 +192,40 @@ class MetaStatusAssemblerTest {
 
         assertThat(response.migration().currentVersion())
                 .isEqualTo(MetaStatusAssembler.UNKNOWN_VERSION);
+    }
+
+    @Test
+    @DisplayName("dependency-probe logs discard operational detail and throwable proxies")
+    void probeLogsContainOnlySanitizedFailureCategories() throws SQLException {
+        DataSource source = mock(DataSource.class);
+        when(source.getConnection()).thenThrow(new SQLException(
+                "FATAL password=credential-value host=10.0.0.7 port=5432 role=marketops_app "
+                        + "SQL=SELECT * FROM private_table"));
+        Flyway flyway = mock(Flyway.class);
+        when(flyway.info()).thenThrow(new IllegalStateException(
+                "history table at jdbc:postgresql://10.0.0.7:5432 is unreadable"));
+
+        Logger logger = (Logger) LoggerFactory.getLogger(MetaStatusAssembler.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+        try {
+            assembler(null, source, flyway).assemble();
+        } finally {
+            logger.detachAppender(appender);
+            appender.stop();
+        }
+
+        assertThat(appender.list).hasSize(2).allSatisfy(event -> {
+            assertThat(event.getThrowableProxy()).isNull();
+            assertThat(event.getFormattedMessage()).isEqualTo("Metadata dependency probe failed");
+        });
+        String rendered = appender.list.stream()
+                .map(event -> event.getFormattedMessage() + " " + event.getKeyValuePairs())
+                .reduce("", (left, right) -> left + "\n" + right);
+        assertThat(rendered)
+                .doesNotContain("credential-value", "10.0.0.7", "5432", "marketops_app",
+                        "SELECT", "private_table", "jdbc:postgresql", "unreadable");
     }
 
     @Test

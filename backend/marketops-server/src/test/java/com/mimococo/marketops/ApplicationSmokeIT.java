@@ -5,11 +5,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.mimococo.marketops.adminobservability.internal.MetaStatusAssembler;
 import com.mimococo.marketops.adminobservability.internal.MetaStatusResponse;
 import com.mimococo.marketops.shared.internal.correlation.CorrelationIdFilter;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -23,7 +28,7 @@ import org.springframework.test.context.DynamicPropertySource;
  * connects under its own, and that the metadata resource can therefore report a
  * schema version and a reachable database.
  */
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("ci")
 class ApplicationSmokeIT {
 
@@ -45,6 +50,9 @@ class ApplicationSmokeIT {
 
     @Autowired
     private CorrelationIdFilter correlationIdFilter;
+
+    @LocalServerPort
+    private int serverPort;
 
     @Test
     @DisplayName("the application starts and reports a migrated, reachable database")
@@ -73,5 +81,24 @@ class ApplicationSmokeIT {
     @DisplayName("the correlation filter is part of the running application")
     void correlationFilterIsRegistered() {
         assertThat(correlationIdFilter).isNotNull();
+    }
+
+    @Test
+    @DisplayName("health names components and status without operational detail")
+    void healthResponseNamesComponentsButWithholdsDetails() throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://127.0.0.1:" + serverPort + "/actuator/health"))
+                .GET()
+                .build();
+        HttpResponse<String> response = HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.body())
+                .contains("\"status\":\"UP\"")
+                .contains("\"components\"")
+                .contains("\"db\"")
+                .doesNotContain("\"details\"", "jdbc:", "marketops_app", "marketops_migration",
+                        "password", "SELECT");
     }
 }

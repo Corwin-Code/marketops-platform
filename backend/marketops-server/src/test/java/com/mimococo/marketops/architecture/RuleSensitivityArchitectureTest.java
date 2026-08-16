@@ -9,123 +9,197 @@ import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchRule;
 import java.util.function.Function;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 /**
- * Proves that each rule fails when it should.
+ * Proves that every production rule can fail for its intended reason and pass.
  *
- * <p>A rule that passes tells you either that the code conforms or that the rule
- * never looked at anything. Two of the rules below permit an empty subject,
- * which is correct when a tree legitimately contains no web resource, and which
- * would otherwise let the rule report success for the wrong reason. Each rule is
- * therefore also evaluated against a package written to break exactly it, and
- * the failure message is checked for the offending type.
+ * <p>The approved suite covers seven rule factories with ten invalid observations:
+ * application and port exercise the two halves of one composite rule, while the
+ * internal-access scenario proves both an ordinary cross-module access and the
+ * historically fragile {@code alpha}/{@code alphabeta} prefix collision. A
+ * vendor-signature scenario checks domain and module API leakage separately. A
+ * shared inward-dependency arrangement must pass all seven rules.
  *
- * <p>The last case runs all seven rules against a package that conforms, so a
- * rule that has become unable to pass is caught as well.
+ * <p>The separately named quality suite supplies the same mutation protection
+ * for the four optional safeguards without counting them as approved boundaries.
  */
 class RuleSensitivityArchitectureTest {
 
     private static final String FIXTURES = "com.mimococo.marketops.testfixture";
     private static final String VIOLATION = FIXTURES + ".violation";
-    private static final String CONFORMING = FIXTURES + ".conforming.inward";
+    private static final String CONFORMING = FIXTURES + ".conforming.architecture";
 
     @Test
-    @DisplayName("F-1 reaching into another module's internals is rejected")
-    void moduleInternalsRuleFails() {
+    @DisplayName("F-ARCH-001 ordinary and prefix-collision internal access are rejected")
+    void moduleInternalAccessRuleFailsForBothCollisionShapes() {
         assertRejects(
                 ArchitectureRules::moduleInternalsAreNotAccessedFromOtherModules,
                 VIOLATION + ".moduleinternals",
-                "BetaReadsAlphaInternals");
+                "BetaReadsAlphaInternals",
+                "AlphaBetaReadsAlphaInternals");
     }
 
     @Test
-    @DisplayName("F-2 a cycle between two modules is rejected")
+    @DisplayName("F-ARCH-002 a cycle between modules is rejected")
     void cycleRuleFails() {
-        assertRejects(
-                ArchitectureRules::modulesAreFreeOfCycles,
-                VIOLATION + ".cycle",
-                "Cycle");
+        assertRejects(ArchitectureRules::modulesAreFreeOfCycles, VIOLATION + ".cycle", "Cycle");
     }
 
     @Test
-    @DisplayName("F-3 a resource that opens a connection is rejected")
-    void webLayerRuleFails() {
+    @DisplayName("F-ARCH-003 a shared dependency on a business module is rejected")
+    void sharedRuleFails() {
         assertRejects(
-                ArchitectureRules::theWebLayerDoesNotReachTheDatabase,
-                VIOLATION + ".weblayer",
-                "ResourceReadingTheDatabase");
-    }
-
-    @Test
-    @DisplayName("F-4 a field-injected dependency is rejected")
-    void fieldInjectionRuleFails() {
-        assertRejects(
-                ArchitectureRules::dependenciesAreNotInjectedIntoFields,
-                VIOLATION + ".fieldinjection",
-                "ServiceWithInjectedField");
-    }
-
-    @Test
-    @DisplayName("F-5 reading the ambient clock is rejected")
-    void ambientTimeRuleFails() {
-        assertRejects(
-                ArchitectureRules::timeIsReadFromAnInjectedClock,
-                VIOLATION + ".ambienttime",
-                "ServiceReadingTheAmbientClock");
-    }
-
-    @Test
-    @DisplayName("F-6 writing to the console is rejected")
-    void consoleOutputRuleFails() {
-        assertRejects(
-                ArchitectureRules::diagnosticsAreWrittenThroughTheLogger,
-                VIOLATION + ".consoleoutput",
-                "ServiceWritingToTheConsole");
-    }
-
-    @Test
-    @DisplayName("F-7 a dependency out of the shared module is rejected")
-    void sharedModuleRuleFails() {
-        assertRejects(
-                ArchitectureRules::theSharedModuleDependsOnNoOtherModule,
+                ArchitectureRules::theSharedModuleDependsOnNoBusinessModule,
                 VIOLATION + ".sharedoutward",
                 "SharedTypeReachingOutward");
     }
 
     @Test
-    @DisplayName("F-8 a conforming arrangement satisfies all seven rules")
-    void conformingFixturePassesEveryRule() {
-        JavaClasses classes = new ClassFileImporter().importPackages(CONFORMING);
-        assertThat(classes).as("the conforming fixture must contain classes").isNotEmpty();
+    @DisplayName("F-ARCH-004 domain dependencies on adapter, infrastructure and SDK are rejected")
+    void domainRuleFails() {
+        assertRejects(
+                ArchitectureRules::domainDoesNotDependOutward,
+                VIOLATION + ".domainoutward",
+                "DomainOrder");
+    }
 
-        for (ArchRule rule : new ArchRule[] {
-                ArchitectureRules.moduleInternalsAreNotAccessedFromOtherModules(CONFORMING),
-                ArchitectureRules.modulesAreFreeOfCycles(CONFORMING),
-                ArchitectureRules.theWebLayerDoesNotReachTheDatabase(CONFORMING),
-                ArchitectureRules.dependenciesAreNotInjectedIntoFields(CONFORMING),
-                ArchitectureRules.timeIsReadFromAnInjectedClock(CONFORMING),
-                ArchitectureRules.diagnosticsAreWrittenThroughTheLogger(CONFORMING),
-                ArchitectureRules.theSharedModuleDependsOnNoOtherModule(CONFORMING)}) {
+    @Test
+    @DisplayName("F-ARCH-005a application dependencies on Marketplace adapters and SDK are rejected")
+    void applicationHalfOfCompositeRuleFails() {
+        assertRejects(
+                ArchitectureRules::applicationAndPortDoNotDependOutward,
+                VIOLATION + ".applicationoutward",
+                "OrderUseCase");
+    }
+
+    @Test
+    @DisplayName("F-ARCH-005b port dependencies on adapter, infrastructure and SDK are rejected")
+    void portHalfOfCompositeRuleFails() {
+        assertRejects(
+                ArchitectureRules::applicationAndPortDoNotDependOutward,
+                VIOLATION + ".portoutward",
+                "OrderPort");
+    }
+
+    @Test
+    @DisplayName("F-ARCH-006 an SDK dependency outside a platform adapter is rejected")
+    void vendorLocationRuleFails() {
+        assertRejects(
+                ArchitectureRules::vendorSdkTypesStayInsidePlatformAdapters,
+                VIOLATION + ".vendorlocation",
+                "SdkUseOutsideAdapter");
+    }
+
+    @Test
+    @DisplayName("F-ARCH-007 SDK types in domain and module API signatures are rejected")
+    void vendorSignatureRuleFails() {
+        assertRejects(
+                ArchitectureRules::vendorSdkTypesDoNotAppearInDomainOrModuleApiSignatures,
+                VIOLATION + ".vendorapi",
+                "DomainOffer",
+                "OrderFacade");
+    }
+
+    @Test
+    @DisplayName("F-ARCH-PASS adapter and infrastructure dependencies point inward")
+    void conformingInwardArrangementPassesEveryApprovedRule() {
+        JavaClasses classes = importFixture(CONFORMING);
+        assertThat(classes).isNotEmpty();
+
+        for (ArchRule rule : approvedRules(CONFORMING)) {
             assertThatCode(() -> rule.check(classes))
-                    .as("rule [%s] must accept a conforming arrangement", rule.getDescription())
+                    .as("approved rule [%s] must accept the conforming fixture",
+                            rule.getDescription())
                     .doesNotThrowAnyException();
         }
     }
 
+    /** Sensitivity checks for safeguards that are not approved dependency rules. */
+    @Nested
+    @DisplayName("Additional code-quality rule sensitivity")
+    class CodeQualitySensitivity {
+
+        @Test
+        @DisplayName("F-QUALITY-001 a resource opening a connection is rejected")
+        void webLayerRuleFails() {
+            assertRejects(
+                    CodeQualityArchitectureRules::webLayerDoesNotReachTheDatabase,
+                    VIOLATION + ".weblayer",
+                    "ResourceReadingTheDatabase");
+        }
+
+        @Test
+        @DisplayName("F-QUALITY-002 field injection is rejected")
+        void fieldInjectionRuleFails() {
+            assertRejects(
+                    CodeQualityArchitectureRules::dependenciesAreNotInjectedIntoFields,
+                    VIOLATION + ".fieldinjection",
+                    "ServiceWithInjectedField");
+        }
+
+        @Test
+        @DisplayName("F-QUALITY-003 ambient time is rejected")
+        void ambientTimeRuleFails() {
+            assertRejects(
+                    CodeQualityArchitectureRules::timeIsReadFromAnInjectedClock,
+                    VIOLATION + ".ambienttime",
+                    "ServiceReadingTheAmbientClock");
+        }
+
+        @Test
+        @DisplayName("F-QUALITY-004 console output is rejected")
+        void consoleOutputRuleFails() {
+            assertRejects(
+                    CodeQualityArchitectureRules::diagnosticsAreWrittenThroughTheLogger,
+                    VIOLATION + ".consoleoutput",
+                    "ServiceWritingToTheConsole");
+        }
+
+        @Test
+        @DisplayName("F-QUALITY-PASS the conforming arrangement satisfies all safeguards")
+        void conformingArrangementPassesQualityRules() {
+            JavaClasses classes = importFixture(CONFORMING);
+            for (ArchRule rule : new ArchRule[] {
+                    CodeQualityArchitectureRules.webLayerDoesNotReachTheDatabase(CONFORMING),
+                    CodeQualityArchitectureRules.dependenciesAreNotInjectedIntoFields(CONFORMING),
+                    CodeQualityArchitectureRules.timeIsReadFromAnInjectedClock(CONFORMING),
+                    CodeQualityArchitectureRules.diagnosticsAreWrittenThroughTheLogger(CONFORMING)}) {
+                assertThatCode(() -> rule.check(classes)).doesNotThrowAnyException();
+            }
+        }
+    }
+
+    private static ArchRule[] approvedRules(String basePackage) {
+        return new ArchRule[] {
+                ArchitectureRules.moduleInternalsAreNotAccessedFromOtherModules(basePackage),
+                ArchitectureRules.modulesAreFreeOfCycles(basePackage),
+                ArchitectureRules.theSharedModuleDependsOnNoBusinessModule(basePackage),
+                ArchitectureRules.domainDoesNotDependOutward(basePackage),
+                ArchitectureRules.applicationAndPortDoNotDependOutward(basePackage),
+                ArchitectureRules.vendorSdkTypesStayInsidePlatformAdapters(basePackage),
+                ArchitectureRules.vendorSdkTypesDoNotAppearInDomainOrModuleApiSignatures(basePackage)
+        };
+    }
+
     private static void assertRejects(Function<String, ArchRule> ruleFactory,
                                       String fixturePackage,
-                                      String expectedInMessage) {
-        JavaClasses classes = new ClassFileImporter().importPackages(fixturePackage);
-        assertThat(classes)
-                .as("fixture package %s must contain classes", fixturePackage)
-                .isNotEmpty();
+                                      String... expectedInMessage) {
+        JavaClasses classes = importFixture(fixturePackage);
+        assertThat(classes).as("fixture package %s must contain classes", fixturePackage).isNotEmpty();
 
-        ArchRule rule = ruleFactory.apply(fixturePackage);
-
-        assertThatThrownBy(() -> rule.check(classes))
-                .as("rule [%s] must reject %s", rule.getDescription(), fixturePackage)
+        assertThatThrownBy(() -> ruleFactory.apply(fixturePackage).check(classes))
                 .isInstanceOf(AssertionError.class)
-                .hasMessageContaining(expectedInMessage);
+                .satisfies(failure -> {
+                    for (String expected : expectedInMessage) {
+                        assertThat(failure).hasMessageContaining(expected);
+                    }
+                });
+    }
+
+    private static JavaClasses importFixture(String fixturePackage) {
+        return new ClassFileImporter()
+                .importPackages(fixturePackage, ArchitectureRules.VENDOR_STANDIN_PACKAGE);
     }
 }

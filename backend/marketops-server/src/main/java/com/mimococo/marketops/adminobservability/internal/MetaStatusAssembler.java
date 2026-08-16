@@ -134,9 +134,7 @@ public class MetaStatusAssembler {
         try (Connection connection = source.getConnection()) {
             return connection.isValid(PROBE_TIMEOUT_SECONDS) ? STATUS_UP : STATUS_DOWN;
         } catch (SQLException | RuntimeException exception) {
-            // The exception text can carry the host, port and role of the database.
-            // It belongs in the server log, not in a response the console renders.
-            log.warn("Database probe did not succeed", exception);
+            logSanitizedProbeFailure("database_probe_failed", exception);
             return STATUS_DOWN;
         }
     }
@@ -155,8 +153,23 @@ public class MetaStatusAssembler {
             // reveal the migration content to an unauthenticated caller.
             return current.getVersion().getVersion();
         } catch (RuntimeException exception) {
-            log.warn("Schema version could not be read", exception);
+            logSanitizedProbeFailure("migration_version_probe_failed", exception);
             return UNKNOWN_VERSION;
         }
+    }
+
+    /**
+     * Record only the category of a probe failure.
+     *
+     * <p>Driver and Flyway exception messages can contain credentials, hosts,
+     * ports, role names and SQL. The exception object is therefore never handed
+     * to the logger and no stack trace is attached to this unauthenticated path.
+     */
+    private void logSanitizedProbeFailure(String event, Exception exception) {
+        log.atWarn()
+                .addKeyValue("event", event)
+                .addKeyValue("correlation_id", CorrelationId.current())
+                .addKeyValue("exception_class", exception.getClass().getName())
+                .log("Metadata dependency probe failed");
     }
 }

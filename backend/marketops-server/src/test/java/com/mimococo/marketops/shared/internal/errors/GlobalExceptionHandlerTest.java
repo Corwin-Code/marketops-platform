@@ -2,12 +2,17 @@ package com.mimococo.marketops.shared.internal.errors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.mimococo.marketops.shared.CorrelationId;
 import com.mimococo.marketops.shared.ErrorCode;
 import java.lang.reflect.Method;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpMethod;
@@ -95,9 +100,48 @@ class GlobalExceptionHandlerTest {
         assertThat((String) detail.getProperties().get("correlationId")).isNotBlank();
     }
 
+    @Test
+    @DisplayName("public-boundary logs discard exception messages and throwable proxies")
+    void logsContainOnlySanitizedFailureCategories() throws NoSuchMethodException {
+        Logger logger = (Logger) LoggerFactory.getLogger(GlobalExceptionHandler.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+
+        try {
+            Method method = GlobalExceptionHandlerTest.class.getDeclaredMethod("accepts", String.class);
+            BeanPropertyBindingResult binding = new BeanPropertyBindingResult(new Object(), "payload");
+            binding.reject("secretRule", "SELECT password FROM ops WHERE role = marketops_app");
+            handler.handleValidationFailure(
+                    new MethodArgumentNotValidException(new MethodParameter(method, 0), binding));
+            handler.handleUnknownResource(
+                    new NoResourceFoundException(HttpMethod.GET, "", "/private/10.0.0.7:5432"));
+            handler.handleUnexpectedFailure(new IllegalStateException(
+                    "FATAL: password authentication failed for marketops_app at 10.0.0.7:5432"));
+        } finally {
+            logger.detachAppender(appender);
+            appender.stop();
+        }
+
+        assertThat(appender.list).hasSize(3).allSatisfy(event -> {
+            assertThat(event.getThrowableProxy()).isNull();
+            assertThat(event.getFormattedMessage()).isEqualTo("Request processing failed");
+        });
+        assertThat(rendered(appender.list))
+                .doesNotContain("password", "marketops_app", "10.0.0.7", "5432", "SELECT",
+                        "secretRule", "/private/");
+    }
+
+    private static String rendered(List<ILoggingEvent> events) {
+        return events.stream()
+                .map(event -> event.getFormattedMessage() + " " + event.getKeyValuePairs())
+                .reduce("", (left, right) -> left + "\n" + right);
+    }
+
     @SuppressWarnings("unused")
     private void accepts(String value) {
-        // Target of the MethodParameter the validation exception needs; the body is
-        // irrelevant because only the parameter's declaration is read.
+        // Target of the MethodParameter the validation exception needs. Referencing
+        // the argument keeps the fixture honest if this helper is ever invoked.
+        java.util.Objects.requireNonNull(value, "validation fixture value");
     }
 }

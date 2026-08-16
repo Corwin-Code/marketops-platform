@@ -61,10 +61,10 @@ class ApplicationConfigurationTest {
     }
 
     @Test
-    @DisplayName("health never reports component detail")
-    void healthDetailIsWithheld() {
+    @DisplayName("health names components but never reports their detail")
+    void healthComponentNamesAreVisibleButDetailIsWithheld() {
         assertThat(base.getProperty("management.endpoint.health.show-details")).isEqualTo("never");
-        assertThat(base.getProperty("management.endpoint.health.show-components")).isEqualTo("never");
+        assertThat(base.getProperty("management.endpoint.health.show-components")).isEqualTo("always");
     }
 
     @Test
@@ -141,6 +141,23 @@ class ApplicationConfigurationTest {
     void logRecordsCarryTheCorrelationIdentifier() {
         assertThat(String.valueOf(base.getProperty("logging.pattern.correlation")))
                 .contains("correlationId");
+    }
+
+    @Test
+    @DisplayName("database libraries do not publish connection configuration at INFO")
+    void databaseLibraryLogsStartAtWarningLevel() {
+        List<String> databaseLoggers = List.of(
+                "logging.level.org.flywaydb",
+                "logging.level.com.zaxxer.hikari",
+                "logging.level.org.postgresql");
+        for (String logger : databaseLoggers) {
+            assertThat(base.getProperty(logger)).as("base %s", logger).isEqualTo("WARN");
+            for (String profile : List.of("application-local.yaml", "application-ci.yaml")) {
+                assertThat(load(profile).getProperty(logger))
+                        .as("%s must not weaken %s", profile, logger)
+                        .isNull();
+            }
+        }
     }
 
     @Test

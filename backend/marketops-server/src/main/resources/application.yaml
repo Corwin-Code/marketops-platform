@@ -82,10 +82,10 @@ management:
   endpoint:
     health:
       access: read-only
-      # Component detail names the data source, its pool and its validation query.
-      # The console needs the aggregate state, not the internals.
+      # Component names and aggregate status are operationally useful. Detailed
+      # messages remain hidden because they can name pools, queries and hosts.
       show-details: never
-      show-components: never
+      show-components: always
       probes:
         enabled: true
       group:
@@ -119,3 +119,9 @@ logging:
   level:
     root: INFO
     com.mimococo.marketops: INFO
+    # Normal driver/pool/migration INFO records include JDBC locations, ports,
+    # pool names or role-adjacent configuration. The allowlisted metadata and
+    # fixed application events provide status without publishing those values.
+    org.flywaydb: WARN
+    com.zaxxer.hikari: WARN
+    org.postgresql: WARN
