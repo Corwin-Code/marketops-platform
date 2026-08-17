@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      The console renders nothing but the platform's own state, and it holds no
+      credential. A restrictive policy is still declared here so a later change
+      that pulls in a third-party script has to state that intention explicitly.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src 'self' http://127.0.0.1:8080; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <title>MarketOps Russia</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

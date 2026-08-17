@@ -1,0 +1,1267 @@
+#!/usr/bin/env python3
+"""Enforce the three global production-readiness rules for this repository.
+
+The rules exist because a foundation that ships an unfinished path, a
+history-narrating comment, or a scaffold identifier teaches every later work
+package to do the same.
+
+============  ===========================================================
+Rule          Question it answers
+============  ===========================================================
+TC-GLOBAL-001 Does any compromise, placeholder, or superseded parallel
+              implementation remain in a production path?
+TC-GLOBAL-002 Does any comment describe project history or a future cleanup
+              instead of current behaviour?
+TC-GLOBAL-003 Does any production identifier use a placeholder or scaffold
+              name instead of the agreed production name?
+============  ===========================================================
+
+Scope is explicit rather than repository-wide. Governance records, work items,
+requirements, and phase evidence legitimately describe history and superseded
+decisions, so they are excluded from the comment and naming rules while
+remaining subject to the secret and placeholder rules that apply everywhere.
+Test sources may use deliberately invalid names, because architecture fixtures
+have to violate the rules they protect.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import re
+import sys
+import xml.etree.ElementTree as ElementTree
+from dataclasses import dataclass, field
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+BACKEND = "backend/marketops-server"
+FRONTEND = "frontend/marketops-console"
+
+# Directories whose contents are production behaviour.
+PRODUCTION_ROOTS = (
+    f"{BACKEND}/src/main",
+    f"{FRONTEND}/src",
+    "infra",
+    "scripts",
+    ".github/workflows",
+)
+
+# Directories whose contents are tests or deliberately invalid fixtures.
+TEST_ROOTS = (
+    f"{BACKEND}/src/test",
+    f"{FRONTEND}/src/__tests__",
+    f"{FRONTEND}/tests",
+    "tests",
+)
+
+# Documents that describe the current system and must not narrate history.
+CANONICAL_DOC_PATHS = (
+    "docs/02-architecture/designs",
+    "docs/06-runbooks",
+    "README.md",
+)
+
+# Documents whose purpose is to record history, decisions, or evidence.
+HISTORICAL_DOC_ROOTS = (
+    "docs/00-governance",
+    "docs/01-requirements",
+    "docs/02-architecture/adr",
+    "docs/03-work-items",
+    "docs/07-phase-evidence",
+    "docs/08-handoffs",
+    "CHANGELOG.md",
+)
+
+SOURCE_SUFFIXES = {".java", ".ts", ".tsx", ".js", ".mjs", ".py", ".sh", ".sql", ".yml", ".yaml"}
+COMMENT_SUFFIXES = {".java", ".ts", ".tsx", ".js", ".mjs"}
+
+SKIP_DIR_NAMES = {
+    ".git", "node_modules", "target", "dist", "coverage", ".vite",
+    "__pycache__", ".venv", ".mvn",
+}
+
+# --------------------------------------------------------------------------
+# TC-GLOBAL-001 — compromise retirement
+# --------------------------------------------------------------------------
+
+# A marker counts only in annotation form. A mention wrapped in backticks or
+# quotes is documentation or test data describing the rule, not unfinished work,
+# so a plain word search would report the rule's own definition forever and train
+# reviewers to ignore the result.
+UNRESOLVED_MARKERS = re.compile(r"""(?<![`'"\w])(?:TODO|FIXME|HACK|XXX)(?![`'"\w])""")
+
+# The files that define these rules necessarily contain every pattern the rules
+# search for. They are the rule definition, not a subject of it. This is the only
+# exclusion in this validator: it is an exact path list, it is asserted by a test
+# so it cannot be widened silently, and every other file in the repository —
+# including all documentation — is scanned.
+RULE_DEFINITION_PATHS = (
+    "scripts/validate_production_readiness.py",
+    "tests/test_validate_production_readiness.py",
+)
+
+# Retired designs. Each entry states what must not reappear and why.
+RETIRED_ARTEFACTS = (
+    ("ops.health_probe", "a probe table was replaced by the datasource health indicator"),
+    ("health_probe", "a probe table was replaced by the datasource health indicator"),
+    ("spring-boot-starter-data-jdbc", "the plain JDBC starter is the approved dependency"),
+    ("Type.OPEN", "modules are closed; an open module disables encapsulation and cycle detection"),
+    ("failOnEmptyShould", "empty-subject handling is per rule, never a global override"),
+    ("com.<company>", "the Java root package is com.mimococo.marketops"),
+    ("<company>", "the Java root package is com.mimococo.marketops"),
+)
+
+# Files that may never exist, keyed by the design they belonged to.
+RETIRED_PATHS = (
+    ("archunit.properties", "empty-subject handling is per rule, never a global override"),
+    (
+        "docs/00-governance/CURRENT_STATE_PROPOSAL_WP-P0-001.md",
+        "CURRENT_STATE.md is the only canonical runtime state source",
+    ),
+    (
+        "docs/02-architecture/designs/WP-P0-001-foundation-design-v1.1.md",
+        "the canonical design carries no review-version suffix",
+    ),
+    (
+        "docs/02-architecture/designs/WP-P0-001-foundation-design-v1.2.md",
+        "the canonical design carries no review-version suffix",
+    ),
+    (
+        "docs/02-architecture/designs/WP-P0-001-foundation-design-v1.3.md",
+        "the canonical design carries no review-version suffix",
+    ),
+)
+
+# Dependencies that must not appear in the backend build.
+FORBIDDEN_BACKEND_DEPENDENCIES = (
+    ("spring-boot-starter-data-jdbc", "use spring-boot-starter-jdbc"),
+    ("spring-boot-starter-data-jpa", "JPA is out of scope for this foundation"),
+    ("hibernate-core", "JPA is out of scope for this foundation"),
+)
+
+# --------------------------------------------------------------------------
+# TC-GLOBAL-002 — functional comments
+# --------------------------------------------------------------------------
+
+HISTORY_COMMENT_PATTERNS = (
+    (re.compile(r"\bWP-P0-00\d\b"), "work package narration"),
+    (re.compile(r"(?<![A-Za-z0-9])C(?:[1-9]|10)\b(?=[^A-Za-z0-9]*(?:commit|stage|step|later|phase))", re.I), "commit-stage narration"),
+    (re.compile(r"\bv1\.[0-3]\b"), "review-revision narration"),
+    (re.compile(r"\bremove (?:this )?(?:in a )?(?:future|later)\b", re.I), "future cleanup instruction"),
+    (re.compile(r"\bremove later\b", re.I), "future cleanup instruction"),
+    (re.compile(r"\bfor now\b", re.I), "provisional wording"),
+    (re.compile(r"\btemporary (?:compromise|workaround|shim)\b", re.I), "compromise wording"),
+    (re.compile(r"\breview finding\b", re.I), "review narration"),
+    (re.compile(r"\bcontroller requested\b", re.I), "review narration"),
+    (re.compile(r"\blegacy compatibility\b", re.I), "compatibility narration"),
+    (re.compile(r"\bhistorically\b", re.I), "history narration"),
+    (re.compile(r"\bpreviously\b", re.I), "history narration"),
+    (re.compile(r"\bformer implementation\b", re.I), "history narration"),
+    (re.compile(r"\bold path\b", re.I), "history narration"),
+    (re.compile(r"\breview iteration\b", re.I), "review narration"),
+    (re.compile(r"\ba work package that introduces\b", re.I), "work package narration"),
+    (
+        re.compile(r"\b(?:controller|rework|revision) (?:finding|request|iteration|stage)\b", re.I),
+        "review narration",
+    ),
+)
+
+# --------------------------------------------------------------------------
+# TC-GLOBAL-003 — production naming
+# --------------------------------------------------------------------------
+
+REQUIRED_NAMES = {
+    "product_display_name": "MarketOps Russia",
+    "repository": "marketops-platform",
+    "backend_application": "marketops-server",
+    "frontend_package": "marketops-console",
+    "java_root_package": "com.mimococo.marketops",
+    "database": "marketops",
+    "migration_role": "marketops_migration",
+    "application_role": "marketops_app",
+    "backend_env_prefix": "MARKETOPS_",
+    "frontend_env_prefix": "VITE_MARKETOPS_",
+}
+
+SCAFFOLD_TERMS = (
+    "hello-world", "helloworld", "hello world",
+    "foo", "bar", "prototype",
+)
+
+# Scaffold terms that are only rejected when they name an identifier, because the
+# same words appear legitimately in prose such as "for example" or "a sample of".
+IDENTIFIER_SCAFFOLD_TERMS = ("example", "demo", "sample", "temp", "temporary")
+
+IDENTIFIER_CONTEXT = re.compile(
+    r"(?:package|class|interface|enum|record|artifactId|groupId|name|id)\s*[:=> ]\s*"
+    r"[\"'<]?([A-Za-z0-9_.\-]*)",
+    re.I,
+)
+
+ACTION_REFERENCE = re.compile(
+    r"^\s*(?:-\s*)?uses:\s*[^@\s]+@(?P<ref>[^\s#]+)"
+    r"(?:\s+#\s*(?P<version>v\d+(?:\.\d+)*))?\s*$"
+)
+IMMUTABLE_ACTION_REF = re.compile(r"^[0-9a-f]{40}$")
+PATH_RESTRICTION = re.compile(
+    r"guard-repo-path|path (?:contains|without) (?:whitespace|spaces?|a single quote)|"
+    r"move the clone to a path without",
+    re.I,
+)
+PENDING_EVIDENCE = re.compile(r"PENDING_(?:LOCAL|CODEX_GITHUB)_EXECUTION")
+UNSAFE_THROWABLE_LOGGING = re.compile(
+    r"\b(?:log|logger)\.(?:trace|debug|info|warn|error)\s*\([^;]*,\s*"
+    r"(?:exception|throwable|error|failure)\s*\)|\.setCause\s*\(",
+    re.S,
+)
+
+ARCHITECTURE_RULE_TOKENS = (
+    "moduleInternalsAreNotAccessedFromOtherModules",
+    "modulesAreFreeOfCycles",
+    "theSharedModuleDependsOnNoBusinessModule",
+    "domainDoesNotDependOutward",
+    "applicationAndPortDoNotDependOutward",
+    "vendorSdkTypesStayInsidePlatformAdapters",
+    "vendorSdkTypesDoNotAppearInDomainOrModuleApiSignatures",
+    "marketplaceintegration.adapter.<platform>",
+    "isWithin(item.getPackageName(), owningModulePackage)",
+    "isNamedInterface(item)",
+    "item.getPackage().isAnnotatedWith(NamedInterface.class)",
+    "segment.equals(INTERNAL_SEGMENT)",
+)
+
+STRUCTURED_LOGGING_TOKENS = (
+    "console: ecs",
+    "exclude: tags",
+    "include: false",
+    "customizer: com.mimococo.marketops.shared.internal.logging.EcsCorrelationIdJsonMembersCustomizer",
+    "application: ${spring.application.name}",
+    "environment: ${marketops.environment}",
+    "buildVersion: ${spring.application.version}",
+)
+
+ECS_CORRELATION_CUSTOMIZER_TOKENS = (
+    "StructuredLoggingJsonMembersCustomizer<ILoggingEvent>",
+    "members.add(CorrelationId.LOG_CONTEXT_KEY, this::correlationId)",
+    "event.getMDCPropertyMap().get(CorrelationId.LOG_CONTEXT_KEY)",
+    'NO_REQUEST = "none"',
+    "!CorrelationId.LOG_CONTEXT_KEY.equals(pair.key)",
+)
+
+LOCAL_LOGGING_TOKENS = (
+    "application=${spring.application.name}",
+    "environment=${marketops.environment}",
+    "buildVersion=${spring.application.version}",
+    "correlationId=%X{correlationId:-none}",
+    "%kvp",
+)
+
+COMPLETION_STATE_TOKENS = (
+    "active_work_package: NONE",
+    "active_gate: CONTROLLER_PHASE_0_PLANNING",
+    "authorization: PLANNING_ONLY",
+)
+
+COMPLETED_WORK_PACKAGE_TOKENS = (
+    "| Status | COMPLETED |",
+    "| Historic design verdict | APPROVED_FOR_IMPLEMENTATION |",
+    "| Current execution authorization | CLOSED |",
+    "| Implementation result | VERIFIED |",
+)
+
+POLLING_CONTRACT_TOKENS = (
+    "HEALTH_REFRESH_INTERVAL_MS",
+    "HEALTH_RETRY_DELAYS_MS",
+    "failedAttempts",
+    "retryDelaysMs",
+    "inFlight",
+    "setTimeout",
+    "lifecycle.abort()",
+    "manualRefresh.current",
+)
+
+BUILT_PREVIEW_COMMAND = (
+    "npm run build && npm run preview -- --host 127.0.0.1 --port 4173 --strictPort"
+)
+
+BACKLOG_HEADER = ("ID", "Title", "Status", "Dependencies", "Core source requirements")
+BACKLOG_ALLOWED_STATES = {"DRAFT", "READY_FOR_DESIGN", "COMPLETED"}
+SOURCE_HEAD_ENVIRONMENT_VARIABLE = "MARKETOPS_SOURCE_HEAD_SHA"
+SOURCE_HEAD_EXPRESSION = "${{ github.event.pull_request.head.sha || github.sha }}"
+
+PR_SECURITY_EVIDENCE_TOKENS = (
+    "source_head_sha",
+    "tested_merge_sha",
+    "PR review threads",
+    "CodeQL PR annotations",
+    "Code scanning",
+    "Dependabot",
+    "Secret scanning",
+)
+
+
+@dataclass
+class Violation:
+    rule: str
+    path: str
+    line: int
+    detail: str
+
+
+@dataclass
+class Report:
+    violations: list[Violation] = field(default_factory=list)
+    inspected_files: int = 0
+
+    def add(self, rule: str, path: Path | str, line: int, detail: str) -> None:
+        relative = path if isinstance(path, str) else str(path.relative_to(ROOT))
+        self.violations.append(Violation(rule, relative, line, detail))
+
+    def for_rule(self, rule: str) -> list[Violation]:
+        return [violation for violation in self.violations if violation.rule == rule]
+
+
+def is_rule_definition(path: Path) -> bool:
+    """Report whether ``path`` defines the rules rather than being subject to them."""
+    return str(path.relative_to(ROOT)) in RULE_DEFINITION_PATHS
+
+
+def under(path: Path, roots: tuple[str, ...]) -> bool:
+    relative = str(path.relative_to(ROOT))
+    return any(relative == root or relative.startswith(root + "/") for root in roots)
+
+
+def iter_files() -> list[Path]:
+    files: list[Path] = []
+    for path in sorted(ROOT.rglob("*")):
+        if not path.is_file():
+            continue
+        if any(part in SKIP_DIR_NAMES for part in path.relative_to(ROOT).parts):
+            continue
+        files.append(path)
+    return files
+
+
+def read_text(path: Path) -> str | None:
+    try:
+        return path.read_text(encoding="utf-8")
+    except (UnicodeDecodeError, OSError):
+        return None
+
+
+def matching_lines(text: str, pattern: re.Pattern[str]) -> list[tuple[int, str]]:
+    """Return every line matched by a repository-contract pattern."""
+    return [
+        (number, line)
+        for number, line in enumerate(text.splitlines(), start=1)
+        if pattern.search(line)
+    ]
+
+
+def contract_token_violations(
+    text: str,
+    required: tuple[str, ...] = (),
+    prohibited: tuple[str, ...] = (),
+) -> list[str]:
+    """Return absent requirements and present retired contract markers."""
+    violations = [f"required contract is absent: {token}" for token in required if token not in text]
+    violations.extend(
+        f"prohibited contract is present: {token}" for token in prohibited if token in text
+    )
+    return violations
+
+
+def base_environment_identity_violations(text: str) -> list[int]:
+    """Return base-config lines that commit a marketops environment fallback."""
+    violations: list[int] = []
+    in_marketops = False
+    for number, line in enumerate(text.splitlines(), start=1):
+        if line and not line[0].isspace() and not line.lstrip().startswith("#"):
+            in_marketops = line.strip() == "marketops:"
+            continue
+        if in_marketops and re.match(r"^\s{2}environment\s*:", line):
+            violations.append(number)
+    return violations
+
+
+def unsafe_throwable_logging_violations(text: str) -> list[int]:
+    """Return source lines that hand an exception object to a logger."""
+    return [text.count("\n", 0, match.start()) + 1 for match in UNSAFE_THROWABLE_LOGGING.finditer(text)]
+
+
+def browser_acceptance_contract_violations(config_text: str, scenario_text: str) -> list[str]:
+    """Check that browser acceptance covers the built artifact and full recovery."""
+    violations = contract_token_violations(
+        config_text,
+        required=(BUILT_PREVIEW_COMMAND, "baseURL: 'http://127.0.0.1:4173'"),
+        prohibited=("npm run dev", "127.0.0.1:5173"),
+    )
+    violations.extend(
+        contract_token_violations(
+            scenario_text,
+            required=(
+                "compose('stop', 'postgres')",
+                "waitForDatabaseStatus(page, 'DOWN')",
+                "compose('up', '-d', '--wait', 'postgres')",
+                "waitForDatabaseStatus(page, 'UP')",
+                "expectCorrelation(recovered.response, recovered.body)",
+            ),
+        )
+    )
+    if len(re.findall(r"'data-state',\s*'ready'", scenario_text)) < 2:
+        violations.append("initial and recovered Ready UI assertions are both required")
+    return violations
+
+
+def markdown_table_cells(line: str) -> list[str] | None:
+    """Return the cells of one structurally delimited Markdown table row."""
+    stripped = line.strip()
+    if not stripped.startswith("|") or not stripped.endswith("|"):
+        return None
+    return [cell.strip() for cell in stripped[1:-1].split("|")]
+
+
+def backlog_completion_contract_violations(text: str) -> list[str]:
+    """Require one completed WP-P0-001 row in the canonical backlog table."""
+    lines = text.splitlines()
+    tables: list[list[list[str]]] = []
+    for index, line in enumerate(lines):
+        if tuple(markdown_table_cells(line) or ()) != BACKLOG_HEADER:
+            continue
+        if index + 1 >= len(lines):
+            return ["Phase 0 backlog table has no separator row"]
+        separator = markdown_table_cells(lines[index + 1])
+        if separator is None or len(separator) != len(BACKLOG_HEADER):
+            return ["Phase 0 backlog table separator is malformed"]
+        if any(re.fullmatch(r":?-{3,}:?", cell) is None for cell in separator):
+            return ["Phase 0 backlog table separator is malformed"]
+        rows: list[list[str]] = []
+        for row_line in lines[index + 2:]:
+            cells = markdown_table_cells(row_line)
+            if cells is None:
+                break
+            if len(cells) != len(BACKLOG_HEADER):
+                return ["Phase 0 backlog table row width is malformed"]
+            rows.append(cells)
+        tables.append(rows)
+    if len(tables) != 1:
+        return ["Phase 0 backlog must contain exactly one canonical table"]
+
+    violations: list[str] = []
+    for row in tables[0]:
+        if row[2] not in BACKLOG_ALLOWED_STATES:
+            violations.append(f"backlog {row[0]} has unknown Status: {row[2]}")
+    wp_rows = [row for row in tables[0] if row[0] == "WP-P0-001"]
+    if len(wp_rows) != 1:
+        violations.append("Phase 0 backlog must contain exactly one WP-P0-001 row")
+    elif wp_rows[0][2] != "COMPLETED":
+        violations.append("backlog WP-P0-001 Status must be COMPLETED")
+    return violations
+
+
+def workflow_job_body(text: str, job: str) -> str | None:
+    """Return one top-level GitHub Actions job body without parsing run scripts."""
+    match = re.search(
+        rf"(?ms)^  {re.escape(job)}:\s*$\n(?P<body>.*?)(?=^  [A-Za-z0-9_-]+:\s*$|\Z)",
+        text,
+    )
+    return match.group("body") if match else None
+
+
+def browser_source_identity_contract_violations(
+    workflow_text: str,
+    config_text: str,
+    scenario_text: str,
+    resolver_text: str,
+) -> list[str]:
+    """Separate the authored source identity from a temporary merge checkout."""
+    violations: list[str] = []
+    frontend_test = workflow_job_body(workflow_text, "frontend-test")
+    expected_assignment = f"{SOURCE_HEAD_ENVIRONMENT_VARIABLE}: {SOURCE_HEAD_EXPRESSION}"
+    if frontend_test is None or expected_assignment not in frontend_test:
+        violations.append(
+            "frontend-test must pass the pull-request authored source identity explicitly"
+        )
+
+    shared_resolution = "const sourceHead = resolveBrowserSourceIdentity(repositoryRoot);"
+    for surface, text in (("Playwright configuration", config_text), ("browser scenario", scenario_text)):
+        if shared_resolution not in text:
+            violations.append(f"{surface} must use the shared source identity resolver")
+        if "execFileSync('git', ['rev-parse', 'HEAD']" in text:
+            violations.append(f"{surface} must not treat checkout HEAD as authored source")
+    if "MARKETOPS_BUILD_COMMIT: sourceHead" not in config_text:
+        violations.append("browser build must consume the shared source identity")
+    if "`Console ${frontendVersion} (${sourceHead})`" not in scenario_text:
+        violations.append("browser assertion must consume the shared source identity")
+
+    for token in (
+        "if (isContinuousIntegration(environment))",
+        "CI browser verification requires ${SOURCE_HEAD_ENVIRONMENT_VARIABLE}",
+        "repositoryHeadReader(repositoryRoot)",
+        "FULL_SOURCE_SHA",
+    ):
+        if token not in resolver_text:
+            violations.append(f"source identity resolver contract is absent: {token}")
+    return violations
+
+
+def pr_security_evidence_violations(text: str, expected_source_head: str) -> list[str]:
+    """Check that PR security evidence covers every surface on the tested source Head."""
+    violations = contract_token_violations(text, required=PR_SECURITY_EVIDENCE_TOKENS)
+    if expected_source_head not in text:
+        violations.append(f"security evidence is stale for source Head {expected_source_head}")
+    return violations
+
+
+def action_reference_violations(text: str) -> list[tuple[int, str]]:
+    """Return mutable or unlabelled external action references."""
+    violations: list[tuple[int, str]] = []
+    for number, line in enumerate(text.splitlines(), start=1):
+        match = ACTION_REFERENCE.match(line)
+        if match is None:
+            continue
+        reference = match.group("ref")
+        version = match.group("version")
+        if IMMUTABLE_ACTION_REF.fullmatch(reference) is None or version is None:
+            violations.append((number, line.strip()))
+    return violations
+
+
+def runner_reference_violations(text: str) -> list[tuple[int, str]]:
+    """Return workflow runner declarations that do not pin Ubuntu 24.04."""
+    return [
+        (number, line.strip())
+        for number, line in enumerate(text.splitlines(), start=1)
+        if "runs-on:" in line and "ubuntu-24.04" not in line
+    ]
+
+
+def require_tokens(report: Report, rule: str, path: Path, tokens: tuple[str, ...]) -> None:
+    """Report each required contract token absent from a text file."""
+    text = read_text(path)
+    if text is None:
+        report.add(rule, path, 0, "required contract file is missing or unreadable")
+        return
+    for detail in contract_token_violations(text, required=tokens):
+        report.add(rule, path, 0, detail)
+
+
+def reject_tokens(report: Report, rule: str, path: Path, tokens: tuple[str, ...]) -> None:
+    """Report each prohibited contract token present in a text file."""
+    text = read_text(path)
+    if text is None:
+        report.add(rule, path, 0, "prohibited-contract file is missing or unreadable")
+        return
+    for detail in contract_token_violations(text, prohibited=tokens):
+        report.add(rule, path, 0, detail)
+
+
+def check_repository_contracts(report: Report) -> None:
+    """Enforce the foundation capabilities whose absence previously looked green."""
+    rule = "TC-GLOBAL-001"
+
+    required_paths = (
+        f"{BACKEND}/.mvn/wrapper/maven-wrapper.jar",
+        f"{FRONTEND}/package-lock.json",
+        f"{FRONTEND}/playwright.config.ts",
+        f"{FRONTEND}/tests/browser/health-shell.spec.ts",
+    )
+    for relative in required_paths:
+        if not (ROOT / relative).is_file():
+            report.add(rule, relative, 0, "required foundation artefact is absent")
+
+    for relative in ("Makefile", "scripts/dev_doctor.py", "scripts/fresh_clone_check.sh"):
+        path = ROOT / relative
+        text = read_text(path) or ""
+        for number, line in matching_lines(text, PATH_RESTRICTION):
+            report.add(rule, path, number, f"repository path restriction: {line.strip()[:100]}")
+
+    require_tokens(
+        report,
+        rule,
+        ROOT / "Makefile",
+        (
+            "bootstrap: preserving the complete existing ignored configuration",
+            "local configuration is incomplete",
+        ),
+    )
+
+    workflows = ROOT / ".github" / "workflows"
+    if workflows.exists():
+        for path in sorted(workflows.glob("*.yml")) + sorted(workflows.glob("*.yaml")):
+            text = read_text(path) or ""
+            for number, line in runner_reference_violations(text):
+                report.add(
+                    rule,
+                    path,
+                    number,
+                    f"workflow runner must be ubuntu-24.04: {line}",
+                )
+            for number, line in action_reference_violations(text):
+                report.add(rule, path, number, f"action is not a full SHA with version comment: {line}")
+
+    evidence = ROOT / "docs" / "07-phase-evidence" / "WP-P0-001"
+    if evidence.exists():
+        for path in sorted(evidence.glob("*.md")):
+            text = read_text(path) or ""
+            for number, line in matching_lines(text, PENDING_EVIDENCE):
+                report.add(rule, path, number, f"implementation evidence remains pending: {line.strip()[:100]}")
+
+    wrapper_properties = ROOT / BACKEND / ".mvn" / "wrapper" / "maven-wrapper.properties"
+    require_tokens(
+        report,
+        rule,
+        wrapper_properties,
+        (
+            "wrapperVersion=3.3.4",
+            "distributionType=bin",
+            "apache-maven/3.9.16/apache-maven-3.9.16-bin.zip",
+            "distributionSha256Sum=",
+            "maven-wrapper/3.3.4/maven-wrapper-3.3.4.jar",
+            "wrapperSha256Sum=",
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / "scripts/verify_coverage_thresholds.sh",
+        ("-Djacoco.line.coverage=1.00", "--coverage.thresholds.lines=100"),
+    )
+    wrapper_jar = ROOT / BACKEND / ".mvn" / "wrapper" / "maven-wrapper.jar"
+    properties_text = read_text(wrapper_properties) or ""
+    expected_wrapper_hash = re.search(r"(?m)^wrapperSha256Sum=([0-9a-f]{64})$", properties_text)
+    if wrapper_jar.is_file() and expected_wrapper_hash is not None:
+        actual = hashlib.sha256(wrapper_jar.read_bytes()).hexdigest()
+        if actual != expected_wrapper_hash.group(1):
+            report.add(rule, wrapper_jar, 0, "wrapper JAR does not match wrapperSha256Sum")
+
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "pom.xml",
+        (
+            "<propertyName>failsafeArgLine</propertyName>",
+            "<proc>full</proc>",
+            "<argLine>@{argLine} -javaagent:",
+            "<argLine>@{failsafeArgLine} -javaagent:",
+            "<jacoco.line.coverage>0.80</jacoco.line.coverage>",
+            "<jacoco.branch.coverage>0.70</jacoco.branch.coverage>",
+        ),
+    )
+
+    architecture_rules = ROOT / BACKEND / "src/test/java/com/mimococo/marketops/architecture/ArchitectureRules.java"
+    require_tokens(report, rule, architecture_rules, ARCHITECTURE_RULE_TOKENS)
+    architecture_text = read_text(architecture_rules) or ""
+    for method in (
+        "moduleInternalsAreNotAccessedFromOtherModules",
+        "theSharedModuleDependsOnNoBusinessModule",
+        "vendorSdkTypesStayInsidePlatformAdapters",
+        "vendorSdkTypesDoNotAppearInDomainOrModuleApiSignatures",
+    ):
+        if re.search(rf"{method}\(String basePackage\).*?return classes\(\)", architecture_text, re.S) is None:
+            report.add(rule, architecture_rules, 0, f"custom ArchUnit condition is not a positive classes() rule: {method}")
+
+    required_architecture_fixtures = (
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/moduleinternals/alphabeta/AlphaBetaReadsAlphaInternals.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/domainoutward/orders/domain/DomainOrder.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/applicationoutward/orders/application/OrderUseCase.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/portoutward/orders/port/OrderPort.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/vendorlocation/orders/other/SdkUseOutsideAdapter.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/vendorapi/orders/OrderFacade.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/vendorapi/orders/domain/DomainOffer.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/vendorapi/namedinterface/orders/api/package-info.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/violation/vendorapi/namedinterface/orders/api/NamedInterfaceVendorApi.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/conforming/architecture/marketplaceintegration/adapter/ozon/OzonMarketplaceAdapter.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/conforming/architecture/orders/api/package-info.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/conforming/architecture/orders/api/PlatformOrderApi.java",
+        f"{BACKEND}/src/test/java/com/mimococo/marketops/testfixture/conforming/internalization/beta/InternalizationConsumer.java",
+    )
+    for relative in required_architecture_fixtures:
+        if not (ROOT / relative).is_file():
+            report.add(rule, relative, 0, "required architecture sensitivity fixture is absent")
+
+    for relative in (
+        f"{BACKEND}/src/main/java/com/mimococo/marketops/shared/internal/errors/GlobalExceptionHandler.java",
+        f"{BACKEND}/src/main/java/com/mimococo/marketops/adminobservability/internal/MetaStatusAssembler.java",
+    ):
+        path = ROOT / relative
+        text = read_text(path) or ""
+        for line in unsafe_throwable_logging_violations(text):
+            report.add(rule, path, line, "public boundary passes a throwable object to the logger")
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/test/java/com/mimococo/marketops/shared/internal/errors/GlobalExceptionHandlerTest.java",
+        ("getThrowableProxy()).isNull()", "logsContainOnlySanitizedFailureCategories"),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/test/java/com/mimococo/marketops/adminobservability/internal/MetaStatusAssemblerTest.java",
+        (
+            "getThrowableProxy()).isNull()",
+            "probeLogsContainOnlySanitizedFailureCategories",
+            "repeatedProbeFailureIsBoundedAndRecoveryRearmsIt",
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/main/java/com/mimococo/marketops/adminobservability/internal/MetaStatusAssembler.java",
+        (
+            "AtomicBoolean",
+            "compareAndSet(false, true)",
+            'addKeyValue("correlationId"',
+            'addKeyValue("exceptionClass"',
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/main/java/com/mimococo/marketops/shared/internal/errors/GlobalExceptionHandler.java",
+        (
+            "log.atWarn()",
+            "log.atInfo()",
+            "log.atError()",
+            'addKeyValue("event"',
+            'addKeyValue("errorCode"',
+            'addKeyValue("correlationId"',
+            'addKeyValue("exceptionClass"',
+        ),
+    )
+
+    for path in (ROOT / BACKEND / "src/test").rglob("*.java") if (ROOT / BACKEND / "src/test").exists() else ():
+        text = read_text(path) or ""
+        if "org.testcontainers.containers.PostgreSQLContainer" in text:
+            report.add(rule, path, 0, "Testcontainers 2.x PostgreSQL import uses the retired package")
+
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/main/java/com/mimococo/marketops/shared/internal/config/CorsProperties.java",
+        (
+            "@ConfigurationProperties(prefix = \"marketops.web.cors\")",
+            "http://127\\\\.0\\\\.0\\\\.1:(?:5173|4173)",
+            "@Size(max = 2)",
+            "@Pattern(regexp = LOCAL_CONSOLE_ORIGIN)",
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/main/java/com/mimococo/marketops/shared/internal/config/WebConfig.java",
+        (
+            'policy.setAllowedMethods(List.of("GET", "OPTIONS"))',
+            'policy.setAllowedHeaders(List.of("Accept", CorrelationId.HEADER_NAME))',
+            "policy.setAllowCredentials(false)",
+            'source.registerCorsConfiguration("/api/**", policy)',
+        ),
+    )
+    base_configuration = read_text(ROOT / BACKEND / "src/main/resources/application.yaml") or ""
+    for line in base_environment_identity_violations(base_configuration):
+        report.add(
+            rule,
+            ROOT / BACKEND / "src/main/resources/application.yaml",
+            line,
+            "base configuration must not provide marketops.environment",
+        )
+    if "allowed-origins" in base_configuration:
+        report.add(rule, ROOT / BACKEND / "src/main/resources/application.yaml", 0, "base profile must enable no CORS origin")
+    finite_origins = (
+        "allowed-origins: http://127.0.0.1:5173,http://127.0.0.1:4173",
+    )
+    for profile in ("application-local.yaml", "application-ci.yaml"):
+        require_tokens(
+            report,
+            rule,
+            ROOT / BACKEND / "src/main/resources" / profile,
+            finite_origins,
+        )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/main/resources/application-ci.yaml",
+        STRUCTURED_LOGGING_TOKENS,
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND
+        / "src/main/java/com/mimococo/marketops/shared/internal/logging/"
+        / "EcsCorrelationIdJsonMembersCustomizer.java",
+        ECS_CORRELATION_CUSTOMIZER_TOKENS,
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/main/resources/application-local.yaml",
+        LOCAL_LOGGING_TOKENS,
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/test/java/com/mimococo/marketops/LoggingContractTest.java",
+        (
+            "StructuredLogEncoder",
+            "new ObjectMapper().readTree",
+            "ciEncoderUsesTheEstablishedMdcCorrelationIdentifier",
+            "ciEncoderUsesNoneWhenMdcIsAbsent",
+            'containsOnlyOnce("\\\"correlationId\\\"")',
+            'record.has("tags")',
+            'record.has("error")',
+            "localPatternProducesReadableSafeOutput",
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/test/java/com/mimococo/marketops/ApplicationEnvironmentFailClosedTest.java",
+        ("unprofiledStartFailsClosed", 'hasMessageContaining("marketops.environment")'),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/main/resources/application.yaml",
+        (
+            "show-details: never",
+            "show-components: always",
+            "org.flywaydb: WARN",
+            "com.zaxxer.hikari: WARN",
+            "org.postgresql: WARN",
+        ),
+    )
+    for profile in ("application-local.yaml", "application-ci.yaml"):
+        reject_tokens(
+            report,
+            rule,
+            ROOT / BACKEND / "src/main/resources" / profile,
+            ("org.flywaydb:", "com.zaxxer.hikari:", "org.postgresql:"),
+        )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/test/java/com/mimococo/marketops/ApplicationSmokeIT.java",
+        ("healthResponseNamesComponentsButWithholdsDetails", 'doesNotContain("\\\"details\\\""'),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / BACKEND / "src/test/java/com/mimococo/marketops/shared/internal/config/CorsContractTest.java",
+        (
+            "emptyOriginListDisablesCors",
+            "localConsoleOriginsAreAllowed",
+            "unknownOriginIsRejected",
+            "unknownConfiguredOriginFailsBindingValidation",
+            "preflightContractIsFinite",
+        ),
+    )
+
+    frontend_manifest = ROOT / FRONTEND / "package.json"
+    require_tokens(
+        report,
+        rule,
+        frontend_manifest,
+        (
+            '"@cyclonedx/cyclonedx-npm"',
+            '"@playwright/test"',
+            '"fsevents": false',
+            '"libxmljs2": false',
+            '"test:browser"',
+            '"sbom"',
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / FRONTEND / "vite.config.ts",
+        (
+            "lines: 80",
+            "branches: 70",
+            "functions: 80",
+            "statements: 80",
+            "readFileSync(new URL('./package.json'",
+            "frontendPackageVersion(packageManifest)",
+        ),
+    )
+    frontend_config = ROOT / FRONTEND / "src/config.ts"
+    config_text = read_text(frontend_config) or ""
+    for retired_default in ("DEFAULT_API_BASE_URL", "DEFAULT_ENVIRONMENT"):
+        if retired_default in config_text:
+            report.add(rule, frontend_config, 0, f"frontend silently defaults {retired_default}")
+    require_tokens(
+        report,
+        rule,
+        frontend_config,
+        ("REQUIRED_CONFIG_KEYS", "missingKeys", "ok: false"),
+    )
+    playwright_config = ROOT / FRONTEND / "playwright.config.ts"
+    browser_scenario = ROOT / FRONTEND / "tests/browser/health-shell.spec.ts"
+    source_identity_resolver = ROOT / FRONTEND / "tests/browser/sourceIdentity.ts"
+    for detail in browser_acceptance_contract_violations(
+        read_text(playwright_config) or "", read_text(browser_scenario) or ""
+    ):
+        report.add(rule, browser_scenario, 0, detail)
+    for detail in browser_source_identity_contract_violations(
+        read_text(ROOT / ".github/workflows/frontend.yml") or "",
+        read_text(playwright_config) or "",
+        read_text(browser_scenario) or "",
+        read_text(source_identity_resolver) or "",
+    ):
+        report.add(rule, browser_scenario, 0, detail)
+    require_tokens(
+        report,
+        rule,
+        browser_scenario,
+        ("frontendPackageVersion(packageManifest)",),
+    )
+    reject_tokens(
+        report,
+        rule,
+        ROOT / ".github/workflows/frontend.yml",
+        ("MARKETOPS_BUILD_VERSION", "github.ref_name"),
+    )
+
+    require_tokens(
+        report,
+        rule,
+        ROOT / "docs/00-governance/CURRENT_STATE.md",
+        COMPLETION_STATE_TOKENS,
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md",
+        COMPLETED_WORK_PACKAGE_TOKENS,
+    )
+    backlog_path = ROOT / "docs/03-work-items/BACKLOG-PHASE-0.md"
+    for detail in backlog_completion_contract_violations(read_text(backlog_path) or ""):
+        report.add(rule, backlog_path, 0, detail)
+    reject_tokens(
+        report,
+        rule,
+        ROOT / "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md",
+        ("IMPLEMENTED_CANDIDATE",),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / "docs/01-requirements/traceability.csv",
+        (
+            "D-03,Owner Decision",
+            "WP-P0-001;WP-P0-003",
+            "ACTIVE_CONTROL",
+            "PostgreSQL Task/Outbox Worker",
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / FRONTEND / "src/health/HealthShell.tsx",
+        POLLING_CONTRACT_TOKENS,
+    )
+    health_shell_text = read_text(ROOT / FRONTEND / "src/health/HealthShell.tsx") or ""
+    if "setInterval" in health_shell_text:
+        report.add(rule, ROOT / FRONTEND / "src/health/HealthShell.tsx", 0, "polling must self-schedule after settlement, not overlap through setInterval")
+    require_tokens(
+        report,
+        rule,
+        ROOT / FRONTEND / "src/__tests__/HealthShell.test.tsx",
+        (
+            "refreshes automatically at the bounded normal interval",
+            "uses three bounded backoff retries",
+            "never overlaps a scheduled or manual refresh",
+            "aborts the active request and schedules nothing after unmount",
+            "leaves one scheduler under StrictMode",
+        ),
+    )
+
+    workflow_contracts = {
+        ROOT / ".github/workflows/frontend.yml": (
+            "actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7",
+            "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7",
+        ),
+        ROOT / ".github/workflows/backend.yml": (
+            "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7",
+        ),
+        ROOT / ".github/workflows/security.yml": (
+            "actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5",
+        ),
+    }
+    for path, tokens in workflow_contracts.items():
+        require_tokens(report, rule, path, tokens)
+    require_tokens(
+        report,
+        rule,
+        ROOT / "scripts/collect_supply_chain.py",
+        ("frontend-sbom.json", 'sbom.get("bomFormat") != "CycloneDX"'),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / "scripts/fresh_clone_check.sh",
+        (
+            "MarketOps clone's verification",
+            "make env-init",
+            "./mvnw -B -ntp verify",
+            "npm ci",
+            "npm ls --all",
+            "npm run lint",
+            "npm run format:check",
+            "npm run typecheck",
+            "npm run test:ci",
+            "npm run build",
+            "npm run verify:bundle",
+            "scripts/verify_coverage_thresholds.sh all",
+            "npm run test:browser",
+            "scripts/collect_supply_chain.py",
+            "scripts/verify_local_config.sh",
+            "down --volumes --remove-orphans",
+        ),
+    )
+
+
+def declared_dependency_artifacts(pom_text: str) -> list[tuple[str, str]]:
+    """Return the group and artifact of every dependency a POM declares.
+
+    The document is parsed rather than searched as text. A build file names a
+    forbidden coordinate twice for opposite purposes: once if it depends on it,
+    and once inside the enforcer rule that bans it. Only an element named
+    ``dependency`` expresses the first, so a substring scan would report the ban
+    as the very thing the ban prevents.
+
+    :raises ElementTree.ParseError: if the document is not well-formed XML
+    """
+    root = ElementTree.fromstring(pom_text)
+    namespace = ""
+    if root.tag.startswith("{"):
+        namespace = root.tag[: root.tag.index("}") + 1]
+    declared: list[tuple[str, str]] = []
+    for element in root.iter(f"{namespace}dependency"):
+        group = (element.findtext(f"{namespace}groupId") or "").strip()
+        artifact = (element.findtext(f"{namespace}artifactId") or "").strip()
+        declared.append((group, artifact))
+    return declared
+
+
+def comment_lines(text: str, suffix: str) -> list[tuple[int, str]]:
+    """Return the comment lines of a source file with their line numbers.
+
+    Only comments are examined, so a rule name or an identifier that legitimately
+    contains a matching word in executable code is never reported.
+    """
+    results: list[tuple[int, str]] = []
+    in_block = False
+    for number, raw in enumerate(text.splitlines(), start=1):
+        line = raw.strip()
+        if in_block:
+            results.append((number, line))
+            if "*/" in line:
+                in_block = False
+            continue
+        if line.startswith("/*"):
+            results.append((number, line))
+            if "*/" not in line:
+                in_block = True
+            continue
+        if line.startswith("//"):
+            results.append((number, line))
+            continue
+        if "//" in line and suffix in COMMENT_SUFFIXES:
+            index = line.find("//")
+            if line.count('"', 0, index) % 2 == 0:
+                results.append((number, line[index:]))
+    return results
+
+
+def check_compromise_retirement(report: Report, files: list[Path]) -> None:
+    """TC-GLOBAL-001 — no unresolved or superseded implementation in production."""
+    rule = "TC-GLOBAL-001"
+
+    for retired_path, reason in RETIRED_PATHS:
+        candidate = ROOT / retired_path
+        if candidate.exists():
+            report.add(rule, retired_path, 0, f"retired artefact present: {reason}")
+        if "/" not in retired_path:
+            for path in files:
+                if path.name == retired_path:
+                    report.add(rule, path, 0, f"retired artefact present: {reason}")
+
+    for path in files:
+        if path.suffix.lower() not in SOURCE_SUFFIXES and path.suffix.lower() != ".md":
+            continue
+        if is_rule_definition(path):
+            continue
+        text = read_text(path)
+        if text is None:
+            continue
+
+        is_production = under(path, PRODUCTION_ROOTS)
+        is_test = under(path, TEST_ROOTS)
+        is_canonical_doc = any(
+            str(path.relative_to(ROOT)) == doc or str(path.relative_to(ROOT)).startswith(doc + "/")
+            for doc in CANONICAL_DOC_PATHS
+        )
+
+        if is_production or is_test or is_canonical_doc:
+            for number, line in enumerate(text.splitlines(), start=1):
+                if UNRESOLVED_MARKERS.search(line):
+                    report.add(rule, path, number, f"unresolved marker: {line.strip()[:80]}")
+
+        if not is_production and not is_canonical_doc:
+            continue
+
+        for marker, reason in RETIRED_ARTEFACTS:
+            for number, line in enumerate(text.splitlines(), start=1):
+                if marker in line:
+                    report.add(rule, path, number, f"retired construct '{marker}': {reason}")
+
+    pom = ROOT / BACKEND / "pom.xml"
+    if pom.exists():
+        pom_text = read_text(pom) or ""
+        try:
+            declared = declared_dependency_artifacts(pom_text)
+        except ElementTree.ParseError as error:
+            report.add(rule, pom, 0, f"the build file is not well-formed XML: {error}")
+            declared = []
+        artifacts = {artifact for _, artifact in declared}
+        for dependency, reason in FORBIDDEN_BACKEND_DEPENDENCIES:
+            if dependency in artifacts:
+                report.add(rule, pom, 0, f"forbidden dependency '{dependency}': {reason}")
+        if "flyway-core" in artifacts and "spring-boot-starter-flyway" in artifacts:
+            report.add(
+                rule, pom, 0,
+                "flyway-core is provided by the Boot starter and must not be declared",
+            )
+
+    migrations = ROOT / BACKEND / "src/main/resources/db/migration"
+    if migrations.exists():
+        versioned = sorted(p.name for p in migrations.glob("V*.sql"))
+        if versioned != ["V0001__create_foundation_schemas.sql"]:
+            report.add(
+                rule, "db/migration", 0,
+                f"the foundation defines exactly one migration; found {versioned}",
+            )
+        for path in migrations.glob("*.sql"):
+            text = read_text(path) or ""
+            if "IF NOT EXISTS" in text.upper():
+                report.add(
+                    rule, path, 0,
+                    "foundation schema creation is strict and must not tolerate an existing schema",
+                )
+
+    check_repository_contracts(report)
+
+
+def check_functional_comments(report: Report, files: list[Path]) -> None:
+    """TC-GLOBAL-002 — comments describe behaviour, not project history."""
+    rule = "TC-GLOBAL-002"
+    for path in files:
+        relative = str(path.relative_to(ROOT))
+        if under(path, HISTORICAL_DOC_ROOTS) or relative in HISTORICAL_DOC_ROOTS:
+            continue
+        if is_rule_definition(path):
+            continue
+        if path.suffix.lower() not in COMMENT_SUFFIXES:
+            continue
+        if not (under(path, PRODUCTION_ROOTS) or under(path, TEST_ROOTS)):
+            continue
+        text = read_text(path)
+        if text is None:
+            continue
+        for number, line in comment_lines(text, path.suffix.lower()):
+            for pattern, label in HISTORY_COMMENT_PATTERNS:
+                if pattern.search(line):
+                    report.add(rule, path, number, f"{label}: {line.strip()[:80]}")
+
+
+def check_production_naming(report: Report, files: list[Path]) -> None:
+    """TC-GLOBAL-003 — production identifiers use the agreed production names."""
+    rule = "TC-GLOBAL-003"
+
+    pom = ROOT / BACKEND / "pom.xml"
+    if pom.exists():
+        pom_text = read_text(pom) or ""
+        if f"<groupId>{REQUIRED_NAMES['java_root_package']}</groupId>" not in pom_text:
+            report.add(rule, pom, 0, "groupId must be com.mimococo.marketops")
+        if f"<artifactId>{REQUIRED_NAMES['backend_application']}</artifactId>" not in pom_text:
+            report.add(rule, pom, 0, "artifactId must be marketops-server")
+
+    package_json = ROOT / FRONTEND / "package.json"
+    if package_json.exists():
+        try:
+            manifest = json.loads(read_text(package_json) or "{}")
+        except json.JSONDecodeError as error:
+            report.add(rule, package_json, 0, f"package.json is not valid JSON: {error}")
+            manifest = {}
+        if manifest.get("name") != REQUIRED_NAMES["frontend_package"]:
+            report.add(rule, package_json, 0, "package name must be marketops-console")
+        if manifest.get("private") is not True:
+            report.add(rule, package_json, 0, "the frontend package must be private")
+
+    for path in files:
+        if not under(path, PRODUCTION_ROOTS):
+            continue
+        if path.suffix.lower() not in SOURCE_SUFFIXES:
+            continue
+        if is_rule_definition(path):
+            continue
+        text = read_text(path)
+        if text is None:
+            continue
+        for term in SCAFFOLD_TERMS:
+            pattern = re.compile(rf"(?<![A-Za-z0-9]){re.escape(term)}(?![A-Za-z0-9])", re.I)
+            for number, line in enumerate(text.splitlines(), start=1):
+                if pattern.search(line):
+                    report.add(rule, path, number, f"scaffold term '{term}' in a production path")
+        for number, line in enumerate(text.splitlines(), start=1):
+            for match in IDENTIFIER_CONTEXT.finditer(line):
+                identifier = (match.group(1) or "").lower()
+                if not identifier:
+                    continue
+                for term in IDENTIFIER_SCAFFOLD_TERMS:
+                    if identifier == term or identifier.startswith(term + "-") or identifier.startswith(term + "."):
+                        report.add(
+                            rule, path, number,
+                            f"scaffold identifier '{match.group(1)}' in a production path",
+                        )
+
+
+def main() -> int:
+    files = iter_files()
+    report = Report(inspected_files=len(files))
+
+    check_compromise_retirement(report, files)
+    check_functional_comments(report, files)
+    check_production_naming(report, files)
+
+    rules = ("TC-GLOBAL-001", "TC-GLOBAL-002", "TC-GLOBAL-003")
+    labels = {
+        "TC-GLOBAL-001": "Compromise Retirement Check",
+        "TC-GLOBAL-002": "Functional JavaDoc Rewrite Check",
+        "TC-GLOBAL-003": "Production Naming Check",
+    }
+
+    print(f"Production readiness validation over {report.inspected_files} files.")
+    failed = False
+    for rule in rules:
+        violations = report.for_rule(rule)
+        if violations:
+            failed = True
+            print(f"{rule} {labels[rule]}: {len(violations)} violation(s)", file=sys.stderr)
+            for violation in violations:
+                location = f"{violation.path}:{violation.line}" if violation.line else violation.path
+                print(f"  {location}: {violation.detail}", file=sys.stderr)
+        else:
+            print(f"{rule} {labels[rule]}: PASS")
+
+    if failed:
+        print("Production readiness validation failed.", file=sys.stderr)
+        return 1
+    print("Production readiness validation passed.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -4,8 +4,10 @@
 
 | Field | Value |
 | --- | --- |
-| Status | READY_FOR_IMPLEMENTATION |
-| Authorization | APPROVED_FOR_IMPLEMENTATION |
+| Status | COMPLETED |
+| Historic design verdict | APPROVED_FOR_IMPLEMENTATION |
+| Current execution authorization | CLOSED |
+| Implementation result | VERIFIED |
 | Phase | Sprint 0 / Phase 0 |
 | Risk | Medium |
 | Controller | GPT-5.6 Sol Pro |
@@ -137,12 +139,28 @@ Implementation will be accepted only when all applicable criteria pass:
 
 ## 10. Controller Gate
 
-Current verdict:
+Historic design verdict:
 
 ```text
 APPROVED_FOR_IMPLEMENTATION
 ```
 
-This verdict authorizes only the scoped WP-P0-001 implementation through a
-protected Draft Pull Request. It does not authorize direct push to `main`, merge,
-production enablement, Marketplace credentials or production data.
+Current execution authorization:
+
+```text
+CLOSED
+```
+
+Implementation result:
+
+```text
+VERIFIED
+```
+
+The design verdict is immutable provenance for the implementation that was
+authorized. It is not current permission to change the completed Work Package.
+Any further implementation requires a newly active Work Package and its own
+authorization Gate. Independent Controller re-review, all repository and project
+Gates, and separate Human Owner merge authorization still govern the Draft PR.
+Nothing here authorizes direct push to `main`, production enablement,
+Marketplace credentials or production data.

@@ -1,0 +1,25 @@
+# Workstation profile.
+#
+# Activated by `make backend-run`. It only names the environment and raises the
+# detail of this project's own log records; connection settings stay in the base
+# file so a workstation and continuous integration exercise the same wiring.
+
+marketops:
+  environment: local
+  web:
+    cors:
+      allowed-origins: http://127.0.0.1:5173,http://127.0.0.1:4173
+
+logging:
+  pattern:
+    # Workstation output is one readable line and includes every safe identity
+    # and event field needed to correlate it with non-local JSON records.
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level application=${spring.application.name} environment=${marketops.environment} buildVersion=${spring.application.version} correlationId=%X{correlationId:-none} %logger{36} - %msg %kvp%n"
+  level:
+    com.mimococo.marketops: DEBUG
+
+spring:
+  flyway:
+    # A workstation database is created by the compose stack and is expected to be
+    # empty. Migrating into a non-empty database is an error worth failing on.
+    baseline-on-migrate: false
