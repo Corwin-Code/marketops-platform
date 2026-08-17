@@ -44,9 +44,11 @@ Canonical design: docs/02-architecture/designs/WP-P0-001-foundation-design.md
   `docs/07-phase-evidence/WP-P0-001/`.
 - The eleven stable CI jobs and the active Ruleset constitute the repository
   Gate. WP-P0-001 is complete, its implementation result is verified, and its
-  execution authorization is closed. The Draft PR remains subject to independent
-  Controller review, every repository Gate and separate Human Owner merge
-  authorization.
+  execution authorization is closed. PR #5 completed the independent Controller,
+  repository Gate and Human Owner authorization path and was squash-merged to
+  `main` as `3473c3670c1fbf5b0f7d40eb70001337146404f7`. Its approved and merged
+  tree is `6e060eeb41d17fdbe913af9d47a9a24cc8a2df39`; production writes remain
+  disabled.
 - Baseline v1.0, the naming baseline, the Controller–Maker–CI–Owner model, the
   repository governance pack and ADRs are established.
 - The Public pre-production repository at `Corwin-Code/marketops-platform` is

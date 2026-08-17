@@ -159,8 +159,10 @@ VERIFIED
 
 The design verdict is immutable provenance for the implementation that was
 authorized. It is not current permission to change the completed Work Package.
-Any further implementation requires a newly active Work Package and its own
-authorization Gate. Independent Controller re-review, all repository and project
-Gates, and separate Human Owner merge authorization still govern the Draft PR.
-Nothing here authorizes direct push to `main`, production enablement,
-Marketplace credentials or production data.
+PR #5 satisfied independent Controller review, all repository/project Gates and
+separate Human Owner merge authorization, then was squash-merged to `main` as
+`3473c3670c1fbf5b0f7d40eb70001337146404f7`. Its merged tree
+`6e060eeb41d17fdbe913af9d47a9a24cc8a2df39` exactly matches the approved source
+tree. Any further implementation requires a newly active Work Package and its
+own authorization Gate. Nothing here authorizes direct push to `main`,
+production enablement, Marketplace credentials or production data.

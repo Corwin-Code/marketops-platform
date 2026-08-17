@@ -7,8 +7,14 @@ Evidence for the final project-foundation micro-closure, regenerated on
 execution boundary: local workspace, committed-head Fresh Clone and GitHub Draft
 Pull Request.
 
+Those execution-boundary records remain historically correct for the pre-merge
+review. Current merged-main provenance and closure state are recorded separately
+in `post-merge-verification.md` so historical evidence is not rewritten as if it
+had been produced after merge.
+
 | Evidence | State | What it establishes |
 | --- | --- | --- |
+| `post-merge-verification.md` | PASS | PR #5 Squash Merge provenance, tree equality, new-main Gates, canonical state and branch cleanup |
 | `compromise-retirement-check.md` | PASS | The governance, architecture, logging, fail-closed and build-identity contracts cannot silently regress |
 | `functional-javadoc-rewrite-check.md` | PASS | Executable comments describe current behaviour and safety boundaries |
 | `production-naming-check.md` | PASS | Production identifiers use the approved names |
@@ -29,3 +35,5 @@ The checked-in local evidence certifies the immutable implementation Head above.
 The later evidence commit, authored source Head, temporary tested merge and its
 final CI rerun are recorded in the Draft PR body and Controller handoff. This
 keeps final GitHub evidence non-recursive without borrowing an older green run.
+That statement describes the pre-merge evidence commit; the post-merge record
+above is now the authoritative current-state supplement.
