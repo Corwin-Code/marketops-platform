@@ -2,15 +2,15 @@
 
 **Russia Marketplace Operations & Decision Platform**
 
-项目状态：`INITIATING`  
-当前阶段：`Sprint 0 / Phase 0 — Data, Identity & Visibility Foundation`  
-当前活动 Work Package：`WP-P0-001 — Repository, Governance & CI Foundation`  
-当前授权：`INITIAL IMPLEMENTATION`；WP-P0-001 的初版实现已产出，等待总控审查与 Owner 合并。
+## Current runtime state
 
-Owner Git 流程指导：`REQUIRED`。每次任务开始时，Agent 必须按
-[`OWNER_GIT_WORKFLOW_GUIDE.md`](docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md)
-说明完整 Git 生命周期、当前所处步骤和下一项操作；只有 Owner 明确确认
-已熟悉且不再需要辅助后才能关闭。
+项目唯一的动态 runtime state 入口是
+[`CURRENT_STATE.md`](docs/00-governance/CURRENT_STATE.md)。本 README 不复制活动
+Work Package、Gate 或 authorization 值，避免形成第二事实源。
+
+Owner Git 流程契约见
+[`OWNER_GIT_WORKFLOW_GUIDE.md`](docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md)；
+是否启用指导模式同样只以 `CURRENT_STATE.md` 为准。
 
 ## 项目定位
 
@@ -115,7 +115,7 @@ marketops-platform/
 ## 当前禁止事项
 
 - 不向聊天、Git、日志、Issue、PR 或普通配置提交任何 Ozon/WB Token、密码、Cookie、Buyer PII 或私钥；
-- 不绕过 Design Gate 直接让 Claude 实现 WP-P0-001；
+- 不绕过活动 Work Package 的 Design Gate 直接开始实现；
 - 不直接向 `main` 推送产品代码；
 - 不把 Fixture 结果描述成真实平台 API 已接通；
 - 不在 Phase 0 开启任何生产平台写能力；
