@@ -7,14 +7,21 @@ from tempfile import TemporaryDirectory
 
 from scripts.validate_governance import (
     CANONICAL_DESIGN_RELATIVE_PATH,
+    WP_P0_002_ID,
+    WP_P0_002_RELATIVE_PATH,
     git_scan_paths,
+    validate_active_work_package_record_text,
     validate_backlog_state_text,
     validate_approved_design_state_text,
     validate_authorization_state_text,
     validate_completion_state_text,
+    validate_controller_review_standard_text,
     validate_lifecycle_state_text,
     validate_owner_control_state_text,
     validate_parallel_current_state_paths,
+    validate_prior_closed_transition_text,
+    validate_readme_runtime_state_text,
+    validate_wp_p0_002_traceability_text,
 )
 
 
@@ -78,10 +85,15 @@ def authorization_current_state(
         if active_work_package is not None
         else ""
     )
+    gate = (
+        "active_gate: READY_FOR_DESIGN\n"
+        if active_work_package not in {None, "NONE"}
+        else "active_gate: CONTROLLER_PHASE_0_PLANNING\n"
+    )
     return f"""# Current State
 
 ```yaml
-{active}{field}production_write_enabled: false
+{active}{gate}{field}production_write_enabled: false
 ```
 """
 
@@ -89,7 +101,7 @@ def authorization_current_state(
 def authorization_work_package(
     authorization: str | None,
     *,
-    status: str = "IMPLEMENTING",
+    status: str = "READY_FOR_DESIGN",
     explicit_field: bool = False,
     historic_verdict: str | None = None,
     implementation_result: str | None = None,
@@ -269,6 +281,52 @@ class OwnerControlStateTests(unittest.TestCase):
             current_state("REQUIRED", delegation="ACTIVE", delegate="NONE"),
         )
         self.assertTrue(any("requires a named delegate" in error for error in errors))
+
+
+class PriorClosedTransitionTests(unittest.TestCase):
+    def active_state(self) -> str:
+        return authorization_current_state("DESIGN_ONLY", WP_P0_002_ID) + """
+
+## Prior closed planning transition — historical provenance
+
+active_work_package: NONE
+active_gate: CONTROLLER_PHASE_0_PLANNING
+authorization: PLANNING_ONLY
+superseded as live runtime state by the leading YAML
+must not be interpreted as current authorization or a parallel state source
+"""
+
+    def test_classified_prior_transition_is_valid(self) -> None:
+        errors: list[str] = []
+        validate_prior_closed_transition_text(errors, self.active_state())
+        self.assertEqual([], errors)
+
+    def test_unclassified_old_state_tokens_are_rejected(self) -> None:
+        errors: list[str] = []
+        validate_prior_closed_transition_text(
+            errors,
+            authorization_current_state("DESIGN_ONLY", WP_P0_002_ID),
+        )
+        self.assertTrue(any("classified" in error for error in errors))
+
+    def test_parallel_state_disclaimer_is_required(self) -> None:
+        errors: list[str] = []
+        validate_prior_closed_transition_text(
+            errors,
+            self.active_state().replace(
+                "must not be interpreted as current authorization or a parallel state source",
+                "",
+            ),
+        )
+        self.assertTrue(any("parallel state source" in error for error in errors))
+
+    def test_closed_state_needs_no_historical_duplicate(self) -> None:
+        errors: list[str] = []
+        validate_prior_closed_transition_text(
+            errors,
+            authorization_current_state("PLANNING_ONLY", "NONE"),
+        )
+        self.assertEqual([], errors)
 
 
 class LifecycleStateTests(unittest.TestCase):
@@ -495,6 +553,112 @@ class AuthorizationStateTests(unittest.TestCase):
         self.assertTrue(any("active_work_package metadata is missing" in error for error in errors))
 
 
+class ActiveDesignAuthorizationTests(unittest.TestCase):
+    def wp_p0_002(
+        self,
+        authorization: str = "DESIGN_ONLY",
+        status: str = "READY_FOR_DESIGN",
+        work_package_id: str = WP_P0_002_ID,
+    ) -> str:
+        return f"""# WP-P0-002
+
+## 1. Metadata
+
+| Field | Value |
+| --- | --- |
+| ID | {work_package_id} |
+| Status | {status} |
+| Authorization | {authorization} |
+"""
+
+    def validate(
+        self,
+        *,
+        current_authorization: str = "DESIGN_ONLY",
+        gate: str = "READY_FOR_DESIGN",
+        wp_authorization: str = "DESIGN_ONLY",
+        wp_status: str = "READY_FOR_DESIGN",
+        validated_id: str = WP_P0_002_ID,
+    ) -> list[str]:
+        current = authorization_current_state(
+            current_authorization,
+            active_work_package=WP_P0_002_ID,
+        ).replace("active_gate: READY_FOR_DESIGN", f"active_gate: {gate}")
+        errors: list[str] = []
+        validate_authorization_state_text(
+            errors,
+            current,
+            self.wp_p0_002(wp_authorization, wp_status),
+            validated_id,
+        )
+        return errors
+
+    def test_active_wp_p0_002_design_state_is_valid(self) -> None:
+        self.assertEqual([], self.validate())
+
+    def test_active_work_package_with_planning_only_is_rejected(self) -> None:
+        errors = self.validate(current_authorization="PLANNING_ONLY")
+        self.assertTrue(any("active Work Package requires" in error for error in errors))
+
+    def test_active_work_package_with_closed_authorization_is_rejected(self) -> None:
+        errors = self.validate(wp_authorization="CLOSED")
+        self.assertTrue(any("cannot have CLOSED" in error for error in errors))
+
+    def test_completed_work_package_cannot_be_active(self) -> None:
+        errors = self.validate(wp_status="COMPLETED")
+        self.assertTrue(any("COMPLETED Work Package" in error for error in errors))
+
+    def test_design_state_requires_ready_for_design_gate(self) -> None:
+        errors = self.validate(gate="PULL_REQUEST_GATE")
+        self.assertTrue(any("active_gate" in error for error in errors))
+
+    def test_design_state_requires_ready_for_design_status(self) -> None:
+        errors = self.validate(wp_status="DRAFT")
+        self.assertTrue(any("Status must be" in error for error in errors))
+
+    def test_active_record_id_mismatch_is_rejected(self) -> None:
+        errors = self.validate(validated_id="WP-P0-003")
+        self.assertTrue(any("record mismatch" in error for error in errors))
+
+
+class ActiveWorkPackageRecordTests(unittest.TestCase):
+    def current(self) -> str:
+        return authorization_current_state("DESIGN_ONLY", WP_P0_002_ID)
+
+    def record(self, work_package_id: str = WP_P0_002_ID) -> str:
+        return f"""# Work Package
+
+## 1. Metadata
+
+| Field | Value |
+| --- | --- |
+| ID | {work_package_id} |
+"""
+
+    def test_registered_active_record_is_valid(self) -> None:
+        errors: list[str] = []
+        validate_active_work_package_record_text(
+            errors,
+            self.current(),
+            {WP_P0_002_ID: self.record()},
+        )
+        self.assertEqual([], errors)
+
+    def test_missing_active_canonical_file_is_rejected(self) -> None:
+        errors: list[str] = []
+        validate_active_work_package_record_text(errors, self.current(), {})
+        self.assertTrue(any("canonical file is missing" in error for error in errors))
+
+    def test_wrong_active_canonical_id_is_rejected(self) -> None:
+        errors: list[str] = []
+        validate_active_work_package_record_text(
+            errors,
+            self.current(),
+            {WP_P0_002_ID: self.record("WP-P0-003")},
+        )
+        self.assertTrue(any("canonical file ID" in error for error in errors))
+
+
 class ClosedAuthorizationStateTests(unittest.TestCase):
     def completed_work_package(
         self,
@@ -715,6 +879,8 @@ def phase_zero_backlog(
     *,
     include_wp: bool = True,
     duplicate_wp: bool = False,
+    wp_p0_002_status: str = "DRAFT",
+    extra_ready: bool = False,
 ) -> str:
     wp_row = (
         f"| WP-P0-001 | Repository, Governance & CI Foundation | {status} | None | D-03 |\n"
@@ -722,12 +888,17 @@ def phase_zero_backlog(
         else ""
     )
     duplicate = wp_row if duplicate_wp else ""
+    extra = (
+        "| WP-P0-003 | Ingestion | READY_FOR_DESIGN | WP-P0-001/002 | INT-001 |\n"
+        if extra_ready
+        else ""
+    )
     return f"""# Phase 0 Work Package Backlog
 
 | ID | Title | Status | Dependencies | Core source requirements |
 | --- | --- | --- | --- | --- |
-{wp_row}{duplicate}| WP-P0-002 | Metadata | DRAFT | WP-P0-001 | IAM-001 |
-"""
+{wp_row}{duplicate}| WP-P0-002 | Metadata | {wp_p0_002_status} | WP-P0-001 | IAM-001 |
+{extra}"""
 
 
 class BacklogCompletionStateTests(unittest.TestCase):
@@ -759,6 +930,96 @@ class BacklogCompletionStateTests(unittest.TestCase):
     def test_unknown_backlog_status_is_rejected(self) -> None:
         errors = self.validate(phase_zero_backlog("UNRECOGNIZED"))
         self.assertTrue(any("unknown Status" in error for error in errors))
+
+
+def active_design_current_state(
+    *,
+    active_work_package: str = WP_P0_002_ID,
+    active_gate: str = "READY_FOR_DESIGN",
+    authorization: str = "DESIGN_ONLY",
+) -> str:
+    return f"""# Current State
+
+```yaml
+active_work_package: {active_work_package}
+active_gate: {active_gate}
+authorization: {authorization}
+production_write_enabled: false
+```
+
+## Active objective
+
+Claude produces the WP-P0-002 Design artifact.
+
+## Next authorized action
+
+Claude produces the WP-P0-002 Design artifact. Implementation remains prohibited.
+"""
+
+
+def active_design_work_package(
+    *, status: str = "READY_FOR_DESIGN", authorization: str = "DESIGN_ONLY"
+) -> str:
+    return f"""# WP-P0-002
+
+## 1. Metadata
+
+| Field | Value |
+| --- | --- |
+| ID | WP-P0-002 |
+| Status | {status} |
+| Authorization | {authorization} |
+"""
+
+
+class ActiveDesignBacklogTests(unittest.TestCase):
+    def validate(
+        self,
+        *,
+        current: str | None = None,
+        backlog: str | None = None,
+        active_wp: str | None = None,
+    ) -> list[str]:
+        errors: list[str] = []
+        validate_backlog_state_text(
+            errors,
+            current or active_design_current_state(),
+            completed_work_package(),
+            backlog or phase_zero_backlog(wp_p0_002_status="READY_FOR_DESIGN"),
+            active_wp or active_design_work_package(),
+        )
+        return errors
+
+    def test_active_design_backlog_transition_is_valid(self) -> None:
+        self.assertEqual([], self.validate())
+
+    def test_multiple_ready_for_design_rows_are_rejected(self) -> None:
+        errors = self.validate(
+            backlog=phase_zero_backlog(
+                wp_p0_002_status="READY_FOR_DESIGN", extra_ready=True
+            )
+        )
+        self.assertTrue(any("multiple READY_FOR_DESIGN" in error for error in errors))
+
+    def test_active_backlog_row_must_match_current_state(self) -> None:
+        errors = self.validate(
+            current=active_design_current_state(active_work_package="WP-P0-003")
+        )
+        self.assertTrue(any("active Work Package row" in error for error in errors))
+
+    def test_active_work_package_status_must_match_backlog(self) -> None:
+        errors = self.validate(active_wp=active_design_work_package(status="DRAFT"))
+        self.assertTrue(any("active Work Package Status" in error for error in errors))
+
+    def test_closed_state_rejects_ready_for_design_row(self) -> None:
+        errors: list[str] = []
+        validate_backlog_state_text(
+            errors,
+            completed_current_state(),
+            completed_work_package(),
+            phase_zero_backlog(wp_p0_002_status="READY_FOR_DESIGN"),
+        )
+        self.assertTrue(any("cannot retain" in error for error in errors))
 
 
 def completed_traceability(
@@ -860,6 +1121,166 @@ class CompletionStateTests(unittest.TestCase):
             traceability=completed_traceability("HR-06", "evidence", "")
         )
         self.assertTrue(any("HR-06 missing evidence" in error for error in errors))
+
+    def test_wp_p0_002_active_design_transition_preserves_wp_p0_001_closure(self) -> None:
+        self.assertEqual([], self.validate(current=active_design_current_state()))
+
+    def test_wp_p0_002_active_design_requires_design_only(self) -> None:
+        errors = self.validate(
+            current=active_design_current_state(authorization="PLANNING_ONLY")
+        )
+        self.assertTrue(any("requires authorization" in error for error in errors))
+
+    def test_wp_p0_002_next_action_must_prohibit_implementation(self) -> None:
+        current = active_design_current_state().replace(
+            "Implementation remains prohibited.",
+            "Implementation may begin.",
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("must prohibit implementation" in error for error in errors))
+
+
+class ReadmeRuntimeStateTests(unittest.TestCase):
+    def test_stable_current_state_entry_is_valid(self) -> None:
+        errors: list[str] = []
+        validate_readme_runtime_state_text(
+            errors,
+            "Current runtime state: docs/00-governance/CURRENT_STATE.md\n",
+        )
+        self.assertEqual([], errors)
+
+    def test_duplicate_active_work_package_claim_is_rejected(self) -> None:
+        errors: list[str] = []
+        validate_readme_runtime_state_text(
+            errors,
+            "docs/00-governance/CURRENT_STATE.md\n"
+            "当前活动 Work Package：WP-P0-002\n",
+        )
+        self.assertTrue(any("duplicates" in error for error in errors))
+
+    def test_missing_current_state_entry_is_rejected(self) -> None:
+        errors: list[str] = []
+        validate_readme_runtime_state_text(errors, "# README\n")
+        self.assertTrue(any("must link" in error for error in errors))
+
+
+def controller_standard_fixture() -> str:
+    return "\n".join(
+        (
+            "## 2. The 11+1 review standard",
+            "Full repository cross-check",
+            "Full production-grade scope",
+            "No in-scope deferred item",
+            "No compromise implementation",
+            "Three global hard rules",
+            "Standalone review and prompt artifacts",
+            "+1 — Project-grade distinction",
+            "## 4. Artifact Contract",
+            "Controller Review `.md`",
+            "Next-action Prompt `.md`",
+            "SHA-256",
+            "NEXT_AUTHORIZED_ACTOR",
+            "NEXT_ACTION",
+            "natural Chinese",
+        )
+    )
+
+
+class ControllerReviewStandardTests(unittest.TestCase):
+    def instructions(self) -> str:
+        return (
+            "At the start of every Controller task read "
+            "CONTROLLER_REVIEW_STANDARD.md and apply its 11+1 review standard."
+        )
+
+    def test_complete_standard_and_loader_are_valid(self) -> None:
+        errors: list[str] = []
+        validate_controller_review_standard_text(
+            errors,
+            controller_standard_fixture(),
+            self.instructions(),
+        )
+        self.assertEqual([], errors)
+
+    def test_missing_artifact_hash_contract_is_rejected(self) -> None:
+        errors: list[str] = []
+        validate_controller_review_standard_text(
+            errors,
+            controller_standard_fixture().replace("SHA-256", "hash omitted"),
+            self.instructions(),
+        )
+        self.assertTrue(any("SHA-256" in error for error in errors))
+
+    def test_project_instructions_must_load_standard(self) -> None:
+        errors: list[str] = []
+        validate_controller_review_standard_text(
+            errors,
+            controller_standard_fixture(),
+            "No task-start standard.",
+        )
+        self.assertTrue(any("do not load" in error for error in errors))
+
+
+def wp_p0_002_traceability() -> str:
+    base = completed_traceability().rstrip("\n")
+    rows = [
+        ("IAM-001", "WP-P0-002", "PARTIAL in WP-P0-002; runtime IAM"),
+        ("IAM-004", "WP-P0-002", "PARTIAL in WP-P0-002; runtime IAM"),
+        ("IAM-006", "WP-P0-002", "PARTIAL in WP-P0-002; runtime integration"),
+        ("IAM-007", "WP-P0-002", "PARTIAL in WP-P0-002; runtime IAM"),
+        (
+            "INT-002",
+            "WP-P0-002;WP-P0-005;WP-P0-006",
+            "PARTIAL in WP-P0-002; WP-P0-005/006",
+        ),
+        ("INT-003", "WP-P0-002", "PARTIAL in WP-P0-002; OQ-006"),
+        ("ADM-001", "WP-P0-002", "FULL closure in WP-P0-002; fail-closed"),
+        (
+            "ADM-002",
+            "WP-P0-002;WP-P0-003",
+            "PARTIAL in WP-P0-002; WP-P0-003",
+        ),
+    ]
+    additions = [
+        f'{source_id},Requirement,0,title,{work_packages},'
+        f'{WP_P0_002_RELATIVE_PATH},,,,PLANNED,"{notes}"'
+        for source_id, work_packages, notes in rows
+    ]
+    return base + "\n" + "\n".join(additions) + "\n"
+
+
+class WpP0002TraceabilityTests(unittest.TestCase):
+    def validate(self, text: str) -> list[str]:
+        errors: list[str] = []
+        validate_wp_p0_002_traceability_text(errors, text)
+        return errors
+
+    def test_complete_partial_full_contract_is_valid(self) -> None:
+        self.assertEqual([], self.validate(wp_p0_002_traceability()))
+
+    def test_partial_requirement_cannot_be_preverified(self) -> None:
+        text = wp_p0_002_traceability().replace(
+            f"{WP_P0_002_RELATIVE_PATH},,,,PLANNED,\"PARTIAL in WP-P0-002; OQ-006\"",
+            f"{WP_P0_002_RELATIVE_PATH},,,,VERIFIED,\"PARTIAL in WP-P0-002; OQ-006\"",
+        )
+        errors = self.validate(text)
+        self.assertTrue(any("must remain PLANNED" in error for error in errors))
+
+    def test_missing_later_closure_disposition_is_rejected(self) -> None:
+        text = wp_p0_002_traceability().replace(
+            "PARTIAL in WP-P0-002; WP-P0-005/006",
+            "PARTIAL in WP-P0-002",
+        )
+        errors = self.validate(text)
+        self.assertTrue(any("WP-P0-005/006" in error for error in errors))
+
+    def test_wrong_adm002_work_package_allocation_is_rejected(self) -> None:
+        text = wp_p0_002_traceability().replace(
+            "ADM-002,Requirement,0,title,WP-P0-002;WP-P0-003",
+            "ADM-002,Requirement,0,title,WP-P0-002",
+        )
+        errors = self.validate(text)
+        self.assertTrue(any("ADM-002 work_package" in error for error in errors))
 
 
 if __name__ == "__main__":

@@ -8,21 +8,51 @@
 | OQ-002 | What company-controlled domain defines the Java root package? | WP-P0-001 implementation | Yes | Human Owner | RESOLVED |
 | OQ-003 | What is the primary development OS and container runtime? | WP-P0-001 design approval | No | Human Owner | RESOLVED |
 | OQ-004 | Is Codex formally enabled for rework/fix/verify? | First review cycle | No | Human Owner | RESOLVED |
-| OQ-005 | Which authentication solution will be used for application users? | IAM design | No for WP-P0-001 | Owner + Controller | OPEN |
-| OQ-006 | Which Secret Manager and S3-compatible object storage are approved for Integration/Staging/Production? | INT-003 / Raw implementation | No for WP-P0-001 foundation | Owner + Security | OPEN |
+| OQ-005 | Which authentication solution will be used for application users? | Runtime IAM design/implementation | No for metadata Design; yes for runtime IAM | Owner + Controller | OPEN |
+| OQ-006 | Which Secret Manager and S3-compatible object storage are approved for Integration/Staging/Production? | INT-003 / Raw implementation | No for metadata Design; yes for runtime Secret retrieval | Owner + Security | OPEN |
 
 ## Sprint 0 business and platform questions from the Baseline
 
 | ID | Question | Needed by | Blocking | Status |
 | --- | --- | --- | --- | --- |
-| OQ-101 | Actual Ozon/WB Store and Account count and fulfillment modes | WP-P0-002/005/006 | Yes | OPEN |
-| OQ-102 | Available API roles, subscriptions and advertising permissions | Capability Matrix v1 | Yes | OPEN |
+| OQ-101 | Actual Ozon/WB Store and Account count and fulfillment modes | WP-P0-002/005/006 | No for metadata Design; yes for onboarding/acceptance and platform WPs | OPEN |
+| OQ-102 | Available API roles, subscriptions and advertising permissions | Capability Matrix v1 | No for metadata Design; yes for verified platform capability evidence | OPEN |
 | OQ-103 | First-version cost model for purchase, packaging, warehouse labor, tax and overhead | Finance model | Yes | OPEN |
 | OQ-104 | Business windows for completed order, refusal and return | Order/return mapping | Yes | OPEN |
 | OQ-105 | Internal Barcode/SKU data quality and duplicate policy | Product identity | Yes | OPEN |
 | OQ-106 | Existing ERP/WMS/accounting systems and export/API availability | Integration scope | No | OPEN |
 | OQ-107 | Russia hosting, backup, personal-data and cross-border access legal confirmation | Staging/Production | Yes before production | OPEN |
 | OQ-108 | Hero SKU and first experiment scope | Phase 1 | No for Phase 0 | OPEN |
+
+## WP-P0-002 Planning dispositions — questions remain OPEN
+
+### OQ-101 — topology input satisfied; actual inventory pending
+
+```text
+Planning disposition: Sufficient input for the current metadata Design Gate only.
+Current Legal Entity count: 1.
+Domain constraint: The model must not hard-code one Legal Entity, a common
+  Account/Store 1:1 cardinality or Warehouse as a strict single-Store child.
+Pending acceptance input: Actual Ozon/WB Account, Store, Warehouse and fulfillment
+  inventory for onboarding and platform Work Packages.
+Closure state: OPEN. Final business onboarding/acceptance still requires the
+  actual inventory and verified platform evidence.
+Secret handling: No Secret was requested or recorded.
+```
+
+### OQ-005, OQ-006 and OQ-102 — non-blocking for metadata Design
+
+```text
+OQ-005: OPEN. It does not block the platform-neutral identity/scope metadata
+  Design, but it blocks later runtime IAM authentication and enforcement design.
+OQ-006: OPEN. It does not block opaque Credential-reference metadata Design, but
+  it blocks real Secret Manager retrieval and storage integration.
+OQ-102: OPEN. It does not block an UNKNOWN/UNVERIFIED Capability Registry
+  structure, but it blocks verified platform capability population and behavior.
+```
+
+None of these dispositions authorizes a guessed platform fact, real Credential,
+Marketplace connection or production write.
 
 ## Resolved bootstrap decisions
 
