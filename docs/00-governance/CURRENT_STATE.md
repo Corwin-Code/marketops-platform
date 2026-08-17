@@ -9,9 +9,9 @@ sprint: Sprint 0
 controller: GPT-5.6 Sol Pro / current ChatGPT Project
 maker: Claude Cowork / Claude Code (initial artifact producer; no authoritative repository writes in current trial)
 rework_agent: Mac Codex (authoritative repository writer, rework/fix/verify, delegated Git execution)
-active_work_package: NONE
-active_gate: CONTROLLER_PHASE_0_PLANNING
-authorization: PLANNING_ONLY
+active_work_package: WP-P0-002
+active_gate: READY_FOR_DESIGN
+authorization: DESIGN_ONLY
 production_write_enabled: false
 owner_git_workflow_guidance: REQUIRED
 owner_git_workflow_guidance_exit: HUMAN_OWNER_EXPLICIT_CONFIRMATION
@@ -24,12 +24,43 @@ owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 ## Approved design of record
 
 ```text
+Role: prior approved WP-P0-001 foundation provenance; not the active design target
 Controller design verdict: APPROVED_FOR_IMPLEMENTATION
 Source reviewed Design v1.3 artifact SHA-256: 6dcb59abbee843fd93950edb6dff7bb052b213b17279c36884d167e844c89bd4
 Source design reviewed repository base: acccc6172cdad626844d99d085eabcc8fb2381ca
 Java root package: com.mimococo.marketops
 Canonical design: docs/02-architecture/designs/WP-P0-001-foundation-design.md
 ```
+
+## Active design target
+
+```text
+Work Package: WP-P0-002 — Organization, Store, Warehouse & Credential Metadata
+Work Package record: docs/03-work-items/WP-P0-002-organization-store-warehouse-credential-metadata.md
+Gate: READY_FOR_DESIGN
+Authorization: DESIGN_ONLY
+Design artifact: NOT_YET_PRODUCED
+Implementation authorization: NONE
+```
+
+The completed WP-P0-001 design is foundation provenance only. It does not grant
+implementation authority for WP-P0-002.
+
+## Prior closed planning transition — historical provenance
+
+Immediately before this Design activation, accepted `main`
+`489f151ea0f86e65793f1eed27def1ffcfd0bfdb` closed WP-P0-001 and exposed the
+following canonical transition:
+
+```text
+active_work_package: NONE
+active_gate: CONTROLLER_PHASE_0_PLANNING
+authorization: PLANNING_ONLY
+```
+
+This block is immutable historical provenance for the completed WP-P0-001 Gate.
+It is superseded as live runtime state by the leading YAML in this file and must
+not be interpreted as current authorization or a parallel state source.
 
 ## Completed
 
@@ -60,6 +91,10 @@ Canonical design: docs/02-architecture/designs/WP-P0-001-foundation-design.md
 - No in-scope deferred item or compromise implementation remains in WP-P0-001.
 - Under D-17, Codex retains only bounded mechanical Git execution authority;
   independent Controller and Human Owner authority remain unchanged.
+- F-17 post-merge governance closure was independently reviewed, authorized and
+  squash-merged through PR #8 as
+  `489f151ea0f86e65793f1eed27def1ffcfd0bfdb`; its tree is
+  `d66049fb72ed9cee28723b1e51ca42138cce1434`.
 
 ## Not completed and not claimed
 
@@ -68,16 +103,20 @@ Canonical design: docs/02-architecture/designs/WP-P0-001-foundation-design.md
 - Marketplace clients, credentials, production data, authentication,
   authorization, business/domain tables, deployment artifacts and external
   platform writes remain absent by design and belong to later Work Packages.
+- The WP-P0-002 Design artifact and every WP-P0-002 implementation deliverable
+  are not yet produced. `DESIGN_ONLY` authorizes design work, not repository
+  implementation.
 - Repository conversion back to Private and security-control revalidation remain
   mandatory at real production go-live, or earlier before confidential material,
   under D-15. This continuing project control is not deferred WP-P0-001 scope.
 
 ## Active objective
 
-Run independent Controller Phase 0 planning, select the next bounded Work Package
-from the approved backlog, and establish a new design/authorization Gate before
-any implementation begins. Do not extend WP-P0-001 or infer authorization for
-production or Marketplace writes.
+Claude produces the standalone WP-P0-002 Design artifact against the active Work
+Package, Requirement Closure Contract, accepted ADRs and open-question
+dispositions. No implementation, Migration, Marketplace client, Credential
+retrieval or production-write work may begin before an independent Controller
+Design verdict of `APPROVED_FOR_IMPLEMENTATION` on the exact Design artifact.
 
 ## Temporary trial execution mode
 
@@ -100,13 +139,15 @@ confirmation can disable the mode.
 
 ## Current blockers / Owner inputs
 
-None block Controller Phase 0 planning. Business, credential and production
-questions remain governed by `docs/00-governance/OPEN_QUESTIONS.md` and the Work
-Package that eventually brings each question into scope.
+OQ-101 topology input is sufficient for metadata Design, while actual Account,
+Store and Warehouse inventory remains open for onboarding/acceptance. OQ-005,
+OQ-006 and OQ-102 do not block metadata Design but continue to block later
+runtime IAM, Secret retrieval and verified platform Capability work respectively.
+No Secret or production data is requested.
 
 ## Next authorized action
 
 ```text
-Independent Controller performs Phase 0 planning for the next Work Package,
-using the completed WP-P0-001 foundation and the canonical backlog as inputs.
+Claude Designer / Maker produces the WP-P0-002 Design artifact only, then returns
+it for independent Controller Design Review. Implementation remains prohibited.
 ```
