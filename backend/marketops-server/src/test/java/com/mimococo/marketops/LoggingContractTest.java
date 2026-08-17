@@ -28,8 +28,21 @@ import tools.jackson.databind.ObjectMapper;
 class LoggingContractTest {
 
     @Test
-    @DisplayName("the CI encoder emits parseable ECS JSON with the safe application schema")
-    void ciEncoderProducesTheStructuredContract() throws IOException {
+    @DisplayName("the CI encoder uses the exact established request correlation identifier")
+    void ciEncoderUsesTheEstablishedMdcCorrelationIdentifier() throws IOException {
+        String rendered = structuredRecord(Map.of("correlationId", "correlation-123"));
+        assertSafeStructuredRecord(rendered, "correlation-123");
+    }
+
+    @Test
+    @DisplayName("the CI encoder uses none exactly once when no request context exists")
+    void ciEncoderUsesNoneWhenMdcIsAbsent() throws IOException {
+        String rendered = structuredRecord(Map.of());
+        assertSafeStructuredRecord(rendered, "none");
+    }
+
+    private static String structuredRecord(Map<String, String> loggingContext)
+            throws IOException {
         StandardEnvironment environment = environment("application-ci.yaml");
         LoggerContext context = loggerContext(environment);
         StructuredLogEncoder encoder = new StructuredLogEncoder();
@@ -37,27 +50,34 @@ class LoggingContractTest {
         encoder.setFormat(environment.getRequiredProperty("logging.structured.format.console"));
         encoder.start();
         try {
-            String rendered = new String(encoder.encode(event(context)), StandardCharsets.UTF_8);
-            JsonNode record = new ObjectMapper().readTree(rendered);
-
-            assertThat(record.path("@timestamp").stringValue()).isNotBlank();
-            assertThat(record.path("log").path("level").stringValue()).isEqualTo("ERROR");
-            assertThat(record.path("message").stringValue()).isEqualTo("Request processing failed");
-            assertThat(record.path("application").stringValue()).isEqualTo("marketops-server");
-            assertThat(record.path("environment").stringValue()).isEqualTo("ci");
-            assertThat(record.path("buildVersion").stringValue()).isEqualTo("0.1.0-SNAPSHOT");
-            assertThat(record.path("correlationId").stringValue()).isEqualTo("correlation-123");
-            assertThat(record.path("event").stringValue()).isEqualTo("request_unhandled_failure");
-            assertThat(record.path("errorCode").stringValue()).isEqualTo("INTERNAL_ERROR");
-            assertThat(record.path("exceptionClass").stringValue())
-                    .isEqualTo("java.lang.IllegalStateException");
-            assertThat(record.has("tags")).isFalse();
-            assertThat(record.has("error")).isFalse();
-            assertThat(rendered).doesNotContain("excluded-marker", "private-message", "stack_trace");
+            return new String(
+                    encoder.encode(event(context, loggingContext)), StandardCharsets.UTF_8);
         } finally {
             encoder.stop();
             context.stop();
         }
+    }
+
+    private static void assertSafeStructuredRecord(
+            String rendered, String expectedCorrelationId) throws IOException {
+        JsonNode record = new ObjectMapper().readTree(rendered);
+
+        assertThat(record.path("@timestamp").stringValue()).isNotBlank();
+        assertThat(record.path("log").path("level").stringValue()).isEqualTo("ERROR");
+        assertThat(record.path("message").stringValue()).isEqualTo("Request processing failed");
+        assertThat(record.path("application").stringValue()).isEqualTo("marketops-server");
+        assertThat(record.path("environment").stringValue()).isEqualTo("ci");
+        assertThat(record.path("buildVersion").stringValue()).isEqualTo("0.1.0-SNAPSHOT");
+        assertThat(record.path("correlationId").stringValue()).isEqualTo(expectedCorrelationId);
+        assertThat(rendered).containsOnlyOnce("\"correlationId\"");
+        assertThat(record.path("event").stringValue()).isEqualTo("request_unhandled_failure");
+        assertThat(record.path("errorCode").stringValue()).isEqualTo("INTERNAL_ERROR");
+        assertThat(record.path("exceptionClass").stringValue())
+                .isEqualTo("java.lang.IllegalStateException");
+        assertThat(record.has("tags")).isFalse();
+        assertThat(record.has("error")).isFalse();
+        assertThat(rendered)
+                .doesNotContain("excluded-marker", "private-message", "stack_trace", "secret-marker");
     }
 
     @Test
@@ -70,7 +90,8 @@ class LoggingContractTest {
         layout.setPattern(environment.getRequiredProperty("logging.pattern.console"));
         layout.start();
         try {
-            String rendered = layout.doLayout(event(context));
+            String rendered = layout.doLayout(
+                    event(context, Map.of("correlationId", "correlation-123")));
 
             assertThat(rendered.lines()).hasSize(1);
             assertThat(rendered)
@@ -98,7 +119,8 @@ class LoggingContractTest {
         return context;
     }
 
-    private static LoggingEvent event(LoggerContext context) {
+    private static LoggingEvent event(
+            LoggerContext context, Map<String, String> loggingContext) {
         LoggingEvent event = new LoggingEvent();
         event.setLoggerContext(context);
         event.setLoggerName("com.mimococo.marketops.LoggingContractTest");
@@ -106,7 +128,7 @@ class LoggingContractTest {
         event.setMessage("Request processing failed");
         event.setInstant(Instant.parse("2026-08-17T00:00:00Z"));
         event.setThreadName("logging-contract-test");
-        event.setMDCPropertyMap(Map.of("correlationId", "correlation-123"));
+        event.setMDCPropertyMap(loggingContext);
         event.setKeyValuePairs(List.of(
                 new KeyValuePair("event", "request_unhandled_failure"),
                 new KeyValuePair("errorCode", "INTERNAL_ERROR"),

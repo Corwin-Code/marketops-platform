@@ -8,6 +8,7 @@ from tempfile import TemporaryDirectory
 from scripts.validate_governance import (
     CANONICAL_DESIGN_RELATIVE_PATH,
     git_scan_paths,
+    validate_backlog_state_text,
     validate_approved_design_state_text,
     validate_authorization_state_text,
     validate_completion_state_text,
@@ -707,6 +708,57 @@ def completed_work_package(status: str = "COMPLETED") -> str:
 | Current execution authorization | CLOSED |
 | Implementation result | VERIFIED |
 """
+
+
+def phase_zero_backlog(
+    status: str = "COMPLETED",
+    *,
+    include_wp: bool = True,
+    duplicate_wp: bool = False,
+) -> str:
+    wp_row = (
+        f"| WP-P0-001 | Repository, Governance & CI Foundation | {status} | None | D-03 |\n"
+        if include_wp
+        else ""
+    )
+    duplicate = wp_row if duplicate_wp else ""
+    return f"""# Phase 0 Work Package Backlog
+
+| ID | Title | Status | Dependencies | Core source requirements |
+| --- | --- | --- | --- | --- |
+{wp_row}{duplicate}| WP-P0-002 | Metadata | DRAFT | WP-P0-001 | IAM-001 |
+"""
+
+
+class BacklogCompletionStateTests(unittest.TestCase):
+    def validate(self, backlog: str) -> list[str]:
+        errors: list[str] = []
+        validate_backlog_state_text(
+            errors,
+            completed_current_state(),
+            completed_work_package(),
+            backlog,
+        )
+        return errors
+
+    def test_completed_backlog_row_is_valid(self) -> None:
+        self.assertEqual([], self.validate(phase_zero_backlog()))
+
+    def test_stale_ready_for_design_status_is_rejected(self) -> None:
+        errors = self.validate(phase_zero_backlog("READY_FOR_DESIGN"))
+        self.assertTrue(any("Status must be exactly: COMPLETED" in error for error in errors))
+
+    def test_missing_work_package_row_is_rejected(self) -> None:
+        errors = self.validate(phase_zero_backlog(include_wp=False))
+        self.assertTrue(any("exactly one WP-P0-001 row" in error for error in errors))
+
+    def test_duplicate_work_package_row_is_rejected(self) -> None:
+        errors = self.validate(phase_zero_backlog(duplicate_wp=True))
+        self.assertTrue(any("exactly one WP-P0-001 row" in error for error in errors))
+
+    def test_unknown_backlog_status_is_rejected(self) -> None:
+        errors = self.validate(phase_zero_backlog("UNRECOGNIZED"))
+        self.assertTrue(any("unknown Status" in error for error in errors))
 
 
 def completed_traceability(

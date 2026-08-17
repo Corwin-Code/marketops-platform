@@ -150,6 +150,10 @@ class ApplicationConfigurationTest {
 
         assertThat(ci.getProperty("logging.structured.format.console")).isEqualTo("ecs");
         assertThat(ci.getProperty("logging.structured.json.exclude")).isEqualTo("tags");
+        assertThat(ci.getProperty("logging.structured.json.context.include")).isEqualTo(false);
+        assertThat(ci.getProperty("logging.structured.json.customizer"))
+                .isEqualTo("com.mimococo.marketops.shared.internal.logging."
+                        + "EcsCorrelationIdJsonMembersCustomizer");
         assertThat(ci.getProperty("logging.structured.json.add.application"))
                 .isEqualTo("${spring.application.name}");
         assertThat(ci.getProperty("logging.structured.json.add.environment"))

@@ -1,16 +1,9 @@
 import { defineConfig } from '@playwright/test';
-import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
+import { resolveBrowserSourceIdentity } from './tests/browser/sourceIdentity.ts';
 
 const repositoryRoot = resolve(process.cwd(), '../..');
-const sourceHead = execFileSync('git', ['rev-parse', 'HEAD'], {
-  cwd: repositoryRoot,
-  encoding: 'utf8',
-}).trim();
-
-if (!/^[0-9a-f]{40}$/.test(sourceHead)) {
-  throw new Error('the browser test requires a full source Head object name');
-}
+const sourceHead = resolveBrowserSourceIdentity(repositoryRoot);
 
 /** Browser verification starts the real local backend and Vite console. */
 export default defineConfig({

@@ -17,8 +17,12 @@ logging:
       console: ecs
     json:
       # Markers can be supplied by libraries and are not part of the stable
-      # application event schema. Safe application key-values remain included.
+      # application event schema. The customizer copies safe application
+      # key-values and owns the single correlation member for every record.
       exclude: tags
+      context:
+        include: false
+      customizer: com.mimococo.marketops.shared.internal.logging.EcsCorrelationIdJsonMembersCustomizer
       add:
         application: ${spring.application.name}
         environment: ${marketops.environment}

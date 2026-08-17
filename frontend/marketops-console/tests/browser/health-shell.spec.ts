@@ -4,12 +4,10 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { frontendPackageVersion } from '../../vite.constants';
+import { resolveBrowserSourceIdentity } from './sourceIdentity.ts';
 
 const repositoryRoot = resolve(process.cwd(), '../..');
-const sourceHead = execFileSync('git', ['rev-parse', 'HEAD'], {
-  cwd: repositoryRoot,
-  encoding: 'utf8',
-}).trim();
+const sourceHead = resolveBrowserSourceIdentity(repositoryRoot);
 const packageManifest: unknown = JSON.parse(
   readFileSync(resolve(process.cwd(), 'package.json'), 'utf8'),
 );

@@ -107,6 +107,8 @@ jobs:
         run: make up
       - name: Exercise the rendered shell against backend metadata
         run: npm run test:browser
+        env:
+          MARKETOPS_SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Stop the isolated database
         if: always()
         working-directory: .

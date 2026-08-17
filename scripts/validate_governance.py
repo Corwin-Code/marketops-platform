@@ -26,6 +26,7 @@ REQUIRED_FILES = [
     "docs/01-requirements/SHA256SUMS.txt",
     "docs/01-requirements/traceability.csv",
     "docs/02-architecture/designs/WP-P0-001-foundation-design.md",
+    "docs/03-work-items/BACKLOG-PHASE-0.md",
     "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md",
     ".github/pull_request_template.md",
     ".github/workflows/governance.yml",
@@ -58,6 +59,8 @@ COMPLETED_WP_AUTHORIZATION = "CLOSED"
 COMPLETED_WP_RESULT = "VERIFIED"
 HISTORIC_DESIGN_VERDICT = "APPROVED_FOR_IMPLEMENTATION"
 POST_WP_ACTIVE_GATE = "CONTROLLER_PHASE_0_PLANNING"
+BACKLOG_HEADER = ["ID", "Title", "Status", "Dependencies", "Core source requirements"]
+BACKLOG_ALLOWED_STATES = {"DRAFT", "READY_FOR_DESIGN", "COMPLETED"}
 COMPLETED_TRACEABILITY_STATES = {"VERIFIED", "ACTIVE_CONTROL"}
 COMPLETED_TRACEABILITY_IDS = {"D-02", "D-03", "D-07", "D-10", "D-15", "D-16", "D-17", "HR-06"}
 D03_WORK_PACKAGES = "WP-P0-001;WP-P0-003"
@@ -239,6 +242,92 @@ def work_package_execution_authorization(text: str) -> str | None:
     if explicit is not None and generic is not None:
         return None
     return explicit if explicit is not None else generic
+
+
+def markdown_table_cells(line: str) -> list[str] | None:
+    """Return trimmed cells for one pipe-delimited Markdown table row."""
+    stripped = line.strip()
+    if not stripped.startswith("|") or not stripped.endswith("|"):
+        return None
+    return [cell.strip() for cell in stripped[1:-1].split("|")]
+
+
+def phase_zero_backlog_rows(text: str) -> list[dict[str, str]] | None:
+    """Parse the single canonical Phase 0 backlog table structurally."""
+    lines = text.splitlines()
+    parsed_tables: list[list[dict[str, str]]] = []
+    for index, line in enumerate(lines):
+        if markdown_table_cells(line) != BACKLOG_HEADER:
+            continue
+        if index + 1 >= len(lines):
+            return None
+        separator = markdown_table_cells(lines[index + 1])
+        if separator is None or len(separator) != len(BACKLOG_HEADER):
+            return None
+        if any(re.fullmatch(r":?-{3,}:?", cell) is None for cell in separator):
+            return None
+
+        rows: list[dict[str, str]] = []
+        for row_line in lines[index + 2:]:
+            cells = markdown_table_cells(row_line)
+            if cells is None:
+                break
+            if len(cells) != len(BACKLOG_HEADER):
+                return None
+            rows.append(dict(zip(BACKLOG_HEADER, cells)))
+        parsed_tables.append(rows)
+    return parsed_tables[0] if len(parsed_tables) == 1 else None
+
+
+def validate_backlog_state_text(
+    errors: list[str],
+    current_state_text: str,
+    work_package_text: str,
+    backlog_text: str,
+) -> None:
+    """Reconcile the canonical backlog row with the closed planning transition."""
+    rows = phase_zero_backlog_rows(backlog_text)
+    if rows is None:
+        errors.append("Phase 0 backlog must contain exactly one structurally valid backlog table")
+        return
+
+    for row in rows:
+        if row["Status"] not in BACKLOG_ALLOWED_STATES:
+            errors.append(
+                f"backlog {row['ID']} has unknown Status: {row['Status']}"
+            )
+
+    wp_rows = [row for row in rows if row["ID"] == "WP-P0-001"]
+    if len(wp_rows) != 1:
+        errors.append("Phase 0 backlog must contain exactly one WP-P0-001 row")
+        return
+    if wp_rows[0]["Status"] != COMPLETED_WP_STATUS:
+        errors.append(
+            f"backlog WP-P0-001 Status must be exactly: {COMPLETED_WP_STATUS}"
+        )
+
+    expected_current = {
+        "active_work_package": "NONE",
+        "active_gate": POST_WP_ACTIVE_GATE,
+        "authorization": "PLANNING_ONLY",
+    }
+    for field, expected in expected_current.items():
+        if current_state_metadata_value(current_state_text, field) != expected:
+            errors.append(
+                f"closed backlog transition requires CURRENT_STATE {field}: {expected}"
+            )
+
+    expected_work_package = {
+        "Status": COMPLETED_WP_STATUS,
+        "Implementation result": COMPLETED_WP_RESULT,
+    }
+    for field, expected in expected_work_package.items():
+        if work_package_metadata_value(work_package_text, field) != expected:
+            errors.append(
+                f"closed backlog transition requires WP-P0-001 {field}: {expected}"
+            )
+    if work_package_execution_authorization(work_package_text) != COMPLETED_WP_AUTHORIZATION:
+        errors.append("closed backlog transition requires WP-P0-001 authorization: CLOSED")
 
 
 def project_charter_status(text: str) -> str | None:
@@ -707,15 +796,24 @@ def validate_completion_state(errors: list[str]) -> None:
         ROOT / "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md"
     )
     traceability_path = ROOT / "docs/01-requirements/traceability.csv"
+    backlog_path = ROOT / "docs/03-work-items/BACKLOG-PHASE-0.md"
     if not all(path.exists() for path in (
-        current_state_path, work_package_path, traceability_path
+        current_state_path, work_package_path, traceability_path, backlog_path
     )):
         return
+    current_state_text = current_state_path.read_text(encoding="utf-8")
+    work_package_text = work_package_path.read_text(encoding="utf-8")
     validate_completion_state_text(
         errors,
-        current_state_path.read_text(encoding="utf-8"),
-        work_package_path.read_text(encoding="utf-8"),
+        current_state_text,
+        work_package_text,
         traceability_path.read_text(encoding="utf-8-sig"),
+    )
+    validate_backlog_state_text(
+        errors,
+        current_state_text,
+        work_package_text,
+        backlog_path.read_text(encoding="utf-8"),
     )
 
 

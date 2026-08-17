@@ -47,6 +47,11 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
                         .log("Inbound correlation identifier replaced");
             }
             chain.doFilter(request, response);
+            log.atInfo()
+                    .addKeyValue("event", "request_completed")
+                    .addKeyValue("correlationId", result.value())
+                    .addKeyValue("status", response.getStatus())
+                    .log("Request completed");
         } finally {
             MDC.remove(CorrelationId.LOG_CONTEXT_KEY);
         }

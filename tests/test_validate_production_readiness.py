@@ -17,6 +17,7 @@ from scripts.validate_production_readiness import (
     BUILT_PREVIEW_COMMAND,
     COMPLETED_WORK_PACKAGE_TOKENS,
     COMPLETION_STATE_TOKENS,
+    ECS_CORRELATION_CUSTOMIZER_TOKENS,
     LOCAL_LOGGING_TOKENS,
     PATH_RESTRICTION,
     PENDING_EVIDENCE,
@@ -33,6 +34,8 @@ from scripts.validate_production_readiness import (
     pr_security_evidence_violations,
     runner_reference_violations,
     unsafe_throwable_logging_violations,
+    backlog_completion_contract_violations,
+    browser_source_identity_contract_violations,
 )
 
 
@@ -161,6 +164,23 @@ class RepositoryContractPatternTests(unittest.TestCase):
         violations = contract_token_violations(mutated, required=STRUCTURED_LOGGING_TOKENS)
         self.assertTrue(any("environment:" in violation for violation in violations))
 
+    def test_no_mdc_ecs_fallback_is_required(self) -> None:
+        source = "\n".join(STRUCTURED_LOGGING_TOKENS)
+        mutated = source.replace(
+            "customizer: com.mimococo.marketops.shared.internal.logging."
+            "EcsCorrelationIdJsonMembersCustomizer",
+            "",
+        )
+        violations = contract_token_violations(mutated, required=STRUCTURED_LOGGING_TOKENS)
+        self.assertTrue(any("customizer:" in violation for violation in violations))
+
+        customizer = "\n".join(ECS_CORRELATION_CUSTOMIZER_TOKENS)
+        no_fallback = customizer.replace('NO_REQUEST = "none"', "")
+        violations = contract_token_violations(
+            no_fallback, required=ECS_CORRELATION_CUSTOMIZER_TOKENS
+        )
+        self.assertTrue(any("NO_REQUEST" in violation for violation in violations))
+
     def test_missing_local_safe_key_values_is_rejected(self) -> None:
         source = "\n".join(LOCAL_LOGGING_TOKENS).replace("%kvp", "")
         violations = contract_token_violations(source, required=LOCAL_LOGGING_TOKENS)
@@ -219,6 +239,103 @@ class RepositoryContractPatternTests(unittest.TestCase):
         self.assertEqual([], pr_security_evidence_violations(evidence, expected_head))
         violations = pr_security_evidence_violations(evidence, "b" * 40)
         self.assertTrue(any("security evidence is stale" in violation for violation in violations))
+
+    def test_backlog_status_regressions_are_rejected(self) -> None:
+        completed = self.backlog("COMPLETED")
+        self.assertEqual([], backlog_completion_contract_violations(completed))
+        for status in ("READY_FOR_DESIGN", "UNKNOWN"):
+            with self.subTest(status=status):
+                self.assertTrue(
+                    backlog_completion_contract_violations(
+                        completed.replace("| COMPLETED |", f"| {status} |", 1)
+                    )
+                )
+
+    def test_missing_and_duplicate_backlog_rows_are_rejected(self) -> None:
+        completed = self.backlog("COMPLETED")
+        row = "| WP-P0-001 | Foundation | COMPLETED | None | D-03 |\n"
+        self.assertTrue(backlog_completion_contract_violations(completed.replace(row, "")))
+        self.assertTrue(backlog_completion_contract_violations(completed.replace(row, row + row)))
+
+    def test_frontend_test_requires_authored_source_expression(self) -> None:
+        workflow, config, scenario, resolver = self.source_identity_contract()
+        self.assertEqual(
+            [],
+            browser_source_identity_contract_violations(workflow, config, scenario, resolver),
+        )
+        for mutated in (
+            workflow.replace(
+                "${{ github.event.pull_request.head.sha || github.sha }}",
+                "${{ github.sha }}",
+            ),
+            workflow.replace("MARKETOPS_SOURCE_HEAD_SHA:", "REMOVED_SOURCE_HEAD:"),
+        ):
+            self.assertTrue(
+                browser_source_identity_contract_violations(
+                    mutated, config, scenario, resolver
+                )
+            )
+
+    def test_checkout_head_and_identity_divergence_are_rejected(self) -> None:
+        workflow, config, scenario, resolver = self.source_identity_contract()
+        checkout_head = scenario.replace(
+            "const sourceHead = resolveBrowserSourceIdentity(repositoryRoot);",
+            "const sourceHead = execFileSync('git', ['rev-parse', 'HEAD']);",
+        )
+        divergent = scenario.replace("(${sourceHead})", "(${checkoutHead})")
+        self.assertTrue(
+            browser_source_identity_contract_violations(
+                workflow, config, checkout_head, resolver
+            )
+        )
+        self.assertTrue(
+            browser_source_identity_contract_violations(
+                workflow, config, divergent, resolver
+            )
+        )
+
+    def test_ci_source_resolver_cannot_fall_back_to_repository_head(self) -> None:
+        workflow, config, scenario, resolver = self.source_identity_contract()
+        mutated = resolver.replace("if (isContinuousIntegration(environment))", "if (false)")
+        self.assertTrue(
+            browser_source_identity_contract_violations(
+                workflow, config, scenario, mutated
+            )
+        )
+
+    @staticmethod
+    def backlog(status: str) -> str:
+        return f"""# Backlog
+
+| ID | Title | Status | Dependencies | Core source requirements |
+| --- | --- | --- | --- | --- |
+| WP-P0-001 | Foundation | {status} | None | D-03 |
+| WP-P0-002 | Metadata | DRAFT | WP-P0-001 | IAM-001 |
+"""
+
+    @staticmethod
+    def source_identity_contract() -> tuple[str, str, str, str]:
+        workflow = """jobs:
+  frontend-test:
+    steps:
+      - run: npm run test:browser
+        env:
+          MARKETOPS_SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  frontend-build:
+    steps: []
+"""
+        config = """const sourceHead = resolveBrowserSourceIdentity(repositoryRoot);
+MARKETOPS_BUILD_COMMIT: sourceHead
+"""
+        scenario = """const sourceHead = resolveBrowserSourceIdentity(repositoryRoot);
+`Console ${frontendVersion} (${sourceHead})`
+"""
+        resolver = """FULL_SOURCE_SHA
+if (isContinuousIntegration(environment))
+CI browser verification requires ${SOURCE_HEAD_ENVIRONMENT_VARIABLE}
+repositoryHeadReader(repositoryRoot)
+"""
+        return workflow, config, scenario, resolver
 
 
 class CommentExtractionTests(unittest.TestCase):

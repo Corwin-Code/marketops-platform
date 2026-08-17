@@ -235,9 +235,19 @@ ARCHITECTURE_RULE_TOKENS = (
 STRUCTURED_LOGGING_TOKENS = (
     "console: ecs",
     "exclude: tags",
+    "include: false",
+    "customizer: com.mimococo.marketops.shared.internal.logging.EcsCorrelationIdJsonMembersCustomizer",
     "application: ${spring.application.name}",
     "environment: ${marketops.environment}",
     "buildVersion: ${spring.application.version}",
+)
+
+ECS_CORRELATION_CUSTOMIZER_TOKENS = (
+    "StructuredLoggingJsonMembersCustomizer<ILoggingEvent>",
+    "members.add(CorrelationId.LOG_CONTEXT_KEY, this::correlationId)",
+    "event.getMDCPropertyMap().get(CorrelationId.LOG_CONTEXT_KEY)",
+    'NO_REQUEST = "none"',
+    "!CorrelationId.LOG_CONTEXT_KEY.equals(pair.key)",
 )
 
 LOCAL_LOGGING_TOKENS = (
@@ -275,6 +285,11 @@ POLLING_CONTRACT_TOKENS = (
 BUILT_PREVIEW_COMMAND = (
     "npm run build && npm run preview -- --host 127.0.0.1 --port 4173 --strictPort"
 )
+
+BACKLOG_HEADER = ("ID", "Title", "Status", "Dependencies", "Core source requirements")
+BACKLOG_ALLOWED_STATES = {"DRAFT", "READY_FOR_DESIGN", "COMPLETED"}
+SOURCE_HEAD_ENVIRONMENT_VARIABLE = "MARKETOPS_SOURCE_HEAD_SHA"
+SOURCE_HEAD_EXPRESSION = "${{ github.event.pull_request.head.sha || github.sha }}"
 
 PR_SECURITY_EVIDENCE_TOKENS = (
     "source_head_sha",
@@ -397,6 +412,98 @@ def browser_acceptance_contract_violations(config_text: str, scenario_text: str)
     )
     if len(re.findall(r"'data-state',\s*'ready'", scenario_text)) < 2:
         violations.append("initial and recovered Ready UI assertions are both required")
+    return violations
+
+
+def markdown_table_cells(line: str) -> list[str] | None:
+    """Return the cells of one structurally delimited Markdown table row."""
+    stripped = line.strip()
+    if not stripped.startswith("|") or not stripped.endswith("|"):
+        return None
+    return [cell.strip() for cell in stripped[1:-1].split("|")]
+
+
+def backlog_completion_contract_violations(text: str) -> list[str]:
+    """Require one completed WP-P0-001 row in the canonical backlog table."""
+    lines = text.splitlines()
+    tables: list[list[list[str]]] = []
+    for index, line in enumerate(lines):
+        if tuple(markdown_table_cells(line) or ()) != BACKLOG_HEADER:
+            continue
+        if index + 1 >= len(lines):
+            return ["Phase 0 backlog table has no separator row"]
+        separator = markdown_table_cells(lines[index + 1])
+        if separator is None or len(separator) != len(BACKLOG_HEADER):
+            return ["Phase 0 backlog table separator is malformed"]
+        if any(re.fullmatch(r":?-{3,}:?", cell) is None for cell in separator):
+            return ["Phase 0 backlog table separator is malformed"]
+        rows: list[list[str]] = []
+        for row_line in lines[index + 2:]:
+            cells = markdown_table_cells(row_line)
+            if cells is None:
+                break
+            if len(cells) != len(BACKLOG_HEADER):
+                return ["Phase 0 backlog table row width is malformed"]
+            rows.append(cells)
+        tables.append(rows)
+    if len(tables) != 1:
+        return ["Phase 0 backlog must contain exactly one canonical table"]
+
+    violations: list[str] = []
+    for row in tables[0]:
+        if row[2] not in BACKLOG_ALLOWED_STATES:
+            violations.append(f"backlog {row[0]} has unknown Status: {row[2]}")
+    wp_rows = [row for row in tables[0] if row[0] == "WP-P0-001"]
+    if len(wp_rows) != 1:
+        violations.append("Phase 0 backlog must contain exactly one WP-P0-001 row")
+    elif wp_rows[0][2] != "COMPLETED":
+        violations.append("backlog WP-P0-001 Status must be COMPLETED")
+    return violations
+
+
+def workflow_job_body(text: str, job: str) -> str | None:
+    """Return one top-level GitHub Actions job body without parsing run scripts."""
+    match = re.search(
+        rf"(?ms)^  {re.escape(job)}:\s*$\n(?P<body>.*?)(?=^  [A-Za-z0-9_-]+:\s*$|\Z)",
+        text,
+    )
+    return match.group("body") if match else None
+
+
+def browser_source_identity_contract_violations(
+    workflow_text: str,
+    config_text: str,
+    scenario_text: str,
+    resolver_text: str,
+) -> list[str]:
+    """Separate the authored source identity from a temporary merge checkout."""
+    violations: list[str] = []
+    frontend_test = workflow_job_body(workflow_text, "frontend-test")
+    expected_assignment = f"{SOURCE_HEAD_ENVIRONMENT_VARIABLE}: {SOURCE_HEAD_EXPRESSION}"
+    if frontend_test is None or expected_assignment not in frontend_test:
+        violations.append(
+            "frontend-test must pass the pull-request authored source identity explicitly"
+        )
+
+    shared_resolution = "const sourceHead = resolveBrowserSourceIdentity(repositoryRoot);"
+    for surface, text in (("Playwright configuration", config_text), ("browser scenario", scenario_text)):
+        if shared_resolution not in text:
+            violations.append(f"{surface} must use the shared source identity resolver")
+        if "execFileSync('git', ['rev-parse', 'HEAD']" in text:
+            violations.append(f"{surface} must not treat checkout HEAD as authored source")
+    if "MARKETOPS_BUILD_COMMIT: sourceHead" not in config_text:
+        violations.append("browser build must consume the shared source identity")
+    if "`Console ${frontendVersion} (${sourceHead})`" not in scenario_text:
+        violations.append("browser assertion must consume the shared source identity")
+
+    for token in (
+        "if (isContinuousIntegration(environment))",
+        "CI browser verification requires ${SOURCE_HEAD_ENVIRONMENT_VARIABLE}",
+        "repositoryHeadReader(repositoryRoot)",
+        "FULL_SOURCE_SHA",
+    ):
+        if token not in resolver_text:
+            violations.append(f"source identity resolver contract is absent: {token}")
     return violations
 
 
@@ -681,6 +788,14 @@ def check_repository_contracts(report: Report) -> None:
     require_tokens(
         report,
         rule,
+        ROOT / BACKEND
+        / "src/main/java/com/mimococo/marketops/shared/internal/logging/"
+        / "EcsCorrelationIdJsonMembersCustomizer.java",
+        ECS_CORRELATION_CUSTOMIZER_TOKENS,
+    )
+    require_tokens(
+        report,
+        rule,
         ROOT / BACKEND / "src/main/resources/application-local.yaml",
         LOCAL_LOGGING_TOKENS,
     )
@@ -691,6 +806,9 @@ def check_repository_contracts(report: Report) -> None:
         (
             "StructuredLogEncoder",
             "new ObjectMapper().readTree",
+            "ciEncoderUsesTheEstablishedMdcCorrelationIdentifier",
+            "ciEncoderUsesNoneWhenMdcIsAbsent",
+            'containsOnlyOnce("\\\"correlationId\\\"")',
             'record.has("tags")',
             'record.has("error")',
             "localPatternProducesReadableSafeOutput",
@@ -780,27 +898,23 @@ def check_repository_contracts(report: Report) -> None:
     )
     playwright_config = ROOT / FRONTEND / "playwright.config.ts"
     browser_scenario = ROOT / FRONTEND / "tests/browser/health-shell.spec.ts"
+    source_identity_resolver = ROOT / FRONTEND / "tests/browser/sourceIdentity.ts"
     for detail in browser_acceptance_contract_violations(
         read_text(playwright_config) or "", read_text(browser_scenario) or ""
+    ):
+        report.add(rule, browser_scenario, 0, detail)
+    for detail in browser_source_identity_contract_violations(
+        read_text(ROOT / ".github/workflows/frontend.yml") or "",
+        read_text(playwright_config) or "",
+        read_text(browser_scenario) or "",
+        read_text(source_identity_resolver) or "",
     ):
         report.add(rule, browser_scenario, 0, detail)
     require_tokens(
         report,
         rule,
-        playwright_config,
-        (
-            "execFileSync('git', ['rev-parse', 'HEAD']",
-            "MARKETOPS_BUILD_COMMIT: sourceHead",
-        ),
-    )
-    require_tokens(
-        report,
-        rule,
         browser_scenario,
-        (
-            "frontendPackageVersion(packageManifest)",
-            "`Console ${frontendVersion} (${sourceHead})`",
-        ),
+        ("frontendPackageVersion(packageManifest)",),
     )
     reject_tokens(
         report,
@@ -821,6 +935,9 @@ def check_repository_contracts(report: Report) -> None:
         ROOT / "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md",
         COMPLETED_WORK_PACKAGE_TOKENS,
     )
+    backlog_path = ROOT / "docs/03-work-items/BACKLOG-PHASE-0.md"
+    for detail in backlog_completion_contract_violations(read_text(backlog_path) or ""):
+        report.add(rule, backlog_path, 0, detail)
     reject_tokens(
         report,
         rule,
@@ -1122,7 +1239,7 @@ def main() -> int:
     rules = ("TC-GLOBAL-001", "TC-GLOBAL-002", "TC-GLOBAL-003")
     labels = {
         "TC-GLOBAL-001": "Compromise Retirement Check",
-        "TC-GLOBAL-002": "Functional Comment Check",
+        "TC-GLOBAL-002": "Functional JavaDoc Rewrite Check",
         "TC-GLOBAL-003": "Production Naming Check",
     }
 

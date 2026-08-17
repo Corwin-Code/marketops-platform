@@ -110,8 +110,8 @@ management:
       enabled: false
 
 logging:
-  # Every record carries the identifier of the request that produced it, so a
-  # console report can be traced to its server-side records.
+  # Request records carry their established identifier; records outside a
+  # request use the profile's explicit no-request representation.
   pattern:
     correlation: "[%X{correlationId:-}] "
   level:
