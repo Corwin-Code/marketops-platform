@@ -48,9 +48,9 @@ stale live-state phrase checks
 PASS — no matches
 ```
 
-The focused closure commit leaves the tracked worktree clean. Its commit SHA and
-final status are recorded in the Draft PR handoff rather than embedded in its own
-content recursively.
+The focused closure commit leaves the tracked worktree clean. Its commit
+identity and PR-specific Gate results are recorded in the GitHub Pull Request
+handoff rather than recursively embedded in this evidence file.
 
 ## New-main GitHub evidence
 
@@ -113,6 +113,7 @@ closure does not select or activate the next Work Package.
 - Closure scope: governance and evidence documents only.
 - Production writes: disabled.
 
-The required checks for the later documentation-only closure PR are recorded in
-that Draft PR's non-recursive handoff. It must receive independent Controller
-re-review and separate Human Owner authorization before any Ready or merge action.
+Changes to this evidence remain governed by the repository's standing Pull
+Request, independent Controller, Human Owner and Ruleset process. PR-specific
+check conclusions, approval decisions, Ready transition and merge outcome remain
+in GitHub's PR/merge record rather than being recursively embedded here.
