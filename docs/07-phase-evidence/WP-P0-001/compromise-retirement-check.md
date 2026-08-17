@@ -1,7 +1,7 @@
 # TC-GLOBAL-001 — compromise retirement
 
-**Result: PASS**; the committed-head Fresh Clone validator inspected 200
-non-generated files and Python discovery ran 122 tests.
+**Result: PASS**; the committed-head Fresh Clone validator inspected 203
+non-generated files and Python discovery ran 133 tests.
 
 The repository hard rule now rejects regression of every final-closure repair:
 
@@ -14,7 +14,11 @@ The repository hard rule now rejects regression of every final-closure repair:
 - a base `marketops.environment` fallback or removal of the unprofiled
   fail-closed startup test;
 - a transient workflow ref as frontend version, missing package-version source,
-  or missing full source-Head browser assertion;
+  missing/invalid authored source identity, CI fallback to checkout Head,
+  configuration/assertion divergence or missing full source-Head browser assertion;
+- stale, missing, duplicated or structurally malformed canonical backlog state;
+- missing root ECS correlation identity, duplicate context output or absent
+  deterministic `none` fallback for system events;
 - mutable Actions, floating runners, weakened coverage, incomplete Fresh Clone,
   browser, SBOM, polling or recovery contracts.
 
@@ -27,7 +31,7 @@ pass, and four general Java safeguards remain separately named and counted.
 ```text
 python3 scripts/validate_production_readiness.py
 TC-GLOBAL-001 Compromise Retirement Check: PASS
-TC-GLOBAL-002 Functional Comment Check: PASS
+TC-GLOBAL-002 Functional JavaDoc Rewrite Check: PASS
 TC-GLOBAL-003 Production Naming Check: PASS
 Production readiness validation passed.
 ```

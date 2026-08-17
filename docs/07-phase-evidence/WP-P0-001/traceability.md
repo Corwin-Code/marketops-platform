@@ -1,10 +1,10 @@
 # WP-P0-001 traceability
 
 **Verification state: PASS on implementation Head
-`3a7575ad8f3a75b94210dc394f154bf4780283f2` (2026-08-17), tree
-`4c4953632a33834052608ec20086c5afe9b791ab`.** The clean-head run comprised
-122 governance/readiness tests, 109 backend unit tests, 22 backend integration
-tests, 31 architecture observations within the unit total, 46 frontend tests and
+`a971717a658e9db315c5e6c3e03e5b5899e48f65` (2026-08-17), tree
+`2f227c35b515a21b8e412a0adea59838dbfc5af8`.** The clean-head run comprised
+133 governance/readiness tests, 110 backend unit tests, 22 backend integration
+tests, 31 architecture observations within the unit total, 53 frontend tests and
 one real-browser recovery scenario.
 
 Each row names the implementation and the test or hard rule that would catch its
@@ -15,6 +15,7 @@ removal. A document-only assertion is not treated as verification.
 | Local configuration is generated, never committed | `scripts/init_local_env.py`, `.gitignore` | `tests/test_init_local_env.py`; the generator refuses a target Git does not ignore |
 | Generated passwords are never printed | `scripts/init_local_env.py` | `tests/test_init_local_env.py` asserts no code path emits a value |
 | No active WP means planning only; completed WP-P0-001 is closed and verified | `CURRENT_STATE.md`, WP-P0-001 metadata, `validate_governance.py` | Authorization/completion mutation tests reject open, ambiguous, candidate or unfinished combinations |
+| The canonical backlog independently closes WP-P0-001 without activating WP-P0-002 | `BACKLOG-PHASE-0.md`, `validate_governance.py` | Structural parsing and mutations reject missing, duplicated, stale, unknown-state or malformed canonical rows |
 | D-03 does not falsely claim an unimplemented Worker | `traceability.csv`, `BACKLOG-PHASE-0.md` | Governance mutations require `ACTIVE_CONTROL`, WP-P0-003 and explicit Task/Outbox Worker disposition |
 | Local files are owner-only | `scripts/init_local_env.py` | `scripts/verify_local_config.sh` step 1 |
 | The backend reads the repository-root local file | `Makefile`, `scripts/verify_local_config.sh` | Readiness reports up only if the generated password was read |
@@ -36,7 +37,7 @@ removal. A document-only assertion is not treated as verification.
 | A correlation identifier exists for every request | `CorrelationIdFilter` | `CorrelationIdTest`, `MetaStatusControllerTest` |
 | A hostile identifier is replaced, never echoed | `CorrelationId` | `CorrelationIdTest`, `MetaStatusControllerTest` |
 | The logging context does not leak between requests | `CorrelationIdFilter` | `MetaStatusControllerTest`, including the failure path |
-| Non-local logs are ECS JSON and local logs are one readable line | profile YAML | `LoggingContractTest` invokes the real Spring Boot encoder and local pattern, parses JSON and asserts safe identity/event fields |
+| Non-local logs are ECS JSON with exactly one root correlation ID and local logs are one readable line | profile YAML, `EcsCorrelationIdJsonMembersCustomizer` | `LoggingContractTest` invokes the real Spring Boot encoder, proves MDC value/`none` fallback, exact single occurrence, retained safe event fields and excluded context/tags/error/stack data |
 | Safe events use deliberate severity | `GlobalExceptionHandler` | `GlobalExceptionHandlerTest` requires validation WARN, missing resource INFO and unexpected failure ERROR |
 | A failure response or public-boundary log carries no internal detail | `GlobalExceptionHandler`, `MetaStatusAssembler` | Captured-appender tests prove no throwable proxy, message, credential, host, port, role or SQL marker; response tests prove the allowlist |
 | Repeated dependency degradation does not flood logs | `MetaStatusAssembler` transition flags | `repeatedProbeFailureIsBoundedAndRecoveryRearmsIt` proves one WARN per degraded interval and rearming after recovery |
@@ -70,7 +71,7 @@ removal. A document-only assertion is not treated as verification.
 | No stale platform value survives an outage | `HealthShell.tsx` | `HealthShell.test.tsx` |
 | Only prefixed variables reach the bundle | `vite.config.ts` | `viteConfig.test.ts`, `verify-bundle-isolation.mjs` |
 | Frontend version comes only from valid package metadata | `package.json`, `vite.config.ts`, `vite.constants.ts` | `viteConfig.test.ts` rejects missing/invalid versions and proves a transient ref is ignored |
-| Frontend commit is the full source Head | workflow and `playwright.config.ts` | unit rejection cases plus the real browser compare rendered metadata with `git rev-parse HEAD` |
+| Frontend commit is the full authored source Head, not the checkout merge | workflow, `sourceIdentity.ts`, `playwright.config.ts` and browser scenario | unit/mutation rejection covers missing/invalid/uppercase/short identity, CI fallback, checkout-Head substitution and build/assertion divergence; the real browser renders the shared resolved value |
 | Backend coverage is at least 80% lines and 70% branches | `pom.xml` JaCoCo rules | `verify` fails below either threshold; `verify_coverage_thresholds.sh backend` proves the failure path |
 | Frontend coverage is at least 80% lines, branches, functions and statements | `vite.config.ts` | `test:ci` fails below a threshold; `verify_coverage_thresholds.sh frontend` proves the failure path |
 | Eleven checks report under stable names | `.github/workflows/` | The names are the job names; a rename is visible in the diff |

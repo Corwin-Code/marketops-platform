@@ -1,7 +1,7 @@
-# TC-GLOBAL-002 — functional comments
+# TC-GLOBAL-002 — functional JavaDoc rewrite
 
-**Result: PASS**; the committed-head Fresh Clone validator inspected 200
-non-generated files and Python discovery ran 122 tests.
+**Result: PASS**; the committed-head Fresh Clone validator inspected 203
+non-generated files and Python discovery ran 133 tests.
 
 The validator extracts source comments before matching. It rejects commit/WP
 stage narration, Controller/rework/revision history, `historically`, `previously`,
@@ -15,5 +15,5 @@ boundaries and failure handling. Mutation tests prove every new history phrase i
 detected and code strings or URL text are not misclassified as comments.
 
 ```text
-TC-GLOBAL-002 Functional Comment Check: PASS
+TC-GLOBAL-002 Functional JavaDoc Rewrite Check: PASS
 ```

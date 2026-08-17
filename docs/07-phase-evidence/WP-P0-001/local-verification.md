@@ -3,8 +3,8 @@
 **Result: PASS**
 
 Execution date: 2026-08-17. Implementation Head
-`3a7575ad8f3a75b94210dc394f154bf4780283f2`; tree
-`4c4953632a33834052608ec20086c5afe9b791ab`. Evidence records commands,
+`a971717a658e9db315c5e6c3e03e5b5899e48f65`; tree
+`2f227c35b515a21b8e412a0adea59838dbfc5af8`. Evidence records commands,
 versions and aggregate results, never environment values, local user paths,
 Testcontainers ports or raw credentials.
 
@@ -30,7 +30,7 @@ check. Every certified frontend command was rerun through Node 24 and passed.
 | --- | --- |
 | `python3 scripts/validate_governance.py` | PASS |
 | `python3 scripts/validate_production_readiness.py` | PASS; all three global checks |
-| `python3 -m unittest discover -s tests -p 'test_*.py'` | PASS, 122 tests |
+| `python3 -m unittest discover -s tests -p 'test_*.py'` | PASS, 133 tests |
 
 Authorization mutations reject `NONE` with an open authorization, an active WP
 with `PLANNING_ONLY`, candidate/non-closed completion, ambiguous fields, missing
@@ -39,26 +39,31 @@ historic/result records and D-03 falsely marked `VERIFIED`. Canonical state is
 `COMPLETED`, authorization `CLOSED`, result `VERIFIED`, while the historic design
 verdict remains `APPROVED_FOR_IMPLEMENTATION`. The D-03 Modular Monolith portion
 is verified here; the PostgreSQL Task/Outbox Worker is explicitly assigned to
-WP-P0-003 outside this WP's scope and remains `ACTIVE_CONTROL`.
+WP-P0-003 outside this WP's scope and remains `ACTIVE_CONTROL`. The canonical
+backlog independently records WP-P0-001 as `COMPLETED`; its structural parser
+rejects missing, duplicate, stale or unknown-state rows. WP-P0-002 remains
+`DRAFT`, so closure did not activate new work.
 
 ## Backend
 
 | Command | Result |
 | --- | --- |
-| `./mvnw -B -ntp -DskipITs verify` | PASS, 109 tests |
+| `./mvnw -B -ntp -DskipITs verify` | PASS, 110 tests |
 | `./mvnw -B -ntp -Dtest='*ArchitectureTest' -DfailIfNoTests=true test` | PASS, 31 observations in exactly 3 suites |
-| `./mvnw -B -ntp clean` then `./mvnw -B -ntp verify` | PASS, 109 unit/configuration/architecture + 22 integration tests |
+| `./mvnw -B -ntp clean` then `./mvnw -B -ntp verify` | PASS, 110 unit/configuration/architecture + 22 integration tests |
 | `scripts/verify_coverage_thresholds.sh backend` | PASS; impossible 100% branch threshold was rejected |
 
-JaCoCo totals are 151/151 lines (100%), 37/40 branches (92.50%), 40/40
-methods and 13/13 classes. The architecture run covers seven approved boundary
+JaCoCo totals are 170/170 lines (100%), 46/50 branches (92.00%) and 65/69
+methods. The architecture run covers seven approved boundary
 factories, eleven invalid observations, positive fixtures, and independent
 Spring Modulith verification.
 
 The CI profile's real Spring Boot `StructuredLogEncoder` produced parseable ECS
-JSON with timestamp, level, message, application, environment, build version,
-correlation ID, event, error code and exception class; markers and `error`/stack
-data were absent. The local `PatternLayout` produced one readable line with the
+JSON with timestamp, level, message, application, environment, build version and
+exactly one root correlation ID; request/application records preserved event,
+error code and exception class while system records deterministically used
+`correlationId=none`. Markers, duplicate context, `error` and stack data were
+absent. The local `PatternLayout` produced one readable line with the
 same safe identity/event fields. Validation logs are WARN, missing-resource logs
 INFO and unexpected failures ERROR. Repeated DB/Flyway degradation emits one WARN
 until recovery, then rearms. Captured tests prove no throwable proxy, exception
@@ -75,7 +80,7 @@ and proved an unprofiled context fails specifically because
 | `npm ci` | PASS, 375 packages from the committed lockfile |
 | `npm ls --all` | PASS; reported unmet entries are optional platform/peer packages |
 | `npm run lint` / `npm run format:check` / `npm run typecheck` | PASS |
-| `npm run test:ci` | PASS, 46 tests in 7 files |
+| `npm run test:ci` | PASS, 53 tests in 8 files |
 | `npm run build` / `npm run verify:bundle` | PASS |
 | `npm run test:browser` | PASS, one built-console Ready → Degraded → Ready scenario |
 | `scripts/verify_coverage_thresholds.sh frontend` | PASS; impossible 100% thresholds were rejected |
@@ -83,16 +88,18 @@ and proved an unprofiled context fails specifically because
 Frontend coverage: statements 128/135 (94.81%), branches 78/91 (85.71%),
 functions 27/29 (93.10%) and lines 126/131 (96.18%). The displayed frontend
 version is the validated package version `0.1.0`; the browser build and assertion
-use the same full source Head. A transient `github.ref_name` version is prohibited.
+call the same source-identity resolver. CI accepts only the explicit lowercase
+40-hex authored Head and fails if it is absent; local execution alone may resolve
+the repository Head. A checkout merge SHA and transient ref are prohibited as
+published source identity.
 
 ## Runtime, Fresh Clone and supply chain
 
 `make bootstrap`, `make up`, `make verify-local-config`, `make supply-chain`,
 the complete special-character `scripts/fresh_clone_check.sh`, final `make down`,
-`git diff --check` and clean Git status all passed. The initial Fresh Clone
-attempt stopped at a host-port collision with the workspace stack; its trap
-cleaned scoped resources. After `make down` preserved the workspace volume and
-released port 5432, the identical Head passed from start to finish.
+`git diff --check` and clean Git status all passed. A sandbox-only Chromium Mach
+port refusal was rerun outside the sandbox; the identical Head passed from start
+to finish and scoped Docker resources were absent afterward.
 
 Backend and frontend SBOMs validate as CycloneDX 1.6 with 76 and 341 components.
 Licence inventories cover 130 Maven dependencies and 366 installed npm packages;
