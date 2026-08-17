@@ -1,0 +1,69 @@
+# Local PostgreSQL for MarketOps Russia.
+#
+# The stack publishes one database on the loopback interface and nothing else.
+# Every password is read from the ignored local file that `make env-init`
+# generates, and each is declared mandatory, so a missing value stops the stack
+# with the name of what is missing instead of starting a database whose
+# credentials nobody knows.
+
+name: marketops-local
+
+services:
+  postgres:
+    image: postgres:18.4
+    environment:
+      POSTGRES_DB: marketops
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${MARKETOPS_POSTGRES_SUPERUSER_PASSWORD:?set it in .env.local via make env-init}
+      # Read by the initialisation script through psql's \getenv, so no password
+      # is ever placed on a command line where the process list would show it.
+      MARKETOPS_DB_MIGRATION_PASSWORD: ${MARKETOPS_DB_MIGRATION_PASSWORD:?set it in .env.local via make env-init}
+      MARKETOPS_DB_APP_PASSWORD: ${MARKETOPS_DB_APP_PASSWORD:?set it in .env.local via make env-init}
+      # PostgreSQL 18 moved the server data one level below the mount point so a
+      # volume can hold more than one major version. Naming the release here and
+      # mounting the parent is what makes an upgrade a copy rather than a loss.
+      PGDATA: /var/lib/postgresql/18/docker
+      # Deterministic text handling. A cluster initialised with whatever locale
+      # the host happens to export sorts differently from one initialised
+      # elsewhere, which turns an index into a source of machine-dependent
+      # results. Checksums make a torn page an error instead of a wrong answer.
+      LANG: C.UTF-8
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --data-checksums"
+    ports:
+      # Bound to loopback. The database holds no production data, but an
+      # unauthenticated port on a shared network is not a foundation to build on.
+      - "127.0.0.1:${MARKETOPS_DB_PORT:-5432}:5432"
+    volumes:
+      - marketops-postgres-data:/var/lib/postgresql
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # `pg_isready` alone answers during initialisation, before the role script
+      # has run. Selecting the application role proves the container finished the
+      # work that makes it usable.
+      test:
+        - CMD-SHELL
+        - pg_isready --username=postgres --dbname=marketops --quiet && psql --username=postgres --dbname=marketops --tuples-only --no-align --command="SELECT 1 FROM pg_roles WHERE rolname = 'marketops_app'" | grep -q 1
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 15s
+    stop_grace_period: 30s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    shm_size: 256mb
+    command:
+      - postgres
+      - -c
+      - max_connections=100
+      # Statements are logged with their duration so a slow query in a later work
+      # package can be attributed without changing the running configuration.
+      - -c
+      - log_min_duration_statement=1000
+      - -c
+      - log_connections=on
+      - -c
+      - log_disconnections=on
+
+volumes:
+  marketops-postgres-data:

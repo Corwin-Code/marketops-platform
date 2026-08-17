@@ -1,0 +1,57 @@
+{
+  "name": "marketops-console",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Operations console for MarketOps Russia",
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=11"
+  },
+  "allowScripts": {
+    "fsevents": false,
+    "libxmljs2": false
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit --pretty",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ci": "vitest run --coverage",
+    "test:browser": "playwright test",
+    "verify:bundle": "node scripts/verify-bundle-isolation.mjs",
+    "presbom": "node scripts/prepare-sbom-output.mjs",
+    "sbom": "cyclonedx-npm --output-file ../../build/supply-chain/frontend-sbom.json --spec-version 1.6 --output-reproducible --validate"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@cyclonedx/cyclonedx-npm": "6.0.1",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.62.1",
+    "@testing-library/dom": "10.4.1",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.2",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.0.5",
+    "@vitest/coverage-v8": "4.1.10",
+    "eslint": "10.8.1",
+    "eslint-config-prettier": "10.1.8",
+    "jsdom": "30.0.1",
+    "prettier": "3.9.6",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.67.0",
+    "vite": "8.2.1",
+    "vitest": "4.1.10"
+  }
+}

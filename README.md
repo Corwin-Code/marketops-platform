@@ -5,7 +5,7 @@
 项目状态：`INITIATING`  
 当前阶段：`Sprint 0 / Phase 0 — Data, Identity & Visibility Foundation`  
 当前活动 Work Package：`WP-P0-001 — Repository, Governance & CI Foundation`  
-当前授权：`DESIGN ONLY`；尚未授权产品代码实现。
+当前授权：`INITIAL IMPLEMENTATION`；WP-P0-001 的初版实现已产出，等待总控审查与 Owner 合并。
 
 Owner Git 流程指导：`REQUIRED`。每次任务开始时，Agent 必须按
 [`OWNER_GIT_WORKFLOW_GUIDE.md`](docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md)
@@ -39,33 +39,62 @@ MarketOps Russia 是面向俄罗斯本地经营主体的内部 Marketplace Opera
 - AI 只提供解释、建议和生产力支持，不持有平台 Credential 或直接写权限；
 - Phase Gate 未通过不得扩大自动化。
 
-## 启动路径
+## 本地启动路径
 
-1. 阅读 [`START_HERE.md`](START_HERE.md)；
-2. 运行本地治理检查：
-
-```bash
-python3 scripts/validate_governance.py
-```
-
-3. 初始化 Git 仓库：
+完整步骤见 [`docs/06-runbooks/local-development.md`](docs/06-runbooks/local-development.md)。
+最短路径：
 
 ```bash
-bash scripts/bootstrap-repo.sh
+make doctor        # 报告缺失的前置条件，不改动主机
+make bootstrap     # 生成两个被 Git 忽略的 .env.local，并再次报告前置条件
+make up            # 启动 PostgreSQL 并等待其可用
+make backend-run   # 以本地数据库启动后端
 ```
 
-4. 按 D-15 在 GitHub 创建 Public 预生产仓库 `marketops-platform`，推送 `main`；真实生产上线时（或更早引入机密业务资料前）改回 Private 并重新验证仓库控制；
-5. 按 `docs/00-governance/GITHUB_SETUP.md` 配置 Ruleset；
-6. 在 Claude Project 中加载指定知识文件并执行 `docs/08-handoffs/CLAUDE-WP-P0-001-DESIGN-PROMPT.md`；
-7. 将 Claude 的设计输出提交回总控窗口，等待明确的 Controller Verdict。
+另开一个终端：
+
+```bash
+make frontend-install
+make frontend-dev
+```
+
+控制台在 <http://127.0.0.1:5173>。后端与控制台都只绑定回环地址：本基座尚无鉴权，
+两者都不得暴露到网络上。
+
+数据库角色名 `marketops_migration` 与 `marketops_app` 是**已提交的常量**，不是机密；
+只有三个数据库口令由生成器写入 `.env.local`，且在任何代码路径上都不会被打印。
+
+## 验证
+
+| 命令 | 覆盖范围 |
+| --- | --- |
+| `make governance` | 治理规则、三条生产就绪硬规则及其自身测试 |
+| `make backend-test` | 编译、单元测试、架构规则、配置断言 |
+| `make backend-arch` | 仅架构边界规则及其 8 个 Fixture |
+| `make backend-verify` | 以上全部，另加 Testcontainers 数据库集成测试 |
+| `make frontend-check` | Lint、格式、类型、覆盖率测试、构建 |
+| `make supply-chain` | 生成两侧依赖与许可证清单（输出被 Git 忽略） |
+| `make fresh-clone` | 克隆当前提交并在其中完整验证，证明不依赖本地残留状态 |
+| `make verify` | 上述本地验证的全集 |
+
+浏览器验收由 `npm run test:browser` 自动执行真实后端、数据库与 Chromium 路径；
+人工检查清单仍可作为补充，见
+[`docs/06-runbooks/browser-smoke.md`](docs/06-runbooks/browser-smoke.md)。
+
+## 证据
+
+WP-P0-001 的后端、前端、数据库、覆盖率、浏览器、供应链与本地配置 Gate 已真实执行；
+`package-lock.json` 已提交，Maven 与 npm 均从锁定输入构建。完整命令、聚合结果及
+Fresh Clone / GitHub PR 边界见
+[`docs/07-phase-evidence/WP-P0-001/`](docs/07-phase-evidence/WP-P0-001/)。
 
 ## 目录
 
 ```text
 marketops-platform/
-├── backend/                     # WP-P0-001 实现阶段创建
-├── frontend/                    # WP-P0-001 实现阶段创建
-├── infra/                       # WP-P0-001 实现阶段创建
+├── backend/marketops-server/    # Spring Boot 后端；两个模块：shared、adminobservability
+├── frontend/marketops-console/  # React 运维控制台；七种平台状态
+├── infra/compose/               # 本地 PostgreSQL 与角色初始化脚本
 ├── fixtures/                    # 后续 Golden Dataset / 脱敏 Fixture
 ├── scripts/
 ├── docs/
@@ -89,4 +118,5 @@ marketops-platform/
 - 不绕过 Design Gate 直接让 Claude 实现 WP-P0-001；
 - 不直接向 `main` 推送产品代码；
 - 不把 Fixture 结果描述成真实平台 API 已接通；
-- 不在 Phase 0 开启任何生产平台写能力。
+- 不在 Phase 0 开启任何生产平台写能力；
+- 不把未执行的检查写成已通过：未跑就是未跑。
