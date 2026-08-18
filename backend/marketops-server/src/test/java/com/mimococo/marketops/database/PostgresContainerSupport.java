@@ -35,12 +35,24 @@ abstract class PostgresContainerSupport {
     static final String MIGRATION_ROLE = "marketops_migration";
     static final String APPLICATION_ROLE = "marketops_app";
 
-    /** The schemas the single foundation migration creates. */
+    /** The schemas the earliest migration creates. */
     static final List<String> FOUNDATION_SCHEMAS =
             List.of("iam", "platform", "raw", "staging", "core", "ledger", "mart", "ops");
 
     /** SQLSTATE PostgreSQL raises when a schema already exists. */
     static final String DUPLICATE_SCHEMA = "42P06";
+
+    /** SQLSTATE PostgreSQL raises for a unique-constraint violation. */
+    static final String UNIQUE_VIOLATION = "23505";
+
+    /** SQLSTATE PostgreSQL raises for a foreign-key violation. */
+    static final String FOREIGN_KEY_VIOLATION = "23503";
+
+    /** SQLSTATE PostgreSQL raises for a check-constraint violation. */
+    static final String CHECK_VIOLATION = "23514";
+
+    /** SQLSTATE PostgreSQL raises for an exclusion-constraint violation. */
+    static final String EXCLUSION_VIOLATION = "23P01";
 
     /** SQLSTATE PostgreSQL raises when a role lacks a privilege. */
     static final String INSUFFICIENT_PRIVILEGE = "42501";

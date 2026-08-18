@@ -23,8 +23,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /**
- * Establishes what the single foundation migration produces, and what it does
- * when the database is not the empty one it expects.
+ * Establishes what the approved migration set produces, and what the earliest
+ * migration does when the database is not the empty one it expects.
  *
  * <p>The negative case is the reason the migration refuses to tolerate an
  * existing schema, so it is asserted in full rather than described.
@@ -32,12 +32,32 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class FlywayMigrationIT extends PostgresContainerSupport {
 
+    /** The approved migration files in their application order. */
+    private static final List<String> APPROVED_MIGRATIONS = List.of(
+            "V0001__create_foundation_schemas.sql",
+            "V0002__enable_btree_gist_extension.sql",
+            "V0003__create_metadata_audit_event.sql",
+            "V0004__create_core_organization_metadata.sql",
+            "V0005__create_iam_access_metadata.sql",
+            "V0006__create_platform_registry_metadata.sql");
+
     private static PostgreSQLContainer container;
 
     @BeforeAll
     static void migrate() {
         container = shared();
         migrator(container).migrate();
+    }
+
+    @Test
+    @Order(0)
+    @DisplayName("TC-DB-100 the container and running server are exactly PostgreSQL 18.4")
+    void serverReleaseIsExactlyPinned() throws SQLException {
+        assertThat(container.getDockerImageName()).isEqualTo(IMAGE);
+        try (Connection connection = asSuperuser(container)) {
+            assertThat(single(connection, "SHOW server_version_num")).isEqualTo("180004");
+            assertThat(single(connection, "SHOW server_version")).startsWith("18.4");
+        }
     }
 
     @Test
@@ -73,31 +93,75 @@ class FlywayMigrationIT extends PostgresContainerSupport {
 
     @Test
     @Order(3)
-    @DisplayName("TC-DB-110 the foundation introduces no application table")
-    void noApplicationTableExists() throws SQLException {
+    @DisplayName("TC-DB-110 the metadata tables exist, and nothing else does")
+    void exactlyTheMetadataTablesExist() throws SQLException {
         try (Connection connection = asMigrationRole(container)) {
             List<String> tables = strings(connection,
                     "SELECT schemaname || '.' || tablename FROM pg_tables "
                             + "WHERE schemaname IN " + quotedFoundationSchemas()
                             + " ORDER BY 1");
 
-            assertThat(tables)
-                    .as("the foundation creates schemas only")
-                    .isEmpty();
+            assertThat(tables).containsExactly(
+                    "core.fulfillment_mode",
+                    "core.legal_entity",
+                    "core.marketplace_account",
+                    "core.marketplace_platform",
+                    "core.organization",
+                    "core.store",
+                    "core.store_fulfillment_declaration",
+                    "core.store_warehouse_link",
+                    "core.warehouse",
+                    "iam.permission_kind",
+                    "iam.service_account",
+                    "iam.service_account_allowed_source",
+                    "iam.service_account_scope_grant",
+                    "ops.metadata_audit_event",
+                    "platform.capability_subject_status",
+                    "platform.capability_verification_event",
+                    "platform.credential_metadata",
+                    "platform.credential_purpose",
+                    "platform.credential_store_scope",
+                    "platform.feature_flag",
+                    "platform.platform_capability",
+                    "platform.platform_endpoint",
+                    "platform.platform_permission_requirement");
+        }
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("TC-DB-115 the reference seeds are the approved rows and nothing more")
+    void referenceSeedsAreExact() throws SQLException {
+        try (Connection connection = asMigrationRole(container)) {
+            assertThat(strings(connection,
+                    "SELECT code FROM core.marketplace_platform ORDER BY code"))
+                    .containsExactly("OZON", "WILDBERRIES");
+            assertThat(strings(connection,
+                    "SELECT code FROM core.fulfillment_mode ORDER BY code"))
+                    .containsExactly("MARKETPLACE_FULFILLED", "SELLER_FULFILLED", "UNKNOWN");
+            assertThat(strings(connection,
+                    "SELECT code FROM iam.permission_kind ORDER BY code"))
+                    .containsExactly("ADS", "CREDENTIAL_ADMIN", "FINANCE", "READ", "WRITE");
+            assertThat(strings(connection,
+                    "SELECT code FROM platform.credential_purpose ORDER BY code"))
+                    .containsExactly(
+                            "ADS_WRITE", "FINANCE", "INVENTORY_WRITE", "PRICE_WRITE", "READ");
+            assertThat(single(connection,
+                    "SELECT extname FROM pg_extension WHERE extname = 'btree_gist'"))
+                    .isEqualTo("btree_gist");
         }
     }
 
     @Test
     @Order(4)
-    @DisplayName("TC-DB-111 the migration history holds exactly the one foundation migration")
-    void historyHoldsOneMigration() throws SQLException {
+    @DisplayName("TC-DB-111 the migration history holds the approved set in order")
+    void historyHoldsTheApprovedSet() throws SQLException {
         try (Connection connection = asMigrationRole(container)) {
             List<String> applied = strings(connection,
-                    "SELECT version || ' ' || script FROM public.flyway_schema_history "
+                    "SELECT script FROM public.flyway_schema_history "
                             + "WHERE type = 'SQL' ORDER BY installed_rank");
 
-            assertThat(applied).hasSize(1);
-            assertThat(applied.get(0)).contains("V0001__create_foundation_schemas.sql");
+            assertThat(applied).containsExactly(APPROVED_MIGRATIONS.toArray(String[]::new));
             assertThat(count(connection,
                     "SELECT count(*) FROM public.flyway_schema_history WHERE success = false"))
                     .isZero();
@@ -124,15 +188,15 @@ class FlywayMigrationIT extends PostgresContainerSupport {
 
     @Test
     @Order(6)
-    @DisplayName("TC-DB-113 the source tree carries exactly one versioned migration")
-    void exactlyOneMigrationIsDeclared() throws Exception {
+    @DisplayName("TC-DB-113 the source tree carries exactly the approved migrations")
+    void exactlyTheApprovedMigrationsAreDeclared() throws Exception {
         Path migrations = repositoryRoot()
                 .resolve("backend/marketops-server/src/main/resources/db/migration");
 
         try (var entries = Files.list(migrations)) {
             List<String> names = entries.map(path -> path.getFileName().toString()).sorted().toList();
 
-            assertThat(names).containsExactly("V0001__create_foundation_schemas.sql");
+            assertThat(names).containsExactly(APPROVED_MIGRATIONS.toArray(String[]::new));
         }
     }
 
@@ -226,7 +290,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                 statement.execute("DROP SCHEMA iam");
             }
             MigrateResult recovered = migrator(contaminated).migrate();
-            assertThat(recovered.migrationsExecuted).isEqualTo(1);
+            assertThat(recovered.migrationsExecuted).isEqualTo(APPROVED_MIGRATIONS.size());
             try (Connection connection = asSuperuser(contaminated)) {
                 assertThat(count(connection,
                         "SELECT count(*) FROM pg_namespace n JOIN pg_roles r ON r.oid = n.nspowner "

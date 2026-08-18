@@ -8,6 +8,7 @@ from tempfile import TemporaryDirectory
 from scripts.validate_governance import (
     CANONICAL_DESIGN_RELATIVE_PATH,
     WP_P0_002_ID,
+    WP_P0_002_DESIGN_RELATIVE_PATH,
     WP_P0_002_RELATIVE_PATH,
     git_scan_paths,
     validate_active_work_package_record_text,
@@ -433,9 +434,40 @@ class AuthorizationStateTests(unittest.TestCase):
         self.assert_valid("DESIGN_ONLY", "DESIGN_ONLY")
 
     def test_approved_for_implementation_pair_is_valid(self) -> None:
-        self.assert_valid(
-            "APPROVED_FOR_IMPLEMENTATION",
-            "APPROVED_FOR_IMPLEMENTATION",
+        errors: list[str] = []
+        validate_authorization_state_text(
+            errors,
+            authorization_current_state("APPROVED_FOR_IMPLEMENTATION").replace(
+                "active_gate: READY_FOR_DESIGN", "active_gate: IMPLEMENTING"
+            ),
+            authorization_work_package(
+                "APPROVED_FOR_IMPLEMENTATION", status="IMPLEMENTING"
+            ),
+        )
+        self.assertEqual([], errors)
+
+    def test_implementation_stage_requires_the_implementing_gate(self) -> None:
+        errors: list[str] = []
+        validate_authorization_state_text(
+            errors,
+            authorization_current_state("APPROVED_FOR_IMPLEMENTATION"),
+            authorization_work_package(
+                "APPROVED_FOR_IMPLEMENTATION", status="IMPLEMENTING"
+            ),
+        )
+        self.assertTrue(any("active_gate: IMPLEMENTING" in error for error in errors))
+
+    def test_implementation_stage_requires_the_implementing_status(self) -> None:
+        errors: list[str] = []
+        validate_authorization_state_text(
+            errors,
+            authorization_current_state("APPROVED_FOR_IMPLEMENTATION").replace(
+                "active_gate: READY_FOR_DESIGN", "active_gate: IMPLEMENTING"
+            ),
+            authorization_work_package("APPROVED_FOR_IMPLEMENTATION"),
+        )
+        self.assertTrue(
+            any("Status must be: IMPLEMENTING" in error for error in errors)
         )
 
     def test_mismatched_pair_is_rejected(self) -> None:
@@ -1011,6 +1043,54 @@ class ActiveDesignBacklogTests(unittest.TestCase):
         errors = self.validate(active_wp=active_design_work_package(status="DRAFT"))
         self.assertTrue(any("active Work Package Status" in error for error in errors))
 
+    def test_active_implementation_backlog_transition_is_valid(self) -> None:
+        errors = self.validate(
+            current=active_design_current_state(
+                active_gate="IMPLEMENTING",
+                authorization="APPROVED_FOR_IMPLEMENTATION",
+            ),
+            backlog=phase_zero_backlog(wp_p0_002_status="IMPLEMENTING"),
+            active_wp=active_design_work_package(
+                status="IMPLEMENTING",
+                authorization="APPROVED_FOR_IMPLEMENTATION",
+            ),
+        )
+        self.assertEqual([], errors)
+
+    def test_implementing_state_rejects_a_ready_for_design_row(self) -> None:
+        errors = self.validate(
+            current=active_design_current_state(
+                active_gate="IMPLEMENTING",
+                authorization="APPROVED_FOR_IMPLEMENTATION",
+            ),
+            backlog=phase_zero_backlog(
+                wp_p0_002_status="IMPLEMENTING", extra_ready=True
+            ),
+            active_wp=active_design_work_package(
+                status="IMPLEMENTING",
+                authorization="APPROVED_FOR_IMPLEMENTATION",
+            ),
+        )
+        self.assertTrue(
+            any("cannot retain a READY_FOR_DESIGN" in error for error in errors)
+        )
+
+    def test_implementing_stage_requires_an_implementing_backlog_row(self) -> None:
+        errors = self.validate(
+            current=active_design_current_state(
+                active_gate="IMPLEMENTING",
+                authorization="APPROVED_FOR_IMPLEMENTATION",
+            ),
+            backlog=phase_zero_backlog(wp_p0_002_status="READY_FOR_DESIGN"),
+            active_wp=active_design_work_package(
+                status="IMPLEMENTING",
+                authorization="APPROVED_FOR_IMPLEMENTATION",
+            ),
+        )
+        self.assertTrue(
+            any("Status must be exactly: IMPLEMENTING" in error for error in errors)
+        )
+
     def test_closed_state_rejects_ready_for_design_row(self) -> None:
         errors: list[str] = []
         validate_backlog_state_text(
@@ -1243,7 +1323,7 @@ def wp_p0_002_traceability() -> str:
     ]
     additions = [
         f'{source_id},Requirement,0,title,{work_packages},'
-        f'{WP_P0_002_RELATIVE_PATH},,,,PLANNED,"{notes}"'
+        f'{WP_P0_002_DESIGN_RELATIVE_PATH},module,test-case,evidence,PLANNED,"{notes}"'
         for source_id, work_packages, notes in rows
     ]
     return base + "\n" + "\n".join(additions) + "\n"
@@ -1260,11 +1340,19 @@ class WpP0002TraceabilityTests(unittest.TestCase):
 
     def test_partial_requirement_cannot_be_preverified(self) -> None:
         text = wp_p0_002_traceability().replace(
-            f"{WP_P0_002_RELATIVE_PATH},,,,PLANNED,\"PARTIAL in WP-P0-002; OQ-006\"",
-            f"{WP_P0_002_RELATIVE_PATH},,,,VERIFIED,\"PARTIAL in WP-P0-002; OQ-006\"",
+            "evidence,PLANNED,\"PARTIAL in WP-P0-002; OQ-006\"",
+            "evidence,VERIFIED,\"PARTIAL in WP-P0-002; OQ-006\"",
         )
         errors = self.validate(text)
         self.assertTrue(any("must remain PLANNED" in error for error in errors))
+
+    def test_unfilled_implementation_columns_are_rejected(self) -> None:
+        text = wp_p0_002_traceability().replace(
+            "module,test-case,evidence,PLANNED,\"PARTIAL in WP-P0-002; OQ-006\"",
+            "module,,evidence,PLANNED,\"PARTIAL in WP-P0-002; OQ-006\"",
+        )
+        errors = self.validate(text)
+        self.assertTrue(any("missing test_case" in error for error in errors))
 
     def test_missing_later_closure_disposition_is_rejected(self) -> None:
         text = wp_p0_002_traceability().replace(

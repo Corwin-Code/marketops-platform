@@ -5,7 +5,7 @@ Phase 0 is a Gate, not merely a date range. Work Packages are deliberately small
 | ID | Title | Status | Dependencies | Core source requirements |
 | --- | --- | --- | --- | --- |
 | WP-P0-001 | Repository, Governance & CI Foundation | COMPLETED | None | D-03, D-10, HR-06, CI Gate, DoR/DoD |
-| WP-P0-002 | Organization, Store, Warehouse & Credential Metadata | READY_FOR_DESIGN | WP-P0-001 | IAM-001/004/006/007, INT-002/003, ADM-001/002 |
+| WP-P0-002 | Organization, Store, Warehouse & Credential Metadata | IMPLEMENTING | WP-P0-001 | IAM-001/004/006/007, INT-002/003, ADM-001/002 |
 | WP-P0-003 | Ingestion Job, Cursor, Raw, Hash, Schema Observation & Replay | DRAFT | WP-P0-001/002 | D-03 PostgreSQL Task/Outbox Worker; INT-001/004/006–014/019/021 |
 | WP-P0-004 | Product Master, Variant, Barcode, Listing & Mapping Queue | DRAFT | WP-P0-002/003 | PIM-001/002/003/008/009 |
 | WP-P0-005 | Ozon Product & Listing Read Vertical Slice | DRAFT | WP-P0-003/004 + Capability evidence | INT + PIM Phase 0 |

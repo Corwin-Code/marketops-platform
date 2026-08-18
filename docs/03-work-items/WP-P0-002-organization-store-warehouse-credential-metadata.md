@@ -7,20 +7,20 @@
 | ID | WP-P0-002 |
 | Title | Organization, Store, Warehouse & Credential Metadata |
 | Phase | Sprint 0 / Phase 0 |
-| Status | READY_FOR_DESIGN |
-| Authorization | DESIGN_ONLY |
+| Status | IMPLEMENTING |
+| Authorization | APPROVED_FOR_IMPLEMENTATION |
 | Risk | HIGH |
 | Controller | GPT-5.6 Sol Pro / current ChatGPT Project |
 | Designer / Maker | Claude Cowork / Claude Code |
 | Repository writer | Mac Codex |
 | Final merge authorization | Human Owner |
 | Target branch | `main` |
-| Design artifact | NOT_YET_PRODUCED |
-| Implementation authorization | PROHIBITED |
+| Design artifact | `docs/02-architecture/designs/WP-P0-002-organization-store-warehouse-credential-metadata-design.md` |
+| Implementation authorization | APPROVED_FOR_IMPLEMENTATION |
 
-This record activates a Design Gate only. It does not authorize implementation,
-Marketplace connectivity, credential retrieval, production data or production
-writes.
+This record is in its implementation stage: the Controller approved the design
+artifact above for implementation. It still does not authorize Marketplace
+connectivity, credential retrieval, production data or production writes.
 
 ## 2. Business Outcome
 
@@ -312,15 +312,16 @@ independent Controller reviews the actual artifact under the Design Gate.
 Current state:
 
 ```text
-Status: READY_FOR_DESIGN
-Authorization: DESIGN_ONLY
-Next authorized actor: Claude Designer / Maker
-Next authorized action: Produce the WP-P0-002 Design artifact
-Implementation: PROHIBITED until APPROVED_FOR_IMPLEMENTATION
+Status: IMPLEMENTING
+Authorization: APPROVED_FOR_IMPLEMENTATION
+Approved design SHA-256: 3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2
+Next authorized actor: Claude Designer / Maker, then independent Controller
+Next authorized action: Deliver the bounded implementation candidate for CONTROLLER_IMPLEMENTATION_REVIEW
+Implementation: PROHIBITED until APPROVED_FOR_IMPLEMENTATION — satisfied by the design verdict above
 Production writes: DISABLED
 ```
 
-The future Controller Design verdict must be exactly one of:
+The Controller Design verdict vocabulary is:
 
 ```text
 APPROVED_FOR_IMPLEMENTATION
@@ -329,6 +330,7 @@ BLOCKED_BY_OWNER_DECISION
 BLOCKED_BY_EXTERNAL_CAPABILITY
 ```
 
-Only `APPROVED_FOR_IMPLEMENTATION` on an exact Design artifact can authorize a
-later implementation task. Nothing in this Work Package authorizes Ready, merge,
+The recorded verdict on Design v1.2 is `APPROVED_FOR_IMPLEMENTATION`. Only
+`APPROVED_FOR_IMPLEMENTATION` on an exact Design artifact can authorize an
+implementation task. Nothing in this Work Package authorizes Ready, merge,
 Marketplace connection, credential retrieval or production writes.

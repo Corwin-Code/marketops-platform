@@ -3,7 +3,11 @@ from __future__ import annotations
 import unittest
 
 from scripts.validate_production_readiness import (
+    APPROVED_MIGRATIONS,
+    HASH_PINNED_DOC_PATHS,
+    DESTRUCTIVE_MIGRATION_STATEMENT,
     FORBIDDEN_BACKEND_DEPENDENCIES,
+    FOUNDATION_MIGRATION_SHA256,
     HISTORY_COMMENT_PATTERNS,
     IDENTIFIER_CONTEXT,
     IDENTIFIER_SCAFFOLD_TERMS,
@@ -40,7 +44,7 @@ from scripts.validate_production_readiness import (
 
 
 class ExclusionScopeTests(unittest.TestCase):
-    """The only exclusion is the rule definition itself and it cannot widen."""
+    """Both exclusion lists are exact, tested path lists that cannot widen."""
 
     def test_exclusion_list_is_exactly_the_rule_definition(self) -> None:
         self.assertEqual(
@@ -51,8 +55,17 @@ class ExclusionScopeTests(unittest.TestCase):
             RULE_DEFINITION_PATHS,
         )
 
+    def test_hash_pinned_docs_are_exactly_the_approved_design(self) -> None:
+        self.assertEqual(
+            (
+                "docs/02-architecture/designs/"
+                "WP-P0-002-organization-store-warehouse-credential-metadata-design.md",
+            ),
+            HASH_PINNED_DOC_PATHS,
+        )
+
     def test_no_directory_is_excluded(self) -> None:
-        for entry in RULE_DEFINITION_PATHS:
+        for entry in RULE_DEFINITION_PATHS + HASH_PINNED_DOC_PATHS:
             with self.subTest(entry=entry):
                 self.assertFalse(entry.endswith("/"))
                 self.assertNotIn("*", entry)
@@ -338,6 +351,48 @@ repositoryHeadReader(repositoryRoot)
         return workflow, config, scenario, resolver
 
 
+class MigrationContractTests(unittest.TestCase):
+    """The approved migration set, the immutability pin and the statement ban."""
+
+    def test_the_approved_set_is_the_six_metadata_migrations(self) -> None:
+        self.assertEqual(
+            (
+                "V0001__create_foundation_schemas.sql",
+                "V0002__enable_btree_gist_extension.sql",
+                "V0003__create_metadata_audit_event.sql",
+                "V0004__create_core_organization_metadata.sql",
+                "V0005__create_iam_access_metadata.sql",
+                "V0006__create_platform_registry_metadata.sql",
+            ),
+            APPROVED_MIGRATIONS,
+        )
+
+    def test_the_foundation_pin_is_a_sha256_digest(self) -> None:
+        self.assertRegex(FOUNDATION_MIGRATION_SHA256, r"^[0-9a-f]{64}$")
+
+    def test_destructive_statements_are_detected(self) -> None:
+        for statement in (
+            "DROP TABLE core.store;",
+            "  drop schema ledger cascade;",
+            "TRUNCATE ops.metadata_audit_event;",
+            "DELETE FROM platform.credential_metadata;",
+            "DROP INDEX credential_metadata_account_ix;",
+            "DROP ROLE marketops_app;",
+        ):
+            with self.subTest(statement=statement):
+                self.assertTrue(DESTRUCTIVE_MIGRATION_STATEMENT.search(statement))
+
+    def test_creation_and_grants_are_not_detected(self) -> None:
+        for statement in (
+            "CREATE TABLE platform.feature_flag (id uuid NOT NULL);",
+            "GRANT SELECT, INSERT ON ops.metadata_audit_event TO marketops_app;",
+            "CREATE UNIQUE INDEX feature_flag_scope_uq ON platform.feature_flag (flag_code);",
+            "ALTER TABLE core.store ADD CONSTRAINT store_pk PRIMARY KEY (id);",
+        ):
+            with self.subTest(statement=statement):
+                self.assertIsNone(DESTRUCTIVE_MIGRATION_STATEMENT.search(statement))
+
+
 class CommentExtractionTests(unittest.TestCase):
     def test_block_comment_lines_are_returned(self) -> None:
         source = "\n".join(
@@ -363,6 +418,15 @@ class CommentExtractionTests(unittest.TestCase):
     def test_double_slash_inside_a_string_is_not_a_comment(self) -> None:
         self.assertEqual([], comment_lines('String url = "https://example.invalid";', ".java"))
 
+    def test_sql_line_comment_is_returned(self) -> None:
+        extracted = comment_lines(
+            "CREATE TABLE example (id uuid); -- current invariant", ".sql"
+        )
+        self.assertEqual([(1, "-- current invariant")], extracted)
+
+    def test_double_dash_inside_a_sql_string_is_not_a_comment(self) -> None:
+        self.assertEqual([], comment_lines("SELECT 'not--a-comment';", ".sql"))
+
 
 class HistoryCommentTests(unittest.TestCase):
     def matches(self, line: str) -> bool:
@@ -384,6 +448,9 @@ class HistoryCommentTests(unittest.TestCase):
             "// review iteration introduced this branch",
             "// a work package that introduces an SDK updates this list",
             "// rework finding changed the assertion",
+            "// later work packages record verified evidence",
+            "// availability remains unknown in this stage",
+            "-- a future credential-verification capability relaxes this check",
         ):
             with self.subTest(line=line):
                 self.assertTrue(self.matches(line))
@@ -395,6 +462,8 @@ class HistoryCommentTests(unittest.TestCase):
             "// Readiness includes the datasource; liveness deliberately does not.",
             "// The correlation identifier is regenerated when the inbound value is invalid.",
             "// Passwords use an alphanumeric alphabet so no escaping is required.",
+            "// A credential with an expiry timestamp in the future remains active.",
+            "-- The interval excludes its upper bound during overlap checks.",
         ):
             with self.subTest(line=line):
                 self.assertFalse(self.matches(line))

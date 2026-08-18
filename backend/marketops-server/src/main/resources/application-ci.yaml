@@ -7,6 +7,10 @@
 
 marketops:
   environment: ci
+  metadata-maintenance:
+    # Integration tests exercise the maintenance surface end to end, including
+    # its denial behaviour, against a disposable containerised database.
+    write-enabled: true
   web:
     cors:
       allowed-origins: http://127.0.0.1:5173,http://127.0.0.1:4173

@@ -1,3 +1,9 @@
 # Internal API
 
-No OpenAPI contract is authorized in Session 0. WP-P0-001 may create only a minimal health/readiness contract. Business APIs begin in later Work Packages and must not expose platform DTOs directly.
+| Page | Content |
+| --- | --- |
+| `metadata-maintenance-api.md` | The loopback metadata maintenance surface: resources, commands and query filters |
+
+The read-only status contract at `/api/v1/meta/status` is defined by the health
+console and its assembler. No OpenAPI contract is published yet, and business
+APIs must never expose platform DTOs directly.

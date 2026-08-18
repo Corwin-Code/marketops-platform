@@ -52,10 +52,15 @@ spring:
     out-of-order: false
   jackson:
     default-property-inclusion: always
+    deserialization:
+      # The maintenance API is the only surface that reads request bodies. An
+      # unknown field there is either a typo or an attempt to smuggle a value
+      # into a model, and both must fail rather than be silently dropped.
+      fail-on-unknown-properties: true
 
 server:
-  # Loopback only. The foundation has no authentication, so the metadata resource
-  # must not be reachable from another host on the network.
+  # Loopback only. The process has no authentication, so neither the metadata
+  # resource nor the maintenance surface may be reachable from another host.
   address: 127.0.0.1
   port: 8080
   shutdown: graceful
@@ -68,6 +73,14 @@ server:
 
 marketops:
   product: MarketOps Russia
+  metadata-maintenance:
+    # Fail closed: an environment accepts maintenance writes only when its
+    # profile explicitly turns them on. Queries are not gated.
+    write-enabled: false
+  production-writes:
+    # Globally disabled. The binding contract rejects true at startup, so no
+    # environment and no metadata flag can represent enabled production writes.
+    enabled: false
 
 management:
   # Nothing is reachable unless it is named below.

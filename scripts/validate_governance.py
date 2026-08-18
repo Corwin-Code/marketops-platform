@@ -64,6 +64,7 @@ COMPLETED_WP_RESULT = "VERIFIED"
 HISTORIC_DESIGN_VERDICT = "APPROVED_FOR_IMPLEMENTATION"
 POST_WP_ACTIVE_GATE = "CONTROLLER_PHASE_0_PLANNING"
 DESIGN_ACTIVE_GATE = "READY_FOR_DESIGN"
+IMPLEMENTATION_ACTIVE_GATE = "IMPLEMENTING"
 WP_P0_001_ID = "WP-P0-001"
 WP_P0_002_ID = "WP-P0-002"
 WP_P0_001_RELATIVE_PATH = (
@@ -73,6 +74,15 @@ WP_P0_002_RELATIVE_PATH = (
     "docs/03-work-items/"
     "WP-P0-002-organization-store-warehouse-credential-metadata.md"
 )
+WP_P0_002_DESIGN_RELATIVE_PATH = (
+    "docs/02-architecture/designs/"
+    "WP-P0-002-organization-store-warehouse-credential-metadata-design.md"
+)
+# The approved WP-P0-002 design is reviewed by content hash. The canonical file
+# must stay byte-identical to the artifact the Controller approved.
+WP_P0_002_DESIGN_SHA256 = (
+    "3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2"
+)
 WORK_PACKAGE_PATHS = {
     WP_P0_001_ID: WP_P0_001_RELATIVE_PATH,
     WP_P0_002_ID: WP_P0_002_RELATIVE_PATH,
@@ -81,7 +91,7 @@ CONTROLLER_REVIEW_STANDARD_RELATIVE_PATH = (
     "docs/00-governance/CONTROLLER_REVIEW_STANDARD.md"
 )
 BACKLOG_HEADER = ["ID", "Title", "Status", "Dependencies", "Core source requirements"]
-BACKLOG_ALLOWED_STATES = {"DRAFT", "READY_FOR_DESIGN", "COMPLETED"}
+BACKLOG_ALLOWED_STATES = {"DRAFT", "READY_FOR_DESIGN", "IMPLEMENTING", "COMPLETED"}
 COMPLETED_TRACEABILITY_STATES = {"VERIFIED", "ACTIVE_CONTROL"}
 COMPLETED_TRACEABILITY_IDS = {"D-02", "D-03", "D-07", "D-10", "D-15", "D-16", "D-17", "HR-06"}
 D03_WORK_PACKAGES = "WP-P0-001;WP-P0-003"
@@ -124,11 +134,24 @@ WP_P0_002_METADATA = {
     "ID": WP_P0_002_ID,
     "Title": "Organization, Store, Warehouse & Credential Metadata",
     "Phase": "Sprint 0 / Phase 0",
-    "Status": "READY_FOR_DESIGN",
-    "Authorization": "DESIGN_ONLY",
     "Risk": "HIGH",
     "Target branch": "`main`",
-    "Implementation authorization": "PROHIBITED",
+}
+
+# The two coherent WP-P0-002 stages. The record's Status selects the stage and
+# every stage-dependent field must agree with it; any other combination is an
+# invalid mixed state.
+WP_P0_002_STAGE_FIELDS = {
+    DESIGN_ACTIVE_GATE: {
+        "Authorization": "DESIGN_ONLY",
+        "Design artifact": "NOT_YET_PRODUCED",
+        "Implementation authorization": "PROHIBITED",
+    },
+    IMPLEMENTATION_ACTIVE_GATE: {
+        "Authorization": "APPROVED_FOR_IMPLEMENTATION",
+        "Design artifact": f"`{WP_P0_002_DESIGN_RELATIVE_PATH}`",
+        "Implementation authorization": "APPROVED_FOR_IMPLEMENTATION",
+    },
 }
 
 WP_P0_002_TRACEABILITY_CONTRACT = {
@@ -241,6 +264,23 @@ def validate_work_package(errors: list[str]) -> None:
         if actual != expected:
             errors.append(f"WP-P0-002 {field} must be exactly: {expected}")
 
+    stage = work_package_metadata_value(text, "Status")
+    stage_fields = WP_P0_002_STAGE_FIELDS.get(stage or "")
+    if stage_fields is None:
+        errors.append(
+            "WP-P0-002 Status must be exactly one of: "
+            + ", ".join(sorted(WP_P0_002_STAGE_FIELDS))
+        )
+    else:
+        for field, expected in stage_fields.items():
+            actual = work_package_metadata_value(text, field)
+            if actual != expected:
+                errors.append(
+                    f"WP-P0-002 {field} must be exactly {expected} while {stage}"
+                )
+    if stage == IMPLEMENTATION_ACTIVE_GATE:
+        validate_wp_p0_002_canonical_design(errors)
+
     for requirement, closure in {
         "IAM-001": "PARTIAL",
         "IAM-004": "PARTIAL",
@@ -270,6 +310,23 @@ def validate_work_package(errors: list[str]) -> None:
     ]:
         if required not in text:
             errors.append(f"WP-P0-002 missing Design contract: {required}")
+
+
+def validate_wp_p0_002_canonical_design(errors: list[str]) -> None:
+    """Pin the approved WP-P0-002 design to the reviewed artifact by hash."""
+    design_path = ROOT / WP_P0_002_DESIGN_RELATIVE_PATH
+    if not design_path.exists():
+        errors.append(
+            "WP-P0-002 implementation stage requires the canonical design at: "
+            + WP_P0_002_DESIGN_RELATIVE_PATH
+        )
+        return
+    digest = hashlib.sha256(design_path.read_bytes()).hexdigest()
+    if digest != WP_P0_002_DESIGN_SHA256:
+        errors.append(
+            "WP-P0-002 canonical design content differs from the approved "
+            f"artifact: expected sha256 {WP_P0_002_DESIGN_SHA256}, found {digest}"
+        )
 
 
 def validate_parallel_current_state_paths(
@@ -478,22 +535,39 @@ def validate_backlog_state_text(
                 "closed planning state cannot retain a READY_FOR_DESIGN backlog row"
             )
     elif active is not None:
+        stage_authorization = (
+            work_package_execution_authorization(active_work_package_text)
+            if active_work_package_text is not None
+            else None
+        )
+        implementing = stage_authorization == "APPROVED_FOR_IMPLEMENTATION"
+        expected_gate = (
+            IMPLEMENTATION_ACTIVE_GATE if implementing else DESIGN_ACTIVE_GATE
+        )
+        expected_authorization = (
+            "APPROVED_FOR_IMPLEMENTATION" if implementing else "DESIGN_ONLY"
+        )
         expected_current = {
             "active_work_package": active,
-            "active_gate": DESIGN_ACTIVE_GATE,
-            "authorization": "DESIGN_ONLY",
+            "active_gate": expected_gate,
+            "authorization": expected_authorization,
         }
         active_rows = [row for row in rows if row["ID"] == active]
         if len(active_rows) != 1:
             errors.append(
                 f"Phase 0 backlog must contain exactly one active Work Package row: {active}"
             )
-        elif active_rows[0]["Status"] != DESIGN_ACTIVE_GATE:
+        elif active_rows[0]["Status"] != expected_gate:
             errors.append(
                 f"backlog active Work Package {active} Status must be exactly: "
-                + DESIGN_ACTIVE_GATE
+                + expected_gate
             )
-        if len(ready_rows) != 1 or ready_rows[0]["ID"] != active:
+        if implementing:
+            if ready_rows:
+                errors.append(
+                    "an implementing state cannot retain a READY_FOR_DESIGN backlog row"
+                )
+        elif len(ready_rows) != 1 or ready_rows[0]["ID"] != active:
             errors.append(
                 "the only READY_FOR_DESIGN backlog row must match CURRENT_STATE "
                 "active_work_package"
@@ -501,12 +575,15 @@ def validate_backlog_state_text(
         if active_work_package_text is None:
             errors.append("active Work Package canonical text is required for backlog validation")
         else:
-            if work_package_metadata_value(active_work_package_text, "Status") != DESIGN_ACTIVE_GATE:
+            if work_package_metadata_value(active_work_package_text, "Status") != expected_gate:
                 errors.append(
-                    f"active Work Package Status must be exactly: {DESIGN_ACTIVE_GATE}"
+                    f"active Work Package Status must be exactly: {expected_gate}"
                 )
-            if work_package_execution_authorization(active_work_package_text) != "DESIGN_ONLY":
-                errors.append("active Work Package authorization must be exactly: DESIGN_ONLY")
+            if work_package_execution_authorization(active_work_package_text) != expected_authorization:
+                errors.append(
+                    "active Work Package authorization must be exactly: "
+                    + expected_authorization
+                )
     else:
         expected_current = {}
 
@@ -711,6 +788,18 @@ def validate_authorization_state_text(
             if wp_status != DESIGN_ACTIVE_GATE:
                 errors.append(
                     f"DESIGN_ONLY active Work Package Status must be: {DESIGN_ACTIVE_GATE}"
+                )
+        if current_authorization == "APPROVED_FOR_IMPLEMENTATION":
+            active_gate = current_state_metadata_value(current_state_text, "active_gate")
+            if active_gate != IMPLEMENTATION_ACTIVE_GATE:
+                errors.append(
+                    "APPROVED_FOR_IMPLEMENTATION requires CURRENT_STATE active_gate: "
+                    + IMPLEMENTATION_ACTIVE_GATE
+                )
+            if wp_status != IMPLEMENTATION_ACTIVE_GATE:
+                errors.append(
+                    "APPROVED_FOR_IMPLEMENTATION active Work Package Status must be: "
+                    + IMPLEMENTATION_ACTIVE_GATE
                 )
 
 
@@ -996,14 +1085,18 @@ def validate_wp_p0_002_traceability_text(errors: list[str], text: str) -> None:
             errors.append(
                 f"traceability {source_id} work_package must be exactly: {work_packages}"
             )
-        if row.get("design_record") != WP_P0_002_RELATIVE_PATH:
+        if row.get("design_record") != WP_P0_002_DESIGN_RELATIVE_PATH:
             errors.append(
-                f"traceability {source_id} must reference the WP-P0-002 canonical record"
+                f"traceability {source_id} must reference the approved WP-P0-002 design"
             )
         if row.get("status") != "PLANNED":
             errors.append(
-                f"traceability {source_id} must remain PLANNED during Design activation"
+                f"traceability {source_id} must remain PLANNED until its "
+                "implementation result is independently verified"
             )
+        for field in ("code_location", "test_case", "evidence"):
+            if not row.get(field, "").strip():
+                errors.append(f"traceability {source_id} missing {field}")
         notes = row.get("notes", "")
         for token in (closure, later):
             if token not in notes:
@@ -1070,26 +1163,57 @@ def validate_completion_state_text(
                     f"CURRENT_STATE {section_name} must direct Controller Phase 0 planning"
                 )
     elif active_work_package == WP_P0_002_ID:
-        if active_gate != DESIGN_ACTIVE_GATE:
-            errors.append(
-                f"WP-P0-002 Design state requires CURRENT_STATE active_gate: "
-                f"{DESIGN_ACTIVE_GATE}"
-            )
-        if authorization != "DESIGN_ONLY":
-            errors.append("WP-P0-002 Design state requires authorization: DESIGN_ONLY")
-        for section_name, section in (
-            ("Active objective", active_objective),
-            ("Next authorized action", next_action),
-        ):
-            for token in ("Claude", WP_P0_002_ID, "Design"):
-                if token not in section:
+        if authorization == "APPROVED_FOR_IMPLEMENTATION":
+            if active_gate != IMPLEMENTATION_ACTIVE_GATE:
+                errors.append(
+                    "WP-P0-002 implementation state requires CURRENT_STATE "
+                    f"active_gate: {IMPLEMENTATION_ACTIVE_GATE}"
+                )
+            for section_name, section in (
+                ("Active objective", active_objective),
+                ("Next authorized action", next_action),
+            ):
+                for token in (WP_P0_002_ID, "implementation", "Controller"):
+                    if token not in section:
+                        errors.append(
+                            f"CURRENT_STATE {section_name} missing implementation "
+                            f"handoff: {token}"
+                        )
+            for token in (
+                WP_P0_002_DESIGN_RELATIVE_PATH,
+                WP_P0_002_DESIGN_SHA256,
+            ):
+                if token not in current_state_text:
                     errors.append(
-                        f"CURRENT_STATE {section_name} missing Design handoff: {token}"
+                        "CURRENT_STATE must pin the approved WP-P0-002 design: "
+                        + token
                     )
-        if "Implementation remains prohibited" not in next_action:
-            errors.append(
-                "CURRENT_STATE Next authorized action must prohibit implementation"
-            )
+            if "NOT_YET_PRODUCED" in current_state_text:
+                errors.append(
+                    "CURRENT_STATE retains a stale missing-design claim while "
+                    "implementing"
+                )
+        else:
+            if active_gate != DESIGN_ACTIVE_GATE:
+                errors.append(
+                    f"WP-P0-002 Design state requires CURRENT_STATE active_gate: "
+                    f"{DESIGN_ACTIVE_GATE}"
+                )
+            if authorization != "DESIGN_ONLY":
+                errors.append("WP-P0-002 Design state requires authorization: DESIGN_ONLY")
+            for section_name, section in (
+                ("Active objective", active_objective),
+                ("Next authorized action", next_action),
+            ):
+                for token in ("Claude", WP_P0_002_ID, "Design"):
+                    if token not in section:
+                        errors.append(
+                            f"CURRENT_STATE {section_name} missing Design handoff: {token}"
+                        )
+            if "Implementation remains prohibited" not in next_action:
+                errors.append(
+                    "CURRENT_STATE Next authorized action must prohibit implementation"
+                )
     elif active_work_package is not None:
         errors.append(
             "CURRENT_STATE active_work_package is unsupported or selects a "

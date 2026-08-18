@@ -27,6 +27,18 @@
 | TC-FE-001 | Lint, type check, unit test and production build pass | frontend CI |
 | TC-E2E-001 | Console shell can display backend health/data state | smoke/E2E evidence |
 
+## WP-P0-002 minimum tests
+
+| ID group | Coverage | Suite |
+| --- | --- | --- |
+| TC-OA-101…102, TC-IA-101…103, TC-MI-101…104 | Lifecycle state machines and closed vocabularies of every metadata module | `CoreLifecycleTest`, `AccessLifecycleTest`, `IntegrationLifecycleTest` |
+| TC-SEC-101…104, TC-SEC-201…204 | Secret-material refusal heuristics and shared field validation, including opaque secret references | `SecretMaterialGuardTest`, `MetadataFieldPolicyTest` |
+| TC-FF-101…104 | Fail-closed write-gate bindings: enabled production writes fail startup, the maintenance switch is mandatory | `WriteGateBindingTest` |
+| TC-DB-101…115 | Migration set, schemas, tables, seeds, contaminated-database refusal, disabled clean | `FlywayMigrationIT` |
+| TC-DB-201…216 | Relational invariants by SQLSTATE: composite-key ownership and platform pinning, exclusion intervals, uniqueness, checks, generated columns, append-only journals and the privilege matrix | `MetadataConstraintIT`, `MetadataPrivilegeIT`, `DatabasePrivilegeIT` |
+| TC-API-001…081 | The maintenance surface end to end: attribution and gate refusals, strict bodies, commands, derived read state, credential scope contract, registry fail-closed rules, flags, retirement vetoes and journal attribution | `MetadataMaintenanceApiIT`, `MaintenanceWriteGateApiIT` |
+| TC-ARCH | Boundary rules over the populated module tree and the exact detected module set | `ModuleBoundaryArchitectureTest`, `ModulithArchitectureTest`, `RuleSensitivityArchitectureTest` |
+
 ## Evidence rule
 
 A model statement such as “tests should pass” is not evidence. Evidence must be a reproducible command result, CI check, test report, migration output or inspected runtime artifact.

@@ -5,8 +5,8 @@ package com.mimococo.marketops.adminobservability.internal;
  *
  * <p>The field set is an allowlist. A connection string, database user, password,
  * search path, filesystem path, dependency inventory, or migration description
- * must never be added: this resource is reachable without authentication in the
- * foundation, so every field is effectively public.
+ * must never be added: this resource is reachable without authentication, so
+ * every field is effectively public.
  *
  * <p>Build time is deliberately absent. A wall-clock stamp makes two builds of one
  * source tree differ, and the source commit already identifies the build input.

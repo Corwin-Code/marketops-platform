@@ -1,0 +1,159 @@
+== table inventory
+                table_name
+------------------------------------------
+ core.fulfillment_mode
+ core.legal_entity
+ core.marketplace_account
+ core.marketplace_platform
+ core.organization
+ core.store
+ core.store_fulfillment_declaration
+ core.store_warehouse_link
+ core.warehouse
+ iam.permission_kind
+ iam.service_account
+ iam.service_account_allowed_source
+ iam.service_account_scope_grant
+ ops.metadata_audit_event
+ platform.capability_subject_status
+ platform.capability_verification_event
+ platform.credential_metadata
+ platform.credential_purpose
+ platform.credential_store_scope
+ platform.feature_flag
+ platform.platform_capability
+ platform.platform_endpoint
+ platform.platform_permission_requirement
+(23 rows)
+
+== reference seeds
+       ?column?
+----------------------
+ platform:OZON
+ platform:WILDBERRIES
+(2 rows)
+
+          ?column?
+----------------------------
+ mode:MARKETPLACE_FULFILLED
+ mode:SELLER_FULFILLED
+ mode:UNKNOWN
+(3 rows)
+
+          ?column?
+-----------------------------
+ permission:ADS
+ permission:CREDENTIAL_ADMIN
+ permission:FINANCE
+ permission:READ
+ permission:WRITE
+(5 rows)
+
+        ?column?
+-------------------------
+ purpose:ADS_WRITE
+ purpose:FINANCE
+ purpose:INVENTORY_WRITE
+ purpose:PRICE_WRITE
+ purpose:READ
+(5 rows)
+
+       ?column?
+----------------------
+ extension:btree_gist
+(1 row)
+
+== privilege matrix for marketops_app
+                              grants
+------------------------------------------------------------------
+ core.fulfillment_mode -> SELECT
+ core.legal_entity -> INSERT,SELECT,UPDATE
+ core.marketplace_account -> INSERT,SELECT,UPDATE
+ core.marketplace_platform -> SELECT
+ core.organization -> INSERT,SELECT,UPDATE
+ core.store -> INSERT,SELECT,UPDATE
+ core.store_fulfillment_declaration -> INSERT,SELECT,UPDATE
+ core.store_warehouse_link -> INSERT,SELECT,UPDATE
+ core.warehouse -> INSERT,SELECT,UPDATE
+ iam.permission_kind -> SELECT
+ iam.service_account -> INSERT,SELECT,UPDATE
+ iam.service_account_allowed_source -> INSERT,SELECT,UPDATE
+ iam.service_account_scope_grant -> INSERT,SELECT,UPDATE
+ ops.metadata_audit_event -> INSERT,SELECT
+ platform.capability_subject_status -> INSERT,SELECT,UPDATE
+ platform.capability_verification_event -> INSERT,SELECT
+ platform.credential_metadata -> INSERT,SELECT,UPDATE
+ platform.credential_purpose -> SELECT
+ platform.credential_store_scope -> INSERT,SELECT,UPDATE
+ platform.feature_flag -> INSERT,SELECT,UPDATE
+ platform.platform_capability -> INSERT,SELECT,UPDATE
+ platform.platform_endpoint -> INSERT,SELECT,UPDATE
+ platform.platform_permission_requirement -> INSERT,SELECT,UPDATE
+(23 rows)
+
+== fixture graph
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+        ?column?
+------------------------
+ fixture rows committed
+(1 row)
+
+== expected refusals (each block reports its SQLSTATE)
+psql:/tmp/local_pg16_validation.sql:56: NOTICE:  PROBE cross-org-store: SQLSTATE 23503
+DO
+psql:/tmp/local_pg16_validation.sql:62: NOTICE:  PROBE cross-platform-endpoint: SQLSTATE 23503
+DO
+psql:/tmp/local_pg16_validation.sql:68: NOTICE:  PROBE cross-platform-subject: SQLSTATE 23503
+DO
+psql:/tmp/local_pg16_validation.sql:74: NOTICE:  PROBE cross-account-scope: SQLSTATE 23503
+DO
+INSERT 0 1
+psql:/tmp/local_pg16_validation.sql:82: NOTICE:  PROBE interval-overlap: SQLSTATE 23P01
+DO
+INSERT 0 1
+psql:/tmp/local_pg16_validation.sql:90: NOTICE:  PROBE duplicate-grant: SQLSTATE 23505
+DO
+psql:/tmp/local_pg16_validation.sql:96: NOTICE:  PROBE flag-scope-matrix: SQLSTATE 23514
+DO
+psql:/tmp/local_pg16_validation.sql:102: NOTICE:  PROBE retired-enabled-flag: SQLSTATE 23514
+DO
+psql:/tmp/local_pg16_validation.sql:108: NOTICE:  PROBE secret-reference-shape: SQLSTATE 23514
+DO
+psql:/tmp/local_pg16_validation.sql:114: NOTICE:  PROBE secret-reference-unique: SQLSTATE 23505
+DO
+psql:/tmp/local_pg16_validation.sql:120: NOTICE:  PROBE verified-without-provenance: SQLSTATE 23514
+DO
+psql:/tmp/local_pg16_validation.sql:125: NOTICE:  PROBE audit-update: SQLSTATE 42501
+DO
+psql:/tmp/local_pg16_validation.sql:130: NOTICE:  PROBE organization-delete: SQLSTATE 42501
+DO
+psql:/tmp/local_pg16_validation.sql:136: NOTICE:  PROBE reference-insert: SQLSTATE 42501
+DO
+== revocation releases the secret reference
+UPDATE 1
+INSERT 0 1
+                 ?column?
+------------------------------------------
+ secret reference reused after revocation
+(1 row)
+
+== generated scope key
+INSERT 0 1
+                          scope_key
+-------------------------------------------------------------
+ MARKETPLACE_ACCOUNT::00000000-0000-0000-0000-0000000000a2::
+(1 row)
+
+== audit journal accepts an insert and stamps the clock
+INSERT 0 1
+ audit_rows | stamped
+------------+---------
+          1 |       1
+(1 row)
