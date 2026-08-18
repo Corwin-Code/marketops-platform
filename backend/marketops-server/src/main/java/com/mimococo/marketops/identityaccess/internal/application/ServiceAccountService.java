@@ -220,6 +220,7 @@ public class ServiceAccountService implements AccessMetadataDirectory {
     /** Withdraw an allowed-source declaration; re-declaring creates a new row. */
     @Transactional
     public AllowedSource changeSourceStatus(String operator,
+                                            UUID serviceAccountId,
                                             UUID sourceId,
                                             AllowedSourceStatus target,
                                             String reason,
@@ -229,6 +230,12 @@ public class ServiceAccountService implements AccessMetadataDirectory {
                         ErrorCode.RESOURCE_NOT_FOUND,
                         AuditSourceDomain.IDENTITY_ACCESS.dbValue(),
                         SOURCE_ENTITY_TYPE, sourceId, null));
+        if (!current.serviceAccountId().equals(serviceAccountId)) {
+            throw OperationRejectedException.forEntity(
+                    ErrorCode.RESOURCE_NOT_FOUND,
+                    AuditSourceDomain.IDENTITY_ACCESS.dbValue(),
+                    SOURCE_ENTITY_TYPE, sourceId, null);
+        }
         String validReason = MetadataFieldPolicy.requireText("reason", reason);
         if (!current.status().canTransitionTo(target)) {
             throw OperationRejectedException.forEntity(

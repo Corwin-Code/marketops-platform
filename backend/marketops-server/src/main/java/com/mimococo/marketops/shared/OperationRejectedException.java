@@ -14,6 +14,8 @@ import java.util.UUID;
  */
 public final class OperationRejectedException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
     private final ErrorCode errorCode;
     private final String auditDomain;
     private final String entityType;

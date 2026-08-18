@@ -3,6 +3,7 @@ package com.mimococo.marketops.database;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
@@ -136,18 +137,24 @@ class MetadataConstraintIT extends PostgresContainerSupport {
     void flagScopeKeyIsGenerated() throws SQLException {
         UUID flag = UUID.randomUUID();
         try (Connection connection = asApplicationRole(container);
-             Statement statement = connection.createStatement()) {
-            statement.execute(
-                    "INSERT INTO platform.feature_flag (id, flag_code, flag_kind, scope_kind,"
-                            + " marketplace_account_id, state, status, created_at, updated_at)"
-                            + " VALUES ('" + flag + "', 'account-scoped', 'OPERATIONAL',"
-                            + " 'MARKETPLACE_ACCOUNT', '" + ACCOUNT_A + "', 'DISABLED',"
-                            + " 'ACTIVE', now(), now())");
+             PreparedStatement statement = connection.prepareStatement(
+                     "INSERT INTO platform.feature_flag (id, flag_code, flag_kind, scope_kind,"
+                             + " marketplace_account_id, state, status, created_at, updated_at)"
+                             + " VALUES (?, 'account-scoped', 'OPERATIONAL',"
+                             + " 'MARKETPLACE_ACCOUNT', ?, 'DISABLED', 'ACTIVE', now(), now())")) {
+            statement.setObject(1, flag);
+            statement.setObject(2, ACCOUNT_A);
+            statement.executeUpdate();
         }
-        try (Connection connection = asApplicationRole(container)) {
-            assertThat(single(connection,
-                    "SELECT scope_key FROM platform.feature_flag WHERE id = '" + flag + "'"))
-                    .isEqualTo("MARKETPLACE_ACCOUNT:" + ":" + ACCOUNT_A + ":" + ":");
+        try (Connection connection = asApplicationRole(container);
+             PreparedStatement statement = connection.prepareStatement(
+                     "SELECT scope_key FROM platform.feature_flag WHERE id = ?")) {
+            statement.setObject(1, flag);
+            try (var rows = statement.executeQuery()) {
+                assertThat(rows.next()).isTrue();
+                assertThat(rows.getString(1))
+                        .isEqualTo("MARKETPLACE_ACCOUNT:" + ":" + ACCOUNT_A + ":" + ":");
+            }
         }
     }
 
@@ -170,8 +177,11 @@ class MetadataConstraintIT extends PostgresContainerSupport {
         try (Connection connection = asApplicationRole(container);
              Statement statement = connection.createStatement()) {
             statement.execute(credential(retiring, ORG_A, ACCOUNT_A, "rotating-old", reference));
-            statement.execute("UPDATE platform.credential_metadata SET status = 'REVOKED'"
-                    + " WHERE id = '" + retiring + "'");
+            try (PreparedStatement update = connection.prepareStatement(
+                    "UPDATE platform.credential_metadata SET status = 'REVOKED' WHERE id = ?")) {
+                update.setObject(1, retiring);
+                update.executeUpdate();
+            }
             statement.execute(credential(UUID.randomUUID(), ORG_A, ACCOUNT_A,
                     "rotating-new", reference));
         }

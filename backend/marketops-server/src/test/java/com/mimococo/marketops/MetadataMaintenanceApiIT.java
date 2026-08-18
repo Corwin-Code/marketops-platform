@@ -119,9 +119,9 @@ class MetadataMaintenanceApiIT {
         JsonNode denials = getJson(BASE + "/audit-events?action=DENIED");
         assertThat(denials.isEmpty()).isFalse();
         JsonNode latest = denials.get(0);
-        assertThat(latest.get("actorType").asText()).isEqualTo("SYSTEM");
-        assertThat(latest.get("actorId").asText()).isEqualTo("metadata-maintenance-boundary");
-        assertThat(latest.get("denialCode").asText()).isEqualTo("OPERATOR_ATTRIBUTION_MISSING");
+        assertThat(latest.get("actorType").asString()).isEqualTo("SYSTEM");
+        assertThat(latest.get("actorId").asString()).isEqualTo("metadata-maintenance-boundary");
+        assertThat(latest.get("denialCode").asString()).isEqualTo("OPERATOR_ATTRIBUTION_MISSING");
     }
 
     @Test
@@ -161,39 +161,39 @@ class MetadataMaintenanceApiIT {
                 "{\"code\":\"mimococo\",\"displayName\":\"Mimococo\","
                         + "\"defaultTimezone\":\"Europe/Moscow\","
                         + "\"defaultCurrencyCode\":\"RUB\"}")
-                .get("id").asText();
+                .get("id").asString();
         otherOrganizationId = created(post(BASE + "/organizations"),
                 "{\"code\":\"neighbour\",\"displayName\":\"Neighbour\"}")
-                .get("id").asText();
+                .get("id").asString();
         legalEntityId = created(post(BASE + "/legal-entities"),
                 "{\"organizationId\":\"" + organizationId + "\",\"code\":\"mimococo-llc\","
                         + "\"displayName\":\"Mimococo LLC\",\"countryCode\":\"RU\"}")
-                .get("id").asText();
+                .get("id").asString();
         otherLegalEntityId = created(post(BASE + "/legal-entities"),
                 "{\"organizationId\":\"" + otherOrganizationId + "\","
                         + "\"code\":\"neighbour-llc\",\"displayName\":\"Neighbour LLC\"}")
-                .get("id").asText();
+                .get("id").asString();
         accountId = created(post(BASE + "/marketplace-accounts"),
                 "{\"legalEntityId\":\"" + legalEntityId + "\",\"platformCode\":\"OZON\","
                         + "\"code\":\"ozon-main\",\"displayName\":\"Ozon Main\"}")
-                .get("id").asText();
+                .get("id").asString();
         otherAccountId = created(post(BASE + "/marketplace-accounts"),
                 "{\"legalEntityId\":\"" + otherLegalEntityId + "\","
                         + "\"platformCode\":\"WILDBERRIES\",\"code\":\"wb-main\","
                         + "\"displayName\":\"WB Main\"}")
-                .get("id").asText();
+                .get("id").asString();
         storeId = created(post(BASE + "/stores"),
                 "{\"marketplaceAccountId\":\"" + accountId + "\",\"code\":\"ozon-store-1\","
                         + "\"displayName\":\"Ozon Store 1\"}")
-                .get("id").asText();
+                .get("id").asString();
         otherStoreId = created(post(BASE + "/stores"),
                 "{\"marketplaceAccountId\":\"" + otherAccountId + "\",\"code\":\"wb-store-1\","
                         + "\"displayName\":\"WB Store 1\"}")
-                .get("id").asText();
+                .get("id").asString();
         warehouseId = created(post(BASE + "/warehouses"),
                 "{\"legalEntityId\":\"" + legalEntityId + "\",\"code\":\"msk-hub\","
                         + "\"displayName\":\"Moscow Hub\",\"timezone\":\"Europe/Moscow\"}")
-                .get("id").asText();
+                .get("id").asString();
     }
 
     @Test
@@ -226,7 +226,7 @@ class MetadataMaintenanceApiIT {
                         + "\"fulfillmentModeCode\":\"SELLER_FULFILLED\","
                         + "\"effectiveFrom\":\"2026-01-01T00:00:00Z\","
                         + "\"effectiveTo\":\"2026-07-01T00:00:00Z\"}")
-                .get("id").asText();
+                .get("id").asString();
         mutate(post(BASE + "/store-warehouse-links"),
                 "{\"storeId\":\"" + storeId + "\",\"warehouseId\":\"" + warehouseId + "\","
                         + "\"fulfillmentModeCode\":\"SELLER_FULFILLED\","
@@ -244,7 +244,7 @@ class MetadataMaintenanceApiIT {
                         + "\"displayName\":\"Sync Robot\",\"purpose\":\"reads metadata\","
                         + "\"ownerLabel\":\"platform-team\",\"expiresAt\":\""
                         + Instant.now().plusSeconds(90 * 24 * 3600) + "\"}")
-                .get("account").get("id").asText();
+                .get("account").get("id").asString();
 
         grantId = created(post(BASE + "/scope-grants"),
                 "{\"serviceAccountId\":\"" + serviceAccountId + "\","
@@ -252,7 +252,7 @@ class MetadataMaintenanceApiIT {
                         + "\"resourceId\":\"" + storeId + "\","
                         + "\"effectiveFrom\":\"2026-01-01T00:00:00Z\","
                         + "\"reason\":\"scheduled metadata reads\"}")
-                .get("id").asText();
+                .get("id").asString();
         mutate(post(BASE + "/scope-grants"),
                 "{\"serviceAccountId\":\"" + serviceAccountId + "\","
                         + "\"permissionCode\":\"READ\",\"resourceType\":\"STORE\","
@@ -314,16 +314,16 @@ class MetadataMaintenanceApiIT {
         JsonNode accountWide = created(post(BASE + "/credentials"),
                 credentialBody(accountId, "account-wide", "ACCOUNT",
                         "secret-ref://vault/marketops/ozon-main/read", null));
-        accountCredentialId = accountWide.get("credential").get("id").asText();
-        assertThat(accountWide.get("scopeUsability").asText()).isEqualTo("ACCOUNT_WIDE");
+        accountCredentialId = accountWide.get("credential").get("id").asString();
+        assertThat(accountWide.get("scopeUsability").asString()).isEqualTo("ACCOUNT_WIDE");
 
         JsonNode storeSet = created(post(BASE + "/credentials"),
                 credentialBody(accountId, "store-bound", "STORE_SET",
                         "secret-ref://vault/marketops/ozon-main/store-read",
                         "[\"" + storeId + "\"]"));
-        storeSetCredentialId = storeSet.get("credential").get("id").asText();
-        storeSetScopeId = storeSet.get("storeScopes").get(0).get("id").asText();
-        assertThat(storeSet.get("scopeUsability").asText()).isEqualTo("STORE_SET");
+        storeSetCredentialId = storeSet.get("credential").get("id").asString();
+        storeSetScopeId = storeSet.get("storeScopes").get(0).get("id").asString();
+        assertThat(storeSet.get("scopeUsability").asString()).isEqualTo("STORE_SET");
     }
 
     @Test
@@ -342,8 +342,8 @@ class MetadataMaintenanceApiIT {
                 .andExpect(jsonPath("$.status").value("WITHDRAWN"));
 
         JsonNode view = getJson(BASE + "/credentials/" + storeSetCredentialId);
-        assertThat(view.get("scopeUsability").asText()).isEqualTo("NO_ACTIVE_STORE_SCOPE");
-        assertThat(view.get("credential").get("scopeMode").asText()).isEqualTo("STORE_SET");
+        assertThat(view.get("scopeUsability").asString()).isEqualTo("NO_ACTIVE_STORE_SCOPE");
+        assertThat(view.get("credential").get("scopeMode").asString()).isEqualTo("STORE_SET");
     }
 
     @Test
@@ -361,10 +361,10 @@ class MetadataMaintenanceApiIT {
                         "secret-ref://vault/marketops/ozon-main/read-v2", null)
                         .replace("}", ",\"replacesCredentialId\":\""
                                 + accountCredentialId + "\"}"))
-                .get("credential").get("id").asText();
+                .get("credential").get("id").asString();
 
         JsonNode predecessor = getJson(BASE + "/credentials/" + accountCredentialId);
-        assertThat(predecessor.get("rotationStatus").asText()).isEqualTo("BEING_REPLACED");
+        assertThat(predecessor.get("rotationStatus").asString()).isEqualTo("BEING_REPLACED");
     }
 
     @Test
@@ -377,14 +377,14 @@ class MetadataMaintenanceApiIT {
                         + "\"appliesTo\":\"MARKETPLACE_ACCOUNT\","
                         + "\"readWriteClass\":\"READ\",\"subscriptionRequired\":\"UNKNOWN\","
                         + "\"ownerLabel\":\"platform-team\"}")
-                .get("id").asText();
+                .get("id").asString();
         endpointId = created(post(BASE + "/endpoints"),
                 "{\"platformCode\":\"OZON\",\"endpointCode\":\"orders.list\","
                         + "\"apiVersion\":\"v3\",\"capabilityId\":\"" + capabilityId + "\","
                         + "\"readWriteClass\":\"READ\",\"paginationModel\":\"UNKNOWN\","
                         + "\"idempotencySupport\":\"UNKNOWN\","
                         + "\"ownerLabel\":\"platform-team\"}")
-                .get("id").asText();
+                .get("id").asString();
 
         mutate(post(BASE + "/capabilities/" + capabilityId + "/verification"),
                 "{\"target\":\"UNVERIFIED\",\"reason\":\"registered for future evidence\","
@@ -401,9 +401,9 @@ class MetadataMaintenanceApiIT {
         JsonNode journal = getJson(
                 BASE + "/capabilities/" + capabilityId + "/verification-events");
         assertThat(journal).hasSize(1);
-        assertThat(journal.get(0).get("fromState").asText()).isEqualTo("UNKNOWN");
-        assertThat(journal.get(0).get("toState").asText()).isEqualTo("UNVERIFIED");
-        assertThat(journal.get(0).get("actor").asText()).isEqualTo(OPERATOR);
+        assertThat(journal.get(0).get("fromState").asString()).isEqualTo("UNKNOWN");
+        assertThat(journal.get(0).get("toState").asString()).isEqualTo("UNVERIFIED");
+        assertThat(journal.get(0).get("actor").asString()).isEqualTo(OPERATOR);
     }
 
     @Test
@@ -428,9 +428,9 @@ class MetadataMaintenanceApiIT {
         JsonNode matrix = getJson(
                 BASE + "/capability-subject-statuses?capabilityId=" + capabilityId);
         assertThat(matrix).hasSize(1);
-        assertThat(matrix.get(0).get("status").get("availability").asText())
+        assertThat(matrix.get(0).get("status").get("availability").asString())
                 .isEqualTo("UNKNOWN");
-        assertThat(matrix.get(0).get("usability").asText()).isEqualTo("NOT_VERIFIED");
+        assertThat(matrix.get(0).get("usability").asString()).isEqualTo("NOT_VERIFIED");
     }
 
     @Test
@@ -461,7 +461,7 @@ class MetadataMaintenanceApiIT {
         JsonNode listed = getJson(BASE
                 + "/platform-permission-requirements?capabilityId=" + capabilityId);
         assertThat(listed).hasSize(1);
-        assertThat(listed.get(0).get("externalCode").asText())
+        assertThat(listed.get(0).get("externalCode").asString())
                 .isEqualTo("seller-orders-read");
     }
 
@@ -472,8 +472,8 @@ class MetadataMaintenanceApiIT {
         JsonNode flag = created(post(BASE + "/feature-flags"),
                 "{\"flagCode\":\"metadata.console\",\"flagKind\":\"OPERATIONAL\","
                         + "\"scopeKind\":\"GLOBAL\"}");
-        flagId = flag.get("id").asText();
-        assertThat(flag.get("state").asText()).isEqualTo("DISABLED");
+        flagId = flag.get("id").asString();
+        assertThat(flag.get("state").asString()).isEqualTo("DISABLED");
 
         mutate(post(BASE + "/feature-flags/" + flagId + "/state"),
                 "{\"target\":\"ENABLED\",\"reason\":\"console rollout\","
@@ -485,7 +485,7 @@ class MetadataMaintenanceApiIT {
                 "{\"flagCode\":\"ozon.price.write\",\"flagKind\":\"WRITE_CAPABILITY\","
                         + "\"scopeKind\":\"CAPABILITY\",\"capabilityId\":\""
                         + capabilityId + "\"}")
-                .get("id").asText();
+                .get("id").asString();
         mutate(post(BASE + "/feature-flags/" + writeFlagId + "/state"),
                 "{\"target\":\"ENABLED\",\"reason\":\"attempting a platform write\","
                         + "\"expectedVersion\":0}")
@@ -526,14 +526,14 @@ class MetadataMaintenanceApiIT {
         JsonNode changes = getJson(BASE + "/audit-events?entityType=credential"
                 + "&action=CREATE");
         assertThat(changes.isEmpty()).isFalse();
-        assertThat(changes.get(0).get("actorType").asText()).isEqualTo("OPERATOR");
-        assertThat(changes.get(0).get("actorId").asText()).isEqualTo(OPERATOR);
-        assertThat(changes.get(0).get("occurredAt").asText()).isNotBlank();
+        assertThat(changes.get(0).get("actorType").asString()).isEqualTo("OPERATOR");
+        assertThat(changes.get(0).get("actorId").asString()).isEqualTo(OPERATOR);
+        assertThat(changes.get(0).get("occurredAt").asString()).isNotBlank();
 
         JsonNode denials = getJson(BASE + "/audit-events?action=DENIED"
                 + "&sourceDomain=MARKETPLACE_INTEGRATION");
         assertThat(denials.isEmpty()).isFalse();
-        assertThat(denials.get(0).get("denialCode").asText()).isNotBlank();
+        assertThat(denials.get(0).get("denialCode").asString()).isNotBlank();
 
         String body = mockMvc.perform(get(BASE + "/audit-events?limit=5"))
                 .andExpect(status().isOk())
@@ -549,11 +549,11 @@ class MetadataMaintenanceApiIT {
     void queriesAreOpenAndPaged() throws Exception {
         JsonNode organizations = getJson(BASE + "/organizations?limit=1");
         assertThat(organizations).hasSize(1);
-        String firstCode = organizations.get(0).get("code").asText();
+        String firstCode = organizations.get(0).get("code").asString();
 
         JsonNode next = getJson(BASE + "/organizations?limit=1&afterCode=" + firstCode);
         assertThat(next).hasSize(1);
-        assertThat(next.get(0).get("code").asText()).isGreaterThan(firstCode);
+        assertThat(next.get(0).get("code").asString()).isGreaterThan(firstCode);
     }
 
     @Test
@@ -593,7 +593,7 @@ class MetadataMaintenanceApiIT {
 
         String lifecycleOrganization = created(post(BASE + "/organizations"),
                 "{\"code\":\"lifecycle-org\",\"displayName\":\"Lifecycle Org\"}")
-                .get("id").asText();
+                .get("id").asString();
         transition("organizations", lifecycleOrganization, "SUSPENDED", 0);
         transition("organizations", lifecycleOrganization, "ACTIVE", 1);
         transition("organizations", lifecycleOrganization, "RETIRED", 2);
@@ -601,7 +601,7 @@ class MetadataMaintenanceApiIT {
         String lifecycleLegalEntity = created(post(BASE + "/legal-entities"),
                 "{\"organizationId\":\"" + organizationId + "\","
                         + "\"code\":\"lifecycle-legal\",\"displayName\":\"Lifecycle Legal\"}")
-                .get("id").asText();
+                .get("id").asString();
         transition("legal-entities", lifecycleLegalEntity, "SUSPENDED", 0);
         transition("legal-entities", lifecycleLegalEntity, "ACTIVE", 1);
         transition("legal-entities", lifecycleLegalEntity, "RETIRED", 2);
@@ -610,7 +610,7 @@ class MetadataMaintenanceApiIT {
                 "{\"legalEntityId\":\"" + legalEntityId + "\",\"platformCode\":\"OZON\","
                         + "\"code\":\"lifecycle-account\","
                         + "\"displayName\":\"Lifecycle Account\"}")
-                .get("id").asText();
+                .get("id").asString();
         transition("marketplace-accounts", lifecycleAccount, "SUSPENDED", 0);
         transition("marketplace-accounts", lifecycleAccount, "ACTIVE", 1);
         transition("marketplace-accounts", lifecycleAccount, "RETIRED", 2);
@@ -618,7 +618,7 @@ class MetadataMaintenanceApiIT {
         String lifecycleStore = created(post(BASE + "/stores"),
                 "{\"marketplaceAccountId\":\"" + accountId + "\","
                         + "\"code\":\"lifecycle-store\",\"displayName\":\"Lifecycle Store\"}")
-                .get("id").asText();
+                .get("id").asString();
         transition("stores", lifecycleStore, "SUSPENDED", 0);
         transition("stores", lifecycleStore, "ACTIVE", 1);
         transition("stores", lifecycleStore, "RETIRED", 2);
@@ -628,7 +628,7 @@ class MetadataMaintenanceApiIT {
                         + "\"code\":\"lifecycle-warehouse\","
                         + "\"displayName\":\"Lifecycle Warehouse\","
                         + "\"timezone\":\"Europe/Moscow\"}")
-                .get("id").asText();
+                .get("id").asString();
         transition("warehouses", lifecycleWarehouse, "SUSPENDED", 0);
         transition("warehouses", lifecycleWarehouse, "ACTIVE", 1);
         transition("warehouses", lifecycleWarehouse, "RETIRED", 2);
@@ -650,7 +650,7 @@ class MetadataMaintenanceApiIT {
                 "{\"storeId\":\"" + storeId + "\","
                         + "\"fulfillmentModeCode\":\"MARKETPLACE_FULFILLED\","
                         + "\"effectiveFrom\":\"2026-01-01T00:00:00Z\"}")
-                .get("id").asText();
+                .get("id").asString();
         ok(post(BASE + "/store-fulfillment-declarations/" + declarationId + "/status"),
                 "{\"target\":\"ENDED\",\"reason\":\"declaration closed\","
                         + "\"expectedVersion\":0}");
@@ -684,7 +684,7 @@ class MetadataMaintenanceApiIT {
         allowedSourceId = created(post(BASE + "/service-accounts/" + serviceAccountId
                         + "/allowed-sources"),
                 "{\"cidr\":\"10.20.0.0/16\",\"note\":\"operations network\"}")
-                .get("id").asText();
+                .get("id").asString();
         assertThat(getJson(BASE + "/service-accounts/" + serviceAccountId
                 + "/allowed-sources")).hasSize(1);
         ok(post(BASE + "/service-accounts/" + serviceAccountId + "/allowed-sources/"
@@ -741,7 +741,7 @@ class MetadataMaintenanceApiIT {
         JsonNode narrowed = ok(post(BASE + "/credentials/" + accountCredentialId + "/scope-mode"),
                 "{\"target\":\"STORE_SET\",\"storeIds\":[\"" + storeId + "\"],"
                         + "\"reason\":\"narrow to one store\",\"expectedVersion\":3}");
-        String narrowedScopeId = narrowed.get("storeScopes").get(0).get("id").asText();
+        String narrowedScopeId = narrowed.get("storeScopes").get(0).get("id").asString();
         ok(post(BASE + "/credentials/" + accountCredentialId + "/store-scopes/"
                         + narrowedScopeId + "/status"),
                 "{\"reason\":\"prepare account scope\",\"expectedVersion\":0}");
@@ -811,7 +811,7 @@ class MetadataMaintenanceApiIT {
                         + "\"appliesTo\":\"STORE\",\"readWriteClass\":\"READ\","
                         + "\"subscriptionRequired\":\"UNKNOWN\","
                         + "\"ownerLabel\":\"platform-team\"}")
-                .get("id").asText();
+                .get("id").asString();
         created(post(BASE + "/capability-subject-statuses"),
                 "{\"capabilityId\":\"" + auxiliaryCapability + "\",\"storeId\":\""
                         + storeId + "\"}");
@@ -853,7 +853,7 @@ class MetadataMaintenanceApiIT {
                         + "\"paginationModel\":\"NONE\","
                         + "\"idempotencySupport\":\"UNKNOWN\","
                         + "\"ownerLabel\":\"platform-team\"}")
-                .get("id").asText();
+                .get("id").asString();
         ok(post(BASE + "/endpoints/" + auxiliaryEndpoint + "/status"),
                 "{\"reason\":\"auxiliary endpoint retired\",\"expectedVersion\":0}");
         ok(post(BASE + "/capabilities/" + auxiliaryCapability + "/status"),
@@ -919,7 +919,7 @@ class MetadataMaintenanceApiIT {
         return created(post(BASE + "/feature-flags"),
                 "{\"flagCode\":\"" + code + "\",\"flagKind\":\"OPERATIONAL\","
                         + "\"scopeKind\":\"" + scopeKind + "\"," + scopeField + "}")
-                .get("id").asText();
+                .get("id").asString();
     }
 
     private void enable(String id) throws Exception {
@@ -958,10 +958,10 @@ class MetadataMaintenanceApiIT {
         JsonNode denials = denialEvents();
         assertThat(denials).hasSize(denialsBefore + 1);
         JsonNode latest = denials.get(0);
-        assertThat(latest.get("denialCode").asText()).isEqualTo("VALIDATION_FAILED");
-        assertThat(latest.get("actorType").asText()).isEqualTo("OPERATOR");
-        assertThat(latest.get("actorId").asText()).isEqualTo(OPERATOR);
-        assertThat(latest.get("correlationId").asText()).isNotBlank();
+        assertThat(latest.get("denialCode").asString()).isEqualTo("VALIDATION_FAILED");
+        assertThat(latest.get("actorType").asString()).isEqualTo("OPERATOR");
+        assertThat(latest.get("actorId").asString()).isEqualTo(OPERATOR);
+        assertThat(latest.get("correlationId").asString()).isNotBlank();
     }
 
     private JsonNode denialEvents() throws Exception {
@@ -1002,9 +1002,9 @@ class MetadataMaintenanceApiIT {
     static class BindingProbeController {
 
         @PostMapping(BASE + "/binding-probe/{entityId}")
-        void bind(@PathVariable("entityId") UUID entityId,
-                  @RequestParam("limit") int limit) {
-            // Successful binding is sufficient; this test surface has no mutation body.
+        BindingProbe bind(@PathVariable("entityId") UUID entityId,
+                          @RequestParam("limit") int limit) {
+            return new BindingProbe(entityId, limit);
         }
 
         @PostMapping(BASE + "/binding-probe/foreign-key")
@@ -1012,6 +1012,9 @@ class MetadataMaintenanceApiIT {
             throw new DataIntegrityViolationException(
                     "unrelated_fk_sensitive_detail",
                     new SQLException("unrelated_fk_sensitive_detail", "23503"));
+        }
+
+        record BindingProbe(UUID entityId, int limit) {
         }
     }
 }

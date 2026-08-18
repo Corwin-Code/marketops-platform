@@ -92,8 +92,8 @@ class ServiceAccountAdminController {
             @PathVariable UUID id,
             @PathVariable UUID sourceId,
             @Valid @RequestBody SourceStatusChangeRequest request) {
-        return serviceAccountService.changeSourceStatus(operator, sourceId, request.target(),
-                request.reason(), request.expectedVersion());
+        return serviceAccountService.changeSourceStatus(operator, id, sourceId,
+                request.target(), request.reason(), request.expectedVersion());
     }
 
     /** Load one service account with its derived evaluation. */

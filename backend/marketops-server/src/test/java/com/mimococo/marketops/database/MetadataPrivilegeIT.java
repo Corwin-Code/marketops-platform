@@ -3,8 +3,8 @@ package com.mimococo.marketops.database;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.UUID;
 import org.assertj.core.api.Assertions;
@@ -53,20 +53,28 @@ class MetadataPrivilegeIT extends PostgresContainerSupport {
     void auditJournalIsAppendOnly() throws SQLException {
         UUID event = UUID.randomUUID();
         try (Connection connection = asApplicationRole(container);
-             Statement statement = connection.createStatement()) {
-            statement.execute("INSERT INTO ops.metadata_audit_event (id, actor_type,"
-                    + " actor_id, source_domain, action, entity_type, denial_code,"
-                    + " correlation_id) VALUES ('" + event + "', 'SYSTEM',"
-                    + " 'privilege-test', 'organizationaccount', 'DENIED',"
-                    + " 'organization', 'VALIDATION_FAILED', 'privilege-check')");
-            assertThat(single(connection, "SELECT occurred_at::text"
-                    + " FROM ops.metadata_audit_event WHERE id = '" + event + "'"))
-                    .as("the database clock stamps the event")
-                    .isNotNull();
+             PreparedStatement insert = connection.prepareStatement(
+                     "INSERT INTO ops.metadata_audit_event (id, actor_type, actor_id,"
+                             + " source_domain, action, entity_type, denial_code,"
+                             + " correlation_id) VALUES (?, 'SYSTEM', 'privilege-test',"
+                             + " 'organizationaccount', 'DENIED', 'organization',"
+                             + " 'VALIDATION_FAILED', 'privilege-check')")) {
+            insert.setObject(1, event);
+            insert.executeUpdate();
+            try (PreparedStatement query = connection.prepareStatement(
+                    "SELECT occurred_at::text FROM ops.metadata_audit_event WHERE id = ?")) {
+                query.setObject(1, event);
+                try (var rows = query.executeQuery()) {
+                    assertThat(rows.next()).isTrue();
+                    assertThat(rows.getString(1))
+                            .as("the database clock stamps the event")
+                            .isNotNull();
+                }
+            }
         }
         assertDenied("UPDATE ops.metadata_audit_event SET actor_id = 'rewritten'"
-                + " WHERE id = '" + event + "'");
-        assertDenied("DELETE FROM ops.metadata_audit_event WHERE id = '" + event + "'");
+                + " WHERE id = ?", event);
+        assertDenied("DELETE FROM ops.metadata_audit_event WHERE id = ?", event);
     }
 
     @Test
@@ -126,25 +134,30 @@ class MetadataPrivilegeIT extends PostgresContainerSupport {
             throws SQLException {
         String[] parts = table.split("\\.");
         List<String> held = new java.util.ArrayList<>();
-        try (Statement statement = connection.createStatement();
-             var rows = statement.executeQuery(
-                     "SELECT privilege_type FROM information_schema.role_table_grants"
-                             + " WHERE grantee = '" + APPLICATION_ROLE + "'"
-                             + " AND table_schema = '" + parts[0] + "'"
-                             + " AND table_name = '" + parts[1] + "'"
-                             + " ORDER BY privilege_type")) {
-            while (rows.next()) {
-                held.add(rows.getString(1));
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT privilege_type FROM information_schema.role_table_grants"
+                        + " WHERE grantee = ? AND table_schema = ? AND table_name = ?"
+                        + " ORDER BY privilege_type")) {
+            statement.setString(1, APPLICATION_ROLE);
+            statement.setString(2, parts[0]);
+            statement.setString(3, parts[1]);
+            try (var rows = statement.executeQuery()) {
+                while (rows.next()) {
+                    held.add(rows.getString(1));
+                }
             }
         }
         return held;
     }
 
-    private static void assertDenied(String sql) throws SQLException {
+    private static void assertDenied(String sql, Object... parameters) throws SQLException {
         try (Connection connection = asApplicationRole(container)) {
             connection.setAutoCommit(false);
-            try (Statement statement = connection.createStatement()) {
-                Throwable failure = Assertions.catchThrowable(() -> statement.execute(sql));
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                for (int index = 0; index < parameters.length; index++) {
+                    statement.setObject(index + 1, parameters[index]);
+                }
+                Throwable failure = Assertions.catchThrowable(statement::execute);
                 assertThat(failure)
                         .as("the statement must be denied: %s", sql)
                         .isNotNull();
