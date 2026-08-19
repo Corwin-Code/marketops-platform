@@ -15,7 +15,7 @@
   <artifactId>marketops-server</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <name>MarketOps Server</name>
-  <description>Repository, governance and CI foundation for MarketOps Russia</description>
+  <description>Modular monolith backend for MarketOps Russia</description>
 
   <properties>
     <java.version>21</java.version>
@@ -106,6 +106,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

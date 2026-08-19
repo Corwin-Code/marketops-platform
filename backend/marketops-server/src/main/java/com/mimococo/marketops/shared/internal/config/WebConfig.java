@@ -2,7 +2,9 @@ package com.mimococo.marketops.shared.internal.config;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.UUID;
 import com.mimococo.marketops.shared.CorrelationId;
+import com.mimococo.marketops.shared.IdGenerator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,11 +16,15 @@ import org.springframework.web.filter.CorsFilter;
 /**
  * Cross-cutting technical beans.
  *
- * <p>The clock is a bean so time-dependent behaviour can be exercised
- * deterministically in a test rather than depending on the wall clock.
+ * <p>The clock and the identifier source are beans so time- and
+ * identity-dependent behaviour can be exercised deterministically in a test
+ * rather than depending on the wall clock or a process-global generator.
  */
 @Configuration
-@EnableConfigurationProperties(CorsProperties.class)
+@EnableConfigurationProperties({
+        CorsProperties.class,
+        MetadataMaintenanceProperties.class,
+        ProductionWriteProperties.class})
 public class WebConfig {
 
     /** UTC clock used wherever the application reports a time. */
@@ -27,11 +33,22 @@ public class WebConfig {
         return Clock.systemUTC();
     }
 
+    /** Random identifier source used wherever the application creates identity. */
+    @Bean
+    public IdGenerator idGenerator() {
+        return UUID::randomUUID;
+    }
+
     /**
      * CORS policy for the local console origins explicitly named by the active profile.
      *
      * <p>When the origin list is empty, no URL pattern is registered and the
      * backend emits no CORS response headers. This is the base-profile posture.
+     *
+     * <p>The policy is registered only for the metadata-read route the console
+     * consumes. The maintenance surface under {@code /api/v1/admin/metadata} is
+     * deliberately outside every CORS registration: no browser origin can
+     * invoke it cross-origin, and no console reads it.
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource(CorsProperties properties) {
@@ -47,7 +64,7 @@ public class WebConfig {
         policy.setExposedHeaders(List.of(CorrelationId.HEADER_NAME));
         policy.setAllowCredentials(false);
         policy.setMaxAge(3600L);
-        source.registerCorsConfiguration("/api/**", policy);
+        source.registerCorsConfiguration("/api/v1/meta/**", policy);
         return source;
     }
 

@@ -39,8 +39,8 @@ REVOKE ALL ON DATABASE marketops FROM PUBLIC;
 GRANT CONNECT ON DATABASE marketops TO marketops_migration;
 GRANT CONNECT ON DATABASE marketops TO marketops_app;
 
--- Only the migrating role may create a schema, which is what the single
--- foundation migration does.
+-- Only the migrating role may create a schema, which is what the earliest
+-- migration does.
 GRANT CREATE ON DATABASE marketops TO marketops_migration;
 
 -- Two revocations, needed for different reasons.

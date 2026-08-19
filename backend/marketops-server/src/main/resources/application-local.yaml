@@ -6,6 +6,10 @@
 
 marketops:
   environment: local
+  metadata-maintenance:
+    # The workstation is the operator's maintenance seat: the process binds to
+    # loopback and mutations carry operator attribution, so writes are accepted.
+    write-enabled: true
   web:
     cors:
       allowed-origins: http://127.0.0.1:5173,http://127.0.0.1:4173
