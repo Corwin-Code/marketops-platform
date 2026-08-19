@@ -32,6 +32,8 @@ REQUIRED_FILES = [
     "docs/03-work-items/BACKLOG-PHASE-0.md",
     "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md",
     "docs/03-work-items/WP-P0-002-organization-store-warehouse-credential-metadata.md",
+    "docs/07-phase-evidence/WP-P0-002/README.md",
+    "docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md",
     ".github/pull_request_template.md",
     ".github/workflows/governance.yml",
     "tests/test_validate_governance.py",
@@ -82,6 +84,10 @@ WP_P0_002_DESIGN_RELATIVE_PATH = (
 # must stay byte-identical to the artifact the Controller approved.
 WP_P0_002_DESIGN_SHA256 = (
     "3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2"
+)
+WP_P0_002_EVIDENCE_RELATIVE_PATH = "docs/07-phase-evidence/WP-P0-002/README.md"
+WP_P0_002_ACCEPTANCE_RELATIVE_PATH = (
+    "docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md"
 )
 WORK_PACKAGE_PATHS = {
     WP_P0_001_ID: WP_P0_001_RELATIVE_PATH,
@@ -152,6 +158,13 @@ WP_P0_002_STAGE_FIELDS = {
         "Design artifact": f"`{WP_P0_002_DESIGN_RELATIVE_PATH}`",
         "Implementation authorization": "APPROVED_FOR_IMPLEMENTATION",
     },
+    COMPLETED_WP_STATUS: {
+        "Historic design verdict": HISTORIC_DESIGN_VERDICT,
+        "Current execution authorization": COMPLETED_WP_AUTHORIZATION,
+        "Implementation result": COMPLETED_WP_RESULT,
+        "Design artifact": f"`{WP_P0_002_DESIGN_RELATIVE_PATH}`",
+        "Approved Design v1.2 SHA-256": WP_P0_002_DESIGN_SHA256,
+    },
 }
 
 WP_P0_002_TRACEABILITY_CONTRACT = {
@@ -172,6 +185,20 @@ WP_P0_002_TRACEABILITY_CONTRACT = {
         "WP-P0-003",
     ),
 }
+
+WP_P0_002_PARTIAL_REQUIREMENTS = {
+    "IAM-001", "IAM-004", "IAM-006", "IAM-007", "INT-002", "INT-003", "ADM-002",
+}
+WP_P0_002_FULL_REQUIREMENTS = {"ADM-001"}
+WP_P0_002_ACCEPTANCE_HEADER = [
+    "Criterion",
+    "Criterion text",
+    "Closure status",
+    "Production location",
+    "Exact tests",
+    "Exact evidence",
+    "Remaining boundary",
+]
 
 TRACEABILITY_HEADER = [
     "source_id",
@@ -278,7 +305,7 @@ def validate_work_package(errors: list[str]) -> None:
                 errors.append(
                     f"WP-P0-002 {field} must be exactly {expected} while {stage}"
                 )
-    if stage == IMPLEMENTATION_ACTIVE_GATE:
+    if stage in {IMPLEMENTATION_ACTIVE_GATE, COMPLETED_WP_STATUS}:
         validate_wp_p0_002_canonical_design(errors)
 
     for requirement, closure in {
@@ -1067,7 +1094,9 @@ def validate_controller_review_standard(errors: list[str]) -> None:
     )
 
 
-def validate_wp_p0_002_traceability_text(errors: list[str], text: str) -> None:
+def validate_wp_p0_002_traceability_text(
+    errors: list[str], text: str, *, completed: bool = False
+) -> None:
     try:
         rows = list(csv.DictReader(text.splitlines()))
     except csv.Error as error:
@@ -1089,11 +1118,28 @@ def validate_wp_p0_002_traceability_text(errors: list[str], text: str) -> None:
             errors.append(
                 f"traceability {source_id} must reference the approved WP-P0-002 design"
             )
-        if row.get("status") != "PLANNED":
-            errors.append(
-                f"traceability {source_id} must remain PLANNED until its "
-                "implementation result is independently verified"
-            )
+        expected_status = (
+            "VERIFIED"
+            if completed and source_id in WP_P0_002_FULL_REQUIREMENTS
+            else "ACTIVE_CONTROL"
+            if completed
+            else "PLANNED"
+        )
+        if row.get("status") != expected_status:
+            if not completed:
+                errors.append(
+                    f"traceability {source_id} must remain PLANNED until its "
+                    "implementation result is independently verified"
+                )
+            elif source_id in WP_P0_002_PARTIAL_REQUIREMENTS:
+                errors.append(
+                    f"traceability {source_id} PARTIAL requirement must be "
+                    "ACTIVE_CONTROL, not fully VERIFIED"
+                )
+            else:
+                errors.append(
+                    f"traceability {source_id} status must be exactly: {expected_status}"
+                )
         for field in ("code_location", "test_case", "evidence"):
             if not row.get(field, "").strip():
                 errors.append(f"traceability {source_id} missing {field}")
@@ -1102,6 +1148,21 @@ def validate_wp_p0_002_traceability_text(errors: list[str], text: str) -> None:
             if token not in notes:
                 errors.append(
                     f"traceability {source_id} notes missing closure disposition: {token}"
+                )
+        if completed and source_id in WP_P0_002_PARTIAL_REQUIREMENTS:
+            for token in (
+                "WP-P0-002 subset VERIFIED",
+                "whole source requirement remains OPEN",
+            ):
+                if token not in notes:
+                    errors.append(
+                        f"traceability {source_id} notes missing completed PARTIAL "
+                        f"semantics: {token}"
+                    )
+        if completed and source_id in WP_P0_002_FULL_REQUIREMENTS:
+            if "WP-P0-002 VERIFIED" not in notes:
+                errors.append(
+                    f"traceability {source_id} notes must record WP-P0-002 VERIFIED"
                 )
 
 
@@ -1125,7 +1186,285 @@ def validate_traceability(errors: list[str]) -> None:
         ids = [row[0] for row in rows if row]
         if len(ids) != len(set(ids)):
             errors.append("traceability.csv contains duplicate source_id rows")
-    validate_wp_p0_002_traceability_text(errors, text)
+    wp_path = ROOT / WP_P0_002_RELATIVE_PATH
+    wp_completed = (
+        wp_path.exists()
+        and work_package_metadata_value(
+            wp_path.read_text(encoding="utf-8"), "Status"
+        )
+        == COMPLETED_WP_STATUS
+    )
+    validate_wp_p0_002_traceability_text(errors, text, completed=wp_completed)
+
+
+def wp_p0_002_acceptance_rows(text: str) -> list[dict[str, str]] | None:
+    """Parse the one canonical 16-row WP-P0-002 acceptance matrix."""
+    lines = text.splitlines()
+    parsed_tables: list[list[dict[str, str]]] = []
+    for index, line in enumerate(lines):
+        if markdown_table_cells(line) != WP_P0_002_ACCEPTANCE_HEADER:
+            continue
+        if index + 1 >= len(lines):
+            return None
+        separator = markdown_table_cells(lines[index + 1])
+        if separator is None or len(separator) != len(WP_P0_002_ACCEPTANCE_HEADER):
+            return None
+        if any(re.fullmatch(r":?-{3,}:?", cell) is None for cell in separator):
+            return None
+
+        rows: list[dict[str, str]] = []
+        for row_line in lines[index + 2:]:
+            cells = markdown_table_cells(row_line)
+            if cells is None:
+                break
+            if len(cells) != len(WP_P0_002_ACCEPTANCE_HEADER):
+                return None
+            rows.append(dict(zip(WP_P0_002_ACCEPTANCE_HEADER, cells)))
+        parsed_tables.append(rows)
+    return parsed_tables[0] if len(parsed_tables) == 1 else None
+
+
+def validate_wp_p0_002_completion_text(
+    errors: list[str],
+    current_state_text: str,
+    work_package_text: str,
+    backlog_text: str,
+    traceability_text: str,
+    evidence_text: str,
+    acceptance_text: str,
+) -> None:
+    """Require one coherent, reviewable WP-P0-002 completed-state transition."""
+    wp_status = work_package_metadata_value(work_package_text, "Status")
+    backlog_rows = phase_zero_backlog_rows(backlog_text)
+    wp_p0_002_row = None
+    wp_p0_003_row = None
+    if backlog_rows is not None:
+        matching = [row for row in backlog_rows if row["ID"] == WP_P0_002_ID]
+        if len(matching) != 1:
+            errors.append("closure backlog must contain exactly one WP-P0-002 row")
+        else:
+            wp_p0_002_row = matching[0]
+        next_rows = [row for row in backlog_rows if row["ID"] == "WP-P0-003"]
+        if len(next_rows) != 1:
+            errors.append("closure backlog must contain exactly one WP-P0-003 row")
+        else:
+            wp_p0_003_row = next_rows[0]
+
+    backlog_status = wp_p0_002_row["Status"] if wp_p0_002_row else None
+    active = current_state_metadata_value(current_state_text, "active_work_package")
+
+    if active == "NONE" and backlog_status in {
+        DESIGN_ACTIVE_GATE,
+        IMPLEMENTATION_ACTIVE_GATE,
+    }:
+        errors.append(
+            "closed planning state cannot retain WP-P0-002 as READY_FOR_DESIGN "
+            "or IMPLEMENTING in the backlog"
+        )
+    if backlog_status == COMPLETED_WP_STATUS and wp_status != COMPLETED_WP_STATUS:
+        errors.append(
+            "backlog WP-P0-002 COMPLETED requires the Work Package Status COMPLETED"
+        )
+    if wp_status == COMPLETED_WP_STATUS and backlog_status != COMPLETED_WP_STATUS:
+        errors.append(
+            "completed WP-P0-002 requires backlog Status COMPLETED"
+        )
+
+    if wp_status != COMPLETED_WP_STATUS:
+        return
+
+    expected_wp = {
+        "Status": COMPLETED_WP_STATUS,
+        "Historic design verdict": HISTORIC_DESIGN_VERDICT,
+        "Current execution authorization": COMPLETED_WP_AUTHORIZATION,
+        "Implementation result": COMPLETED_WP_RESULT,
+        "Design artifact": f"`{WP_P0_002_DESIGN_RELATIVE_PATH}`",
+        "Approved Design v1.2 SHA-256": WP_P0_002_DESIGN_SHA256,
+    }
+    for field, expected in expected_wp.items():
+        if work_package_metadata_value(work_package_text, field) != expected:
+            errors.append(f"completed WP-P0-002 {field} must be exactly: {expected}")
+    if work_package_execution_authorization(work_package_text) != COMPLETED_WP_AUTHORIZATION:
+        errors.append("completed WP-P0-002 current execution authorization must be CLOSED")
+
+    expected_current = {
+        "active_work_package": "NONE",
+        "active_gate": POST_WP_ACTIVE_GATE,
+        "authorization": "PLANNING_ONLY",
+        "production_write_enabled": "false",
+        "owner_git_workflow_guidance": "REQUIRED",
+        "owner_git_execution_delegation": "ACTIVE",
+        "owner_git_execution_delegate": "CODEX",
+        "owner_git_execution_delegation_scope": OWNER_DELEGATION_SCOPE,
+    }
+    for field, expected in expected_current.items():
+        if current_state_metadata_value(current_state_text, field) != expected:
+            errors.append(
+                f"WP-P0-002 closure requires CURRENT_STATE {field}: {expected}"
+            )
+    if active == WP_P0_002_ID:
+        errors.append("WP-P0-002 COMPLETED cannot remain the active Work Package")
+    for section_name in ("## Active objective", "## Next authorized action"):
+        section = h2_section_body(current_state_text, section_name) or ""
+        for token in ("Controller", "Phase 0 planning"):
+            if token not in section:
+                errors.append(
+                    f"WP-P0-002 closure {section_name} must direct {token}"
+                )
+
+    if wp_p0_003_row is not None and wp_p0_003_row["Status"] != "DRAFT":
+        errors.append("WP-P0-003 must remain DRAFT during WP-P0-002 closure")
+
+    validate_wp_p0_002_traceability_text(
+        errors, traceability_text, completed=True
+    )
+    if WP_P0_002_ACCEPTANCE_RELATIVE_PATH not in traceability_text:
+        errors.append("completed traceability must reference the acceptance matrix")
+    if WP_P0_002_ACCEPTANCE_RELATIVE_PATH not in evidence_text:
+        errors.append("WP-P0-002 evidence must link the acceptance matrix")
+
+    acceptance_rows = wp_p0_002_acceptance_rows(acceptance_text)
+    if acceptance_rows is None:
+        errors.append("WP-P0-002 acceptance evidence must contain one valid matrix")
+    else:
+        criterion_values = [row["Criterion"] for row in acceptance_rows]
+        expected_values = [str(number) for number in range(1, 17)]
+        if criterion_values != expected_values:
+            errors.append(
+                "WP-P0-002 acceptance matrix must contain criteria 1 through 16 "
+                "exactly once and in order"
+            )
+        for row in acceptance_rows:
+            criterion = row["Criterion"]
+            if row["Closure status"] != "VERIFIED":
+                errors.append(
+                    f"WP-P0-002 acceptance criterion {criterion} must be VERIFIED"
+                )
+            for field in WP_P0_002_ACCEPTANCE_HEADER[1:]:
+                if not row[field].strip():
+                    errors.append(
+                        f"WP-P0-002 acceptance criterion {criterion} missing {field}"
+                    )
+
+    stale_markers = {
+        "repository CI Gate: pending": "repository CI pending",
+        "independent Controller implementation/PR approval: pending": "Controller review pending",
+        "pending the repair push": "repair-push pending",
+        "Deliver the bounded implementation candidate": "implementation delivery",
+        "Codex imports, repairs and verifies": "implementation delivery",
+        "No WP-P0-002 acceptance criterion is claimed as VERIFIED": "unverified acceptance",
+    }
+    completed_text = "\n".join(
+        (current_state_text, work_package_text, evidence_text, acceptance_text)
+    )
+    for marker, description in stale_markers.items():
+        if marker in completed_text:
+            errors.append(
+                f"WP-P0-002 completed state retains stale {description} narration"
+            )
+
+    for dependency in ("OQ-101", "OQ-005", "OQ-006", "OQ-102"):
+        if dependency not in completed_text:
+            errors.append(
+                f"WP-P0-002 completed evidence must preserve open dependency: {dependency}"
+            )
+
+
+def validate_wp_p0_002_completion_references(
+    errors: list[str], traceability_text: str, acceptance_text: str
+) -> None:
+    """Resolve every completed trace/evidence path and cited test against the tree."""
+    rows = list(csv.DictReader(traceability_text.splitlines()))
+    by_id = {row.get("source_id", ""): row for row in rows}
+    test_root = ROOT / "backend/marketops-server/src/test"
+    test_files = list(test_root.rglob("*.java")) if test_root.exists() else []
+    all_test_text = "\n".join(
+        path.read_text(encoding="utf-8") for path in test_files
+    )
+    for source_id in WP_P0_002_TRACEABILITY_CONTRACT:
+        row = by_id.get(source_id)
+        if row is None:
+            continue
+        for field in ("code_location", "evidence"):
+            for relative in row.get(field, "").split(";"):
+                relative = relative.strip()
+                if relative and not (ROOT / relative).exists():
+                    errors.append(
+                        f"traceability {source_id} {field} path does not exist: {relative}"
+                    )
+        for test_id in re.findall(r"TC-[A-Z]+(?:-[A-Z]+)*-[0-9]+[a-z]?", row.get("test_case", "")):
+            if test_id not in all_test_text:
+                errors.append(
+                    f"traceability {source_id} cites missing test ID: {test_id}"
+                )
+
+    acceptance_rows = wp_p0_002_acceptance_rows(acceptance_text) or []
+    for row in acceptance_rows:
+        criterion = row["Criterion"]
+        production_paths = re.findall(
+            r"`((?:backend|docs|infra|scripts)/[^`#]+)`",
+            row["Production location"],
+        )
+        if not production_paths:
+            errors.append(
+                f"WP-P0-002 acceptance criterion {criterion} has no resolvable production path"
+            )
+        for relative in production_paths:
+            if not (ROOT / relative).exists():
+                errors.append(
+                    f"WP-P0-002 acceptance criterion {criterion} path does not exist: {relative}"
+                )
+
+        test_references = re.findall(
+            r"`((?:backend|tests)/[^`#]+)#([A-Za-z_][A-Za-z0-9_]*)`",
+            row["Exact tests"],
+        )
+        if not test_references:
+            errors.append(
+                f"WP-P0-002 acceptance criterion {criterion} has no exact test method"
+            )
+        for relative, method in test_references:
+            path = ROOT / relative
+            if not path.is_file():
+                errors.append(
+                    f"WP-P0-002 acceptance criterion {criterion} test file missing: {relative}"
+                )
+                continue
+            if re.search(rf"\b{re.escape(method)}\s*\(", path.read_text(encoding="utf-8")) is None:
+                errors.append(
+                    f"WP-P0-002 acceptance criterion {criterion} test method missing: "
+                    f"{relative}#{method}"
+                )
+
+
+def validate_wp_p0_002_completion(errors: list[str]) -> None:
+    paths = {
+        "current": ROOT / "docs/00-governance/CURRENT_STATE.md",
+        "work_package": ROOT / WP_P0_002_RELATIVE_PATH,
+        "backlog": ROOT / "docs/03-work-items/BACKLOG-PHASE-0.md",
+        "traceability": ROOT / "docs/01-requirements/traceability.csv",
+        "evidence": ROOT / WP_P0_002_EVIDENCE_RELATIVE_PATH,
+        "acceptance": ROOT / WP_P0_002_ACCEPTANCE_RELATIVE_PATH,
+    }
+    if not all(path.exists() for path in paths.values()):
+        return
+    texts = {
+        name: path.read_text(encoding="utf-8-sig" if name == "traceability" else "utf-8")
+        for name, path in paths.items()
+    }
+    validate_wp_p0_002_completion_text(
+        errors,
+        texts["current"],
+        texts["work_package"],
+        texts["backlog"],
+        texts["traceability"],
+        texts["evidence"],
+        texts["acceptance"],
+    )
+    if work_package_metadata_value(texts["work_package"], "Status") == COMPLETED_WP_STATUS:
+        validate_wp_p0_002_completion_references(
+            errors, texts["traceability"], texts["acceptance"]
+        )
 
 
 def validate_completion_state_text(
@@ -1363,6 +1702,7 @@ def main() -> int:
     validate_controller_review_standard(errors)
     validate_traceability(errors)
     validate_completion_state(errors)
+    validate_wp_p0_002_completion(errors)
     validate_common_secrets(errors)
 
     if errors:

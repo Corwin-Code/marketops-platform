@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-08-18
+as_of: 2026-08-19
 project: MarketOps Russia
 lifecycle_state: EXECUTING_PHASE_0
 phase: Phase 0 — Data, Identity & Visibility Foundation
@@ -9,9 +9,9 @@ sprint: Sprint 0
 controller: GPT-5.6 Sol Pro / current ChatGPT Project
 maker: Claude Cowork / Claude Code (initial artifact producer; no authoritative repository writes in current trial)
 rework_agent: Mac Codex (authoritative repository writer, rework/fix/verify, delegated Git execution)
-active_work_package: WP-P0-002
-active_gate: IMPLEMENTING
-authorization: APPROVED_FOR_IMPLEMENTATION
+active_work_package: NONE
+active_gate: CONTROLLER_PHASE_0_PLANNING
+authorization: PLANNING_ONLY
 production_write_enabled: false
 owner_git_workflow_guidance: REQUIRED
 owner_git_workflow_guidance_exit: HUMAN_OWNER_EXPLICIT_CONFIRMATION
@@ -32,21 +32,23 @@ Java root package: com.mimococo.marketops
 Canonical design: docs/02-architecture/designs/WP-P0-001-foundation-design.md
 ```
 
-## Active design target
+## Completed WP-P0-002 design provenance
 
 ```text
 Work Package: WP-P0-002 — Organization, Store, Warehouse & Credential Metadata
 Work Package record: docs/03-work-items/WP-P0-002-organization-store-warehouse-credential-metadata.md
-Gate: IMPLEMENTING
-Authorization: APPROVED_FOR_IMPLEMENTATION
+Historic design verdict: APPROVED_FOR_IMPLEMENTATION
+Current execution authorization: CLOSED
+Implementation result: VERIFIED
 Canonical design: docs/02-architecture/designs/WP-P0-002-organization-store-warehouse-credential-metadata-design.md
 Controller design verdict: APPROVED_FOR_IMPLEMENTATION
 Approved Design v1.2 artifact SHA-256: 3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2
 ```
 
-The completed WP-P0-001 design is foundation provenance only. WP-P0-002
-implementation authority comes from the Controller verdict on the exact Design
-v1.2 artifact pinned above.
+The completed WP-P0-001 design remains foundation provenance. WP-P0-002 was
+implemented only under the Controller verdict on the exact Design v1.2 artifact
+pinned above. That implementation authority is now closed; the historic Design
+verdict is provenance and does not authorize further implementation.
 
 ## Prior closed planning transition — historical provenance
 
@@ -101,6 +103,16 @@ not be interpreted as current authorization or a parallel state source.
   verdict `APPROVED_FOR_IMPLEMENTATION`; the approved artifact is canonical at
   `docs/02-architecture/designs/WP-P0-002-organization-store-warehouse-credential-metadata-design.md`
   and byte-pinned by the SHA-256 above.
+- The WP-P0-002 technical implementation at Head
+  `28d50134bbd272dc4cc9335315841a526bb819c5`, tree
+  `30de068598341e545782b0bd833da94838ea22c6`, and tested merge
+  `0efda272211f91aecdc7cf614744e9ca4a576677` passed independent Controller
+  technical re-review. Its implementation result is `VERIFIED`, and the
+  implementation authorization is closed.
+- WP-P0-002 Requirement → Test → Evidence and all sixteen Work Package
+  acceptance criteria are committed under `docs/07-phase-evidence/WP-P0-002/`.
+  `ADM-001` is verified to its authorized FULL boundary; PARTIAL source
+  requirements remain `ACTIVE_CONTROL` with their later owners explicit.
 
 ## Not completed and not claimed
 
@@ -109,31 +121,29 @@ not be interpreted as current authorization or a parallel state source.
 - Marketplace clients, credentials, production data, authentication,
   authorization, business/domain tables, deployment artifacts and external
   platform writes remain absent by design and belong to later Work Packages.
-- The bounded WP-P0-002 candidate has been imported and repaired on the
-  authoritative short-lived Codex task branch. Maker/local verification does
-  not constitute independent Controller implementation/PR approval, repository
-  Gate acceptance or merge authorization. No WP-P0-002 acceptance criterion is
-  claimed as VERIFIED.
+- PR #10 remains Draft and not merged while this governance/traceability closure
+  candidate awaits final independent Controller re-review. The verified
+  technical implementation and committed acceptance evidence do not themselves
+  authorize Ready, merge or a change to `main`.
 - Repository conversion back to Private and security-control revalidation remain
   mandatory at real production go-live, or earlier before confidential material,
   under D-15. This continuing project control is not deferred WP-P0-001 scope.
 
 ## Active objective
 
-Codex imports, repairs and verifies the bounded WP-P0-002 implementation against
-the approved Design v1.2 on an authoritative task branch, then exposes that
-exact branch only through a Draft PR for independent Controller
-implementation/PR review. No Marketplace connection, credential retrieval or
-production write is part of this objective, and production writes remain
-disabled.
+The Controller performs the final review of the WP-P0-002 governance and
+traceability closure on Draft PR #10. If that exact closure Head and tested merge
+are accepted and later merged with separate Human Owner authorization, live work
+returns to Controller Phase 0 planning. WP-P0-003 remains DRAFT and is not
+activated by this closure. Production writes remain disabled.
 
 ## Temporary trial execution mode
 
 - Claude Cowork / Claude Code may produce reviewable artifacts in a disposable
   workspace but does not write the authoritative repository, push, change
   Rulesets or merge in the current trial.
-- Mac Codex is the authoritative local repository writer and may import, rework,
-  verify, commit, push and maintain Draft Pull Requests. It may execute a merge
+- Mac Codex is the authoritative local repository writer and may perform bounded
+  rework, verify, commit, push and maintain Draft Pull Requests. It may execute a merge
   only under active D-17 delegation, an independent Controller merge verdict,
   every repository/project Gate and separate Human Owner authorization.
 
@@ -157,8 +167,9 @@ No Secret or production data is requested.
 ## Next authorized action
 
 ```text
-The only authorized transition for the WP-P0-002 task branch is a Draft PR to
-main followed by independent GPT Controller implementation/PR review. Draft
-status is not acceptance: no Ready action, merge or production write is
-authorized, and OQ-101/OQ-005/OQ-006/OQ-102 remain open as allocated.
+The independent GPT Controller reviews the exact WP-P0-002 closure Head and
+tested merge on Draft PR #10. No Ready action or merge is authorized without a
+future APPROVE_FOR_HUMAN_MERGE verdict and separate Human Owner authorization.
+After an authorized merge, the next live action is Controller Phase 0 planning;
+WP-P0-003 remains DRAFT. OQ-101/OQ-005/OQ-006/OQ-102 remain open as allocated.
 ```

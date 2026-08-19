@@ -7,8 +7,10 @@
 | ID | WP-P0-002 |
 | Title | Organization, Store, Warehouse & Credential Metadata |
 | Phase | Sprint 0 / Phase 0 |
-| Status | IMPLEMENTING |
-| Authorization | APPROVED_FOR_IMPLEMENTATION |
+| Status | COMPLETED |
+| Historic design verdict | APPROVED_FOR_IMPLEMENTATION |
+| Current execution authorization | CLOSED |
+| Implementation result | VERIFIED |
 | Risk | HIGH |
 | Controller | GPT-5.6 Sol Pro / current ChatGPT Project |
 | Designer / Maker | Claude Cowork / Claude Code |
@@ -16,11 +18,14 @@
 | Final merge authorization | Human Owner |
 | Target branch | `main` |
 | Design artifact | `docs/02-architecture/designs/WP-P0-002-organization-store-warehouse-credential-metadata-design.md` |
-| Implementation authorization | APPROVED_FOR_IMPLEMENTATION |
+| Approved Design v1.2 SHA-256 | 3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2 |
 
-This record is in its implementation stage: the Controller approved the design
-artifact above for implementation. It still does not authorize Marketplace
-connectivity, credential retrieval, production data or production writes.
+The Controller independently accepted the WP-P0-002 technical implementation on
+Head `28d50134bbd272dc4cc9335315841a526bb819c5`. The historic Design verdict
+above remains provenance; current implementation authorization is closed. PR #10
+remains a Draft closure candidate awaiting final Controller re-review and does
+not authorize Marketplace connectivity, credential retrieval, production data,
+Ready, merge or production writes.
 
 ## 2. Business Outcome
 
@@ -120,8 +125,12 @@ any requirement.
 | ADM-001 | FULL | Controlled maintenance/query boundary for Organization, Account, Store, Warehouse, timezone and currency metadata | General-purpose unauthenticated public mutation surface | Closed in WP-P0-002 only when the safe maintenance boundary and evidence pass | Maintenance is auditable and fail closed under the current no-auth foundation |
 | ADM-002 | PARTIAL | Feature Flag and Capability metadata with production-write default disabled | Job Schedule, Backfill execution and real platform Capability population | WP-P0-003 owns Job Schedule/Backfill; WP-P0-005/006 own platform evidence | Metadata invariants pass; scheduling and real capabilities remain unverified |
 
-Traceability status remains `PLANNED`. A `PARTIAL` row must not become
-`VERIFIED` merely because WP-P0-002 completes.
+Final traceability uses `VERIFIED` only for the authorized FULL `ADM-001`
+boundary. Each `PARTIAL` source requirement uses the existing `ACTIVE_CONTROL`
+state: its WP-P0-002 subset is verified, while the whole source requirement
+remains open under the later owner named in this table. The exact Requirement →
+Test → Evidence and sixteen-criterion matrices are committed at
+`docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md`.
 
 ## 6. Scope
 
@@ -309,28 +318,30 @@ independent Controller reviews the actual artifact under the Design Gate.
 
 ## 14. Controller Gate
 
-Current state:
+Current completed-state distinction:
 
 ```text
-Status: IMPLEMENTING
-Authorization: APPROVED_FOR_IMPLEMENTATION
+Status: COMPLETED
+Historic design verdict: APPROVED_FOR_IMPLEMENTATION
+Current execution authorization: CLOSED
+Implementation result: VERIFIED
 Approved design SHA-256: 3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2
-Next authorized actor: Claude Designer / Maker, then independent Controller
-Next authorized action: Deliver the bounded implementation candidate for CONTROLLER_IMPLEMENTATION_REVIEW
-Implementation: PROHIBITED until APPROVED_FOR_IMPLEMENTATION — satisfied by the design verdict above
+Technical implementation review: PASS on Head 28d50134bbd272dc4cc9335315841a526bb819c5
+PR closure candidate: AWAITING_FINAL_CONTROLLER_RE_REVIEW
+Ready: NOT_AUTHORIZED
+Merge: NOT_AUTHORIZED
 Production writes: DISABLED
 ```
 
-The Controller Design verdict vocabulary is:
+Historic implementation precondition:
 
 ```text
-APPROVED_FOR_IMPLEMENTATION
-CHANGES_REQUIRED
-BLOCKED_BY_OWNER_DECISION
-BLOCKED_BY_EXTERNAL_CAPABILITY
+Implementation: PROHIBITED until APPROVED_FOR_IMPLEMENTATION
 ```
 
-The recorded verdict on Design v1.2 is `APPROVED_FOR_IMPLEMENTATION`. Only
-`APPROVED_FOR_IMPLEMENTATION` on an exact Design artifact can authorize an
-implementation task. Nothing in this Work Package authorizes Ready, merge,
-Marketplace connection, credential retrieval or production writes.
+That precondition was satisfied by the exact Design v1.2 verdict and is retained
+only as historic provenance; it is not live authorization. The technical
+implementation has been accepted, but the Draft PR closure still requires an
+independent `APPROVE_FOR_HUMAN_MERGE` verdict on its final Head/tested merge and
+separate Human Owner authorization. No real Ozon/Wildberries fact, credential,
+production inventory, Marketplace connection or production write is claimed.

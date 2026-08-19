@@ -22,7 +22,9 @@ from scripts.validate_governance import (
     validate_parallel_current_state_paths,
     validate_prior_closed_transition_text,
     validate_readme_runtime_state_text,
+    validate_wp_p0_002_completion_text,
     validate_wp_p0_002_traceability_text,
+    wp_p0_002_acceptance_rows,
 )
 
 
@@ -1301,7 +1303,7 @@ class ControllerReviewStandardTests(unittest.TestCase):
         self.assertTrue(any("do not load" in error for error in errors))
 
 
-def wp_p0_002_traceability() -> str:
+def wp_p0_002_traceability(*, completed: bool = False) -> str:
     base = completed_traceability().rstrip("\n")
     rows = [
         ("IAM-001", "WP-P0-002", "PARTIAL in WP-P0-002; runtime IAM"),
@@ -1321,11 +1323,29 @@ def wp_p0_002_traceability() -> str:
             "PARTIAL in WP-P0-002; WP-P0-003",
         ),
     ]
-    additions = [
-        f'{source_id},Requirement,0,title,{work_packages},'
-        f'{WP_P0_002_DESIGN_RELATIVE_PATH},module,test-case,evidence,PLANNED,"{notes}"'
-        for source_id, work_packages, notes in rows
-    ]
+    completed_notes = {
+        "IAM-001": "PARTIAL in WP-P0-002; runtime IAM; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+        "IAM-004": "PARTIAL in WP-P0-002; runtime IAM; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+        "IAM-006": "PARTIAL in WP-P0-002; runtime integration; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+        "IAM-007": "PARTIAL in WP-P0-002; runtime IAM; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+        "INT-002": "PARTIAL in WP-P0-002; WP-P0-005/006; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+        "INT-003": "PARTIAL in WP-P0-002; OQ-006; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+        "ADM-001": "FULL closure in WP-P0-002; fail-closed; WP-P0-002 VERIFIED",
+        "ADM-002": "PARTIAL in WP-P0-002; WP-P0-003; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+    }
+    additions = []
+    for source_id, work_packages, notes in rows:
+        status = "VERIFIED" if completed and source_id == "ADM-001" else "ACTIVE_CONTROL" if completed else "PLANNED"
+        evidence = (
+            "docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md"
+            if completed
+            else "evidence"
+        )
+        final_notes = completed_notes[source_id] if completed else notes
+        additions.append(
+            f'{source_id},Requirement,0,title,{work_packages},'
+            f'{WP_P0_002_DESIGN_RELATIVE_PATH},module,test-case,{evidence},{status},"{final_notes}"'
+        )
     return base + "\n" + "\n".join(additions) + "\n"
 
 
@@ -1369,6 +1389,241 @@ class WpP0002TraceabilityTests(unittest.TestCase):
         )
         errors = self.validate(text)
         self.assertTrue(any("ADM-002 work_package" in error for error in errors))
+
+    def test_completed_partial_and_full_contract_is_valid(self) -> None:
+        errors: list[str] = []
+        validate_wp_p0_002_traceability_text(
+            errors, wp_p0_002_traceability(completed=True), completed=True
+        )
+        self.assertEqual([], errors)
+
+    def test_partial_requirement_cannot_be_fully_verified_after_completion(self) -> None:
+        text = wp_p0_002_traceability(completed=True).replace(
+            "evidence/WP-P0-002/acceptance-criteria.md,ACTIVE_CONTROL,\"PARTIAL in WP-P0-002; OQ-006",
+            "evidence/WP-P0-002/acceptance-criteria.md,VERIFIED,\"PARTIAL in WP-P0-002; OQ-006",
+        )
+        errors: list[str] = []
+        validate_wp_p0_002_traceability_text(errors, text, completed=True)
+        self.assertTrue(any("not fully VERIFIED" in error for error in errors))
+
+    def test_adm001_full_closure_must_be_verified(self) -> None:
+        text = wp_p0_002_traceability(completed=True).replace(
+            "acceptance-criteria.md,VERIFIED,\"FULL closure in WP-P0-002",
+            "acceptance-criteria.md,ACTIVE_CONTROL,\"FULL closure in WP-P0-002",
+        )
+        errors: list[str] = []
+        validate_wp_p0_002_traceability_text(errors, text, completed=True)
+        self.assertTrue(any("ADM-001 status must be exactly: VERIFIED" in error for error in errors))
+
+
+def wp_p0_002_closure_current_state() -> str:
+    return """# Current State
+
+```yaml
+active_work_package: NONE
+active_gate: CONTROLLER_PHASE_0_PLANNING
+authorization: PLANNING_ONLY
+production_write_enabled: false
+owner_git_workflow_guidance: REQUIRED
+owner_git_workflow_guidance_exit: HUMAN_OWNER_EXPLICIT_CONFIRMATION
+owner_git_execution_delegation: ACTIVE
+owner_git_execution_delegate: CODEX
+owner_git_execution_delegation_scope: PR_READY_AND_MERGE_AFTER_ALL_GATES
+owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
+```
+
+## Active objective
+
+Controller performs the final closure review before Controller Phase 0 planning.
+
+## Next authorized action
+
+Controller completes final review, then returns the project to Controller Phase 0 planning.
+
+OQ-101 OQ-005 OQ-006 OQ-102 remain open.
+"""
+
+
+def wp_p0_002_completed_work_package() -> str:
+    return f"""# WP-P0-002
+
+## 1. Metadata
+
+| Field | Value |
+| --- | --- |
+| ID | WP-P0-002 |
+| Status | COMPLETED |
+| Historic design verdict | APPROVED_FOR_IMPLEMENTATION |
+| Current execution authorization | CLOSED |
+| Implementation result | VERIFIED |
+| Design artifact | `{WP_P0_002_DESIGN_RELATIVE_PATH}` |
+| Approved Design v1.2 SHA-256 | 3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2 |
+"""
+
+
+def wp_p0_002_closure_backlog(wp_status: str = "COMPLETED", wp3_status: str = "DRAFT") -> str:
+    return f"""# Phase 0 Work Package Backlog
+
+| ID | Title | Status | Dependencies | Core source requirements |
+| --- | --- | --- | --- | --- |
+| WP-P0-001 | Foundation | COMPLETED | None | D-03 |
+| WP-P0-002 | Metadata | {wp_status} | WP-P0-001 | IAM-001 |
+| WP-P0-003 | Ingestion | {wp3_status} | WP-P0-001/002 | INT-001 |
+"""
+
+
+def wp_p0_002_closure_evidence(extra: str = "") -> str:
+    return """# Evidence
+
+docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md
+OQ-101 OQ-005 OQ-006 OQ-102 remain open.
+""" + extra
+
+
+def wp_p0_002_acceptance_evidence(count: int = 16) -> str:
+    header = (
+        "| Criterion | Criterion text | Closure status | Production location | "
+        "Exact tests | Exact evidence | Remaining boundary |\n"
+        "| --- | --- | --- | --- | --- | --- | --- |\n"
+    )
+    rows = "".join(
+        f"| {number} | criterion {number} | VERIFIED | production | test | evidence | boundary |\n"
+        for number in range(1, count + 1)
+    )
+    return header + rows
+
+
+class WpP0002ClosureStateTests(unittest.TestCase):
+    def validate(
+        self,
+        *,
+        current: str | None = None,
+        work_package: str | None = None,
+        backlog: str | None = None,
+        traceability: str | None = None,
+        evidence: str | None = None,
+        acceptance: str | None = None,
+    ) -> list[str]:
+        errors: list[str] = []
+        validate_wp_p0_002_completion_text(
+            errors,
+            current or wp_p0_002_closure_current_state(),
+            work_package or wp_p0_002_completed_work_package(),
+            backlog or wp_p0_002_closure_backlog(),
+            traceability or wp_p0_002_traceability(completed=True),
+            evidence or wp_p0_002_closure_evidence(),
+            acceptance or wp_p0_002_acceptance_evidence(),
+        )
+        return errors
+
+    def test_complete_closure_state_is_valid(self) -> None:
+        self.assertEqual([], self.validate())
+        self.assertEqual(
+            [str(number) for number in range(1, 17)],
+            [
+                row["Criterion"]
+                for row in wp_p0_002_acceptance_rows(
+                    wp_p0_002_acceptance_evidence()
+                ) or []
+            ],
+        )
+
+    def test_completed_work_package_cannot_remain_active(self) -> None:
+        current = wp_p0_002_closure_current_state().replace(
+            "active_work_package: NONE", "active_work_package: WP-P0-002"
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("cannot remain the active" in error for error in errors))
+
+    def test_closed_planning_rejects_implementing_backlog(self) -> None:
+        errors = self.validate(backlog=wp_p0_002_closure_backlog("IMPLEMENTING"))
+        self.assertTrue(any("closed planning state" in error for error in errors))
+
+    def test_completed_backlog_rejects_implementing_work_package(self) -> None:
+        work_package = wp_p0_002_completed_work_package().replace(
+            "| Status | COMPLETED |", "| Status | IMPLEMENTING |"
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("requires the Work Package Status COMPLETED" in error for error in errors))
+
+    def test_closed_authorization_is_required(self) -> None:
+        work_package = wp_p0_002_completed_work_package().replace(
+            "| Current execution authorization | CLOSED |",
+            "| Current execution authorization | APPROVED_FOR_IMPLEMENTATION |",
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("authorization must be CLOSED" in error for error in errors))
+
+    def test_verified_result_is_required(self) -> None:
+        work_package = wp_p0_002_completed_work_package().replace(
+            "| Implementation result | VERIFIED |",
+            "| Implementation result | PENDING |",
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("Implementation result" in error for error in errors))
+
+    def test_historic_design_identity_is_required(self) -> None:
+        work_package = wp_p0_002_completed_work_package().replace(
+            "3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2",
+            "0" * 64,
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("Approved Design v1.2 SHA-256" in error for error in errors))
+
+    def test_missing_acceptance_row_is_rejected(self) -> None:
+        errors = self.validate(acceptance=wp_p0_002_acceptance_evidence(15))
+        self.assertTrue(any("criteria 1 through 16" in error for error in errors))
+
+    def test_nonverified_acceptance_row_is_rejected(self) -> None:
+        acceptance = wp_p0_002_acceptance_evidence().replace(
+            "| 8 | criterion 8 | VERIFIED |",
+            "| 8 | criterion 8 | PLANNED |",
+        )
+        errors = self.validate(acceptance=acceptance)
+        self.assertTrue(any("criterion 8 must be VERIFIED" in error for error in errors))
+
+    def test_stale_pending_evidence_is_rejected(self) -> None:
+        errors = self.validate(
+            evidence=wp_p0_002_closure_evidence(
+                "\nrepository CI Gate: pending the repair push\n"
+            )
+        )
+        self.assertTrue(any("stale repository CI pending" in error for error in errors))
+
+    def test_wp_p0_003_activation_is_rejected(self) -> None:
+        errors = self.validate(backlog=wp_p0_002_closure_backlog(wp3_status="READY_FOR_DESIGN"))
+        self.assertTrue(any("WP-P0-003 must remain DRAFT" in error for error in errors))
+
+    def test_production_write_control_cannot_change(self) -> None:
+        current = wp_p0_002_closure_current_state().replace(
+            "production_write_enabled: false", "production_write_enabled: true"
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("production_write_enabled: false" in error for error in errors))
+
+    def test_d16_guidance_control_cannot_change(self) -> None:
+        current = wp_p0_002_closure_current_state().replace(
+            "owner_git_workflow_guidance: REQUIRED",
+            "owner_git_workflow_guidance: DISABLED",
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("owner_git_workflow_guidance: REQUIRED" in error for error in errors))
+
+    def test_d17_delegation_control_cannot_change(self) -> None:
+        current = wp_p0_002_closure_current_state().replace(
+            "owner_git_execution_delegation: ACTIVE",
+            "owner_git_execution_delegation: INACTIVE",
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("owner_git_execution_delegation: ACTIVE" in error for error in errors))
+
+    def test_duplicate_current_state_authority_is_rejected(self) -> None:
+        current = wp_p0_002_closure_current_state().replace(
+            "active_work_package: NONE",
+            "active_work_package: NONE\nactive_work_package: NONE",
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("active_work_package: NONE" in error for error in errors))
 
 
 if __name__ == "__main__":
