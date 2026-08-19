@@ -34,10 +34,11 @@
 | TC-OA-101…102, TC-IA-101…103, TC-MI-101…104 | Lifecycle state machines and closed vocabularies of every metadata module | `CoreLifecycleTest`, `AccessLifecycleTest`, `IntegrationLifecycleTest` |
 | TC-SEC-101…104, TC-SEC-201…204 | Secret-material refusal heuristics and shared field validation, including opaque secret references | `SecretMaterialGuardTest`, `MetadataFieldPolicyTest` |
 | TC-FF-101…104 | Fail-closed write-gate bindings: enabled production writes fail startup, the maintenance switch is mandatory | `WriteGateBindingTest` |
-| TC-DB-101…115 | Migration set, schemas, tables, seeds, contaminated-database refusal, disabled clean | `FlywayMigrationIT` |
-| TC-DB-201…216 | Relational invariants by SQLSTATE: composite-key ownership and platform pinning, exclusion intervals, uniqueness, checks, generated columns, append-only journals and the privilege matrix | `MetadataConstraintIT`, `MetadataPrivilegeIT`, `DatabasePrivilegeIT` |
-| TC-API-001…081 | The maintenance surface end to end: attribution and gate refusals, strict bodies, commands, derived read state, credential scope contract, registry fail-closed rules, flags, retirement vetoes and journal attribution | `MetadataMaintenanceApiIT`, `MaintenanceWriteGateApiIT` |
-| TC-ARCH | Boundary rules over the populated module tree and the exact detected module set | `ModuleBoundaryArchitectureTest`, `ModulithArchitectureTest`, `RuleSensitivityArchitectureTest` |
+| TC-DB-100…103, TC-DB-110…114, TC-DB-118 | PostgreSQL release pin, migration set, schemas, tables, seeds, contaminated-database refusal and disabled clean | `FlywayMigrationIT` |
+| TC-DB-104…105, TC-DB-105b, TC-DB-106…109, TC-DB-115…117 | Foundation-role connection, schema, search-path and cluster-level negative privileges | `DatabasePrivilegeIT` |
+| TC-DB-201…216 | Metadata relational invariants by SQLSTATE: composite-key ownership and platform pinning, exclusion intervals, uniqueness, checks, generated columns, append-only journals and the object privilege matrix | `MetadataConstraintIT`, `MetadataPrivilegeIT` |
+| TC-API-001…003, TC-API-010…013, TC-API-020, TC-API-030…033, TC-API-040…042, TC-API-050, TC-API-060, TC-API-070…071, TC-API-080…087 | The maintenance surface end to end: attribution and gate refusals, strict bodies, commands, complete lifecycle/read paths, credential scope contract, registry fail-closed rules, flags, retirement vetoes and journal attribution | `MetadataMaintenanceApiIT`, `MaintenanceWriteGateApiIT` |
+| TC-ARCH-001…008, TC-QUALITY-ARCH-001…004 | Boundary and production-quality rules over the populated module tree and exact detected module set | `ModuleBoundaryArchitectureTest`, `ModulithArchitectureTest`, `RuleSensitivityArchitectureTest` |
 
 ## Evidence rule
 

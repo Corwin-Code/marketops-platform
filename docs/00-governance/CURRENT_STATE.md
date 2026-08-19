@@ -116,11 +116,15 @@ not be interpreted as current authorization or a parallel state source.
 
 ## Not completed and not claimed
 
-- The whole MarketOps Russia product is not production-ready. WP-P0-001 is only
-  the repository, governance, CI, database and health-console foundation.
-- Marketplace clients, credentials, production data, authentication,
-  authorization, business/domain tables, deployment artifacts and external
-  platform writes remain absent by design and belong to later Work Packages.
+- The whole MarketOps Russia product is not production-ready. WP-P0-001 provides
+  the repository, governance, CI, database and health-console foundation, while
+  WP-P0-002 provides the verified metadata-domain foundation; later product and
+  runtime capabilities remain open.
+- Real Marketplace clients and verified platform Capability population,
+  plaintext or production credentials and Secret retrieval, production data,
+  runtime authentication/authorization, PIM/Order/Inventory/Return/Finance fact
+  tables, deployment artifacts and external platform writes remain absent by
+  design and belong to later Work Packages.
 - PR #10 remains Draft and not merged while this governance/traceability closure
   candidate awaits final independent Controller re-review. The verified
   technical implementation and committed acceptance evidence do not themselves

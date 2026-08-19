@@ -6,6 +6,8 @@ import hashlib
 import re
 import subprocess
 import sys
+from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,6 +34,7 @@ REQUIRED_FILES = [
     "docs/03-work-items/BACKLOG-PHASE-0.md",
     "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md",
     "docs/03-work-items/WP-P0-002-organization-store-warehouse-credential-metadata.md",
+    "docs/05-testing/TEST_STRATEGY.md",
     "docs/07-phase-evidence/WP-P0-002/README.md",
     "docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md",
     ".github/pull_request_template.md",
@@ -89,6 +92,11 @@ WP_P0_002_EVIDENCE_RELATIVE_PATH = "docs/07-phase-evidence/WP-P0-002/README.md"
 WP_P0_002_ACCEPTANCE_RELATIVE_PATH = (
     "docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md"
 )
+WP_P0_002_TEST_STRATEGY_RELATIVE_PATH = "docs/05-testing/TEST_STRATEGY.md"
+HISTORIC_CONTRACT_BEGIN = (
+    "<!-- BEGIN HISTORIC APPROVED CONTRACT QUOTATION (NON-AUTHORITATIVE) -->"
+)
+HISTORIC_CONTRACT_END = "<!-- END HISTORIC APPROVED CONTRACT QUOTATION -->"
 WORK_PACKAGE_PATHS = {
     WP_P0_001_ID: WP_P0_001_RELATIVE_PATH,
     WP_P0_002_ID: WP_P0_002_RELATIVE_PATH,
@@ -214,6 +222,30 @@ TRACEABILITY_HEADER = [
     "notes",
 ]
 
+TEST_ID_PATTERN = r"TC-[A-Z]+(?:-[A-Z]+)*-[0-9]+[A-Za-z]?"
+JAVA_TEST_DISPLAY_NAME = re.compile(
+    rf'@DisplayName\("(?P<test_id>{TEST_ID_PATTERN})'
+    rf'(?:\s+(?P<display_text>[^\"]+))?"\)'
+)
+JAVA_TEST_MEMBER = re.compile(
+    r"\bvoid\s+(?P<method>[A-Za-z_][A-Za-z0-9_]*)\s*\("
+    r"|\bclass\s+(?P<nested_group>[A-Za-z_][A-Za-z0-9_]*)\b"
+)
+
+
+@dataclass(frozen=True)
+class JavaTestIdentity:
+    """One canonical JUnit display identity found by the bounded repository scanner."""
+
+    test_id: str
+    file: str
+    class_name: str
+    member: str
+    member_kind: str
+    display_text: str
+    line: int
+    occurrence_count: int
+
 SCAN_EXTENSIONS = {
     ".yml", ".yaml", ".json", ".properties", ".toml", ".xml",
     ".java", ".kt", ".ts", ".tsx", ".js", ".jsx", ".py", ".sh", ".ps1",
@@ -330,7 +362,7 @@ def validate_work_package(errors: list[str]) -> None:
         "UNKNOWN until verified platform evidence exists",
         "Marketplace-fulfilled",
         "Seller-fulfilled",
-        "maintenance remains local/internal/admin-only and fail closed",
+        "local/internal/admin-only and fails closed",
         "audit` is a conceptual responsibility, not an approved PostgreSQL schema",
         "iam / platform / raw / staging / core / ledger / mart / ops",
         "Implementation: PROHIBITED until APPROVED_FOR_IMPLEMENTATION",
@@ -1224,6 +1256,217 @@ def wp_p0_002_acceptance_rows(text: str) -> list[dict[str, str]] | None:
     return parsed_tables[0] if len(parsed_tables) == 1 else None
 
 
+def java_test_identity_inventory(
+    java_sources: dict[str, str],
+) -> tuple[list[JavaTestIdentity], list[str]]:
+    """Build the canonical TC inventory with a bounded scanner for repo test style."""
+    raw: list[tuple[str, str, str, str, str, str, int]] = []
+    parse_errors: list[str] = []
+    for relative, text in sorted(java_sources.items()):
+        matches = list(JAVA_TEST_DISPLAY_NAME.finditer(text))
+        for index, match in enumerate(matches):
+            next_start = (
+                matches[index + 1].start()
+                if index + 1 < len(matches)
+                else len(text)
+            )
+            member_match = JAVA_TEST_MEMBER.search(text, match.end(), next_start)
+            if member_match is None:
+                line = text.count("\n", 0, match.start()) + 1
+                parse_errors.append(
+                    f"unbound Java test display identity {match.group('test_id')}: "
+                    f"{relative}:{line}"
+                )
+                continue
+            method = member_match.group("method")
+            nested_group = member_match.group("nested_group")
+            raw.append(
+                (
+                    match.group("test_id"),
+                    relative,
+                    Path(relative).stem,
+                    method or nested_group,
+                    "method" if method else "nested_group",
+                    match.group("display_text") or "",
+                    text.count("\n", 0, match.start()) + 1,
+                )
+            )
+
+    counts = Counter(item[0] for item in raw)
+    inventory = [
+        JavaTestIdentity(
+            test_id=test_id,
+            file=relative,
+            class_name=class_name,
+            member=member,
+            member_kind=member_kind,
+            display_text=display_text,
+            line=line,
+            occurrence_count=counts[test_id],
+        )
+        for (
+            test_id,
+            relative,
+            class_name,
+            member,
+            member_kind,
+            display_text,
+            line,
+        ) in raw
+    ]
+    return inventory, parse_errors
+
+
+def without_explicit_historic_contracts(
+    errors: list[str], text: str, document_name: str
+) -> str:
+    """Exclude only explicitly delimited non-authoritative historic quotations."""
+    live_parts: list[str] = []
+    cursor = 0
+    while cursor < len(text):
+        begin = text.find(HISTORIC_CONTRACT_BEGIN, cursor)
+        stray_end = text.find(HISTORIC_CONTRACT_END, cursor)
+        if stray_end != -1 and (begin == -1 or stray_end < begin):
+            errors.append(f"{document_name} has an unmatched historic-contract end marker")
+            live_parts.append(text[cursor:stray_end])
+            cursor = stray_end + len(HISTORIC_CONTRACT_END)
+            continue
+        if begin == -1:
+            live_parts.append(text[cursor:])
+            break
+        live_parts.append(text[cursor:begin])
+        end = text.find(HISTORIC_CONTRACT_END, begin + len(HISTORIC_CONTRACT_BEGIN))
+        if end == -1:
+            errors.append(f"{document_name} has an unclosed historic-contract quotation")
+            break
+        nested_begin = text.find(
+            HISTORIC_CONTRACT_BEGIN,
+            begin + len(HISTORIC_CONTRACT_BEGIN),
+            end,
+        )
+        if nested_begin != -1:
+            errors.append(
+                f"{document_name} has a nested historic-contract quotation"
+            )
+        cursor = end + len(HISTORIC_CONTRACT_END)
+    return "".join(live_parts)
+
+
+def documented_test_ids(text: str, prefix: str) -> set[str]:
+    """Expand the explicit numeric ID ranges used by the canonical Test Strategy."""
+    ids = set(re.findall(rf"{re.escape(prefix)}[0-9]{{3}}[A-Za-z]?", text))
+    range_pattern = re.compile(
+        rf"{re.escape(prefix)}(?P<start>[0-9]{{3}})(?:…|\.\.\.)(?P<end>[0-9]{{3}})"
+    )
+    for match in range_pattern.finditer(text):
+        start = int(match.group("start"))
+        end = int(match.group("end"))
+        if end < start:
+            continue
+        ids.update(f"{prefix}{number:03d}" for number in range(start, end + 1))
+    return ids
+
+
+def validate_wp_p0_002_test_identity_contract(
+    errors: list[str],
+    traceability_text: str,
+    acceptance_text: str,
+    test_strategy_text: str,
+    java_sources: dict[str, str],
+) -> list[JavaTestIdentity]:
+    """Bind unique Java TC identities to traceability, exact methods and strategy."""
+    inventory, parse_errors = java_test_identity_inventory(java_sources)
+    errors.extend(parse_errors)
+    by_id: dict[str, list[JavaTestIdentity]] = {}
+    for identity in inventory:
+        by_id.setdefault(identity.test_id, []).append(identity)
+
+    for test_id, definitions in sorted(by_id.items()):
+        if len(definitions) > 1:
+            targets = ", ".join(
+                f"{definition.file}#{definition.member}" for definition in definitions
+            )
+            errors.append(f"duplicate Java test ID {test_id}: {targets}")
+
+    rows = list(csv.DictReader(traceability_text.splitlines()))
+    by_source_id = {row.get("source_id", ""): row for row in rows}
+    for source_id in WP_P0_002_TRACEABILITY_CONTRACT:
+        row = by_source_id.get(source_id)
+        if row is None:
+            continue
+        for test_id in re.findall(TEST_ID_PATTERN, row.get("test_case", "")):
+            definitions = by_id.get(test_id, [])
+            if not definitions:
+                errors.append(f"traceability {source_id} cites missing test ID: {test_id}")
+            elif len(definitions) > 1:
+                errors.append(
+                    f"traceability {source_id} cites ambiguous test ID: {test_id}"
+                )
+
+    acceptance_rows = wp_p0_002_acceptance_rows(acceptance_text) or []
+    bound_reference = re.compile(
+        rf"`(?P<file>(?:backend|tests)/[^`#]+)#"
+        rf"(?P<member>[A-Za-z_][A-Za-z0-9_]*)`\s*"
+        rf"\(`(?P<test_id>{TEST_ID_PATTERN})`\)"
+    )
+    for row in acceptance_rows:
+        criterion = row["Criterion"]
+        exact_tests = row["Exact tests"]
+        bound_matches = list(bound_reference.finditer(exact_tests))
+        listed_ids = Counter(re.findall(TEST_ID_PATTERN, exact_tests))
+        bound_ids = Counter(match.group("test_id") for match in bound_matches)
+        if listed_ids != bound_ids:
+            errors.append(
+                f"WP-P0-002 acceptance criterion {criterion} has test IDs that "
+                "are not bound exactly once to file#method references"
+            )
+        for match in bound_matches:
+            test_id = match.group("test_id")
+            definitions = by_id.get(test_id, [])
+            if not definitions:
+                errors.append(
+                    f"WP-P0-002 acceptance criterion {criterion} cites missing test ID: "
+                    f"{test_id}"
+                )
+                continue
+            if len(definitions) > 1:
+                errors.append(
+                    f"WP-P0-002 acceptance criterion {criterion} cites ambiguous test ID: "
+                    f"{test_id}"
+                )
+                continue
+            definition = definitions[0]
+            if (
+                definition.file != match.group("file")
+                or definition.member != match.group("member")
+            ):
+                errors.append(
+                    f"WP-P0-002 acceptance criterion {criterion} test ID {test_id} "
+                    f"belongs to {definition.file}#{definition.member}, not "
+                    f"{match.group('file')}#{match.group('member')}"
+                )
+
+    implemented_api_ids = {
+        identity.test_id
+        for identity in inventory
+        if identity.test_id.startswith("TC-API-")
+    }
+    strategy_api_ids = documented_test_ids(test_strategy_text, "TC-API-")
+    missing_strategy_ids = sorted(implemented_api_ids - strategy_api_ids)
+    extra_strategy_ids = sorted(strategy_api_ids - implemented_api_ids)
+    if missing_strategy_ids:
+        errors.append(
+            "Test Strategy omits implemented canonical API test IDs: "
+            + ", ".join(missing_strategy_ids)
+        )
+    if extra_strategy_ids:
+        errors.append(
+            "Test Strategy lists unimplemented canonical API test IDs: "
+            + ", ".join(extra_strategy_ids)
+        )
+    return inventory
+
+
 def validate_wp_p0_002_completion_text(
     errors: list[str],
     current_state_text: str,
@@ -1353,12 +1596,27 @@ def validate_wp_p0_002_completion_text(
         "Deliver the bounded implementation candidate": "implementation delivery",
         "Codex imports, repairs and verifies": "implementation delivery",
         "No WP-P0-002 acceptance criterion is claimed as VERIFIED": "unverified acceptance",
+        "This Design-activation PR does not verify any requirement": "Design-activation denial",
+        "when WP-P0-002 is eventually implemented": "future implementation",
+        "Claude Design must": "live Claude Design instruction",
+        "Claude must return": "live Claude delivery instruction",
+        "this Planning record": "live Planning record instruction",
+        "After Design return": "live post-Design instruction",
+        "business/domain tables": "overbroad domain-table absence",
+    }
+    documents = {
+        "CURRENT_STATE.md": current_state_text,
+        "WP-P0-002 Work Package": work_package_text,
+        "WP-P0-002 evidence": evidence_text,
+        "WP-P0-002 acceptance": acceptance_text,
     }
     completed_text = "\n".join(
-        (current_state_text, work_package_text, evidence_text, acceptance_text)
+        without_explicit_historic_contracts(errors, text, name)
+        for name, text in documents.items()
     )
+    normalized_completed_text = re.sub(r"\s+", " ", completed_text)
     for marker, description in stale_markers.items():
-        if marker in completed_text:
+        if re.sub(r"\s+", " ", marker) in normalized_completed_text:
             errors.append(
                 f"WP-P0-002 completed state retains stale {description} narration"
             )
@@ -1371,15 +1629,26 @@ def validate_wp_p0_002_completion_text(
 
 
 def validate_wp_p0_002_completion_references(
-    errors: list[str], traceability_text: str, acceptance_text: str
+    errors: list[str],
+    traceability_text: str,
+    acceptance_text: str,
+    test_strategy_text: str,
 ) -> None:
     """Resolve every completed trace/evidence path and cited test against the tree."""
     rows = list(csv.DictReader(traceability_text.splitlines()))
     by_id = {row.get("source_id", ""): row for row in rows}
     test_root = ROOT / "backend/marketops-server/src/test"
-    test_files = list(test_root.rglob("*.java")) if test_root.exists() else []
-    all_test_text = "\n".join(
-        path.read_text(encoding="utf-8") for path in test_files
+    test_files = sorted(test_root.rglob("*.java")) if test_root.exists() else []
+    java_sources = {
+        path.relative_to(ROOT).as_posix(): path.read_text(encoding="utf-8")
+        for path in test_files
+    }
+    validate_wp_p0_002_test_identity_contract(
+        errors,
+        traceability_text,
+        acceptance_text,
+        test_strategy_text,
+        java_sources,
     )
     for source_id in WP_P0_002_TRACEABILITY_CONTRACT:
         row = by_id.get(source_id)
@@ -1392,11 +1661,6 @@ def validate_wp_p0_002_completion_references(
                     errors.append(
                         f"traceability {source_id} {field} path does not exist: {relative}"
                     )
-        for test_id in re.findall(r"TC-[A-Z]+(?:-[A-Z]+)*-[0-9]+[a-z]?", row.get("test_case", "")):
-            if test_id not in all_test_text:
-                errors.append(
-                    f"traceability {source_id} cites missing test ID: {test_id}"
-                )
 
     acceptance_rows = wp_p0_002_acceptance_rows(acceptance_text) or []
     for row in acceptance_rows:
@@ -1445,6 +1709,7 @@ def validate_wp_p0_002_completion(errors: list[str]) -> None:
         "traceability": ROOT / "docs/01-requirements/traceability.csv",
         "evidence": ROOT / WP_P0_002_EVIDENCE_RELATIVE_PATH,
         "acceptance": ROOT / WP_P0_002_ACCEPTANCE_RELATIVE_PATH,
+        "test_strategy": ROOT / WP_P0_002_TEST_STRATEGY_RELATIVE_PATH,
     }
     if not all(path.exists() for path in paths.values()):
         return
@@ -1463,7 +1728,10 @@ def validate_wp_p0_002_completion(errors: list[str]) -> None:
     )
     if work_package_metadata_value(texts["work_package"], "Status") == COMPLETED_WP_STATUS:
         validate_wp_p0_002_completion_references(
-            errors, texts["traceability"], texts["acceptance"]
+            errors,
+            texts["traceability"],
+            texts["acceptance"],
+            texts["test_strategy"],
         )
 
 

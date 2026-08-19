@@ -36,6 +36,30 @@ Credential/Service Account lifecycle, Capability fail-closed behavior and
 production-write refusal. V0001 remains byte-pinned by
 `scripts/validate_production_readiness.py`.
 
+### Deterministic test-identity inventory
+
+The completed test tree contains 96 canonical Java `TC-*` definitions and 96
+unique identities. A bounded structural scanner records each identity with its
+file, top-level class, exact test method or nested test group, display text and
+global occurrence count. The final collision repair preserves the maintenance
+write-gate and WP-P0-001 privilege identities:
+
+| Exact test | Previous ID | Final ID |
+| --- | --- | --- |
+| `MetadataMaintenanceApiIT#coreMetadataSupportsCompleteMaintenancePaths` | `TC-API-080` | `TC-API-086` |
+| `MetadataMaintenanceApiIT#associationsSupportCompleteMaintenancePaths` | `TC-API-081` | `TC-API-087` |
+| `FlywayMigrationIT#referenceSeedsAreExact` | `TC-DB-115` | `TC-DB-118` |
+
+`TC-API-080/081` remain bound only to `MaintenanceWriteGateApiIT`; `TC-DB-115`
+remains bound only to
+`DatabasePrivilegeIT#applicationRoleSearchPathExcludesPublic`. The governance
+validator rejects duplicate definitions, missing or ambiguous traceability IDs,
+acceptance IDs that are unpaired or bound to another method, unbound test
+display identities, and an API inventory not represented exactly by
+`TEST_STRATEGY.md`. Independent mutations cover both known API collisions,
+traceability missing and duplicate resolution, unpaired acceptance IDs,
+ID-to-method mismatch, Test Strategy omission and the valid unique case.
+
 ### Pull-request CI on the accepted technical snapshot
 
 | Workflow/job | Conclusion | Immutable job |
@@ -90,10 +114,12 @@ debt, and are not suppressed.
 ## Closure evidence boundary
 
 The governance closure changes canonical state, Work Package/backlog status,
-traceability, this evidence, the acceptance matrix, and governance validators
-and sensitivity tests only. Its final Head/tree/tested merge and fresh workflow
-links are necessarily recorded in the Draft PR body after the closure commit and
-CI complete; embedding those identities in their own commit would be recursive.
+traceability, this evidence, the acceptance matrix, Test Strategy, test display
+identity metadata, and governance validators and sensitivity tests only. It does
+not change Java test behavior or any production source. Its final
+Head/tree/tested merge and fresh workflow links are necessarily recorded in the
+Draft PR body after the closure commit and CI complete; embedding those
+identities in their own commit would be recursive.
 
 The closure must rerun and pass governance, production readiness, all Python
 validator tests, unit-only/full Maven, PostgreSQL 18.4, architecture, coverage,

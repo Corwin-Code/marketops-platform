@@ -130,7 +130,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
 
     @Test
     @Order(3)
-    @DisplayName("TC-DB-115 the reference seeds are the approved rows and nothing more")
+    @DisplayName("TC-DB-118 the reference seeds are the approved rows and nothing more")
     void referenceSeedsAreExact() throws SQLException {
         try (Connection connection = asMigrationRole(container)) {
             assertThat(strings(connection,

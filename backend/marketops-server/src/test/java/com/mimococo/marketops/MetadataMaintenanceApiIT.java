@@ -558,7 +558,7 @@ class MetadataMaintenanceApiIT {
 
     @Test
     @Order(20)
-    @DisplayName("TC-API-080 core metadata supports complete update, lookup, list and lifecycle paths")
+    @DisplayName("TC-API-086 core metadata supports complete update, lookup, list and lifecycle paths")
     void coreMetadataSupportsCompleteMaintenancePaths() throws Exception {
         ok(put(BASE + "/organizations/" + organizationId),
                 "{\"displayName\":\"Mimococo Updated\","
@@ -636,7 +636,7 @@ class MetadataMaintenanceApiIT {
 
     @Test
     @Order(21)
-    @DisplayName("TC-API-081 associations update, list and terminate without deleting history")
+    @DisplayName("TC-API-087 associations update, list and terminate without deleting history")
     void associationsSupportCompleteMaintenancePaths() throws Exception {
         ok(put(BASE + "/store-warehouse-links/" + linkId),
                 "{\"effectiveFrom\":\"2026-01-01T00:00:00Z\","
