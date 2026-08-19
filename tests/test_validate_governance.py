@@ -1436,13 +1436,21 @@ owner_git_execution_delegation_scope: PR_READY_AND_MERGE_AFTER_ALL_GATES
 owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 ```
 
+## Completed
+
+PR #10 was squash-merged as
+203b509e765959560fdfbd0edbde428ba9c6d763 with merged tree
+6a2db6f565b29847bed6065d2b04d1df800b516b. Post-merge Controller artifact
+SHA-256: 4e65f0a7fb1c997096c5fd98fb56f42211c546cca323fae5b12d39eaa0c1c8ab.
+
 ## Active objective
 
-Controller performs the final closure review before Controller Phase 0 planning.
+Controller Phase 0 planning selects the next bounded Work Package.
+WP-P0-003 remains DRAFT.
 
 ## Next authorized action
 
-Controller completes final review, then returns the project to Controller Phase 0 planning.
+Controller Phase 0 planning retains the Design Gate. WP-P0-003 remains DRAFT.
 
 OQ-101 OQ-005 OQ-006 OQ-102 remain open.
 """
@@ -1462,6 +1470,22 @@ def wp_p0_002_completed_work_package() -> str:
 | Implementation result | VERIFIED |
 | Design artifact | `{WP_P0_002_DESIGN_RELATIVE_PATH}` |
 | Approved Design v1.2 SHA-256 | 3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2 |
+
+PR #10 state: MERGED / CLOSED / NOT_DRAFT
+Controller merge verdict: PASS — APPROVE_FOR_HUMAN_MERGE
+Controller approval artifact SHA-256: d477bb77846d1c9f3f50de58a6795450327b445853794fc38192ee96d4cd3c9f
+The Human Owner approved D-17 Ready and squash merge of PR #10 on the exact accepted identity.
+Approved Base: 3c4f6a6210db377b5471d6014da6afd5bfef6127
+Approved Head: ce8eb44f2f750d73d7329fb78a17640ef3fc80c1
+Approved tested merge: fdcbf2bc69a0a80d1b6fb98455e91bf7e6373fef
+Squash merge SHA: 203b509e765959560fdfbd0edbde428ba9c6d763
+Merged main tree: 6a2db6f565b29847bed6065d2b04d1df800b516b
+Squash parent: 3c4f6a6210db377b5471d6014da6afd5bfef6127
+Commit signature: VERIFIED
+Post-merge Controller verdict: PASS — MERGE_EXECUTION_VERIFIED
+Next lifecycle state: Controller Phase 0 planning
+WP-P0-003 remains DRAFT
+Production writes: DISABLED
 """
 
 
@@ -1480,12 +1504,32 @@ def wp_p0_002_closure_evidence(extra: str = "") -> str:
     return """# Evidence
 
 docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md
+PR #10 is merged and closed.
+Controller verdict: PASS — APPROVE_FOR_HUMAN_MERGE
+Controller approval artifact: d477bb77846d1c9f3f50de58a6795450327b445853794fc38192ee96d4cd3c9f
+The Human Owner approved D-17 Ready and squash merge of PR #10 on the exact accepted identity.
+Approved Base: 3c4f6a6210db377b5471d6014da6afd5bfef6127
+Approved Head: ce8eb44f2f750d73d7329fb78a17640ef3fc80c1
+Approved tested merge: fdcbf2bc69a0a80d1b6fb98455e91bf7e6373fef
+Squash merge: 203b509e765959560fdfbd0edbde428ba9c6d763
+Merged main tree: 6a2db6f565b29847bed6065d2b04d1df800b516b
+Squash parent | `3c4f6a6210db377b5471d6014da6afd5bfef6127`
+Merged at: 2026-08-19T17:44:16Z
+Commit signature: VERIFIED
+Post-merge Controller artifact: 4e65f0a7fb1c997096c5fd98fb56f42211c546cca323fae5b12d39eaa0c1c8ab
+Remote task branch: deleted after merge
+Controller Phase 0 planning is next.
+WP-P0-003 remains DRAFT.
+production_write_enabled: false
 OQ-101 OQ-005 OQ-006 OQ-102 remain open.
 """ + extra
 
 
 def wp_p0_002_acceptance_evidence(count: int = 16) -> str:
     header = (
+        "PR #10 merged as 203b509e765959560fdfbd0edbde428ba9c6d763 "
+        "with tree 6a2db6f565b29847bed6065d2b04d1df800b516b. "
+        "WP-P0-003 remains DRAFT.\n\n"
         "| Criterion | Criterion text | Closure status | Production location | "
         "Exact tests | Exact evidence | Remaining boundary |\n"
         "| --- | --- | --- | --- | --- | --- | --- |\n"
@@ -1845,6 +1889,82 @@ class WpP0002ClosureStateTests(unittest.TestCase):
         )
         errors = self.validate(current=current)
         self.assertTrue(any("overbroad domain-table absence" in error for error in errors))
+
+    def test_wrong_squash_sha_is_rejected(self) -> None:
+        evidence = wp_p0_002_closure_evidence().replace(
+            "Squash merge: 203b509e765959560fdfbd0edbde428ba9c6d763",
+            "Squash merge: " + "0" * 40,
+        )
+        errors = self.validate(evidence=evidence)
+        self.assertTrue(
+            any("missing required post-merge provenance" in error for error in errors)
+        )
+
+    def test_wrong_merged_tree_is_rejected(self) -> None:
+        evidence = wp_p0_002_closure_evidence().replace(
+            "Merged main tree: 6a2db6f565b29847bed6065d2b04d1df800b516b",
+            "Merged main tree: " + "0" * 40,
+        )
+        errors = self.validate(evidence=evidence)
+        self.assertTrue(
+            any("6a2db6f565b29847bed6065d2b04d1df800b516b" in error for error in errors)
+        )
+
+    def test_wrong_squash_parent_is_rejected(self) -> None:
+        evidence = wp_p0_002_closure_evidence().replace(
+            "Squash parent | `3c4f6a6210db377b5471d6014da6afd5bfef6127`",
+            "Squash parent | `" + "0" * 40 + "`",
+        )
+        errors = self.validate(evidence=evidence)
+        self.assertTrue(
+            any("3c4f6a6210db377b5471d6014da6afd5bfef6127" in error for error in errors)
+        )
+
+    def test_stale_draft_pr_wording_is_rejected(self) -> None:
+        current = wp_p0_002_closure_current_state() + "\nPR #10 remains Draft.\n"
+        errors = self.validate(current=current)
+        self.assertTrue(any("stale Draft PR state" in error for error in errors))
+
+    def test_stale_not_merged_wording_is_rejected(self) -> None:
+        current = (
+            wp_p0_002_closure_current_state()
+            + "\nPR #10 remains a Draft closure candidate and is not merged.\n"
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("stale not-merged PR state" in error for error in errors))
+
+    def test_stale_final_controller_review_wording_is_rejected(self) -> None:
+        evidence = wp_p0_002_closure_evidence(
+            "\nawaiting final independent Controller re-review\n"
+        )
+        errors = self.validate(evidence=evidence)
+        self.assertTrue(
+            any("stale final Controller re-review pending" in error for error in errors)
+        )
+
+    def test_stale_ready_and_merge_authorization_wording_is_rejected(self) -> None:
+        work_package = wp_p0_002_completed_work_package() + (
+            "\nReady: NOT_AUTHORIZED\nMerge: NOT_AUTHORIZED\n"
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("stale Ready authorization pending" in error for error in errors))
+        self.assertTrue(any("stale merge authorization pending" in error for error in errors))
+
+    def test_stale_future_merge_condition_is_rejected(self) -> None:
+        current = wp_p0_002_closure_current_state() + (
+            "\nIf that exact closure Head is later merged, planning resumes.\n"
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("stale future closure merge" in error for error in errors))
+
+    def test_stale_draft_closure_evidence_location_is_rejected(self) -> None:
+        acceptance = wp_p0_002_acceptance_evidence() + (
+            "\nThe final closure Head and tree belong in Draft PR #10.\n"
+        )
+        errors = self.validate(acceptance=acceptance)
+        self.assertTrue(
+            any("stale Draft closure-evidence location" in error for error in errors)
+        )
 
     def test_explicit_historic_contract_quotation_is_allowed(self) -> None:
         work_package = (

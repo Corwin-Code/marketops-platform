@@ -88,6 +88,19 @@ WP_P0_002_DESIGN_RELATIVE_PATH = (
 WP_P0_002_DESIGN_SHA256 = (
     "3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2"
 )
+WP_P0_002_APPROVED_BASE_SHA = "3c4f6a6210db377b5471d6014da6afd5bfef6127"
+WP_P0_002_APPROVED_HEAD_SHA = "ce8eb44f2f750d73d7329fb78a17640ef3fc80c1"
+WP_P0_002_APPROVED_TESTED_MERGE_SHA = (
+    "fdcbf2bc69a0a80d1b6fb98455e91bf7e6373fef"
+)
+WP_P0_002_MERGED_SHA = "203b509e765959560fdfbd0edbde428ba9c6d763"
+WP_P0_002_MERGED_TREE = "6a2db6f565b29847bed6065d2b04d1df800b516b"
+WP_P0_002_CONTROLLER_APPROVAL_SHA256 = (
+    "d477bb77846d1c9f3f50de58a6795450327b445853794fc38192ee96d4cd3c9f"
+)
+WP_P0_002_POST_MERGE_CONTROLLER_SHA256 = (
+    "4e65f0a7fb1c997096c5fd98fb56f42211c546cca323fae5b12d39eaa0c1c8ab"
+)
 WP_P0_002_EVIDENCE_RELATIVE_PATH = "docs/07-phase-evidence/WP-P0-002/README.md"
 WP_P0_002_ACCEPTANCE_RELATIVE_PATH = (
     "docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md"
@@ -1603,6 +1616,13 @@ def validate_wp_p0_002_completion_text(
         "this Planning record": "live Planning record instruction",
         "After Design return": "live post-Design instruction",
         "business/domain tables": "overbroad domain-table absence",
+        "awaiting final independent Controller re-review": "final Controller re-review pending",
+        "AWAITING_FINAL_CONTROLLER_RE_REVIEW": "final Controller re-review state",
+        "Ready: NOT_AUTHORIZED": "Ready authorization pending",
+        "Merge: NOT_AUTHORIZED": "merge authorization pending",
+        "No Ready action or merge is authorized": "Ready/merge authorization pending",
+        "If that exact closure Head": "future closure merge condition",
+        "closure candidate": "closure-candidate state",
     }
     documents = {
         "CURRENT_STATE.md": current_state_text,
@@ -1610,16 +1630,93 @@ def validate_wp_p0_002_completion_text(
         "WP-P0-002 evidence": evidence_text,
         "WP-P0-002 acceptance": acceptance_text,
     }
-    completed_text = "\n".join(
-        without_explicit_historic_contracts(errors, text, name)
+    completed_documents = {
+        name: without_explicit_historic_contracts(errors, text, name)
         for name, text in documents.items()
-    )
+    }
+    completed_text = "\n".join(completed_documents.values())
     normalized_completed_text = re.sub(r"\s+", " ", completed_text)
     for marker, description in stale_markers.items():
         if re.sub(r"\s+", " ", marker) in normalized_completed_text:
             errors.append(
                 f"WP-P0-002 completed state retains stale {description} narration"
             )
+
+    stale_patterns = {
+        r"PR #10 remains(?:\s+a)?\s+Draft": "Draft PR state",
+        r"PR #10 remains[^.]{0,160}not merged": "not-merged PR state",
+        r"final (?:governance-)?closure Head.{0,240}Draft PR #10": (
+            "Draft closure-evidence location"
+        ),
+    }
+    for pattern, description in stale_patterns.items():
+        if re.search(pattern, normalized_completed_text, flags=re.IGNORECASE):
+            errors.append(
+                f"WP-P0-002 completed state retains stale {description} narration"
+            )
+
+    required_post_merge_markers = {
+        "CURRENT_STATE.md": (
+            "PR #10",
+            WP_P0_002_MERGED_SHA,
+            WP_P0_002_MERGED_TREE,
+            "Controller Phase 0 planning",
+            "WP-P0-003 remains DRAFT",
+            "production_write_enabled: false",
+            WP_P0_002_POST_MERGE_CONTROLLER_SHA256,
+        ),
+        "WP-P0-002 Work Package": (
+            "PR #10",
+            "PASS — APPROVE_FOR_HUMAN_MERGE",
+            WP_P0_002_CONTROLLER_APPROVAL_SHA256,
+            "approved D-17 Ready and squash merge of PR #10 on the exact accepted identity",
+            WP_P0_002_APPROVED_BASE_SHA,
+            WP_P0_002_APPROVED_HEAD_SHA,
+            WP_P0_002_APPROVED_TESTED_MERGE_SHA,
+            WP_P0_002_MERGED_SHA,
+            WP_P0_002_MERGED_TREE,
+            "Squash parent: " + WP_P0_002_APPROVED_BASE_SHA,
+            "Commit signature: VERIFIED",
+            "PASS — MERGE_EXECUTION_VERIFIED",
+            "Controller Phase 0 planning",
+            "WP-P0-003 remains DRAFT",
+            "Production writes: DISABLED",
+        ),
+        "WP-P0-002 evidence": (
+            "PR #10",
+            "PASS — APPROVE_FOR_HUMAN_MERGE",
+            WP_P0_002_CONTROLLER_APPROVAL_SHA256,
+            "approved D-17 Ready and squash merge of PR #10 on the exact accepted identity",
+            WP_P0_002_APPROVED_BASE_SHA,
+            WP_P0_002_APPROVED_HEAD_SHA,
+            WP_P0_002_APPROVED_TESTED_MERGE_SHA,
+            WP_P0_002_MERGED_SHA,
+            WP_P0_002_MERGED_TREE,
+            "Squash parent | `" + WP_P0_002_APPROVED_BASE_SHA + "`",
+            "2026-08-19T17:44:16Z",
+            WP_P0_002_POST_MERGE_CONTROLLER_SHA256,
+            "Commit signature",
+            "VERIFIED",
+            "Remote task branch",
+            "deleted after merge",
+            "Controller Phase 0 planning",
+            "WP-P0-003 remains DRAFT",
+            "production_write_enabled: false",
+        ),
+        "WP-P0-002 acceptance": (
+            "PR #10",
+            WP_P0_002_MERGED_SHA,
+            WP_P0_002_MERGED_TREE,
+            "WP-P0-003 remains DRAFT",
+        ),
+    }
+    for document_name, required_markers in required_post_merge_markers.items():
+        document_text = completed_documents[document_name]
+        for marker in required_markers:
+            if marker not in document_text:
+                errors.append(
+                    f"{document_name} missing required post-merge provenance: {marker}"
+                )
 
     for dependency in ("OQ-101", "OQ-005", "OQ-006", "OQ-102"):
         if dependency not in completed_text:

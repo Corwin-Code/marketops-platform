@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-08-19
+as_of: 2026-08-20
 project: MarketOps Russia
 lifecycle_state: EXECUTING_PHASE_0
 phase: Phase 0 — Data, Identity & Visibility Foundation
@@ -113,6 +113,17 @@ not be interpreted as current authorization or a parallel state source.
   acceptance criteria are committed under `docs/07-phase-evidence/WP-P0-002/`.
   `ADM-001` is verified to its authorized FULL boundary; PARTIAL source
   requirements remain `ACTIVE_CONTROL` with their later owners explicit.
+- PR #10 completed the independent Controller, repository Gate and Human Owner
+  D-17 authorization path and was squash-merged to `main` as
+  `203b509e765959560fdfbd0edbde428ba9c6d763` at `2026-08-19T17:44:16Z`.
+  Its merged tree `6a2db6f565b29847bed6065d2b04d1df800b516b` equals the
+  Controller-approved Head tree, and its sole parent is the approved Base
+  `3c4f6a6210db377b5471d6014da6afd5bfef6127`. The commit has a valid GitHub
+  signature; Backend `32283328311`, Frontend `32283328372`, Governance
+  `32283328293` and Security `32283328308` all passed on the merged commit.
+- The independent post-merge Controller verdict is
+  `PASS — MERGE_EXECUTION_VERIFIED`, bound to artifact SHA-256
+  `4e65f0a7fb1c997096c5fd98fb56f42211c546cca323fae5b12d39eaa0c1c8ab`.
 
 ## Not completed and not claimed
 
@@ -125,21 +136,19 @@ not be interpreted as current authorization or a parallel state source.
   runtime authentication/authorization, PIM/Order/Inventory/Return/Finance fact
   tables, deployment artifacts and external platform writes remain absent by
   design and belong to later Work Packages.
-- PR #10 remains Draft and not merged while this governance/traceability closure
-  candidate awaits final independent Controller re-review. The verified
-  technical implementation and committed acceptance evidence do not themselves
-  authorize Ready, merge or a change to `main`.
+- WP-P0-002 is merged and complete only to its approved FULL/PARTIAL boundary.
+  Phase 0 and the whole product remain incomplete, and this completed merge does
+  not authorize another Work Package, deployment, credentials or production
+  writes.
 - Repository conversion back to Private and security-control revalidation remain
   mandatory at real production go-live, or earlier before confidential material,
   under D-15. This continuing project control is not deferred WP-P0-001 scope.
 
 ## Active objective
 
-The Controller performs the final review of the WP-P0-002 governance and
-traceability closure on Draft PR #10. If that exact closure Head and tested merge
-are accepted and later merged with separate Human Owner authorization, live work
-returns to Controller Phase 0 planning. WP-P0-003 remains DRAFT and is not
-activated by this closure. Production writes remain disabled.
+Controller Phase 0 planning selects and prepares the next bounded Work Package.
+WP-P0-003 remains DRAFT and is not activated by the WP-P0-002 merge or its
+post-merge provenance sync. Production writes remain disabled.
 
 ## Temporary trial execution mode
 
@@ -171,9 +180,8 @@ No Secret or production data is requested.
 ## Next authorized action
 
 ```text
-The independent GPT Controller reviews the exact WP-P0-002 closure Head and
-tested merge on Draft PR #10. No Ready action or merge is authorized without a
-future APPROVE_FOR_HUMAN_MERGE verdict and separate Human Owner authorization.
-After an authorized merge, the next live action is Controller Phase 0 planning;
-WP-P0-003 remains DRAFT. OQ-101/OQ-005/OQ-006/OQ-102 remain open as allocated.
+Controller Phase 0 planning determines the next authorized Work Package and
+must retain the normal Design Gate before any implementation. WP-P0-003 remains
+DRAFT; OQ-101/OQ-005/OQ-006/OQ-102 remain open as allocated. No production
+write, Marketplace connection, Secret retrieval or deployment is authorized.
 ```

@@ -5,9 +5,14 @@ claim runtime IAM, Secret retrieval, verified Ozon/Wildberries facts, production
 inventory or production writes. The independently accepted technical snapshot is
 Head `28d50134bbd272dc4cc9335315841a526bb819c5`, tree
 `30de068598341e545782b0bd833da94838ea22c6`, tested merge
-`0efda272211f91aecdc7cf614744e9ca4a576677`. The final governance-closure Head,
-tree, tested merge and fresh CI links belong in Draft PR #10 so this committed
-file does not make an impossible self-referential commit claim.
+`0efda272211f91aecdc7cf614744e9ca4a576677`. The final governance-closure Head
+`ce8eb44f2f750d73d7329fb78a17640ef3fc80c1` and tested merge
+`fdcbf2bc69a0a80d1b6fb98455e91bf7e6373fef` were accepted and merged through
+PR #10 as squash commit `203b509e765959560fdfbd0edbde428ba9c6d763`.
+The merged main tree `6a2db6f565b29847bed6065d2b04d1df800b516b` equals the
+approved Head tree. Post-merge verification passed; production writes remain
+disabled and WP-P0-003 remains DRAFT. This file makes no claim about the future
+post-merge-provenance-sync PR's own merge identity.
 
 ## Requirement → Test → Evidence
 

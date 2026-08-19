@@ -4,14 +4,67 @@ WP-P0-002 is complete to the exact FULL/PARTIAL boundary approved in Design
 v1.2. The technical implementation was independently accepted by the Controller
 on Head `28d50134bbd272dc4cc9335315841a526bb819c5`, tree
 `30de068598341e545782b0bd833da94838ea22c6`, and GitHub tested merge
-`0efda272211f91aecdc7cf614744e9ca4a576677`. Draft PR #10 now carries a bounded
-governance/traceability closure for final independent review. This completion
-does not authorize Ready, merge, production writes, real Marketplace
-connectivity, Secret retrieval or production data.
+`0efda272211f91aecdc7cf614744e9ca4a576677`. The final governance/traceability
+closure was independently approved, Human Owner-authorized and squash-merged
+through PR #10. This completion does not authorize another Work Package,
+production writes, real Marketplace connectivity, Secret retrieval or
+production data.
 
 The deterministic Requirement → Test → Evidence table and one-for-one 16-row
 Work Package acceptance matrix are committed in
 `docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md`.
+
+## Post-merge provenance
+
+The completed protected-merge chain is:
+
+| Evidence | Exact value |
+| --- | --- |
+| Pull Request | `#10 — MERGED / CLOSED / NOT_DRAFT` |
+| Controller merge verdict | `PASS — APPROVE_FOR_HUMAN_MERGE` |
+| Controller approval artifact SHA-256 | `d477bb77846d1c9f3f50de58a6795450327b445853794fc38192ee96d4cd3c9f` |
+| Owner authorization | approved D-17 Ready and squash merge of PR #10 on the exact accepted identity |
+| Approved Base | `3c4f6a6210db377b5471d6014da6afd5bfef6127` |
+| Approved Head | `ce8eb44f2f750d73d7329fb78a17640ef3fc80c1` |
+| Approved Head tree | `6a2db6f565b29847bed6065d2b04d1df800b516b` |
+| Approved tested merge | `fdcbf2bc69a0a80d1b6fb98455e91bf7e6373fef` |
+| Squash merge SHA | `203b509e765959560fdfbd0edbde428ba9c6d763` |
+| Merged main tree | `6a2db6f565b29847bed6065d2b04d1df800b516b` |
+| Squash parent | `3c4f6a6210db377b5471d6014da6afd5bfef6127` |
+| Commit signature | `VERIFIED` |
+| Merge time | `2026-08-19T17:44:16Z` / `2026-08-20 01:44:16 UTC+8` |
+| Tree equality | merged main tree equals approved Head tree |
+| Remote task branch | deleted after merge |
+| Post-merge Controller verdict | `PASS — MERGE_EXECUTION_VERIFIED` |
+| Post-merge Controller artifact SHA-256 | `4e65f0a7fb1c997096c5fd98fb56f42211c546cca323fae5b12d39eaa0c1c8ab` |
+
+All four push workflows ran on squash commit
+`203b509e765959560fdfbd0edbde428ba9c6d763`, attempt 1:
+
+| Workflow | Run | Conclusion |
+| --- | ---: | --- |
+| Backend | [32283328311](https://github.com/Corwin-Code/marketops-platform/actions/runs/32283328311) | SUCCESS |
+| Frontend | [32283328372](https://github.com/Corwin-Code/marketops-platform/actions/runs/32283328372) | SUCCESS |
+| Governance | [32283328293](https://github.com/Corwin-Code/marketops-platform/actions/runs/32283328293) | SUCCESS |
+| Security | [32283328308](https://github.com/Corwin-Code/marketops-platform/actions/runs/32283328308) | SUCCESS |
+
+The push-event `dependency-review` job was `SKIPPED` by design because it
+compares Pull Request commits. The required PR `dependency-review` Gate passed
+on the exact approved Head/tested merge before merge. Java and TypeScript CodeQL
+both passed again on the merged commit.
+
+The merged invariant remains:
+
+```text
+active_work_package: NONE
+active_gate: CONTROLLER_PHASE_0_PLANNING
+authorization: PLANNING_ONLY
+production_write_enabled: false
+WP-P0-003 remains DRAFT
+```
+
+Controller Phase 0 planning is the next lifecycle state. Neither the PR #10
+merge nor this provenance record activates another Work Package.
 
 ## Independently accepted technical snapshot
 
@@ -103,8 +156,12 @@ GET /repos/Corwin-Code/marketops-platform/dependabot/alerts?state=open&per_page=
 
 All 63 PR CodeQL alerts were introduced by the PR and fixed without dismissal or
 suppression: four `java/concatenated-sql-query`, 56 `java/deprecated-call`, and
-three `java/unused-parameter`. The final closure Head will be enumerated again
-after its fresh CI, with exact results recorded in the Draft PR body.
+three `java/unused-parameter`. Native GitHub API enumeration after the squash
+merge again returned PR CodeQL open `0`, repository Code Scanning open `0`,
+Secret Scanning open `0` and Dependabot open `0`. Those counts are native API
+evidence from Codex's execution environment; the Controller connector does not
+expose the alert-listing endpoints, but independently verified the post-merge
+Security workflow and source state.
 
 CycloneDX may emit upstream JSON-schema-library notices for `meta:enum` and
 `deprecated`. SBOM generation, validation and upload succeed; these notices are
@@ -113,17 +170,13 @@ debt, and are not suppressed.
 
 ## Closure evidence boundary
 
-The governance closure changes canonical state, Work Package/backlog status,
-traceability, this evidence, the acceptance matrix, Test Strategy, test display
-identity metadata, and governance validators and sensitivity tests only. It does
-not change Java test behavior or any production source. Its final
-Head/tree/tested merge and fresh workflow links are necessarily recorded in the
-Draft PR body after the closure commit and CI complete; embedding those
-identities in their own commit would be recursive.
-
-The closure must rerun and pass governance, production readiness, all Python
-validator tests, unit-only/full Maven, PostgreSQL 18.4, architecture, coverage,
-frontend, supply-chain and real Chromium Fresh Clone checks before handoff.
+The merged governance closure changed canonical state, Work Package/backlog
+status, traceability, this evidence, the acceptance matrix, Test Strategy, test
+display identity metadata, and governance validators and sensitivity tests only.
+It did not change Java test behavior or any production source. The immutable
+Head, tested merge, squash commit, merged tree and post-merge workflow identities
+are recorded above without claiming the provenance-sync PR's own future merge
+identity.
 
 ## Historical non-gate probe and artifact provenance
 
@@ -137,6 +190,8 @@ provenance only. PostgreSQL 16 is not Gate or substitution evidence.
 | Controller implementation deep review | `5629fbeb7afde7dade2ef5e04bd726c10cd84d604e54a130b52d9b0caf08cc9e` |
 | Codex new-window handoff pack | `6d32589e24bb72f0fe12d86fdf674e85176cff8fd84966e3fde325e02bb9e0c7` |
 | Controller technical re-review of Head `28d50134…` | `483584d177344db3a14ad7093ec3cd89061b2cf1c93a0a538d6cfc6279d0c25f` |
+| Controller merge approval of Head `ce8eb44…` | `d477bb77846d1c9f3f50de58a6795450327b445853794fc38192ee96d4cd3c9f` |
+| Controller post-merge verification | `4e65f0a7fb1c997096c5fd98fb56f42211c546cca323fae5b12d39eaa0c1c8ab` |
 
 No derived repository ZIP or documented deterministic transformation exists in
 the bound inputs, so no derived-package identity is asserted.
@@ -149,7 +204,8 @@ the bound inputs, so no derived-package identity is asserted.
 - OQ-101, OQ-005, OQ-006 and OQ-102 remain open as allocated.
 - WP-P0-003 remains DRAFT; this closure does not activate it.
 - WP-P0-002 technical implementation: project-grade / PASS.
-- WP-P0-002 closure candidate: awaiting final independent review on its new Head.
+- WP-P0-002 governance closure: merged through PR #10 and post-merge verified.
+- Next lifecycle state: Controller Phase 0 planning.
 - Phase 0: not complete.
 - Whole product production readiness: NO.
 - Secret/PII/production inventory/real Marketplace connectivity: none.
