@@ -7,27 +7,38 @@
 | ID | WP-P0-002 |
 | Title | Organization, Store, Warehouse & Credential Metadata |
 | Phase | Sprint 0 / Phase 0 |
-| Status | READY_FOR_DESIGN |
-| Authorization | DESIGN_ONLY |
+| Status | COMPLETED |
+| Historic design verdict | APPROVED_FOR_IMPLEMENTATION |
+| Current execution authorization | CLOSED |
+| Implementation result | VERIFIED |
 | Risk | HIGH |
 | Controller | GPT-5.6 Sol Pro / current ChatGPT Project |
 | Designer / Maker | Claude Cowork / Claude Code |
 | Repository writer | Mac Codex |
 | Final merge authorization | Human Owner |
 | Target branch | `main` |
-| Design artifact | NOT_YET_PRODUCED |
-| Implementation authorization | PROHIBITED |
+| Design artifact | `docs/02-architecture/designs/WP-P0-002-organization-store-warehouse-credential-metadata-design.md` |
+| Approved Design v1.2 SHA-256 | 3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2 |
 
-This record activates a Design Gate only. It does not authorize implementation,
-Marketplace connectivity, credential retrieval, production data or production
-writes.
+The Controller independently accepted the WP-P0-002 technical implementation on
+Head `28d50134bbd272dc4cc9335315841a526bb819c5`. The historic Design verdict
+above remains provenance; current implementation authorization is closed. PR #10
+remains a Draft closure candidate awaiting final Controller re-review and does
+not authorize Marketplace connectivity, credential retrieval, production data,
+Ready, merge or production writes.
+
+Sections 2–13 state the accepted functional contract and its verified completion
+boundary. They are current result documentation, not live Design or
+implementation authorization; the byte-pinned Design v1.2 artifact remains the
+historic approved provenance.
 
 ## 2. Business Outcome
 
-Design a platform-neutral, evolvable and auditable metadata foundation for the
-operating entities and Marketplace access boundaries used by later Connector,
-Raw, PIM, Order, Inventory and Finance Work Packages. The design must give those
-consumers explicit identities and relationships for:
+WP-P0-002 delivers a platform-neutral, evolvable and auditable metadata
+foundation for the operating entities and Marketplace access boundaries used by
+later Connector, Raw, PIM, Order, Inventory and Finance Work Packages. The
+verified implementation gives those consumers explicit identities and
+relationships for:
 
 - Organization and Legal Entity;
 - Marketplace Account and Store;
@@ -37,9 +48,10 @@ consumers explicit identities and relationships for:
 - Endpoint, Capability and verification state;
 - Feature Flag and Capability metadata.
 
-The outcome is a production-grade design and bounded implementation contract. It
-must not imply that a real Ozon or Wildberries connection, Credential or current
-business inventory has been established.
+The completed outcome is a production-grade metadata foundation within the
+approved implementation contract. It does not imply that a real Ozon or
+Wildberries connection, Credential or current business inventory has been
+established.
 
 ## 3. Source Requirements and Planning Inputs
 
@@ -77,12 +89,12 @@ The Controller accepted the following Human Owner planning input for Design:
 - actual production Account, Store and Warehouse inventory remains an
   onboarding/acceptance input.
 
-OQ-101 remains OPEN. These constraints satisfy topology input for Design only;
-they do not close business onboarding or platform evidence.
+OQ-101 remains OPEN. These constraints satisfied topology input for the accepted
+Design; they do not close business onboarding or platform evidence.
 
 ## 4. Ownership and Association Semantics
 
-The generic model must separate ownership from operational service association:
+The accepted model separates ownership from operational service association:
 
 ```text
 Ownership hierarchy:
@@ -98,16 +110,17 @@ Platform-specific cardinality:
 UNKNOWN until verified platform evidence exists
 ```
 
-Design must reject a strict generic tree of
+The accepted model and verified implementation reject a strict generic tree of
 `Organization → Legal Entity → Marketplace Account → Store → Warehouse`.
 Platform extensions may add verified constraints later without narrowing the
 common model through assumptions.
 
 ## 5. Requirement Closure Contract
 
-The statuses below describe the intended closure boundary when WP-P0-002 is
-eventually implemented and accepted. This Design-activation PR does not verify
-any requirement.
+The statuses below record the completed WP-P0-002 closure boundary. `ADM-001` is
+`FULL / VERIFIED`; every `PARTIAL` source requirement has its authorized
+WP-P0-002 subset verified while the whole source requirement remains open under
+the named later owner.
 
 | Requirement | WP-P0-002 closure | Current WP delivers | Current WP does not deliver | Later closure responsibility | Acceptance boundary |
 | --- | --- | --- | --- | --- | --- |
@@ -120,12 +133,17 @@ any requirement.
 | ADM-001 | FULL | Controlled maintenance/query boundary for Organization, Account, Store, Warehouse, timezone and currency metadata | General-purpose unauthenticated public mutation surface | Closed in WP-P0-002 only when the safe maintenance boundary and evidence pass | Maintenance is auditable and fail closed under the current no-auth foundation |
 | ADM-002 | PARTIAL | Feature Flag and Capability metadata with production-write default disabled | Job Schedule, Backfill execution and real platform Capability population | WP-P0-003 owns Job Schedule/Backfill; WP-P0-005/006 own platform evidence | Metadata invariants pass; scheduling and real capabilities remain unverified |
 
-Traceability status remains `PLANNED`. A `PARTIAL` row must not become
-`VERIFIED` merely because WP-P0-002 completes.
+Final traceability uses `VERIFIED` only for the authorized FULL `ADM-001`
+boundary. Each `PARTIAL` source requirement uses the existing `ACTIVE_CONTROL`
+state: its WP-P0-002 subset is verified, while the whole source requirement
+remains open under the later owner named in this table. The exact Requirement →
+Test → Evidence and sixteen-criterion matrices are committed at
+`docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md`.
 
 ## 6. Scope
 
-Design must cover all of the following as one coherent metadata foundation:
+The verified WP-P0-002 scope covers all of the following as one coherent metadata
+foundation:
 
 1. Organization, Legal Entity, Marketplace Account, Store and Warehouse
    identity, native keys, lifecycle and status metadata;
@@ -185,7 +203,8 @@ No Secret, Buyer PII, production payload or guessed platform fact is an input.
 
 ### 8.3 Required failure states
 
-Design must define detection, safe behavior, audit and recovery for at least:
+The verified contract and implementation define detection, safe behavior, audit
+and recovery for at least:
 
 - an invalid cross-Organization relationship;
 - an invalid or unknown authorization scope;
@@ -204,11 +223,11 @@ Unknown and unverified states fail closed; they are not coerced to `false`,
 
 ### 9.1 Maintenance surface must fail closed
 
-The current foundation has no runtime authentication. Claude Design must therefore
-show how ADM-001 maintenance remains local/internal/admin-only and fail closed.
-It must not expose an unauthenticated mutation API usable from a public or
-production network. The Design must describe the current boundary and its future
-runtime IAM integration, but this Planning record does not decide the final API.
+The current foundation has no runtime authentication. ADM-001 maintenance is
+therefore local/internal/admin-only and fails closed unless its explicit
+maintenance switch is present. It exposes no unauthenticated mutation API usable
+from a public or production network. A future authenticated administration API
+requires a separate runtime IAM decision.
 
 ### 9.2 Credential safety
 
@@ -228,14 +247,15 @@ existing foundation schemas are exactly:
 iam / platform / raw / staging / core / ledger / mart / ops
 ```
 
-WP-P0-002 does not authorize a ninth schema. Claude Design must first map
-responsibilities to existing schemas. Any proposed new schema requires explicit
-rationale and Controller Design Review before implementation authorization.
+WP-P0-002 does not authorize a ninth schema. The accepted Design and verified
+implementation map responsibilities to the existing schemas. Any proposed new
+schema requires explicit rationale and Controller Design Review before
+implementation authorization.
 
 ## 10. Acceptance Criteria
 
-WP-P0-002 may be accepted only when the approved implementation and evidence
-satisfy every applicable criterion:
+WP-P0-002 was technically accepted only after the approved implementation and
+evidence satisfied every applicable criterion:
 
 1. cardinalities remain configurable and no platform-independent 1:1 assumption
    is encoded;
@@ -264,7 +284,7 @@ satisfy every applicable criterion:
 
 ## 11. Migration, Rollback and Observability Expectations
 
-Claude Design must specify:
+The accepted Design and verified implementation provide:
 
 - additive Flyway migrations only; `V0001` is immutable;
 - object-level least privilege and no blanket or default grants;
@@ -278,7 +298,7 @@ Claude Design must specify:
 
 ## 12. Design Deliverables and Required Evidence
 
-Claude must return a standalone Design artifact containing:
+The approved standalone Design artifact contains:
 
 - verified technology/platform facts with primary sources and verification date;
 - proposed module, package, data, API and maintenance-surface changes;
@@ -291,8 +311,10 @@ Claude must return a standalone Design artifact containing:
 - deterministic test matrix mapped to Requirement IDs and acceptance criteria;
 - assumptions, unresolved Unknowns and Decision Requests.
 
-The Design must not include implementation commits. After Design return, the
-independent Controller reviews the actual artifact under the Design Gate.
+The byte-pinned Design artifact contains no implementation commits. The
+independent Controller reviewed that exact artifact under the Design Gate before
+implementation authorization, and later accepted the technical implementation
+on Head `28d50134bbd272dc4cc9335315841a526bb819c5`.
 
 ## 13. Risks and Constraints
 
@@ -309,26 +331,30 @@ independent Controller reviews the actual artifact under the Design Gate.
 
 ## 14. Controller Gate
 
-Current state:
+Current completed-state distinction:
 
 ```text
-Status: READY_FOR_DESIGN
-Authorization: DESIGN_ONLY
-Next authorized actor: Claude Designer / Maker
-Next authorized action: Produce the WP-P0-002 Design artifact
-Implementation: PROHIBITED until APPROVED_FOR_IMPLEMENTATION
+Status: COMPLETED
+Historic design verdict: APPROVED_FOR_IMPLEMENTATION
+Current execution authorization: CLOSED
+Implementation result: VERIFIED
+Approved design SHA-256: 3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2
+Technical implementation review: PASS on Head 28d50134bbd272dc4cc9335315841a526bb819c5
+PR closure candidate: AWAITING_FINAL_CONTROLLER_RE_REVIEW
+Ready: NOT_AUTHORIZED
+Merge: NOT_AUTHORIZED
 Production writes: DISABLED
 ```
 
-The future Controller Design verdict must be exactly one of:
+Historic implementation precondition:
 
 ```text
-APPROVED_FOR_IMPLEMENTATION
-CHANGES_REQUIRED
-BLOCKED_BY_OWNER_DECISION
-BLOCKED_BY_EXTERNAL_CAPABILITY
+Implementation: PROHIBITED until APPROVED_FOR_IMPLEMENTATION
 ```
 
-Only `APPROVED_FOR_IMPLEMENTATION` on an exact Design artifact can authorize a
-later implementation task. Nothing in this Work Package authorizes Ready, merge,
-Marketplace connection, credential retrieval or production writes.
+That precondition was satisfied by the exact Design v1.2 verdict and is retained
+only as historic provenance; it is not live authorization. The technical
+implementation has been accepted, but the Draft PR closure still requires an
+independent `APPROVE_FOR_HUMAN_MERGE` verdict on its final Head/tested merge and
+separate Human Owner authorization. No real Ozon/Wildberries fact, credential,
+production inventory, Marketplace connection or production write is claimed.

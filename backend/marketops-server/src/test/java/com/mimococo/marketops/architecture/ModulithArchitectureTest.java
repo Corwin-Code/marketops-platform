@@ -59,6 +59,7 @@ class ModulithArchitectureTest {
                 .sorted()
                 .toList();
 
-        assertThat(detected).containsExactly("adminobservability", "shared");
+        assertThat(detected).containsExactly("adminobservability", "identityaccess",
+                "marketplaceintegration", "organizationaccount", "shared");
     }
 }

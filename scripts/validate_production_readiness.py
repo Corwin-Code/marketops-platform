@@ -75,7 +75,7 @@ HISTORICAL_DOC_ROOTS = (
 )
 
 SOURCE_SUFFIXES = {".java", ".ts", ".tsx", ".js", ".mjs", ".py", ".sh", ".sql", ".yml", ".yaml"}
-COMMENT_SUFFIXES = {".java", ".ts", ".tsx", ".js", ".mjs"}
+COMMENT_SUFFIXES = {".java", ".ts", ".tsx", ".js", ".mjs", ".sql"}
 
 SKIP_DIR_NAMES = {
     ".git", "node_modules", "target", "dist", "coverage", ".vite",
@@ -92,14 +92,48 @@ SKIP_DIR_NAMES = {
 # reviewers to ignore the result.
 UNRESOLVED_MARKERS = re.compile(r"""(?<![`'"\w])(?:TODO|FIXME|HACK|XXX)(?![`'"\w])""")
 
+# The approved migration set. A migration appears here in the same change that
+# adds the file; an unlisted migration file fails the check in both directions.
+APPROVED_MIGRATIONS = (
+    "V0001__create_foundation_schemas.sql",
+    "V0002__enable_btree_gist_extension.sql",
+    "V0003__create_metadata_audit_event.sql",
+    "V0004__create_core_organization_metadata.sql",
+    "V0005__create_iam_access_metadata.sql",
+    "V0006__create_platform_registry_metadata.sql",
+)
+
+# An applied migration is immutable. The pin covers the earliest migration,
+# which every environment has applied; editing it in place would desynchronise
+# Flyway history from the repository.
+FOUNDATION_MIGRATION_SHA256 = (
+    "7c7f34ba3a3746883e236a5a4e6eb0efc87e58e3b33f895d7f1d71c369d0eb0d"
+)
+
+# Metadata migrations create structure and seed reference rows. No migration in
+# this stage may destroy schemas, tables or rows.
+DESTRUCTIVE_MIGRATION_STATEMENT = re.compile(
+    r"^\s*(?:DROP\s+(?:SCHEMA|TABLE|INDEX|ROLE)|TRUNCATE\b|DELETE\s+FROM)",
+    re.IGNORECASE,
+)
+
 # The files that define these rules necessarily contain every pattern the rules
-# search for. They are the rule definition, not a subject of it. This is the only
-# exclusion in this validator: it is an exact path list, it is asserted by a test
-# so it cannot be widened silently, and every other file in the repository —
-# including all documentation — is scanned.
+# search for. They are the rule definition, not a subject of it. Both exclusion
+# lists in this validator are exact path lists asserted by tests so they cannot
+# widen silently; every other file in the repository — including all
+# documentation — is scanned.
 RULE_DEFINITION_PATHS = (
     "scripts/validate_production_readiness.py",
     "tests/test_validate_production_readiness.py",
+)
+
+# Controller-approved design artifacts pinned byte-exact by SHA-256 in
+# validate_governance.py. Their integrity contract is the hash: any edit —
+# including one that would satisfy a content scan — breaks the approval pin,
+# so the content scans do not apply to them.
+HASH_PINNED_DOC_PATHS = (
+    "docs/02-architecture/designs/"
+    "WP-P0-002-organization-store-warehouse-credential-metadata-design.md",
 )
 
 # Retired designs. Each entry states what must not reappear and why.
@@ -147,6 +181,19 @@ FORBIDDEN_BACKEND_DEPENDENCIES = (
 
 HISTORY_COMMENT_PATTERNS = (
     (re.compile(r"\bWP-P0-00\d\b"), "work package narration"),
+    (re.compile(r"\bwork packages?\b", re.I), "work package narration"),
+    (
+        re.compile(r"\b(?:in|at|during) (?:this|the) (?:stage|phase)\b", re.I),
+        "project-stage narration",
+    ),
+    (
+        re.compile(
+            r"\bfuture (?:[a-z0-9-]+ ){0,2}"
+            r"(?:capability|implementation|migration|runtime|stage|phase)\b",
+            re.I,
+        ),
+        "future implementation narration",
+    ),
     (re.compile(r"(?<![A-Za-z0-9])C(?:[1-9]|10)\b(?=[^A-Za-z0-9]*(?:commit|stage|step|later|phase))", re.I), "commit-stage narration"),
     (re.compile(r"\bv1\.[0-3]\b"), "review-revision narration"),
     (re.compile(r"\bremove (?:this )?(?:in a )?(?:future|later)\b", re.I), "future cleanup instruction"),
@@ -287,7 +334,7 @@ BUILT_PREVIEW_COMMAND = (
 )
 
 BACKLOG_HEADER = ("ID", "Title", "Status", "Dependencies", "Core source requirements")
-BACKLOG_ALLOWED_STATES = {"DRAFT", "READY_FOR_DESIGN", "COMPLETED"}
+BACKLOG_ALLOWED_STATES = {"DRAFT", "READY_FOR_DESIGN", "IMPLEMENTING", "COMPLETED"}
 SOURCE_HEAD_ENVIRONMENT_VARIABLE = "MARKETOPS_SOURCE_HEAD_SHA"
 SOURCE_HEAD_EXPRESSION = "${{ github.event.pull_request.head.sha || github.sha }}"
 
@@ -756,7 +803,7 @@ def check_repository_contracts(report: Report) -> None:
             'policy.setAllowedMethods(List.of("GET", "OPTIONS"))',
             'policy.setAllowedHeaders(List.of("Accept", CorrelationId.HEADER_NAME))',
             "policy.setAllowCredentials(false)",
-            'source.registerCorsConfiguration("/api/**", policy)',
+            'source.registerCorsConfiguration("/api/v1/meta/**", policy)',
         ),
     )
     base_configuration = read_text(ROOT / BACKEND / "src/main/resources/application.yaml") or ""
@@ -1068,6 +1115,11 @@ def comment_lines(text: str, suffix: str) -> list[tuple[int, str]]:
         if line.startswith("//"):
             results.append((number, line))
             continue
+        if suffix == ".sql" and "--" in line:
+            index = line.find("--")
+            if line.count("'", 0, index) % 2 == 0:
+                results.append((number, line[index:]))
+            continue
         if "//" in line and suffix in COMMENT_SUFFIXES:
             index = line.find("//")
             if line.count('"', 0, index) % 2 == 0:
@@ -1103,6 +1155,8 @@ def check_compromise_retirement(report: Report, files: list[Path]) -> None:
             str(path.relative_to(ROOT)) == doc or str(path.relative_to(ROOT)).startswith(doc + "/")
             for doc in CANONICAL_DOC_PATHS
         )
+        if str(path.relative_to(ROOT)) in HASH_PINNED_DOC_PATHS:
+            continue
 
         if is_production or is_test or is_canonical_doc:
             for number, line in enumerate(text.splitlines(), start=1):
@@ -1138,18 +1192,40 @@ def check_compromise_retirement(report: Report, files: list[Path]) -> None:
     migrations = ROOT / BACKEND / "src/main/resources/db/migration"
     if migrations.exists():
         versioned = sorted(p.name for p in migrations.glob("V*.sql"))
-        if versioned != ["V0001__create_foundation_schemas.sql"]:
+        if versioned != sorted(APPROVED_MIGRATIONS):
             report.add(
                 rule, "db/migration", 0,
-                f"the foundation defines exactly one migration; found {versioned}",
+                f"the approved migration set is {sorted(APPROVED_MIGRATIONS)}; found {versioned}",
             )
+        foundation = migrations / "V0001__create_foundation_schemas.sql"
+        foundation_text = read_text(foundation)
+        if foundation_text is None:
+            report.add(rule, foundation, 0, "the foundation migration must exist")
+        else:
+            digest = hashlib.sha256(foundation_text.encode("utf-8")).hexdigest()
+            if digest != FOUNDATION_MIGRATION_SHA256:
+                report.add(
+                    rule, foundation, 0,
+                    "the applied foundation migration is immutable; "
+                    f"expected sha256 {FOUNDATION_MIGRATION_SHA256}, found {digest}",
+                )
         for path in migrations.glob("*.sql"):
             text = read_text(path) or ""
-            if "IF NOT EXISTS" in text.upper():
+            upper = text.upper()
+            if "IF NOT EXISTS" in upper:
                 report.add(
                     rule, path, 0,
-                    "foundation schema creation is strict and must not tolerate an existing schema",
+                    "schema creation is strict and must not tolerate an existing object",
                 )
+            for number, line in enumerate(text.splitlines(), start=1):
+                stripped = line.strip().upper()
+                if stripped.startswith("--"):
+                    continue
+                if DESTRUCTIVE_MIGRATION_STATEMENT.search(line):
+                    report.add(
+                        rule, path, number,
+                        f"destructive statement in a metadata migration: {line.strip()[:80]}",
+                    )
 
     check_repository_contracts(report)
 

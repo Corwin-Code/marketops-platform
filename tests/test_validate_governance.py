@@ -7,9 +7,13 @@ from tempfile import TemporaryDirectory
 
 from scripts.validate_governance import (
     CANONICAL_DESIGN_RELATIVE_PATH,
+    HISTORIC_CONTRACT_BEGIN,
+    HISTORIC_CONTRACT_END,
     WP_P0_002_ID,
+    WP_P0_002_DESIGN_RELATIVE_PATH,
     WP_P0_002_RELATIVE_PATH,
     git_scan_paths,
+    java_test_identity_inventory,
     validate_active_work_package_record_text,
     validate_backlog_state_text,
     validate_approved_design_state_text,
@@ -21,7 +25,10 @@ from scripts.validate_governance import (
     validate_parallel_current_state_paths,
     validate_prior_closed_transition_text,
     validate_readme_runtime_state_text,
+    validate_wp_p0_002_completion_text,
+    validate_wp_p0_002_test_identity_contract,
     validate_wp_p0_002_traceability_text,
+    wp_p0_002_acceptance_rows,
 )
 
 
@@ -433,9 +440,40 @@ class AuthorizationStateTests(unittest.TestCase):
         self.assert_valid("DESIGN_ONLY", "DESIGN_ONLY")
 
     def test_approved_for_implementation_pair_is_valid(self) -> None:
-        self.assert_valid(
-            "APPROVED_FOR_IMPLEMENTATION",
-            "APPROVED_FOR_IMPLEMENTATION",
+        errors: list[str] = []
+        validate_authorization_state_text(
+            errors,
+            authorization_current_state("APPROVED_FOR_IMPLEMENTATION").replace(
+                "active_gate: READY_FOR_DESIGN", "active_gate: IMPLEMENTING"
+            ),
+            authorization_work_package(
+                "APPROVED_FOR_IMPLEMENTATION", status="IMPLEMENTING"
+            ),
+        )
+        self.assertEqual([], errors)
+
+    def test_implementation_stage_requires_the_implementing_gate(self) -> None:
+        errors: list[str] = []
+        validate_authorization_state_text(
+            errors,
+            authorization_current_state("APPROVED_FOR_IMPLEMENTATION"),
+            authorization_work_package(
+                "APPROVED_FOR_IMPLEMENTATION", status="IMPLEMENTING"
+            ),
+        )
+        self.assertTrue(any("active_gate: IMPLEMENTING" in error for error in errors))
+
+    def test_implementation_stage_requires_the_implementing_status(self) -> None:
+        errors: list[str] = []
+        validate_authorization_state_text(
+            errors,
+            authorization_current_state("APPROVED_FOR_IMPLEMENTATION").replace(
+                "active_gate: READY_FOR_DESIGN", "active_gate: IMPLEMENTING"
+            ),
+            authorization_work_package("APPROVED_FOR_IMPLEMENTATION"),
+        )
+        self.assertTrue(
+            any("Status must be: IMPLEMENTING" in error for error in errors)
         )
 
     def test_mismatched_pair_is_rejected(self) -> None:
@@ -1011,6 +1049,54 @@ class ActiveDesignBacklogTests(unittest.TestCase):
         errors = self.validate(active_wp=active_design_work_package(status="DRAFT"))
         self.assertTrue(any("active Work Package Status" in error for error in errors))
 
+    def test_active_implementation_backlog_transition_is_valid(self) -> None:
+        errors = self.validate(
+            current=active_design_current_state(
+                active_gate="IMPLEMENTING",
+                authorization="APPROVED_FOR_IMPLEMENTATION",
+            ),
+            backlog=phase_zero_backlog(wp_p0_002_status="IMPLEMENTING"),
+            active_wp=active_design_work_package(
+                status="IMPLEMENTING",
+                authorization="APPROVED_FOR_IMPLEMENTATION",
+            ),
+        )
+        self.assertEqual([], errors)
+
+    def test_implementing_state_rejects_a_ready_for_design_row(self) -> None:
+        errors = self.validate(
+            current=active_design_current_state(
+                active_gate="IMPLEMENTING",
+                authorization="APPROVED_FOR_IMPLEMENTATION",
+            ),
+            backlog=phase_zero_backlog(
+                wp_p0_002_status="IMPLEMENTING", extra_ready=True
+            ),
+            active_wp=active_design_work_package(
+                status="IMPLEMENTING",
+                authorization="APPROVED_FOR_IMPLEMENTATION",
+            ),
+        )
+        self.assertTrue(
+            any("cannot retain a READY_FOR_DESIGN" in error for error in errors)
+        )
+
+    def test_implementing_stage_requires_an_implementing_backlog_row(self) -> None:
+        errors = self.validate(
+            current=active_design_current_state(
+                active_gate="IMPLEMENTING",
+                authorization="APPROVED_FOR_IMPLEMENTATION",
+            ),
+            backlog=phase_zero_backlog(wp_p0_002_status="READY_FOR_DESIGN"),
+            active_wp=active_design_work_package(
+                status="IMPLEMENTING",
+                authorization="APPROVED_FOR_IMPLEMENTATION",
+            ),
+        )
+        self.assertTrue(
+            any("Status must be exactly: IMPLEMENTING" in error for error in errors)
+        )
+
     def test_closed_state_rejects_ready_for_design_row(self) -> None:
         errors: list[str] = []
         validate_backlog_state_text(
@@ -1221,7 +1307,7 @@ class ControllerReviewStandardTests(unittest.TestCase):
         self.assertTrue(any("do not load" in error for error in errors))
 
 
-def wp_p0_002_traceability() -> str:
+def wp_p0_002_traceability(*, completed: bool = False) -> str:
     base = completed_traceability().rstrip("\n")
     rows = [
         ("IAM-001", "WP-P0-002", "PARTIAL in WP-P0-002; runtime IAM"),
@@ -1241,11 +1327,29 @@ def wp_p0_002_traceability() -> str:
             "PARTIAL in WP-P0-002; WP-P0-003",
         ),
     ]
-    additions = [
-        f'{source_id},Requirement,0,title,{work_packages},'
-        f'{WP_P0_002_RELATIVE_PATH},,,,PLANNED,"{notes}"'
-        for source_id, work_packages, notes in rows
-    ]
+    completed_notes = {
+        "IAM-001": "PARTIAL in WP-P0-002; runtime IAM; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+        "IAM-004": "PARTIAL in WP-P0-002; runtime IAM; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+        "IAM-006": "PARTIAL in WP-P0-002; runtime integration; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+        "IAM-007": "PARTIAL in WP-P0-002; runtime IAM; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+        "INT-002": "PARTIAL in WP-P0-002; WP-P0-005/006; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+        "INT-003": "PARTIAL in WP-P0-002; OQ-006; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+        "ADM-001": "FULL closure in WP-P0-002; fail-closed; WP-P0-002 VERIFIED",
+        "ADM-002": "PARTIAL in WP-P0-002; WP-P0-003; WP-P0-002 subset VERIFIED; whole source requirement remains OPEN",
+    }
+    additions = []
+    for source_id, work_packages, notes in rows:
+        status = "VERIFIED" if completed and source_id == "ADM-001" else "ACTIVE_CONTROL" if completed else "PLANNED"
+        evidence = (
+            "docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md"
+            if completed
+            else "evidence"
+        )
+        final_notes = completed_notes[source_id] if completed else notes
+        additions.append(
+            f'{source_id},Requirement,0,title,{work_packages},'
+            f'{WP_P0_002_DESIGN_RELATIVE_PATH},module,test-case,{evidence},{status},"{final_notes}"'
+        )
     return base + "\n" + "\n".join(additions) + "\n"
 
 
@@ -1260,11 +1364,19 @@ class WpP0002TraceabilityTests(unittest.TestCase):
 
     def test_partial_requirement_cannot_be_preverified(self) -> None:
         text = wp_p0_002_traceability().replace(
-            f"{WP_P0_002_RELATIVE_PATH},,,,PLANNED,\"PARTIAL in WP-P0-002; OQ-006\"",
-            f"{WP_P0_002_RELATIVE_PATH},,,,VERIFIED,\"PARTIAL in WP-P0-002; OQ-006\"",
+            "evidence,PLANNED,\"PARTIAL in WP-P0-002; OQ-006\"",
+            "evidence,VERIFIED,\"PARTIAL in WP-P0-002; OQ-006\"",
         )
         errors = self.validate(text)
         self.assertTrue(any("must remain PLANNED" in error for error in errors))
+
+    def test_unfilled_implementation_columns_are_rejected(self) -> None:
+        text = wp_p0_002_traceability().replace(
+            "module,test-case,evidence,PLANNED,\"PARTIAL in WP-P0-002; OQ-006\"",
+            "module,,evidence,PLANNED,\"PARTIAL in WP-P0-002; OQ-006\"",
+        )
+        errors = self.validate(text)
+        self.assertTrue(any("missing test_case" in error for error in errors))
 
     def test_missing_later_closure_disposition_is_rejected(self) -> None:
         text = wp_p0_002_traceability().replace(
@@ -1281,6 +1393,529 @@ class WpP0002TraceabilityTests(unittest.TestCase):
         )
         errors = self.validate(text)
         self.assertTrue(any("ADM-002 work_package" in error for error in errors))
+
+    def test_completed_partial_and_full_contract_is_valid(self) -> None:
+        errors: list[str] = []
+        validate_wp_p0_002_traceability_text(
+            errors, wp_p0_002_traceability(completed=True), completed=True
+        )
+        self.assertEqual([], errors)
+
+    def test_partial_requirement_cannot_be_fully_verified_after_completion(self) -> None:
+        text = wp_p0_002_traceability(completed=True).replace(
+            "evidence/WP-P0-002/acceptance-criteria.md,ACTIVE_CONTROL,\"PARTIAL in WP-P0-002; OQ-006",
+            "evidence/WP-P0-002/acceptance-criteria.md,VERIFIED,\"PARTIAL in WP-P0-002; OQ-006",
+        )
+        errors: list[str] = []
+        validate_wp_p0_002_traceability_text(errors, text, completed=True)
+        self.assertTrue(any("not fully VERIFIED" in error for error in errors))
+
+    def test_adm001_full_closure_must_be_verified(self) -> None:
+        text = wp_p0_002_traceability(completed=True).replace(
+            "acceptance-criteria.md,VERIFIED,\"FULL closure in WP-P0-002",
+            "acceptance-criteria.md,ACTIVE_CONTROL,\"FULL closure in WP-P0-002",
+        )
+        errors: list[str] = []
+        validate_wp_p0_002_traceability_text(errors, text, completed=True)
+        self.assertTrue(any("ADM-001 status must be exactly: VERIFIED" in error for error in errors))
+
+
+def wp_p0_002_closure_current_state() -> str:
+    return """# Current State
+
+```yaml
+active_work_package: NONE
+active_gate: CONTROLLER_PHASE_0_PLANNING
+authorization: PLANNING_ONLY
+production_write_enabled: false
+owner_git_workflow_guidance: REQUIRED
+owner_git_workflow_guidance_exit: HUMAN_OWNER_EXPLICIT_CONFIRMATION
+owner_git_execution_delegation: ACTIVE
+owner_git_execution_delegate: CODEX
+owner_git_execution_delegation_scope: PR_READY_AND_MERGE_AFTER_ALL_GATES
+owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
+```
+
+## Active objective
+
+Controller performs the final closure review before Controller Phase 0 planning.
+
+## Next authorized action
+
+Controller completes final review, then returns the project to Controller Phase 0 planning.
+
+OQ-101 OQ-005 OQ-006 OQ-102 remain open.
+"""
+
+
+def wp_p0_002_completed_work_package() -> str:
+    return f"""# WP-P0-002
+
+## 1. Metadata
+
+| Field | Value |
+| --- | --- |
+| ID | WP-P0-002 |
+| Status | COMPLETED |
+| Historic design verdict | APPROVED_FOR_IMPLEMENTATION |
+| Current execution authorization | CLOSED |
+| Implementation result | VERIFIED |
+| Design artifact | `{WP_P0_002_DESIGN_RELATIVE_PATH}` |
+| Approved Design v1.2 SHA-256 | 3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2 |
+"""
+
+
+def wp_p0_002_closure_backlog(wp_status: str = "COMPLETED", wp3_status: str = "DRAFT") -> str:
+    return f"""# Phase 0 Work Package Backlog
+
+| ID | Title | Status | Dependencies | Core source requirements |
+| --- | --- | --- | --- | --- |
+| WP-P0-001 | Foundation | COMPLETED | None | D-03 |
+| WP-P0-002 | Metadata | {wp_status} | WP-P0-001 | IAM-001 |
+| WP-P0-003 | Ingestion | {wp3_status} | WP-P0-001/002 | INT-001 |
+"""
+
+
+def wp_p0_002_closure_evidence(extra: str = "") -> str:
+    return """# Evidence
+
+docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md
+OQ-101 OQ-005 OQ-006 OQ-102 remain open.
+""" + extra
+
+
+def wp_p0_002_acceptance_evidence(count: int = 16) -> str:
+    header = (
+        "| Criterion | Criterion text | Closure status | Production location | "
+        "Exact tests | Exact evidence | Remaining boundary |\n"
+        "| --- | --- | --- | --- | --- | --- | --- |\n"
+    )
+    rows = "".join(
+        f"| {number} | criterion {number} | VERIFIED | production | test | evidence | boundary |\n"
+        for number in range(1, count + 1)
+    )
+    return header + rows
+
+
+IDENTITY_TEST_PATH = (
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/ExampleApiIT.java"
+)
+
+
+def identity_java_source(*definitions: tuple[str, str]) -> str:
+    methods = "\n".join(
+        f'    @DisplayName("{test_id} {method}")\n'
+        f"    void {method}() {{}}"
+        for test_id, method in definitions
+    )
+    return f"class ExampleApiIT {{\n{methods}\n}}\n"
+
+
+def identity_traceability(*test_ids: str) -> str:
+    return (
+        "source_id,source_type,phase,title,work_package,design_record,"
+        "code_location,test_case,evidence,status,notes\n"
+        "IAM-001,Requirement,0,title,WP-P0-002,design,code,"
+        + ";".join(test_ids)
+        + ",evidence,ACTIVE_CONTROL,notes\n"
+    )
+
+
+def identity_acceptance(*bindings: tuple[str, str, str]) -> str:
+    references = "<br>".join(
+        f"`{relative}#{method}` (`{test_id}`)"
+        for relative, method, test_id in bindings
+    )
+    return (
+        "| Criterion | Criterion text | Closure status | Production location | "
+        "Exact tests | Exact evidence | Remaining boundary |\n"
+        "| --- | --- | --- | --- | --- | --- | --- |\n"
+        f"| 1 | criterion | VERIFIED | production | {references} | evidence | boundary |\n"
+    )
+
+
+def identity_strategy(*test_ids: str) -> str:
+    return "| " + ", ".join(test_ids) + " | coverage | suite |\n"
+
+
+class WpP0002TestIdentityContractTests(unittest.TestCase):
+    def validate(
+        self,
+        *,
+        sources: dict[str, str],
+        trace_ids: tuple[str, ...],
+        bindings: tuple[tuple[str, str, str], ...],
+        strategy_ids: tuple[str, ...],
+    ) -> list[str]:
+        errors: list[str] = []
+        validate_wp_p0_002_test_identity_contract(
+            errors,
+            identity_traceability(*trace_ids),
+            identity_acceptance(*bindings),
+            identity_strategy(*strategy_ids),
+            sources,
+        )
+        return errors
+
+    def test_duplicate_tc_api_080_is_rejected(self) -> None:
+        errors = self.validate(
+            sources={
+                IDENTITY_TEST_PATH: identity_java_source(
+                    ("TC-API-080", "first"), ("TC-API-080", "second")
+                )
+            },
+            trace_ids=("TC-API-080",),
+            bindings=((IDENTITY_TEST_PATH, "first", "TC-API-080"),),
+            strategy_ids=("TC-API-080",),
+        )
+        self.assertTrue(
+            any("duplicate Java test ID TC-API-080" in error for error in errors)
+        )
+
+    def test_duplicate_tc_api_081_is_rejected(self) -> None:
+        errors = self.validate(
+            sources={
+                IDENTITY_TEST_PATH: identity_java_source(
+                    ("TC-API-081", "first"), ("TC-API-081", "second")
+                )
+            },
+            trace_ids=("TC-API-081",),
+            bindings=((IDENTITY_TEST_PATH, "first", "TC-API-081"),),
+            strategy_ids=("TC-API-081",),
+        )
+        self.assertTrue(
+            any("duplicate Java test ID TC-API-081" in error for error in errors)
+        )
+
+    def test_acceptance_method_with_another_methods_id_is_rejected(self) -> None:
+        errors = self.validate(
+            sources={
+                IDENTITY_TEST_PATH: identity_java_source(
+                    ("TC-API-080", "first"), ("TC-API-081", "second")
+                )
+            },
+            trace_ids=("TC-API-080", "TC-API-081"),
+            bindings=((IDENTITY_TEST_PATH, "first", "TC-API-081"),),
+            strategy_ids=("TC-API-080", "TC-API-081"),
+        )
+        self.assertTrue(
+            any("belongs to" in error and "not" in error for error in errors)
+        )
+
+    def test_acceptance_id_without_exact_method_binding_is_rejected(self) -> None:
+        sources = {
+            IDENTITY_TEST_PATH: identity_java_source(
+                ("TC-API-080", "first"), ("TC-API-081", "second")
+            )
+        }
+        acceptance = identity_acceptance(
+            (IDENTITY_TEST_PATH, "first", "TC-API-080")
+        ).replace(
+            " | evidence | boundary |",
+            "<br>`TC-API-081` | evidence | boundary |",
+        )
+        errors: list[str] = []
+        validate_wp_p0_002_test_identity_contract(
+            errors,
+            identity_traceability("TC-API-080", "TC-API-081"),
+            acceptance,
+            identity_strategy("TC-API-080", "TC-API-081"),
+            sources,
+        )
+        self.assertTrue(any("not bound exactly once" in error for error in errors))
+
+    def test_traceability_missing_id_is_rejected(self) -> None:
+        errors = self.validate(
+            sources={
+                IDENTITY_TEST_PATH: identity_java_source(("TC-API-080", "first"))
+            },
+            trace_ids=("TC-API-081",),
+            bindings=((IDENTITY_TEST_PATH, "first", "TC-API-080"),),
+            strategy_ids=("TC-API-080",),
+        )
+        self.assertTrue(
+            any("cites missing test ID: TC-API-081" in error for error in errors)
+        )
+
+    def test_traceability_duplicated_id_is_rejected(self) -> None:
+        errors = self.validate(
+            sources={
+                IDENTITY_TEST_PATH: identity_java_source(
+                    ("TC-API-082", "first"), ("TC-API-082", "second")
+                )
+            },
+            trace_ids=("TC-API-082",),
+            bindings=((IDENTITY_TEST_PATH, "first", "TC-API-082"),),
+            strategy_ids=("TC-API-082",),
+        )
+        self.assertTrue(
+            any("cites ambiguous test ID: TC-API-082" in error for error in errors)
+        )
+
+    def test_unique_correctly_bound_ids_pass(self) -> None:
+        errors = self.validate(
+            sources={
+                IDENTITY_TEST_PATH: identity_java_source(
+                    ("TC-API-080", "first"), ("TC-API-081", "second")
+                )
+            },
+            trace_ids=("TC-API-080", "TC-API-081"),
+            bindings=(
+                (IDENTITY_TEST_PATH, "first", "TC-API-080"),
+                (IDENTITY_TEST_PATH, "second", "TC-API-081"),
+            ),
+            strategy_ids=("TC-API-080", "TC-API-081"),
+        )
+        self.assertEqual([], errors)
+
+    def test_test_strategy_omission_is_rejected(self) -> None:
+        errors = self.validate(
+            sources={
+                IDENTITY_TEST_PATH: identity_java_source(
+                    ("TC-API-080", "first"), ("TC-API-081", "second")
+                )
+            },
+            trace_ids=("TC-API-080", "TC-API-081"),
+            bindings=(
+                (IDENTITY_TEST_PATH, "first", "TC-API-080"),
+                (IDENTITY_TEST_PATH, "second", "TC-API-081"),
+            ),
+            strategy_ids=("TC-API-080",),
+        )
+        self.assertTrue(any("omits implemented" in error for error in errors))
+
+    def test_inventory_records_nested_group_and_occurrence_count(self) -> None:
+        source = (
+            'class ExampleApiIT {\n'
+            '    @DisplayName("TC-SEC-201 codes")\n'
+            '    class Codes {}\n'
+            '}\n'
+        )
+        inventory, errors = java_test_identity_inventory(
+            {IDENTITY_TEST_PATH: source}
+        )
+        self.assertEqual([], errors)
+        self.assertEqual("nested_group", inventory[0].member_kind)
+        self.assertEqual("Codes", inventory[0].member)
+        self.assertEqual(1, inventory[0].occurrence_count)
+
+
+class WpP0002ClosureStateTests(unittest.TestCase):
+    def validate(
+        self,
+        *,
+        current: str | None = None,
+        work_package: str | None = None,
+        backlog: str | None = None,
+        traceability: str | None = None,
+        evidence: str | None = None,
+        acceptance: str | None = None,
+    ) -> list[str]:
+        errors: list[str] = []
+        validate_wp_p0_002_completion_text(
+            errors,
+            current or wp_p0_002_closure_current_state(),
+            work_package or wp_p0_002_completed_work_package(),
+            backlog or wp_p0_002_closure_backlog(),
+            traceability or wp_p0_002_traceability(completed=True),
+            evidence or wp_p0_002_closure_evidence(),
+            acceptance or wp_p0_002_acceptance_evidence(),
+        )
+        return errors
+
+    def test_complete_closure_state_is_valid(self) -> None:
+        self.assertEqual([], self.validate())
+        self.assertEqual(
+            [str(number) for number in range(1, 17)],
+            [
+                row["Criterion"]
+                for row in wp_p0_002_acceptance_rows(
+                    wp_p0_002_acceptance_evidence()
+                ) or []
+            ],
+        )
+
+    def test_completed_work_package_cannot_remain_active(self) -> None:
+        current = wp_p0_002_closure_current_state().replace(
+            "active_work_package: NONE", "active_work_package: WP-P0-002"
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("cannot remain the active" in error for error in errors))
+
+    def test_closed_planning_rejects_implementing_backlog(self) -> None:
+        errors = self.validate(backlog=wp_p0_002_closure_backlog("IMPLEMENTING"))
+        self.assertTrue(any("closed planning state" in error for error in errors))
+
+    def test_completed_backlog_rejects_implementing_work_package(self) -> None:
+        work_package = wp_p0_002_completed_work_package().replace(
+            "| Status | COMPLETED |", "| Status | IMPLEMENTING |"
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("requires the Work Package Status COMPLETED" in error for error in errors))
+
+    def test_closed_authorization_is_required(self) -> None:
+        work_package = wp_p0_002_completed_work_package().replace(
+            "| Current execution authorization | CLOSED |",
+            "| Current execution authorization | APPROVED_FOR_IMPLEMENTATION |",
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("authorization must be CLOSED" in error for error in errors))
+
+    def test_verified_result_is_required(self) -> None:
+        work_package = wp_p0_002_completed_work_package().replace(
+            "| Implementation result | VERIFIED |",
+            "| Implementation result | PENDING |",
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("Implementation result" in error for error in errors))
+
+    def test_historic_design_identity_is_required(self) -> None:
+        work_package = wp_p0_002_completed_work_package().replace(
+            "3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2",
+            "0" * 64,
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("Approved Design v1.2 SHA-256" in error for error in errors))
+
+    def test_missing_acceptance_row_is_rejected(self) -> None:
+        errors = self.validate(acceptance=wp_p0_002_acceptance_evidence(15))
+        self.assertTrue(any("criteria 1 through 16" in error for error in errors))
+
+    def test_nonverified_acceptance_row_is_rejected(self) -> None:
+        acceptance = wp_p0_002_acceptance_evidence().replace(
+            "| 8 | criterion 8 | VERIFIED |",
+            "| 8 | criterion 8 | PLANNED |",
+        )
+        errors = self.validate(acceptance=acceptance)
+        self.assertTrue(any("criterion 8 must be VERIFIED" in error for error in errors))
+
+    def test_stale_pending_evidence_is_rejected(self) -> None:
+        errors = self.validate(
+            evidence=wp_p0_002_closure_evidence(
+                "\nrepository CI Gate: pending the repair push\n"
+            )
+        )
+        self.assertTrue(any("stale repository CI pending" in error for error in errors))
+
+    def test_design_activation_denial_is_rejected(self) -> None:
+        work_package = wp_p0_002_completed_work_package() + (
+            "\nThis Design-activation PR does not verify any requirement.\n"
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("stale Design-activation denial" in error for error in errors))
+
+    def test_eventual_implementation_narration_is_rejected(self) -> None:
+        work_package = wp_p0_002_completed_work_package() + (
+            "\nwhen WP-P0-002 is eventually\nimplemented, evidence follows.\n"
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("stale future implementation" in error for error in errors))
+
+    def test_live_claude_design_instruction_is_rejected(self) -> None:
+        work_package = wp_p0_002_completed_work_package() + (
+            "\nClaude Design must specify the future contract.\n"
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("stale live Claude Design" in error for error in errors))
+
+    def test_live_claude_delivery_instruction_is_rejected(self) -> None:
+        work_package = wp_p0_002_completed_work_package() + (
+            "\nClaude must return a standalone artifact.\n"
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("stale live Claude delivery" in error for error in errors))
+
+    def test_live_planning_record_instruction_is_rejected(self) -> None:
+        work_package = wp_p0_002_completed_work_package() + (
+            "\nthis Planning record does not decide the API.\n"
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("stale live Planning record" in error for error in errors))
+
+    def test_live_after_design_return_instruction_is_rejected(self) -> None:
+        work_package = wp_p0_002_completed_work_package() + (
+            "\nAfter Design return, the Controller reviews the artifact.\n"
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("stale live post-Design" in error for error in errors))
+
+    def test_overbroad_domain_table_absence_is_rejected(self) -> None:
+        current = wp_p0_002_closure_current_state() + (
+            "\nAll business/domain tables remain absent.\n"
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("overbroad domain-table absence" in error for error in errors))
+
+    def test_explicit_historic_contract_quotation_is_allowed(self) -> None:
+        work_package = (
+            wp_p0_002_completed_work_package()
+            + "\n"
+            + HISTORIC_CONTRACT_BEGIN
+            + "\n> Claude Design must specify the historic contract.\n"
+            + HISTORIC_CONTRACT_END
+            + "\n"
+        )
+        self.assertEqual([], self.validate(work_package=work_package))
+
+    def test_unclosed_historic_contract_quotation_is_rejected(self) -> None:
+        work_package = (
+            wp_p0_002_completed_work_package()
+            + "\n"
+            + HISTORIC_CONTRACT_BEGIN
+            + "\n> historic text\n"
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("unclosed historic-contract" in error for error in errors))
+
+    def test_nested_historic_contract_quotation_is_rejected(self) -> None:
+        work_package = (
+            wp_p0_002_completed_work_package()
+            + "\n"
+            + HISTORIC_CONTRACT_BEGIN
+            + "\n"
+            + HISTORIC_CONTRACT_BEGIN
+            + "\n> historic text\n"
+            + HISTORIC_CONTRACT_END
+            + "\n"
+            + HISTORIC_CONTRACT_END
+        )
+        errors = self.validate(work_package=work_package)
+        self.assertTrue(any("nested historic-contract" in error for error in errors))
+
+    def test_wp_p0_003_activation_is_rejected(self) -> None:
+        errors = self.validate(backlog=wp_p0_002_closure_backlog(wp3_status="READY_FOR_DESIGN"))
+        self.assertTrue(any("WP-P0-003 must remain DRAFT" in error for error in errors))
+
+    def test_production_write_control_cannot_change(self) -> None:
+        current = wp_p0_002_closure_current_state().replace(
+            "production_write_enabled: false", "production_write_enabled: true"
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("production_write_enabled: false" in error for error in errors))
+
+    def test_d16_guidance_control_cannot_change(self) -> None:
+        current = wp_p0_002_closure_current_state().replace(
+            "owner_git_workflow_guidance: REQUIRED",
+            "owner_git_workflow_guidance: DISABLED",
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("owner_git_workflow_guidance: REQUIRED" in error for error in errors))
+
+    def test_d17_delegation_control_cannot_change(self) -> None:
+        current = wp_p0_002_closure_current_state().replace(
+            "owner_git_execution_delegation: ACTIVE",
+            "owner_git_execution_delegation: INACTIVE",
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("owner_git_execution_delegation: ACTIVE" in error for error in errors))
+
+    def test_duplicate_current_state_authority_is_rejected(self) -> None:
+        current = wp_p0_002_closure_current_state().replace(
+            "active_work_package: NONE",
+            "active_work_package: NONE\nactive_work_package: NONE",
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("active_work_package: NONE" in error for error in errors))
 
 
 if __name__ == "__main__":

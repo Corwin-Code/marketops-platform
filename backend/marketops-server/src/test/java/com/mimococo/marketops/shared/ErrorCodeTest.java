@@ -37,6 +37,15 @@ class ErrorCodeTest {
     void codeSetIsStable() {
         assertThat(ErrorCode.values())
                 .extracting(Enum::name)
-                .containsExactly("VALIDATION_FAILED", "RESOURCE_NOT_FOUND", "INTERNAL_ERROR");
+                .containsExactly(
+                        "VALIDATION_FAILED", "RESOURCE_NOT_FOUND", "INTERNAL_ERROR",
+                        "DUPLICATE_IDENTITY", "VERSION_CONFLICT", "INVALID_STATE_TRANSITION",
+                        "EFFECTIVE_RANGE_OVERLAP", "CROSS_ORGANIZATION_REJECTED",
+                        "REFERENCED_ENTITY_ACTIVE", "INVALID_TIMEZONE", "INVALID_CURRENCY",
+                        "INVALID_COUNTRY", "SECRET_REFERENCE_INVALID",
+                        "SECRET_MATERIAL_SUSPECTED", "SERVICE_ACCOUNT_INACTIVE",
+                        "UNKNOWN_SCOPE", "CAPABILITY_VERIFICATION_NOT_SUPPORTED",
+                        "PRODUCTION_WRITE_DISABLED", "MAINTENANCE_WRITE_DISABLED",
+                        "OPERATOR_ATTRIBUTION_MISSING");
     }
 }

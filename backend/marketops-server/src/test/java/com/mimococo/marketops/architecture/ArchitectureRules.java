@@ -24,10 +24,10 @@ import org.springframework.modulith.NamedInterface;
  * base package so the identical rule instance can check production code, a
  * deliberately invalid fixture and the shared conforming fixture.
  *
- * <p>The domain rule and each half of the application/port composite permit an
- * empty layer because the foundation intentionally has no business module yet.
- * All other rules select the non-empty application tree and retain ArchUnit's
- * normal empty-subject protection.
+ * <p>Each half of the application/port composite permits an empty layer: the
+ * sensitivity fixtures exercise one half at a time, and no module declares a
+ * {@code port} package until a runtime port exists. All other rules select
+ * non-empty subjects and retain ArchUnit's normal empty-subject protection.
  */
 final class ArchitectureRules {
 
@@ -116,7 +116,6 @@ final class ArchitectureRules {
                 .that().resideInAPackage(basePackage + "..domain..")
                 .should().dependOnClassesThat()
                 .resideInAnyPackage(outwardAndVendorPackages(basePackage))
-                .allowEmptyShould(true)
                 .as("domain does not depend on adapter, infrastructure or vendor SDK types")
                 .because("the domain must remain independent of delivery and vendor mechanisms");
     }
