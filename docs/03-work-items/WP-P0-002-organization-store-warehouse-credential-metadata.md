@@ -23,9 +23,11 @@
 The Controller independently accepted the WP-P0-002 technical implementation on
 Head `28d50134bbd272dc4cc9335315841a526bb819c5`. The historic Design verdict
 above remains provenance; current implementation authorization is closed. PR #10
-remains a Draft closure candidate awaiting final Controller re-review and does
-not authorize Marketplace connectivity, credential retrieval, production data,
-Ready, merge or production writes.
+is merged and closed as squash commit
+`203b509e765959560fdfbd0edbde428ba9c6d763`, whose tree
+`6a2db6f565b29847bed6065d2b04d1df800b516b` equals the approved Head tree.
+The completed merge does not authorize Marketplace connectivity, credential
+retrieval, production data, another Work Package or production writes.
 
 Sections 2–13 state the accepted functional contract and its verified completion
 boundary. They are current result documentation, not live Design or
@@ -340,9 +342,23 @@ Current execution authorization: CLOSED
 Implementation result: VERIFIED
 Approved design SHA-256: 3e524c666e56b3d5fdecd6e2098a22d1bd9fd88711dd9c524858ca0cdd3859b2
 Technical implementation review: PASS on Head 28d50134bbd272dc4cc9335315841a526bb819c5
-PR closure candidate: AWAITING_FINAL_CONTROLLER_RE_REVIEW
-Ready: NOT_AUTHORIZED
-Merge: NOT_AUTHORIZED
+Controller merge verdict: PASS — APPROVE_FOR_HUMAN_MERGE
+Controller approval artifact SHA-256: d477bb77846d1c9f3f50de58a6795450327b445853794fc38192ee96d4cd3c9f
+Owner authorization: approved D-17 Ready and squash merge of PR #10 on the exact accepted identity
+Approved Base: 3c4f6a6210db377b5471d6014da6afd5bfef6127
+Approved Head: ce8eb44f2f750d73d7329fb78a17640ef3fc80c1
+Approved Head tree: 6a2db6f565b29847bed6065d2b04d1df800b516b
+Approved tested merge: fdcbf2bc69a0a80d1b6fb98455e91bf7e6373fef
+PR #10 state: MERGED / CLOSED / NOT_DRAFT
+Squash merge SHA: 203b509e765959560fdfbd0edbde428ba9c6d763
+Merged main tree: 6a2db6f565b29847bed6065d2b04d1df800b516b
+Squash parent: 3c4f6a6210db377b5471d6014da6afd5bfef6127
+Commit signature: VERIFIED
+Merge time: 2026-08-19T17:44:16Z / 2026-08-20 01:44:16 UTC+8
+Post-merge Controller verdict: PASS — MERGE_EXECUTION_VERIFIED
+Post-merge Controller artifact SHA-256: 4e65f0a7fb1c997096c5fd98fb56f42211c546cca323fae5b12d39eaa0c1c8ab
+Next lifecycle state: Controller Phase 0 planning
+WP-P0-003 remains DRAFT
 Production writes: DISABLED
 ```
 
@@ -354,7 +370,8 @@ Implementation: PROHIBITED until APPROVED_FOR_IMPLEMENTATION
 
 That precondition was satisfied by the exact Design v1.2 verdict and is retained
 only as historic provenance; it is not live authorization. The technical
-implementation has been accepted, but the Draft PR closure still requires an
-independent `APPROVE_FOR_HUMAN_MERGE` verdict on its final Head/tested merge and
-separate Human Owner authorization. No real Ozon/Wildberries fact, credential,
-production inventory, Marketplace connection or production write is claimed.
+implementation and governance closure passed independent review, received Human
+Owner authorization and were merged through protected PR #10. Controller Phase
+0 planning is the next lifecycle state. No real Ozon/Wildberries fact,
+credential, production inventory, Marketplace connection or production write is
+claimed.
