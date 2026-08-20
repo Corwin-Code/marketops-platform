@@ -9,9 +9,9 @@ sprint: Sprint 0
 controller: GPT-5.6 Sol Pro / current ChatGPT Project
 maker: Claude Cowork / Claude Code (initial artifact producer; no authoritative repository writes in current trial)
 rework_agent: Mac Codex (authoritative repository writer, rework/fix/verify, delegated Git execution)
-active_work_package: NONE
-active_gate: CONTROLLER_PHASE_0_PLANNING
-authorization: PLANNING_ONLY
+active_work_package: WP-P0-003
+active_gate: READY_FOR_DESIGN
+authorization: DESIGN_ONLY
 production_write_enabled: false
 owner_git_workflow_guidance: REQUIRED
 owner_git_workflow_guidance_exit: HUMAN_OWNER_EXPLICIT_CONFIRMATION
@@ -52,9 +52,9 @@ verdict is provenance and does not authorize further implementation.
 
 ## Prior closed planning transition — historical provenance
 
-Immediately before this Design activation, accepted `main`
-`489f151ea0f86e65793f1eed27def1ffcfd0bfdb` closed WP-P0-001 and exposed the
-following canonical transition:
+Accepted `main` `489f151ea0f86e65793f1eed27def1ffcfd0bfdb` closed
+WP-P0-001 and historically exposed the following canonical transition before
+WP-P0-002 was activated:
 
 ```text
 active_work_package: NONE
@@ -65,6 +65,28 @@ authorization: PLANNING_ONLY
 This block is immutable historical provenance for the completed WP-P0-001 Gate.
 It is superseded as live runtime state by the leading YAML in this file and must
 not be interpreted as current authorization or a parallel state source.
+
+## Prior WP-P0-002 closure transition — historical provenance
+
+Accepted `main` `3bae9e58663374301135a82f74add3066335e55c`, tree
+`c60da326804ed832301e216059c29f77944b904a`, completed WP-P0-002 post-merge
+provenance and exposed the exact pre-activation state reviewed by the Phase 0
+Controller:
+
+Controller Phase 0 planning was the next authorized action at that accepted
+baseline.
+
+```text
+active_work_package: NONE
+active_gate: CONTROLLER_PHASE_0_PLANNING
+authorization: PLANNING_ONLY
+WP-P0-003 remains DRAFT
+```
+
+This block is immutable historical provenance for the accepted WP-P0-002
+closure/planning baseline. It is superseded as live runtime state by the leading
+YAML and must not be interpreted as current authorization or a parallel state
+source.
 
 ## Completed
 
@@ -146,9 +168,12 @@ not be interpreted as current authorization or a parallel state source.
 
 ## Active objective
 
-Controller Phase 0 planning selects and prepares the next bounded Work Package.
-WP-P0-003 remains DRAFT and is not activated by the WP-P0-002 merge or its
-post-merge provenance sync. Production writes remain disabled.
+The Designer cross-checks live source, migrations, tests, dependencies, accepted
+ADRs and the closed WP-P0-001/WP-P0-002 records, then produces the standalone
+Design artifact for `WP-P0-003 — Durable Ingestion Control Plane & Immutable Raw
+Evidence`. This state authorizes Design only. Implementation, migration,
+Marketplace outbound traffic, Secret retrieval and production writes remain
+prohibited.
 
 ## Temporary trial execution mode
 
@@ -171,17 +196,22 @@ confirmation can disable the mode.
 
 ## Current blockers / Owner inputs
 
-OQ-101 topology input is sufficient for metadata Design, while actual Account,
-Store and Warehouse inventory remains open for onboarding/acceptance. OQ-005,
-OQ-006 and OQ-102 do not block metadata Design but continue to block later
-runtime IAM, Secret retrieval and verified platform Capability work respectively.
-No Secret or production data is requested.
+OQ-005 does not block the internal worker Design but blocks any public webhook,
+public manual-trigger or file-upload runtime surface. OQ-006 does not block a
+provider-neutral Design start, but blocks concrete Object Storage/Secret Final
+Design approval, Implementation authorization and bounded Raw acceptance.
+OQ-101/OQ-102/OQ-106/OQ-107 remain OPEN at the onboarding, verified platform,
+source-integration and deployment/production Gates allocated in the Work Package.
+No provider fact, Secret or production data is requested or assumed.
 
 ## Next authorized action
 
 ```text
-Controller Phase 0 planning determines the next authorized Work Package and
-must retain the normal Design Gate before any implementation. WP-P0-003 remains
-DRAFT; OQ-101/OQ-005/OQ-006/OQ-102 remain open as allocated. No production
-write, Marketplace connection, Secret retrieval or deployment is authorized.
+Designer source cross-check and WP-P0-003 Design only. The Designer must return a
+standalone Design artifact for independent Controller Design review.
+Implementation remains prohibited until a later Controller verdict explicitly
+authorizes it and OQ-006 has an approved disposition for concrete Object
+Storage/Secret choices.
+No migration, product code, Marketplace connection, Secret retrieval, deployment
+or production write is authorized.
 ```
