@@ -8,8 +8,8 @@
 | OQ-002 | What company-controlled domain defines the Java root package? | WP-P0-001 implementation | Yes | Human Owner | RESOLVED |
 | OQ-003 | What is the primary development OS and container runtime? | WP-P0-001 design approval | No | Human Owner | RESOLVED |
 | OQ-004 | Is Codex formally enabled for rework/fix/verify? | First review cycle | No | Human Owner | RESOLVED |
-| OQ-005 | Which authentication solution will be used for application users? | Runtime IAM design/implementation | No for metadata Design; yes for runtime IAM | Owner + Controller | OPEN |
-| OQ-006 | Which Secret Manager and S3-compatible object storage are approved for Integration/Staging/Production? | INT-003 / Raw implementation | No for metadata Design; yes for runtime Secret retrieval | Owner + Security | OPEN |
+| OQ-005 | Which authentication solution will be used for application users? | Runtime IAM and public ingestion surfaces | No for internal WP-P0-003 worker Design; yes for public webhook/manual/file-upload runtime | Owner + Controller | OPEN |
+| OQ-006 | Which Secret Manager and S3-compatible object storage are approved for Integration/Staging/Production? | INT-003 / Raw Final Design, implementation and acceptance | No for planning/provider-neutral Design start; yes for concrete storage/Secret Final Design, Implementation authorization and bounded Raw acceptance | Owner + Security | OPEN |
 
 ## Sprint 0 business and platform questions from the Baseline
 
@@ -53,6 +53,52 @@ OQ-102: OPEN. It does not block an UNKNOWN/UNVERIFIED Capability Registry
 
 None of these dispositions authorizes a guessed platform fact, real Credential,
 Marketplace connection or production write.
+
+## WP-P0-003 Planning dispositions — questions remain OPEN
+
+### OQ-005 — internal Design allowed; public surfaces blocked
+
+```text
+Planning disposition: OPEN. It does not block the provider-neutral internal
+  worker, lease, cursor, Raw, replay or backfill Design.
+Blocked boundary: Any public webhook, public manual-trigger or file-upload
+  runtime surface, including its caller authentication and reauthorization.
+Later Gate: Runtime IAM Design/Implementation selected by a future Controller.
+No authentication product or public route is selected by this disposition.
+```
+
+### OQ-006 — provider-neutral Design only before approved answer
+
+```text
+Planning disposition: OPEN. It does not block canonicalization or the start of a
+  provider-neutral Design using opaque object references and fixed capability
+  requirements.
+Blocked boundaries: Concrete Object Storage/Secret Final Design approval,
+  Implementation authorization, and bounded INT-010/HR-01 Raw acceptance.
+Minimum Owner/Security input: Approved Secret Manager and S3-compatible provider;
+  region/locality, workload identity, encryption, versioning/immutability,
+  retention/deletion, backup/restore, quotas/cost and audit evidence.
+Evidence boundary: Test-only fake/in-memory storage and protocol-compatible
+  integration services are not REAL_PROVIDER_OR_EXTERNAL_SYSTEM evidence.
+No provider, region, account, key, Credential or retention behavior is guessed.
+```
+
+### OQ-101, OQ-102, OQ-106 and OQ-107 — preserved later Gates
+
+```text
+OQ-101: OPEN. Generic Design may use platform-neutral IDs and synthetic topology;
+  actual Ozon/WB Account, Store, Warehouse and fulfillment inventory remains an
+  onboarding/platform-acceptance input.
+OQ-102: OPEN. UNKNOWN/UNVERIFIED remains fail-closed; verified roles,
+  subscriptions, quotas and capabilities remain WP-P0-005/006 evidence.
+OQ-106: OPEN. The generic foundation and bounded split may proceed; actual
+  ERP/WMS/accounting formats, ownership and source behavior are required when
+  WP-P0-003B/WP-P0-007 are planned.
+OQ-107: OPEN. Local/synthetic Design and verification may proceed; hosting,
+  backup, personal-data, retention, cross-border and external-service legal
+  confirmation are required before deployment/production readiness.
+Secret handling: No Secret or production data was requested or recorded.
+```
 
 ## Resolved bootstrap decisions
 

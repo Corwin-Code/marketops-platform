@@ -92,7 +92,7 @@ Fresh Clone / GitHub PR 边界见
 
 ```text
 marketops-platform/
-├── backend/marketops-server/    # Spring Boot 后端；两个模块：shared、adminobservability
+├── backend/marketops-server/    # Spring Boot 后端；模块边界以当前 source tree 为准
 ├── frontend/marketops-console/  # React 运维控制台；七种平台状态
 ├── infra/compose/               # 本地 PostgreSQL 与角色初始化脚本
 ├── fixtures/                    # 后续 Golden Dataset / 脱敏 Fixture
