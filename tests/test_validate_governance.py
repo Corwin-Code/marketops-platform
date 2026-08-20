@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import csv
+import io
 import subprocess
 import unittest
 from pathlib import Path
@@ -12,6 +14,7 @@ from scripts.validate_governance import (
     WP_P0_002_ID,
     WP_P0_002_DESIGN_RELATIVE_PATH,
     WP_P0_002_RELATIVE_PATH,
+    WP_P0_003_PREIMPLEMENTATION_EMPTY_TRACEABILITY_IDS,
     WP_P0_003_RELATIVE_PATH,
     git_scan_paths,
     java_test_identity_inventory,
@@ -30,6 +33,7 @@ from scripts.validate_governance import (
     validate_wp_p0_002_test_identity_contract,
     validate_wp_p0_002_traceability_text,
     validate_wp_p0_003_activation_text,
+    validate_wp_p0_003_record_paths,
     validate_wp_p0_003_traceability_text,
     validate_wp_p0_003_work_package_text,
     wp_p0_002_acceptance_rows,
@@ -2047,6 +2051,24 @@ def repository_governance_text(relative: str) -> str:
     return (Path(__file__).resolve().parents[1] / relative).read_text(encoding="utf-8")
 
 
+def mutate_traceability_field(
+    text: str, source_id: str, field: str, value: str
+) -> str:
+    rows = list(csv.DictReader(text.splitlines()))
+    output = io.StringIO()
+    writer = csv.DictWriter(
+        output,
+        fieldnames=list(rows[0]),
+        lineterminator="\n",
+    )
+    writer.writeheader()
+    for row in rows:
+        if row["source_id"] == source_id:
+            row[field] = value
+        writer.writerow(row)
+    return output.getvalue()
+
+
 class WpP0003ActivationContractTests(unittest.TestCase):
     def activation_errors(
         self,
@@ -2119,6 +2141,17 @@ class WpP0003ActivationContractTests(unittest.TestCase):
         errors = self.activation_errors(backlog=backlog)
         self.assertTrue(any("only READY_FOR_DESIGN" in error for error in errors))
 
+    def test_duplicate_backlog_id_is_rejected(self) -> None:
+        backlog = repository_governance_text(
+            "docs/03-work-items/BACKLOG-PHASE-0.md"
+        )
+        row = next(
+            line for line in backlog.splitlines() if line.startswith("| WP-P0-003 |")
+        )
+        backlog = backlog.replace(row, row + "\n" + row, 1)
+        errors = self.activation_errors(backlog=backlog)
+        self.assertTrue(any("duplicate Work Package IDs" in error for error in errors))
+
     def test_int019_cannot_be_claimed_full(self) -> None:
         work_package = repository_governance_text(WP_P0_003_RELATIVE_PATH).replace(
             "| INT-019 | OUT_OF_SCOPE |",
@@ -2134,6 +2167,48 @@ class WpP0003ActivationContractTests(unittest.TestCase):
         )
         errors = self.work_package_errors(work_package)
         self.assertTrue(any("must name its later owner" in error for error in errors))
+
+    def test_r01_business_failure_returned_bytes_cannot_be_failure_record_only(self) -> None:
+        work_package = repository_governance_text(WP_P0_003_RELATIVE_PATH).replace(
+            "| Business-meaningful failed call | YES | Immutable Raw exact bytes plus request metadata, hash, schema version, source time, ingestion time and provenance; never failure-record-only |",
+            "| Business-meaningful failed call | YES | Attributable failure-record-only treatment is permitted |",
+        )
+        errors = self.work_package_errors(work_package)
+        self.assertTrue(any("Raw outcome contract" in error for error in errors))
+
+    def test_r02_rate_limit_credential_dimension_cannot_be_removed(self) -> None:
+        work_package = repository_governance_text(WP_P0_003_RELATIVE_PATH).replace(
+            "| Credential | Opaque Credential reference/identity; no Secret retrieval |",
+            "| Credential | Account and Endpoint only |",
+        )
+        errors = self.work_package_errors(work_package)
+        self.assertTrue(any("rate-limit identity contract" in error for error in errors))
+
+    def test_r02_distinct_credential_identities_cannot_be_silently_merged(self) -> None:
+        work_package = repository_governance_text(WP_P0_003_RELATIVE_PATH).replace(
+            "| Partitioning | Distinct Credential scopes/identities under the same Account and Endpoint must not be silently merged unless future verified platform evidence explicitly permits it |",
+            "| Partitioning | Merge every Credential under Account and Endpoint |",
+        )
+        errors = self.work_package_errors(work_package)
+        self.assertTrue(any("rate-limit identity contract" in error for error in errors))
+
+    def test_r03_adm004_trace_allocation_cannot_drop_wp_p0_003(self) -> None:
+        traceability = repository_governance_text(
+            "docs/01-requirements/traceability.csv"
+        ).replace(
+            "ADM-004,Requirement,0,Job Run / Error Queue / Replay / Dead-letter management,WP-P0-003;WP-P0-008,",
+            "ADM-004,Requirement,0,Job Run / Error Queue / Replay / Dead-letter management,WP-P0-008,",
+        )
+        errors = self.traceability_errors(traceability)
+        self.assertTrue(any("ADM-004 work_package" in error for error in errors))
+
+    def test_r03_adm004_closure_cannot_claim_full(self) -> None:
+        work_package = repository_governance_text(WP_P0_003_RELATIVE_PATH).replace(
+            "| ADM-004 | PARTIAL / MULTI-WP |",
+            "| ADM-004 | FULL |",
+        )
+        errors = self.work_package_errors(work_package)
+        self.assertTrue(any("ADM-004 closure model" in error for error in errors))
 
     def test_public_webhook_exclusion_is_binding(self) -> None:
         work_package = repository_governance_text(WP_P0_003_RELATIVE_PATH).replace(
@@ -2183,16 +2258,127 @@ class WpP0003ActivationContractTests(unittest.TestCase):
         errors = self.traceability_errors(traceability)
         self.assertTrue(any("INT-019 work_package" in error for error in errors))
 
-    def test_seed_evidence_must_remain_unproduced(self) -> None:
+    def test_r04_every_preimplementation_field_rejects_premature_evidence(self) -> None:
+        original = repository_governance_text("docs/01-requirements/traceability.csv")
+        for source_id in sorted(WP_P0_003_PREIMPLEMENTATION_EMPTY_TRACEABILITY_IDS):
+            for field in ("code_location", "test_case", "evidence"):
+                with self.subTest(source_id=source_id, field=field):
+                    traceability = mutate_traceability_field(
+                        original,
+                        source_id,
+                        field,
+                        "premature-proof",
+                    )
+                    errors = self.traceability_errors(traceability)
+                    self.assertTrue(
+                        any(
+                            f"{source_id} {field} must remain empty" in error
+                            for error in errors
+                        )
+                    )
+
+    def test_prior_evidence_notes_distinguish_closed_and_unimplemented_subsets(self) -> None:
+        original = repository_governance_text("docs/01-requirements/traceability.csv")
+        for source_id, required_note in (
+            ("D-03", "WP-P0-001 verified"),
+            ("ADM-002", "WP-P0-002 subset VERIFIED"),
+        ):
+            with self.subTest(source_id=source_id):
+                row = next(
+                    row
+                    for row in csv.DictReader(original.splitlines())
+                    if row["source_id"] == source_id
+                )
+                traceability = mutate_traceability_field(
+                    original,
+                    source_id,
+                    "notes",
+                    row["notes"].replace(required_note, "prior subset", 1),
+                )
+                errors = self.traceability_errors(traceability)
+                self.assertTrue(
+                    any(
+                        f"{source_id} notes missing" in error
+                        for error in errors
+                    )
+                )
+
+    def test_duplicate_traceability_source_id_is_rejected(self) -> None:
         traceability = repository_governance_text(
             "docs/01-requirements/traceability.csv"
-        ).replace(
-            f"{WP_P0_003_RELATIVE_PATH},,,,PLANNED,\"PARTIAL in WP-P0-003: persisted",
-            f"{WP_P0_003_RELATIVE_PATH},code,test,evidence,PLANNED,\"PARTIAL in WP-P0-003: persisted",
-            1,
         )
+        row = next(
+            line for line in traceability.splitlines() if line.startswith("ADM-004,")
+        )
+        traceability = traceability + row + "\n"
         errors = self.traceability_errors(traceability)
-        self.assertTrue(any("INT-004 code_location must remain empty" in error for error in errors))
+        self.assertTrue(any("duplicate source_id" in error for error in errors))
+
+    def test_wp_p0_003b_canonical_record_is_rejected(self) -> None:
+        errors: list[str] = []
+        validate_wp_p0_003_record_paths(
+            errors,
+            {"docs/03-work-items/WP-P0-003B-controlled-file-import.md"},
+        )
+        self.assertTrue(any("without a canonical Work Package file" in error for error in errors))
+
+    def test_dr_leading_authority_fields_reject_duplicates_and_conflicts(self) -> None:
+        original = repository_governance_text(
+            "docs/00-governance/DR-0002-split-controlled-file-import-from-wp-p0-003.md"
+        )
+        for field, contradiction in (
+            ("status", "REJECTED"),
+            ("owner_approval", "NONE"),
+            ("effective_condition", "IMMEDIATE"),
+        ):
+            with self.subTest(field=field):
+                current = next(
+                    line for line in original.splitlines() if line.startswith(field + ":")
+                )
+                decision_request = original.replace(
+                    current,
+                    current + f"\n{field}: {contradiction}",
+                    1,
+                )
+                errors = self.activation_errors(decision_request=decision_request)
+                self.assertTrue(any("duplicate fields" in error for error in errors))
+
+    def test_second_runtime_authority_declarations_are_rejected(self) -> None:
+        original = repository_governance_text(WP_P0_003_RELATIVE_PATH)
+        for capability in (
+            "Job scheduler/worker",
+            "Cursor/checkpoint writer",
+            "Replay/dead-letter recovery command executor",
+            "Raw object-store intake coordinator",
+        ):
+            with self.subTest(capability=capability):
+                row = next(
+                    line
+                    for line in original.splitlines()
+                    if line.startswith(f"| {capability} |")
+                )
+                second = (
+                    f"| {capability} | adminobservability | marketplaceintegration | SINGLE |"
+                )
+                work_package = original.replace(row, row + "\n" + second, 1)
+                errors = self.work_package_errors(work_package)
+                self.assertTrue(any("duplicate Capability" in error for error in errors))
+
+    def test_oq005_public_surface_contradiction_is_rejected(self) -> None:
+        work_package = repository_governance_text(WP_P0_003_RELATIVE_PATH).replace(
+            "| OQ-005 | OPEN | Internal provider-neutral worker and operator contract Design | Any authenticated/public operator, webhook, manual-trigger or file-upload runtime surface | Future runtime IAM Work Package selected by the Controller |",
+            "| OQ-005 | OPEN | Public operator runtime surface | None | Future runtime IAM Work Package selected by the Controller |",
+        )
+        errors = self.work_package_errors(work_package)
+        self.assertTrue(any("Owner Gate allocation" in error for error in errors))
+
+    def test_oq006_concrete_provider_contradiction_is_rejected(self) -> None:
+        work_package = repository_governance_text(WP_P0_003_RELATIVE_PATH).replace(
+            "| OQ-006 | OPEN | Provider-neutral object and opaque Credential-reference contract Design | Concrete Object Storage/Secret Final Design approval, Implementation authorization, bounded Raw acceptance, Secret retrieval and real quota assumptions | Human Owner + Security, then WP-P0-005/WP-P0-006 platform evidence |",
+            "| OQ-006 | OPEN | Concrete provider is approved | None | Human Owner + Security, then WP-P0-005/WP-P0-006 platform evidence |",
+        )
+        errors = self.work_package_errors(work_package)
+        self.assertTrue(any("Owner Gate allocation" in error for error in errors))
 
     def test_decision_request_cannot_claim_runtime_change(self) -> None:
         decision_request = repository_governance_text(

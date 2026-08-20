@@ -57,12 +57,20 @@ not authorized for Design or implementation by this request.
 
 - Requirements: `INT-019`, plus manual-file portions of `INT-010/011`.
 - Planning allocations updated for `D-03`, `D-04`, `HR-01`, `HR-02`,
-  `INT-001/004/006–014/019/021` and `ADM-002` without changing their source
-  meaning.
+  `INT-001/004/006–014/019/021`, `ADM-002` and `ADM-004` without changing
+  their source meaning. `ADM-004` is explicitly `PARTIAL / MULTI-WP`:
+  `WP-P0-003` owns generic Job Run/Error Queue/Replay/Dead-letter state,
+  recovery-command contract, audit linkage and the single runtime authority;
+  `WP-P0-008` owns the Data Quality/Admin product view, cross-domain UX and
+  final Phase 0 management closure. OQ-005 and a future runtime IAM Work Package
+  gate any authenticated/public operator surface.
 - ADR-0001, ADR-0002, ADR-0003 and ADR-0004 remain accepted and unchanged.
 - No module boundary changes now. Future Design keeps `marketplaceintegration`
-  as the single ingestion authority and treats a later file-intake path as a
-  consumer of the approved Raw intake contract.
+  as the sole scheduler/worker, cursor/checkpoint writer, replay/dead-letter
+  recovery-command executor and Raw object-store intake coordinator. The
+  `adminobservability` module consumes that contract and may request recovery;
+  it is not a second executor/writer. A later file-intake path consumes the
+  approved Raw intake contract.
 
 ## Data migration and compatibility impact
 

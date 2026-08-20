@@ -89,6 +89,7 @@ WP_P0_003_RELATIVE_PATH = (
 WP_P0_003B_DECISION_REQUEST_RELATIVE_PATH = (
     "docs/00-governance/DR-0002-split-controlled-file-import-from-wp-p0-003.md"
 )
+WP_P0_003B_ID = "WP-P0-003B"
 WP_P0_002_DESIGN_RELATIVE_PATH = (
     "docs/02-architecture/designs/"
     "WP-P0-002-organization-store-warehouse-credential-metadata-design.md"
@@ -233,6 +234,7 @@ WP_P0_003_CLOSURE_MODELS = {
     "INT-019": "OUT_OF_SCOPE",
     "INT-021": "STRUCTURE_ONLY",
     "ADM-002": "MULTI-WP",
+    "ADM-004": "PARTIAL / MULTI-WP",
 }
 
 WP_P0_003_LATER_OWNER_TOKENS = {
@@ -243,7 +245,7 @@ WP_P0_003_LATER_OWNER_TOKENS = {
     "INT-001": ("WP-P0-005", "WP-P0-006"),
     "INT-004": ("WP-P0-005/WP-P0-006", "OQ-005"),
     "INT-006": ("WP-P0-005", "WP-P0-006"),
-    "INT-007": ("WP-P0-005", "WP-P0-006"),
+    "INT-007": ("WP-P0-005", "WP-P0-006", "OQ-006"),
     "INT-008": ("WP-P0-005", "WP-P0-006"),
     "INT-009": ("WP-P0-005", "WP-P0-006", "WP-P0-007"),
     "INT-010": ("WP-P0-003B", "WP-P0-005", "WP-P0-006", "OQ-006"),
@@ -254,6 +256,162 @@ WP_P0_003_LATER_OWNER_TOKENS = {
     "INT-019": ("WP-P0-003B",),
     "INT-021": ("WP-P0-005", "WP-P0-006", "WP-P0-007"),
     "ADM-002": ("WP-P0-005", "WP-P0-006"),
+    "ADM-004": ("WP-P0-008", "OQ-005", "runtime IAM Work Package"),
+}
+
+WP_P0_003_CLOSURE_FIELD_TOKENS = {
+    "HR-01": {
+        "WP-P0-003 target subset": (
+            "exact returned response/report/event bytes",
+            "business-meaningful failures",
+            "request metadata",
+            "schema version",
+            "source time",
+            "ingestion time",
+            "provenance",
+        ),
+        "Excluded or remaining boundary": (
+            "no returned source bytes",
+            "failure-record-only",
+        ),
+    },
+    "INT-007": {
+        "WP-P0-003 target subset": (
+            "Account + Endpoint + opaque Credential reference/identity",
+        ),
+        "Excluded or remaining boundary": (
+            "no Secret retrieval",
+            "real quota guessing",
+        ),
+    },
+    "INT-010": {
+        "WP-P0-003 target subset": (
+            "exact returned bytes",
+            "schema version",
+            "source/ingestion time",
+            "provenance",
+            "business-meaningful failed calls",
+        ),
+        "Excluded or remaining boundary": (
+            "no-source-byte transport/connectivity failures",
+            "failure-record-only",
+        ),
+    },
+    "ADM-004": {
+        "WP-P0-003 target subset": (
+            "Job Run",
+            "Error Queue",
+            "Replay",
+            "Dead-letter",
+            "recovery-command contract",
+            "audit linkage",
+            "single runtime authority",
+        ),
+        "Excluded or remaining boundary": (
+            "Data Quality/Admin product view",
+            "cross-domain UX",
+            "final Phase 0 management closure",
+            "authenticated/public operator surface",
+        ),
+    },
+}
+
+WP_P0_003_AUTHORITY_HEADER = [
+    "Capability",
+    "Sole executor / writer",
+    "Consumer-only module",
+    "Authority mode",
+]
+WP_P0_003_AUTHORITY_CONTRACT = {
+    "Job scheduler/worker": (
+        "marketplaceintegration",
+        "adminobservability",
+        "SINGLE",
+    ),
+    "Cursor/checkpoint writer": (
+        "marketplaceintegration",
+        "adminobservability",
+        "SINGLE",
+    ),
+    "Replay/dead-letter recovery command executor": (
+        "marketplaceintegration",
+        "adminobservability",
+        "SINGLE",
+    ),
+    "Raw object-store intake coordinator": (
+        "marketplaceintegration",
+        "adminobservability",
+        "SINGLE",
+    ),
+}
+
+WP_P0_003_RAW_OUTCOME_HEADER = [
+    "Source outcome",
+    "Returned source bytes",
+    "Required durable treatment",
+]
+WP_P0_003_RAW_OUTCOME_CONTRACT = {
+    "Successful call": (
+        "YES",
+        "Immutable Raw exact bytes plus request metadata, hash, schema version, source time, ingestion time and provenance",
+    ),
+    "Business-meaningful failed call": (
+        "YES",
+        "Immutable Raw exact bytes plus request metadata, hash, schema version, source time, ingestion time and provenance; never failure-record-only",
+    ),
+    "Transport/connectivity failure": (
+        "NO",
+        "Attributable failure-record-only treatment is permitted",
+    ),
+}
+
+WP_P0_003_RATE_LIMIT_HEADER = ["Dimension / rule", "Required contract"]
+WP_P0_003_RATE_LIMIT_CONTRACT = {
+    "Account": "Opaque Account identity",
+    "Endpoint": "Provider-neutral Endpoint identity",
+    "Credential": "Opaque Credential reference/identity; no Secret retrieval",
+    "Partitioning": (
+        "Distinct Credential scopes/identities under the same Account and Endpoint "
+        "must not be silently merged unless future verified platform evidence "
+        "explicitly permits it"
+    ),
+    "Quota semantics": (
+        "No real quota guessing; WP-P0-005/WP-P0-006 retain verified platform "
+        "quotas and response semantics; OQ-006 remains OPEN"
+    ),
+}
+
+WP_P0_003_OWNER_GATE_HEADER = [
+    "Gate",
+    "Status",
+    "Allowed before answer",
+    "Blocked before answer",
+    "Later owner",
+]
+WP_P0_003_OWNER_GATE_CONTRACT = {
+    "OQ-005": (
+        "OPEN",
+        "Internal provider-neutral worker and operator contract Design",
+        "Any authenticated/public operator, webhook, manual-trigger or file-upload runtime surface",
+        "Future runtime IAM Work Package selected by the Controller",
+    ),
+    "OQ-006": (
+        "OPEN",
+        "Provider-neutral object and opaque Credential-reference contract Design",
+        "Concrete Object Storage/Secret Final Design approval, Implementation authorization, bounded Raw acceptance, Secret retrieval and real quota assumptions",
+        "Human Owner + Security, then WP-P0-005/WP-P0-006 platform evidence",
+    ),
+}
+
+DR_0002_HEADING = "# DR-0002 — Split Controlled File Import from WP-P0-003"
+DR_0002_LEADING_YAML = {
+    "decision_request": "DR-0002",
+    "status": "ACCEPTED",
+    "trigger": "CONTROLLER_PHASE_0_PLANNING",
+    "owner_approval": "EXPLICIT",
+    "owner_instruction_date": "2026-08-20",
+    "controller_recommendation": "ACCEPT_BOUNDED_SPLIT",
+    "effective_condition": "GOVERNANCE_PR_MERGE",
 }
 
 # The two coherent WP-P0-002 stages. The record's Status selects the stage and
@@ -331,7 +489,13 @@ WP_P0_003_TRACEABILITY_CONTRACT = {
         "WP-P0-001;WP-P0-003",
         "ACTIVE_CONTROL",
         WP_P0_003_RELATIVE_PATH,
-        ("MULTI-WP", "internal PostgreSQL Task/Worker", "INT-017", "ACTIVE_CONTROL"),
+        (
+            "MULTI-WP",
+            "WP-P0-001 verified",
+            "internal PostgreSQL Task/Worker",
+            "INT-017",
+            "ACTIVE_CONTROL",
+        ),
     ),
     "D-04": (
         "WP-P0-003;WP-P0-007",
@@ -343,7 +507,16 @@ WP_P0_003_TRACEABILITY_CONTRACT = {
         "WP-P0-003;WP-P0-003B;WP-P0-005;WP-P0-006;WP-P0-007",
         "ACTIVE_CONTROL",
         WP_P0_003_RELATIVE_PATH,
-        ("MULTI-WP", "WP-P0-003B", "WP-P0-005/006/007", "ACTIVE_CONTROL"),
+        (
+            "MULTI-WP",
+            "exact returned response/report/event bytes",
+            "business-meaningful failures",
+            "no-source-byte transport/connectivity failures",
+            "failure-record-only",
+            "WP-P0-003B",
+            "WP-P0-005/006/007",
+            "ACTIVE_CONTROL",
+        ),
     ),
     "HR-02": (
         "WP-P0-003;WP-P0-005;WP-P0-006;WP-P0-007",
@@ -373,7 +546,15 @@ WP_P0_003_TRACEABILITY_CONTRACT = {
         "WP-P0-003;WP-P0-005;WP-P0-006",
         "PLANNED",
         WP_P0_003_RELATIVE_PATH,
-        ("PARTIAL", "WP-P0-005/006", "quota"),
+        (
+            "PARTIAL",
+            "Account + Endpoint + opaque Credential reference/identity",
+            "cannot be silently merged",
+            "no Secret retrieval",
+            "real quota guessing",
+            "WP-P0-005/006",
+            "OQ-006 remains OPEN",
+        ),
     ),
     "INT-008": (
         "WP-P0-003;WP-P0-005;WP-P0-006",
@@ -391,7 +572,17 @@ WP_P0_003_TRACEABILITY_CONTRACT = {
         "WP-P0-003;WP-P0-003B;WP-P0-005;WP-P0-006",
         "ACTIVE_CONTROL",
         WP_P0_003_RELATIVE_PATH,
-        ("PARTIAL / MULTI-WP", "WP-P0-003B", "WP-P0-005/006", "OQ-006"),
+        (
+            "PARTIAL / MULTI-WP",
+            "exact returned bytes",
+            "business-meaningful failures",
+            "HTTP/business status cannot downgrade",
+            "no-source-byte transport/connectivity failures",
+            "failure-record-only",
+            "WP-P0-003B",
+            "WP-P0-005/006",
+            "OQ-006",
+        ),
     ),
     "INT-011": (
         "WP-P0-003;WP-P0-003B;WP-P0-005;WP-P0-006",
@@ -433,13 +624,55 @@ WP_P0_003_TRACEABILITY_CONTRACT = {
         "WP-P0-002;WP-P0-003;WP-P0-005;WP-P0-006",
         "ACTIVE_CONTROL",
         WP_P0_003_RELATIVE_PATH,
-        ("MULTI-WP", "WP-P0-003", "WP-P0-005/006", "remains OPEN"),
+        (
+            "PARTIAL in WP-P0-002",
+            "MULTI-WP",
+            "WP-P0-002 subset VERIFIED",
+            "WP-P0-003 owns Job Schedule/Backfill",
+            "WP-P0-005/006",
+            "remains OPEN",
+        ),
+    ),
+    "ADM-004": (
+        "WP-P0-003;WP-P0-008",
+        "PLANNED",
+        WP_P0_003_RELATIVE_PATH,
+        (
+            "PARTIAL / MULTI-WP",
+            "Job Run/Error Queue/Replay/Dead-letter state",
+            "recovery-command contract",
+            "audit linkage",
+            "sole runtime executor/writer authority in marketplaceintegration",
+            "adminobservability consumes the contract",
+            "not a second executor/writer",
+            "WP-P0-008 owns the Data Quality/Admin product view",
+            "cross-domain UX",
+            "final Phase 0 management closure",
+            "OQ-005",
+            "future runtime IAM Work Package",
+            "authenticated/public operator surface",
+        ),
     ),
 }
 
-WP_P0_003_SEED_TRACEABILITY_IDS = {
-    "INT-004", "INT-006", "INT-007", "INT-008", "INT-011",
-    "INT-012", "INT-013", "INT-014", "INT-019", "INT-021",
+WP_P0_003_PREIMPLEMENTATION_EMPTY_TRACEABILITY_IDS = {
+    "D-04",
+    "HR-01",
+    "HR-02",
+    "INT-001",
+    "INT-004",
+    "INT-006",
+    "INT-007",
+    "INT-008",
+    "INT-009",
+    "INT-010",
+    "INT-011",
+    "INT-012",
+    "INT-013",
+    "INT-014",
+    "INT-019",
+    "INT-021",
+    "ADM-004",
 }
 
 TEST_ID_PATTERN = r"TC-[A-Z]+(?:-[A-Z]+)*-[0-9]+[A-Za-z]?"
@@ -772,6 +1005,95 @@ def markdown_table_rows(
     return parsed_tables[0] if len(parsed_tables) == 1 else None
 
 
+def validate_exact_keyed_table(
+    errors: list[str],
+    text: str,
+    header: list[str],
+    expected_rows: dict[str, tuple[str, ...] | str],
+    contract_name: str,
+) -> None:
+    """Bind one small high-risk table exactly; semantic review remains separate."""
+    rows = markdown_table_rows(text, header)
+    if rows is None:
+        errors.append(f"{contract_name} must be exactly one structurally valid table")
+        return
+    key_field = header[0]
+    keys = [row[key_field] for row in rows]
+    if len(keys) != len(set(keys)):
+        errors.append(f"{contract_name} contains duplicate {key_field} declarations")
+    if set(keys) != set(expected_rows):
+        errors.append(f"{contract_name} must contain the exact controlled row set")
+    by_key = {row[key_field]: row for row in rows}
+    value_fields = header[1:]
+    for key, expected_values in expected_rows.items():
+        row = by_key.get(key)
+        if row is None:
+            continue
+        normalized = (
+            (expected_values,)
+            if isinstance(expected_values, str)
+            else expected_values
+        )
+        if len(normalized) != len(value_fields):
+            errors.append(f"internal {contract_name} validator contract is malformed")
+            continue
+        for field, expected in zip(value_fields, normalized):
+            if row[field] != expected:
+                errors.append(
+                    f"{contract_name} {key} {field} must be exactly: {expected}"
+                )
+
+
+def validate_dr_0002_text(errors: list[str], text: str) -> None:
+    """Require one exact leading DR authority block plus bounded scope facts."""
+    metadata = leading_yaml_body(text, DR_0002_HEADING)
+    if metadata is None:
+        errors.append("DR-0002 leading YAML metadata is missing or malformed")
+    else:
+        parsed_fields: list[str] = []
+        malformed_lines: list[str] = []
+        for line in metadata.splitlines():
+            if not line.strip():
+                continue
+            match = re.fullmatch(r"([a-z][a-z0-9_]*):\s*(\S(?:.*\S)?)\s*", line)
+            if match is None:
+                malformed_lines.append(line)
+            else:
+                parsed_fields.append(match.group(1))
+        if malformed_lines:
+            errors.append("DR-0002 leading YAML contains malformed fields")
+        duplicates = sorted(
+            field for field, count in Counter(parsed_fields).items() if count > 1
+        )
+        if duplicates:
+            errors.append(
+                "DR-0002 leading YAML contains duplicate fields: "
+                + ", ".join(duplicates)
+            )
+        if set(parsed_fields) != set(DR_0002_LEADING_YAML):
+            errors.append("DR-0002 leading YAML must contain the exact authority fields")
+        for field, expected in DR_0002_LEADING_YAML.items():
+            actual = unique_yaml_value(metadata, field)
+            if actual != expected:
+                errors.append(f"DR-0002 {field} must be uniquely exactly: {expected}")
+
+    for token in (
+        "WP-P0-003B — Controlled File Import & Source Intake Security",
+        "No Design, migration or implementation",
+        "`ADM-004` is explicitly `PARTIAL / MULTI-WP`",
+        "WP-P0-008` owns the Data Quality/Admin product view",
+        "OQ-005 and a future runtime IAM Work Package",
+        "marketplaceintegration`\n  as the sole scheduler/worker",
+        "adminobservability` module consumes that contract",
+        "not a second executor/writer",
+        "OQ-005 and OQ-006 remain OPEN",
+        "No current infrastructure, provider or operating cost",
+        "`ACCEPTED`, with repository effective date pending",
+    ):
+        if token not in text:
+            errors.append(f"DR-0002 missing bounded-split contract: {token}")
+
+
 def validate_wp_p0_003_work_package_text(
     errors: list[str], text: str
 ) -> None:
@@ -824,6 +1146,43 @@ def validate_wp_p0_003_work_package_text(
                     errors.append(
                         f"WP-P0-003 {source_id} later owner/Gate missing: {token}"
                     )
+            for field, tokens in WP_P0_003_CLOSURE_FIELD_TOKENS.get(
+                source_id, {}
+            ).items():
+                for token in tokens:
+                    if token not in row[field]:
+                        errors.append(
+                            f"WP-P0-003 {source_id} {field} missing: {token}"
+                        )
+
+    validate_exact_keyed_table(
+        errors,
+        text,
+        WP_P0_003_AUTHORITY_HEADER,
+        WP_P0_003_AUTHORITY_CONTRACT,
+        "WP-P0-003 runtime authority declaration",
+    )
+    validate_exact_keyed_table(
+        errors,
+        text,
+        WP_P0_003_RAW_OUTCOME_HEADER,
+        WP_P0_003_RAW_OUTCOME_CONTRACT,
+        "WP-P0-003 Raw outcome contract",
+    )
+    validate_exact_keyed_table(
+        errors,
+        text,
+        WP_P0_003_RATE_LIMIT_HEADER,
+        WP_P0_003_RATE_LIMIT_CONTRACT,
+        "WP-P0-003 rate-limit identity contract",
+    )
+    validate_exact_keyed_table(
+        errors,
+        text,
+        WP_P0_003_OWNER_GATE_HEADER,
+        WP_P0_003_OWNER_GATE_CONTRACT,
+        "WP-P0-003 Owner Gate allocation",
+    )
 
     for required in (
         "No real Ozon/Wildberries HTTP/SDK Adapter",
@@ -833,7 +1192,10 @@ def validate_wp_p0_003_work_package_text(
         "Exact Raw bytes are durably stored and hash-verified before the corresponding",
         "cursor/checkpoint is acknowledged",
         "There may be only one scheduler/worker",
+        "marketplaceintegration` is the single owner",
+        "adminobservability` consumes module contracts",
         "A stale or expired worker cannot advance cursor",
+        "failure Raw must never be discarded",
         "Replay reads saved Raw evidence and performs zero Marketplace outbound calls",
         "Use forward-only V0007+ migrations; never edit V0001–V0006",
         "OQ-006 blocks concrete Object Storage/Secret Final Design approval",
@@ -1026,12 +1388,16 @@ def validate_wp_p0_003_activation_text(
     if backlog_rows is None:
         errors.append("WP-P0-003 activation requires a valid Phase 0 backlog")
     else:
+        backlog_ids = [row["ID"] for row in backlog_rows]
+        if len(backlog_ids) != len(set(backlog_ids)):
+            errors.append("Phase 0 backlog contains duplicate Work Package IDs")
         ready = [row for row in backlog_rows if row["Status"] == DESIGN_ACTIVE_GATE]
         if [row["ID"] for row in ready] != [WP_P0_003_ID]:
             errors.append("WP-P0-003 must be the only READY_FOR_DESIGN Work Package")
         by_id = {row["ID"]: row for row in backlog_rows}
         wp3 = by_id.get(WP_P0_003_ID)
-        wp3b = by_id.get("WP-P0-003B")
+        wp3b = by_id.get(WP_P0_003B_ID)
+        wp8 = by_id.get("WP-P0-008")
         expected_wp3 = {
             "Title": "Durable Ingestion Control Plane & Immutable Raw Evidence",
             "Status": DESIGN_ACTIVE_GATE,
@@ -1046,7 +1412,13 @@ def validate_wp_p0_003_activation_text(
             requirements = wp3["Core source requirements"]
             if "INT-019" in requirements:
                 errors.append("backlog WP-P0-003 cannot retain INT-019")
-            for token in ("D-03/D-04", "HR-01/02", "INT-001/004/006–014/021", "ADM-002"):
+            for token in (
+                "D-03/D-04",
+                "HR-01/02",
+                "INT-001/004/006–014/021",
+                "ADM-002",
+                "ADM-004 generic runtime/recovery subset",
+            ):
                 if token not in requirements:
                     errors.append(f"backlog WP-P0-003 allocation missing: {token}")
         if wp3b is None:
@@ -1063,6 +1435,23 @@ def validate_wp_p0_003_activation_text(
             for token in ("INT-019", "manual-file portions of INT-010/011"):
                 if token not in wp3b["Core source requirements"]:
                     errors.append(f"backlog WP-P0-003B allocation missing: {token}")
+        if wp8 is None:
+            errors.append("Phase 0 backlog is missing WP-P0-008")
+        else:
+            expected_wp8 = {
+                "Title": "Data Quality & Daily Business Report v1",
+                "Status": "DRAFT",
+                "Dependencies": "WP-P0-003–007",
+            }
+            for field, expected in expected_wp8.items():
+                if wp8[field] != expected:
+                    errors.append(f"backlog WP-P0-008 {field} must be exactly: {expected}")
+            for token in (
+                "ADM-003",
+                "ADM-004 final product/management closure",
+            ):
+                if token not in wp8["Core source requirements"]:
+                    errors.append(f"backlog WP-P0-008 allocation missing: {token}")
 
     active_objective = h2_section_body(current_state_text, "## Active objective") or ""
     next_action = h2_section_body(current_state_text, "## Next authorized action") or ""
@@ -1100,19 +1489,7 @@ def validate_wp_p0_003_activation_text(
         if token not in oq_section:
             errors.append(f"WP-P0-003 Open Question disposition missing: {token}")
 
-    for token in (
-        "decision_request: DR-0002",
-        "status: ACCEPTED",
-        "owner_approval: EXPLICIT",
-        "effective_condition: GOVERNANCE_PR_MERGE",
-        "WP-P0-003B — Controlled File Import & Source Intake Security",
-        "No Design, migration or implementation",
-        "OQ-005 and OQ-006 remain OPEN",
-        "No current infrastructure, provider or operating cost",
-        "`ACCEPTED`, with repository effective date pending",
-    ):
-        if token not in decision_request_text:
-            errors.append(f"DR-0002 missing bounded-split contract: {token}")
+    validate_dr_0002_text(errors, decision_request_text)
 
 
 def project_charter_status(text: str) -> str | None:
@@ -1664,12 +2041,15 @@ def validate_wp_p0_002_traceability_text(
 def validate_wp_p0_003_traceability_text(
     errors: list[str], text: str
 ) -> None:
-    """Require the exact Design-only WP-P0-003 allocation and empty seed evidence."""
+    """Bind Design-only allocation and reject all premature implementation proof."""
     try:
         rows = list(csv.DictReader(text.splitlines()))
     except csv.Error as error:
         errors.append(f"WP-P0-003 traceability is unreadable: {error}")
         return
+    source_ids = [row.get("source_id", "") for row in rows]
+    if len(source_ids) != len(set(source_ids)):
+        errors.append("WP-P0-003 traceability contains duplicate source_id rows")
     by_id = {row.get("source_id", ""): row for row in rows}
     for source_id, (
         work_packages,
@@ -1699,7 +2079,7 @@ def validate_wp_p0_003_traceability_text(
                 errors.append(
                     f"traceability {source_id} notes missing WP-P0-003 disposition: {token}"
                 )
-        if source_id in WP_P0_003_SEED_TRACEABILITY_IDS:
+        if source_id in WP_P0_003_PREIMPLEMENTATION_EMPTY_TRACEABILITY_IDS:
             for field in ("code_location", "test_case", "evidence"):
                 if row.get(field, "").strip():
                     errors.append(
@@ -2564,6 +2944,23 @@ def validate_completion_state(errors: list[str]) -> None:
     )
 
 
+def validate_wp_p0_003_record_paths(
+    errors: list[str], existing_paths: set[str]
+) -> None:
+    """Keep WP-P0-003B DRAFT by rejecting every canonical record spelling."""
+    for relative in sorted(existing_paths):
+        path = Path(relative)
+        if (
+            path.parent.as_posix() == "docs/03-work-items"
+            and path.name.startswith(f"{WP_P0_003B_ID}")
+            and path.suffix == ".md"
+        ):
+            errors.append(
+                "WP-P0-003B must remain DRAFT without a canonical Work Package file: "
+                + relative
+            )
+
+
 def validate_wp_p0_003_activation(errors: list[str]) -> None:
     paths = {
         "current": ROOT / "docs/00-governance/CURRENT_STATE.md",
@@ -2582,14 +2979,11 @@ def validate_wp_p0_003_activation(errors: list[str]) -> None:
         paths["open_questions"].read_text(encoding="utf-8"),
         paths["decision_request"].read_text(encoding="utf-8"),
     )
-    wp3b_records = sorted(
-        (ROOT / "docs/03-work-items").glob("WP-P0-003B*.md")
-    )
-    for path in wp3b_records:
-        errors.append(
-            "WP-P0-003B must remain DRAFT without a canonical Work Package file: "
-            + path.relative_to(ROOT).as_posix()
-        )
+    wp3b_records = {
+        path.relative_to(ROOT).as_posix()
+        for path in (ROOT / "docs/03-work-items").glob("WP-P0-003B*.md")
+    }
+    validate_wp_p0_003_record_paths(errors, wp3b_records)
 
 
 def git_scan_paths(root: Path = ROOT) -> list[Path]:

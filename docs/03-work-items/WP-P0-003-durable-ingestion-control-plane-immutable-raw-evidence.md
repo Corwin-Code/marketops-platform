@@ -35,6 +35,8 @@ Tech/Data operators must eventually be able to:
 - register and inspect Schedule, Manual, backfill and replay work;
 - distinguish queued, leased, running, retry-wait, blocked, succeeded and
   terminal-failure states;
+- inspect generic Job Run, Error Queue, Replay and Dead-letter state, invoke a
+  bounded recovery command and follow its audit linkage;
 - inspect cursor/checkpoint, Freshness, attempt, queue, lease, schema-observation
   and safe-error facts;
 - replay already-saved Raw evidence with zero Marketplace outbound calls; and
@@ -52,15 +54,15 @@ named later owner. Planning and Design do not verify a source requirement.
 | --- | --- | --- | --- | --- |
 | D-03 | MULTI-WP | Remaining internal PostgreSQL Task/Worker obligation after the verified WP-P0-001 Modular Monolith foundation | INT-017 platform-write Command Outbox | WP-P0-003 acceptance Gate closes the remaining worker subset; no later owner after verification |
 | D-04 | PARTIAL | Immutable Raw evidence | Inventory and Financial Ledgers | WP-P0-007 |
-| HR-01 | MULTI-WP | Durable Raw contract/runtime for generic acquisition | Every real source path must later prove immutable evidence conformance | WP-P0-003B, WP-P0-005, WP-P0-006 and WP-P0-007 |
+| HR-01 | MULTI-WP | Durable Raw contract/runtime preserves exact returned response/report/event bytes for successes and business-meaningful failures with request metadata, hash, schema version, source time, ingestion time and provenance | Every real source path must later prove immutable evidence conformance; only transport/connectivity failure with no returned source bytes may use a failure-record-only path | WP-P0-003B, WP-P0-005, WP-P0-006 and WP-P0-007 |
 | HR-02 | MULTI-WP | Trigger/job/Raw/cursor/replay idempotency | Adapter, Core and Ledger effects | WP-P0-005, WP-P0-006 and WP-P0-007 |
 | INT-001 | STRUCTURE_ONLY | Platform-neutral acquisition port and envelope | Real Ozon/Wildberries Adapter and vendor HTTP | WP-P0-005 and WP-P0-006 |
 | INT-004 | PARTIAL | Persisted Schedule/Manual trigger and internal push-envelope intake contract | Public webhook, authenticity and authenticated public manual surface | WP-P0-005/WP-P0-006 plus the runtime IAM Work Package selected after OQ-005 |
 | INT-006 | PARTIAL | Generic Cursor/Offset/Page/Date Window/None strategy and safe checkpoint/CAS contract | Endpoint-specific pagination semantics | WP-P0-005 and WP-P0-006 |
-| INT-007 | PARTIAL | Generic Account + Endpoint rate-limit scope, persistence and backpressure contract | Verified platform quotas and response semantics | WP-P0-005 and WP-P0-006 |
+| INT-007 | PARTIAL | Generic Account + Endpoint + opaque Credential reference/identity rate-limit scope, persistence and backpressure contract | Verified platform quotas and response semantics; no Secret retrieval or real quota guessing | WP-P0-005 and WP-P0-006; OQ-006 remains OPEN |
 | INT-008 | PARTIAL | Generic timeout, backoff, jitter, retry-budget and circuit-state behavior integrated with job state | Platform error taxonomy | WP-P0-005 and WP-P0-006 |
 | INT-009 | MULTI-WP | Generic job/Raw/cursor/replay deduplication | Downstream business effects | WP-P0-005, WP-P0-006 and WP-P0-007 |
-| INT-010 | PARTIAL / MULTI-WP | Immutable Raw metadata, exact bytes/object reference/hash, source kinds and read verification | Actual API/report/push/manual-file integrations and approved provider acceptance | WP-P0-003B, WP-P0-005 and WP-P0-006; OQ-006 gates provider acceptance |
+| INT-010 | PARTIAL / MULTI-WP | Immutable Raw request metadata, exact returned bytes/object reference/hash, schema version, source/ingestion time, provenance, source kinds and read verification for successful and business-meaningful failed calls | Actual API/report/push/manual-file integrations and approved provider acceptance; only no-source-byte transport/connectivity failures permit failure-record-only treatment | WP-P0-003B, WP-P0-005 and WP-P0-006; OQ-006 gates provider acceptance |
 | INT-011 | PARTIAL | Generic schema fingerprint/observation and unknown-field capture | Concrete file and platform schemas | WP-P0-003B, WP-P0-005 and WP-P0-006 |
 | INT-012 | PARTIAL | Generic error/replay runtime and replay without redownload | Source-specific reconciliation | WP-P0-005, WP-P0-006 and WP-P0-007 |
 | INT-013 | PARTIAL | Backfill manifest/partition/resume engine and synthetic fixtures | Real 90–180-day source history evidence | WP-P0-005, WP-P0-006 and WP-P0-007 |
@@ -68,6 +70,7 @@ named later owner. Planning and Design do not verify a source requirement.
 | INT-019 | OUT_OF_SCOPE | No controlled file import capability in this Work Package | CSV/Excel/platform-report import, file-upload security and importer workflow | WP-P0-003B |
 | INT-021 | STRUCTURE_ONLY | Opaque native status/error and unknown-state envelope | Actual native mappings and versioned semantic evidence | WP-P0-005, WP-P0-006 and WP-P0-007 |
 | ADM-002 | MULTI-WP | Job Schedule and Backfill operator contract | WP-P0-002 already verified Feature Flag/Capability metadata; real capability evidence remains open | WP-P0-005 and WP-P0-006 |
+| ADM-004 | PARTIAL / MULTI-WP | Generic Job Run, Error Queue, Replay and Dead-letter state, recovery-command contract, audit linkage and single runtime authority | Data Quality/Admin product view, cross-domain UX and final Phase 0 management closure; authenticated/public operator surface | WP-P0-008; OQ-005 and the future runtime IAM Work Package gate the authenticated/public surface |
 
 The split of `INT-019` is recorded by
 `docs/00-governance/DR-0002-split-controlled-file-import-from-wp-p0-003.md`.
@@ -85,19 +88,27 @@ immutable Raw durability, idempotency, replay and backfill:
 3. PostgreSQL task/job state, lease, heartbeat, expiry, fencing, retry scheduling,
    attempt, cancellation and terminal-fact contracts;
 4. Cursor, Offset, Page, Date Window and None/Unknown checkpoint strategies;
-5. generic Account + Endpoint rate limiting, timeout, backoff, jitter,
-   retry-budget, circuit-state and backpressure behavior tied to worker state;
+5. generic Account + Endpoint + opaque Credential reference/identity rate
+   limiting, timeout, backoff, jitter, retry-budget, circuit-state and
+   backpressure behavior tied to worker state, without Secret retrieval or real
+   quota guessing; distinct Credential scopes/identities under the same Account
+   and Endpoint must not be silently merged unless future verified platform
+   evidence explicitly permits it;
 6. idempotency identities for trigger, job, source page/event/file identity, Raw
    object and replay;
-7. immutable Raw exchange/event/report metadata, exact-byte hash/length,
-   source/ingestion/processing time, schema observation and opaque object reference;
+7. immutable Raw exchange/event/report request metadata, exact returned bytes,
+   hash/length, schema version, source/ingestion/processing time, provenance and
+   opaque object reference for successes and business-meaningful failures;
 8. an Object Storage port and production-capability contract, with concrete
    provider decisions gated by OQ-006;
-9. attributable error/exception state, selective replay from stored evidence and
-   reconciliation hooks;
+9. attributable error/exception state, generic Job Run/Error Queue/Replay/
+   Dead-letter state, selective replay from stored evidence and reconciliation
+   hooks;
 10. immutable backfill requested scope/window, partition progress, resume and
     outcome/difference summary;
-11. safe internal operator query/command contracts and audit linkage; and
+11. safe internal operator query/recovery-command contracts and audit linkage,
+    while leaving the Data Quality/Admin product view, cross-domain UX and final
+    Phase 0 management closure to WP-P0-008; and
 12. forward-only migration, architecture, runbook, metric and evidence plans.
 
 Design must stay at contract, state, authority, transaction, security and
@@ -142,7 +153,8 @@ No accepted ADR or Owner Decision is changed by this Work Package record.
 - `marketplaceintegration` is the single owner of acquisition contracts, job
   orchestration, cursor/checkpoint, source policy and Raw intake coordination.
 - `adminobservability` consumes module contracts to expose safe internal views
-  and commands; it is not a second scheduler, worker or persistence authority.
+  and request safe recovery commands; it is not a second executor, writer,
+  scheduler, worker or persistence authority.
 - `organizationaccount` and `identityaccess` provide existing references and
   evaluations through public module APIs; cross-module Repository access remains
   prohibited.
@@ -155,6 +167,15 @@ No accepted ADR or Owner Decision is changed by this Work Package record.
 
 There may be only one scheduler/worker, cursor writer, replay path and object-store
 authority for this capability.
+
+The structured authority declaration is binding:
+
+| Capability | Sole executor / writer | Consumer-only module | Authority mode |
+| --- | --- | --- | --- |
+| Job scheduler/worker | marketplaceintegration | adminobservability | SINGLE |
+| Cursor/checkpoint writer | marketplaceintegration | adminobservability | SINGLE |
+| Replay/dead-letter recovery command executor | marketplaceintegration | adminobservability | SINGLE |
+| Raw object-store intake coordinator | marketplaceintegration | adminobservability | SINGLE |
 
 ## 8. Binding Correctness Invariants
 
@@ -169,8 +190,13 @@ authority for this capability.
    so an acknowledged cursor never points beyond durable evidence.
 6. Duplicate trigger/source identity/replay cannot create duplicate logical
    processing effects.
-7. Every meaningful acquisition attempt has safe request metadata and either
-   immutable evidence or an attributable failure record.
+7. Every successful call and every business-meaningful failed call that returns
+   response/report/event bytes preserves safe request metadata, the exact
+   returned bytes, hash, schema version, source time, ingestion time and
+   provenance as immutable Raw, regardless of HTTP or business status. Only a
+   transport/connectivity failure with no returned source bytes may use an
+   attributable failure-record-only path; failure Raw must never be discarded
+   or downgraded because of HTTP or business status.
 8. Schema changes and unknown fields are observed; unknown values are never
    coerced to success.
 9. Replay reads saved Raw evidence and performs zero Marketplace outbound calls.
@@ -187,8 +213,13 @@ Design Gate.
 ## 9. Raw, Object Storage, Hash and Schema Boundary
 
 - Hash exact received bytes, never a reserialized representation.
+- Preserve returned response/report/event bytes for both successful and
+  business-meaningful failed calls; HTTP/business status never downgrades Raw.
+- Permit failure-record-only treatment only for a transport/connectivity failure
+  that returned no source bytes.
 - Store immutable object identity/reference, hash algorithm/value, byte length,
-  media/source type and provenance in the database.
+  media/source type, request metadata, schema version, source time, ingestion
+  time and provenance in the database.
 - Integrity-check object reads before replay or processing.
 - Keep object references opaque and tamper-checked; never persist or log bucket
   credentials or signed URLs.
@@ -201,6 +232,24 @@ Design Gate.
 
 The application path may append/read Raw evidence but must not update or delete
 it. Mutable workflow and processing state belongs outside immutable Raw rows.
+
+The structured Raw outcome contract is binding:
+
+| Source outcome | Returned source bytes | Required durable treatment |
+| --- | --- | --- |
+| Successful call | YES | Immutable Raw exact bytes plus request metadata, hash, schema version, source time, ingestion time and provenance |
+| Business-meaningful failed call | YES | Immutable Raw exact bytes plus request metadata, hash, schema version, source time, ingestion time and provenance; never failure-record-only |
+| Transport/connectivity failure | NO | Attributable failure-record-only treatment is permitted |
+
+The structured rate-limit identity contract is binding:
+
+| Dimension / rule | Required contract |
+| --- | --- |
+| Account | Opaque Account identity |
+| Endpoint | Provider-neutral Endpoint identity |
+| Credential | Opaque Credential reference/identity; no Secret retrieval |
+| Partitioning | Distinct Credential scopes/identities under the same Account and Endpoint must not be silently merged unless future verified platform evidence explicitly permits it |
+| Quota semantics | No real quota guessing; WP-P0-005/WP-P0-006 retain verified platform quotas and response semantics; OQ-006 remains OPEN |
 
 ## 10. Security, No-leak and Intake Boundary
 
@@ -271,8 +320,16 @@ Mandatory failure-window proofs include crash before object persistence; object
 persistence followed by failed Raw-reference commit; Raw commit followed by
 failed cursor CAS; duplicate cursor retry; stale worker after lease expiry;
 missing/corrupt object during replay; partial page/backfill; schema drift;
-rate-limit/timeout/retry exhaustion; and process restart with queued/running/
-retry-wait work.
+rate-limit/timeout/retry exhaustion; a business-meaningful failed call with
+returned response/report/event bytes that must remain immutable Raw rather than
+a failure-record-only entry; a transport/connectivity failure with no returned
+source bytes; distinct Credential identities under one Account/Endpoint that
+must not be silently merged; and process restart with queued/running/retry-wait
+work.
+
+Governance validation can bind these structured fields and reject controlled
+counter-mutations, but it does not replace independent semantic Controller
+review of the complete contract.
 
 ## 14. Risks and Owner Gates
 
@@ -292,6 +349,13 @@ Owner-controlled Gates remain:
 - OQ-101/OQ-102 block actual onboarding and verified platform capability facts.
 - OQ-106 blocks concrete ERP/WMS/accounting source integration planning.
 - OQ-107 blocks deployment readiness and production hosting/privacy/legal claims.
+
+The structured Owner Gate allocation is binding:
+
+| Gate | Status | Allowed before answer | Blocked before answer | Later owner |
+| --- | --- | --- | --- | --- |
+| OQ-005 | OPEN | Internal provider-neutral worker and operator contract Design | Any authenticated/public operator, webhook, manual-trigger or file-upload runtime surface | Future runtime IAM Work Package selected by the Controller |
+| OQ-006 | OPEN | Provider-neutral object and opaque Credential-reference contract Design | Concrete Object Storage/Secret Final Design approval, Implementation authorization, bounded Raw acceptance, Secret retrieval and real quota assumptions | Human Owner + Security, then WP-P0-005/WP-P0-006 platform evidence |
 
 Planning keeps all of these questions OPEN and requests no Secret or production
 data.
