@@ -2105,9 +2105,121 @@ class WpP0003ActivationContractTests(unittest.TestCase):
         validate_wp_p0_003_work_package_text(errors, text)
         return errors
 
+    def assert_prior_evidence_provenance_mutations_rejected(
+        self,
+        source_id: str,
+        field: str,
+        incorrectly_attributed_source_id: str,
+    ) -> None:
+        original = repository_governance_text("docs/01-requirements/traceability.csv")
+        rows = {
+            row["source_id"]: row
+            for row in csv.DictReader(original.splitlines())
+        }
+        wp_p0_003_looking = {
+            "code_location": (
+                "backend/marketops-server/src/main/java/com/mimococo/marketops/"
+                "marketplaceintegration/internal/application/IngestionWorker.java"
+            ),
+            "test_case": "TC-ING-003",
+            "evidence": "docs/07-phase-evidence/WP-P0-003/acceptance-criteria.md",
+        }
+        mutations = {
+            "arbitrary_non_empty": "arbitrary-non-empty-replacement",
+            "wp_p0_003_looking": wp_p0_003_looking[field],
+            "incorrect_existing_prior_subset": rows[
+                incorrectly_attributed_source_id
+            ][field],
+        }
+        self.assertTrue(rows[source_id][field])
+        for mutation_name, replacement in mutations.items():
+            with self.subTest(
+                source_id=source_id,
+                field=field,
+                mutation=mutation_name,
+            ):
+                self.assertNotEqual(rows[source_id][field], replacement)
+                traceability = mutate_traceability_field(
+                    original,
+                    source_id,
+                    field,
+                    replacement,
+                )
+                errors = self.traceability_errors(traceability)
+                self.assertTrue(
+                    any(
+                        f"{source_id} prior evidence {field} must be exactly"
+                        in error
+                        for error in errors
+                    )
+                )
+
+    def assert_dr_body_authority_declaration_rejected(
+        self, declaration: str, field: str
+    ) -> None:
+        decision_request = repository_governance_text(
+            "docs/00-governance/DR-0002-split-controlled-file-import-from-wp-p0-003.md"
+        ) + f"\n{declaration}\n"
+        errors = self.activation_errors(decision_request=decision_request)
+        self.assertTrue(
+            any(
+                f"DR-0002 {field} must appear exactly once in leading YAML "
+                "and nowhere else" in error
+                for error in errors
+            )
+        )
+
     def test_exact_activation_and_traceability_contract_are_valid(self) -> None:
         self.assertEqual([], self.activation_errors())
         self.assertEqual([], self.traceability_errors())
+
+    def test_r04_legitimate_prior_evidence_contract_is_valid(self) -> None:
+        self.assertEqual([], self.traceability_errors())
+
+    def test_r04_d03_code_location_rejects_provenance_drift(self) -> None:
+        self.assert_prior_evidence_provenance_mutations_rejected(
+            "D-03", "code_location", "ADM-002"
+        )
+
+    def test_r04_d03_test_case_rejects_provenance_drift(self) -> None:
+        self.assert_prior_evidence_provenance_mutations_rejected(
+            "D-03", "test_case", "ADM-002"
+        )
+
+    def test_r04_d03_evidence_rejects_provenance_drift(self) -> None:
+        self.assert_prior_evidence_provenance_mutations_rejected(
+            "D-03", "evidence", "ADM-002"
+        )
+
+    def test_r04_adm002_code_location_rejects_provenance_drift(self) -> None:
+        self.assert_prior_evidence_provenance_mutations_rejected(
+            "ADM-002", "code_location", "D-03"
+        )
+
+    def test_r04_adm002_test_case_rejects_provenance_drift(self) -> None:
+        self.assert_prior_evidence_provenance_mutations_rejected(
+            "ADM-002", "test_case", "D-03"
+        )
+
+    def test_r04_adm002_evidence_rejects_provenance_drift(self) -> None:
+        self.assert_prior_evidence_provenance_mutations_rejected(
+            "ADM-002", "evidence", "D-03"
+        )
+
+    def test_s01_dr_body_status_parallel_declaration_is_rejected(self) -> None:
+        self.assert_dr_body_authority_declaration_rejected(
+            "status: REJECTED", "status"
+        )
+
+    def test_s01_dr_body_owner_approval_parallel_declaration_is_rejected(self) -> None:
+        self.assert_dr_body_authority_declaration_rejected(
+            "owner_approval: NONE", "owner_approval"
+        )
+
+    def test_s01_dr_body_effective_condition_parallel_declaration_is_rejected(self) -> None:
+        self.assert_dr_body_authority_declaration_rejected(
+            "effective_condition: IMMEDIATE", "effective_condition"
+        )
 
     def test_current_state_must_remain_design_only(self) -> None:
         current = repository_governance_text(

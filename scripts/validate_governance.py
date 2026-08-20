@@ -413,6 +413,11 @@ DR_0002_LEADING_YAML = {
     "controller_recommendation": "ACCEPT_BOUNDED_SPLIT",
     "effective_condition": "GOVERNANCE_PR_MERGE",
 }
+DR_0002_UNIQUE_AUTHORITY_KEYS = (
+    "status",
+    "owner_approval",
+    "effective_condition",
+)
 
 # The two coherent WP-P0-002 stages. The record's Status selects the stage and
 # every stage-dependent field must agree with it; any other combination is an
@@ -653,6 +658,36 @@ WP_P0_003_TRACEABILITY_CONTRACT = {
             "authenticated/public operator surface",
         ),
     ),
+}
+
+WP_P0_003_PRIOR_EVIDENCE_CONTRACT = {
+    "D-03": {
+        "code_location": (
+            "backend/marketops-server/src/test/java/com/mimococo/marketops/"
+            "architecture/ArchitectureRules.java"
+        ),
+        "test_case": (
+            "TC-ARCH-001;TC-ARCH-002;TC-ARCH-003;TC-ARCH-004;"
+            "TC-ARCH-005;TC-ARCH-006;TC-ARCH-007;TC-ARCH-008"
+        ),
+        "evidence": "docs/07-phase-evidence/WP-P0-001/local-verification.md",
+    },
+    "ADM-002": {
+        "code_location": (
+            "backend/marketops-server/src/main/java/com/mimococo/marketops/"
+            "marketplaceintegration/internal/application/FeatureFlagService.java;"
+            "backend/marketops-server/src/main/java/com/mimococo/marketops/"
+            "shared/ProductionWritePolicy.java"
+        ),
+        "test_case": (
+            "TC-API-040;TC-API-041;TC-API-050;TC-API-085;"
+            "TC-FF-101;TC-FF-103;TC-DB-207"
+        ),
+        "evidence": (
+            "docs/07-phase-evidence/WP-P0-002/README.md;"
+            "docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md"
+        ),
+    },
 }
 
 WP_P0_003_PREIMPLEMENTATION_EMPTY_TRACEABILITY_IDS = {
@@ -1076,6 +1111,17 @@ def validate_dr_0002_text(errors: list[str], text: str) -> None:
             actual = unique_yaml_value(metadata, field)
             if actual != expected:
                 errors.append(f"DR-0002 {field} must be uniquely exactly: {expected}")
+
+    for field in DR_0002_UNIQUE_AUTHORITY_KEYS:
+        declarations = re.findall(
+            rf"(?m)^{re.escape(field)}:\s*(.*?)\s*$",
+            text,
+        )
+        if len(declarations) != 1:
+            errors.append(
+                f"DR-0002 {field} must appear exactly once in leading YAML "
+                "and nowhere else"
+            )
 
     for token in (
         "WP-P0-003B — Controlled File Import & Source Intake Security",
@@ -2079,6 +2125,14 @@ def validate_wp_p0_003_traceability_text(
                 errors.append(
                     f"traceability {source_id} notes missing WP-P0-003 disposition: {token}"
                 )
+        prior_evidence = WP_P0_003_PRIOR_EVIDENCE_CONTRACT.get(source_id)
+        if prior_evidence is not None:
+            for field, expected in prior_evidence.items():
+                if row.get(field) != expected:
+                    errors.append(
+                        f"traceability {source_id} prior evidence {field} must be "
+                        f"exactly: {expected}"
+                    )
         if source_id in WP_P0_003_PREIMPLEMENTATION_EMPTY_TRACEABILITY_IDS:
             for field in ("code_location", "test_case", "evidence"):
                 if row.get(field, "").strip():
