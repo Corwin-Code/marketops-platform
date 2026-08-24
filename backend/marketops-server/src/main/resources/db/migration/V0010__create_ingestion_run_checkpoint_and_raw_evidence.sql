@@ -192,37 +192,52 @@ CREATE TABLE ops.ingestion_checkpoint (
         CHECK (strategy <> 'UNKNOWN' OR position_value IS NULL)
 );
 
--- Advance the cursor only if the evidence for it is already committed.
+-- Advance the cursor only if the evidence for it is already committed, and
+-- only for the worker that still holds the run.
 --
--- The observation lookup is the whole point: the caller cannot advance past
--- bytes that were not stored, because the row it must name has to exist in this
--- transaction. Passing an observation from another run, or one that does not
--- cover the named logical unit, matches nothing and the advance is refused.
+-- The run row is locked first and held to commit, so the authority check and
+-- the cursor write are one unit: a takeover cannot land between them, it can
+-- only wait behind them or precede them entirely. The observation lookup is
+-- the second half of the point: the caller cannot advance past bytes that were
+-- not stored, because the row it must name has to exist in this transaction.
 --
 -- The compare-and-set on checkpoint_version makes a superseded worker's late
--- advance a zero-row update rather than a rewind.
+-- advance a zero-row update rather than a rewind, and a zero-row outcome is
+-- raised, never returned as success.
+--
+-- SECURITY DEFINER is the enforcement, not a convenience: the application
+-- role holds no UPDATE on the run or the checkpoint, so this function is the
+-- only path by which a cursor can move at all.
 CREATE FUNCTION ops.acknowledge_checkpoint(
-    p_run_id             uuid,
-    p_fence_token        bigint,
-    p_observation_id     uuid,
-    p_expected_version   bigint,
-    p_position_value     text)
+    p_run_id               uuid,
+    p_expected_fence       bigint,
+    p_expected_lease_owner text,
+    p_observation_id       uuid,
+    p_expected_version     bigint,
+    p_position_value       text)
 RETURNS bigint
 LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
 AS $$
 DECLARE
-    target_job    uuid;
-    new_version   bigint;
+    target_job  uuid;
+    new_version bigint;
 BEGIN
-    -- The run must still be this worker's, at this fence.
+    -- Lock the run and hold the lock through the checkpoint write.
     SELECT run.job_id INTO target_job
       FROM ops.ingestion_run AS run
      WHERE run.id = p_run_id
-       AND run.fence_token = p_fence_token
-       AND run.state = 'RUNNING';
+       AND run.fence_token = p_expected_fence
+       AND run.lease_owner = p_expected_lease_owner
+       AND run.state = 'RUNNING'
+       AND run.lease_expires_at > clock_timestamp()
+       FOR UPDATE OF run;
 
     IF target_job IS NULL THEN
-        RAISE EXCEPTION 'run % does not hold authority at fence %', p_run_id, p_fence_token
+        RAISE EXCEPTION
+            'run % is not held by % at fence % with a live lease',
+            p_run_id, p_expected_lease_owner, p_expected_fence
             USING ERRCODE = 'MO008';
     END IF;
 
@@ -259,27 +274,35 @@ BEGIN
 END;
 $$;
 
+REVOKE ALL ON FUNCTION ops.acknowledge_checkpoint(uuid, bigint, text, uuid, bigint, text)
+    FROM PUBLIC;
+
 -- ---------------------------------------------------------------------------
 -- The grant
 -- ---------------------------------------------------------------------------
 
--- Turn a control snapshot into a bounded call authority, or refuse.
+-- Evaluate, consume and record one bounded call authority in one transaction,
+-- or refuse with nothing changed.
 --
--- Everything the evaluation read is consumed here in one transaction, and every
--- way the snapshot could have gone stale is a zero-row outcome:
+-- The caller supplies references only: the run it claims to hold, the fence
+-- and lease owner it claims to hold it at, and the scope grant and Credential
+-- rows it selected. Everything else -- the job, the organization, the account,
+-- the subject, the epochs, the temporal boundary relation -- is derived from
+-- committed rows inside this transaction. Evidence describes the decision;
+-- nothing a caller submits can be the decision.
 --
---   change      the four epochs must still equal the values that were read
---   time        the grant instant must be strictly before the boundary
---   authority   the run must still be this worker's, at this fence
+-- The transaction is the serialization point:
 --
--- The epoch comparison is a count against four supplied pairs rather than a
--- per-row check, because a missing epoch row and a changed one must have the
--- same effect. A per-row comparison would silently pass over a scope whose row
--- is absent, and an absent guard is exactly the state that must not authorise.
---
--- The boundary comparison is strict. At the boundary the authority has ended,
--- so an instant equal to it is already outside; treating it as inside would put
--- the one case that is guaranteed to be wrong on the allowing side.
+--   authority   the run row is locked first, and the final transition re-checks
+--               fence, owner, state and lease in the UPDATE itself; zero rows
+--               is a raised refusal, never a fall-through
+--   change      the four epoch rows are locked FOR SHARE and held to commit, in
+--               the same ascending (scope_kind, scope_id) order the epoch
+--               triggers use to advance them, so a control mutation either
+--               commits before this transaction begins and is evaluated, or
+--               waits behind it and lands after the grant is already bounded
+--   time        the boundary relation is recomputed under those locks, and the
+--               grant instant must be strictly before its minimum
 --
 -- The returned authority is capped by the boundary. That cap is what carries
 -- the guarantee outward: the caller's existing "is there enough authority left
@@ -291,101 +314,197 @@ $$;
 -- live authority; bounding its completion would need a separate timeout proof,
 -- and no such proof is claimed here.
 CREATE FUNCTION platform.grant_call_authority(
-    p_run_id                 uuid,
-    p_fence_token            bigint,
-    p_organization_id        uuid,
-    p_marketplace_account_id uuid,
-    p_service_account_id     uuid,
-    p_credential_id          uuid,
-    p_epoch_organization     bigint,
-    p_epoch_account          bigint,
-    p_epoch_subject          bigint,
-    p_epoch_job              bigint,
-    p_temporal               platform.control_snapshot_temporal,
-    p_evaluated_at           timestamptz,
-    p_nominal_authority      interval,
-    p_correlation_id         text)
+    p_run_id               uuid,
+    p_expected_fence       bigint,
+    p_expected_lease_owner text,
+    p_scope_grant_id       uuid,
+    p_credential_id        uuid,
+    p_nominal_authority    interval,
+    p_correlation_id       text)
 RETURNS timestamptz
 LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
 AS $$
 DECLARE
-    target_job     uuid;
-    matched_scopes integer;
+    run_row        record;
+    epoch_scopes   text[];
+    epoch_values   bigint[];
+    evaluated      timestamptz;
+    snapshot       platform.control_snapshot_temporal;
     grant_at       timestamptz;
     authority_at   timestamptz;
+    granted_run    uuid;
 BEGIN
-    SELECT run.job_id INTO target_job
+    -- Lock the run, derive the identity graph from it, and hold the lock to
+    -- commit. Missing row and wrong-holder are the same refusal: what matters
+    -- is that this caller does not hold this run.
+    SELECT run.job_id,
+           run.fence_token,
+           run.lease_owner,
+           run.state,
+           run.lease_expires_at,
+           job.organization_id,
+           job.marketplace_account_id,
+           job.service_account_id
+      INTO run_row
       FROM ops.ingestion_run AS run
+      JOIN platform.ingestion_job AS job ON job.id = run.job_id
      WHERE run.id = p_run_id
-       AND run.fence_token = p_fence_token
-       AND run.state = 'LEASED';
+       FOR UPDATE OF run;
 
-    IF target_job IS NULL THEN
-        RAISE EXCEPTION 'run % does not hold authority at fence %', p_run_id, p_fence_token
+    IF run_row.job_id IS NULL
+        OR run_row.fence_token <> p_expected_fence
+        OR run_row.lease_owner IS DISTINCT FROM p_expected_lease_owner
+        OR run_row.state <> 'LEASED'
+        OR run_row.lease_expires_at <= clock_timestamp() THEN
+        RAISE EXCEPTION
+            'run % is not held by % at fence % in a live LEASED lease',
+            p_run_id, p_expected_lease_owner, p_expected_fence
             USING ERRCODE = 'MO008';
     END IF;
 
-    SELECT count(*)::integer INTO matched_scopes
-      FROM platform.control_epoch AS epoch
-     WHERE (epoch.scope_kind, epoch.scope_id, epoch.epoch) IN (
-               ('ORGANIZATION',        p_organization_id,        p_epoch_organization),
-               ('MARKETPLACE_ACCOUNT', p_marketplace_account_id, p_epoch_account),
-               ('SERVICE_ACCOUNT',     p_service_account_id,     p_epoch_subject),
-               ('JOB',                 target_job,               p_epoch_job));
-
-    IF matched_scopes <> 4 THEN
+    -- The selected scope grant must be a live READ authority of the derived
+    -- subject over the derived organization or account. A grant that belongs
+    -- to anyone else, is inactive, out of window, for another permission or
+    -- over another resource is the same refusal.
+    PERFORM 1
+      FROM iam.service_account_scope_grant AS scope_grant
+      JOIN iam.service_account AS subject
+        ON subject.id = scope_grant.service_account_id
+     WHERE scope_grant.id = p_scope_grant_id
+       AND scope_grant.service_account_id = run_row.service_account_id
+       AND scope_grant.organization_id = run_row.organization_id
+       AND scope_grant.permission_code = 'READ'
+       AND scope_grant.status = 'ACTIVE'
+       AND scope_grant.effective_from <= clock_timestamp()
+       AND (scope_grant.effective_to IS NULL
+            OR scope_grant.effective_to > clock_timestamp())
+       AND (scope_grant.organization_ref_id = run_row.organization_id
+            OR scope_grant.marketplace_account_ref_id = run_row.marketplace_account_id)
+       AND subject.organization_id = run_row.organization_id
+       AND subject.status = 'ACTIVE'
+       AND subject.expires_at > clock_timestamp();
+    IF NOT FOUND THEN
         RAISE EXCEPTION
-            'control snapshot is stale or incomplete: % of 4 scopes still match', matched_scopes
+            'scope grant % does not authorise subject % over this job now',
+            p_scope_grant_id, run_row.service_account_id
+            USING ERRCODE = 'MO012';
+    END IF;
+
+    -- The selected Credential must be a live READ credential of the derived
+    -- account. A STORE_SET credential without one active store scope row is
+    -- unusable rather than silently account-wide.
+    PERFORM 1
+      FROM platform.credential_metadata AS credential
+     WHERE credential.id = p_credential_id
+       AND credential.marketplace_account_id = run_row.marketplace_account_id
+       AND credential.organization_id = run_row.organization_id
+       AND credential.purpose_code = 'READ'
+       AND credential.status = 'ACTIVE'
+       AND credential.effective_from <= clock_timestamp()
+       AND credential.expires_at > clock_timestamp()
+       AND (credential.scope_mode = 'ACCOUNT'
+            OR EXISTS (SELECT 1
+                         FROM platform.credential_store_scope AS store_scope
+                        WHERE store_scope.credential_id = credential.id
+                          AND store_scope.status = 'ACTIVE'));
+    IF NOT FOUND THEN
+        RAISE EXCEPTION
+            'credential % is not a live READ credential of account %',
+            p_credential_id, run_row.marketplace_account_id
+            USING ERRCODE = 'MO013';
+    END IF;
+
+    -- Lock the four epoch rows and hold the locks to commit. The ascending
+    -- (scope_kind, scope_id) order matches platform.advance_control_epochs,
+    -- so a writer and a grant can only queue behind each other, never form an
+    -- ordering cycle. The count is asserted because an absent row and a
+    -- changed one must refuse identically.
+    SELECT array_agg(locked.scope_kind  ORDER BY locked.scope_kind),
+           array_agg(locked.epoch       ORDER BY locked.scope_kind)
+      INTO epoch_scopes, epoch_values
+      FROM (SELECT epoch.scope_kind, epoch.scope_id, epoch.epoch
+              FROM platform.control_epoch AS epoch
+             WHERE (epoch.scope_kind, epoch.scope_id) IN (
+                       ('ORGANIZATION',        run_row.organization_id),
+                       ('MARKETPLACE_ACCOUNT', run_row.marketplace_account_id),
+                       ('SERVICE_ACCOUNT',     run_row.service_account_id),
+                       ('JOB',                 run_row.job_id))
+             ORDER BY epoch.scope_kind, epoch.scope_id
+               FOR SHARE) AS locked;
+
+    IF coalesce(cardinality(epoch_scopes), 0) <> 4 THEN
+        RAISE EXCEPTION
+            'control snapshot is incomplete: % of 4 scopes have an epoch row',
+            coalesce(cardinality(epoch_scopes), 0)
             USING ERRCODE = 'MO010';
     END IF;
 
-    IF p_temporal.boundary_kind_count
-           <> (SELECT count(*) FROM platform.control_boundary_kind) THEN
-        RAISE EXCEPTION
-            'the supplied boundary set covers % kinds; % are declared',
-            p_temporal.boundary_kind_count,
-            (SELECT count(*) FROM platform.control_boundary_kind)
-            USING ERRCODE = 'MO005';
-    END IF;
+    -- Recompute the temporal boundary relation under the held locks. The
+    -- resolver itself refuses a missing, duplicate or undeclared kind, so a
+    -- snapshot that reaches the comparison below is a proven-complete one.
+    evaluated := clock_timestamp();
+    snapshot := platform.control_snapshot_temporal(
+        run_row.service_account_id, p_scope_grant_id,
+        run_row.marketplace_account_id, p_credential_id, evaluated);
 
     grant_at := clock_timestamp();
 
-    IF grant_at >= p_temporal.valid_until THEN
+    IF grant_at >= snapshot.valid_until THEN
         RAISE EXCEPTION
             'control snapshot expired at % before the grant at %',
-            p_temporal.valid_until, grant_at
+            snapshot.valid_until, grant_at
             USING ERRCODE = 'MO011';
     END IF;
 
-    authority_at := LEAST(grant_at + p_nominal_authority, p_temporal.valid_until);
+    authority_at := LEAST(grant_at + p_nominal_authority, snapshot.valid_until);
 
+    -- The final transition re-checks everything it depends on inside the
+    -- UPDATE itself and must change exactly one row. Zero rows means the run
+    -- authority was lost after the initial read -- the lease expired on the
+    -- wall clock, or the row changed in a way the lock could not prevent --
+    -- and the whole transaction rolls back with no evidence written.
     UPDATE ops.ingestion_run AS run
        SET state         = 'RUNNING',
            last_call_seq = run.last_call_seq + 1,
            updated_at    = grant_at
      WHERE run.id = p_run_id
-       AND run.fence_token = p_fence_token
-       AND run.state = 'LEASED';
+       AND run.fence_token = p_expected_fence
+       AND run.lease_owner = p_expected_lease_owner
+       AND run.state = 'LEASED'
+       AND run.lease_expires_at > clock_timestamp()
+    RETURNING run.id INTO granted_run;
+
+    IF granted_run IS NULL THEN
+        RAISE EXCEPTION
+            'run authority for % was lost before the grant could commit', p_run_id
+            USING ERRCODE = 'MO014';
+    END IF;
 
     INSERT INTO ops.authorization_decision_evidence (
-        id, job_id, service_account_id, marketplace_account_id, credential_id,
+        id, job_id, service_account_id, marketplace_account_id,
+        scope_grant_id, credential_id,
         evaluated_at, granted_at,
         control_epoch_scopes, control_epoch_values,
         control_snapshot_valid_until, boundary_kind_count, boundary_kind_set,
         boundary_set_digest, winning_boundary_kind,
         call_authority_expires_at, correlation_id)
     VALUES (
-        gen_random_uuid(), target_job, p_service_account_id, p_marketplace_account_id,
-        p_credential_id, p_evaluated_at, grant_at,
-        ARRAY['ORGANIZATION', 'MARKETPLACE_ACCOUNT', 'SERVICE_ACCOUNT', 'JOB'],
-        ARRAY[p_epoch_organization, p_epoch_account, p_epoch_subject, p_epoch_job],
-        p_temporal.valid_until, p_temporal.boundary_kind_count, p_temporal.boundary_kind_set,
-        p_temporal.boundary_set_digest, p_temporal.winning_kind,
+        gen_random_uuid(), run_row.job_id, run_row.service_account_id,
+        run_row.marketplace_account_id, p_scope_grant_id, p_credential_id,
+        evaluated, grant_at,
+        epoch_scopes, epoch_values,
+        snapshot.valid_until, snapshot.boundary_kind_count, snapshot.boundary_kind_set,
+        snapshot.boundary_set_digest, snapshot.winning_kind,
         authority_at, p_correlation_id);
 
     RETURN authority_at;
 END;
 $$;
+
+REVOKE ALL ON FUNCTION platform.grant_call_authority(
+    uuid, bigint, text, uuid, uuid, interval, text) FROM PUBLIC;
 
 -- ---------------------------------------------------------------------------
 -- Route inventory
@@ -414,13 +533,18 @@ GRANT SELECT, INSERT ON raw.raw_content TO marketops_app;
 GRANT SELECT, INSERT ON raw.raw_logical_unit TO marketops_app;
 GRANT SELECT, INSERT ON raw.raw_acquisition_observation TO marketops_app;
 
-GRANT SELECT, INSERT, UPDATE ON ops.ingestion_run TO marketops_app;
-GRANT SELECT, INSERT, UPDATE ON ops.ingestion_checkpoint TO marketops_app;
+-- Run and checkpoint state moves only through the two SECURITY DEFINER
+-- transition functions above. The application can watch both tables and can
+-- change neither: with no INSERT or UPDATE privilege there is no direct-write
+-- path around the fence, the lease, the state machine or the cursor CAS, for
+-- well-behaved code and for an arbitrary SQL client alike.
+GRANT SELECT ON ops.ingestion_run TO marketops_app;
+GRANT SELECT ON ops.ingestion_checkpoint TO marketops_app;
 
-GRANT EXECUTE ON FUNCTION ops.acknowledge_checkpoint(uuid, bigint, uuid, bigint, text)
+GRANT EXECUTE ON FUNCTION ops.acknowledge_checkpoint(uuid, bigint, text, uuid, bigint, text)
     TO marketops_app;
 GRANT EXECUTE ON FUNCTION platform.grant_call_authority(
-    uuid, bigint, uuid, uuid, uuid, uuid, bigint, bigint, bigint, bigint,
-    platform.control_snapshot_temporal, timestamptz, interval, text) TO marketops_app;
+    uuid, bigint, text, uuid, uuid, interval, text) TO marketops_app;
 
--- Deliberately not granted: DELETE anywhere, and UPDATE on any raw table.
+-- Deliberately not granted: DELETE anywhere, UPDATE on any raw table, and any
+-- write on the run, the checkpoint or the decision evidence.

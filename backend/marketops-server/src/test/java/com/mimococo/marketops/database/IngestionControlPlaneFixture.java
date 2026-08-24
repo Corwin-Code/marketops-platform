@@ -32,11 +32,17 @@ final class IngestionControlPlaneFixture {
     static final UUID SECOND_JOB = UUID.fromString("00000000-0000-0000-0000-0000000000f2");
     static final UUID CREDENTIAL = UUID.fromString("00000000-0000-0000-0000-000000000101");
     static final UUID SCOPE_GRANT = UUID.fromString("00000000-0000-0000-0000-000000000201");
+    static final UUID ENDPOINT = UUID.fromString("00000000-0000-0000-0000-000000000501");
     static final UUID RUN = UUID.fromString("00000000-0000-0000-0000-000000000301");
 
-    /** The scopes an acquisition consumes, in the order the grant reports them. */
+    /**
+     * The scopes an acquisition consumes, in the ascending order the grant
+     * locks their rows and records them -- the same order the epoch triggers
+     * advance in, which is what keeps a writer and a grant from forming an
+     * ordering cycle.
+     */
     static final List<String> SCOPE_KINDS =
-            List.of("ORGANIZATION", "MARKETPLACE_ACCOUNT", "SERVICE_ACCOUNT", "JOB");
+            List.of("JOB", "MARKETPLACE_ACCOUNT", "ORGANIZATION", "SERVICE_ACCOUNT");
 
     /** The declared temporal boundary kinds. */
     static final List<String> BOUNDARY_KINDS = List.of(
@@ -57,6 +63,9 @@ final class IngestionControlPlaneFixture {
     static final String CHECKPOINT_WITHOUT_EVIDENCE = "MO009";
     static final String CONTROL_SNAPSHOT_STALE = "MO010";
     static final String CONTROL_SNAPSHOT_EXPIRED = "MO011";
+    static final String SCOPE_GRANT_NOT_AUTHORITATIVE = "MO012";
+    static final String CREDENTIAL_NOT_AUTHORITATIVE = "MO013";
+    static final String RUN_AUTHORITY_LOST_AT_COMMIT = "MO014";
 
     private IngestionControlPlaneFixture() {
     }
@@ -129,6 +138,16 @@ final class IngestionControlPlaneFixture {
                 ON CONFLICT DO NOTHING
                 """.formatted(CREDENTIAL, ORGANIZATION, ACCOUNT));
         execute(connection, """
+                INSERT INTO platform.platform_endpoint
+                    (id, platform_code, endpoint_code, api_version, read_write_class,
+                     pagination_model, idempotency_support, verification_state,
+                     owner_label, contract_test_status, status, created_at, updated_at)
+                VALUES ('%s', 'OZON', 'orders.list', 'v3', 'READ', 'CURSOR', 'UNKNOWN',
+                        'UNVERIFIED', 'platform-team', 'NOT_IMPLEMENTED', 'ACTIVE',
+                        now(), now())
+                ON CONFLICT DO NOTHING
+                """.formatted(ENDPOINT));
+        execute(connection, """
                 INSERT INTO platform.ingestion_job
                     (id, organization_id, marketplace_account_id, platform_code,
                      service_account_id, job_code, display_name, status,
@@ -164,6 +183,7 @@ final class IngestionControlPlaneFixture {
                 "ops.ingestion_run",
                 "platform.feature_flag",
                 "platform.ingestion_job",
+                "platform.platform_endpoint",
                 "platform.credential_store_scope",
                 "platform.credential_metadata",
                 "iam.service_account_scope_grant",
@@ -211,24 +231,24 @@ final class IngestionControlPlaneFixture {
     }
 
     /**
-     * A call to {@code platform.grant_call_authority} that supplies the epochs
-     * currently stored, so a test only has to state the value it wants to be
-     * wrong.
+     * A call to {@code platform.grant_call_authority} for the seeded run,
+     * naming the seeded scope grant and Credential. Everything else the grant
+     * consumes -- identities, epochs, the boundary relation -- is derived by
+     * the function from committed rows, so there is nothing here a test could
+     * forge even if it wanted to.
      */
-    static String grantUsingStoredEpochs(
-            long fenceToken, String organizationEpoch, String accountEpoch,
-            String subjectEpoch, String jobEpoch, String correlationId) {
+    static String grant(long fenceToken, String leaseOwner, String correlationId) {
+        return grant(fenceToken, leaseOwner, SCOPE_GRANT, CREDENTIAL, correlationId);
+    }
+
+    /** The fixture grant with an explicit scope grant and Credential selection. */
+    static String grant(long fenceToken, String leaseOwner,
+            UUID scopeGrantId, UUID credentialId, String correlationId) {
         return """
                 SELECT platform.grant_call_authority(
-                    '%s', %d, '%s', '%s', '%s', '%s',
-                    %s, %s, %s, %s,
-                    platform.control_snapshot_temporal('%s', '%s', '%s', '%s', now()),
-                    now(), interval '30 seconds', '%s')
-                """.formatted(
-                RUN, fenceToken, ORGANIZATION, ACCOUNT, SERVICE_ACCOUNT, CREDENTIAL,
-                organizationEpoch, accountEpoch, subjectEpoch, jobEpoch,
-                SERVICE_ACCOUNT, SCOPE_GRANT, ACCOUNT, CREDENTIAL,
-                correlationId);
+                    '%s', %d, '%s', '%s', '%s', interval '30 seconds', '%s')
+                """.formatted(RUN, fenceToken, leaseOwner,
+                scopeGrantId, credentialId, correlationId);
     }
 
     /** The stored epoch of {@code scopeKind}, as a scalar subquery. */

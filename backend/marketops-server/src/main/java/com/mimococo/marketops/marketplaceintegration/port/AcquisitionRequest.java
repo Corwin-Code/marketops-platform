@@ -12,6 +12,11 @@ import java.util.UUID;
  * carry secret material because it has no field able to hold any, which is a
  * stronger statement than a rule asking callers not to.
  *
+ * <p>Every acquisition names its endpoint. There is deliberately no
+ * endpoint-less form: a call without an endpoint identity would have no home
+ * for the per-endpoint permit and capability semantics that later gate it, and
+ * an accidental null must not become that bypass.
+ *
  * <p>{@code callAuthorityExpiresAt} is the instant the granted authority ends,
  * already capped by the control snapshot's validity boundary. A call must start
  * strictly before it; an implementation that receives an expired request must
@@ -29,6 +34,7 @@ public record AcquisitionRequest(
     public AcquisitionRequest {
         Objects.requireNonNull(jobId, "jobId");
         Objects.requireNonNull(runId, "runId");
+        Objects.requireNonNull(endpointId, "endpointId");
         Objects.requireNonNull(credentialId, "credentialId");
         Objects.requireNonNull(callAuthorityExpiresAt, "callAuthorityExpiresAt");
         if (fenceToken <= 0) {

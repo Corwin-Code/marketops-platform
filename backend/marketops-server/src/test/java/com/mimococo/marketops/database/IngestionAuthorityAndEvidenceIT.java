@@ -3,7 +3,7 @@ package com.mimococo.marketops.database;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.ACCOUNT;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.BOUNDARY_KINDS;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.CHECKPOINT_WITHOUT_EVIDENCE;
-import static com.mimococo.marketops.database.IngestionControlPlaneFixture.CONTROL_SNAPSHOT_EXPIRED;
+import static com.mimococo.marketops.database.IngestionControlPlaneFixture.CREDENTIAL_NOT_AUTHORITATIVE;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.CONTROL_SNAPSHOT_STALE;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.CREDENTIAL;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.JOB;
@@ -11,14 +11,14 @@ import static com.mimococo.marketops.database.IngestionControlPlaneFixture.ORGAN
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.RUN;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.RUN_AUTHORITY_LOST;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.SCOPE_GRANT;
+import static com.mimococo.marketops.database.IngestionControlPlaneFixture.SCOPE_GRANT_NOT_AUTHORITATIVE;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.SCOPE_KINDS;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.SERVICE_ACCOUNT;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.epochOf;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.execute;
-import static com.mimococo.marketops.database.IngestionControlPlaneFixture.grantUsingStoredEpochs;
+import static com.mimococo.marketops.database.IngestionControlPlaneFixture.grant;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.reset;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.seed;
-import static com.mimococo.marketops.database.IngestionControlPlaneFixture.storedEpoch;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.strings;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,7 +72,7 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
     @DisplayName("TC-CTRL-400 a grant that consumes the current snapshot succeeds and is capped")
     void freshSnapshotGrantsCappedAuthority() throws SQLException {
         try (Connection connection = asApplicationRole(container)) {
-            String authority = single(connection, storedEpochGrant(1, "corr-ok"));
+            String authority = single(connection, grant(1, "worker-a", "corr-ok"));
 
             assertThat(authority)
                     .as("the grant returns the instant the authority expires")
@@ -97,20 +97,57 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
         }
     }
 
+    /**
+     * The caller cannot supply epochs at all, so the only way a grant can
+     * consume control state is to read it, locked, from the table. A mutation
+     * committed before the grant therefore appears in the grant's own
+     * evidence; there is no caller memory left to go stale.
+     */
     @Test
-    @DisplayName("TC-CTRL-401 a stale epoch refuses the grant and leaves zero residue")
-    void staleEpochRefusesTheGrant() throws SQLException {
-        long subjectEpoch;
+    @DisplayName("TC-CTRL-401 the grant consumes server-derived epochs,"
+            + " so a prior control mutation is visible in its evidence")
+    void grantConsumesServerDerivedEpochs() throws SQLException {
+        long subjectEpochBefore;
         try (Connection connection = asApplicationRole(container)) {
-            subjectEpoch = epochOf(connection, "SERVICE_ACCOUNT", SERVICE_ACCOUNT);
+            subjectEpochBefore = epochOf(connection, "SERVICE_ACCOUNT", SERVICE_ACCOUNT);
+            execute(connection, """
+                    UPDATE iam.service_account
+                       SET display_name = 'Acme Worker (rotated)', updated_at = now(),
+                           version = version + 1
+                     WHERE id = '%s'
+                    """.formatted(SERVICE_ACCOUNT));
+
+            assertThat(single(connection, grant(1, "worker-a", "corr-derived")))
+                    .isNotNull();
+
+            assertThat(strings(connection, """
+                    SELECT value::text
+                      FROM ops.authorization_decision_evidence,
+                           unnest(control_epoch_scopes, control_epoch_values)
+                               AS consumed (scope, value)
+                     WHERE consumed.scope = 'SERVICE_ACCOUNT'
+                    """))
+                    .as("the evidence records the epoch after the mutation, not before")
+                    .containsExactly(String.valueOf(subjectEpochBefore + 1));
+        }
+    }
+
+    /**
+     * A scope whose epoch row is absent must refuse, not authorise over the
+     * three rows that remain: a missing guard and a changed one are the same
+     * answer.
+     */
+    @Test
+    @DisplayName("TC-CTRL-414 a missing epoch row refuses the grant and leaves zero residue")
+    void missingEpochRowRefusesTheGrant() throws SQLException {
+        try (Connection connection = asMigrationRole(container)) {
+            execute(connection, """
+                    DELETE FROM platform.control_epoch
+                     WHERE scope_kind = 'JOB' AND scope_id = '%s'
+                    """.formatted(JOB));
         }
 
-        assertRefused(CONTROL_SNAPSHOT_STALE, grantUsingStoredEpochs(1,
-                storedEpoch("ORGANIZATION", ORGANIZATION),
-                storedEpoch("MARKETPLACE_ACCOUNT", ACCOUNT),
-                String.valueOf(subjectEpoch - 1),
-                storedEpoch("JOB", JOB),
-                "corr-stale"));
+        assertRefused(CONTROL_SNAPSHOT_STALE, grant(1, "worker-a", "corr-incomplete"));
 
         try (Connection connection = asApplicationRole(container)) {
             assertThat(runState(connection)).isEqualTo("LEASED");
@@ -118,9 +155,18 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
         }
     }
 
+    /**
+     * With point-of-use validation in the grant itself, an expired subject is
+     * refused where the expiry is discovered -- at the liveness check, before
+     * any lock on control state. The in-function boundary comparison
+     * (`MO011`) and the table constraint behind it (TC-CTRL-405) remain as
+     * backstops for the one window validation cannot see: the wall clock
+     * crossing the boundary inside the grant transaction itself.
+     */
     @Test
-    @DisplayName("TC-CTRL-402 an already-passed boundary refuses the grant and leaves zero residue")
-    void expiredSnapshotRefusesTheGrant() throws SQLException {
+    @DisplayName("TC-CTRL-402 an expired subject refuses the grant at point of use,"
+            + " with zero residue")
+    void expiredSubjectRefusesTheGrant() throws SQLException {
         try (Connection connection = asApplicationRole(container)) {
             connection.setAutoCommit(false);
             try {
@@ -131,13 +177,14 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
                         """.formatted(SERVICE_ACCOUNT));
 
                 Throwable failure = Assertions.catchThrowable(() ->
-                        execute(connection, storedEpochGrant(1, "corr-expired")));
+                        execute(connection, grant(1, "worker-a", "corr-expired")));
 
                 assertThat(failure)
-                        .as("a snapshot whose boundary has passed must not grant")
+                        .as("an expired subject must not grant")
                         .isNotNull();
-                assertThat(carriesSqlState(failure, CONTROL_SNAPSHOT_EXPIRED))
-                        .as("expected SQLSTATE %s from: %s", CONTROL_SNAPSHOT_EXPIRED, failure)
+                assertThat(carriesSqlState(failure, SCOPE_GRANT_NOT_AUTHORITATIVE))
+                        .as("expected SQLSTATE %s from: %s",
+                                SCOPE_GRANT_NOT_AUTHORITATIVE, failure)
                         .isTrue();
             } finally {
                 connection.rollback();
@@ -152,7 +199,7 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
     @Test
     @DisplayName("TC-CTRL-403 a superseded worker's grant at the wrong fence gains nothing")
     void wrongFenceGrantChangesNoRow() throws SQLException {
-        assertRefused(RUN_AUTHORITY_LOST, storedEpochGrant(2, "corr-fenced"));
+        assertRefused(RUN_AUTHORITY_LOST, grant(2, "worker-a", "corr-fenced"));
 
         try (Connection connection = asApplicationRole(container)) {
             assertThat(runState(connection)).isEqualTo("LEASED");
@@ -173,19 +220,7 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
                      WHERE id = '%s'
                     """.formatted(SCOPE_GRANT));
 
-            String authority = single(connection, """
-                    SELECT platform.grant_call_authority(
-                        '%s', 1, '%s', '%s', '%s', '%s',
-                        %s, %s, %s, %s,
-                        platform.control_snapshot_temporal('%s', '%s', '%s', '%s', now()),
-                        now(), interval '30 seconds', 'corr-capped')
-                    """.formatted(
-                    RUN, ORGANIZATION, ACCOUNT, SERVICE_ACCOUNT, CREDENTIAL,
-                    storedEpoch("ORGANIZATION", ORGANIZATION),
-                    storedEpoch("MARKETPLACE_ACCOUNT", ACCOUNT),
-                    storedEpoch("SERVICE_ACCOUNT", SERVICE_ACCOUNT),
-                    storedEpoch("JOB", JOB),
-                    SERVICE_ACCOUNT, SCOPE_GRANT, ACCOUNT, CREDENTIAL));
+            String authority = single(connection, grant(1, "worker-a", "corr-capped"));
 
             assertThat(authority).isNotNull();
             assertThat(evidenceRows(connection)).isEqualTo(1);
@@ -206,10 +241,11 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
     }
 
     /**
-     * A client that bypasses {@code platform.grant_call_authority} and writes
-     * the evidence row directly must still be unable to record a grant that
-     * happened at or after its own boundary, because the constraint lives on
-     * the table rather than in the function.
+     * Even the migration role, which may write the journal, cannot record a
+     * grant that happened at or after its own boundary: the constraint lives
+     * on the table, not in the function. The application role cannot reach
+     * the journal at all, so a forged evidence row is refused one layer
+     * earlier still.
      */
     @Test
     @DisplayName("TC-CTRL-405 the evidence row cannot record a grant at or after its own boundary")
@@ -218,30 +254,84 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
                 .map(kind -> "'" + kind + "'")
                 .collect(Collectors.joining(", "));
 
-        assertRefused(CHECK_VIOLATION, """
+        assertRefusedAsMigrationRole(CHECK_VIOLATION, """
                 INSERT INTO ops.authorization_decision_evidence
-                    (id, job_id, service_account_id, marketplace_account_id, credential_id,
+                    (id, job_id, service_account_id, marketplace_account_id,
+                     scope_grant_id, credential_id,
                      evaluated_at, granted_at, control_epoch_scopes, control_epoch_values,
                      control_snapshot_valid_until, boundary_kind_count, boundary_kind_set,
                      boundary_set_digest, winning_boundary_kind, call_authority_expires_at,
                      correlation_id)
                 VALUES
-                    (gen_random_uuid(), '%s', '%s', '%s', '%s',
+                    (gen_random_uuid(), '%s', '%s', '%s', '%s', '%s',
                      now(), now() + interval '1 minute',
                      ARRAY['ORGANIZATION', 'MARKETPLACE_ACCOUNT', 'SERVICE_ACCOUNT', 'JOB'],
                      ARRAY[1, 1, 1, 1]::bigint[],
                      now() + interval '1 minute', %d, ARRAY[%s],
                      repeat('0', 64), 'SERVICE_ACCOUNT_EXPIRY',
                      now() + interval '1 minute', 'corr-bypass')
-                """.formatted(JOB, SERVICE_ACCOUNT, ACCOUNT, CREDENTIAL,
+                """.formatted(JOB, SERVICE_ACCOUNT, ACCOUNT, SCOPE_GRANT, CREDENTIAL,
                 BOUNDARY_KINDS.size(), kinds));
+    }
+
+    /**
+     * The two refusals F02 makes structural: the grant validates its selected
+     * rows against the identity graph it derived, so a selection that does not
+     * authorise this exact subject over this exact account -- whoever it does
+     * belong to, whatever state it is in -- is the same refusal, with nothing
+     * changed.
+     */
+    @Test
+    @DisplayName("TC-CTRL-415 a foreign, inactive or wrong-permission scope grant"
+            + " refuses the grant and leaves zero residue")
+    void unauthoritativeScopeGrantRefusesTheGrant() throws SQLException {
+        assertRefused(SCOPE_GRANT_NOT_AUTHORITATIVE,
+                grant(1, "worker-a", UUID.randomUUID(), CREDENTIAL, "corr-no-grant"));
+
+        try (Connection connection = asApplicationRole(container)) {
+            execute(connection, """
+                    UPDATE iam.service_account_scope_grant
+                       SET status = 'REVOKED', reason = 'rotation drill', updated_at = now()
+                     WHERE id = '%s'
+                    """.formatted(SCOPE_GRANT));
+        }
+        assertRefused(SCOPE_GRANT_NOT_AUTHORITATIVE,
+                grant(1, "worker-a", "corr-revoked-grant"));
+
+        try (Connection connection = asApplicationRole(container)) {
+            assertThat(runState(connection)).isEqualTo("LEASED");
+            assertThat(evidenceRows(connection)).isZero();
+        }
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-416 a foreign, disabled or expired Credential"
+            + " refuses the grant and leaves zero residue")
+    void unauthoritativeCredentialRefusesTheGrant() throws SQLException {
+        assertRefused(CREDENTIAL_NOT_AUTHORITATIVE,
+                grant(1, "worker-a", SCOPE_GRANT, UUID.randomUUID(), "corr-no-cred"));
+
+        try (Connection connection = asApplicationRole(container)) {
+            execute(connection, """
+                    UPDATE platform.credential_metadata
+                       SET status = 'DISABLED', updated_at = now()
+                     WHERE id = '%s'
+                    """.formatted(CREDENTIAL));
+        }
+        assertRefused(CREDENTIAL_NOT_AUTHORITATIVE,
+                grant(1, "worker-a", "corr-disabled-cred"));
+
+        try (Connection connection = asApplicationRole(container)) {
+            assertThat(runState(connection)).isEqualTo("LEASED");
+            assertThat(evidenceRows(connection)).isZero();
+        }
     }
 
     @Test
     @DisplayName("TC-CTRL-406 a cursor may not advance without committed evidence")
     void checkpointWithoutEvidenceIsRefused() throws SQLException {
         try (Connection connection = asApplicationRole(container)) {
-            execute(connection, runToRunning());
+            execute(connection, grant(1, "worker-a", "corr-406"));
         }
 
         assertRefused(CHECKPOINT_WITHOUT_EVIDENCE,
@@ -261,7 +351,7 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
         UUID observation = UUID.randomUUID();
 
         try (Connection connection = asApplicationRole(container)) {
-            execute(connection, runToRunning());
+            execute(connection, grant(1, "worker-a", "corr-407"));
             execute(connection, rawContent(content));
             execute(connection, rawLogicalUnit(unit));
             execute(connection, rawObservation(observation, RUN, unit, content));
@@ -285,7 +375,7 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
         UUID observation = UUID.randomUUID();
 
         try (Connection connection = asApplicationRole(container)) {
-            execute(connection, runToRunning());
+            execute(connection, grant(1, "worker-a", "corr-408"));
             execute(connection, rawContent(content));
             execute(connection, rawLogicalUnit(unit));
             execute(connection, rawObservation(observation, RUN, unit, content));
@@ -314,9 +404,11 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
         UUID foreignRun = UUID.randomUUID();
 
         try (Connection connection = asApplicationRole(container)) {
-            execute(connection, runToRunning());
+            execute(connection, grant(1, "worker-a", "corr-409"));
             execute(connection, rawContent(content));
             execute(connection, rawLogicalUnit(unit));
+        }
+        try (Connection connection = asMigrationRole(container)) {
             // The foreign run is a real run of a real second job. The point of
             // the case is that reality is not enough: the observation must
             // belong to the acknowledging run itself.
@@ -364,6 +456,38 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
         assertRefused(INSUFFICIENT_PRIVILEGE, "SELECT 1 FROM raw.raw_content FOR UPDATE");
     }
 
+    /**
+     * Run and checkpoint state moves only through the two transition
+     * functions. The privilege set is the enforcement: with no INSERT or
+     * UPDATE anywhere on the run, the checkpoint or the decision journal,
+     * there is no direct path around the fence, the lease, the state machine,
+     * the cursor CAS or the evidence -- for well-behaved code and for an
+     * arbitrary SQL client alike.
+     */
+    @Test
+    @DisplayName("TC-CTRL-417 run, checkpoint and evidence accept no direct application write")
+    void runAndCheckpointAcceptNoDirectWrite() throws SQLException {
+        assertRefused(INSUFFICIENT_PRIVILEGE,
+                "UPDATE ops.ingestion_run SET state = 'RUNNING'");
+        assertRefused(INSUFFICIENT_PRIVILEGE,
+                "UPDATE ops.ingestion_run SET fence_token = 99");
+        assertRefused(INSUFFICIENT_PRIVILEGE,
+                "UPDATE ops.ingestion_run SET lease_expires_at = now() + interval '1 hour'");
+        assertRefused(INSUFFICIENT_PRIVILEGE,
+                "UPDATE ops.ingestion_checkpoint SET position_value = 'forged'");
+        assertRefused(INSUFFICIENT_PRIVILEGE,
+                "UPDATE ops.ingestion_checkpoint SET checkpoint_version = 0");
+        assertRefused(INSUFFICIENT_PRIVILEGE, """
+                INSERT INTO ops.ingestion_run
+                    (id, job_id, state, fence_token, attempt_no, last_call_seq,
+                     created_at, updated_at)
+                VALUES ('%s', '%s', 'QUEUED', 1, 0, 0, now(), now())
+                """.formatted(UUID.randomUUID(), JOB));
+        assertRefused(INSUFFICIENT_PRIVILEGE,
+                "INSERT INTO ops.authorization_decision_evidence (id)"
+                        + " VALUES (gen_random_uuid())");
+    }
+
     @Test
     @DisplayName("TC-CTRL-411 content addressing collapses identical bytes into one row")
     void identicalBytesAreOneContentRow() throws SQLException {
@@ -396,7 +520,7 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
     @Test
     @DisplayName("TC-CTRL-412 at most one live run may exist per job")
     void atMostOneLiveRunPerJob() throws SQLException {
-        assertRefused(UNIQUE_VIOLATION, """
+        assertRefusedAsMigrationRole(UNIQUE_VIOLATION, """
                 INSERT INTO ops.ingestion_run
                     (id, job_id, state, fence_token, attempt_no, last_call_seq,
                      created_at, updated_at)
@@ -407,30 +531,12 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
     @Test
     @DisplayName("TC-CTRL-413 an unknown pagination strategy may not carry a position")
     void unknownStrategyMayNotCarryAPosition() throws SQLException {
-        assertRefused(CHECK_VIOLATION, """
+        assertRefusedAsMigrationRole(CHECK_VIOLATION, """
                 UPDATE ops.ingestion_checkpoint
                    SET strategy = 'UNKNOWN', position_value = 'guessed-cursor',
                        updated_at = now()
                  WHERE job_id = '%s'
                 """.formatted(JOB));
-    }
-
-    /** The fixture grant at {@code fenceToken}, consuming the stored epochs. */
-    private static String storedEpochGrant(long fenceToken, String correlationId) {
-        return grantUsingStoredEpochs(fenceToken,
-                storedEpoch("ORGANIZATION", ORGANIZATION),
-                storedEpoch("MARKETPLACE_ACCOUNT", ACCOUNT),
-                storedEpoch("SERVICE_ACCOUNT", SERVICE_ACCOUNT),
-                storedEpoch("JOB", JOB),
-                correlationId);
-    }
-
-    private static String runToRunning() {
-        return """
-                UPDATE ops.ingestion_run
-                   SET state = 'RUNNING', updated_at = now()
-                 WHERE id = '%s'
-                """.formatted(RUN);
     }
 
     private static String rawContent(UUID id) {
@@ -461,7 +567,7 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
     }
 
     private static String acknowledge(UUID observationId, long expectedVersion, String position) {
-        return "SELECT ops.acknowledge_checkpoint('%s', 1, '%s', %d, '%s')"
+        return "SELECT ops.acknowledge_checkpoint('%s', 1, 'worker-a', '%s', %d, '%s')"
                 .formatted(RUN, observationId, expectedVersion, position);
     }
 
@@ -478,6 +584,24 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
         return count(connection,
                 "SELECT checkpoint_version FROM ops.ingestion_checkpoint"
                         + " WHERE job_id = '" + JOB + "'");
+    }
+
+    private static void assertRefusedAsMigrationRole(String sqlState, String sql)
+            throws SQLException {
+        try (Connection connection = asMigrationRole(container)) {
+            connection.setAutoCommit(false);
+            try (Statement statement = connection.createStatement()) {
+                Throwable failure = Assertions.catchThrowable(() -> statement.execute(sql));
+                assertThat(failure)
+                        .as("the statement must be refused with SQLSTATE %s", sqlState)
+                        .isNotNull();
+                assertThat(carriesSqlState(failure, sqlState))
+                        .as("expected SQLSTATE %s from: %s", sqlState, failure)
+                        .isTrue();
+            } finally {
+                connection.rollback();
+            }
+        }
     }
 
     private static void assertRefused(String sqlState, String sql) throws SQLException {

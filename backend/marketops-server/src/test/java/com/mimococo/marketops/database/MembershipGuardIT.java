@@ -9,9 +9,8 @@ import static com.mimococo.marketops.database.IngestionControlPlaneFixture.SECON
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.SERVICE_ACCOUNT;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.epochOf;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.execute;
-import static com.mimococo.marketops.database.IngestionControlPlaneFixture.grantUsingStoredEpochs;
+import static com.mimococo.marketops.database.IngestionControlPlaneFixture.grant;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.guardGenerationOf;
-import static com.mimococo.marketops.database.IngestionControlPlaneFixture.storedEpoch;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.strings;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -453,12 +452,7 @@ class MembershipGuardIT extends PostgresContainerSupport {
             long ozonBefore = guardGenerationOf(connection, "OZON");
             long wildberriesBefore = guardGenerationOf(connection, "WILDBERRIES");
 
-            assertThat(single(connection, grantUsingStoredEpochs(1,
-                    storedEpoch("ORGANIZATION", ORGANIZATION),
-                    storedEpoch("MARKETPLACE_ACCOUNT", ACCOUNT),
-                    storedEpoch("SERVICE_ACCOUNT", SERVICE_ACCOUNT),
-                    storedEpoch("JOB", JOB),
-                    "tc-ctrl-311")))
+            assertThat(single(connection, grant(1, "worker-a", "tc-ctrl-311")))
                     .as("the grant succeeds and returns a bounded authority")
                     .isNotNull();
 

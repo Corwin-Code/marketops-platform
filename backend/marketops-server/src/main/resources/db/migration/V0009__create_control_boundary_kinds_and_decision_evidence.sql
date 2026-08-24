@@ -338,6 +338,7 @@ CREATE TABLE ops.authorization_decision_evidence (
     job_id                   uuid        NOT NULL,
     service_account_id       uuid        NOT NULL,
     marketplace_account_id   uuid        NOT NULL,
+    scope_grant_id           uuid        NOT NULL,
     credential_id            uuid        NOT NULL,
     evaluated_at             timestamptz NOT NULL,
     granted_at               timestamptz NOT NULL,
@@ -355,6 +356,17 @@ CREATE TABLE ops.authorization_decision_evidence (
     CONSTRAINT authorization_decision_evidence_pk PRIMARY KEY (id),
     CONSTRAINT authorization_decision_evidence_job_fk
         FOREIGN KEY (job_id) REFERENCES platform.ingestion_job (id),
+    -- Every identity a decision names must be a real row. The evidence is
+    -- never read as authorization, but a journal that can name nonexistent
+    -- subjects cannot support the audit question it exists to answer.
+    CONSTRAINT authorization_decision_evidence_subject_fk
+        FOREIGN KEY (service_account_id) REFERENCES iam.service_account (id),
+    CONSTRAINT authorization_decision_evidence_account_fk
+        FOREIGN KEY (marketplace_account_id) REFERENCES core.marketplace_account (id),
+    CONSTRAINT authorization_decision_evidence_scope_grant_fk
+        FOREIGN KEY (scope_grant_id) REFERENCES iam.service_account_scope_grant (id),
+    CONSTRAINT authorization_decision_evidence_credential_fk
+        FOREIGN KEY (credential_id) REFERENCES platform.credential_metadata (id),
     -- The scope and value arrays are read pairwise, so a row whose arrays have
     -- different lengths is not a partially recorded decision but an unreadable
     -- one.
@@ -392,7 +404,11 @@ INSERT INTO platform.control_route_inventory
 -- Privileges
 -- ---------------------------------------------------------------------------
 GRANT SELECT ON platform.control_boundary_kind TO marketops_app;
-GRANT SELECT, INSERT ON ops.authorization_decision_evidence TO marketops_app;
+-- The application reads the journal and never writes it directly: rows are
+-- inserted only by the SECURITY DEFINER grant primitive, so every recorded
+-- decision is server-derived and an application-forged evidence row is
+-- unrepresentable rather than merely against the rules.
+GRANT SELECT ON ops.authorization_decision_evidence TO marketops_app;
 GRANT EXECUTE ON FUNCTION platform.control_snapshot_boundaries(uuid, uuid, uuid, uuid, timestamptz)
     TO marketops_app;
 GRANT EXECUTE ON FUNCTION platform.control_snapshot_temporal(uuid, uuid, uuid, uuid, timestamptz)

@@ -68,7 +68,7 @@ class IngestionSkeletonFlowIT extends PostgresContainerSupport {
                     IngestionControlPlaneFixture.JOB,
                     IngestionControlPlaneFixture.RUN,
                     1L,
-                    null,
+                    IngestionControlPlaneFixture.ENDPOINT,
                     IngestionControlPlaneFixture.CREDENTIAL,
                     1,
                     authority);
@@ -99,6 +99,8 @@ class IngestionSkeletonFlowIT extends PostgresContainerSupport {
         AcquisitionRequest recorded = acquisition.recorded().getFirst();
         assertThat(recorded.credentialId())
                 .isEqualTo(IngestionControlPlaneFixture.CREDENTIAL);
+        assertThat(recorded.endpointId())
+                .isEqualTo(IngestionControlPlaneFixture.ENDPOINT);
         assertThat(recorded.fenceToken()).isEqualTo(1L);
 
         try (Connection connection = asMigrationRole(container)) {
@@ -124,7 +126,7 @@ class IngestionSkeletonFlowIT extends PostgresContainerSupport {
                 IngestionControlPlaneFixture.JOB,
                 IngestionControlPlaneFixture.RUN,
                 1L,
-                null,
+                IngestionControlPlaneFixture.ENDPOINT,
                 IngestionControlPlaneFixture.CREDENTIAL,
                 1,
                 Instant.now().minusSeconds(1));
@@ -137,17 +139,7 @@ class IngestionSkeletonFlowIT extends PostgresContainerSupport {
 
     private Instant grant(Connection connection, String correlationId) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(
-                IngestionControlPlaneFixture.grantUsingStoredEpochs(
-                        1L,
-                        IngestionControlPlaneFixture.storedEpoch(
-                                "ORGANIZATION", IngestionControlPlaneFixture.ORGANIZATION),
-                        IngestionControlPlaneFixture.storedEpoch(
-                                "MARKETPLACE_ACCOUNT", IngestionControlPlaneFixture.ACCOUNT),
-                        IngestionControlPlaneFixture.storedEpoch(
-                                "SERVICE_ACCOUNT", IngestionControlPlaneFixture.SERVICE_ACCOUNT),
-                        IngestionControlPlaneFixture.storedEpoch(
-                                "JOB", IngestionControlPlaneFixture.JOB),
-                        correlationId));
+                IngestionControlPlaneFixture.grant(1L, "worker-a", correlationId));
              ResultSet rows = statement.executeQuery()) {
             assertThat(rows.next()).isTrue();
             Timestamp granted = rows.getTimestamp(1);
@@ -185,7 +177,7 @@ class IngestionSkeletonFlowIT extends PostgresContainerSupport {
     private long acknowledge(Connection connection, UUID observation, String position)
             throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(
-                "SELECT ops.acknowledge_checkpoint(?, 1, ?, 0, ?)")) {
+                "SELECT ops.acknowledge_checkpoint(?, 1, 'worker-a', ?, 0, ?)")) {
             statement.setObject(1, IngestionControlPlaneFixture.RUN);
             statement.setObject(2, observation);
             statement.setString(3, position);
