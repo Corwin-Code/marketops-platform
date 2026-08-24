@@ -39,7 +39,11 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0003__create_metadata_audit_event.sql",
             "V0004__create_core_organization_metadata.sql",
             "V0005__create_iam_access_metadata.sql",
-            "V0006__create_platform_registry_metadata.sql");
+            "V0006__create_platform_registry_metadata.sql",
+            "V0007__create_ingestion_control_plane_authority.sql",
+            "V0008__attach_control_epoch_triggers.sql",
+            "V0009__create_control_boundary_kinds_and_decision_evidence.sql",
+            "V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql");
 
     private static PostgreSQLContainer container;
 
@@ -93,7 +97,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
 
     @Test
     @Order(3)
-    @DisplayName("TC-DB-110 the metadata tables exist, and nothing else does")
+    @DisplayName("TC-DB-110 the approved tables exist, and nothing else does")
     void exactlyTheMetadataTablesExist() throws SQLException {
         try (Connection connection = asMigrationRole(container)) {
             List<String> tables = strings(connection,
@@ -115,16 +119,27 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "iam.service_account",
                     "iam.service_account_allowed_source",
                     "iam.service_account_scope_grant",
+                    "ops.authorization_decision_evidence",
+                    "ops.ingestion_checkpoint",
+                    "ops.ingestion_run",
                     "ops.metadata_audit_event",
                     "platform.capability_subject_status",
                     "platform.capability_verification_event",
+                    "platform.control_boundary_kind",
+                    "platform.control_epoch",
+                    "platform.control_epoch_membership_guard",
+                    "platform.control_route_inventory",
                     "platform.credential_metadata",
                     "platform.credential_purpose",
                     "platform.credential_store_scope",
                     "platform.feature_flag",
+                    "platform.ingestion_job",
                     "platform.platform_capability",
                     "platform.platform_endpoint",
-                    "platform.platform_permission_requirement");
+                    "platform.platform_permission_requirement",
+                    "raw.raw_acquisition_observation",
+                    "raw.raw_content",
+                    "raw.raw_logical_unit");
         }
     }
 
@@ -146,6 +161,22 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "SELECT code FROM platform.credential_purpose ORDER BY code"))
                     .containsExactly(
                             "ADS_WRITE", "FINANCE", "INVENTORY_WRITE", "PRICE_WRITE", "READ");
+            assertThat(strings(connection,
+                    "SELECT kind FROM platform.control_boundary_kind ORDER BY ordinal"))
+                    .containsExactly(
+                            "SERVICE_ACCOUNT_EXPIRY",
+                            "SELECTED_SCOPE_GRANT_END",
+                            "FUTURE_SCOPE_GRANT_START",
+                            "SELECTED_CREDENTIAL_EXPIRY",
+                            "FUTURE_CREDENTIAL_START",
+                            "STORE_SCOPE_BOUNDARY");
+            // Every platform carries its membership guard from the migration
+            // that created the platform, so the serialization point exists
+            // before any job can reference it.
+            assertThat(strings(connection,
+                    "SELECT platform_code FROM platform.control_epoch_membership_guard"
+                            + " WHERE guard_kind = 'PLATFORM_JOB_SET' ORDER BY platform_code"))
+                    .containsExactly("OZON", "WILDBERRIES");
             assertThat(single(connection,
                     "SELECT extname FROM pg_extension WHERE extname = 'btree_gist'"))
                     .isEqualTo("btree_gist");
