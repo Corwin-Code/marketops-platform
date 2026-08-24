@@ -1,93 +1,138 @@
 # WP-P0-003 executable design validation evidence
 
 ```yaml
-task: WP_P0_003_EXECUTABLE_DESIGN_VALIDATION
+task: WP_P0_003_EXECUTABLE_DESIGN_VALIDATION_FINAL_TARGETED_REWORK
 mode: BOUNDED_IMPLEMENTATION_FOR_DESIGN_VALIDATION
 source_base: 9f7688204950c64b9f6bd8629daf90a115669864
-environment: local workstation, Docker, Testcontainers, postgres:18.4 (pinned, asserted by TC-DB-100)
+reviewed_input_head: 6715b4d48ebbea7b3135455d0d5a587fed1e00d0
+reviewed_input_tree: 5bf299242c3c35b905f378fbfd3b2012537afea3
+verified_implementation_head: d620a8b9d951ded22698448244f73d82cbd899d3
+verified_implementation_tree: c743415fb4967a990e1d7aa6311e9484fcb5655f
+final_package_identity: LIVE_PR_16_METADATA_AND_BODY
+prior_controller_verdict: TARGETED_REWORK
+current_findings: WP3-EDV-F01, WP3-EDV-F02, WP3-EDV-F03, WP3-EDV-R01, WP3-EDV-RR02
+environment: local workstation, Docker, Testcontainers, postgres:18.4
 design_approved: false
 implementation_complete: false
+bounded_scope_quality: PRODUCTION_GRADE
+project_production_complete: false
 marketplace_outbound: NONE
 production_write: DISABLED
 ```
 
-This tranche exists to close three binding corrections with executable
-evidence, not to implement the ingestion product. The Design candidate remains
-unapproved, and this evidence does not change any Gate by itself.
+## Finding-to-test matrix
 
-## BC closure matrix
+| Finding | Required proof | Result |
+| --- | --- | --- |
+| `F01` | Revocation and Credential disable commit while grant waits; Job writer-first and grant-first orders; zero residue on deny | PASS — `TC-CTRL-F01-A/B/C1/C2` |
+| `F02` | Job/endpoint validity; mandatory platform-pinned endpoint; unique Credential rotation leaf; caller Credential removed; `STORE_SET` denied; nonpositive nominal denied; exact evidence identities; request non-rebinding | PASS — `TC-CTRL-400/418/419/430…433`, `TC-PORT-001…004`, `TC-ARCH-023`, `F-ARCH-023/024`, `TC-CTRL-500/501` |
+| `F03` | Checkpoint blocker crosses lease expiry; wrong owner and expired lease deny; no checkpoint mutation | PASS — `TC-CTRL-F03-A/B` |
+| `R01` | One-statement platform/guard contract and source-comment functional scan | PASS — `TC-CTRL-302…304`, `TC-GLOBAL-002` |
+| `RR02` | Separate reviewed input, tested implementation and final PR package identities | PASS — this package plus live PR #16 body |
 
-| BC | Obligation | Carried by | Result source |
+## Backend verification
+
+`./mvnw -B -ntp verify` completed successfully against PostgreSQL 18.4:
+
+- 10 Flyway migrations validated and applied from an empty schema;
+- 193 unit and architecture tests passed;
+- 141 integration tests passed;
+- `CallAuthorityExclusivityIT`: 15/15 passed;
+- `IngestionAuthorityAndEvidenceIT`: 24/24 passed;
+- `AuthorizedAcquisitionFlowIT`: 2/2 passed; and
+- all JaCoCo coverage checks passed.
+
+The command transcript is recorded in `backend-verify-run.txt`.
+
+## Exact function and ACL surface
+
+| Object | `PUBLIC` | `marketops_app` | Direct mutation posture |
 | --- | --- | --- | --- |
-| BC-01 | Temporal boundary completeness: closed kind set, missing/duplicate/unexpected kind fail closed, `valid_until` from a counted relation, no `LEAST(NULL)` assumption, grant strictly before the boundary, authority capped — and the whole relation recomputed and consumed **inside the locked grant transaction**, with no caller-supplied identity, epoch or temporal value anywhere in the EXECUTE surface | `V0009`, `V0010`, `ControlBoundaryCompletenessIT` (TC-CTRL-200…209), `IngestionAuthorityAndEvidenceIT` (TC-CTRL-400…405, 414…416), `CallAuthorityExclusivityIT` (TC-CTRL-420…422) | `backend-verify-run.txt` |
-| BC-02 | Membership guard totality: guard FK to the platform set, exactly one guard per platform in both directions at commit, zero-row lock impossible (`row count = 1` asserted inside the acquire function), job-create vs fan-out phantom-free in both orders, runtime-immutable platform set, grant never touches the guard | `V0007`, `V0008`, `MembershipGuardIT` (TC-CTRL-300…311) | `backend-verify-run.txt` |
-| BC-03 | As-built cross-section truth: route inventory vs installed triggers vs schema compared by the migration itself and re-checked by tests; exact table/seed/migration sets pinned; architecture rules mutation-tested | `V0008` self-check, `ControlEpochTriggerIT` (TC-CTRL-102…104), `FlywayMigrationIT` (TC-DB-110/111/113/118), `IngestionAuthorityArchitectureTest` (TC-ARCH-020…022, F-ARCH-020…023) | `backend-verify-run.txt` |
+| `platform.grant_call_authority(uuid,bigint,text,uuid,interval,text) RETURNS platform.call_authority_grant` | all revoked | `EXECUTE` | only grant transition/evidence writer; `SECURITY DEFINER`, fixed `search_path` |
+| `ops.acknowledge_checkpoint(uuid,bigint,text,uuid,bigint,text) RETURNS bigint` | all revoked | `EXECUTE` | only checkpoint transition writer; `SECURITY DEFINER`, fixed `search_path` |
+| `ops.ingestion_run` / `ops.ingestion_checkpoint` / `ops.authorization_decision_evidence` | none | `SELECT` | no direct application `INSERT`, `UPDATE` or `DELETE` |
+| three Raw evidence tables | none | `SELECT`, `INSERT` | no application `UPDATE` or `DELETE` |
 
-## Authority exclusivity evidence (WP3-EDV-F01/F02/F03)
+## Deterministic race records
 
-`CallAuthorityExclusivityIT` proves the serialization with two live
-connections and real lock waits:
+| Test | Ordered events | Observed result |
+| --- | --- | --- |
+| `TC-CTRL-F01-A` | scope revocation reaches epoch write → grant starts and waits → writer commits → grant resumes | `MO012`; zero run transition/evidence |
+| `TC-CTRL-F01-B` | Credential disable reaches epoch write → grant starts and waits → writer commits → grant resumes | `MO013`; zero run transition/evidence |
+| `TC-CTRL-F01-C1` | Job mutation owns the Job row and commits → grant reads the committed row | `MO015`; zero run transition/evidence |
+| `TC-CTRL-F01-C2` | grant locks Job → Job writer starts and blocks → grant completes/commits → writer lands | grant identities match pre-writer Job; writer is strictly later |
+| `TC-CTRL-F03-A` | T1 locks checkpoint → T2 starts while lease is live, locks run and blocks → wall clock passes lease → T1 releases | `MO008`; position/version unchanged |
+| `TC-CTRL-F03-B` | wrong owner, then already-expired lease | both `MO008`; position/version unchanged |
 
-- a metadata writer's epoch advance demonstrably blocks behind an open grant's
-  `FOR SHARE` and lands strictly after the already-bounded authority
-  (TC-CTRL-421); the mirror case refuses under `lock_timeout` with zero
-  residue (TC-CTRL-422);
-- a revocation committed first refuses the grant from database truth
-  (TC-CTRL-420);
-- a takeover either waits behind the run lock (TC-CTRL-423/427) or, committed
-  first, turns the superseded worker's grant and acknowledgement into raised
-  refusals with zero effect (TC-CTRL-424/428);
-- an expired lease and a wrong owner refuse at grant time (TC-CTRL-425/426).
+## Cross-checks
 
-The forgery surface is closed by construction and by privilege:
-`grant_call_authority` accepts only run/fence/owner plus the selected scope
-grant and Credential row ids, derives everything else from locked rows
-(TC-CTRL-401/415/416), and `marketops_app` holds `SELECT` and nothing else on
-`ops.ingestion_run`, `ops.ingestion_checkpoint` and
-`ops.authorization_decision_evidence` (TC-CTRL-417), so both transition
-functions are the only write paths rather than the polite ones.
+- `git diff origin/main -- V0001…V0006`: empty.
+- `git diff --check`: pass.
+- global compromise-retirement, functional-comment and production-naming rules:
+  pass.
+- governance validator and validator unit tests: pass.
+- no secret/PII or real Marketplace outbound path was added.
+- the application role has no direct write on run/checkpoint/decision evidence;
+  Raw remains immutable to that role.
 
-## Zero-outbound and zero-secret evidence
+## Controller principles audit
 
-`IngestionSkeletonFlowIT` (TC-CTRL-500/501) drives one complete flow — grant →
-acquisition through `RecordedAcquisitionPort` → custody in
-`InMemoryObjectStoragePort` with hash-verified read-back → three-identity Raw
-rows → cursor acknowledgement — and asserts:
-
-- the only acquisition doorway in the run owns no network client;
-- the recorded request carries identities only (`AcquisitionRequest` has no
-  field able to hold secret material);
-- an expired call authority stops the call at the doorway with zero recorded
-  invocations.
-
-No real credential exists anywhere in the repository or the test run; the one
-credential row is metadata with a `secret-ref://` reference that nothing
-resolves.
-
-## Engine facts established on the pinned server
-
-| Fact | Assertion |
+| # | Assessment |
 | --- | --- |
-| `LEAST` ignores NULL arguments; NULL only when all arguments are NULL | TC-CTRL-200 |
-| A trigger requesting transition relations cannot cover more than one event | TC-CTRL-100 |
-| `OLD TABLE` is illegal on INSERT triggers; `NEW TABLE` on DELETE triggers | TC-CTRL-101 |
-| A statement matching zero rows still fires its statement trigger with an empty transition relation, advancing nothing | TC-CTRL-105 |
-| `SELECT … FOR UPDATE` locks only returned rows; a missing row yields a zero-row no-op unless the caller counts | TC-CTRL-305 |
-| A `FOR SHARE` held to commit blocks a concurrent writer's `UPDATE` of the same row until the holder commits | TC-CTRL-421 |
-| Row locks require the UPDATE privilege; a single-column grant (`updated_at`) confers exactly the lock and nothing else | TC-CTRL-110 |
+| 1 | PASS — governance, active Work Package, ADRs, migrations, Java boundaries, executable tests and live PR/CI facts were cross-checked. |
+| 2 | PASS FOR BOUNDED SCOPE — every targeted finding has executable proof and no known release-blocking defect remains inside this authorization boundary. |
+| 3 | PASS FOR BOUNDED SCOPE — authority and acknowledgement paths fail closed and are production-grade; the package does not claim the unimplemented whole-product runtime. |
+| 4 | PASS — remaining Work Package/project allocations are listed in the addendum; none is silently represented as complete. |
+| 5 | PASS — no fallback, validation-only substitute or weakened control remains in the repaired path. |
+| 6 | PASS — the rework used fail-closed production decisions without requiring an Owner choice; no `BLOCKED_BY_OWNER_DECISION` item arose. |
+| 7 | PASS — changed production comments describe functional behavior; `TC-GLOBAL-002` passes. |
+| 8 | PASS — the bare-expiry grant, caller Credential selection, independently constructible request path and stage-named flow test were retired; no parallel authority path remains. |
+| 9 | PASS — `TC-GLOBAL-001`, `TC-GLOBAL-002` and `TC-GLOBAL-003` all pass. |
+| 10 | BOUNDED PRODUCTION-GRADE / PROJECT INCOMPLETE — this is executable design-validation authority, not the complete WP-P0-003 or MarketOps product. |
+| 11 | YES — project-level production-readiness work exists and is enumerated in addendum section 5 with its allocated Work Package, open question or Gate. |
 
-## Command transcripts
+## Evidence limits
 
-| File | Command |
-| --- | --- |
-| `backend-verify-run.txt` | `./mvnw -B -ntp verify` (unit + architecture + REAL_DATABASE integration, coverage gate) |
-| `validate-governance-run.txt` | `python3 scripts/validate_governance.py` |
-| `validate-production-readiness-run.txt` | `python3 scripts/validate_production_readiness.py` |
-| `validator-unit-tests-run.txt` | `python3 -m unittest tests.test_validate_governance tests.test_validate_production_readiness` |
+Executed evidence classes:
+
+```text
+STATIC_SOURCE_PROOF
+UNIT_TEST
+ARCHITECTURE_TEST
+INTEGRATION_TEST
+REAL_DATABASE
+FAKE_CREDENTIAL_ZERO_OUTBOUND
+PACKAGE_OR_PROVENANCE
+CI_EXECUTION (final package Head is bound by live GitHub CI and PR body)
+```
+
+Not executed and not claimed:
+
+```text
+REAL_MARKETPLACE_CREDENTIAL
+SECRET_RETRIEVAL
+REAL_HTTP_MARKETPLACE
+REAL_PROVIDER_OR_EXTERNAL_SYSTEM
+PERFORMANCE_OR_LOAD
+OWNER_VERIFIED_RESULT
+DEPLOYMENT
+```
+
+## Branch convergence record
+
+The removed local `docs/WP-P0-003-canonicalization` branch pointed to
+`862bab71ee65753234fedfbddc727d0092569ff5`. Its tree was exactly
+`f56515a28f003c19d2acb9440a61656a409eb02c`, the same as `main`, and its direct
+tree diff against `main` was empty. The remote branch was already absent, so the
+local stale reference was deleted without losing content.
+
+The three Dependabot branches each back a separate open dependency-update PR.
+They remain isolated from PR #16; this package neither merges nor deletes them.
 
 ## Boundary statement
 
-Draft PR only, UNMERGED; independent Controller
-IMPLEMENTATION_BACKED_DESIGN_VALIDATION_REVIEW follows. This evidence is not a
-Design PASS, not a full Implementation authorization and not a merge
-authorization. OQ-005 and OQ-006 remain OPEN. No secret or PII was added.
+PR #16 remains draft and unmerged. This evidence requests the independent
+`CONTROLLER_WP_P0_003_IMPLEMENTATION_BACKED_DESIGN_VALIDATION_RE_REVIEW`; it is
+not a Design approval, full implementation authorization, merge authorization,
+deployment authorization or production-write authorization. `OQ-005`, `OQ-006`
+and project-level production-readiness work remain open at their allocated Gates.
