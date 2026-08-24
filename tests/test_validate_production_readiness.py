@@ -354,7 +354,7 @@ repositoryHeadReader(repositoryRoot)
 class MigrationContractTests(unittest.TestCase):
     """The approved migration set, the immutability pin and the statement ban."""
 
-    def test_the_approved_set_is_the_six_metadata_migrations(self) -> None:
+    def test_the_approved_set_is_the_metadata_and_control_plane_migrations(self) -> None:
         self.assertEqual(
             (
                 "V0001__create_foundation_schemas.sql",
@@ -363,6 +363,10 @@ class MigrationContractTests(unittest.TestCase):
                 "V0004__create_core_organization_metadata.sql",
                 "V0005__create_iam_access_metadata.sql",
                 "V0006__create_platform_registry_metadata.sql",
+                "V0007__create_ingestion_control_plane_authority.sql",
+                "V0008__attach_control_epoch_triggers.sql",
+                "V0009__create_control_boundary_kinds_and_decision_evidence.sql",
+                "V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql",
             ),
             APPROVED_MIGRATIONS,
         )
