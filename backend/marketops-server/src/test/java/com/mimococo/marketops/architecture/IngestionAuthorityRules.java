@@ -10,7 +10,7 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 
 /**
- * The three authority-boundary rules for the ingestion acquisition ports.
+ * The authority-boundary rules for the ingestion acquisition ports.
  *
  * <p>Acquisition is the one doorway through which traffic could ever leave the
  * system, so its ports are owned by exactly one module and reachable from no
@@ -24,6 +24,8 @@ final class IngestionAuthorityRules {
             "com.mimococo.marketops.marketplaceintegration.port.AcquisitionPort";
     private static final String OBJECT_STORAGE_PORT =
             "com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort";
+    private static final String CALL_AUTHORITY_GRANT =
+            "com.mimococo.marketops.marketplaceintegration.port.CallAuthorityGrant";
     private static final String OWNING_MODULE_SEGMENT = ".marketplaceintegration.";
 
     private IngestionAuthorityRules() {
@@ -94,6 +96,28 @@ final class IngestionAuthorityRules {
                 .as("no web controller reaches an acquisition port")
                 .because("acquisition runs only under a worker's leased, fenced, granted"
                         + " authority, never under a request thread's");
+    }
+
+    /** No module outside the owner may manufacture a database-derived grant. */
+    static ArchRule callAuthorityGrantsAreConstructedOnlyByTheOwningModule(String basePackage) {
+        return classes()
+                .that().resideInAPackage(basePackage + "..")
+                .should(new ArchCondition<>(
+                        "construct call-authority grants only inside marketplaceintegration") {
+                    @Override
+                    public void check(JavaClass item, ConditionEvents events) {
+                        if (isInOwningModule(item.getPackageName())) {
+                            return;
+                        }
+                        item.getDirectDependenciesFromSelf().stream()
+                                .filter(dependency -> dependency.getTargetClass().getName()
+                                        .equals(CALL_AUTHORITY_GRANT))
+                                .forEach(dependency -> events.add(SimpleConditionEvent.violated(
+                                        item, dependency.getDescription())));
+                    }
+                })
+                .as("call-authority grants are constructed only inside marketplaceintegration")
+                .because("a caller-made grant could rebind an expiry to another call identity");
     }
 
     private static boolean isAcquisitionPort(JavaClass type) {

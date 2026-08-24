@@ -33,10 +33,6 @@ public final class RecordedAcquisitionPort implements AcquisitionPort {
 
     @Override
     public AcquisitionResult acquire(AcquisitionRequest request) {
-        if (!request.callAuthorityExpiresAt().isAfter(Instant.now())) {
-            throw new IllegalStateException(
-                    "the call authority expired at " + request.callAuthorityExpiresAt());
-        }
         recorded.add(request);
         return new AcquisitionResult(cannedBody, cannedStatus, cannedOutcome, Instant.now());
     }

@@ -12,9 +12,8 @@
 --   membership  a row appeared that the reader never saw   -> membership guard
 --
 -- This file installs the change and membership mechanisms and the objects they
--- protect. V0008 attaches the triggers that make epoch advancement structural,
--- V0009 installs the time mechanism, and V0010 adds the run/evidence skeleton
--- those mechanisms exist to protect.
+-- protect. Epoch triggers, temporal boundaries, and run/evidence authority are
+-- composed by the following migrations into one serialized authorization path.
 --
 -- Nothing here is reachable from a public route, and nothing here reads or
 -- stores credential material. The application role is deliberately given the
@@ -40,6 +39,11 @@
 --   MO009  CHECKPOINT_WITHOUT_EVIDENCE       (V0010)
 --   MO010  CONTROL_SNAPSHOT_STALE            (V0010)
 --   MO011  CONTROL_SNAPSHOT_EXPIRED          (V0010)
+--   MO012  SCOPE_GRANT_NOT_AUTHORITATIVE     (V0010)
+--   MO013  CREDENTIAL_NOT_AUTHORITATIVE      (V0010)
+--   MO014  RUN_AUTHORITY_LOST_AT_COMMIT      (V0010)
+--   MO015  JOB_GRAPH_NOT_AUTHORITATIVE       (V0010)
+--   MO016  NOMINAL_AUTHORITY_INVALID         (V0010)
 
 -- ---------------------------------------------------------------------------
 -- Control scope
@@ -273,12 +277,11 @@ REVOKE ALL ON FUNCTION platform.acquire_platform_job_set_guard(text[]) FROM PUBL
 -- back, so the membership proof can never be running against a platform whose
 -- serialization point does not exist.
 --
--- The check is deferred to commit rather than run at end of statement, because
--- the platform and its guard are necessarily two statements: the guard's
--- foreign key requires the platform to exist first. A statement-time check
--- would reject the very transaction shape it is meant to require. Deferring it
--- also means the two statements may appear in either order relative to any
--- other work in the same transaction.
+-- A future platform and its guard are created in one data-modifying CTE
+-- statement. GLOBAL_FANOUT requires the complete guard set when the platform
+-- INSERT statement ends, so no intermediate statement may expose a platform
+-- whose serialization row is absent. The deferred check remains the commit-time
+-- backstop for set equality and for deletion of a live platform's guard.
 --
 -- Both directions are guarded. Adding a platform without a guard and removing
 -- a guard from a live platform reach the same invalid state, so the same
@@ -338,7 +341,7 @@ CREATE TABLE platform.ingestion_job (
     marketplace_account_id uuid        NOT NULL,
     platform_code          text        NOT NULL,
     service_account_id     uuid        NOT NULL,
-    endpoint_id            uuid,
+    endpoint_id            uuid        NOT NULL,
     job_code               text        NOT NULL,
     display_name           text        NOT NULL,
     status                 text        NOT NULL,

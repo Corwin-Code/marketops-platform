@@ -250,10 +250,8 @@ DECLARE
 BEGIN
     SELECT count(*) INTO declared_count FROM platform.control_boundary_kind;
 
-    -- Resolve once into a value. A temporary table would be the natural shape
-    -- for this, but creating one makes the function volatile, and a volatile
-    -- boundary resolver could legitimately return a different relation to the
-    -- evaluation and to the grant that consumes it.
+    -- Resolve once into an immutable value so evaluation and grant consumption
+    -- cannot observe different boundary relations within one statement.
     resolved := ARRAY(
         SELECT platform.control_snapshot_boundaries(
             p_service_account_id, p_scope_grant_id,

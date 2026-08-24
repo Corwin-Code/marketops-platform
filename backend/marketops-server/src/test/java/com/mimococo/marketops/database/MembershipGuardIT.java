@@ -469,11 +469,12 @@ class MembershipGuardIT extends PostgresContainerSupport {
         return """
                 INSERT INTO platform.ingestion_job
                     (id, organization_id, marketplace_account_id, platform_code,
-                     service_account_id, job_code, display_name, status,
+                     service_account_id, endpoint_id, job_code, display_name, status,
                      created_at, updated_at)
-                VALUES ('%s', '%s', '%s', 'OZON', '%s', 'ozon-stocks', 'Ozon stocks',
+                VALUES ('%s', '%s', '%s', 'OZON', '%s', '%s', 'ozon-stocks', 'Ozon stocks',
                         'ACTIVE', now(), now())
-                """.formatted(SECOND_JOB, ORGANIZATION, ACCOUNT, SERVICE_ACCOUNT);
+                """.formatted(SECOND_JOB, ORGANIZATION, ACCOUNT, SERVICE_ACCOUNT,
+                IngestionControlPlaneFixture.ENDPOINT);
     }
 
     /**

@@ -66,6 +66,8 @@ final class IngestionControlPlaneFixture {
     static final String SCOPE_GRANT_NOT_AUTHORITATIVE = "MO012";
     static final String CREDENTIAL_NOT_AUTHORITATIVE = "MO013";
     static final String RUN_AUTHORITY_LOST_AT_COMMIT = "MO014";
+    static final String JOB_GRAPH_NOT_AUTHORITATIVE = "MO015";
+    static final String NOMINAL_AUTHORITY_INVALID = "MO016";
 
     private IngestionControlPlaneFixture() {
     }
@@ -150,12 +152,12 @@ final class IngestionControlPlaneFixture {
         execute(connection, """
                 INSERT INTO platform.ingestion_job
                     (id, organization_id, marketplace_account_id, platform_code,
-                     service_account_id, job_code, display_name, status,
+                     service_account_id, endpoint_id, job_code, display_name, status,
                      created_at, updated_at)
-                VALUES ('%s', '%s', '%s', 'OZON', '%s', 'ozon-orders', 'Ozon orders',
+                VALUES ('%s', '%s', '%s', 'OZON', '%s', '%s', 'ozon-orders', 'Ozon orders',
                         'ACTIVE', now(), now())
                 ON CONFLICT DO NOTHING
-                """.formatted(JOB, ORGANIZATION, ACCOUNT, SERVICE_ACCOUNT));
+                """.formatted(JOB, ORGANIZATION, ACCOUNT, SERVICE_ACCOUNT, ENDPOINT));
         execute(connection, """
                 INSERT INTO ops.ingestion_run
                     (id, job_id, state, fence_token, lease_owner, lease_expires_at,
@@ -238,17 +240,24 @@ final class IngestionControlPlaneFixture {
      * forge even if it wanted to.
      */
     static String grant(long fenceToken, String leaseOwner, String correlationId) {
-        return grant(fenceToken, leaseOwner, SCOPE_GRANT, CREDENTIAL, correlationId);
+        return grant(fenceToken, leaseOwner, SCOPE_GRANT, correlationId);
     }
 
-    /** The fixture grant with an explicit scope grant and Credential selection. */
+    /** The fixture grant with an explicit scope grant; Credential selection is server-owned. */
     static String grant(long fenceToken, String leaseOwner,
-            UUID scopeGrantId, UUID credentialId, String correlationId) {
+            UUID scopeGrantId, String correlationId) {
+        return grantWithNominal(
+                fenceToken, leaseOwner, scopeGrantId, "interval '30 seconds'", correlationId);
+    }
+
+    /** The fixture grant with an explicit SQL interval expression. */
+    static String grantWithNominal(long fenceToken, String leaseOwner,
+            UUID scopeGrantId, String nominalAuthority, String correlationId) {
         return """
-                SELECT platform.grant_call_authority(
-                    '%s', %d, '%s', '%s', '%s', interval '30 seconds', '%s')
+                SELECT * FROM platform.grant_call_authority(
+                    '%s', %d, '%s', '%s', %s, '%s')
                 """.formatted(RUN, fenceToken, leaseOwner,
-                scopeGrantId, credentialId, correlationId);
+                scopeGrantId, nominalAuthority, correlationId);
     }
 
     /** The stored epoch of {@code scopeKind}, as a scalar subquery. */

@@ -21,9 +21,10 @@ public interface AcquisitionPort {
     /**
      * Perform one acquisition call under a live, bounded call authority.
      *
-     * <p>The caller has already been granted the authority the request carries;
-     * an implementation performs the exchange and reports it, and never widens,
-     * extends or re-derives the authority it was handed.
+     * <p>{@link AuthorizedAcquisitionExecutor} has already validated the bound
+     * authority deadline and derived this request. An implementation performs
+     * the exchange and reports it, and never widens, extends or re-derives the
+     * authority it was handed.
      */
     AcquisitionResult acquire(AcquisitionRequest request);
 }

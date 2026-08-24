@@ -7,6 +7,8 @@ import static com.mimococo.marketops.database.IngestionControlPlaneFixture.CREDE
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.CONTROL_SNAPSHOT_STALE;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.CREDENTIAL;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.JOB;
+import static com.mimococo.marketops.database.IngestionControlPlaneFixture.JOB_GRAPH_NOT_AUTHORITATIVE;
+import static com.mimococo.marketops.database.IngestionControlPlaneFixture.NOMINAL_AUTHORITY_INVALID;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.ORGANIZATION;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.RUN;
 import static com.mimococo.marketops.database.IngestionControlPlaneFixture.RUN_AUTHORITY_LOST;
@@ -72,10 +74,10 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
     @DisplayName("TC-CTRL-400 a grant that consumes the current snapshot succeeds and is capped")
     void freshSnapshotGrantsCappedAuthority() throws SQLException {
         try (Connection connection = asApplicationRole(container)) {
-            String authority = single(connection, grant(1, "worker-a", "corr-ok"));
+            String decision = single(connection, grant(1, "worker-a", "corr-ok"));
 
-            assertThat(authority)
-                    .as("the grant returns the instant the authority expires")
+            assertThat(decision)
+                    .as("the structured grant returns its decision identity first")
                     .isNotNull();
             assertThat(runState(connection)).isEqualTo("RUNNING");
             assertThat(count(connection,
@@ -93,6 +95,21 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
                     "SELECT call_authority_expires_at <= control_snapshot_valid_until"
                             + " FROM ops.authorization_decision_evidence"))
                     .as("the issued authority never reaches past the snapshot boundary")
+                    .isTrue();
+            assertThat(singleBoolean(connection, """
+                    SELECT run_id = '%s'
+                       AND fence_token = 1
+                       AND lease_owner = 'worker-a'
+                       AND platform_code = 'OZON'
+                       AND endpoint_id = '%s'
+                       AND credential_id = '%s'
+                       AND scope_grant_id = '%s'
+                       AND call_seq = 1
+                       AND call_authority_expires_at > granted_at
+                      FROM ops.authorization_decision_evidence
+                    """.formatted(RUN, IngestionControlPlaneFixture.ENDPOINT,
+                    CREDENTIAL, SCOPE_GRANT)))
+                    .as("the journal binds the exact run/fence/endpoint/Credential/call")
                     .isTrue();
         }
     }
@@ -256,21 +273,24 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
 
         assertRefusedAsMigrationRole(CHECK_VIOLATION, """
                 INSERT INTO ops.authorization_decision_evidence
-                    (id, job_id, service_account_id, marketplace_account_id,
+                    (id, job_id, run_id, fence_token, lease_owner, platform_code,
+                     endpoint_id, call_seq, service_account_id, marketplace_account_id,
                      scope_grant_id, credential_id,
                      evaluated_at, granted_at, control_epoch_scopes, control_epoch_values,
                      control_snapshot_valid_until, boundary_kind_count, boundary_kind_set,
                      boundary_set_digest, winning_boundary_kind, call_authority_expires_at,
                      correlation_id)
                 VALUES
-                    (gen_random_uuid(), '%s', '%s', '%s', '%s', '%s',
+                    (gen_random_uuid(), '%s', '%s', 1, 'worker-a', 'OZON', '%s', 1,
+                     '%s', '%s', '%s', '%s',
                      now(), now() + interval '1 minute',
                      ARRAY['ORGANIZATION', 'MARKETPLACE_ACCOUNT', 'SERVICE_ACCOUNT', 'JOB'],
                      ARRAY[1, 1, 1, 1]::bigint[],
                      now() + interval '1 minute', %d, ARRAY[%s],
                      repeat('0', 64), 'SERVICE_ACCOUNT_EXPIRY',
                      now() + interval '1 minute', 'corr-bypass')
-                """.formatted(JOB, SERVICE_ACCOUNT, ACCOUNT, SCOPE_GRANT, CREDENTIAL,
+                """.formatted(JOB, RUN, IngestionControlPlaneFixture.ENDPOINT,
+                SERVICE_ACCOUNT, ACCOUNT, SCOPE_GRANT, CREDENTIAL,
                 BOUNDARY_KINDS.size(), kinds));
     }
 
@@ -286,7 +306,7 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
             + " refuses the grant and leaves zero residue")
     void unauthoritativeScopeGrantRefusesTheGrant() throws SQLException {
         assertRefused(SCOPE_GRANT_NOT_AUTHORITATIVE,
-                grant(1, "worker-a", UUID.randomUUID(), CREDENTIAL, "corr-no-grant"));
+                grant(1, "worker-a", UUID.randomUUID(), "corr-no-grant"));
 
         try (Connection connection = asApplicationRole(container)) {
             execute(connection, """
@@ -305,12 +325,9 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
     }
 
     @Test
-    @DisplayName("TC-CTRL-416 a foreign, disabled or expired Credential"
+    @DisplayName("TC-CTRL-416 no current active ACCOUNT READ Credential"
             + " refuses the grant and leaves zero residue")
     void unauthoritativeCredentialRefusesTheGrant() throws SQLException {
-        assertRefused(CREDENTIAL_NOT_AUTHORITATIVE,
-                grant(1, "worker-a", SCOPE_GRANT, UUID.randomUUID(), "corr-no-cred"));
-
         try (Connection connection = asApplicationRole(container)) {
             execute(connection, """
                     UPDATE platform.credential_metadata
@@ -320,6 +337,145 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
         }
         assertRefused(CREDENTIAL_NOT_AUTHORITATIVE,
                 grant(1, "worker-a", "corr-disabled-cred"));
+
+        try (Connection connection = asApplicationRole(container)) {
+            assertThat(runState(connection)).isEqualTo("LEASED");
+            assertThat(evidenceRows(connection)).isZero();
+        }
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-418 PAUSED/RETIRED Jobs and non-active/non-READ endpoints deny")
+    void jobAndEndpointMustBeCurrentActiveReadAuthority() throws SQLException {
+        try (Connection connection = asApplicationRole(container)) {
+            execute(connection, "UPDATE platform.ingestion_job SET status = 'PAUSED',"
+                    + " updated_at = now() WHERE id = '" + JOB + "'");
+        }
+        assertRefused(JOB_GRAPH_NOT_AUTHORITATIVE,
+                grant(1, "worker-a", "corr-paused-job"));
+
+        try (Connection connection = asApplicationRole(container)) {
+            execute(connection, "UPDATE platform.ingestion_job SET status = 'RETIRED',"
+                    + " updated_at = now() WHERE id = '" + JOB + "'");
+        }
+        assertRefused(JOB_GRAPH_NOT_AUTHORITATIVE,
+                grant(1, "worker-a", "corr-retired-job"));
+
+        try (Connection connection = asApplicationRole(container)) {
+            execute(connection, "UPDATE platform.ingestion_job SET status = 'ACTIVE',"
+                    + " updated_at = now() WHERE id = '" + JOB + "'");
+            execute(connection, "UPDATE platform.platform_endpoint SET status = 'RETIRED',"
+                    + " updated_at = now() WHERE id = '"
+                    + IngestionControlPlaneFixture.ENDPOINT + "'");
+        }
+        assertRefused(JOB_GRAPH_NOT_AUTHORITATIVE,
+                grant(1, "worker-a", "corr-retired-endpoint"));
+
+        try (Connection connection = asApplicationRole(container)) {
+            execute(connection, "UPDATE platform.platform_endpoint"
+                    + " SET status = 'ACTIVE', read_write_class = 'WRITE', updated_at = now()"
+                    + " WHERE id = '" + IngestionControlPlaneFixture.ENDPOINT + "'");
+        }
+        assertRefused(JOB_GRAPH_NOT_AUTHORITATIVE,
+                grant(1, "worker-a", "corr-write-endpoint"));
+
+        try (Connection connection = asApplicationRole(container)) {
+            assertThat(runState(connection)).isEqualTo("LEASED");
+            assertThat(evidenceRows(connection)).isZero();
+        }
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-419 the Job cannot carry a null, missing or wrong-platform endpoint")
+    void endpointIdentityIsRelationallyTotal() throws SQLException {
+        assertRefusedAsMigrationRole("23502",
+                "UPDATE platform.ingestion_job SET endpoint_id = NULL WHERE id = '" + JOB + "'");
+        assertRefusedAsMigrationRole(FOREIGN_KEY_VIOLATION,
+                "UPDATE platform.ingestion_job SET endpoint_id = '"
+                        + UUID.randomUUID() + "' WHERE id = '" + JOB + "'");
+
+        UUID wrongPlatformEndpoint = UUID.randomUUID();
+        assertRefusedAsMigrationRole(FOREIGN_KEY_VIOLATION, """
+                WITH inserted AS (
+                    INSERT INTO platform.platform_endpoint
+                        (id, platform_code, endpoint_code, api_version, read_write_class,
+                         pagination_model, idempotency_support, verification_state,
+                         owner_label, contract_test_status, status, created_at, updated_at)
+                    VALUES ('%s', 'WILDBERRIES', 'orders.other', 'v1', 'READ', 'CURSOR',
+                            'UNKNOWN', 'UNVERIFIED', 'platform-team', 'NOT_IMPLEMENTED',
+                            'ACTIVE', now(), now())
+                    RETURNING id)
+                UPDATE platform.ingestion_job
+                   SET endpoint_id = (SELECT id FROM inserted), updated_at = now()
+                 WHERE id = '%s'
+                """.formatted(wrongPlatformEndpoint, JOB));
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-430 unrelated active Credential leaves are ambiguous and deny")
+    void unrelatedCredentialLeavesDeny() throws SQLException {
+        try (Connection connection = asApplicationRole(container)) {
+            insertCredential(connection, UUID.randomUUID(), "acme-read-unrelated",
+                    "secret-ref://vault/acme/read-unrelated", null, "ACCOUNT");
+        }
+
+        assertRefused(CREDENTIAL_NOT_AUTHORITATIVE,
+                grant(1, "worker-a", "corr-ambiguous-credential"));
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-431 rotation selects the unique leaf and exposes no caller Credential input")
+    void rotationSelectsTheUniqueLeaf() throws SQLException {
+        UUID leaf = UUID.randomUUID();
+        try (Connection connection = asApplicationRole(container)) {
+            insertCredential(connection, leaf, "acme-read-next",
+                    "secret-ref://vault/acme/read-next", CREDENTIAL, "ACCOUNT");
+
+            assertThat(single(connection, grant(1, "worker-a", "corr-rotation-leaf")))
+                    .isNotNull();
+            assertThat(single(connection,
+                    "SELECT credential_id::text FROM ops.authorization_decision_evidence"))
+                    .isEqualTo(leaf.toString());
+            assertThat(single(connection, """
+                    SELECT to_regprocedure(
+                        'platform.grant_call_authority(uuid,bigint,text,uuid,interval,text)')
+                    """)).isNotNull();
+            assertThat(single(connection, """
+                    SELECT to_regprocedure(
+                        'platform.grant_call_authority(uuid,bigint,text,uuid,uuid,interval,text)')
+                    """)).isNull();
+        }
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-432 STORE_SET is denied for an account-level Job")
+    void storeSetCredentialIsDeniedForAccountJob() throws SQLException {
+        try (Connection connection = asApplicationRole(container)) {
+            execute(connection, "UPDATE platform.credential_metadata"
+                    + " SET scope_mode = 'STORE_SET', updated_at = now()"
+                    + " WHERE id = '" + CREDENTIAL + "'");
+            execute(connection, """
+                    INSERT INTO platform.credential_store_scope
+                        (id, credential_id, marketplace_account_id, store_id, status,
+                         created_at, updated_at)
+                    VALUES ('%s', '%s', '%s', '%s', 'ACTIVE', now(), now())
+                    """.formatted(UUID.randomUUID(), CREDENTIAL, ACCOUNT,
+                    IngestionControlPlaneFixture.STORE));
+        }
+
+        assertRefused(CREDENTIAL_NOT_AUTHORITATIVE,
+                grant(1, "worker-a", "corr-store-set"));
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-433 zero and negative nominal authority deny with zero residue")
+    void nonpositiveNominalAuthorityIsDenied() throws SQLException {
+        assertRefused(NOMINAL_AUTHORITY_INVALID,
+                IngestionControlPlaneFixture.grantWithNominal(
+                        1, "worker-a", SCOPE_GRANT, "interval '0 seconds'", "corr-zero"));
+        assertRefused(NOMINAL_AUTHORITY_INVALID,
+                IngestionControlPlaneFixture.grantWithNominal(
+                        1, "worker-a", SCOPE_GRANT, "interval '-1 second'", "corr-negative"));
 
         try (Connection connection = asApplicationRole(container)) {
             assertThat(runState(connection)).isEqualTo("LEASED");
@@ -415,14 +571,15 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
             execute(connection, """
                     INSERT INTO platform.ingestion_job
                         (id, organization_id, marketplace_account_id, platform_code,
-                         service_account_id, job_code, display_name, status,
+                         service_account_id, endpoint_id, job_code, display_name, status,
                          created_at, updated_at)
-                    VALUES ('%s', '%s', '%s', 'OZON', '%s', 'ozon-returns',
+                    VALUES ('%s', '%s', '%s', 'OZON', '%s', '%s', 'ozon-returns',
                             'Ozon returns', 'ACTIVE', now(), now())
                     """.formatted(IngestionControlPlaneFixture.SECOND_JOB,
                     IngestionControlPlaneFixture.ORGANIZATION,
                     IngestionControlPlaneFixture.ACCOUNT,
-                    IngestionControlPlaneFixture.SERVICE_ACCOUNT));
+                    IngestionControlPlaneFixture.SERVICE_ACCOUNT,
+                    IngestionControlPlaneFixture.ENDPOINT));
             execute(connection, """
                     INSERT INTO ops.ingestion_run
                         (id, job_id, state, fence_token, lease_owner, lease_expires_at,
@@ -537,6 +694,22 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
                        updated_at = now()
                  WHERE job_id = '%s'
                 """.formatted(JOB));
+    }
+
+    private static void insertCredential(Connection connection, UUID id, String code,
+            String secretReference, UUID replaces, String scopeMode) throws SQLException {
+        String replacesValue = replaces == null ? "NULL" : "'" + replaces + "'";
+        execute(connection, """
+                INSERT INTO platform.credential_metadata
+                    (id, organization_id, marketplace_account_id, code, display_name,
+                     purpose_code, scope_mode, secret_reference, effective_from,
+                     expires_at, replaces_credential_id, status, custodian_label,
+                     verification_state, created_at, updated_at)
+                VALUES ('%s', '%s', '%s', '%s', '%s', 'READ', '%s', '%s',
+                        now() - interval '1 hour', now() + interval '10 days', %s,
+                        'ACTIVE', 'platform-team', 'UNVERIFIED', now(), now())
+                """.formatted(id, ORGANIZATION, ACCOUNT, code, code, scopeMode,
+                secretReference, replacesValue));
     }
 
     private static String rawContent(UUID id) {

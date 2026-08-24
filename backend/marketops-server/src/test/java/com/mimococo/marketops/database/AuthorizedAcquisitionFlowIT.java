@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionRequest;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionResult;
+import com.mimococo.marketops.marketplaceintegration.port.AuthorizedAcquisitionExecutor;
+import com.mimococo.marketops.marketplaceintegration.port.CallAuthorityGrant;
 import com.mimococo.marketops.marketplaceintegration.port.InMemoryObjectStoragePort;
 import com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort;
 import com.mimococo.marketops.marketplaceintegration.port.RecordedAcquisitionPort;
@@ -11,8 +13,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +34,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
  * an opaque row identifier, and the recorded requests show that nothing capable
  * of holding secret material was available to leak it.
  */
-class IngestionSkeletonFlowIT extends PostgresContainerSupport {
+class AuthorizedAcquisitionFlowIT extends PostgresContainerSupport {
 
     private static PostgreSQLContainer container;
 
@@ -60,19 +63,13 @@ class IngestionSkeletonFlowIT extends PostgresContainerSupport {
 
         try (Connection connection = asApplicationRole(container)) {
             // The grant consumes the control snapshot and bounds the authority.
-            Instant authority = grant(connection, "flow-500");
-            assertThat(authority).isAfter(Instant.now());
+            CallAuthorityGrant grant = grant(connection, "flow-500");
+            assertThat(grant.callAuthorityExpiresAt()).isAfter(Instant.now());
 
-            // The call goes through the only doorway the test possesses.
-            AcquisitionRequest request = new AcquisitionRequest(
-                    IngestionControlPlaneFixture.JOB,
-                    IngestionControlPlaneFixture.RUN,
-                    1L,
-                    IngestionControlPlaneFixture.ENDPOINT,
-                    IngestionControlPlaneFixture.CREDENTIAL,
-                    1,
-                    authority);
-            AcquisitionResult result = acquisition.acquire(request);
+            // The sole executor derives the request from the whole structured
+            // grant; no fixture identity is selected a second time.
+            AuthorizedAcquisitionExecutor executor = new AuthorizedAcquisitionExecutor(acquisition);
+            AcquisitionResult result = executor.execute(grant);
             assertThat(result.outcome())
                     .isEqualTo(AcquisitionResult.AcquisitionOutcome.SUCCESS_BYTES);
 
@@ -102,6 +99,8 @@ class IngestionSkeletonFlowIT extends PostgresContainerSupport {
         assertThat(recorded.endpointId())
                 .isEqualTo(IngestionControlPlaneFixture.ENDPOINT);
         assertThat(recorded.fenceToken()).isEqualTo(1L);
+        assertThat(recorded.decisionId()).isNotNull();
+        assertThat(recorded.callSeq()).isEqualTo(1);
 
         try (Connection connection = asMigrationRole(container)) {
             // The decision, the evidence and the cursor all agree afterwards.
@@ -122,28 +121,46 @@ class IngestionSkeletonFlowIT extends PostgresContainerSupport {
     void expiredAuthorityStopsTheCall() {
         RecordedAcquisitionPort acquisition = new RecordedAcquisitionPort(
                 "{}", "200 OK", AcquisitionResult.AcquisitionOutcome.SUCCESS_BYTES);
-        AcquisitionRequest expired = new AcquisitionRequest(
-                IngestionControlPlaneFixture.JOB,
-                IngestionControlPlaneFixture.RUN,
-                1L,
+        Instant grantedAt = Instant.now().minusSeconds(2);
+        CallAuthorityGrant expired = new CallAuthorityGrant(
+                UUID.randomUUID(), IngestionControlPlaneFixture.JOB,
+                IngestionControlPlaneFixture.RUN, 1L, "worker-a", "OZON",
                 IngestionControlPlaneFixture.ENDPOINT,
                 IngestionControlPlaneFixture.CREDENTIAL,
-                1,
-                Instant.now().minusSeconds(1));
+                IngestionControlPlaneFixture.SCOPE_GRANT, 1, grantedAt,
+                grantedAt.plusSeconds(1), IngestionControlPlaneFixture.SCOPE_KINDS,
+                List.of(1L, 1L, 1L, 1L), "a".repeat(64));
+        AuthorizedAcquisitionExecutor executor = new AuthorizedAcquisitionExecutor(acquisition);
 
-        org.assertj.core.api.Assertions.assertThatThrownBy(() -> acquisition.acquire(expired))
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> executor.execute(expired))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("expired");
         assertThat(acquisition.recorded()).isEmpty();
     }
 
-    private Instant grant(Connection connection, String correlationId) throws SQLException {
+    private CallAuthorityGrant grant(Connection connection, String correlationId)
+            throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(
                 IngestionControlPlaneFixture.grant(1L, "worker-a", correlationId));
              ResultSet rows = statement.executeQuery()) {
             assertThat(rows.next()).isTrue();
-            Timestamp granted = rows.getTimestamp(1);
-            return granted.toInstant();
+            String[] scopes = (String[]) rows.getArray("control_epoch_scopes").getArray();
+            Long[] values = (Long[]) rows.getArray("control_epoch_values").getArray();
+            return new CallAuthorityGrant(
+                    rows.getObject("decision_id", UUID.class),
+                    rows.getObject("job_id", UUID.class),
+                    rows.getObject("run_id", UUID.class),
+                    rows.getLong("fence_token"),
+                    rows.getString("lease_owner"),
+                    rows.getString("platform_code"),
+                    rows.getObject("endpoint_id", UUID.class),
+                    rows.getObject("credential_id", UUID.class),
+                    rows.getObject("scope_grant_id", UUID.class),
+                    rows.getInt("call_seq"),
+                    rows.getTimestamp("granted_at").toInstant(),
+                    rows.getTimestamp("call_authority_expires_at").toInstant(),
+                    Arrays.asList(scopes), Arrays.asList(values),
+                    rows.getString("boundary_set_digest"));
         }
     }
 

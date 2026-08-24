@@ -64,6 +64,14 @@ class IngestionAuthorityArchitectureTest {
                 .check(production);
     }
 
+    @Test
+    @DisplayName("TC-ARCH-023 only marketplaceintegration constructs call-authority grants")
+    void callAuthorityGrantConstructionIsOwned() {
+        IngestionAuthorityRules
+                .callAuthorityGrantsAreConstructedOnlyByTheOwningModule(PRODUCTION_PACKAGE)
+                .check(production);
+    }
+
     /**
      * Each rule rejects the arrangement built to violate it and accepts the
      * conforming arrangement, so a rule weakened by a later edit fails here
@@ -101,7 +109,16 @@ class IngestionAuthorityArchitectureTest {
         }
 
         @Test
-        @DisplayName("F-ARCH-023 the conforming arrangement passes all three rules")
+        @DisplayName("F-ARCH-023 an outside grant constructor/rebinder is rejected")
+        void outsideGrantRebinderIsRejected() {
+            assertRejects(
+                    IngestionAuthorityRules::callAuthorityGrantsAreConstructedOnlyByTheOwningModule,
+                    VIOLATION + ".grantrebind",
+                    "GrantRebinder");
+        }
+
+        @Test
+        @DisplayName("F-ARCH-024 the conforming arrangement passes all four rules")
         void conformingArrangementPasses() {
             JavaClasses conforming = importFixture(CONFORMING);
             assertThatCode(() -> {
@@ -113,6 +130,9 @@ class IngestionAuthorityArchitectureTest {
                         .check(conforming);
                 IngestionAuthorityRules
                         .webControllersDoNotReachAcquisition(CONFORMING)
+                        .check(conforming);
+                IngestionAuthorityRules
+                        .callAuthorityGrantsAreConstructedOnlyByTheOwningModule(CONFORMING)
                         .check(conforming);
             }).doesNotThrowAnyException();
         }

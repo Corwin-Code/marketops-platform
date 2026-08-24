@@ -1,10 +1,10 @@
--- The runtime skeleton the control plane protects: a leased and fenced run, a
+-- The runtime authority the control plane protects: a leased and fenced run, a
 -- cursor that may not outrun durable evidence, immutable Raw evidence, and the
 -- single statement that turns a control snapshot into a call authority.
 --
--- This is the smallest shape that lets the guarantees in V0007 to V0009 be
--- executed rather than described. It is not a worker: nothing here schedules,
--- dispatches or calls anything outward, and no code path reaches a Marketplace.
+-- The database owns authorization, lease/fence validation, custody evidence,
+-- and checkpoint ordering. Scheduling, dispatch and outbound transport remain
+-- outside this authority boundary, and no database path reaches a Marketplace.
 --
 -- Two invariants decide the structure.
 --
@@ -39,6 +39,7 @@ CREATE TABLE ops.ingestion_run (
     created_at          timestamptz NOT NULL,
     updated_at          timestamptz NOT NULL,
     CONSTRAINT ingestion_run_pk PRIMARY KEY (id),
+    CONSTRAINT ingestion_run_id_job_uq UNIQUE (id, job_id),
     CONSTRAINT ingestion_run_job_fk
         FOREIGN KEY (job_id) REFERENCES platform.ingestion_job (id),
     CONSTRAINT ingestion_run_state_ck
@@ -65,6 +66,48 @@ CREATE INDEX ingestion_run_job_ix ON ops.ingestion_run (job_id, state);
 CREATE UNIQUE INDEX ingestion_run_live_uq
     ON ops.ingestion_run (job_id)
     WHERE state IN ('QUEUED', 'LEASED', 'RUNNING', 'RETRY_WAIT', 'BLOCKED');
+
+-- A grant is a structured, identity-bound decision rather than a bearer-like
+-- expiry instant. Every field is derived by the database grant primitive and
+-- is carried together to the sole acquisition executor.
+CREATE TYPE platform.call_authority_grant AS (
+    decision_id                  uuid,
+    job_id                       uuid,
+    run_id                       uuid,
+    fence_token                  bigint,
+    lease_owner                  text,
+    platform_code                text,
+    endpoint_id                  uuid,
+    credential_id                uuid,
+    scope_grant_id               uuid,
+    call_seq                     integer,
+    granted_at                   timestamptz,
+    call_authority_expires_at    timestamptz,
+    control_epoch_scopes         text[],
+    control_epoch_values         bigint[],
+    boundary_set_digest          text
+);
+
+-- V0009 creates the decision journal before the runtime run exists. Complete
+-- its identity graph here, after both referenced tables are available.
+ALTER TABLE ops.authorization_decision_evidence
+    ADD COLUMN run_id        uuid   NOT NULL,
+    ADD COLUMN fence_token   bigint NOT NULL,
+    ADD COLUMN lease_owner   text   NOT NULL,
+    ADD COLUMN platform_code text   NOT NULL,
+    ADD COLUMN endpoint_id   uuid   NOT NULL,
+    ADD COLUMN call_seq      integer NOT NULL,
+    ADD CONSTRAINT authorization_decision_evidence_run_job_fk
+        FOREIGN KEY (run_id, job_id) REFERENCES ops.ingestion_run (id, job_id),
+    ADD CONSTRAINT authorization_decision_evidence_endpoint_platform_fk
+        FOREIGN KEY (endpoint_id, platform_code)
+        REFERENCES platform.platform_endpoint (id, platform_code),
+    ADD CONSTRAINT authorization_decision_evidence_fence_ck CHECK (fence_token > 0),
+    ADD CONSTRAINT authorization_decision_evidence_owner_ck
+        CHECK (length(btrim(lease_owner)) > 0),
+    ADD CONSTRAINT authorization_decision_evidence_call_seq_ck CHECK (call_seq > 0),
+    ADD CONSTRAINT authorization_decision_evidence_authority_after_grant_ck
+        CHECK (call_authority_expires_at > granted_at);
 
 CREATE FUNCTION ops.ingestion_run_fence_monotonic()
 RETURNS trigger
@@ -256,17 +299,49 @@ BEGIN
                   HINT = 'store and hash the returned bytes before acknowledging a cursor';
     END IF;
 
+    -- Lock the exact checkpoint row after the run. A concurrent holder may
+    -- delay this acquisition past the lease deadline; after the row is obtained
+    -- the final UPDATE below therefore rechecks wall-clock lease truth.
+    PERFORM 1
+      FROM ops.ingestion_checkpoint AS checkpoint
+     WHERE checkpoint.job_id = target_job
+       AND checkpoint.checkpoint_version = p_expected_version
+       FOR UPDATE OF checkpoint;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION
+            'checkpoint for job % is not at expected version %', target_job, p_expected_version
+            USING ERRCODE = 'MO008';
+    END IF;
+
     UPDATE ops.ingestion_checkpoint AS checkpoint
        SET position_value     = p_position_value,
            checkpoint_version = checkpoint.checkpoint_version + 1,
            updated_at         = clock_timestamp()
+      FROM ops.ingestion_run AS run
      WHERE checkpoint.job_id = target_job
        AND checkpoint.checkpoint_version = p_expected_version
+       AND run.id = p_run_id
+       AND run.job_id = checkpoint.job_id
+       AND run.state = 'RUNNING'
+       AND run.fence_token = p_expected_fence
+       AND run.lease_owner = p_expected_lease_owner
+       AND run.lease_expires_at > clock_timestamp()
+       AND EXISTS (
+           SELECT 1
+             FROM raw.raw_acquisition_observation AS observation
+             JOIN raw.raw_logical_unit AS unit
+               ON unit.id = observation.logical_unit_id
+             JOIN raw.raw_content AS content
+               ON content.id = observation.content_id
+            WHERE observation.id = p_observation_id
+              AND observation.run_id = run.id
+              AND unit.job_id = run.job_id)
     RETURNING checkpoint.checkpoint_version INTO new_version;
 
     IF new_version IS NULL THEN
         RAISE EXCEPTION
-            'checkpoint for job % is not at expected version %', target_job, p_expected_version
+            'checkpoint authority for run % was lost before version % could advance',
+            p_run_id, p_expected_version
             USING ERRCODE = 'MO008';
     END IF;
 
@@ -284,30 +359,28 @@ REVOKE ALL ON FUNCTION ops.acknowledge_checkpoint(uuid, bigint, text, uuid, bigi
 -- Evaluate, consume and record one bounded call authority in one transaction,
 -- or refuse with nothing changed.
 --
--- The caller supplies references only: the run it claims to hold, the fence
--- and lease owner it claims to hold it at, and the scope grant and Credential
--- rows it selected. Everything else -- the job, the organization, the account,
--- the subject, the epochs, the temporal boundary relation -- is derived from
--- committed rows inside this transaction. Evidence describes the decision;
--- nothing a caller submits can be the decision.
+-- The caller supplies the run holder identity and a scope-grant reference. The
+-- function locks and derives the Job graph, selects the unique current
+-- Credential rotation leaf, consumes the epoch tuple and returns one structured
+-- grant whose identities are the recorded decision. Evidence describes the
+-- decision; nothing a caller submits can substitute for it.
 --
 -- The transaction is the serialization point:
 --
 --   authority   the run row is locked first, and the final transition re-checks
 --               fence, owner, state and lease in the UPDATE itself; zero rows
 --               is a raised refusal, never a fall-through
---   change      the four epoch rows are locked FOR SHARE and held to commit, in
---               the same ascending (scope_kind, scope_id) order the epoch
---               triggers use to advance them, so a control mutation either
---               commits before this transaction begins and is evaluated, or
---               waits behind it and lands after the grant is already bounded
+--   change      the Job is locked, then the four epoch rows are locked FOR SHARE
+--               in the writers' ascending order. Every metadata evaluation is
+--               performed after those locks, so a prior writer is observed and
+--               a later writer lands after the already-bounded grant
 --   time        the boundary relation is recomputed under those locks, and the
 --               grant instant must be strictly before its minimum
 --
--- The returned authority is capped by the boundary. That cap is what carries
--- the guarantee outward: the caller's existing "is there enough authority left
--- to start a call" check now also answers "does this call start before the
--- control snapshot expires", with no second code path to keep in step.
+-- The returned grant binds the cap to its decision, Job, run, fence, holder,
+-- platform, endpoint, Credential, scope grant, call sequence and epoch/digest
+-- proof. The acquisition request is derived from this whole value, so the cap
+-- cannot be rebound to another call identity.
 --
 -- Note what is not claimed. This bounds when a call may START. A remote call
 -- that starts inside the window and returns after it has still started under a
@@ -318,38 +391,41 @@ CREATE FUNCTION platform.grant_call_authority(
     p_expected_fence       bigint,
     p_expected_lease_owner text,
     p_scope_grant_id       uuid,
-    p_credential_id        uuid,
     p_nominal_authority    interval,
     p_correlation_id       text)
-RETURNS timestamptz
+RETURNS platform.call_authority_grant
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = pg_catalog, pg_temp
 AS $$
 DECLARE
-    run_row        record;
-    epoch_scopes   text[];
-    epoch_values   bigint[];
-    evaluated      timestamptz;
-    snapshot       platform.control_snapshot_temporal;
-    grant_at       timestamptz;
-    authority_at   timestamptz;
-    granted_run    uuid;
+    run_row              record;
+    job_row              record;
+    epoch_scopes         text[];
+    epoch_values         bigint[];
+    evaluated            timestamptz;
+    snapshot             platform.control_snapshot_temporal;
+    grant_at             timestamptz;
+    authority_at         timestamptz;
+    selected_credential  uuid;
+    credential_count     integer;
+    credential_leaves    integer;
+    credential_chain     integer;
+    granted_call_seq     integer;
+    decision             uuid;
+    grant_result         platform.call_authority_grant;
 BEGIN
-    -- Lock the run, derive the identity graph from it, and hold the lock to
-    -- commit. Missing row and wrong-holder are the same refusal: what matters
-    -- is that this caller does not hold this run.
-    SELECT run.job_id,
-           run.fence_token,
-           run.lease_owner,
-           run.state,
-           run.lease_expires_at,
-           job.organization_id,
-           job.marketplace_account_id,
-           job.service_account_id
+    IF p_nominal_authority IS NULL OR p_nominal_authority <= interval '0' THEN
+        RAISE EXCEPTION 'nominal call authority must be greater than zero'
+            USING ERRCODE = 'MO016';
+    END IF;
+
+    -- First serialize the runtime authority. Missing row and wrong holder are
+    -- the same refusal: this caller does not hold the named run.
+    SELECT run.job_id, run.fence_token, run.lease_owner, run.state,
+           run.lease_expires_at
       INTO run_row
       FROM ops.ingestion_run AS run
-      JOIN platform.ingestion_job AS job ON job.id = run.job_id
      WHERE run.id = p_run_id
        FOR UPDATE OF run;
 
@@ -364,73 +440,35 @@ BEGIN
             USING ERRCODE = 'MO008';
     END IF;
 
-    -- The selected scope grant must be a live READ authority of the derived
-    -- subject over the derived organization or account. A grant that belongs
-    -- to anyone else, is inactive, out of window, for another permission or
-    -- over another resource is the same refusal.
-    PERFORM 1
-      FROM iam.service_account_scope_grant AS scope_grant
-      JOIN iam.service_account AS subject
-        ON subject.id = scope_grant.service_account_id
-     WHERE scope_grant.id = p_scope_grant_id
-       AND scope_grant.service_account_id = run_row.service_account_id
-       AND scope_grant.organization_id = run_row.organization_id
-       AND scope_grant.permission_code = 'READ'
-       AND scope_grant.status = 'ACTIVE'
-       AND scope_grant.effective_from <= clock_timestamp()
-       AND (scope_grant.effective_to IS NULL
-            OR scope_grant.effective_to > clock_timestamp())
-       AND (scope_grant.organization_ref_id = run_row.organization_id
-            OR scope_grant.marketplace_account_ref_id = run_row.marketplace_account_id)
-       AND subject.organization_id = run_row.organization_id
-       AND subject.status = 'ACTIVE'
-       AND subject.expires_at > clock_timestamp();
-    IF NOT FOUND THEN
-        RAISE EXCEPTION
-            'scope grant % does not authorise subject % over this job now',
-            p_scope_grant_id, run_row.service_account_id
-            USING ERRCODE = 'MO012';
+    -- Lock the exact Job row separately from the run, and derive every identity
+    -- the call may use. A Job writer that committed first is followed to its
+    -- current row version; a later writer waits behind this held lock.
+    SELECT job.id, job.organization_id, job.marketplace_account_id,
+           job.service_account_id, job.platform_code, job.endpoint_id, job.status
+      INTO job_row
+      FROM platform.ingestion_job AS job
+     WHERE job.id = run_row.job_id
+       FOR SHARE OF job;
+
+    IF job_row.id IS NULL THEN
+        RAISE EXCEPTION 'run % has no current ingestion Job', p_run_id
+            USING ERRCODE = 'MO015';
     END IF;
 
-    -- The selected Credential must be a live READ credential of the derived
-    -- account. A STORE_SET credential without one active store scope row is
-    -- unusable rather than silently account-wide.
-    PERFORM 1
-      FROM platform.credential_metadata AS credential
-     WHERE credential.id = p_credential_id
-       AND credential.marketplace_account_id = run_row.marketplace_account_id
-       AND credential.organization_id = run_row.organization_id
-       AND credential.purpose_code = 'READ'
-       AND credential.status = 'ACTIVE'
-       AND credential.effective_from <= clock_timestamp()
-       AND credential.expires_at > clock_timestamp()
-       AND (credential.scope_mode = 'ACCOUNT'
-            OR EXISTS (SELECT 1
-                         FROM platform.credential_store_scope AS store_scope
-                        WHERE store_scope.credential_id = credential.id
-                          AND store_scope.status = 'ACTIVE'));
-    IF NOT FOUND THEN
-        RAISE EXCEPTION
-            'credential % is not a live READ credential of account %',
-            p_credential_id, run_row.marketplace_account_id
-            USING ERRCODE = 'MO013';
-    END IF;
-
-    -- Lock the four epoch rows and hold the locks to commit. The ascending
-    -- (scope_kind, scope_id) order matches platform.advance_control_epochs,
-    -- so a writer and a grant can only queue behind each other, never form an
-    -- ordering cycle. The count is asserted because an absent row and a
-    -- changed one must refuse identically.
-    SELECT array_agg(locked.scope_kind  ORDER BY locked.scope_kind),
-           array_agg(locked.epoch       ORDER BY locked.scope_kind)
+    -- The four epoch locks are the control-metadata serialization point. Every
+    -- point-of-use evaluation is deliberately below this statement, so a
+    -- writer that reached an epoch first commits and becomes visible before any
+    -- subject, grant, Credential, endpoint or temporal decision is made.
+    SELECT array_agg(locked.scope_kind ORDER BY locked.scope_kind),
+           array_agg(locked.epoch ORDER BY locked.scope_kind)
       INTO epoch_scopes, epoch_values
       FROM (SELECT epoch.scope_kind, epoch.scope_id, epoch.epoch
               FROM platform.control_epoch AS epoch
              WHERE (epoch.scope_kind, epoch.scope_id) IN (
-                       ('ORGANIZATION',        run_row.organization_id),
-                       ('MARKETPLACE_ACCOUNT', run_row.marketplace_account_id),
-                       ('SERVICE_ACCOUNT',     run_row.service_account_id),
-                       ('JOB',                 run_row.job_id))
+                       ('ORGANIZATION',        job_row.organization_id),
+                       ('MARKETPLACE_ACCOUNT', job_row.marketplace_account_id),
+                       ('SERVICE_ACCOUNT',     job_row.service_account_id),
+                       ('JOB',                 job_row.id))
              ORDER BY epoch.scope_kind, epoch.scope_id
                FOR SHARE) AS locked;
 
@@ -441,14 +479,107 @@ BEGIN
             USING ERRCODE = 'MO010';
     END IF;
 
-    -- Recompute the temporal boundary relation under the held locks. The
-    -- resolver itself refuses a missing, duplicate or undeclared kind, so a
-    -- snapshot that reaches the comparison below is a proven-complete one.
+    -- Evaluate the Job, owning entities and endpoint only after serialization.
+    -- UNVERIFIED provider metadata is permitted only for provider-neutral
+    -- design validation; the authorization boundary performs no outbound I/O.
+    PERFORM 1
+      FROM core.organization AS organization
+      JOIN core.marketplace_account AS account
+        ON account.id = job_row.marketplace_account_id
+       AND account.organization_id = organization.id
+      JOIN core.marketplace_platform AS marketplace
+        ON marketplace.code = job_row.platform_code
+      JOIN platform.platform_endpoint AS endpoint
+        ON endpoint.id = job_row.endpoint_id
+       AND endpoint.platform_code = job_row.platform_code
+     WHERE organization.id = job_row.organization_id
+       AND organization.status = 'ACTIVE'
+       AND account.status = 'ACTIVE'
+       AND account.platform_code = job_row.platform_code
+       AND marketplace.status = 'ACTIVE'
+       AND job_row.status = 'ACTIVE'
+       AND endpoint.status = 'ACTIVE'
+       AND endpoint.read_write_class = 'READ';
+    IF NOT FOUND THEN
+        RAISE EXCEPTION
+            'job % and its organization/account/platform/endpoint are not active READ authority',
+            job_row.id
+            USING ERRCODE = 'MO015';
+    END IF;
+
+    -- The selected scope grant is caller-named but evaluated against the locked,
+    -- derived Job identity under the epoch locks.
+    PERFORM 1
+      FROM iam.service_account_scope_grant AS scope_grant
+      JOIN iam.service_account AS subject
+        ON subject.id = scope_grant.service_account_id
+     WHERE scope_grant.id = p_scope_grant_id
+       AND scope_grant.service_account_id = job_row.service_account_id
+       AND scope_grant.organization_id = job_row.organization_id
+       AND scope_grant.permission_code = 'READ'
+       AND scope_grant.status = 'ACTIVE'
+       AND scope_grant.effective_from <= clock_timestamp()
+       AND (scope_grant.effective_to IS NULL
+            OR scope_grant.effective_to > clock_timestamp())
+       AND (scope_grant.organization_ref_id = job_row.organization_id
+            OR scope_grant.marketplace_account_ref_id = job_row.marketplace_account_id)
+       AND subject.organization_id = job_row.organization_id
+       AND subject.status = 'ACTIVE'
+       AND subject.expires_at > clock_timestamp();
+    IF NOT FOUND THEN
+        RAISE EXCEPTION
+            'scope grant % does not authorise subject % over this job now',
+            p_scope_grant_id, job_row.service_account_id
+            USING ERRCODE = 'MO012';
+    END IF;
+
+    -- Derive the unique current ACCOUNT-scoped READ Credential rotation leaf.
+    -- The caller cannot select a credential. One unrelated branch, a cycle, a
+    -- STORE_SET candidate or no candidate is a fail-closed ambiguity.
+    WITH RECURSIVE candidates AS MATERIALIZED (
+        SELECT credential.id, credential.replaces_credential_id
+          FROM platform.credential_metadata AS credential
+         WHERE credential.marketplace_account_id = job_row.marketplace_account_id
+           AND credential.organization_id = job_row.organization_id
+           AND credential.purpose_code = 'READ'
+           AND credential.scope_mode = 'ACCOUNT'
+           AND credential.status = 'ACTIVE'
+           AND credential.effective_from <= clock_timestamp()
+           AND credential.expires_at > clock_timestamp()
+    ), leaves AS (
+        SELECT candidate.id, candidate.replaces_credential_id
+          FROM candidates AS candidate
+         WHERE NOT EXISTS (
+                   SELECT 1
+                     FROM candidates AS successor
+                    WHERE successor.replaces_credential_id = candidate.id)
+    ), chain (id, replaces_credential_id) AS (
+        SELECT leaf.id, leaf.replaces_credential_id FROM leaves AS leaf
+        UNION
+        SELECT predecessor.id, predecessor.replaces_credential_id
+          FROM candidates AS predecessor
+          JOIN chain AS successor ON successor.replaces_credential_id = predecessor.id
+    )
+    SELECT (SELECT leaf.id FROM leaves AS leaf LIMIT 1),
+           (SELECT count(*) FROM candidates),
+           (SELECT count(*) FROM leaves),
+           (SELECT count(*) FROM chain)
+      INTO selected_credential, credential_count, credential_leaves, credential_chain;
+
+    IF credential_count = 0
+        OR credential_leaves <> 1
+        OR credential_chain <> credential_count THEN
+        RAISE EXCEPTION
+            'account % has no unique current ACCOUNT READ credential rotation leaf',
+            job_row.marketplace_account_id
+            USING ERRCODE = 'MO013';
+    END IF;
+
+    -- Recompute the complete temporal relation using the server-selected leaf.
     evaluated := clock_timestamp();
     snapshot := platform.control_snapshot_temporal(
-        run_row.service_account_id, p_scope_grant_id,
-        run_row.marketplace_account_id, p_credential_id, evaluated);
-
+        job_row.service_account_id, p_scope_grant_id,
+        job_row.marketplace_account_id, selected_credential, evaluated);
     grant_at := clock_timestamp();
 
     IF grant_at >= snapshot.valid_until THEN
@@ -459,31 +590,35 @@ BEGIN
     END IF;
 
     authority_at := LEAST(grant_at + p_nominal_authority, snapshot.valid_until);
+    IF authority_at <= grant_at THEN
+        RAISE EXCEPTION 'call authority did not extend beyond its grant instant'
+            USING ERRCODE = 'MO016';
+    END IF;
 
-    -- The final transition re-checks everything it depends on inside the
-    -- UPDATE itself and must change exactly one row. Zero rows means the run
-    -- authority was lost after the initial read -- the lease expired on the
-    -- wall clock, or the row changed in a way the lock could not prevent --
-    -- and the whole transaction rolls back with no evidence written.
+    -- Consume the lease exactly once and derive the call sequence in the same
+    -- guarded transition. No caller can choose or reuse that sequence.
     UPDATE ops.ingestion_run AS run
        SET state         = 'RUNNING',
            last_call_seq = run.last_call_seq + 1,
            updated_at    = grant_at
      WHERE run.id = p_run_id
+       AND run.job_id = job_row.id
        AND run.fence_token = p_expected_fence
        AND run.lease_owner = p_expected_lease_owner
        AND run.state = 'LEASED'
        AND run.lease_expires_at > clock_timestamp()
-    RETURNING run.id INTO granted_run;
+    RETURNING run.last_call_seq INTO granted_call_seq;
 
-    IF granted_run IS NULL THEN
+    IF granted_call_seq IS NULL THEN
         RAISE EXCEPTION
             'run authority for % was lost before the grant could commit', p_run_id
             USING ERRCODE = 'MO014';
     END IF;
 
+    decision := gen_random_uuid();
     INSERT INTO ops.authorization_decision_evidence (
-        id, job_id, service_account_id, marketplace_account_id,
+        id, job_id, run_id, fence_token, lease_owner, platform_code, endpoint_id,
+        call_seq, service_account_id, marketplace_account_id,
         scope_grant_id, credential_id,
         evaluated_at, granted_at,
         control_epoch_scopes, control_epoch_values,
@@ -491,20 +626,36 @@ BEGIN
         boundary_set_digest, winning_boundary_kind,
         call_authority_expires_at, correlation_id)
     VALUES (
-        gen_random_uuid(), run_row.job_id, run_row.service_account_id,
-        run_row.marketplace_account_id, p_scope_grant_id, p_credential_id,
-        evaluated, grant_at,
-        epoch_scopes, epoch_values,
+        decision, job_row.id, p_run_id, p_expected_fence, p_expected_lease_owner,
+        job_row.platform_code, job_row.endpoint_id, granted_call_seq,
+        job_row.service_account_id, job_row.marketplace_account_id,
+        p_scope_grant_id, selected_credential,
+        evaluated, grant_at, epoch_scopes, epoch_values,
         snapshot.valid_until, snapshot.boundary_kind_count, snapshot.boundary_kind_set,
         snapshot.boundary_set_digest, snapshot.winning_kind,
         authority_at, p_correlation_id);
 
-    RETURN authority_at;
+    grant_result.decision_id := decision;
+    grant_result.job_id := job_row.id;
+    grant_result.run_id := p_run_id;
+    grant_result.fence_token := p_expected_fence;
+    grant_result.lease_owner := p_expected_lease_owner;
+    grant_result.platform_code := job_row.platform_code;
+    grant_result.endpoint_id := job_row.endpoint_id;
+    grant_result.credential_id := selected_credential;
+    grant_result.scope_grant_id := p_scope_grant_id;
+    grant_result.call_seq := granted_call_seq;
+    grant_result.granted_at := grant_at;
+    grant_result.call_authority_expires_at := authority_at;
+    grant_result.control_epoch_scopes := epoch_scopes;
+    grant_result.control_epoch_values := epoch_values;
+    grant_result.boundary_set_digest := snapshot.boundary_set_digest;
+    RETURN grant_result;
 END;
 $$;
 
 REVOKE ALL ON FUNCTION platform.grant_call_authority(
-    uuid, bigint, text, uuid, uuid, interval, text) FROM PUBLIC;
+    uuid, bigint, text, uuid, interval, text) FROM PUBLIC;
 
 -- ---------------------------------------------------------------------------
 -- Route inventory
@@ -544,7 +695,7 @@ GRANT SELECT ON ops.ingestion_checkpoint TO marketops_app;
 GRANT EXECUTE ON FUNCTION ops.acknowledge_checkpoint(uuid, bigint, text, uuid, bigint, text)
     TO marketops_app;
 GRANT EXECUTE ON FUNCTION platform.grant_call_authority(
-    uuid, bigint, text, uuid, uuid, interval, text) TO marketops_app;
+    uuid, bigint, text, uuid, interval, text) TO marketops_app;
 
 -- Deliberately not granted: DELETE anywhere, UPDATE on any raw table, and any
 -- write on the run, the checkpoint or the decision evidence.
