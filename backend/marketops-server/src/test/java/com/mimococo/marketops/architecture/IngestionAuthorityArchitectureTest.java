@@ -3,6 +3,7 @@ package com.mimococo.marketops.architecture;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
+import com.mimococo.marketops.marketplaceintegration.port.AcquisitionRequestRebinderFixture;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -18,11 +19,11 @@ import org.junit.jupiter.api.Test;
  * Applies the acquisition-authority rules to production classes, and proves
  * each rule can fail for its intended reason.
  *
- * <p>The three rules keep the outbound doorway singular: only the owning module
- * implements the acquisition ports, only the owning module calls them, and no
- * web controller reaches them. Every production check is paired with a
- * deliberately invalid fixture, because a boundary rule that has never rejected
- * anything proves only that it compiled.
+ * <p>The rules keep the outbound doorway singular: the owning module implements
+ * the ports, the sole executor invokes acquisition and creates its request, the
+ * trusted JDBC mapper constructs grants, and no web controller reaches a port.
+ * Every production check is paired with a deliberately invalid fixture, because
+ * a boundary rule that has never rejected anything proves only that it compiled.
  */
 class IngestionAuthorityArchitectureTest {
 
@@ -49,10 +50,10 @@ class IngestionAuthorityArchitectureTest {
     }
 
     @Test
-    @DisplayName("TC-ARCH-021 acquisition ports are called only from marketplaceintegration")
-    void portsAreCalledOnlyFromTheOwningModule() {
+    @DisplayName("TC-ARCH-021 only AuthorizedAcquisitionExecutor calls AcquisitionPort.acquire")
+    void acquisitionIsCalledOnlyByTheAuthorizedExecutor() {
         IngestionAuthorityRules
-                .acquisitionPortsAreCalledOnlyFromTheOwningModule(PRODUCTION_PACKAGE)
+                .acquisitionPortAcquireIsCalledOnlyByAuthorizedExecutor(PRODUCTION_PACKAGE)
                 .check(production);
     }
 
@@ -65,15 +66,23 @@ class IngestionAuthorityArchitectureTest {
     }
 
     @Test
-    @DisplayName("TC-ARCH-023 only marketplaceintegration constructs call-authority grants")
-    void callAuthorityGrantConstructionIsOwned() {
+    @DisplayName("TC-ARCH-023 only CallAuthorityGrantMapper constructs grants")
+    void callAuthorityGrantConstructionIsMappedFromDatabaseResults() {
         IngestionAuthorityRules
-                .callAuthorityGrantsAreConstructedOnlyByTheOwningModule(PRODUCTION_PACKAGE)
+                .callAuthorityGrantsAreConstructedOnlyByTrustedMapper(PRODUCTION_PACKAGE)
+                .check(production);
+    }
+
+    @Test
+    @DisplayName("TC-ARCH-024 only AuthorizedAcquisitionExecutor creates requests")
+    void requestsAreCreatedOnlyByTheAuthorizedExecutor() {
+        IngestionAuthorityRules
+                .acquisitionRequestsAreCreatedOnlyByTheAuthorizedExecutor(PRODUCTION_PACKAGE)
                 .check(production);
     }
 
     /**
-     * Each rule rejects the arrangement built to violate it and accepts the
+     * Each rule rejects arrangements built to violate it and accepts the
      * conforming arrangement, so a rule weakened by a later edit fails here
      * before it silently stops protecting production.
      */
@@ -94,9 +103,18 @@ class IngestionAuthorityArchitectureTest {
         @DisplayName("F-ARCH-021 an outside caller of the port is rejected")
         void outsideCallerIsRejected() {
             assertRejects(
-                    IngestionAuthorityRules::acquisitionPortsAreCalledOnlyFromTheOwningModule,
+                    IngestionAuthorityRules::acquisitionPortAcquireIsCalledOnlyByAuthorizedExecutor,
                     VIOLATION + ".acquisitioncaller",
                     "ReportRefresher");
+        }
+
+        @Test
+        @DisplayName("F-ARCH-021I an owning-module bypass caller is rejected")
+        void insideCallerIsRejected() {
+            assertRejects(
+                    IngestionAuthorityRules::acquisitionPortAcquireIsCalledOnlyByAuthorizedExecutor,
+                    VIOLATION + ".insideacquisition",
+                    "BypassAcquisitionCaller");
         }
 
         @Test
@@ -112,13 +130,37 @@ class IngestionAuthorityArchitectureTest {
         @DisplayName("F-ARCH-023 an outside grant constructor/rebinder is rejected")
         void outsideGrantRebinderIsRejected() {
             assertRejects(
-                    IngestionAuthorityRules::callAuthorityGrantsAreConstructedOnlyByTheOwningModule,
+                    IngestionAuthorityRules::callAuthorityGrantsAreConstructedOnlyByTrustedMapper,
                     VIOLATION + ".grantrebind",
                     "GrantRebinder");
         }
 
         @Test
-        @DisplayName("F-ARCH-024 the conforming arrangement passes all four rules")
+        @DisplayName("F-ARCH-023I an owning-module grant rebinder is rejected")
+        void insideGrantRebinderIsRejected() {
+            assertRejects(
+                    IngestionAuthorityRules::callAuthorityGrantsAreConstructedOnlyByTrustedMapper,
+                    VIOLATION + ".insidegrant",
+                    "UntrustedGrantRebinder");
+        }
+
+        @Test
+        @DisplayName("F-ARCH-024 a second AcquisitionRequest.from caller is rejected")
+        void requestRebinderIsRejected() {
+            JavaClasses fixture = new ClassFileImporter()
+                    .importClasses(AcquisitionRequestRebinderFixture.class);
+            EvaluationResult result = IngestionAuthorityRules
+                    .acquisitionRequestsAreCreatedOnlyByTheAuthorizedExecutor(PRODUCTION_PACKAGE)
+                    .evaluate(fixture);
+
+            assertThat(result.hasViolation()).isTrue();
+            assertThat(result.getFailureReport().getDetails())
+                    .anySatisfy(detail -> assertThat(detail)
+                            .contains("AcquisitionRequestRebinderFixture"));
+        }
+
+        @Test
+        @DisplayName("F-ARCH-025 the conforming arrangement passes all authority rules")
         void conformingArrangementPasses() {
             JavaClasses conforming = importFixture(CONFORMING);
             assertThatCode(() -> {
@@ -126,13 +168,16 @@ class IngestionAuthorityArchitectureTest {
                         .acquisitionPortsAreImplementedOnlyByTheOwningModule(CONFORMING)
                         .check(conforming);
                 IngestionAuthorityRules
-                        .acquisitionPortsAreCalledOnlyFromTheOwningModule(CONFORMING)
+                        .acquisitionPortAcquireIsCalledOnlyByAuthorizedExecutor(CONFORMING)
                         .check(conforming);
                 IngestionAuthorityRules
                         .webControllersDoNotReachAcquisition(CONFORMING)
                         .check(conforming);
                 IngestionAuthorityRules
-                        .callAuthorityGrantsAreConstructedOnlyByTheOwningModule(CONFORMING)
+                        .callAuthorityGrantsAreConstructedOnlyByTrustedMapper(CONFORMING)
+                        .check(conforming);
+                IngestionAuthorityRules
+                        .acquisitionRequestsAreCreatedOnlyByTheAuthorizedExecutor(CONFORMING)
                         .check(conforming);
             }).doesNotThrowAnyException();
         }

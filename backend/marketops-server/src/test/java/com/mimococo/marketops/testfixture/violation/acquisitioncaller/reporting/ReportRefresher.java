@@ -1,6 +1,8 @@
 package com.mimococo.marketops.testfixture.violation.acquisitioncaller.reporting;
 
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionPort;
+import com.mimococo.marketops.marketplaceintegration.port.AcquisitionRequest;
+import com.mimococo.marketops.marketplaceintegration.port.AcquisitionResult;
 
 /**
  * A class in another module holding the acquisition doorway.
@@ -17,8 +19,8 @@ public final class ReportRefresher {
         this.acquisition = acquisition;
     }
 
-    /** Report which doorway this refresher would use. */
-    public String doorway() {
-        return acquisition.getClass().getName();
+    /** Deliberately bypass the sole authority-aware executor. */
+    public AcquisitionResult refresh(AcquisitionRequest request) {
+        return acquisition.acquire(request);
     }
 }

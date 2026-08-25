@@ -9,8 +9,9 @@ import java.util.Objects;
  * <p>Production callers supply the structured result returned by the database
  * grant primitive. This executor derives the request without accepting any
  * replacement identity and immediately passes it to the single acquisition
- * doorway. Architecture rules confine both this executor and grant construction
- * to {@code marketplaceintegration}.
+ * doorway. Architecture rules allow only this class to create the request and
+ * invoke acquisition, while the trusted JDBC result mapper alone constructs the
+ * grant.
  */
 public final class AuthorizedAcquisitionExecutor {
 

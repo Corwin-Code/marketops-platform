@@ -25,8 +25,12 @@ import static com.mimococo.marketops.database.IngestionControlPlaneFixture.strin
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
@@ -53,6 +57,9 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
     /** A deterministic SHA-256-shaped digest for the stored bytes. */
     private static final String CONTENT_HASH =
             "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+    private static final Instant FIXED_WINDOW_START = Instant.parse("2029-01-01T00:00:00Z");
+    private static final Instant SUCCESSOR_START = Instant.parse("2030-01-01T00:00:00Z");
+    private static final Instant FIXED_WINDOW_END = Instant.parse("2034-01-01T00:00:00Z");
 
     private static PostgreSQLContainer container;
 
@@ -412,6 +419,100 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
     }
 
     @Test
+    @DisplayName("TC-CTRL-434 one fixed instant selects the old Credential and caps at successor")
+    void credentialBeforeActivationUsesOneEvaluationInstant() throws SQLException {
+        UUID successor = UUID.randomUUID();
+        try (Connection connection = asMigrationRole(container)) {
+            prepareFixedTemporalGraph(connection);
+            insertCredentialAt(connection, successor, "acme-read-successor",
+                    "secret-ref://vault/acme/read-successor", CREDENTIAL,
+                    SUCCESSOR_START, FIXED_WINDOW_END);
+
+            CallControlFacts before = evaluateFacts(
+                    connection, SUCCESSOR_START.minusMillis(1));
+            CallControlFacts atBoundary = evaluateFacts(connection, SUCCESSOR_START);
+
+            assertThat(before.credentialId()).isEqualTo(CREDENTIAL);
+            assertThat(before.validUntil()).isEqualTo(SUCCESSOR_START);
+            assertThat(atBoundary.credentialId()).isEqualTo(successor);
+            assertThat(singleBoolean(connection, """
+                    WITH sample(evaluated_at) AS (
+                        SELECT generate_series(
+                            '%s'::timestamptz - interval '1 second',
+                            '%s'::timestamptz + interval '1 second',
+                            interval '10 milliseconds')),
+                    resolved AS (
+                        SELECT sample.evaluated_at, evaluation.credential_id,
+                               evaluation.valid_until
+                          FROM sample
+                          CROSS JOIN LATERAL platform.evaluate_call_control_facts(
+                              '%s', '%s', sample.evaluated_at) AS evaluation)
+                    SELECT bool_and(NOT (
+                               credential_id = '%s'
+                               AND valid_until > '%s'::timestamptz))
+                      FROM resolved
+                    """.formatted(SUCCESSOR_START, SUCCESSOR_START, JOB, SCOPE_GRANT,
+                    CREDENTIAL, SUCCESSOR_START)))
+                    .as("no sampled instant selects the old Credential without its boundary")
+                    .isTrue();
+            assertThat(singleBoolean(connection, """
+                    SELECT has_function_privilege(
+                        'marketops_app',
+                        'platform.evaluate_call_control_facts(uuid,uuid,timestamptz)',
+                        'EXECUTE')
+                    """))
+                    .as("the deterministic evaluator is not a second application authority")
+                    .isFalse();
+        }
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-435 a future scope-grant start is present before and gone after")
+    void scopeGrantBoundaryUsesTheSameEvaluationInstant() throws SQLException {
+        UUID futureGrant = UUID.randomUUID();
+        try (Connection connection = asMigrationRole(container)) {
+            prepareFixedTemporalGraph(connection);
+            execute(connection, """
+                    INSERT INTO iam.service_account_scope_grant
+                        (id, organization_id, service_account_id, permission_code,
+                         marketplace_account_ref_id, effective_from, effective_to,
+                         status, created_at, updated_at)
+                    VALUES ('%s', '%s', '%s', 'READ', '%s', '%s', '%s',
+                            'ACTIVE', now(), now())
+                    """.formatted(futureGrant, ORGANIZATION, SERVICE_ACCOUNT, ACCOUNT,
+                    SUCCESSOR_START, FIXED_WINDOW_END));
+
+            CallControlFacts before = evaluateFacts(
+                    connection, SUCCESSOR_START.minusMillis(1));
+            CallControlFacts atBoundary = evaluateFacts(connection, SUCCESSOR_START);
+
+            assertThat(before.credentialId()).isEqualTo(CREDENTIAL);
+            assertThat(before.validUntil()).isEqualTo(SUCCESSOR_START);
+            assertThat(atBoundary.credentialId()).isEqualTo(CREDENTIAL);
+            assertThat(atBoundary.validUntil()).isAfter(SUCCESSOR_START);
+            assertThat(singleBoolean(connection, """
+                    WITH sample(evaluated_at) AS (
+                        SELECT generate_series(
+                            '%s'::timestamptz - interval '1 second',
+                            '%s'::timestamptz + interval '1 second',
+                            interval '10 milliseconds')),
+                    resolved AS (
+                        SELECT sample.evaluated_at, evaluation.valid_until
+                          FROM sample
+                          CROSS JOIN LATERAL platform.evaluate_call_control_facts(
+                              '%s', '%s', sample.evaluated_at) AS evaluation)
+                    SELECT bool_and(
+                               evaluated_at >= '%s'::timestamptz
+                               OR valid_until <= '%s'::timestamptz)
+                      FROM resolved
+                    """.formatted(SUCCESSOR_START, SUCCESSOR_START, JOB, SCOPE_GRANT,
+                    SUCCESSOR_START, SUCCESSOR_START)))
+                    .as("every sampled instant before activation includes the future grant start")
+                    .isTrue();
+        }
+    }
+
+    @Test
     @DisplayName("TC-CTRL-430 unrelated active Credential leaves are ambiguous and deny")
     void unrelatedCredentialLeavesDeny() throws SQLException {
         try (Connection connection = asApplicationRole(container)) {
@@ -421,6 +522,64 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
 
         assertRefused(CREDENTIAL_NOT_AUTHORITATIVE,
                 grant(1, "worker-a", "corr-ambiguous-credential"));
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-436 an attached-leaf Credential cycle denies with zero residue")
+    void attachedLeafCredentialCycleDenies() throws SQLException {
+        UUID cyclePeer = UUID.randomUUID();
+        UUID attachedLeaf = UUID.randomUUID();
+        try (Connection connection = asApplicationRole(container)) {
+            insertCredential(connection, cyclePeer, "acme-read-cycle-peer",
+                    "secret-ref://vault/acme/read-cycle-peer", CREDENTIAL, "ACCOUNT");
+            execute(connection, "UPDATE platform.credential_metadata"
+                    + " SET replaces_credential_id = '" + cyclePeer + "', updated_at = now()"
+                    + " WHERE id = '" + CREDENTIAL + "'");
+            insertCredential(connection, attachedLeaf, "acme-read-attached-leaf",
+                    "secret-ref://vault/acme/read-attached-leaf", CREDENTIAL, "ACCOUNT");
+        }
+
+        assertCredentialGrantRefusedWithNoResidue("corr-attached-cycle");
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-437 a complete linear Credential chain selects its unique leaf")
+    void linearCredentialChainSelectsItsLeaf() throws SQLException {
+        UUID middle = UUID.randomUUID();
+        UUID leaf = UUID.randomUUID();
+        try (Connection connection = asApplicationRole(container)) {
+            insertCredential(connection, middle, "acme-read-middle",
+                    "secret-ref://vault/acme/read-middle", CREDENTIAL, "ACCOUNT");
+            insertCredential(connection, leaf, "acme-read-linear-leaf",
+                    "secret-ref://vault/acme/read-linear-leaf", middle, "ACCOUNT");
+
+            assertThat(single(connection, grant(1, "worker-a", "corr-linear-chain")))
+                    .isNotNull();
+            assertThat(single(connection,
+                    "SELECT credential_id::text FROM ops.authorization_decision_evidence"))
+                    .isEqualTo(leaf.toString());
+        }
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-438 a disconnected Credential cycle denies the visible linear leaf")
+    void disconnectedCredentialBranchDenies() throws SQLException {
+        UUID linearLeaf = UUID.randomUUID();
+        UUID cycleA = UUID.randomUUID();
+        UUID cycleB = UUID.randomUUID();
+        try (Connection connection = asApplicationRole(container)) {
+            insertCredential(connection, linearLeaf, "acme-read-visible-leaf",
+                    "secret-ref://vault/acme/read-visible-leaf", CREDENTIAL, "ACCOUNT");
+            insertCredential(connection, cycleA, "acme-read-disconnected-a",
+                    "secret-ref://vault/acme/read-disconnected-a", null, "ACCOUNT");
+            insertCredential(connection, cycleB, "acme-read-disconnected-b",
+                    "secret-ref://vault/acme/read-disconnected-b", cycleA, "ACCOUNT");
+            execute(connection, "UPDATE platform.credential_metadata"
+                    + " SET replaces_credential_id = '" + cycleB + "', updated_at = now()"
+                    + " WHERE id = '" + cycleA + "'");
+        }
+
+        assertCredentialGrantRefusedWithNoResidue("corr-disconnected-cycle");
     }
 
     @Test
@@ -710,6 +869,68 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
                         'ACTIVE', 'platform-team', 'UNVERIFIED', now(), now())
                 """.formatted(id, ORGANIZATION, ACCOUNT, code, code, scopeMode,
                 secretReference, replacesValue));
+    }
+
+    private static void insertCredentialAt(Connection connection, UUID id, String code,
+            String secretReference, UUID replaces, Instant effectiveFrom, Instant expiresAt)
+            throws SQLException {
+        String replacesValue = replaces == null ? "NULL" : "'" + replaces + "'";
+        execute(connection, """
+                INSERT INTO platform.credential_metadata
+                    (id, organization_id, marketplace_account_id, code, display_name,
+                     purpose_code, scope_mode, secret_reference, effective_from,
+                     expires_at, replaces_credential_id, status, custodian_label,
+                     verification_state, created_at, updated_at)
+                VALUES ('%s', '%s', '%s', '%s', '%s', 'READ', 'ACCOUNT', '%s',
+                        '%s', '%s', %s, 'ACTIVE', 'platform-team', 'UNVERIFIED', now(), now())
+                """.formatted(id, ORGANIZATION, ACCOUNT, code, code, secretReference,
+                effectiveFrom, expiresAt, replacesValue));
+    }
+
+    private static void prepareFixedTemporalGraph(Connection connection) throws SQLException {
+        execute(connection, "UPDATE iam.service_account SET expires_at = '2035-01-01T00:00:00Z',"
+                + " updated_at = now() WHERE id = '" + SERVICE_ACCOUNT + "'");
+        execute(connection, "UPDATE iam.service_account_scope_grant"
+                + " SET effective_from = '" + FIXED_WINDOW_START + "', effective_to = '"
+                + FIXED_WINDOW_END + "', updated_at = now() WHERE id = '" + SCOPE_GRANT + "'");
+        execute(connection, "UPDATE platform.credential_metadata"
+                + " SET effective_from = '" + FIXED_WINDOW_START + "', expires_at = '"
+                + FIXED_WINDOW_END + "', replaces_credential_id = NULL, scope_mode = 'ACCOUNT',"
+                + " status = 'ACTIVE', updated_at = now() WHERE id = '" + CREDENTIAL + "'");
+    }
+
+    private static CallControlFacts evaluateFacts(Connection connection, Instant evaluatedAt)
+            throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement("""
+                SELECT credential_id, valid_until
+                  FROM platform.evaluate_call_control_facts(?, ?, ?)
+                """)) {
+            statement.setObject(1, JOB);
+            statement.setObject(2, SCOPE_GRANT);
+            statement.setTimestamp(3, Timestamp.from(evaluatedAt));
+            try (ResultSet rows = statement.executeQuery()) {
+                assertThat(rows.next()).isTrue();
+                return new CallControlFacts(
+                        rows.getObject("credential_id", UUID.class),
+                        rows.getTimestamp("valid_until").toInstant());
+            }
+        }
+    }
+
+    private static void assertCredentialGrantRefusedWithNoResidue(String correlationId)
+            throws SQLException {
+        assertRefused(CREDENTIAL_NOT_AUTHORITATIVE,
+                grant(1, "worker-a", correlationId));
+        try (Connection connection = asApplicationRole(container)) {
+            assertThat(runState(connection)).isEqualTo("LEASED");
+            assertThat(count(connection,
+                    "SELECT last_call_seq FROM ops.ingestion_run WHERE id = '" + RUN + "'"))
+                    .isZero();
+            assertThat(evidenceRows(connection)).isZero();
+        }
+    }
+
+    private record CallControlFacts(UUID credentialId, Instant validUntil) {
     }
 
     private static String rawContent(UUID id) {

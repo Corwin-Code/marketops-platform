@@ -353,6 +353,154 @@ REVOKE ALL ON FUNCTION ops.acknowledge_checkpoint(uuid, bigint, text, uuid, bigi
     FROM PUBLIC;
 
 -- ---------------------------------------------------------------------------
+-- One-instant call-control evaluation
+-- ---------------------------------------------------------------------------
+
+-- The time-sensitive facts consumed by one grant, resolved at an explicit
+-- database instant. Keeping this as a production function gives deterministic
+-- database tests the exact resolver used by the grant without giving the
+-- application a second authority path: it does not lock epochs, consume a run,
+-- issue authority or record evidence, and PUBLIC receives no EXECUTE privilege.
+CREATE TYPE platform.call_control_evaluation AS (
+    credential_id          uuid,
+    valid_until            timestamptz,
+    boundary_kind_count    integer,
+    boundary_kind_set      text[],
+    boundary_set_digest    text,
+    winning_kind           text
+);
+
+CREATE FUNCTION platform.evaluate_call_control_facts(
+    p_job_id         uuid,
+    p_scope_grant_id uuid,
+    p_evaluated_at   timestamptz)
+RETURNS platform.call_control_evaluation
+LANGUAGE plpgsql
+STABLE
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE
+    job_row              record;
+    selected_credential  uuid;
+    credential_count     integer;
+    credential_leaves    integer;
+    credential_reachable integer;
+    credential_cycles    integer;
+    snapshot             platform.control_snapshot_temporal;
+    result               platform.call_control_evaluation;
+BEGIN
+    IF p_evaluated_at IS NULL THEN
+        RAISE EXCEPTION 'call-control evaluation instant is required'
+            USING ERRCODE = 'MO010';
+    END IF;
+
+    SELECT job.id, job.organization_id, job.marketplace_account_id,
+           job.service_account_id
+      INTO job_row
+      FROM platform.ingestion_job AS job
+     WHERE job.id = p_job_id;
+
+    IF job_row.id IS NULL THEN
+        RAISE EXCEPTION 'call-control evaluation has no ingestion Job %', p_job_id
+            USING ERRCODE = 'MO015';
+    END IF;
+
+    -- The named scope grant and its subject are tested at exactly the same
+    -- instant that credential selection and temporal-boundary resolution use.
+    PERFORM 1
+      FROM iam.service_account_scope_grant AS scope_grant
+      JOIN iam.service_account AS subject
+        ON subject.id = scope_grant.service_account_id
+     WHERE scope_grant.id = p_scope_grant_id
+       AND scope_grant.service_account_id = job_row.service_account_id
+       AND scope_grant.organization_id = job_row.organization_id
+       AND scope_grant.permission_code = 'READ'
+       AND scope_grant.status = 'ACTIVE'
+       AND scope_grant.effective_from <= p_evaluated_at
+       AND (scope_grant.effective_to IS NULL
+            OR scope_grant.effective_to > p_evaluated_at)
+       AND (scope_grant.organization_ref_id = job_row.organization_id
+            OR scope_grant.marketplace_account_ref_id = job_row.marketplace_account_id)
+       AND subject.organization_id = job_row.organization_id
+       AND subject.status = 'ACTIVE'
+       AND subject.expires_at > p_evaluated_at;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION
+            'scope grant % does not authorise subject % over job % at %',
+            p_scope_grant_id, job_row.service_account_id, job_row.id, p_evaluated_at
+            USING ERRCODE = 'MO012';
+    END IF;
+
+    -- Walk backwards from every rotation leaf while retaining the visited path.
+    -- UNION ALL is intentional: a repeated node is evidence of a cycle, not a
+    -- duplicate to discard. The row that closes a cycle is counted and is not
+    -- expanded again, so every finite graph terminates with explicit evidence.
+    WITH RECURSIVE candidates AS MATERIALIZED (
+        SELECT credential.id, credential.replaces_credential_id
+          FROM platform.credential_metadata AS credential
+         WHERE credential.marketplace_account_id = job_row.marketplace_account_id
+           AND credential.organization_id = job_row.organization_id
+           AND credential.purpose_code = 'READ'
+           AND credential.scope_mode = 'ACCOUNT'
+           AND credential.status = 'ACTIVE'
+           AND credential.effective_from <= p_evaluated_at
+           AND credential.expires_at > p_evaluated_at
+    ), leaves AS (
+        SELECT candidate.id, candidate.replaces_credential_id
+          FROM candidates AS candidate
+         WHERE NOT EXISTS (
+                   SELECT 1
+                     FROM candidates AS successor
+                    WHERE successor.replaces_credential_id = candidate.id)
+    ), chain (id, replaces_credential_id, visited_path, is_cycle) AS (
+        SELECT leaf.id, leaf.replaces_credential_id, ARRAY[leaf.id], false
+          FROM leaves AS leaf
+        UNION ALL
+        SELECT predecessor.id,
+               predecessor.replaces_credential_id,
+               successor.visited_path || predecessor.id,
+               predecessor.id = ANY(successor.visited_path)
+          FROM candidates AS predecessor
+          JOIN chain AS successor
+            ON successor.replaces_credential_id = predecessor.id
+         WHERE NOT successor.is_cycle
+    )
+    SELECT (SELECT leaf.id FROM leaves AS leaf ORDER BY leaf.id LIMIT 1),
+           (SELECT count(*) FROM candidates),
+           (SELECT count(*) FROM leaves),
+           (SELECT count(DISTINCT chain.id) FROM chain),
+           (SELECT count(*) FROM chain WHERE chain.is_cycle)
+      INTO selected_credential, credential_count, credential_leaves,
+           credential_reachable, credential_cycles;
+
+    IF credential_count = 0
+        OR credential_leaves <> 1
+        OR credential_cycles <> 0
+        OR credential_reachable <> credential_count THEN
+        RAISE EXCEPTION
+            'account % has no unique acyclic current ACCOUNT READ credential rotation leaf',
+            job_row.marketplace_account_id
+            USING ERRCODE = 'MO013';
+    END IF;
+
+    snapshot := platform.control_snapshot_temporal(
+        job_row.service_account_id, p_scope_grant_id,
+        job_row.marketplace_account_id, selected_credential, p_evaluated_at);
+
+    result.credential_id := selected_credential;
+    result.valid_until := snapshot.valid_until;
+    result.boundary_kind_count := snapshot.boundary_kind_count;
+    result.boundary_kind_set := snapshot.boundary_kind_set;
+    result.boundary_set_digest := snapshot.boundary_set_digest;
+    result.winning_kind := snapshot.winning_kind;
+    RETURN result;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION platform.evaluate_call_control_facts(uuid, uuid, timestamptz)
+    FROM PUBLIC;
+
+-- ---------------------------------------------------------------------------
 -- The grant
 -- ---------------------------------------------------------------------------
 
@@ -404,13 +552,10 @@ DECLARE
     epoch_scopes         text[];
     epoch_values         bigint[];
     evaluated            timestamptz;
-    snapshot             platform.control_snapshot_temporal;
+    evaluation           platform.call_control_evaluation;
     grant_at             timestamptz;
     authority_at         timestamptz;
     selected_credential  uuid;
-    credential_count     integer;
-    credential_leaves    integer;
-    credential_chain     integer;
     granted_call_seq     integer;
     decision             uuid;
     grant_result         platform.call_authority_grant;
@@ -479,6 +624,11 @@ BEGIN
             USING ERRCODE = 'MO010';
     END IF;
 
+    -- This is the sole evaluation instant for subject, scope-grant,
+    -- Credential and boundary liveness. It is captured only after all four
+    -- epoch locks are held, then passed unchanged through the whole resolver.
+    evaluated := clock_timestamp();
+
     -- Evaluate the Job, owning entities and endpoint only after serialization.
     -- UNVERIFIED provider metadata is permitted only for provider-neutral
     -- design validation; the authorization boundary performs no outbound I/O.
@@ -507,89 +657,22 @@ BEGIN
             USING ERRCODE = 'MO015';
     END IF;
 
-    -- The selected scope grant is caller-named but evaluated against the locked,
-    -- derived Job identity under the epoch locks.
-    PERFORM 1
-      FROM iam.service_account_scope_grant AS scope_grant
-      JOIN iam.service_account AS subject
-        ON subject.id = scope_grant.service_account_id
-     WHERE scope_grant.id = p_scope_grant_id
-       AND scope_grant.service_account_id = job_row.service_account_id
-       AND scope_grant.organization_id = job_row.organization_id
-       AND scope_grant.permission_code = 'READ'
-       AND scope_grant.status = 'ACTIVE'
-       AND scope_grant.effective_from <= clock_timestamp()
-       AND (scope_grant.effective_to IS NULL
-            OR scope_grant.effective_to > clock_timestamp())
-       AND (scope_grant.organization_ref_id = job_row.organization_id
-            OR scope_grant.marketplace_account_ref_id = job_row.marketplace_account_id)
-       AND subject.organization_id = job_row.organization_id
-       AND subject.status = 'ACTIVE'
-       AND subject.expires_at > clock_timestamp();
-    IF NOT FOUND THEN
-        RAISE EXCEPTION
-            'scope grant % does not authorise subject % over this job now',
-            p_scope_grant_id, job_row.service_account_id
-            USING ERRCODE = 'MO012';
-    END IF;
-
-    -- Derive the unique current ACCOUNT-scoped READ Credential rotation leaf.
-    -- The caller cannot select a credential. One unrelated branch, a cycle, a
-    -- STORE_SET candidate or no candidate is a fail-closed ambiguity.
-    WITH RECURSIVE candidates AS MATERIALIZED (
-        SELECT credential.id, credential.replaces_credential_id
-          FROM platform.credential_metadata AS credential
-         WHERE credential.marketplace_account_id = job_row.marketplace_account_id
-           AND credential.organization_id = job_row.organization_id
-           AND credential.purpose_code = 'READ'
-           AND credential.scope_mode = 'ACCOUNT'
-           AND credential.status = 'ACTIVE'
-           AND credential.effective_from <= clock_timestamp()
-           AND credential.expires_at > clock_timestamp()
-    ), leaves AS (
-        SELECT candidate.id, candidate.replaces_credential_id
-          FROM candidates AS candidate
-         WHERE NOT EXISTS (
-                   SELECT 1
-                     FROM candidates AS successor
-                    WHERE successor.replaces_credential_id = candidate.id)
-    ), chain (id, replaces_credential_id) AS (
-        SELECT leaf.id, leaf.replaces_credential_id FROM leaves AS leaf
-        UNION
-        SELECT predecessor.id, predecessor.replaces_credential_id
-          FROM candidates AS predecessor
-          JOIN chain AS successor ON successor.replaces_credential_id = predecessor.id
-    )
-    SELECT (SELECT leaf.id FROM leaves AS leaf LIMIT 1),
-           (SELECT count(*) FROM candidates),
-           (SELECT count(*) FROM leaves),
-           (SELECT count(*) FROM chain)
-      INTO selected_credential, credential_count, credential_leaves, credential_chain;
-
-    IF credential_count = 0
-        OR credential_leaves <> 1
-        OR credential_chain <> credential_count THEN
-        RAISE EXCEPTION
-            'account % has no unique current ACCOUNT READ credential rotation leaf',
-            job_row.marketplace_account_id
-            USING ERRCODE = 'MO013';
-    END IF;
-
-    -- Recompute the complete temporal relation using the server-selected leaf.
-    evaluated := clock_timestamp();
-    snapshot := platform.control_snapshot_temporal(
-        job_row.service_account_id, p_scope_grant_id,
-        job_row.marketplace_account_id, selected_credential, evaluated);
+    -- The caller names no Credential. This production resolver validates the
+    -- scope grant, selects one complete acyclic rotation chain and resolves the
+    -- temporal relation at the already-fixed database instant.
+    evaluation := platform.evaluate_call_control_facts(
+        job_row.id, p_scope_grant_id, evaluated);
+    selected_credential := evaluation.credential_id;
     grant_at := clock_timestamp();
 
-    IF grant_at >= snapshot.valid_until THEN
+    IF grant_at >= evaluation.valid_until THEN
         RAISE EXCEPTION
             'control snapshot expired at % before the grant at %',
-            snapshot.valid_until, grant_at
+            evaluation.valid_until, grant_at
             USING ERRCODE = 'MO011';
     END IF;
 
-    authority_at := LEAST(grant_at + p_nominal_authority, snapshot.valid_until);
+    authority_at := LEAST(grant_at + p_nominal_authority, evaluation.valid_until);
     IF authority_at <= grant_at THEN
         RAISE EXCEPTION 'call authority did not extend beyond its grant instant'
             USING ERRCODE = 'MO016';
@@ -606,7 +689,7 @@ BEGIN
        AND run.fence_token = p_expected_fence
        AND run.lease_owner = p_expected_lease_owner
        AND run.state = 'LEASED'
-       AND run.lease_expires_at > clock_timestamp()
+       AND run.lease_expires_at > grant_at
     RETURNING run.last_call_seq INTO granted_call_seq;
 
     IF granted_call_seq IS NULL THEN
@@ -631,8 +714,9 @@ BEGIN
         job_row.service_account_id, job_row.marketplace_account_id,
         p_scope_grant_id, selected_credential,
         evaluated, grant_at, epoch_scopes, epoch_values,
-        snapshot.valid_until, snapshot.boundary_kind_count, snapshot.boundary_kind_set,
-        snapshot.boundary_set_digest, snapshot.winning_kind,
+        evaluation.valid_until, evaluation.boundary_kind_count,
+        evaluation.boundary_kind_set, evaluation.boundary_set_digest,
+        evaluation.winning_kind,
         authority_at, p_correlation_id);
 
     grant_result.decision_id := decision;
@@ -649,7 +733,7 @@ BEGIN
     grant_result.call_authority_expires_at := authority_at;
     grant_result.control_epoch_scopes := epoch_scopes;
     grant_result.control_epoch_values := epoch_values;
-    grant_result.boundary_set_digest := snapshot.boundary_set_digest;
+    grant_result.boundary_set_digest := evaluation.boundary_set_digest;
     RETURN grant_result;
 END;
 $$;

@@ -2,6 +2,7 @@ package com.mimococo.marketops.database;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.CallAuthorityGrantMapper;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionRequest;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionResult;
 import com.mimococo.marketops.marketplaceintegration.port.AuthorizedAcquisitionExecutor;
@@ -14,7 +15,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
@@ -35,6 +35,8 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
  * of holding secret material was available to leak it.
  */
 class AuthorizedAcquisitionFlowIT extends PostgresContainerSupport {
+
+    private static final CallAuthorityGrantMapper GRANT_MAPPER = new CallAuthorityGrantMapper();
 
     private static PostgreSQLContainer container;
 
@@ -144,23 +146,7 @@ class AuthorizedAcquisitionFlowIT extends PostgresContainerSupport {
                 IngestionControlPlaneFixture.grant(1L, "worker-a", correlationId));
              ResultSet rows = statement.executeQuery()) {
             assertThat(rows.next()).isTrue();
-            String[] scopes = (String[]) rows.getArray("control_epoch_scopes").getArray();
-            Long[] values = (Long[]) rows.getArray("control_epoch_values").getArray();
-            return new CallAuthorityGrant(
-                    rows.getObject("decision_id", UUID.class),
-                    rows.getObject("job_id", UUID.class),
-                    rows.getObject("run_id", UUID.class),
-                    rows.getLong("fence_token"),
-                    rows.getString("lease_owner"),
-                    rows.getString("platform_code"),
-                    rows.getObject("endpoint_id", UUID.class),
-                    rows.getObject("credential_id", UUID.class),
-                    rows.getObject("scope_grant_id", UUID.class),
-                    rows.getInt("call_seq"),
-                    rows.getTimestamp("granted_at").toInstant(),
-                    rows.getTimestamp("call_authority_expires_at").toInstant(),
-                    Arrays.asList(scopes), Arrays.asList(values),
-                    rows.getString("boundary_set_digest"));
+            return GRANT_MAPPER.map(rows);
         }
     }
 
