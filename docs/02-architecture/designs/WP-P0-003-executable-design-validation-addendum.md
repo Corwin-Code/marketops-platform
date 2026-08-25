@@ -2,18 +2,18 @@
 
 ```yaml
 document_type: as_built_design_addendum
-task: CODEX_WP_P0_003_COMMIT_BEFORE_PORT_TRANSITIVE_WEB_ISOLATION_FINAL_TARGETED_REWORK_PR16
+task: CODEX_WP_P0_003_POLYMORPHIC_REACHABILITY_PORT_ASSIGNABILITY_VISIBILITY_TARGETED_REWORK_PR16
 mode: BOUNDED_IMPLEMENTATION_FOR_DESIGN_VALIDATION
 work_package: WP-P0-003
 source_base: 9f7688204950c64b9f6bd8629daf90a115669864
-reviewed_input_head: 392d0c9a85e7898b565168e34f915d2721dc554e
-reviewed_input_tree: 4644e22d4e6162bade605030d4c5e6955c4a2631
-verified_implementation_head: 7b555f5b32c96526e31f173efd221cf6d3bb99e3
-verified_implementation_tree: d953a4c78029fce49ab92655fa51fb6a77c7f85f
+reviewed_input_head: de34774af5f7c8f10dd39be40149da1a2aa3e5b7
+reviewed_input_tree: 06dd651ed3198bdf1f7d95348dcbf69e8e04bda3
+verified_implementation_head: 52ff670c2bf8f44a1709273ad60036d4610d3f3c
+verified_implementation_tree: a5d99f2bf0a4dd583dc0a32b9d166fe656d4d9d2
 final_package_identity: LIVE_PR_16_METADATA_AND_BODY
 prior_controller_verdict: TARGETED_REWORK
-targeted_findings: WP3-EDV-F02-R3A, WP3-EDV-F02-R3B
-preserved_findings: WP3-EDV-F02-R2A, WP3-EDV-F02-R2B, WP3-EDV-F02-R2C, WP3-EDV-F01, WP3-EDV-F02-R1A, WP3-EDV-F02-R1B, WP3-EDV-F02-R1C, WP3-EDV-F03, WP3-EDV-R01, WP3-EDV-RR02
+targeted_findings: WP3-EDV-F02-R4A, WP3-EDV-F02-R4B, WP3-EDV-F02-R4C
+preserved_findings: WP3-EDV-F02-R3A, WP3-EDV-F02-R3B-CONCRETE-STATIC, WP3-EDV-F02-R2A, WP3-EDV-F02-R2B, WP3-EDV-F02-R2C, WP3-EDV-F01, WP3-EDV-F02-R1A, WP3-EDV-F02-R1B, WP3-EDV-F02-R1C, WP3-EDV-F03, WP3-EDV-R01, WP3-EDV-RR02
 design_approved: false
 targeted_rework_status: IMPLEMENTED_AWAITING_CONTROLLER
 bounded_scope_quality: PRODUCTION_GRADE
@@ -33,15 +33,17 @@ package Head, tree, tested-merge identity and CI result.
 
 | Finding | As-built correction | Executable evidence | Rework state |
 | --- | --- | --- | --- |
-| `WP3-EDV-F02-R3A` | `JdbcAuthorizedAcquisitionGateway` checks the real connection's `autoCommit` state before preparing SQL and rejects caller-owned transactions. It maps one database decision, closes ResultSet, statement and connection, and only then invokes the executor/port. SQL or resource-completion failure prevents port entry. The checked-in Hikari default is guarded but is not treated as the runtime authority. | `TC-CTRL-502…505`, configuration source assertion and repository-contract mutation test | `IMPLEMENTED_AWAITING_CONTROLLER` |
-| `WP3-EDV-F02-R3B` | An independent cycle-safe architecture rule traverses every `RestController` dependency graph across MarketOps classes and rejects any path to the gateway, executor, mapper, grant, request, acquisition port/implementation or object-storage port/implementation. Violations contain the full path; ordinary query paths remain valid. | `TC-ARCH-030`, `F-ARCH-030/031` | `IMPLEMENTED_AWAITING_CONTROLLER` |
+| `WP3-EDV-F02-R4A` | The cycle-safe controller graph now combines direct bytecode dependencies with runtime dispatch edges from every interface or abstract contract to every concrete assignable MarketOps implementation in the complete production import. Direct and meta-annotated `RestController` roots are covered; dispatch evidence uses `=>`, and every violation retains the complete root-to-forbidden path. | `TC-ARCH-030`, `F-ARCH-030…035`, `F-ARCH-040` | `IMPLEMENTED_AWAITING_CONTROLLER` |
+| `WP3-EDV-F02-R4B` | Port ownership is evaluated with `isAssignableTo(AcquisitionPort)` or `isAssignableTo(ObjectStoragePort)` for interfaces, abstract types and concrete classes. External subinterfaces, direct implementations and inherited implementations are rejected; equivalent owning-module types pass. | `F-ARCH-020`, `F-ARCH-036…038`, `F-ARCH-038C` | `IMPLEMENTED_AWAITING_CONTROLLER` |
+| `WP3-EDV-F02-R4C` | `CallAuthorityGrant` and its constructor are exactly package-private. Obsolete outside-package fixtures that required public production visibility were removed, while an exact JDBC-package non-mapper constructor fixture proves the mapper-only ownership rule remains sensitive. | `TC-ARCH-039`, `F-ARCH-023I` | `IMPLEMENTED_AWAITING_CONTROLLER` |
 
-R2A, the exact-query/local-one-shot portion of R2B, R2C, R1A/R1B/R1C,
-`WP3-EDV-F01`, `WP3-EDV-F03`, `WP3-EDV-R01` and `WP3-EDV-RR02` remain
-executable and passing. This rework does not weaken or redefine them. Closure
-authority for R3A/R3B remains with the next independent Controller Gate.
+R3A, the concrete-static portion of R3B, R2A, the exact-query/local-one-shot
+portion of R2B, R2C, R1A/R1B/R1C, `WP3-EDV-F01`, `WP3-EDV-F03`,
+`WP3-EDV-R01` and `WP3-EDV-RR02` remain executable and passing. This rework
+does not weaken or redefine them. Closure authority for R4A/R4B/R4C remains
+with the next independent Controller Gate.
 
-## 2. Commit-before-port invariant
+## 2. Preserved commit-before-port invariant
 
 The production chain is now:
 
@@ -100,12 +102,23 @@ The observation occurs before the port callback records its invocation. This
 proves commit-before-port for the local doorway without claiming remote
 exactly-once behavior.
 
-## 3. Transitive request-thread isolation
+## 3. Polymorphic request-thread isolation and port ownership
 
-The existing direct-dependency rule remains active. The independent transitive
-rule starts at every `@RestController`, follows dependencies rooted at
-`com.mimococo.marketops`, and tracks visited class names. Breadth-first traversal
-therefore terminates even when application dependencies contain cycles.
+The existing direct-dependency rule and its concrete-static graph remain
+active. The strengthened transitive rule receives the complete imported
+production `JavaClasses`, starts at every direct or meta-annotated
+`RestController`, and follows two deterministic edge kinds:
+
+```text
+source -> target   direct bytecode dependency
+contract => type  runtime-selectable concrete assignable implementation
+```
+
+Runtime dispatch expansion applies to every interface and abstract class, is
+resolved by ArchUnit assignability rather than package-name inference, and is
+sorted for deterministic reports. A visited type-name set makes the union graph
+cycle-safe. Because every concrete assignable implementation is expanded, a
+safe implementation cannot hide an unsafe selectable implementation.
 
 The terminal forbidden set is:
 
@@ -120,18 +133,32 @@ ObjectStoragePort and assignable implementations
 ```
 
 Every violation reports the discovered controller-to-terminal class sequence
-joined with ` -> `. The two-hop mutation fixture proves the report includes the
-controller, bridge service and gateway. A conforming query controller and query
-service prove the graph rule does not prohibit ordinary request-facing reads.
-The complete earlier direct rules and their mutation fixtures remain present.
+with `->` and `=>` edge provenance. Fixtures prove unsafe interface dispatch,
+mixed safe/unsafe implementations and meta-annotated abstract dispatch are
+rejected; safe-only dispatch and cyclic non-authority graphs pass. The earlier
+concrete two-hop failure and normal query-path success remain covered. No HTTP
+route or production application bean was introduced by these architecture-only
+fixtures.
+
+The port ownership rule separately applies `isAssignableTo` to every imported
+type. It rejects external Acquisition and ObjectStorage subinterfaces, their
+implementations and subclasses that inherit an owning implementation. Matching
+subinterfaces and implementations inside the owning module remain valid.
+
+`CallAuthorityGrant` now has default class and constructor visibility. The
+gateway remains result-only, the mapper remains the only production constructor
+caller, and the executor remains the only grant consumer. An exact JDBC-package
+non-mapper fixture remains compilable and is rejected by the constructor
+allowlist without reopening public production visibility.
 
 ## 4. Preserved production contracts
 
 - The exact production grant query remains owned only by
   `JdbcAuthorizedAcquisitionGateway`.
-- Mapper, grant and executor remain package-private collaborators; architecture
-  allowlists still reject synthetic ResultSet mapping, alternate executor
-  callers, alternate request factories and direct port calls.
+- Mapper, grant, grant constructor and executor remain package-private
+  collaborators; architecture allowlists still reject synthetic ResultSet
+  mapping, alternate executor callers, alternate request factories and direct
+  port calls.
 - `CallAuthorityGrant` remains atomic one-shot state. Sequential and concurrent
   reuse reach the fake port only once.
 - R2A keeps the 30-second server cap, locked lease/control-boundary minimum and
@@ -142,7 +169,7 @@ The complete earlier direct rules and their mutation fixtures remain present.
 - V0001–V0006 remain byte-identical to `origin/main`. The migration directory,
   including V0010 SHA-256
   `a3b8ca08b796c1d211f17a042a8ec546cd0009d4457e2d68dcd930dfc36a13d9`,
-  is unchanged from Controller-reviewed Head `392d0c9`.
+  is unchanged from Controller-reviewed Head `de34774`.
 - F01 serialization, F03 final-checkpoint CAS, ACL denial, zero-residue failure,
   fixed database time and temporal/graph completeness remain passing.
 - No network client, Provider simulation, credential retrieval, secret
@@ -150,15 +177,16 @@ The complete earlier direct rules and their mutation fixtures remain present.
 
 ## 5. Verification record and evidence limit
 
-The complete backend command passed 213 unit/architecture tests and 152
-real-database/integration tests: 365 total, zero failures/errors/skips, with all
-JaCoCo checks met. The focused command passed 50 unit/architecture/configuration
-tests and 62 real-database/integration tests: 112 total. Governance validation,
+The complete backend command passed 222 unit/architecture tests and 152
+real-database/integration tests: 374 total, zero failures/errors/skips, with all
+JaCoCo checks met. The focused command passed 59 unit/architecture/configuration
+tests and 62 real-database/integration tests: 121 total. Governance validation,
 production-readiness validation and the 244-test validator suite also passed.
 
 Executed evidence proves runtime transaction exclusion, resource ordering,
 committed decision visibility, local identity-bound port entry, local one-shot
-consumption and transitive request-thread isolation. It does not prove socket
+consumption, polymorphic request-thread isolation, assignability-based port
+ownership and exact grant visibility. It does not prove socket
 start under database authority, Provider behavior, credential retrieval,
 performance, deployment or end-to-end worker recovery.
 
@@ -170,9 +198,10 @@ final evidence package remain separate Gates.
 
 This package is production-grade for the bounded executable authority scope.
 Runtime correctness does not depend only on configuration, the port is not
-entered while the grant transaction/resources remain open, and request-facing
-code cannot reach authority surfaces indirectly through another MarketOps
-class. No parallel older authority path or fallback behavior was introduced.
+entered while the grant transaction/resources remain open, request-facing code
+cannot reach authority surfaces through direct, interface or abstract dispatch,
+and port ownership cannot be escaped through subtyping or inheritance. No
+parallel older authority path or fallback behavior was introduced.
 
 It is not the complete WP-P0-003 runtime or a project-level
 production-complete MarketOps product. Project-level readiness remains gated by
