@@ -1,0 +1,23 @@
+Command: ./mvnw -B -ntp verify
+Working directory: backend/marketops-server
+Verified implementation: 52ff670c2bf8f44a1709273ad60036d4610d3f3c
+Verified implementation tree: a5d99f2bf0a4dd583dc0a32b9d166fe656d4d9d2
+Environment: Java 21.0.10; Maven Wrapper; Docker Desktop; Testcontainers 2.0.5; postgres:18.4
+Finished: 2026-08-25T15:40:58+08:00
+
+Flyway: Successfully validated 10 migrations.
+Flyway: Successfully applied 10 migrations to an empty PostgreSQL 18.4 schema; version v0010.
+Flyway recovery: the interrupted-install path rolled back and then applied all 10 migrations.
+Unit/architecture: Tests run: 222, Failures: 0, Errors: 0, Skipped: 0.
+Integration: Tests run: 152, Failures: 0, Errors: 0, Skipped: 0.
+Total: Tests run: 374, Failures: 0, Errors: 0, Skipped: 0.
+IngestionAuthorityArchitectureTest: Tests run: 32, Failures: 0, Errors: 0, Skipped: 0.
+CallAuthoritySingleUseTest: Tests run: 6, Failures: 0, Errors: 0, Skipped: 0.
+JdbcAuthorizedAcquisitionGatewayTest: Tests run: 3, Failures: 0, Errors: 0, Skipped: 0.
+CallAuthorityExclusivityIT: Tests run: 15, Failures: 0, Errors: 0, Skipped: 0.
+IngestionAuthorityAndEvidenceIT: Tests run: 34, Failures: 0, Errors: 0, Skipped: 0.
+AuthorizedAcquisitionFlowIT: Tests run: 3, Failures: 0, Errors: 0, Skipped: 0.
+JaCoCo: All coverage checks have been met.
+
+BUILD SUCCESS
+Total time: 01:00 min

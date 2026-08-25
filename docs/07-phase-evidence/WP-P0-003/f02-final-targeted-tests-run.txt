@@ -1,0 +1,51 @@
+Command: ./mvnw -B -ntp -Dtest=ApplicationConfigurationTest,IngestionAuthorityArchitectureTest,CallAuthoritySingleUseTest,JdbcAuthorizedAcquisitionGatewayTest -Dit.test=FlywayMigrationIT,AuthorizedAcquisitionFlowIT,IngestionAuthorityAndEvidenceIT,CallAuthorityExclusivityIT -Djacoco.skip=true verify
+Working directory: backend/marketops-server
+Verified implementation: 52ff670c2bf8f44a1709273ad60036d4610d3f3c
+Verified implementation tree: a5d99f2bf0a4dd583dc0a32b9d166fe656d4d9d2
+Environment: Java 21.0.10; Docker Desktop; Testcontainers 2.0.5; postgres:18.4
+Finished: 2026-08-25T15:42:03+08:00
+
+UNIT/ARCHITECTURE/CONFIGURATION: 59/59 passed.
+- ApplicationConfigurationTest: 18/18 passed.
+- IngestionAuthorityArchitectureTest: 32/32 passed.
+- CallAuthoritySingleUseTest: 6/6 passed.
+- JdbcAuthorizedAcquisitionGatewayTest: 3/3 passed.
+
+REAL_DATABASE/INTEGRATION: 62/62 passed.
+- FlywayMigrationIT: 10/10 passed.
+- AuthorizedAcquisitionFlowIT: 3/3 passed.
+- IngestionAuthorityAndEvidenceIT: 34/34 passed.
+- CallAuthorityExclusivityIT: 15/15 passed.
+
+Targeted command total: 121 tests, 0 failures, 0 errors, 0 skipped.
+
+R4A observations:
+- TC-ARCH-030 traversed the complete imported production universe from direct and meta-annotated RestController roots using direct dependency and runtime dispatch edges.
+- F-ARCH-032 rejected PolymorphicAcquisitionController -> AcquisitionUseCase => GatewayBackedAcquisitionService -> JdbcAuthorizedAcquisitionGateway with the full four-type path and both edge markers.
+- F-ARCH-033 rejected the unsafe selectable implementation even when the same contract also had a safe implementation.
+- F-ARCH-034 permitted safe-only interface dispatch; F-ARCH-035 rejected meta-annotated abstract dispatch; F-ARCH-040 terminated and permitted a cyclic safe graph.
+- F-ARCH-030/031 retained the concrete two-hop rejection and ordinary query-path pass.
+
+R4B observations:
+- F-ARCH-036 rejected an external AcquisitionPort subinterface and its implementation.
+- F-ARCH-037 rejected an external subclass inheriting an owning AcquisitionPort implementation.
+- F-ARCH-038 rejected equivalent ObjectStoragePort subinterface, direct implementation and inherited implementation shapes.
+- F-ARCH-038C permitted assignable subinterfaces and implementations inside the owning module.
+
+R4C observations:
+- TC-ARCH-039 asserted that CallAuthorityGrant and every constructor have none of public, protected or private modifiers: exact package-private visibility.
+- F-ARCH-023I rejected an exact-JDBC-package non-mapper grant constructor.
+- Public-visibility-dependent outside-package fixtures were removed; mapper-only construction, executor-only consumption and the direct port-call rule remain active.
+
+Preserved observations:
+- R3A auto-commit exclusion, JDBC resource completion and second-connection commit visibility passed.
+- The concrete-static portion of R3B and its full-path reporting passed.
+- R2A 30-second server cap, locked lease/control minimum and zero-residue interval rejection passed.
+- R2B exact query/mapper/executor ownership and sequential/concurrent local one-shot semantics passed.
+- R2C cross-account credential lineage refusal and same-account current-leaf selection passed.
+- R1A/R1B/R1C temporal, graph and exact allowlist proofs passed.
+- F01 writer/grant serialization and F03 lease-expiry checkpoint races passed.
+- Flyway installed all 10 migrations from empty and recovered from an interrupted install.
+
+BUILD SUCCESS
+Total time: 32.206 s

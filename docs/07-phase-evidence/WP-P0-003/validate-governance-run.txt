@@ -1,0 +1,5 @@
+Command: python3 scripts/validate_governance.py
+Verified implementation: 52ff670c2bf8f44a1709273ad60036d4610d3f3c
+
+Governance validation passed.
+exit 0

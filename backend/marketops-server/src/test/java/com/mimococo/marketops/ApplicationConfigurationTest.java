@@ -102,6 +102,12 @@ class ApplicationConfigurationTest {
     }
 
     @Test
+    @DisplayName("call-authority connections default to independent auto-commit operations")
+    void callAuthorityConnectionsDefaultToAutoCommit() {
+        assertThat(base.getProperty("spring.datasource.hikari.auto-commit")).isEqualTo(true);
+    }
+
+    @Test
     @DisplayName("no password is written into the checked-in configuration")
     void noLiteralPasswordIsPresent() throws IOException {
         for (String resource : List.of("application.yaml", "application-local.yaml", "application-ci.yaml")) {

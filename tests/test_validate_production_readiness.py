@@ -19,6 +19,7 @@ from scripts.validate_production_readiness import (
     ACTION_REFERENCE,
     ARCHITECTURE_RULE_TOKENS,
     BUILT_PREVIEW_COMMAND,
+    BASE_HIKARI_AUTOCOMMIT_TOKENS,
     COMPLETED_WORK_PACKAGE_TOKENS,
     COMPLETION_STATE_TOKENS,
     ECS_CORRELATION_CUSTOMIZER_TOKENS,
@@ -207,6 +208,15 @@ class RepositoryContractPatternTests(unittest.TestCase):
             base_environment_identity_violations("marketops:\n  product: MarketOps Russia\n"),
         )
 
+    def test_base_hikari_auto_commit_must_remain_true(self) -> None:
+        source = "\n".join(BASE_HIKARI_AUTOCOMMIT_TOKENS)
+        mutated = source.replace("auto-commit: true", "auto-commit: false")
+        violations = contract_token_violations(
+            mutated, required=BASE_HIKARI_AUTOCOMMIT_TOKENS
+        )
+
+        self.assertTrue(any("auto-commit: true" in violation for violation in violations))
+
     def test_open_authorization_with_no_active_work_package_is_rejected(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)
         mutated = source.replace("authorization: PLANNING_ONLY", "authorization: APPROVED_FOR_IMPLEMENTATION")
@@ -354,7 +364,7 @@ repositoryHeadReader(repositoryRoot)
 class MigrationContractTests(unittest.TestCase):
     """The approved migration set, the immutability pin and the statement ban."""
 
-    def test_the_approved_set_is_the_six_metadata_migrations(self) -> None:
+    def test_the_approved_set_is_the_metadata_and_control_plane_migrations(self) -> None:
         self.assertEqual(
             (
                 "V0001__create_foundation_schemas.sql",
@@ -363,6 +373,10 @@ class MigrationContractTests(unittest.TestCase):
                 "V0004__create_core_organization_metadata.sql",
                 "V0005__create_iam_access_metadata.sql",
                 "V0006__create_platform_registry_metadata.sql",
+                "V0007__create_ingestion_control_plane_authority.sql",
+                "V0008__attach_control_epoch_triggers.sql",
+                "V0009__create_control_boundary_kinds_and_decision_evidence.sql",
+                "V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql",
             ),
             APPROVED_MIGRATIONS,
         )
