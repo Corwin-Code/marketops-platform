@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-08-20
+as_of: 2026-08-25
 project: MarketOps Russia
 lifecycle_state: EXECUTING_PHASE_0
 phase: Phase 0 — Data, Identity & Visibility Foundation
@@ -10,9 +10,14 @@ controller: GPT-5.6 Sol Pro / current ChatGPT Project
 maker: Claude Cowork / Claude Code (initial artifact producer; no authoritative repository writes in current trial)
 rework_agent: Mac Codex (authoritative repository writer, rework/fix/verify, delegated Git execution)
 active_work_package: WP-P0-003
-active_gate: READY_FOR_DESIGN
+active_gate: CONTROLLER_WP_P0_003_DESIGN_FINALIZATION
 authorization: DESIGN_ONLY
 production_write_enabled: false
+implementation_backed_design_validation: VERIFIED
+bounded_validation_authorization: CLOSED
+pr16_merge_execution: VERIFIED
+full_design_approved: false
+full_implementation_authorized: false
 owner_git_workflow_guidance: REQUIRED
 owner_git_workflow_guidance_exit: HUMAN_OWNER_EXPLICIT_CONFIRMATION
 owner_git_execution_delegation: ACTIVE
@@ -49,6 +54,35 @@ The completed WP-P0-001 design remains foundation provenance. WP-P0-002 was
 implemented only under the Controller verdict on the exact Design v1.2 artifact
 pinned above. That implementation authority is now closed; the historic Design
 verdict is provenance and does not authorize further implementation.
+
+## WP-P0-003 bounded validation and merge provenance
+
+```text
+Work Package: WP-P0-003 — Durable Ingestion Control Plane & Immutable Raw Evidence
+Bounded executable design-validation result: VERIFIED
+Bounded validation authorization: CLOSED
+Controller final re-review verdict: PASS_WITH_FOLLOW_UPS
+Authorized PR Head: 27b457bff4a0ed11308efa080993ee6793cae090
+Authorized Head tree: 52704ed54b2499898609a0bdd4041a5c88892fd3
+Pre-merge tested merge: cc9e3a91a189702808a3c2643b25ba0a7905237d
+PR #16 state: MERGED / CLOSED / NOT_DRAFT
+Actual squash commit / current main: ce054a0c115788c7e7a174daa978af116b100a83
+Actual main tree: 52704ed54b2499898609a0bdd4041a5c88892fd3
+Actual squash parent: 9f7688204950c64b9f6bd8629daf90a115669864
+Commit signature: VERIFIED / VALID
+Merge time: 2026-08-25T08:52:52Z
+Post-merge Controller verdict: PASS — MERGE_EXECUTION_VERIFIED
+Full Design approved: NO
+Full WP-P0-003 implementation authorized: NO
+Full WP-P0-003 implementation complete: NO
+```
+
+The accepted and merged tranche is production-grade only for its bounded
+implementation-backed design-validation scope. Its one-time validation
+authorization is consumed and closed. It does not promote the frozen Design
+candidate to an approved Design of Record, authorize the remaining runtime, or
+complete WP-P0-003. The exact post-merge proof is recorded at
+`docs/07-phase-evidence/WP-P0-003/post-merge-execution-verification.md`.
 
 ## Prior closed planning transition — historical provenance
 
@@ -146,6 +180,21 @@ source.
 - The independent post-merge Controller verdict is
   `PASS — MERGE_EXECUTION_VERIFIED`, bound to artifact SHA-256
   `4e65f0a7fb1c997096c5fd98fb56f42211c546cca323fae5b12d39eaa0c1c8ab`.
+- PR #16 accepted the bounded WP-P0-003 executable design-validation tranche at
+  Head `27b457bff4a0ed11308efa080993ee6793cae090`, tree
+  `52704ed54b2499898609a0bdd4041a5c88892fd3`, after the independent Controller
+  verdict `PASS_WITH_FOLLOW_UPS`. The separately Owner-authorized squash merge
+  produced validly signed commit
+  `ce054a0c115788c7e7a174daa978af116b100a83`; its tree is exactly the accepted
+  Head tree and its sole parent is
+  `9f7688204950c64b9f6bd8629daf90a115669864`.
+- Backend `32828929222`, Frontend `32828929327`, Governance `32828929615` and
+  Security `32828929261` all concluded `SUCCESS` on the actual PR #16 squash
+  commit. Ten executed jobs passed; the push-event `dependency-review` job was
+  conditionally skipped and is not represented as executed evidence.
+- The PR #16 post-merge Controller verdict is
+  `PASS — MERGE_EXECUTION_VERIFIED`, bound to artifact SHA-256
+  `cdd964d951a6d994d1942f550a37f39e268337a55ba89348e235a818157e8875`.
 
 ## Not completed and not claimed
 
@@ -162,18 +211,27 @@ source.
   Phase 0 and the whole product remain incomplete, and this completed merge does
   not authorize another Work Package, deployment, credentials or production
   writes.
+- PR #16 does not approve the full WP-P0-003 Design, authorize or complete the
+  remaining WP-P0-003 runtime, close any PARTIAL/MULTI-WP/STRUCTURE_ONLY or
+  OUT_OF_SCOPE requirement boundary, or make the project deployment-ready.
+- `WP3-EDV-BC-R4B-01` remains a non-blocking binding correction that must replace
+  the loose owning-module package predicate with exact root
+  `com.mimococo.marketops.marketplaceintegration` before the first real
+  `AcquisitionPort`/`ObjectStoragePort` Adapter Gate. It is recorded, not
+  implemented, by this governance transition.
 - Repository conversion back to Private and security-control revalidation remain
   mandatory at real production go-live, or earlier before confidential material,
   under D-15. This continuing project control is not deferred WP-P0-001 scope.
 
 ## Active objective
 
-The Designer cross-checks live source, migrations, tests, dependencies, accepted
-ADRs and the closed WP-P0-001/WP-P0-002 records, then produces the standalone
-Design artifact for `WP-P0-003 — Durable Ingestion Control Plane & Immutable Raw
-Evidence`. This state authorizes Design only. Implementation, migration,
-Marketplace outbound traffic, Secret retrieval and production writes remain
-prohibited.
+The Controller performs `WP-P0-003` Design finalization and next-implementation-
+scope review by reconciling the frozen Design candidate, executable validation
+addendum, merged source/migrations, remaining Work Package scope, open Owner
+Gates and project-level deferred/readiness work. This state authorizes Design
+finalization only. It does not approve the full Design or authorize additional
+implementation, migration, Marketplace outbound traffic, Secret retrieval,
+Provider selection, deployment or production writes.
 
 ## Temporary trial execution mode
 
@@ -196,10 +254,10 @@ confirmation can disable the mode.
 
 ## Current blockers / Owner inputs
 
-OQ-005 does not block the internal worker Design but blocks any public webhook,
-public manual-trigger or file-upload runtime surface. OQ-006 does not block a
-provider-neutral Design start, but blocks concrete Object Storage/Secret Final
-Design approval, Implementation authorization and bounded Raw acceptance.
+OQ-005 does not block internal Design finalization but blocks any public webhook,
+public manual-trigger or file-upload runtime surface. OQ-006 does not block
+provider-neutral Design finalization, but blocks concrete Object Storage/Secret
+Final Design approval, Implementation authorization and bounded Raw acceptance.
 OQ-101/OQ-102/OQ-106/OQ-107 remain OPEN at the onboarding, verified platform,
 source-integration and deployment/production Gates allocated in the Work Package.
 No provider fact, Secret or production data is requested or assumed.
@@ -207,11 +265,12 @@ No provider fact, Secret or production data is requested or assumed.
 ## Next authorized action
 
 ```text
-Designer source cross-check and WP-P0-003 Design only. The Designer must return a
-standalone Design artifact for independent Controller Design review.
-Implementation remains prohibited until a later Controller verdict explicitly
-authorizes it and OQ-006 has an approved disposition for concrete Object
-Storage/Secret choices.
-No migration, product code, Marketplace connection, Secret retrieval, deployment
-or production write is authorized.
+CONTROLLER_WP_P0_003_DESIGN_FINALIZATION. The Controller reconciles the frozen
+Design candidate, executable validation addendum, live merged source and
+migrations, remaining `WP-P0-003` scope, OQ-005/OQ-006 and project-level
+deferred work, then decides the next bounded Design/implementation Gate.
+DESIGN_ONLY remains the current authorization. Full Design approval and further
+implementation authorization remain false; no migration, product code,
+Marketplace connection, Secret retrieval, Provider choice, deployment or
+production write is authorized.
 ```

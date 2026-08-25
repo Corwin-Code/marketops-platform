@@ -33,6 +33,7 @@ from scripts.validate_governance import (
     validate_wp_p0_002_test_identity_contract,
     validate_wp_p0_002_traceability_text,
     validate_wp_p0_003_activation_text,
+    validate_wp_p0_003_post_merge_closure_text,
     validate_wp_p0_003_record_paths,
     validate_wp_p0_003_traceability_text,
     validate_wp_p0_003_work_package_text,
@@ -2067,6 +2068,172 @@ def mutate_traceability_field(
             row[field] = value
         writer.writerow(row)
     return output.getvalue()
+
+
+class WpP0003PostMergeClosureTests(unittest.TestCase):
+    def validate(
+        self,
+        *,
+        current: str | None = None,
+        work_package: str | None = None,
+        addendum: str | None = None,
+        evidence: str | None = None,
+        post_merge_evidence: str | None = None,
+    ) -> list[str]:
+        errors: list[str] = []
+        validate_wp_p0_003_post_merge_closure_text(
+            errors,
+            current
+            or repository_governance_text("docs/00-governance/CURRENT_STATE.md"),
+            work_package or repository_governance_text(WP_P0_003_RELATIVE_PATH),
+            addendum
+            or repository_governance_text(
+                "docs/02-architecture/designs/"
+                "WP-P0-003-executable-design-validation-addendum.md"
+            ),
+            evidence
+            or repository_governance_text(
+                "docs/07-phase-evidence/WP-P0-003/"
+                "executable-design-validation.md"
+            ),
+            post_merge_evidence
+            or repository_governance_text(
+                "docs/07-phase-evidence/WP-P0-003/"
+                "post-merge-execution-verification.md"
+            ),
+        )
+        return errors
+
+    def test_exact_post_merge_closure_is_valid(self) -> None:
+        self.assertEqual([], self.validate())
+
+    def test_full_design_approval_inflation_is_rejected(self) -> None:
+        current = repository_governance_text(
+            "docs/00-governance/CURRENT_STATE.md"
+        ).replace("full_design_approved: false", "full_design_approved: true", 1)
+        self.assertTrue(
+            any(
+                "full_design_approved" in error
+                for error in self.validate(current=current)
+            )
+        )
+
+    def test_full_implementation_authorization_inflation_is_rejected(self) -> None:
+        current = repository_governance_text(
+            "docs/00-governance/CURRENT_STATE.md"
+        ).replace(
+            "full_implementation_authorized: false",
+            "full_implementation_authorized: true",
+            1,
+        )
+        self.assertTrue(
+            any(
+                "full_implementation_authorized" in error
+                for error in self.validate(current=current)
+            )
+        )
+
+    def test_production_write_enablement_is_rejected(self) -> None:
+        current = repository_governance_text(
+            "docs/00-governance/CURRENT_STATE.md"
+        ).replace(
+            "production_write_enabled: false",
+            "production_write_enabled: true",
+            1,
+        )
+        self.assertTrue(
+            any(
+                "production_write_enabled" in error
+                for error in self.validate(current=current)
+            )
+        )
+
+    def test_pr16_merge_cannot_complete_the_work_package(self) -> None:
+        work_package = repository_governance_text(WP_P0_003_RELATIVE_PATH).replace(
+            "| Status | DESIGN_FINALIZATION_REQUIRED |",
+            "| Status | COMPLETED |",
+            1,
+        )
+        self.assertTrue(
+            any(
+                "must not mark WP-P0-003 COMPLETED" in error
+                for error in self.validate(work_package=work_package)
+            )
+        )
+
+    def test_pr_state_reverted_to_open_draft_is_rejected(self) -> None:
+        post_merge = repository_governance_text(
+            "docs/07-phase-evidence/WP-P0-003/post-merge-execution-verification.md"
+        ).replace("pr_state: MERGED_CLOSED_NOT_DRAFT", "pr_state: OPEN_DRAFT", 1)
+        self.assertTrue(
+            any(
+                "pr_state" in error
+                for error in self.validate(post_merge_evidence=post_merge)
+            )
+        )
+
+    def test_merge_commit_and_tree_drift_are_rejected(self) -> None:
+        original = repository_governance_text(
+            "docs/07-phase-evidence/WP-P0-003/post-merge-execution-verification.md"
+        )
+        for field, value in (
+            ("actual_squash_commit", "0" * 40),
+            ("actual_main_tree", "1" * 40),
+        ):
+            with self.subTest(field=field):
+                post_merge = original.replace(
+                    next(
+                        line
+                        for line in original.splitlines()
+                        if line.startswith(f"{field}:")
+                    ),
+                    f"{field}: {value}",
+                    1,
+                )
+                self.assertTrue(
+                    any(
+                        field in error
+                        for error in self.validate(post_merge_evidence=post_merge)
+                    )
+                )
+
+    def test_bounded_validation_verified_cannot_be_removed(self) -> None:
+        current = repository_governance_text(
+            "docs/00-governance/CURRENT_STATE.md"
+        ).replace(
+            "implementation_backed_design_validation: VERIFIED",
+            "implementation_backed_design_validation: PENDING",
+            1,
+        )
+        self.assertTrue(
+            any(
+                "implementation_backed_design_validation" in error
+                for error in self.validate(current=current)
+            )
+        )
+
+    def test_pre_merge_gate_cannot_be_presented_as_current_authority(self) -> None:
+        current = repository_governance_text(
+            "docs/00-governance/CURRENT_STATE.md"
+        ).replace(
+            "active_gate: CONTROLLER_WP_P0_003_DESIGN_FINALIZATION",
+            "active_gate: READY_FOR_DESIGN",
+            1,
+        )
+        self.assertTrue(
+            any("active_gate" in error for error in self.validate(current=current))
+        )
+
+    def test_stale_awaiting_controller_marker_is_rejected(self) -> None:
+        evidence = repository_governance_text(
+            "docs/07-phase-evidence/WP-P0-003/executable-design-validation.md"
+        ) + "\nIMPLEMENTED_AWAITING_CONTROLLER\n"
+        self.assertTrue(
+            any(
+                "awaiting-Controller status" in error
+                for error in self.validate(evidence=evidence)
+            )
+        )
 
 
 class WpP0003ActivationContractTests(unittest.TestCase):

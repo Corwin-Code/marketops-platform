@@ -10,38 +10,48 @@ reviewed_input_head: de34774af5f7c8f10dd39be40149da1a2aa3e5b7
 reviewed_input_tree: 06dd651ed3198bdf1f7d95348dcbf69e8e04bda3
 verified_implementation_head: 52ff670c2bf8f44a1709273ad60036d4610d3f3c
 verified_implementation_tree: a5d99f2bf0a4dd583dc0a32b9d166fe656d4d9d2
-final_package_identity: LIVE_PR_16_METADATA_AND_BODY
-prior_controller_verdict: TARGETED_REWORK
+final_package_identity: PR_16_FINAL_HEAD_27B457B_AND_MERGED_MAIN_CE054A0
+controller_verdict: PASS_WITH_FOLLOW_UPS
 targeted_findings: WP3-EDV-F02-R4A, WP3-EDV-F02-R4B, WP3-EDV-F02-R4C
 preserved_findings: WP3-EDV-F02-R3A, WP3-EDV-F02-R3B-CONCRETE-STATIC, WP3-EDV-F02-R2A, WP3-EDV-F02-R2B, WP3-EDV-F02-R2C, WP3-EDV-F01, WP3-EDV-F02-R1A, WP3-EDV-F02-R1B, WP3-EDV-F02-R1C, WP3-EDV-F03, WP3-EDV-R01, WP3-EDV-RR02
 design_approved: false
-targeted_rework_status: IMPLEMENTED_AWAITING_CONTROLLER
-bounded_scope_quality: PRODUCTION_GRADE
+targeted_rework_status: CONTROLLER_ACCEPTED_AND_MERGED
+merge_execution: VERIFIED
+actual_merge_commit: ce054a0c115788c7e7a174daa978af116b100a83
+actual_main_tree: 52704ed54b2499898609a0bdd4041a5c88892fd3
+bounded_validation_authorization: CLOSED
+full_implementation_authorized: false
+bounded_scope_quality: PRODUCTION_GRADE_WITH_NON_BLOCKING_PRE_ADAPTER_HARDENING
 project_production_complete: false
 marketplace_outbound: NONE
 secret_retrieval: NONE
 production_write: DISABLED
-next_gate: CONTROLLER_WP_P0_003_IMPLEMENTATION_BACKED_DESIGN_VALIDATION_RE_REVIEW
+next_gate: CONTROLLER_WP_P0_003_DESIGN_FINALIZATION_AND_NEXT_IMPLEMENTATION_SCOPE_REVIEW
 ```
 
 The implementation identity binds the production code and tests that passed
-complete backend verification. An evidence-only commit cannot contain its own
-Git identity, so live PR #16 metadata and body are authoritative for the final
-package Head, tree, tested-merge identity and CI result.
+complete backend verification. PR #16 final Head
+`27b457bff4a0ed11308efa080993ee6793cae090`, final tree
+`52704ed54b2499898609a0bdd4041a5c88892fd3` and tested merge
+`cc9e3a91a189702808a3c2643b25ba0a7905237d` are immutable pre-merge evidence.
+The independently verified squash commit is
+`ce054a0c115788c7e7a174daa978af116b100a83`, whose main tree equals that final
+Head tree.
 
 ## 1. Targeted finding implementation
 
 | Finding | As-built correction | Executable evidence | Rework state |
 | --- | --- | --- | --- |
-| `WP3-EDV-F02-R4A` | The cycle-safe controller graph now combines direct bytecode dependencies with runtime dispatch edges from every interface or abstract contract to every concrete assignable MarketOps implementation in the complete production import. Direct and meta-annotated `RestController` roots are covered; dispatch evidence uses `=>`, and every violation retains the complete root-to-forbidden path. | `TC-ARCH-030`, `F-ARCH-030…035`, `F-ARCH-040` | `IMPLEMENTED_AWAITING_CONTROLLER` |
-| `WP3-EDV-F02-R4B` | Port ownership is evaluated with `isAssignableTo(AcquisitionPort)` or `isAssignableTo(ObjectStoragePort)` for interfaces, abstract types and concrete classes. External subinterfaces, direct implementations and inherited implementations are rejected; equivalent owning-module types pass. | `F-ARCH-020`, `F-ARCH-036…038`, `F-ARCH-038C` | `IMPLEMENTED_AWAITING_CONTROLLER` |
-| `WP3-EDV-F02-R4C` | `CallAuthorityGrant` and its constructor are exactly package-private. Obsolete outside-package fixtures that required public production visibility were removed, while an exact JDBC-package non-mapper constructor fixture proves the mapper-only ownership rule remains sensitive. | `TC-ARCH-039`, `F-ARCH-023I` | `IMPLEMENTED_AWAITING_CONTROLLER` |
+| `WP3-EDV-F02-R4A` | The cycle-safe controller graph now combines direct bytecode dependencies with runtime dispatch edges from every interface or abstract contract to every concrete assignable MarketOps implementation in the complete production import. Direct and meta-annotated `RestController` roots are covered; dispatch evidence uses `=>`, and every violation retains the complete root-to-forbidden path. | `TC-ARCH-030`, `F-ARCH-030…035`, `F-ARCH-040` | `CONTROLLER_ACCEPTED_AND_MERGED` |
+| `WP3-EDV-F02-R4B` | Port ownership is evaluated with `isAssignableTo(AcquisitionPort)` or `isAssignableTo(ObjectStoragePort)` for interfaces, abstract types and concrete classes. External subinterfaces, direct implementations and inherited implementations are rejected; equivalent owning-module types pass. | `F-ARCH-020`, `F-ARCH-036…038`, `F-ARCH-038C` | `CONTROLLER_ACCEPTED_AND_MERGED` |
+| `WP3-EDV-F02-R4C` | `CallAuthorityGrant` and its constructor are exactly package-private. Obsolete outside-package fixtures that required public production visibility were removed, while an exact JDBC-package non-mapper constructor fixture proves the mapper-only ownership rule remains sensitive. | `TC-ARCH-039`, `F-ARCH-023I` | `CONTROLLER_ACCEPTED_AND_MERGED` |
 
 R3A, the concrete-static portion of R3B, R2A, the exact-query/local-one-shot
 portion of R2B, R2C, R1A/R1B/R1C, `WP3-EDV-F01`, `WP3-EDV-F03`,
 `WP3-EDV-R01` and `WP3-EDV-RR02` remain executable and passing. This rework
-does not weaken or redefine them. Closure authority for R4A/R4B/R4C remains
-with the next independent Controller Gate.
+does not weaken or redefine them. The independent Controller closed R4A/R4B/R4C
+with `PASS_WITH_FOLLOW_UPS`; PR #16 then merged after separate Human Owner
+authorization.
 
 ## 2. Preserved commit-before-port invariant
 
@@ -191,8 +201,9 @@ start under database authority, Provider behavior, credential retrieval,
 performance, deployment or end-to-end worker recovery.
 
 No real Marketplace credential, real outbound HTTP, Provider system or
-production write was used. Independent Controller review and GitHub CI on the
-final evidence package remain separate Gates.
+production write was used. Independent Controller review, accepted-Head GitHub
+CI, merge execution verification and post-main CI are now recorded evidence;
+they do not approve the full Design or the remaining WP-P0-003 implementation.
 
 ## 6. Production-readiness classification
 
@@ -222,3 +233,10 @@ explicitly allocated work:
 
 These are declared work-package/project allocations, not hidden omissions or
 compromise implementations inside this bounded Controller rework.
+
+`WP3-EDV-BC-R4B-01` remains
+`MANDATORY_BEFORE_FIRST_REAL_ADAPTER_GATE`: replace the loose owning-module
+package predicate with exact root
+`com.mimococo.marketops.marketplaceintegration`. The Controller classified it
+as non-blocking because no present production bypass exists. This addendum
+records the disposition; the governance closure does not implement it.

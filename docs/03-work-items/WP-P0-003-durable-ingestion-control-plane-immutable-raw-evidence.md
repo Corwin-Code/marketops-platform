@@ -7,7 +7,7 @@
 | ID | WP-P0-003 |
 | Title | Durable Ingestion Control Plane & Immutable Raw Evidence |
 | Phase | Sprint 0 / Phase 0 |
-| Status | READY_FOR_DESIGN |
+| Status | DESIGN_FINALIZATION_REQUIRED |
 | Authorization | DESIGN_ONLY |
 | Risk | HIGH |
 | Controller | GPT-5.6 Sol Pro / current ChatGPT Project |
@@ -15,13 +15,19 @@
 | Repository writer | Mac Codex |
 | Final merge authorization | Human Owner |
 | Target branch | `main` |
-| Design artifact | NOT_YET_PRODUCED |
-| Implementation authorization | PROHIBITED |
+| Design status | FINALIZATION_REQUIRED / NOT_FULLY_APPROVED |
+| Design evidence | Frozen Design v1.11 candidate + `docs/02-architecture/designs/WP-P0-003-executable-design-validation-addendum.md` |
+| Implementation-backed validation result | VERIFIED |
+| Bounded validation authorization | CLOSED |
+| Full implementation authorization | PROHIBITED |
 
-This record activates only the Design Gate after the governance Pull Request is
-independently reviewed, authorized by the Human Owner and merged. It does not
-contain a Design artifact and does not authorize implementation, a migration,
-an external connection, a Secret, production data or a production write.
+PR #16 merged the bounded implementation-backed design-validation tranche after
+independent Controller acceptance and separate Human Owner authorization. Its
+validation result is verified and that one-time bounded authorization is closed.
+The frozen Design candidate and as-built addendum are evidence for the current
+Design-finalization Gate; they are not a fully approved Design of Record and do
+not authorize remaining implementation, a new migration, an external
+connection, a Secret, production data or a production write.
 
 ## 2. Business and Operator Outcome
 
@@ -360,11 +366,20 @@ The structured Owner Gate allocation is binding:
 Planning keeps all of these questions OPEN and requests no Secret or production
 data.
 
+The post-merge follow-up ledger also retains
+`WP3-EDV-BC-R4B-01` as
+`MANDATORY_BEFORE_FIRST_REAL_ADAPTER_GATE`: the owning-module predicate must use
+the exact package root `com.mimococo.marketops.marketplaceintegration` before
+the first real `AcquisitionPort` or `ObjectStoragePort` Adapter Gate. There is
+no current production bypass, so this is recorded but is not implemented or
+represented as closed by the governance transition.
+
 ## 15. Design Deliverables and Controller Gate
 
-The Designer must first cross-check current source, migrations, dependencies,
-tests, closed WP-P0-001/WP-P0-002 records and accepted ADRs. The standalone
-Design artifact must then define, without implementation:
+The Controller must reconcile the frozen Design candidate, executable
+validation addendum, merged source, migrations, dependencies, tests, closed
+WP-P0-001/WP-P0-002 records, accepted ADRs and remaining Work Package scope.
+Design finalization must define, without authorizing further implementation:
 
 - the one module/data/transaction authority and public contract boundary;
 - state machines, transitions, CAS/fencing and failure ownership;
@@ -377,21 +392,24 @@ Design artifact must then define, without implementation:
 - Requirement → Test → Evidence mappings and falsification cases; and
 - every open assumption, OQ Gate and Decision Request.
 
-The exact next Gate is independent Controller Design review. The Controller must
-actively attempt to falsify durability ordering, stale-worker exclusion,
-idempotency, provider-evidence maturity, scope confinement and traceability
-claims. A Design that guesses OQ-006 or lacks an executable failure model receives
-`CHANGES_REQUIRED` or `BLOCKED_BY_OWNER_DECISION`.
+The exact current Gate is
+`CONTROLLER_WP_P0_003_DESIGN_FINALIZATION`. The Controller must actively attempt
+to falsify durability ordering, stale-worker exclusion, idempotency,
+provider-evidence maturity, scope confinement and traceability claims, then
+decide the next bounded Design/implementation scope. It must not infer full
+Design approval or further implementation authorization from PR #16.
 
 Current stop declaration:
 
 ```text
-STATUS: READY_FOR_DESIGN
+STATUS: DESIGN_FINALIZATION_REQUIRED
 AUTHORIZATION: DESIGN_ONLY
-DESIGN_ARTIFACT: NOT_YET_PRODUCED
-IMPLEMENTATION_AUTHORIZATION: PROHIBITED
+DESIGN_STATUS: FINALIZATION_REQUIRED / NOT_FULLY_APPROVED
+IMPLEMENTATION_BACKED_DESIGN_VALIDATION: VERIFIED
+BOUNDED_VALIDATION_AUTHORIZATION: CLOSED
+FULL_IMPLEMENTATION_AUTHORIZATION: PROHIBITED
 MARKETPLACE_OUTBOUND: PROHIBITED
 SECRET_OR_PRODUCTION_DATA: PROHIBITED
 PRODUCTION_WRITE: DISABLED
-NEXT_GATE: CONTROLLER_DESIGN_REVIEW
+NEXT_GATE: CONTROLLER_WP_P0_003_DESIGN_FINALIZATION
 ```

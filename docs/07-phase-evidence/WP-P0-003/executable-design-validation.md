@@ -8,16 +8,22 @@ reviewed_input_head: de34774af5f7c8f10dd39be40149da1a2aa3e5b7
 reviewed_input_tree: 06dd651ed3198bdf1f7d95348dcbf69e8e04bda3
 verified_implementation_head: 52ff670c2bf8f44a1709273ad60036d4610d3f3c
 verified_implementation_tree: a5d99f2bf0a4dd583dc0a32b9d166fe656d4d9d2
-final_package_identity: LIVE_PR_16_METADATA_AND_BODY
-prior_controller_verdict: TARGETED_REWORK
+final_package_identity: PR_16_FINAL_HEAD_27B457B_AND_MERGED_MAIN_CE054A0
+controller_verdict: PASS_WITH_FOLLOW_UPS
 targeted_findings: WP3-EDV-F02-R4A, WP3-EDV-F02-R4B, WP3-EDV-F02-R4C
 preserved_findings: WP3-EDV-F02-R3A, WP3-EDV-F02-R3B-CONCRETE-STATIC, WP3-EDV-F02-R2A, WP3-EDV-F02-R2B, WP3-EDV-F02-R2C, WP3-EDV-F01, WP3-EDV-F02-R1A, WP3-EDV-F02-R1B, WP3-EDV-F02-R1C, WP3-EDV-F03, WP3-EDV-R01, WP3-EDV-RR02
 environment: local workstation, Docker, Testcontainers, postgres:18.4
 design_approved: false
-targeted_rework_status: IMPLEMENTED_AWAITING_CONTROLLER
-bounded_scope_quality: PRODUCTION_GRADE
+targeted_rework_status: CONTROLLER_ACCEPTED_AND_MERGED
+merge_execution: VERIFIED
+actual_merge_commit: ce054a0c115788c7e7a174daa978af116b100a83
+actual_main_tree: 52704ed54b2499898609a0bdd4041a5c88892fd3
+bounded_validation_authorization: CLOSED
+full_implementation_authorized: false
+bounded_scope_quality: PRODUCTION_GRADE_WITH_NON_BLOCKING_PRE_ADAPTER_HARDENING
 project_production_complete: false
 marketplace_outbound: NONE
+secret_retrieval: NONE
 production_write: DISABLED
 ```
 
@@ -28,13 +34,14 @@ production_write: DISABLED
 | Base | `9f7688204950c64b9f6bd8629daf90a115669864` | resolved by GitHub repository | PR base |
 | Controller-reviewed starting Head | `de34774af5f7c8f10dd39be40149da1a2aa3e5b7` | `06dd651ed3198bdf1f7d95348dcbf69e8e04bda3` | Controller ruling and live PR state |
 | Verified implementation | `52ff670c2bf8f44a1709273ad60036d4610d3f3c` | `a5d99f2bf0a4dd583dc0a32b9d166fe656d4d9d2` | local Git object and complete verification |
-| Final evidence package | live PR #16 Head | live PR #16 tree | PR metadata/body after evidence-only commit |
-| Tested merge | live PR #16 test merge | live merge tree and parents | GitHub API after final CI |
+| Final evidence package | `27b457bff4a0ed11308efa080993ee6793cae090` | `52704ed54b2499898609a0bdd4041a5c88892fd3` | Controller-accepted final PR #16 Head |
+| Pre-merge tested merge | `cc9e3a91a189702808a3c2643b25ba0a7905237d` | `52704ed54b2499898609a0bdd4041a5c88892fd3` | GitHub required-check identity before merge |
+| Actual squash commit / main | `ce054a0c115788c7e7a174daa978af116b100a83` | `52704ed54b2499898609a0bdd4041a5c88892fd3` | Independently verified post-merge identity |
 
 The starting-to-final delta is one implementation/test commit followed by one
-evidence-only commit. The evidence commit cannot record its own immutable SHA;
-the final Head, tree, tested-merge identity and workflow results are therefore
-bound in live PR #16 metadata and body after push and CI.
+evidence-only commit. Its immutable final Head, tree and tested-merge identity
+were accepted by the Controller before the separately Owner-authorized squash
+merge. The actual squash tree equals the accepted final Head tree.
 
 ## Finding-to-test matrix
 
@@ -51,8 +58,11 @@ bound in live PR #16 metadata and body after push and CI.
 | Preserved `F01/F03` | grant serialization, zero-residue denial and final checkpoint CAS after blocking/lease expiry | PASS — `CallAuthorityExclusivityIT` and `IngestionAuthorityAndEvidenceIT` |
 | Preserved `R01/RR02` | functional migration/comment checks and distinct package identities | PASS — repository validators and this package manifest |
 
-Independent Controller authority is still required for closure. This evidence
-records implementation and test results; it does not issue a Controller verdict.
+This paragraph was historically written before closure. It is superseded by the
+Controller `PASS_WITH_FOLLOW_UPS`, separate Human Owner Ready+Merge
+authorization, and independent post-merge verdict
+`PASS — MERGE_EXECUTION_VERIFIED`. The evidence records those decisions; it
+does not turn them into full Design approval or full implementation authority.
 
 ## Preserved commit-before-port production invariant
 
@@ -238,8 +248,10 @@ FAKE_CREDENTIAL_ZERO_OUTBOUND
 PACKAGE_OR_PROVENANCE
 ```
 
-`CI_EXECUTION` is bound only after the final package is pushed and the exact
-GitHub workflow/job set completes.
+`CI_EXECUTION` is now bound to the accepted final Head workflows and the
+post-merge push workflows recorded in
+`post-merge-execution-verification.md`. On actual main, ten executed jobs passed
+and one push-event `dependency-review` job was conditionally skipped.
 
 Not executed and not claimed:
 
@@ -261,12 +273,15 @@ idempotency.
 
 ## Branch and boundary statement
 
-The three Dependabot lines remain isolated in their own dependency-update PRs.
-The sole WP-P0-003 implementation line is
-`feat/WP-P0-003-executable-design-validation` and its remote counterpart.
+The three Dependabot lines remained isolated from the accepted PR #16 source.
+PR #16 merged as squash commit
+`ce054a0c115788c7e7a174daa978af116b100a83` after Controller
+`PASS_WITH_FOLLOW_UPS` and separate Human Owner Ready+Merge authorization. The
+remote feature branch was automatically deleted under repository policy.
 
-PR #16 must remain open, draft and unmerged for
-`CONTROLLER_WP_P0_003_IMPLEMENTATION_BACKED_DESIGN_VALIDATION_RE_REVIEW`.
-This package is not Design approval, merge authorization, deployment
-authorization or production-write authorization. `OQ-005`, `OQ-006` and the
-project-level readiness work remain open at their allocated Gates.
+Merge execution was independently verified. Evidence classes and maturity
+limits remain unchanged: this package is not full Design approval, full
+WP-P0-003 implementation authorization/completion, deployment authorization or
+production-write authorization. `OQ-005`, `OQ-006`,
+`WP3-EDV-BC-R4B-01` and project-level readiness work remain open at their
+allocated Gates.
