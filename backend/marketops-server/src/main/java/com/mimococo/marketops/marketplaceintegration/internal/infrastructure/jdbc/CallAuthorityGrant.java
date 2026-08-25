@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * adapter. The value contains opaque metadata identities only and has no representation for secret
  * material.
  */
-public final class CallAuthorityGrant {
+final class CallAuthorityGrant {
 
     private static final List<String> REQUIRED_EPOCH_SCOPES =
             List.of("JOB", "MARKETPLACE_ACCOUNT", "ORGANIZATION", "SERVICE_ACCOUNT");
@@ -39,7 +39,7 @@ public final class CallAuthorityGrant {
     private final AtomicBoolean consumed = new AtomicBoolean();
 
     /** Validate and detach every column of the structured database result. */
-    public CallAuthorityGrant(
+    CallAuthorityGrant(
             UUID decisionId,
             UUID jobId,
             UUID runId,

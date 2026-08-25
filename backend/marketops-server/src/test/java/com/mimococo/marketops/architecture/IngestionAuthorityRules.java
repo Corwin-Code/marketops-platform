@@ -2,13 +2,16 @@ package com.mimococo.marketops.architecture;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
+import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +34,8 @@ final class IngestionAuthorityRules {
     private static final String GRANT_MAPPER = JDBC_PACKAGE + "CallAuthorityGrantMapper";
     private static final String CALL_AUTHORITY_GRANT = JDBC_PACKAGE + "CallAuthorityGrant";
     private static final String PRODUCTION_ROOT = "com.mimococo.marketops";
+    private static final String REST_CONTROLLER =
+            "org.springframework.web.bind.annotation.RestController";
     private static final String OWNING_MODULE_SEGMENT = ".marketplaceintegration.";
     private static final Set<String> CONTROLLER_FORBIDDEN_SURFACES = Set.of(
             ACQUISITION_PORT,
@@ -46,25 +51,24 @@ final class IngestionAuthorityRules {
     private IngestionAuthorityRules() {
     }
 
-    /** Only the owning module implements an acquisition or object-storage port. */
+    /** Only the owning module declares or inherits an acquisition or object-storage port. */
     static ArchRule acquisitionPortsAreImplementedOnlyByTheOwningModule(String basePackage) {
         return classes()
                 .that().resideInAPackage(basePackage + "..")
                 .should(new ArchCondition<>(
-                        "implement acquisition ports only inside marketplaceintegration") {
+                        "be assignable to acquisition ports only inside marketplaceintegration") {
                     @Override
                     public void check(JavaClass item, ConditionEvents events) {
-                        boolean implementsPort = item.getRawInterfaces().stream()
-                                .anyMatch(IngestionAuthorityRules::isAcquisitionPort);
-                        if (implementsPort && !isInOwningModule(item.getPackageName())) {
+                        if (isAuthorityPort(item)
+                                && !isInOwningModule(item.getPackageName())) {
                             events.add(SimpleConditionEvent.violated(item,
                                     item.getDescription()
-                                            + " implements an acquisition port outside"
+                                            + " is assignable to an acquisition port outside"
                                             + " marketplaceintegration"));
                         }
                     }
                 })
-                .as("acquisition ports are implemented only inside marketplaceintegration")
+                .as("all acquisition-port assignable types remain inside marketplaceintegration")
                 .because("a second implementing module would be a second acquisition authority");
     }
 
@@ -102,7 +106,7 @@ final class IngestionAuthorityRules {
     static ArchRule webControllersDoNotReachAcquisition(String basePackage) {
         return classes()
                 .that().resideInAPackage(basePackage + "..")
-                .and().areAnnotatedWith("org.springframework.web.bind.annotation.RestController")
+                .and(restControllerRoots())
                 .should(new ArchCondition<>("not depend on the acquisition-authority chain") {
                     @Override
                     public void check(JavaClass item, ConditionEvents events) {
@@ -120,26 +124,37 @@ final class IngestionAuthorityRules {
                 .because("acquisition starts only from a leased worker through the DB gateway");
     }
 
-    /** No RestController may transitively reach any link in the authority chain. */
-    static ArchRule webControllersDoNotTransitivelyReachAcquisition(String basePackage) {
+    /**
+     * No direct or meta-annotated RestController may reach the authority chain through either
+     * compile-time dependencies or runtime dispatch to a concrete implementation.
+     */
+    static ArchRule webControllersDoNotTransitivelyReachAcquisition(
+            JavaClasses universe, String basePackage) {
         return classes()
                 .that().resideInAPackage(basePackage + "..")
-                .and().areAnnotatedWith("org.springframework.web.bind.annotation.RestController")
+                .and(restControllerRoots())
                 .should(new ArchCondition<>("not transitively reach the acquisition-authority chain") {
                     @Override
                     public void check(JavaClass item, ConditionEvents events) {
                         ArrayDeque<DependencyPath> pending = new ArrayDeque<>();
                         Set<String> visited = new HashSet<>();
                         visited.add(item.getName());
-                        pending.add(new DependencyPath(item, List.of(item.getName())));
+                        pending.add(new DependencyPath(item, item.getName()));
 
                         while (!pending.isEmpty()) {
                             DependencyPath current = pending.removeFirst();
                             current.type().getDirectDependenciesFromSelf().stream()
                                     .map(dependency -> dependency.getTargetClass())
                                     .filter(IngestionAuthorityRules::isMarketOpsClass)
+                                    .distinct()
+                                    .sorted(Comparator.comparing(JavaClass::getName))
                                     .forEach(target -> inspectControllerPath(
-                                            item, current, target, visited, pending, events));
+                                            item, current, target, " -> ",
+                                            visited, pending, events));
+                            runtimeDispatchTargets(current.type(), universe).forEach(target ->
+                                    inspectControllerPath(
+                                            item, current, target, " => ",
+                                            visited, pending, events));
                         }
                     }
                 })
@@ -230,27 +245,56 @@ final class IngestionAuthorityRules {
 
     private static boolean isControllerForbidden(JavaClass type) {
         return CONTROLLER_FORBIDDEN_SURFACES.contains(type.getName())
-                || type.isAssignableTo(ACQUISITION_PORT)
-                || type.isAssignableTo(OBJECT_STORAGE_PORT);
+                || isAuthorityPort(type);
     }
 
     private static void inspectControllerPath(
             JavaClass controller,
             DependencyPath current,
             JavaClass target,
+            String edgeMarker,
             Set<String> visited,
             ArrayDeque<DependencyPath> pending,
             ConditionEvents events) {
-        List<String> path = new ArrayList<>(current.classes());
-        path.add(target.getName());
+        String path = current.path() + edgeMarker + target.getName();
         if (isControllerForbidden(target)) {
             events.add(SimpleConditionEvent.violated(
-                    controller, "transitive acquisition-authority path: " + String.join(" -> ", path)));
+                    controller, "transitive acquisition-authority path: " + path));
             return;
         }
         if (visited.add(target.getName())) {
-            pending.addLast(new DependencyPath(target, List.copyOf(path)));
+            pending.addLast(new DependencyPath(target, path));
         }
+    }
+
+    private static List<JavaClass> runtimeDispatchTargets(
+            JavaClass contract, JavaClasses universe) {
+        boolean runtimeContract = contract.isInterface()
+                || contract.getModifiers().contains(JavaModifier.ABSTRACT);
+        if (!runtimeContract) {
+            return List.of();
+        }
+        return universe.stream()
+                .filter(IngestionAuthorityRules::isMarketOpsClass)
+                .filter(IngestionAuthorityRules::isConcreteClass)
+                .filter(candidate -> candidate.isAssignableTo(contract.getName()))
+                .sorted(Comparator.comparing(JavaClass::getName))
+                .toList();
+    }
+
+    private static boolean isConcreteClass(JavaClass type) {
+        return !type.isInterface()
+                && !type.getModifiers().contains(JavaModifier.ABSTRACT);
+    }
+
+    private static DescribedPredicate<JavaClass> restControllerRoots() {
+        return new DescribedPredicate<>("are directly or meta-annotated with @RestController") {
+            @Override
+            public boolean test(JavaClass input) {
+                return input.isAnnotatedWith(REST_CONTROLLER)
+                        || input.isMetaAnnotatedWith(REST_CONTROLLER);
+            }
+        };
     }
 
     private static boolean isMarketOpsClass(JavaClass type) {
@@ -258,15 +302,15 @@ final class IngestionAuthorityRules {
                 || type.getPackageName().startsWith(PRODUCTION_ROOT + ".");
     }
 
-    private static boolean isAcquisitionPort(JavaClass type) {
-        return type.getName().equals(ACQUISITION_PORT)
-                || type.getName().equals(OBJECT_STORAGE_PORT);
+    private static boolean isAuthorityPort(JavaClass type) {
+        return type.isAssignableTo(ACQUISITION_PORT)
+                || type.isAssignableTo(OBJECT_STORAGE_PORT);
     }
 
     private static boolean isInOwningModule(String packageName) {
         return (packageName + ".").contains(OWNING_MODULE_SEGMENT);
     }
 
-    private record DependencyPath(JavaClass type, List<String> classes) {
+    private record DependencyPath(JavaClass type, String path) {
     }
 }

@@ -7,7 +7,10 @@ import com.mimococo.marketops.marketplaceintegration.port.AcquisitionRequestRebi
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.ControllerViaExecutorFixture;
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.SecondExecutorCallerFixture;
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.SyntheticResultSetGrantCallerFixture;
+import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.UntrustedGrantConstructorFixture;
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchRule;
@@ -37,6 +40,15 @@ class IngestionAuthorityArchitectureTest {
     private static final String CONFORMING = FIXTURES + ".conforming.ingestionauthority";
     private static final String CONFORMING_QUERY =
             FIXTURES + ".conforming.ingestionauthorityquery";
+    private static final String CONFORMING_POLYMORPHIC_SAFE =
+            FIXTURES + ".conforming.polymorphicsafe";
+    private static final String CONFORMING_POLYMORPHIC_CYCLE =
+            FIXTURES + ".conforming.polymorphiccycle";
+    private static final String CONFORMING_ASSIGNABLE_PORTS =
+            FIXTURES + ".conforming.assignableports";
+    private static final String CALL_AUTHORITY_GRANT =
+            "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc."
+                    + "CallAuthorityGrant";
 
     private static JavaClasses production;
 
@@ -120,8 +132,26 @@ class IngestionAuthorityArchitectureTest {
     @DisplayName("TC-ARCH-030 no RestController transitively reaches acquisition authority")
     void controllersAreTransitivelyExcludedFromTheAuthorityChain() {
         IngestionAuthorityRules
-                .webControllersDoNotTransitivelyReachAcquisition(PRODUCTION_PACKAGE)
+                .webControllersDoNotTransitivelyReachAcquisition(
+                        production, PRODUCTION_PACKAGE)
                 .check(production);
+    }
+
+    @Test
+    @DisplayName("TC-ARCH-039 CallAuthorityGrant has package-private visibility")
+    void callAuthorityGrantHasPackagePrivateVisibility() {
+        JavaClass grant = production.get(CALL_AUTHORITY_GRANT);
+
+        assertThat(grant.getModifiers())
+                .doesNotContain(
+                        JavaModifier.PUBLIC, JavaModifier.PROTECTED, JavaModifier.PRIVATE);
+        assertThat(grant.getConstructors())
+                .isNotEmpty()
+                .allSatisfy(constructor -> assertThat(constructor.getModifiers())
+                        .doesNotContain(
+                                JavaModifier.PUBLIC,
+                                JavaModifier.PROTECTED,
+                                JavaModifier.PRIVATE));
     }
 
     /**
@@ -170,21 +200,18 @@ class IngestionAuthorityArchitectureTest {
         }
 
         @Test
-        @DisplayName("F-ARCH-023 an outside grant constructor/rebinder is rejected")
-        void outsideGrantRebinderIsRejected() {
-            assertRejects(
-                    IngestionAuthorityRules::callAuthorityGrantsAreConstructedOnlyByTrustedMapper,
-                    VIOLATION + ".grantrebind",
-                    "GrantRebinder");
-        }
-
-        @Test
-        @DisplayName("F-ARCH-023I an owning-module grant rebinder is rejected")
+        @DisplayName("F-ARCH-023I a same-package non-mapper grant constructor is rejected")
         void insideGrantRebinderIsRejected() {
-            assertRejects(
-                    IngestionAuthorityRules::callAuthorityGrantsAreConstructedOnlyByTrustedMapper,
-                    VIOLATION + ".insidegrant",
-                    "UntrustedGrantRebinder");
+            JavaClasses fixture = new ClassFileImporter()
+                    .importClasses(UntrustedGrantConstructorFixture.class);
+            EvaluationResult result = IngestionAuthorityRules
+                    .callAuthorityGrantsAreConstructedOnlyByTrustedMapper(PRODUCTION_PACKAGE)
+                    .evaluate(fixture);
+
+            assertThat(result.hasViolation()).isTrue();
+            assertThat(result.getFailureReport().getDetails())
+                    .anySatisfy(detail -> assertThat(detail)
+                            .contains("UntrustedGrantConstructorFixture"));
         }
 
         @Test
@@ -256,9 +283,11 @@ class IngestionAuthorityArchitectureTest {
         @DisplayName("F-ARCH-030 a controller-to-service-to-gateway path is rejected")
         void transitiveControllerPathIsRejectedWithTheCompletePath() {
             String fixturePackage = VIOLATION + ".transitiveacquisitionweb";
+            JavaClasses fixture = importFixture(fixturePackage);
             EvaluationResult result = IngestionAuthorityRules
-                    .webControllersDoNotTransitivelyReachAcquisition(fixturePackage)
-                    .evaluate(importFixture(fixturePackage));
+                    .webControllersDoNotTransitivelyReachAcquisition(
+                            fixture, fixturePackage)
+                    .evaluate(fixture);
 
             assertThat(result.hasViolation()).isTrue();
             assertThat(result.getFailureReport().getDetails())
@@ -276,8 +305,127 @@ class IngestionAuthorityArchitectureTest {
             JavaClasses queryPath = importFixture(CONFORMING_QUERY);
 
             assertThatCode(() -> IngestionAuthorityRules
-                    .webControllersDoNotTransitivelyReachAcquisition(CONFORMING_QUERY)
+                    .webControllersDoNotTransitivelyReachAcquisition(
+                            queryPath, CONFORMING_QUERY)
                     .check(queryPath))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        @DisplayName("F-ARCH-032 an unsafe interface implementation path is rejected")
+        void polymorphicControllerPathIsRejectedWithDispatchEvidence() {
+            String fixturePackage = VIOLATION + ".polymorphicunsafe";
+            EvaluationResult result = evaluateTransitiveRule(fixturePackage);
+
+            assertThat(result.hasViolation()).isTrue();
+            assertThat(result.getFailureReport().getDetails())
+                    .anySatisfy(detail -> assertThat(detail)
+                            .contains(
+                                    "PolymorphicAcquisitionController",
+                                    "AcquisitionUseCase",
+                                    "GatewayBackedAcquisitionService",
+                                    "JdbcAuthorizedAcquisitionGateway",
+                                    " -> ",
+                                    " => "));
+        }
+
+        @Test
+        @DisplayName("F-ARCH-033 an unsafe implementation cannot be masked by a safe one")
+        void mixedImplementationsAreRejectedForTheUnsafeSelectablePath() {
+            String fixturePackage = VIOLATION + ".polymorphicmixed";
+            EvaluationResult result = evaluateTransitiveRule(fixturePackage);
+
+            assertThat(result.hasViolation()).isTrue();
+            assertThat(result.getFailureReport().getDetails())
+                    .anySatisfy(detail -> assertThat(detail)
+                            .contains(
+                                    "MixedAcquisitionController",
+                                    "MixedAcquisitionUseCase",
+                                    "UnsafeAcquisitionService",
+                                    "JdbcAuthorizedAcquisitionGateway",
+                                    " => "));
+        }
+
+        @Test
+        @DisplayName("F-ARCH-034 a safe-only interface dispatch path is permitted")
+        void safeOnlyPolymorphicPathIsPermitted() {
+            JavaClasses fixture = importFixture(CONFORMING_POLYMORPHIC_SAFE);
+
+            assertThatCode(() -> IngestionAuthorityRules
+                    .webControllersDoNotTransitivelyReachAcquisition(
+                            fixture, CONFORMING_POLYMORPHIC_SAFE)
+                    .check(fixture))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        @DisplayName("F-ARCH-035 a meta-annotated controller reaches abstract dispatch")
+        void metaAnnotatedControllerPathIsRejected() {
+            String fixturePackage = VIOLATION + ".polymorphicmeta";
+            EvaluationResult result = evaluateTransitiveRule(fixturePackage);
+
+            assertThat(result.hasViolation()).isTrue();
+            assertThat(result.getFailureReport().getDetails())
+                    .anySatisfy(detail -> assertThat(detail)
+                            .contains(
+                                    "MetaAnnotatedAcquisitionController",
+                                    "MetaAcquisitionUseCase",
+                                    "MetaGatewayBackedService",
+                                    "JdbcAuthorizedAcquisitionGateway",
+                                    " => "));
+        }
+
+        @Test
+        @DisplayName("F-ARCH-036 an external acquisition subinterface is rejected")
+        void acquisitionSubinterfaceAndImplementationAreRejected() {
+            assertRejects(
+                    IngestionAuthorityRules::acquisitionPortsAreImplementedOnlyByTheOwningModule,
+                    VIOLATION + ".assignableacquisition",
+                    "ExternalAcquisitionPort",
+                    "ExternalSubinterfaceAdapter");
+        }
+
+        @Test
+        @DisplayName("F-ARCH-037 an external inherited acquisition implementation is rejected")
+        void inheritedAcquisitionImplementationIsRejected() {
+            assertRejects(
+                    IngestionAuthorityRules::acquisitionPortsAreImplementedOnlyByTheOwningModule,
+                    VIOLATION + ".assignableacquisition",
+                    "ExternalInheritedAcquisitionAdapter");
+        }
+
+        @Test
+        @DisplayName("F-ARCH-038 object-storage subinterface and inheritance are rejected")
+        void objectStorageAssignableTypesAreRejectedOutsideTheOwner() {
+            assertRejects(
+                    IngestionAuthorityRules::acquisitionPortsAreImplementedOnlyByTheOwningModule,
+                    VIOLATION + ".assignableobjectstorage",
+                    "ExternalObjectStoragePort",
+                    "ExternalSubinterfaceObjectStorageAdapter",
+                    "ExternalInheritedObjectStorageAdapter");
+        }
+
+        @Test
+        @DisplayName("F-ARCH-038C owning-module assignable port types are permitted")
+        void owningModuleAssignablePortTypesArePermitted() {
+            JavaClasses fixture = importFixture(CONFORMING_ASSIGNABLE_PORTS);
+
+            assertThatCode(() -> IngestionAuthorityRules
+                    .acquisitionPortsAreImplementedOnlyByTheOwningModule(
+                            CONFORMING_ASSIGNABLE_PORTS)
+                    .check(fixture))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        @DisplayName("F-ARCH-040 a cyclic non-authority dispatch graph terminates and passes")
+        void cyclicSafePolymorphicPathIsPermitted() {
+            JavaClasses fixture = importFixture(CONFORMING_POLYMORPHIC_CYCLE);
+
+            assertThatCode(() -> IngestionAuthorityRules
+                    .webControllersDoNotTransitivelyReachAcquisition(
+                            fixture, CONFORMING_POLYMORPHIC_CYCLE)
+                    .check(fixture))
                     .doesNotThrowAnyException();
         }
 
@@ -296,7 +444,8 @@ class IngestionAuthorityArchitectureTest {
                         .webControllersDoNotReachAcquisition(CONFORMING)
                         .check(conforming);
                 IngestionAuthorityRules
-                        .webControllersDoNotTransitivelyReachAcquisition(CONFORMING)
+                        .webControllersDoNotTransitivelyReachAcquisition(
+                                conforming, CONFORMING)
                         .check(conforming);
                 IngestionAuthorityRules
                         .callAuthorityGrantsAreConstructedOnlyByTrustedMapper(CONFORMING)
@@ -333,6 +482,14 @@ class IngestionAuthorityArchitectureTest {
 
         private JavaClasses importFixture(String fixturePackage) {
             return new ClassFileImporter().importPackages(fixturePackage);
+        }
+
+        private EvaluationResult evaluateTransitiveRule(String fixturePackage) {
+            JavaClasses fixture = importFixture(fixturePackage);
+            return IngestionAuthorityRules
+                    .webControllersDoNotTransitivelyReachAcquisition(
+                            fixture, fixturePackage)
+                    .evaluate(fixture);
         }
     }
 }
