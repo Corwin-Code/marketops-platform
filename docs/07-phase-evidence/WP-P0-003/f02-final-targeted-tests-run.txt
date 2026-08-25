@@ -1,37 +1,50 @@
-Command: ./mvnw -B -ntp -Dtest=IngestionAuthorityArchitectureTest -Dit.test=IngestionAuthorityAndEvidenceIT,AuthorizedAcquisitionFlowIT -Djacoco.skip=true verify
+Command: ./mvnw -B -ntp -Dtest=IngestionAuthorityArchitectureTest,CallAuthoritySingleUseTest,JdbcAuthorizedAcquisitionGatewayTest -Dit.test=FlywayMigrationIT,AuthorizedAcquisitionFlowIT,IngestionAuthorityAndEvidenceIT,CallAuthorityExclusivityIT -Djacoco.skip=true verify
 Working directory: backend/marketops-server
-Verified implementation: d93b931c7d2d278ed494ea632cada7f165144b0b
+Verified implementation: fc47e018d86902566a1219a6c4cbf84429c4d035
 Environment: Java 21.0.10; Docker Desktop; Testcontainers 2.0.5; postgres:18.4
-Finished: 2026-08-25T10:59:46+08:00
+Finished: 2026-08-25T13:25:33+08:00
 
-Flyway: 10 migrations validated and applied to an empty PostgreSQL 18.4 schema.
-Architecture: IngestionAuthorityArchitectureTest 13/13 passed.
-REAL_DATABASE: IngestionAuthorityAndEvidenceIT 29/29 passed.
-Zero-outbound flow: AuthorizedAcquisitionFlowIT 2/2 passed.
-Targeted command total: 44 tests, 0 failures, 0 errors, 0 skipped.
+UNIT/ARCHITECTURE: 27/27 passed.
+- IngestionAuthorityArchitectureTest: 20/20 passed.
+- CallAuthoritySingleUseTest: 6/6 passed.
+- JdbcAuthorizedAcquisitionGatewayTest: 1/1 passed.
 
-R1A observations:
-- TC-CTRL-434 at T-1ms selected the old Credential and valid_until=T.
-- TC-CTRL-434 at T selected the successor Credential.
-- TC-CTRL-434 sampled 201 instants over T+/-1s; no old selection had valid_until>T.
-- TC-CTRL-435 at T-1ms included the future scope-grant start as valid_until=T.
-- TC-CTRL-435 at T no longer had that future-start cap.
-- TC-CTRL-435 sampled 201 instants; every instant before T had valid_until<=T.
-- marketops_app EXECUTE on evaluate_call_control_facts returned false.
+REAL_DATABASE/INTEGRATION: 60/60 passed.
+- FlywayMigrationIT: 10/10 passed.
+- AuthorizedAcquisitionFlowIT: 1/1 passed.
+- IngestionAuthorityAndEvidenceIT: 34/34 passed.
+- CallAuthorityExclusivityIT: 15/15 passed.
 
-R1B observations:
-- TC-CTRL-436 attached-leaf A<->B plus C->A: MO013; LEASED; call sequence 0; evidence 0.
-- TC-CTRL-437 linear C->B->A: grant succeeded and evidence selected C.
-- TC-CTRL-438 linear component plus disconnected cycle: MO013 and zero residue.
-- TC-CTRL-430 multiple leaves: MO013.
-- TC-CTRL-432 STORE_SET for account Job: MO013.
+Targeted command total: 87 tests, 0 failures, 0 errors, 0 skipped.
 
-R1C observations:
-- sole executor, sole JDBC mapper and sole request factory production rules passed.
-- outside and inside-owner direct acquisition callers were rejected.
-- outside and inside-owner grant rebinders were rejected.
-- a second package-private AcquisitionRequest.from caller was rejected.
-- the conforming executor arrangement passed.
+R2A observations:
+- TC-CTRL-439 requested 1 day with a 5-minute lease and distant boundary; expiry equaled the server-policy deadline at grant + 30 seconds.
+- TC-CTRL-440 used a lease deadline 5 seconds away; expiry equaled the exact recorded lease deadline.
+- TC-CTRL-441 forged evidence beyond the recorded lease and was rejected by the database CHECK.
+- TC-CTRL-442 NULL, zero, negative and timestamp-overflowing intervals returned MO016; every refusal left the run LEASED, sequence unchanged and evidence 0.
+
+R2B observations:
+- TC-ARCH-026/027 allow only the exact JdbcAuthorizedAcquisitionGateway to call the mapper and executor.
+- TC-ARCH-028 rejects RestController dependencies on the gateway/executor/mapper/grant/request/port.
+- TC-ARCH-029 confines internal grant, mapper and executor collaborators.
+- F-ARCH-026 rejects an inside-owner shape-valid synthetic ResultSet mapping-and-execution caller.
+- F-ARCH-027 rejects controller-via-executor.
+- F-ARCH-028 rejects a second internal executor caller.
+- TC-PORT-005 sequential reuse reached the fake port exactly once.
+- TC-PORT-006 concurrent reuse reached the fake port exactly once.
+- TC-CTRL-500 used the real production gateway and database primitive.
+- TC-CTRL-501 rejected an expired mapped envelope before the port and verified JDBC closure.
+
+R2C observations:
+- TC-CTRL-443 rejected Account A -> Account B credential replacement by composite FK before grant, leaving sequence/evidence 0.
+- TC-CTRL-444 allowed a same-account historical predecessor and selected the current active leaf.
+
+Preserved observations:
+- R1A fixed database instant and both 201-point temporal samples passed.
+- R1B attached/disconnected cycles, linear success, multiple leaves and STORE_SET refusal passed.
+- R1C inside/outside direct-call, grant-constructor and request-factory fixtures passed.
+- F01 writer/grant serialization and F03 lease-expiry checkpoint races passed.
+- ACL denial and V0001-V0006 identity remain covered by the complete verification and repository checks.
 
 BUILD SUCCESS
-Total time: 14.266 s
+Total time: 30.624 s

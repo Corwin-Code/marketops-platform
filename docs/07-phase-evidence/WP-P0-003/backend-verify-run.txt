@@ -1,19 +1,22 @@
 Command: ./mvnw -B -ntp verify
 Working directory: backend/marketops-server
-Verified implementation: d93b931c7d2d278ed494ea632cada7f165144b0b
+Verified implementation: fc47e018d86902566a1219a6c4cbf84429c4d035
 Environment: Java 21.0.10; Maven Wrapper; Docker Desktop; Testcontainers 2.0.5; postgres:18.4
-Finished: 2026-08-25T11:01:36+08:00
+Finished: 2026-08-25T13:24:00+08:00
 
 Flyway: Successfully validated 10 migrations.
 Flyway: Successfully applied 10 migrations to an empty PostgreSQL 18.4 schema; version v0010.
-Unit/architecture: Tests run: 197, Failures: 0, Errors: 0, Skipped: 0.
-Integration: Tests run: 146, Failures: 0, Errors: 0, Skipped: 0.
-Total: Tests run: 343, Failures: 0, Errors: 0, Skipped: 0.
-IngestionAuthorityArchitectureTest: Tests run: 13, Failures: 0, Errors: 0, Skipped: 0.
+Flyway recovery: the interrupted-install path rolled back and then applied all 10 migrations.
+Unit/architecture: Tests run: 207, Failures: 0, Errors: 0, Skipped: 0.
+Integration: Tests run: 150, Failures: 0, Errors: 0, Skipped: 0.
+Total: Tests run: 357, Failures: 0, Errors: 0, Skipped: 0.
+IngestionAuthorityArchitectureTest: Tests run: 20, Failures: 0, Errors: 0, Skipped: 0.
+CallAuthoritySingleUseTest: Tests run: 6, Failures: 0, Errors: 0, Skipped: 0.
+JdbcAuthorizedAcquisitionGatewayTest: Tests run: 1, Failures: 0, Errors: 0, Skipped: 0.
 CallAuthorityExclusivityIT: Tests run: 15, Failures: 0, Errors: 0, Skipped: 0.
-IngestionAuthorityAndEvidenceIT: Tests run: 29, Failures: 0, Errors: 0, Skipped: 0.
-AuthorizedAcquisitionFlowIT: Tests run: 2, Failures: 0, Errors: 0, Skipped: 0.
+IngestionAuthorityAndEvidenceIT: Tests run: 34, Failures: 0, Errors: 0, Skipped: 0.
+AuthorizedAcquisitionFlowIT: Tests run: 1, Failures: 0, Errors: 0, Skipped: 0.
 JaCoCo: All coverage checks have been met.
 
 BUILD SUCCESS
-Total time: 49.268 s
+Total time: 57.253 s

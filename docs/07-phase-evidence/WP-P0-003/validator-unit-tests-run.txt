@@ -1,9 +1,9 @@
 Command: python3 -m unittest tests.test_validate_governance tests.test_validate_production_readiness
-Verified implementation: d93b931c7d2d278ed494ea632cada7f165144b0b
+Verified implementation: fc47e018d86902566a1219a6c4cbf84429c4d035
 
 ...................................................................................................................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 243 tests in 0.221s
+Ran 243 tests in 0.422s
 
 OK
 exit 0
