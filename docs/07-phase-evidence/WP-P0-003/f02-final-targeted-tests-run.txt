@@ -1,0 +1,37 @@
+Command: ./mvnw -B -ntp -Dtest=IngestionAuthorityArchitectureTest -Dit.test=IngestionAuthorityAndEvidenceIT,AuthorizedAcquisitionFlowIT -Djacoco.skip=true verify
+Working directory: backend/marketops-server
+Verified implementation: d93b931c7d2d278ed494ea632cada7f165144b0b
+Environment: Java 21.0.10; Docker Desktop; Testcontainers 2.0.5; postgres:18.4
+Finished: 2026-08-25T10:59:46+08:00
+
+Flyway: 10 migrations validated and applied to an empty PostgreSQL 18.4 schema.
+Architecture: IngestionAuthorityArchitectureTest 13/13 passed.
+REAL_DATABASE: IngestionAuthorityAndEvidenceIT 29/29 passed.
+Zero-outbound flow: AuthorizedAcquisitionFlowIT 2/2 passed.
+Targeted command total: 44 tests, 0 failures, 0 errors, 0 skipped.
+
+R1A observations:
+- TC-CTRL-434 at T-1ms selected the old Credential and valid_until=T.
+- TC-CTRL-434 at T selected the successor Credential.
+- TC-CTRL-434 sampled 201 instants over T+/-1s; no old selection had valid_until>T.
+- TC-CTRL-435 at T-1ms included the future scope-grant start as valid_until=T.
+- TC-CTRL-435 at T no longer had that future-start cap.
+- TC-CTRL-435 sampled 201 instants; every instant before T had valid_until<=T.
+- marketops_app EXECUTE on evaluate_call_control_facts returned false.
+
+R1B observations:
+- TC-CTRL-436 attached-leaf A<->B plus C->A: MO013; LEASED; call sequence 0; evidence 0.
+- TC-CTRL-437 linear C->B->A: grant succeeded and evidence selected C.
+- TC-CTRL-438 linear component plus disconnected cycle: MO013 and zero residue.
+- TC-CTRL-430 multiple leaves: MO013.
+- TC-CTRL-432 STORE_SET for account Job: MO013.
+
+R1C observations:
+- sole executor, sole JDBC mapper and sole request factory production rules passed.
+- outside and inside-owner direct acquisition callers were rejected.
+- outside and inside-owner grant rebinders were rejected.
+- a second package-private AcquisitionRequest.from caller was rejected.
+- the conforming executor arrangement passed.
+
+BUILD SUCCESS
+Total time: 14.266 s
