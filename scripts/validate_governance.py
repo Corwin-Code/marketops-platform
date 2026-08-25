@@ -36,6 +36,9 @@ REQUIRED_FILES = [
     "docs/03-work-items/WP-P0-001-repository-governance-ci-foundation.md",
     "docs/03-work-items/WP-P0-002-organization-store-warehouse-credential-metadata.md",
     "docs/03-work-items/WP-P0-003-durable-ingestion-control-plane-immutable-raw-evidence.md",
+    "docs/02-architecture/designs/WP-P0-003-executable-design-validation-addendum.md",
+    "docs/07-phase-evidence/WP-P0-003/executable-design-validation.md",
+    "docs/07-phase-evidence/WP-P0-003/post-merge-execution-verification.md",
     "docs/05-testing/TEST_STRATEGY.md",
     "docs/07-phase-evidence/WP-P0-002/README.md",
     "docs/07-phase-evidence/WP-P0-002/acceptance-criteria.md",
@@ -72,6 +75,8 @@ HISTORIC_DESIGN_VERDICT = "APPROVED_FOR_IMPLEMENTATION"
 POST_WP_ACTIVE_GATE = "CONTROLLER_PHASE_0_PLANNING"
 DESIGN_ACTIVE_GATE = "READY_FOR_DESIGN"
 IMPLEMENTATION_ACTIVE_GATE = "IMPLEMENTING"
+WP_P0_003_DESIGN_FINALIZATION_GATE = "CONTROLLER_WP_P0_003_DESIGN_FINALIZATION"
+WP_P0_003_DESIGN_FINALIZATION_STATUS = "DESIGN_FINALIZATION_REQUIRED"
 WP_P0_001_ID = "WP-P0-001"
 WP_P0_002_ID = "WP-P0-002"
 WP_P0_003_ID = "WP-P0-003"
@@ -85,6 +90,24 @@ WP_P0_002_RELATIVE_PATH = (
 WP_P0_003_RELATIVE_PATH = (
     "docs/03-work-items/"
     "WP-P0-003-durable-ingestion-control-plane-immutable-raw-evidence.md"
+)
+WP_P0_003_ADDENDUM_RELATIVE_PATH = (
+    "docs/02-architecture/designs/"
+    "WP-P0-003-executable-design-validation-addendum.md"
+)
+WP_P0_003_EVIDENCE_RELATIVE_PATH = (
+    "docs/07-phase-evidence/WP-P0-003/executable-design-validation.md"
+)
+WP_P0_003_POST_MERGE_EVIDENCE_RELATIVE_PATH = (
+    "docs/07-phase-evidence/WP-P0-003/post-merge-execution-verification.md"
+)
+WP_P0_003_AUTHORIZED_HEAD = "27b457bff4a0ed11308efa080993ee6793cae090"
+WP_P0_003_AUTHORIZED_TREE = "52704ed54b2499898609a0bdd4041a5c88892fd3"
+WP_P0_003_TESTED_MERGE = "cc9e3a91a189702808a3c2643b25ba0a7905237d"
+WP_P0_003_SQUASH_COMMIT = "ce054a0c115788c7e7a174daa978af116b100a83"
+WP_P0_003_SQUASH_PARENT = "9f7688204950c64b9f6bd8629daf90a115669864"
+WP_P0_003_POST_MERGE_CONTROLLER_SHA256 = (
+    "cdd964d951a6d994d1942f550a37f39e268337a55ba89348e235a818157e8875"
 )
 WP_P0_003B_DECISION_REQUEST_RELATIVE_PATH = (
     "docs/00-governance/DR-0002-split-controlled-file-import-from-wp-p0-003.md"
@@ -199,12 +222,18 @@ WP_P0_003_METADATA = {
     "ID": WP_P0_003_ID,
     "Title": "Durable Ingestion Control Plane & Immutable Raw Evidence",
     "Phase": "Sprint 0 / Phase 0",
-    "Status": DESIGN_ACTIVE_GATE,
+    "Status": WP_P0_003_DESIGN_FINALIZATION_STATUS,
     "Authorization": "DESIGN_ONLY",
     "Risk": "HIGH",
     "Target branch": "`main`",
-    "Design artifact": "NOT_YET_PRODUCED",
-    "Implementation authorization": "PROHIBITED",
+    "Design status": "FINALIZATION_REQUIRED / NOT_FULLY_APPROVED",
+    "Design evidence": (
+        "Frozen Design v1.11 candidate + "
+        f"`{WP_P0_003_ADDENDUM_RELATIVE_PATH}`"
+    ),
+    "Implementation-backed validation result": "VERIFIED",
+    "Bounded validation authorization": "CLOSED",
+    "Full implementation authorization": "PROHIBITED",
 }
 
 WP_P0_003_CLOSURE_HEADER = [
@@ -1246,8 +1275,13 @@ def validate_wp_p0_003_work_package_text(
         "Use forward-only V0007+ migrations; never edit V0001–V0006",
         "OQ-006 blocks concrete Object Storage/Secret Final Design approval",
         "Implementation authorization and bounded INT-010/HR-01 Raw acceptance",
-        "IMPLEMENTATION_AUTHORIZATION: PROHIBITED",
+        "IMPLEMENTATION_BACKED_DESIGN_VALIDATION: VERIFIED",
+        "BOUNDED_VALIDATION_AUTHORIZATION: CLOSED",
+        "FULL_IMPLEMENTATION_AUTHORIZATION: PROHIBITED",
         "PRODUCTION_WRITE: DISABLED",
+        "WP3-EDV-BC-R4B-01",
+        "MANDATORY_BEFORE_FIRST_REAL_ADAPTER_GATE",
+        "com.mimococo.marketops.marketplaceintegration",
         WP_P0_003B_DECISION_REQUEST_RELATIVE_PATH,
     ):
         if required not in text:
@@ -1343,8 +1377,28 @@ def validate_backlog_state_text(
             else None
         )
         implementing = stage_authorization == "APPROVED_FOR_IMPLEMENTATION"
+        finalizing_wp_p0_003 = (
+            active == WP_P0_003_ID
+            and stage_authorization == "DESIGN_ONLY"
+            and current_state_metadata_value(current_state_text, "active_gate")
+            == WP_P0_003_DESIGN_FINALIZATION_GATE
+        )
         expected_gate = (
-            IMPLEMENTATION_ACTIVE_GATE if implementing else DESIGN_ACTIVE_GATE
+            IMPLEMENTATION_ACTIVE_GATE
+            if implementing
+            else (
+                WP_P0_003_DESIGN_FINALIZATION_GATE
+                if finalizing_wp_p0_003
+                else DESIGN_ACTIVE_GATE
+            )
+        )
+        expected_backlog_status = (
+            DESIGN_ACTIVE_GATE if finalizing_wp_p0_003 else expected_gate
+        )
+        expected_work_package_status = (
+            WP_P0_003_DESIGN_FINALIZATION_STATUS
+            if finalizing_wp_p0_003
+            else expected_gate
         )
         expected_authorization = (
             "APPROVED_FOR_IMPLEMENTATION" if implementing else "DESIGN_ONLY"
@@ -1359,10 +1413,10 @@ def validate_backlog_state_text(
             errors.append(
                 f"Phase 0 backlog must contain exactly one active Work Package row: {active}"
             )
-        elif active_rows[0]["Status"] != expected_gate:
+        elif active_rows[0]["Status"] != expected_backlog_status:
             errors.append(
                 f"backlog active Work Package {active} Status must be exactly: "
-                + expected_gate
+                + expected_backlog_status
             )
         if implementing:
             if ready_rows:
@@ -1377,9 +1431,13 @@ def validate_backlog_state_text(
         if active_work_package_text is None:
             errors.append("active Work Package canonical text is required for backlog validation")
         else:
-            if work_package_metadata_value(active_work_package_text, "Status") != expected_gate:
+            if (
+                work_package_metadata_value(active_work_package_text, "Status")
+                != expected_work_package_status
+            ):
                 errors.append(
-                    f"active Work Package Status must be exactly: {expected_gate}"
+                    "active Work Package Status must be exactly: "
+                    + expected_work_package_status
                 )
             if work_package_execution_authorization(active_work_package_text) != expected_authorization:
                 errors.append(
@@ -1414,12 +1472,17 @@ def validate_wp_p0_003_activation_text(
     open_questions_text: str,
     decision_request_text: str,
 ) -> None:
-    """Bind the one coherent WP-P0-003 READY_FOR_DESIGN transition."""
+    """Bind the coherent WP-P0-003 post-merge Design-finalization transition."""
     expected_current = {
         "active_work_package": WP_P0_003_ID,
-        "active_gate": DESIGN_ACTIVE_GATE,
+        "active_gate": WP_P0_003_DESIGN_FINALIZATION_GATE,
         "authorization": "DESIGN_ONLY",
         "production_write_enabled": "false",
+        "implementation_backed_design_validation": "VERIFIED",
+        "bounded_validation_authorization": "CLOSED",
+        "pr16_merge_execution": "VERIFIED",
+        "full_design_approved": "false",
+        "full_implementation_authorized": "false",
     }
     for field, expected in expected_current.items():
         actual = current_state_metadata_value(current_state_text, field)
@@ -1501,14 +1564,17 @@ def validate_wp_p0_003_activation_text(
 
     active_objective = h2_section_body(current_state_text, "## Active objective") or ""
     next_action = h2_section_body(current_state_text, "## Next authorized action") or ""
-    for token in ("Designer", WP_P0_003_ID, "Design"):
+    for token in ("Controller", WP_P0_003_ID, "Design"):
         if token not in active_objective:
-            errors.append(f"CURRENT_STATE Active objective missing WP-P0-003 handoff: {token}")
+            errors.append(
+                "CURRENT_STATE Active objective missing WP-P0-003 "
+                f"Design-finalization handoff: {token}"
+            )
     for token in (
-        "Designer source cross-check",
-        WP_P0_003_ID,
-        "Design only",
-        "Implementation remains prohibited",
+        WP_P0_003_DESIGN_FINALIZATION_GATE,
+        "DESIGN_ONLY",
+        "Full Design approval",
+        "implementation authorization remain false",
         "OQ-006",
     ):
         if token not in next_action:
@@ -1536,6 +1602,155 @@ def validate_wp_p0_003_activation_text(
             errors.append(f"WP-P0-003 Open Question disposition missing: {token}")
 
     validate_dr_0002_text(errors, decision_request_text)
+
+
+def validate_leading_yaml_contract(
+    errors: list[str],
+    text: str,
+    expected: dict[str, str],
+    label: str,
+) -> None:
+    """Require one exact leading YAML value for each protected evidence field."""
+    metadata = leading_yaml_body(text)
+    if metadata is None:
+        errors.append(f"{label} leading YAML is missing or malformed")
+        return
+    for field, expected_value in expected.items():
+        actual = unique_yaml_value(metadata, field)
+        if actual != expected_value:
+            errors.append(
+                f"{label} {field} must be exactly: {expected_value}"
+            )
+
+
+def validate_wp_p0_003_post_merge_closure_text(
+    errors: list[str],
+    current_state_text: str,
+    work_package_text: str,
+    addendum_text: str,
+    evidence_text: str,
+    post_merge_evidence_text: str,
+) -> None:
+    """Protect merge truth without promoting bounded validation to full approval."""
+    expected_current = {
+        "active_work_package": WP_P0_003_ID,
+        "active_gate": WP_P0_003_DESIGN_FINALIZATION_GATE,
+        "authorization": "DESIGN_ONLY",
+        "production_write_enabled": "false",
+        "implementation_backed_design_validation": "VERIFIED",
+        "bounded_validation_authorization": "CLOSED",
+        "pr16_merge_execution": "VERIFIED",
+        "full_design_approved": "false",
+        "full_implementation_authorized": "false",
+    }
+    for field, expected in expected_current.items():
+        actual = current_state_metadata_value(current_state_text, field)
+        if actual != expected:
+            errors.append(
+                f"WP-P0-003 post-merge CURRENT_STATE {field} must be exactly: "
+                + expected
+            )
+
+    validate_wp_p0_003_work_package_text(errors, work_package_text)
+    if work_package_metadata_value(work_package_text, "Status") == COMPLETED_WP_STATUS:
+        errors.append("PR #16 merge must not mark WP-P0-003 COMPLETED")
+
+    shared_evidence = {
+        "final_package_identity": "PR_16_FINAL_HEAD_27B457B_AND_MERGED_MAIN_CE054A0",
+        "controller_verdict": "PASS_WITH_FOLLOW_UPS",
+        "design_approved": "false",
+        "targeted_rework_status": "CONTROLLER_ACCEPTED_AND_MERGED",
+        "merge_execution": "VERIFIED",
+        "actual_merge_commit": WP_P0_003_SQUASH_COMMIT,
+        "actual_main_tree": WP_P0_003_AUTHORIZED_TREE,
+        "bounded_validation_authorization": "CLOSED",
+        "full_implementation_authorized": "false",
+        "bounded_scope_quality": (
+            "PRODUCTION_GRADE_WITH_NON_BLOCKING_PRE_ADAPTER_HARDENING"
+        ),
+        "project_production_complete": "false",
+        "marketplace_outbound": "NONE",
+        "secret_retrieval": "NONE",
+        "production_write": "DISABLED",
+    }
+    validate_leading_yaml_contract(
+        errors,
+        addendum_text,
+        {
+            **shared_evidence,
+            "next_gate": (
+                "CONTROLLER_WP_P0_003_DESIGN_FINALIZATION_AND_"
+                "NEXT_IMPLEMENTATION_SCOPE_REVIEW"
+            ),
+        },
+        "WP-P0-003 executable validation addendum",
+    )
+    validate_leading_yaml_contract(
+        errors,
+        evidence_text,
+        shared_evidence,
+        "WP-P0-003 executable validation evidence",
+    )
+    validate_leading_yaml_contract(
+        errors,
+        post_merge_evidence_text,
+        {
+            "document_type": "post_merge_execution_verification_evidence",
+            "work_package": WP_P0_003_ID,
+            "repository": "Corwin-Code/marketops-platform",
+            "pull_request": "16",
+            "pr_state": "MERGED_CLOSED_NOT_DRAFT",
+            "authorized_head": WP_P0_003_AUTHORIZED_HEAD,
+            "authorized_head_tree": WP_P0_003_AUTHORIZED_TREE,
+            "pre_merge_tested_merge": WP_P0_003_TESTED_MERGE,
+            "actual_squash_commit": WP_P0_003_SQUASH_COMMIT,
+            "actual_main_tree": WP_P0_003_AUTHORIZED_TREE,
+            "actual_squash_parent": WP_P0_003_SQUASH_PARENT,
+            "merge_time": "2026-08-25T08:52:52Z",
+            "commit_signature": "VERIFIED_VALID",
+            "controller_verdict": "PASS_MERGE_EXECUTION_VERIFIED",
+            "bounded_executable_design_validation": "VERIFIED",
+            "bounded_validation_authorization": "CLOSED",
+            "full_design_approved": "false",
+            "full_implementation_authorized": "false",
+            "production_write": "DISABLED",
+        },
+        "WP-P0-003 post-merge execution evidence",
+    )
+
+    required_post_merge_tokens = (
+        "PASS — MERGE_EXECUTION_VERIFIED",
+        WP_P0_003_POST_MERGE_CONTROLLER_SHA256,
+        "executed jobs: 10 / 10 SUCCESS",
+        "conditional skipped jobs: 1",
+        "dependency-review` job was skipped",
+        "Reviews / review threads / comments | `0 / 0 / 0`",
+        "delete_branch_on_merge=true",
+        "a3b8ca08b796c1d211f17a042a8ec546cd0009d4457e2d68dcd930dfc36a13d9",
+        "WP3-EDV-BC-R4B-01",
+        "MANDATORY_BEFORE_FIRST_REAL_ADAPTER_GATE",
+    )
+    for token in required_post_merge_tokens:
+        if token not in post_merge_evidence_text:
+            errors.append(
+                "WP-P0-003 post-merge execution evidence missing: " + token
+            )
+
+    stale_markers = {
+        "IMPLEMENTED_AWAITING_CONTROLLER": "awaiting-Controller status",
+        "LIVE_PR_16_METADATA_AND_BODY": "mutable live-PR package identity",
+        "PR #16 must remain open, draft and unmerged": "pre-merge PR state",
+    }
+    for marker, description in stale_markers.items():
+        for label, text in (
+            ("addendum", addendum_text),
+            ("evidence", evidence_text),
+        ):
+            if marker in text:
+                errors.append(
+                    f"WP-P0-003 {label} retains stale current {description}: "
+                    + marker
+                )
 
 
 def project_charter_status(text: str) -> str | None:
@@ -1725,13 +1940,28 @@ def validate_authorization_state_text(
         if wp_status == COMPLETED_WP_STATUS:
             errors.append("a COMPLETED Work Package cannot remain active")
         if current_authorization == "DESIGN_ONLY":
-            if current_state_metadata_value(current_state_text, "active_gate") != DESIGN_ACTIVE_GATE:
+            expected_design_gate = (
+                WP_P0_003_DESIGN_FINALIZATION_GATE
+                if work_package_id == WP_P0_003_ID
+                else DESIGN_ACTIVE_GATE
+            )
+            expected_design_status = (
+                WP_P0_003_DESIGN_FINALIZATION_STATUS
+                if work_package_id == WP_P0_003_ID
+                else DESIGN_ACTIVE_GATE
+            )
+            if (
+                current_state_metadata_value(current_state_text, "active_gate")
+                != expected_design_gate
+            ):
                 errors.append(
-                    f"DESIGN_ONLY requires CURRENT_STATE active_gate: {DESIGN_ACTIVE_GATE}"
+                    "DESIGN_ONLY requires CURRENT_STATE active_gate: "
+                    + expected_design_gate
                 )
-            if wp_status != DESIGN_ACTIVE_GATE:
+            if wp_status != expected_design_status:
                 errors.append(
-                    f"DESIGN_ONLY active Work Package Status must be: {DESIGN_ACTIVE_GATE}"
+                    "DESIGN_ONLY active Work Package Status must be: "
+                    + expected_design_status
                 )
         if current_authorization == "APPROVED_FOR_IMPLEMENTATION":
             active_gate = current_state_metadata_value(current_state_text, "active_gate")
@@ -2489,7 +2719,7 @@ def validate_wp_p0_002_completion_text(
     elif active == WP_P0_003_ID:
         expected_current = {
             "active_work_package": WP_P0_003_ID,
-            "active_gate": DESIGN_ACTIVE_GATE,
+            "active_gate": WP_P0_003_DESIGN_FINALIZATION_GATE,
             "authorization": "DESIGN_ONLY",
         }
     else:
@@ -2530,7 +2760,12 @@ def validate_wp_p0_002_completion_text(
         next_action = h2_section_body(
             current_state_text, "## Next authorized action"
         ) or ""
-        for token in (WP_P0_003_ID, "Design only", "Implementation remains prohibited", "OQ-006"):
+        for token in (
+            WP_P0_003_ID,
+            "DESIGN_FINALIZATION",
+            "Full Design approval",
+            "OQ-006",
+        ):
             if token not in next_action:
                 errors.append(
                     "WP-P0-002 completed provenance must preserve the next Design Gate: "
@@ -2885,24 +3120,32 @@ def validate_completion_state_text(
                     "CURRENT_STATE Next authorized action must prohibit implementation"
                 )
     elif active_work_package == WP_P0_003_ID:
-        if active_gate != DESIGN_ACTIVE_GATE:
+        if active_gate != WP_P0_003_DESIGN_FINALIZATION_GATE:
             errors.append(
-                f"WP-P0-003 Design state requires CURRENT_STATE active_gate: "
-                f"{DESIGN_ACTIVE_GATE}"
+                "WP-P0-003 Design-finalization state requires CURRENT_STATE "
+                "active_gate: " + WP_P0_003_DESIGN_FINALIZATION_GATE
             )
         if authorization != "DESIGN_ONLY":
-            errors.append("WP-P0-003 Design state requires authorization: DESIGN_ONLY")
+            errors.append(
+                "WP-P0-003 Design-finalization state requires authorization: "
+                "DESIGN_ONLY"
+            )
         for section_name, section in (
             ("Active objective", active_objective),
             ("Next authorized action", next_action),
         ):
-            for token in ("Designer", WP_P0_003_ID, "Design"):
+            for token in ("Controller", "WP-P0-003", "Design"):
                 if token not in section:
                     errors.append(
-                        f"CURRENT_STATE {section_name} missing WP-P0-003 Design handoff: "
+                        f"CURRENT_STATE {section_name} missing WP-P0-003 "
+                        "Design-finalization handoff: "
                         + token
                     )
-        for token in ("Implementation remains prohibited", "OQ-006"):
+        for token in (
+            "CONTROLLER_WP_P0_003_DESIGN_FINALIZATION",
+            "Full Design approval",
+            "OQ-006",
+        ):
             if token not in next_action:
                 errors.append(
                     "CURRENT_STATE WP-P0-003 Next authorized action missing: " + token
@@ -3022,6 +3265,9 @@ def validate_wp_p0_003_activation(errors: list[str]) -> None:
         "backlog": ROOT / "docs/03-work-items/BACKLOG-PHASE-0.md",
         "open_questions": ROOT / "docs/00-governance/OPEN_QUESTIONS.md",
         "decision_request": ROOT / WP_P0_003B_DECISION_REQUEST_RELATIVE_PATH,
+        "addendum": ROOT / WP_P0_003_ADDENDUM_RELATIVE_PATH,
+        "evidence": ROOT / WP_P0_003_EVIDENCE_RELATIVE_PATH,
+        "post_merge_evidence": ROOT / WP_P0_003_POST_MERGE_EVIDENCE_RELATIVE_PATH,
     }
     if not all(path.exists() for path in paths.values()):
         return
@@ -3032,6 +3278,14 @@ def validate_wp_p0_003_activation(errors: list[str]) -> None:
         paths["backlog"].read_text(encoding="utf-8"),
         paths["open_questions"].read_text(encoding="utf-8"),
         paths["decision_request"].read_text(encoding="utf-8"),
+    )
+    validate_wp_p0_003_post_merge_closure_text(
+        errors,
+        paths["current"].read_text(encoding="utf-8"),
+        paths["work_package"].read_text(encoding="utf-8"),
+        paths["addendum"].read_text(encoding="utf-8"),
+        paths["evidence"].read_text(encoding="utf-8"),
+        paths["post_merge_evidence"].read_text(encoding="utf-8"),
     )
     wp3b_records = {
         path.relative_to(ROOT).as_posix()
