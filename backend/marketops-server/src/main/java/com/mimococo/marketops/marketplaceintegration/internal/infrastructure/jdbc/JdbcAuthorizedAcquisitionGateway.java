@@ -16,8 +16,10 @@ import javax.sql.DataSource;
  * The sole production chain from the database grant primitive to one acquisition invocation.
  *
  * <p>The gateway owns the exact stored-function call, requires exactly one structured row,
- * closes every JDBC resource, keeps the mapped grant local and immediately consumes it through
- * the sole executor. It exposes no grant, mapper or executor and adds no network client.
+ * closes every JDBC resource, keeps the mapped grant local and consumes it through the sole
+ * executor only after the auto-commit operation has completed. It rejects connections that can
+ * join a caller-owned transaction, exposes no grant, mapper or executor and adds no network
+ * client.
  */
 public final class JdbcAuthorizedAcquisitionGateway {
 
@@ -58,23 +60,28 @@ public final class JdbcAuthorizedAcquisitionGateway {
         Objects.requireNonNull(correlationId, "correlationId");
 
         CallAuthorityGrant grant;
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(GRANT_SQL)) {
-            statement.setObject(1, runId);
-            statement.setLong(2, expectedFence);
-            statement.setString(3, expectedLeaseOwner);
-            statement.setObject(4, scopeGrantId);
-            statement.setString(5, requestedAuthority.toString());
-            statement.setString(6, correlationId);
-            try (ResultSet rows = statement.executeQuery()) {
-                if (!rows.next()) {
-                    throw new IllegalStateException(
-                            "the call authority primitive returned no decision");
-                }
-                grant = mapper.map(rows);
-                if (rows.next()) {
-                    throw new IllegalStateException(
-                            "the call authority primitive returned multiple decisions");
+        try (Connection connection = dataSource.getConnection()) {
+            if (!connection.getAutoCommit()) {
+                throw new IllegalStateException(
+                        "call-authority gateway requires an independent auto-commit connection");
+            }
+            try (PreparedStatement statement = connection.prepareStatement(GRANT_SQL)) {
+                statement.setObject(1, runId);
+                statement.setLong(2, expectedFence);
+                statement.setString(3, expectedLeaseOwner);
+                statement.setObject(4, scopeGrantId);
+                statement.setString(5, requestedAuthority.toString());
+                statement.setString(6, correlationId);
+                try (ResultSet rows = statement.executeQuery()) {
+                    if (!rows.next()) {
+                        throw new IllegalStateException(
+                                "the call authority primitive returned no decision");
+                    }
+                    grant = mapper.map(rows);
+                    if (rows.next()) {
+                        throw new IllegalStateException(
+                                "the call authority primitive returned multiple decisions");
+                    }
                 }
             }
         } catch (SQLException failure) {

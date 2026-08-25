@@ -19,6 +19,7 @@ from scripts.validate_production_readiness import (
     ACTION_REFERENCE,
     ARCHITECTURE_RULE_TOKENS,
     BUILT_PREVIEW_COMMAND,
+    BASE_HIKARI_AUTOCOMMIT_TOKENS,
     COMPLETED_WORK_PACKAGE_TOKENS,
     COMPLETION_STATE_TOKENS,
     ECS_CORRELATION_CUSTOMIZER_TOKENS,
@@ -206,6 +207,15 @@ class RepositoryContractPatternTests(unittest.TestCase):
             [],
             base_environment_identity_violations("marketops:\n  product: MarketOps Russia\n"),
         )
+
+    def test_base_hikari_auto_commit_must_remain_true(self) -> None:
+        source = "\n".join(BASE_HIKARI_AUTOCOMMIT_TOKENS)
+        mutated = source.replace("auto-commit: true", "auto-commit: false")
+        violations = contract_token_violations(
+            mutated, required=BASE_HIKARI_AUTOCOMMIT_TOKENS
+        )
+
+        self.assertTrue(any("auto-commit: true" in violation for violation in violations))
 
     def test_open_authorization_with_no_active_work_package_is_rejected(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)

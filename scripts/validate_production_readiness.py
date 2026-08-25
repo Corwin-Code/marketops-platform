@@ -262,6 +262,11 @@ PATH_RESTRICTION = re.compile(
     re.I,
 )
 PENDING_EVIDENCE = re.compile(r"PENDING_(?:LOCAL|CODEX_GITHUB)_EXECUTION")
+BASE_HIKARI_AUTOCOMMIT_TOKENS = (
+    "  datasource:",
+    "    hikari:",
+    "      auto-commit: true",
+)
 UNSAFE_THROWABLE_LOGGING = re.compile(
     r"\b(?:log|logger)\.(?:trace|debug|info|warn|error)\s*\([^;]*,\s*"
     r"(?:exception|throwable|error|failure)\s*\)|\.setCause\s*\(",
@@ -810,16 +815,18 @@ def check_repository_contracts(report: Report) -> None:
             'source.registerCorsConfiguration("/api/v1/meta/**", policy)',
         ),
     )
-    base_configuration = read_text(ROOT / BACKEND / "src/main/resources/application.yaml") or ""
+    base_configuration_path = ROOT / BACKEND / "src/main/resources/application.yaml"
+    require_tokens(report, rule, base_configuration_path, BASE_HIKARI_AUTOCOMMIT_TOKENS)
+    base_configuration = read_text(base_configuration_path) or ""
     for line in base_environment_identity_violations(base_configuration):
         report.add(
             rule,
-            ROOT / BACKEND / "src/main/resources/application.yaml",
+            base_configuration_path,
             line,
             "base configuration must not provide marketops.environment",
         )
     if "allowed-origins" in base_configuration:
-        report.add(rule, ROOT / BACKEND / "src/main/resources/application.yaml", 0, "base profile must enable no CORS origin")
+        report.add(rule, base_configuration_path, 0, "base profile must enable no CORS origin")
     finite_origins = (
         "allowed-origins: http://127.0.0.1:5173,http://127.0.0.1:4173",
     )

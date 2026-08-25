@@ -7,6 +7,10 @@ import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /** Exact production allowlists for the complete acquisition-authority chain. */
@@ -26,6 +30,7 @@ final class IngestionAuthorityRules {
             JDBC_PACKAGE + "AuthorizedAcquisitionExecutor";
     private static final String GRANT_MAPPER = JDBC_PACKAGE + "CallAuthorityGrantMapper";
     private static final String CALL_AUTHORITY_GRANT = JDBC_PACKAGE + "CallAuthorityGrant";
+    private static final String PRODUCTION_ROOT = "com.mimococo.marketops";
     private static final String OWNING_MODULE_SEGMENT = ".marketplaceintegration.";
     private static final Set<String> CONTROLLER_FORBIDDEN_SURFACES = Set.of(
             ACQUISITION_PORT,
@@ -115,6 +120,35 @@ final class IngestionAuthorityRules {
                 .because("acquisition starts only from a leased worker through the DB gateway");
     }
 
+    /** No RestController may transitively reach any link in the authority chain. */
+    static ArchRule webControllersDoNotTransitivelyReachAcquisition(String basePackage) {
+        return classes()
+                .that().resideInAPackage(basePackage + "..")
+                .and().areAnnotatedWith("org.springframework.web.bind.annotation.RestController")
+                .should(new ArchCondition<>("not transitively reach the acquisition-authority chain") {
+                    @Override
+                    public void check(JavaClass item, ConditionEvents events) {
+                        ArrayDeque<DependencyPath> pending = new ArrayDeque<>();
+                        Set<String> visited = new HashSet<>();
+                        visited.add(item.getName());
+                        pending.add(new DependencyPath(item, List.of(item.getName())));
+
+                        while (!pending.isEmpty()) {
+                            DependencyPath current = pending.removeFirst();
+                            current.type().getDirectDependenciesFromSelf().stream()
+                                    .map(dependency -> dependency.getTargetClass())
+                                    .filter(IngestionAuthorityRules::isMarketOpsClass)
+                                    .forEach(target -> inspectControllerPath(
+                                            item, current, target, visited, pending, events));
+                        }
+                    }
+                })
+                .allowEmptyShould(true)
+                .as("no web controller transitively reaches the gateway, executor, mapper, grant,"
+                        + " request, acquisition port or object-storage port")
+                .because("request threads cannot enter a leased worker's authority graph");
+    }
+
     /** Only the mapper constructs the internal grant value. */
     static ArchRule callAuthorityGrantsAreConstructedOnlyByTrustedMapper(String basePackage) {
         return classes()
@@ -200,6 +234,30 @@ final class IngestionAuthorityRules {
                 || type.isAssignableTo(OBJECT_STORAGE_PORT);
     }
 
+    private static void inspectControllerPath(
+            JavaClass controller,
+            DependencyPath current,
+            JavaClass target,
+            Set<String> visited,
+            ArrayDeque<DependencyPath> pending,
+            ConditionEvents events) {
+        List<String> path = new ArrayList<>(current.classes());
+        path.add(target.getName());
+        if (isControllerForbidden(target)) {
+            events.add(SimpleConditionEvent.violated(
+                    controller, "transitive acquisition-authority path: " + String.join(" -> ", path)));
+            return;
+        }
+        if (visited.add(target.getName())) {
+            pending.addLast(new DependencyPath(target, List.copyOf(path)));
+        }
+    }
+
+    private static boolean isMarketOpsClass(JavaClass type) {
+        return type.getPackageName().equals(PRODUCTION_ROOT)
+                || type.getPackageName().startsWith(PRODUCTION_ROOT + ".");
+    }
+
     private static boolean isAcquisitionPort(JavaClass type) {
         return type.getName().equals(ACQUISITION_PORT)
                 || type.getName().equals(OBJECT_STORAGE_PORT);
@@ -207,5 +265,8 @@ final class IngestionAuthorityRules {
 
     private static boolean isInOwningModule(String packageName) {
         return (packageName + ".").contains(OWNING_MODULE_SEGMENT);
+    }
+
+    private record DependencyPath(JavaClass type, List<String> classes) {
     }
 }

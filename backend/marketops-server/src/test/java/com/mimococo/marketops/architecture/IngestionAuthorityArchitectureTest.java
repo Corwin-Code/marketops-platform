@@ -24,7 +24,8 @@ import org.junit.jupiter.api.Test;
  *
  * <p>The rules keep the outbound doorway singular: the owning module implements
  * the ports, the sole executor invokes acquisition and creates its request, the
- * trusted JDBC mapper constructs grants, and no web controller reaches a port.
+ * trusted JDBC mapper constructs grants, and no web controller directly or transitively reaches
+ * an authority surface.
  * Every production check is paired with a deliberately invalid fixture, because
  * a boundary rule that has never rejected anything proves only that it compiled.
  */
@@ -34,6 +35,8 @@ class IngestionAuthorityArchitectureTest {
     private static final String FIXTURES = "com.mimococo.marketops.testfixture";
     private static final String VIOLATION = FIXTURES + ".violation";
     private static final String CONFORMING = FIXTURES + ".conforming.ingestionauthority";
+    private static final String CONFORMING_QUERY =
+            FIXTURES + ".conforming.ingestionauthorityquery";
 
     private static JavaClasses production;
 
@@ -110,6 +113,14 @@ class IngestionAuthorityArchitectureTest {
     void internalAuthorityTypesDoNotEscape() {
         IngestionAuthorityRules
                 .internalAuthorityTypesDoNotEscapeTheirCollaborators(PRODUCTION_PACKAGE)
+                .check(production);
+    }
+
+    @Test
+    @DisplayName("TC-ARCH-030 no RestController transitively reaches acquisition authority")
+    void controllersAreTransitivelyExcludedFromTheAuthorityChain() {
+        IngestionAuthorityRules
+                .webControllersDoNotTransitivelyReachAcquisition(PRODUCTION_PACKAGE)
                 .check(production);
     }
 
@@ -242,6 +253,35 @@ class IngestionAuthorityArchitectureTest {
         }
 
         @Test
+        @DisplayName("F-ARCH-030 a controller-to-service-to-gateway path is rejected")
+        void transitiveControllerPathIsRejectedWithTheCompletePath() {
+            String fixturePackage = VIOLATION + ".transitiveacquisitionweb";
+            EvaluationResult result = IngestionAuthorityRules
+                    .webControllersDoNotTransitivelyReachAcquisition(fixturePackage)
+                    .evaluate(importFixture(fixturePackage));
+
+            assertThat(result.hasViolation()).isTrue();
+            assertThat(result.getFailureReport().getDetails())
+                    .anySatisfy(detail -> assertThat(detail)
+                            .contains(
+                                    "TransitiveAcquisitionController",
+                                    "AcquisitionBridgeService",
+                                    "JdbcAuthorizedAcquisitionGateway",
+                                    " -> "));
+        }
+
+        @Test
+        @DisplayName("F-ARCH-031 a controller-to-query-service path is permitted")
+        void ordinaryQueryControllerPathIsPermitted() {
+            JavaClasses queryPath = importFixture(CONFORMING_QUERY);
+
+            assertThatCode(() -> IngestionAuthorityRules
+                    .webControllersDoNotTransitivelyReachAcquisition(CONFORMING_QUERY)
+                    .check(queryPath))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
         @DisplayName("F-ARCH-025 the conforming arrangement passes all authority rules")
         void conformingArrangementPasses() {
             JavaClasses conforming = importFixture(CONFORMING);
@@ -254,6 +294,9 @@ class IngestionAuthorityArchitectureTest {
                         .check(conforming);
                 IngestionAuthorityRules
                         .webControllersDoNotReachAcquisition(CONFORMING)
+                        .check(conforming);
+                IngestionAuthorityRules
+                        .webControllersDoNotTransitivelyReachAcquisition(CONFORMING)
                         .check(conforming);
                 IngestionAuthorityRules
                         .callAuthorityGrantsAreConstructedOnlyByTrustedMapper(CONFORMING)
