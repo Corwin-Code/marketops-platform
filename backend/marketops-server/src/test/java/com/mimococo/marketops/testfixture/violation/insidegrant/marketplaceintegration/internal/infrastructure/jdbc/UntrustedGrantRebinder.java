@@ -1,6 +1,6 @@
 package com.mimococo.marketops.testfixture.violation.insidegrant.marketplaceintegration.internal.infrastructure.jdbc;
 
-import com.mimococo.marketops.marketplaceintegration.port.CallAuthorityGrant;
+import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.CallAuthorityGrant;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -14,7 +14,8 @@ public final class UntrustedGrantRebinder {
         return new CallAuthorityGrant(
                 UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 1L,
                 "inside-worker", "OZON", endpointId, credentialId, UUID.randomUUID(), 1,
-                grantedAt, grantedAt.plusSeconds(30),
+                grantedAt, grantedAt.plusSeconds(30), grantedAt.plusSeconds(60),
+                grantedAt.plusSeconds(30),
                 List.of("JOB", "MARKETPLACE_ACCOUNT", "ORGANIZATION", "SERVICE_ACCOUNT"),
                 List.of(1L, 1L, 1L, 1L), "b".repeat(64));
     }

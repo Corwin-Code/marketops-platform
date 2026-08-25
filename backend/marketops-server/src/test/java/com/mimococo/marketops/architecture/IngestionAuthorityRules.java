@@ -1,38 +1,42 @@
 package com.mimococo.marketops.architecture;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
+import java.util.Set;
 
-/**
- * The authority-boundary rules for the ingestion acquisition ports.
- *
- * <p>Acquisition is the one doorway through which traffic could ever leave the
- * system, so its ports are owned by exactly one module and reachable from no
- * public route. Each factory accepts a base package so the identical rule
- * instance can check production code, a deliberately invalid fixture and a
- * conforming fixture, in the same way the approved boundary rules are checked.
- */
+/** Exact production allowlists for the complete acquisition-authority chain. */
 final class IngestionAuthorityRules {
 
     private static final String ACQUISITION_PORT =
             "com.mimococo.marketops.marketplaceintegration.port.AcquisitionPort";
     private static final String OBJECT_STORAGE_PORT =
             "com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort";
-    private static final String CALL_AUTHORITY_GRANT =
-            "com.mimococo.marketops.marketplaceintegration.port.CallAuthorityGrant";
     private static final String ACQUISITION_REQUEST =
             "com.mimococo.marketops.marketplaceintegration.port.AcquisitionRequest";
+    private static final String JDBC_PACKAGE =
+            "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.";
+    private static final String AUTHORIZED_GATEWAY =
+            JDBC_PACKAGE + "JdbcAuthorizedAcquisitionGateway";
     private static final String AUTHORIZED_EXECUTOR =
-            "com.mimococo.marketops.marketplaceintegration.port.AuthorizedAcquisitionExecutor";
-    private static final String GRANT_MAPPER = "com.mimococo.marketops.marketplaceintegration"
-            + ".internal.infrastructure.jdbc.CallAuthorityGrantMapper";
+            JDBC_PACKAGE + "AuthorizedAcquisitionExecutor";
+    private static final String GRANT_MAPPER = JDBC_PACKAGE + "CallAuthorityGrantMapper";
+    private static final String CALL_AUTHORITY_GRANT = JDBC_PACKAGE + "CallAuthorityGrant";
     private static final String OWNING_MODULE_SEGMENT = ".marketplaceintegration.";
+    private static final Set<String> CONTROLLER_FORBIDDEN_SURFACES = Set.of(
+            ACQUISITION_PORT,
+            OBJECT_STORAGE_PORT,
+            ACQUISITION_REQUEST,
+            AUTHORIZED_GATEWAY,
+            AUTHORIZED_EXECUTOR,
+            GRANT_MAPPER,
+            CALL_AUTHORITY_GRANT);
+    private static final Set<String> INTERNAL_AUTHORITY_COLLABORATORS = Set.of(
+            AUTHORIZED_GATEWAY, AUTHORIZED_EXECUTOR, GRANT_MAPPER, CALL_AUTHORITY_GRANT);
 
     private IngestionAuthorityRules() {
     }
@@ -59,51 +63,59 @@ final class IngestionAuthorityRules {
                 .because("a second implementing module would be a second acquisition authority");
     }
 
-    /** Only the designated executor invokes the outbound acquisition method. */
+    /** Only the internal executor invokes the outbound acquisition method. */
     static ArchRule acquisitionPortAcquireIsCalledOnlyByAuthorizedExecutor(String basePackage) {
-        return classes()
-                .that().resideInAPackage(basePackage + "..")
-                .should(new ArchCondition<>(
-                        "invoke AcquisitionPort.acquire only from AuthorizedAcquisitionExecutor") {
-                    @Override
-                    public void check(JavaClass item, ConditionEvents events) {
-                        item.getMethodCallsFromSelf().stream()
-                                .filter(call -> call.getName().equals("acquire"))
-                                .filter(call -> call.getTargetOwner()
-                                        .isAssignableTo(ACQUISITION_PORT))
-                                .filter(call -> !item.getName().equals(AUTHORIZED_EXECUTOR))
-                                .forEach(call -> events.add(SimpleConditionEvent.violated(
-                                        item, call.getDescription())));
-                    }
-                })
-                .as("only AuthorizedAcquisitionExecutor calls AcquisitionPort.acquire")
-                .because("every outbound start must pass the expiry check and identity-bound"
-                        + " request factory in the sole executor");
+        return methodCallAllowlist(
+                basePackage,
+                ACQUISITION_PORT,
+                "acquire",
+                AUTHORIZED_EXECUTOR,
+                "only AuthorizedAcquisitionExecutor calls AcquisitionPort.acquire");
     }
 
-    /** No web controller reaches the acquisition doorway. */
+    /** Only the gateway can turn a JDBC row into an internal grant. */
+    static ArchRule grantMapperIsCalledOnlyByGateway(String basePackage) {
+        return methodCallAllowlist(
+                basePackage,
+                GRANT_MAPPER,
+                "map",
+                AUTHORIZED_GATEWAY,
+                "only JdbcAuthorizedAcquisitionGateway calls CallAuthorityGrantMapper.map");
+    }
+
+    /** Only the gateway can pass an internal grant to the one-shot executor. */
+    static ArchRule authorizedExecutorIsCalledOnlyByGateway(String basePackage) {
+        return methodCallAllowlist(
+                basePackage,
+                AUTHORIZED_EXECUTOR,
+                "execute",
+                AUTHORIZED_GATEWAY,
+                "only JdbcAuthorizedAcquisitionGateway calls AuthorizedAcquisitionExecutor.execute");
+    }
+
+    /** No RestController may depend on any link in the authority chain. */
     static ArchRule webControllersDoNotReachAcquisition(String basePackage) {
-        return noClasses()
+        return classes()
                 .that().resideInAPackage(basePackage + "..")
                 .and().areAnnotatedWith("org.springframework.web.bind.annotation.RestController")
-                .should(new ArchCondition<>("depend on an acquisition port") {
+                .should(new ArchCondition<>("not depend on the acquisition-authority chain") {
                     @Override
                     public void check(JavaClass item, ConditionEvents events) {
                         item.getDirectDependenciesFromSelf().stream()
-                                .filter(dependency ->
-                                        isAcquisitionPort(dependency.getTargetClass()))
+                                .filter(dependency -> isControllerForbidden(
+                                        dependency.getTargetClass()))
                                 .forEach(dependency -> events.add(
-                                        SimpleConditionEvent.satisfied(
+                                        SimpleConditionEvent.violated(
                                                 item, dependency.getDescription())));
                     }
                 })
                 .allowEmptyShould(true)
-                .as("no web controller reaches an acquisition port")
-                .because("acquisition runs only under a worker's leased, fenced, granted"
-                        + " authority, never under a request thread's");
+                .as("no web controller reaches the gateway, executor, mapper, grant,"
+                        + " request or acquisition port")
+                .because("acquisition starts only from a leased worker through the DB gateway");
     }
 
-    /** Only the trusted database-result mapper may manufacture a grant. */
+    /** Only the mapper constructs the internal grant value. */
     static ArchRule callAuthorityGrantsAreConstructedOnlyByTrustedMapper(String basePackage) {
         return classes()
                 .that().resideInAPackage(basePackage + "..")
@@ -120,29 +132,72 @@ final class IngestionAuthorityRules {
                     }
                 })
                 .as("only CallAuthorityGrantMapper constructs CallAuthorityGrant")
-                .because("the grant must contain only columns returned by the database"
-                        + " authority primitive, with no caller-selected replacement identity");
+                .because("only the exact stored-function row may manufacture a grant");
     }
 
-    /** Only the sole executor may derive a request from the complete grant. */
-    static ArchRule acquisitionRequestsAreCreatedOnlyByTheAuthorizedExecutor(String basePackage) {
+    /** Only the executor derives the adapter request from the consumed grant. */
+    static ArchRule acquisitionRequestsAreCreatedOnlyByTheAuthorizedExecutor(
+            String basePackage) {
+        return methodCallAllowlist(
+                basePackage,
+                ACQUISITION_REQUEST,
+                "fromDatabaseAuthority",
+                AUTHORIZED_EXECUTOR,
+                "only AuthorizedAcquisitionExecutor creates AcquisitionRequest");
+    }
+
+    /** Mapper, executor and grant are private collaborators of the one JDBC gateway. */
+    static ArchRule internalAuthorityTypesDoNotEscapeTheirCollaborators(String basePackage) {
         return classes()
                 .that().resideInAPackage(basePackage + "..")
-                .should(new ArchCondition<>(
-                        "invoke AcquisitionRequest.from only in AuthorizedAcquisitionExecutor") {
+                .should(new ArchCondition<>("not depend on internal authority collaborators") {
+                    @Override
+                    public void check(JavaClass item, ConditionEvents events) {
+                        item.getDirectDependenciesFromSelf().stream()
+                                .filter(dependency -> Set.of(
+                                                AUTHORIZED_EXECUTOR,
+                                                GRANT_MAPPER,
+                                                CALL_AUTHORITY_GRANT)
+                                        .contains(dependency.getTargetClass().getName()))
+                                .filter(dependency -> !INTERNAL_AUTHORITY_COLLABORATORS
+                                        .contains(item.getName()))
+                                .forEach(dependency -> events.add(SimpleConditionEvent.violated(
+                                        item, dependency.getDescription())));
+                    }
+                })
+                .as("grant, mapper and executor do not escape the exact JDBC collaborators");
+    }
+
+    private static ArchRule methodCallAllowlist(
+            String basePackage,
+            String targetOwner,
+            String targetMethod,
+            String allowedCaller,
+            String description) {
+        return classes()
+                .that().resideInAPackage(basePackage + "..")
+                .should(new ArchCondition<>(description) {
                     @Override
                     public void check(JavaClass item, ConditionEvents events) {
                         item.getMethodCallsFromSelf().stream()
+                                .filter(call -> call.getName().equals(targetMethod))
                                 .filter(call -> call.getTargetOwner().getName()
-                                        .equals(ACQUISITION_REQUEST))
-                                .filter(call -> call.getName().equals("from"))
-                                .filter(call -> !item.getName().equals(AUTHORIZED_EXECUTOR))
+                                        .equals(targetOwner)
+                                        || (targetOwner.equals(ACQUISITION_PORT)
+                                            && call.getTargetOwner()
+                                                    .isAssignableTo(ACQUISITION_PORT)))
+                                .filter(call -> !item.getName().equals(allowedCaller))
                                 .forEach(call -> events.add(SimpleConditionEvent.violated(
                                         item, call.getDescription())));
                     }
                 })
-                .as("only AuthorizedAcquisitionExecutor calls AcquisitionRequest.from")
-                .because("the request must be derived once from the complete structured grant");
+                .as(description);
+    }
+
+    private static boolean isControllerForbidden(JavaClass type) {
+        return CONTROLLER_FORBIDDEN_SURFACES.contains(type.getName())
+                || type.isAssignableTo(ACQUISITION_PORT)
+                || type.isAssignableTo(OBJECT_STORAGE_PORT);
     }
 
     private static boolean isAcquisitionPort(JavaClass type) {

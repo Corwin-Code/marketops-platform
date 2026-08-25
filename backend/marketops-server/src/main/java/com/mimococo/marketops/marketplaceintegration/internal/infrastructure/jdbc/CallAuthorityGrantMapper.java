@@ -1,20 +1,19 @@
 package com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc;
 
-import com.mimococo.marketops.marketplaceintegration.port.CallAuthorityGrant;
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.UUID;
 
-/** Maps the current row of the database grant primitive to its bound value. */
-public final class CallAuthorityGrantMapper {
+/** Maps the current row of the database grant primitive to its internal one-shot value. */
+final class CallAuthorityGrantMapper {
 
     /**
      * Read every identity and control proof from the structured database result.
      * No caller-supplied value participates in construction.
      */
-    public CallAuthorityGrant map(ResultSet rows) throws SQLException {
+    CallAuthorityGrant map(ResultSet rows) throws SQLException {
         Array scopeArray = rows.getArray("control_epoch_scopes");
         Array valueArray = rows.getArray("control_epoch_values");
         try {
@@ -33,6 +32,8 @@ public final class CallAuthorityGrantMapper {
                     rows.getInt("call_seq"),
                     rows.getTimestamp("granted_at").toInstant(),
                     rows.getTimestamp("call_authority_expires_at").toInstant(),
+                    rows.getTimestamp("run_lease_expires_at").toInstant(),
+                    rows.getTimestamp("server_policy_deadline").toInstant(),
                     Arrays.asList(scopes),
                     Arrays.asList(values),
                     rows.getString("boundary_set_digest"));

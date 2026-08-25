@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionRequestRebinderFixture;
+import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.ControllerViaExecutorFixture;
+import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.SecondExecutorCallerFixture;
+import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.SyntheticResultSetGrantCallerFixture;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -78,6 +81,35 @@ class IngestionAuthorityArchitectureTest {
     void requestsAreCreatedOnlyByTheAuthorizedExecutor() {
         IngestionAuthorityRules
                 .acquisitionRequestsAreCreatedOnlyByTheAuthorizedExecutor(PRODUCTION_PACKAGE)
+                .check(production);
+    }
+
+    @Test
+    @DisplayName("TC-ARCH-026 only JdbcAuthorizedAcquisitionGateway calls the mapper")
+    void mapperIsCalledOnlyByTheExactGateway() {
+        IngestionAuthorityRules.grantMapperIsCalledOnlyByGateway(PRODUCTION_PACKAGE)
+                .check(production);
+    }
+
+    @Test
+    @DisplayName("TC-ARCH-027 only JdbcAuthorizedAcquisitionGateway calls the executor")
+    void executorIsCalledOnlyByTheExactGateway() {
+        IngestionAuthorityRules.authorizedExecutorIsCalledOnlyByGateway(PRODUCTION_PACKAGE)
+                .check(production);
+    }
+
+    @Test
+    @DisplayName("TC-ARCH-028 no RestController reaches any authority-chain type")
+    void controllersAreExcludedFromTheCompleteAuthorityChain() {
+        IngestionAuthorityRules.webControllersDoNotReachAcquisition(PRODUCTION_PACKAGE)
+                .check(production);
+    }
+
+    @Test
+    @DisplayName("TC-ARCH-029 grant, mapper and executor remain gateway-internal collaborators")
+    void internalAuthorityTypesDoNotEscape() {
+        IngestionAuthorityRules
+                .internalAuthorityTypesDoNotEscapeTheirCollaborators(PRODUCTION_PACKAGE)
                 .check(production);
     }
 
@@ -160,6 +192,56 @@ class IngestionAuthorityArchitectureTest {
         }
 
         @Test
+        @DisplayName("F-ARCH-026 an inside-owner synthetic ResultSet mapper caller is rejected")
+        void syntheticResultSetMapperCallerIsRejected() {
+            JavaClasses fixture = new ClassFileImporter()
+                    .importClasses(SyntheticResultSetGrantCallerFixture.class);
+            EvaluationResult mapperResult = IngestionAuthorityRules
+                    .grantMapperIsCalledOnlyByGateway(PRODUCTION_PACKAGE)
+                    .evaluate(fixture);
+            EvaluationResult executorResult = IngestionAuthorityRules
+                    .authorizedExecutorIsCalledOnlyByGateway(PRODUCTION_PACKAGE)
+                    .evaluate(fixture);
+
+            assertThat(mapperResult.hasViolation()).isTrue();
+            assertThat(executorResult.hasViolation()).isTrue();
+            assertThat(mapperResult.getFailureReport().getDetails())
+                    .anySatisfy(detail -> assertThat(detail)
+                            .contains("SyntheticResultSetGrantCallerFixture"));
+            assertThat(executorResult.getFailureReport().getDetails())
+                    .anySatisfy(detail -> assertThat(detail)
+                            .contains("SyntheticResultSetGrantCallerFixture"));
+        }
+
+        @Test
+        @DisplayName("F-ARCH-027 a controller depending on the executor is rejected")
+        void controllerViaExecutorIsRejected() {
+            EvaluationResult result = IngestionAuthorityRules
+                    .webControllersDoNotReachAcquisition(PRODUCTION_PACKAGE)
+                    .evaluate(new ClassFileImporter()
+                            .importClasses(ControllerViaExecutorFixture.class));
+
+            assertThat(result.hasViolation()).isTrue();
+            assertThat(result.getFailureReport().getDetails())
+                    .anySatisfy(detail -> assertThat(detail)
+                            .contains("ControllerViaExecutorFixture"));
+        }
+
+        @Test
+        @DisplayName("F-ARCH-028 a second internal executor caller is rejected")
+        void secondInternalExecutorCallerIsRejected() {
+            EvaluationResult result = IngestionAuthorityRules
+                    .authorizedExecutorIsCalledOnlyByGateway(PRODUCTION_PACKAGE)
+                    .evaluate(new ClassFileImporter()
+                            .importClasses(SecondExecutorCallerFixture.class));
+
+            assertThat(result.hasViolation()).isTrue();
+            assertThat(result.getFailureReport().getDetails())
+                    .anySatisfy(detail -> assertThat(detail)
+                            .contains("SecondExecutorCallerFixture"));
+        }
+
+        @Test
         @DisplayName("F-ARCH-025 the conforming arrangement passes all authority rules")
         void conformingArrangementPasses() {
             JavaClasses conforming = importFixture(CONFORMING);
@@ -178,6 +260,13 @@ class IngestionAuthorityArchitectureTest {
                         .check(conforming);
                 IngestionAuthorityRules
                         .acquisitionRequestsAreCreatedOnlyByTheAuthorizedExecutor(CONFORMING)
+                        .check(conforming);
+                IngestionAuthorityRules.grantMapperIsCalledOnlyByGateway(CONFORMING)
+                        .check(conforming);
+                IngestionAuthorityRules.authorizedExecutorIsCalledOnlyByGateway(CONFORMING)
+                        .check(conforming);
+                IngestionAuthorityRules
+                        .internalAuthorityTypesDoNotEscapeTheirCollaborators(CONFORMING)
                         .check(conforming);
             }).doesNotThrowAnyException();
         }

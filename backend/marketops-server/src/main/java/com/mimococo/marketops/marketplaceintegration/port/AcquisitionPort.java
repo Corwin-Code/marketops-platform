@@ -21,8 +21,8 @@ public interface AcquisitionPort {
     /**
      * Perform one acquisition call under a live, bounded call authority.
      *
-     * <p>{@link AuthorizedAcquisitionExecutor} has already validated the bound
-     * authority deadline and derived this request. An implementation performs
+     * <p>The internal JDBC authority gateway has already validated and consumed
+     * the bound authority and derived this request. An implementation performs
      * the exchange and reports it, and never widens, extends or re-derives the
      * authority it was handed.
      */

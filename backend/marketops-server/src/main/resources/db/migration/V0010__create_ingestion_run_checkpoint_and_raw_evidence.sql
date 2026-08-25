@@ -19,6 +19,14 @@
 -- silent, permanent data loss, so the ordering is enforced here rather than
 -- left to call order in application code.
 
+-- Credential rotation is account-local. The composite relationship preserves
+-- valid predecessor history while making cross-account lineage unrepresentable.
+ALTER TABLE platform.credential_metadata
+    DROP CONSTRAINT credential_metadata_replaces_fk,
+    ADD CONSTRAINT credential_metadata_replaces_account_fk
+        FOREIGN KEY (replaces_credential_id, marketplace_account_id)
+        REFERENCES platform.credential_metadata (id, marketplace_account_id);
+
 -- ---------------------------------------------------------------------------
 -- Run, lease and fence
 -- ---------------------------------------------------------------------------
@@ -83,13 +91,15 @@ CREATE TYPE platform.call_authority_grant AS (
     call_seq                     integer,
     granted_at                   timestamptz,
     call_authority_expires_at    timestamptz,
+    run_lease_expires_at         timestamptz,
+    server_policy_deadline       timestamptz,
     control_epoch_scopes         text[],
     control_epoch_values         bigint[],
     boundary_set_digest          text
 );
 
--- V0009 creates the decision journal before the runtime run exists. Complete
--- its identity graph here, after both referenced tables are available.
+-- Complete the authorization journal's runtime identity graph so each decision
+-- is bound to the exact run, fence, lease, platform endpoint and call sequence.
 ALTER TABLE ops.authorization_decision_evidence
     ADD COLUMN run_id        uuid   NOT NULL,
     ADD COLUMN fence_token   bigint NOT NULL,
@@ -97,6 +107,8 @@ ALTER TABLE ops.authorization_decision_evidence
     ADD COLUMN platform_code text   NOT NULL,
     ADD COLUMN endpoint_id   uuid   NOT NULL,
     ADD COLUMN call_seq      integer NOT NULL,
+    ADD COLUMN run_lease_expires_at   timestamptz NOT NULL,
+    ADD COLUMN server_policy_deadline timestamptz NOT NULL,
     ADD CONSTRAINT authorization_decision_evidence_run_job_fk
         FOREIGN KEY (run_id, job_id) REFERENCES ops.ingestion_run (id, job_id),
     ADD CONSTRAINT authorization_decision_evidence_endpoint_platform_fk
@@ -107,7 +119,15 @@ ALTER TABLE ops.authorization_decision_evidence
         CHECK (length(btrim(lease_owner)) > 0),
     ADD CONSTRAINT authorization_decision_evidence_call_seq_ck CHECK (call_seq > 0),
     ADD CONSTRAINT authorization_decision_evidence_authority_after_grant_ck
-        CHECK (call_authority_expires_at > granted_at);
+        CHECK (call_authority_expires_at > granted_at),
+    ADD CONSTRAINT authorization_decision_evidence_lease_after_grant_ck
+        CHECK (run_lease_expires_at > granted_at),
+    ADD CONSTRAINT authorization_decision_evidence_server_policy_after_grant_ck
+        CHECK (server_policy_deadline > granted_at),
+    ADD CONSTRAINT authorization_decision_evidence_authority_within_lease_ck
+        CHECK (call_authority_expires_at <= run_lease_expires_at),
+    ADD CONSTRAINT auth_decision_evidence_authority_within_server_policy_ck
+        CHECK (call_authority_expires_at <= server_policy_deadline);
 
 CREATE FUNCTION ops.ingestion_run_fence_monotonic()
 RETURNS trigger
@@ -356,11 +376,10 @@ REVOKE ALL ON FUNCTION ops.acknowledge_checkpoint(uuid, bigint, text, uuid, bigi
 -- One-instant call-control evaluation
 -- ---------------------------------------------------------------------------
 
--- The time-sensitive facts consumed by one grant, resolved at an explicit
--- database instant. Keeping this as a production function gives deterministic
--- database tests the exact resolver used by the grant without giving the
--- application a second authority path: it does not lock epochs, consume a run,
--- issue authority or record evidence, and PUBLIC receives no EXECUTE privilege.
+-- Resolve the time-sensitive facts consumed by one grant at an explicit
+-- database instant. This private function does not create a second authority
+-- path: it does not lock epochs, consume a run, issue authority or record
+-- evidence, and PUBLIC receives no EXECUTE privilege.
 CREATE TYPE platform.call_control_evaluation AS (
     credential_id          uuid,
     valid_until            timestamptz,
@@ -539,7 +558,7 @@ CREATE FUNCTION platform.grant_call_authority(
     p_expected_fence       bigint,
     p_expected_lease_owner text,
     p_scope_grant_id       uuid,
-    p_nominal_authority    interval,
+    p_requested_authority  interval,
     p_correlation_id       text)
 RETURNS platform.call_authority_grant
 LANGUAGE plpgsql
@@ -547,6 +566,7 @@ SECURITY DEFINER
 SET search_path = pg_catalog, pg_temp
 AS $$
 DECLARE
+    server_max_call_authority CONSTANT interval := interval '30 seconds';
     run_row              record;
     job_row              record;
     epoch_scopes         text[];
@@ -554,14 +574,16 @@ DECLARE
     evaluated            timestamptz;
     evaluation           platform.call_control_evaluation;
     grant_at             timestamptz;
+    requested_deadline   timestamptz;
+    server_policy_at     timestamptz;
     authority_at         timestamptz;
     selected_credential  uuid;
     granted_call_seq     integer;
     decision             uuid;
     grant_result         platform.call_authority_grant;
 BEGIN
-    IF p_nominal_authority IS NULL OR p_nominal_authority <= interval '0' THEN
-        RAISE EXCEPTION 'nominal call authority must be greater than zero'
+    IF p_requested_authority IS NULL OR p_requested_authority <= interval '0' THEN
+        RAISE EXCEPTION 'requested call authority must be greater than zero'
             USING ERRCODE = 'MO016';
     END IF;
 
@@ -672,7 +694,23 @@ BEGIN
             USING ERRCODE = 'MO011';
     END IF;
 
-    authority_at := LEAST(grant_at + p_nominal_authority, evaluation.valid_until);
+    -- The request can shorten authority but can never widen the server policy,
+    -- the consumed run lease or the locked control snapshot. Catch timestamp
+    -- overflow inside the primitive so even an arbitrary SQL client receives a
+    -- fail-closed authority refusal with no run sequence or evidence residue.
+    BEGIN
+        requested_deadline := grant_at + p_requested_authority;
+    EXCEPTION
+        WHEN datetime_field_overflow THEN
+            RAISE EXCEPTION 'requested call authority is outside the timestamp range'
+                USING ERRCODE = 'MO016';
+    END;
+    server_policy_at := grant_at + server_max_call_authority;
+    authority_at := LEAST(
+        requested_deadline,
+        server_policy_at,
+        run_row.lease_expires_at,
+        evaluation.valid_until);
     IF authority_at <= grant_at THEN
         RAISE EXCEPTION 'call authority did not extend beyond its grant instant'
             USING ERRCODE = 'MO016';
@@ -690,6 +728,7 @@ BEGIN
        AND run.lease_owner = p_expected_lease_owner
        AND run.state = 'LEASED'
        AND run.lease_expires_at > grant_at
+       AND run.lease_expires_at = run_row.lease_expires_at
     RETURNING run.last_call_seq INTO granted_call_seq;
 
     IF granted_call_seq IS NULL THEN
@@ -703,7 +742,7 @@ BEGIN
         id, job_id, run_id, fence_token, lease_owner, platform_code, endpoint_id,
         call_seq, service_account_id, marketplace_account_id,
         scope_grant_id, credential_id,
-        evaluated_at, granted_at,
+        evaluated_at, granted_at, run_lease_expires_at, server_policy_deadline,
         control_epoch_scopes, control_epoch_values,
         control_snapshot_valid_until, boundary_kind_count, boundary_kind_set,
         boundary_set_digest, winning_boundary_kind,
@@ -713,7 +752,8 @@ BEGIN
         job_row.platform_code, job_row.endpoint_id, granted_call_seq,
         job_row.service_account_id, job_row.marketplace_account_id,
         p_scope_grant_id, selected_credential,
-        evaluated, grant_at, epoch_scopes, epoch_values,
+        evaluated, grant_at, run_row.lease_expires_at, server_policy_at,
+        epoch_scopes, epoch_values,
         evaluation.valid_until, evaluation.boundary_kind_count,
         evaluation.boundary_kind_set, evaluation.boundary_set_digest,
         evaluation.winning_kind,
@@ -731,6 +771,8 @@ BEGIN
     grant_result.call_seq := granted_call_seq;
     grant_result.granted_at := grant_at;
     grant_result.call_authority_expires_at := authority_at;
+    grant_result.run_lease_expires_at := run_row.lease_expires_at;
+    grant_result.server_policy_deadline := server_policy_at;
     grant_result.control_epoch_scopes := epoch_scopes;
     grant_result.control_epoch_values := epoch_values;
     grant_result.boundary_set_digest := evaluation.boundary_set_digest;

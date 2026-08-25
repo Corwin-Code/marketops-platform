@@ -104,6 +104,14 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
                     .as("the issued authority never reaches past the snapshot boundary")
                     .isTrue();
             assertThat(singleBoolean(connection, """
+                    SELECT call_authority_expires_at <= run_lease_expires_at
+                       AND call_authority_expires_at <= server_policy_deadline
+                       AND server_policy_deadline = granted_at + interval '30 seconds'
+                      FROM ops.authorization_decision_evidence
+                    """))
+                    .as("the evidence binds the consumed lease and server-owned 30-second cap")
+                    .isTrue();
+            assertThat(singleBoolean(connection, """
                     SELECT run_id = '%s'
                        AND fence_token = 1
                        AND lease_owner = 'worker-a'
@@ -283,14 +291,16 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
                     (id, job_id, run_id, fence_token, lease_owner, platform_code,
                      endpoint_id, call_seq, service_account_id, marketplace_account_id,
                      scope_grant_id, credential_id,
-                     evaluated_at, granted_at, control_epoch_scopes, control_epoch_values,
+                     evaluated_at, granted_at, run_lease_expires_at,
+                     server_policy_deadline, control_epoch_scopes, control_epoch_values,
                      control_snapshot_valid_until, boundary_kind_count, boundary_kind_set,
                      boundary_set_digest, winning_boundary_kind, call_authority_expires_at,
                      correlation_id)
                 VALUES
                     (gen_random_uuid(), '%s', '%s', 1, 'worker-a', 'OZON', '%s', 1,
                      '%s', '%s', '%s', '%s',
-                     now(), now() + interval '1 minute',
+                     now(), now() + interval '1 minute', now() + interval '5 minutes',
+                     now() + interval '2 minutes',
                      ARRAY['ORGANIZATION', 'MARKETPLACE_ACCOUNT', 'SERVICE_ACCOUNT', 'JOB'],
                      ARRAY[1, 1, 1, 1]::bigint[],
                      now() + interval '1 minute', %d, ARRAY[%s],
@@ -627,18 +637,154 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
     }
 
     @Test
-    @DisplayName("TC-CTRL-433 zero and negative nominal authority deny with zero residue")
-    void nonpositiveNominalAuthorityIsDenied() throws SQLException {
+    @DisplayName("TC-CTRL-439 a one-day request is capped by the server at 30 seconds")
+    void serverPolicyCapsAnUnboundedCallerRequest() throws SQLException {
+        try (Connection connection = asApplicationRole(container)) {
+            assertThat(single(connection, IngestionControlPlaneFixture.grantWithNominal(
+                    1, "worker-a", SCOPE_GRANT, "interval '1 day'", "corr-server-cap")))
+                    .isNotNull();
+            assertThat(singleBoolean(connection, """
+                    SELECT call_authority_expires_at = server_policy_deadline
+                       AND call_authority_expires_at = granted_at + interval '30 seconds'
+                       AND call_authority_expires_at < run_lease_expires_at
+                       AND call_authority_expires_at < control_snapshot_valid_until
+                      FROM ops.authorization_decision_evidence
+                    """))
+                    .as("the old caller-controlled unbounded formula must fail this proof")
+                    .isTrue();
+        }
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-440 a five-second remaining lease is the exact authority deadline")
+    void runLeaseCapsTheAuthority() throws SQLException {
+        try (Connection connection = asMigrationRole(container)) {
+            execute(connection, "UPDATE ops.ingestion_run"
+                    + " SET lease_expires_at = clock_timestamp() + interval '5 seconds'"
+                    + " WHERE id = '" + RUN + "'");
+        }
+        try (Connection connection = asApplicationRole(container)) {
+            assertThat(single(connection, grant(1, "worker-a", "corr-lease-cap")))
+                    .isNotNull();
+            assertThat(singleBoolean(connection, """
+                    SELECT call_authority_expires_at = run_lease_expires_at
+                       AND call_authority_expires_at < server_policy_deadline
+                      FROM ops.authorization_decision_evidence
+                    """))
+                    .as("the authority must end at the exact consumed lease deadline")
+                    .isTrue();
+        }
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-441 forged evidence cannot record authority beyond its lease")
+    void evidenceCheckRejectsAuthorityBeyondLease() throws SQLException {
+        String kinds = BOUNDARY_KINDS.stream()
+                .map(kind -> "'" + kind + "'")
+                .collect(Collectors.joining(", "));
+        assertRefusedAsMigrationRole(CHECK_VIOLATION, """
+                INSERT INTO ops.authorization_decision_evidence
+                    (id, job_id, run_id, fence_token, lease_owner, platform_code,
+                     endpoint_id, call_seq, service_account_id, marketplace_account_id,
+                     scope_grant_id, credential_id, evaluated_at, granted_at,
+                     run_lease_expires_at, server_policy_deadline,
+                     control_epoch_scopes, control_epoch_values,
+                     control_snapshot_valid_until, boundary_kind_count, boundary_kind_set,
+                     boundary_set_digest, winning_boundary_kind,
+                     call_authority_expires_at, correlation_id)
+                VALUES
+                    (gen_random_uuid(), '%s', '%s', 1, 'worker-a', 'OZON', '%s', 1,
+                     '%s', '%s', '%s', '%s', now(), now(),
+                     now() + interval '5 seconds', now() + interval '30 seconds',
+                     ARRAY['ORGANIZATION', 'MARKETPLACE_ACCOUNT', 'SERVICE_ACCOUNT', 'JOB'],
+                     ARRAY[1, 1, 1, 1]::bigint[], now() + interval '1 hour', %d,
+                     ARRAY[%s], repeat('0', 64), 'SERVICE_ACCOUNT_EXPIRY',
+                     now() + interval '10 seconds', 'corr-forged-lease')
+                """.formatted(JOB, RUN, IngestionControlPlaneFixture.ENDPOINT,
+                SERVICE_ACCOUNT, ACCOUNT, SCOPE_GRANT, CREDENTIAL,
+                BOUNDARY_KINDS.size(), kinds));
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-442 null, zero, negative and overflow requests deny with zero residue")
+    void invalidRequestedAuthorityIsDenied() throws SQLException {
+        assertRefused(NOMINAL_AUTHORITY_INVALID,
+                IngestionControlPlaneFixture.grantWithNominal(
+                        1, "worker-a", SCOPE_GRANT, "NULL::interval", "corr-null"));
         assertRefused(NOMINAL_AUTHORITY_INVALID,
                 IngestionControlPlaneFixture.grantWithNominal(
                         1, "worker-a", SCOPE_GRANT, "interval '0 seconds'", "corr-zero"));
         assertRefused(NOMINAL_AUTHORITY_INVALID,
                 IngestionControlPlaneFixture.grantWithNominal(
                         1, "worker-a", SCOPE_GRANT, "interval '-1 second'", "corr-negative"));
+        assertRefused(NOMINAL_AUTHORITY_INVALID,
+                IngestionControlPlaneFixture.grantWithNominal(
+                        1, "worker-a", SCOPE_GRANT,
+                        "interval '1000000 years'", "corr-overflow"));
 
         try (Connection connection = asApplicationRole(container)) {
             assertThat(runState(connection)).isEqualTo("LEASED");
             assertThat(evidenceRows(connection)).isZero();
+        }
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-443 Credential replacement cannot cross Marketplace Accounts")
+    void credentialReplacementIsPinnedToItsAccount() throws SQLException {
+        UUID foreignAccount = UUID.randomUUID();
+        UUID foreignCredential = UUID.randomUUID();
+        try (Connection connection = asMigrationRole(container)) {
+            execute(connection, """
+                    INSERT INTO core.marketplace_account
+                        (id, organization_id, legal_entity_id, platform_code, code,
+                         display_name, status, created_at, updated_at)
+                    VALUES ('%s', '%s', '%s', 'OZON', 'acme-ozon-second',
+                            'Acme Ozon Second', 'ACTIVE', now(), now())
+                    """.formatted(foreignAccount, ORGANIZATION,
+                    IngestionControlPlaneFixture.LEGAL_ENTITY));
+            execute(connection, """
+                    INSERT INTO platform.credential_metadata
+                        (id, organization_id, marketplace_account_id, code, display_name,
+                         purpose_code, scope_mode, secret_reference, effective_from,
+                         expires_at, status, custodian_label, verification_state,
+                         created_at, updated_at)
+                    VALUES ('%s', '%s', '%s', 'foreign-account-read',
+                            'Foreign Account Read', 'READ', 'ACCOUNT',
+                            'secret-ref://vault/acme/foreign-read', now() - interval '1 hour',
+                            now() + interval '10 days', 'ACTIVE', 'platform-team',
+                            'UNVERIFIED', now(), now())
+                    """.formatted(foreignCredential, ORGANIZATION, foreignAccount));
+        }
+
+        assertRefused(FOREIGN_KEY_VIOLATION, "UPDATE platform.credential_metadata"
+                + " SET replaces_credential_id = '" + foreignCredential + "', updated_at = now()"
+                + " WHERE id = '" + CREDENTIAL + "'");
+
+        try (Connection connection = asApplicationRole(container)) {
+            assertThat(runState(connection)).isEqualTo("LEASED");
+            assertThat(count(connection,
+                    "SELECT last_call_seq FROM ops.ingestion_run WHERE id = '" + RUN + "'"))
+                    .isZero();
+            assertThat(evidenceRows(connection)).isZero();
+        }
+    }
+
+    @Test
+    @DisplayName("TC-CTRL-444 a same-account historical predecessor remains valid lineage")
+    void sameAccountHistoricalPredecessorRemainsAllowed() throws SQLException {
+        UUID currentCredential = UUID.randomUUID();
+        try (Connection connection = asApplicationRole(container)) {
+            execute(connection, "UPDATE platform.credential_metadata"
+                    + " SET status = 'DISABLED', updated_at = now()"
+                    + " WHERE id = '" + CREDENTIAL + "'");
+            insertCredential(connection, currentCredential, "acme-read-after-history",
+                    "secret-ref://vault/acme/read-after-history", CREDENTIAL, "ACCOUNT");
+
+            assertThat(single(connection, grant(1, "worker-a", "corr-historical-lineage")))
+                    .isNotNull();
+            assertThat(single(connection,
+                    "SELECT credential_id::text FROM ops.authorization_decision_evidence"))
+                    .isEqualTo(currentCredential.toString());
         }
     }
 

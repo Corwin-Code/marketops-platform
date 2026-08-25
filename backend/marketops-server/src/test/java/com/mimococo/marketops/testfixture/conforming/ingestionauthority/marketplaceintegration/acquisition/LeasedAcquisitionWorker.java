@@ -3,7 +3,6 @@ package com.mimococo.marketops.testfixture.conforming.ingestionauthority.marketp
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionPort;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionRequest;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionResult;
-import com.mimococo.marketops.marketplaceintegration.port.AuthorizedAcquisitionExecutor;
 import java.time.Instant;
 
 /**
@@ -19,8 +18,4 @@ public final class LeasedAcquisitionWorker implements AcquisitionPort {
                 AcquisitionResult.AcquisitionOutcome.UNKNOWN_STATE, Instant.EPOCH);
     }
 
-    /** Bind this adapter to the sole executor that may invoke the doorway. */
-    public AuthorizedAcquisitionExecutor executor() {
-        return new AuthorizedAcquisitionExecutor(this);
-    }
 }

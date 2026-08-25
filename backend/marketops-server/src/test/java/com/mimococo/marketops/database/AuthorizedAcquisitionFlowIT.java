@@ -2,11 +2,9 @@ package com.mimococo.marketops.database;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.CallAuthorityGrantMapper;
+import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.JdbcAuthorizedAcquisitionGateway;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionRequest;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionResult;
-import com.mimococo.marketops.marketplaceintegration.port.AuthorizedAcquisitionExecutor;
-import com.mimococo.marketops.marketplaceintegration.port.CallAuthorityGrant;
 import com.mimococo.marketops.marketplaceintegration.port.InMemoryObjectStoragePort;
 import com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort;
 import com.mimococo.marketops.marketplaceintegration.port.RecordedAcquisitionPort;
@@ -14,13 +12,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
-import java.util.List;
+import java.time.Duration;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /**
@@ -35,8 +33,6 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
  * of holding secret material was available to leak it.
  */
 class AuthorizedAcquisitionFlowIT extends PostgresContainerSupport {
-
-    private static final CallAuthorityGrantMapper GRANT_MAPPER = new CallAuthorityGrantMapper();
 
     private static PostgreSQLContainer container;
 
@@ -63,17 +59,21 @@ class AuthorizedAcquisitionFlowIT extends PostgresContainerSupport {
                 AcquisitionResult.AcquisitionOutcome.SUCCESS_BYTES);
         ObjectStoragePort storage = new InMemoryObjectStoragePort();
 
-        try (Connection connection = asApplicationRole(container)) {
-            // The grant consumes the control snapshot and bounds the authority.
-            CallAuthorityGrant grant = grant(connection, "flow-500");
-            assertThat(grant.callAuthorityExpiresAt()).isAfter(Instant.now());
+        DriverManagerDataSource dataSource = new DriverManagerDataSource(
+                container.getJdbcUrl(), APPLICATION_ROLE, applicationPassword());
+        JdbcAuthorizedAcquisitionGateway gateway =
+                new JdbcAuthorizedAcquisitionGateway(dataSource, acquisition);
+        AcquisitionResult result = gateway.acquire(
+                IngestionControlPlaneFixture.RUN,
+                1L,
+                "worker-a",
+                IngestionControlPlaneFixture.SCOPE_GRANT,
+                Duration.ofSeconds(30),
+                "flow-500");
+        assertThat(result.outcome())
+                .isEqualTo(AcquisitionResult.AcquisitionOutcome.SUCCESS_BYTES);
 
-            // The sole executor derives the request from the whole structured
-            // grant; no fixture identity is selected a second time.
-            AuthorizedAcquisitionExecutor executor = new AuthorizedAcquisitionExecutor(acquisition);
-            AcquisitionResult result = executor.execute(grant);
-            assertThat(result.outcome())
-                    .isEqualTo(AcquisitionResult.AcquisitionOutcome.SUCCESS_BYTES);
+        try (Connection connection = asApplicationRole(container)) {
 
             // Custody before acknowledgement: store, then verify by reading back.
             byte[] body = result.body();
@@ -115,38 +115,6 @@ class AuthorizedAcquisitionFlowIT extends PostgresContainerSupport {
             assertThat(IngestionControlPlaneFixture.strings(connection,
                     "SELECT position_value FROM ops.ingestion_checkpoint"))
                     .containsExactly("cursor-after-flow-500");
-        }
-    }
-
-    @Test
-    @DisplayName("TC-CTRL-501 an expired authority stops the call at the doorway")
-    void expiredAuthorityStopsTheCall() {
-        RecordedAcquisitionPort acquisition = new RecordedAcquisitionPort(
-                "{}", "200 OK", AcquisitionResult.AcquisitionOutcome.SUCCESS_BYTES);
-        Instant grantedAt = Instant.now().minusSeconds(2);
-        CallAuthorityGrant expired = new CallAuthorityGrant(
-                UUID.randomUUID(), IngestionControlPlaneFixture.JOB,
-                IngestionControlPlaneFixture.RUN, 1L, "worker-a", "OZON",
-                IngestionControlPlaneFixture.ENDPOINT,
-                IngestionControlPlaneFixture.CREDENTIAL,
-                IngestionControlPlaneFixture.SCOPE_GRANT, 1, grantedAt,
-                grantedAt.plusSeconds(1), IngestionControlPlaneFixture.SCOPE_KINDS,
-                List.of(1L, 1L, 1L, 1L), "a".repeat(64));
-        AuthorizedAcquisitionExecutor executor = new AuthorizedAcquisitionExecutor(acquisition);
-
-        org.assertj.core.api.Assertions.assertThatThrownBy(() -> executor.execute(expired))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("expired");
-        assertThat(acquisition.recorded()).isEmpty();
-    }
-
-    private CallAuthorityGrant grant(Connection connection, String correlationId)
-            throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(
-                IngestionControlPlaneFixture.grant(1L, "worker-a", correlationId));
-             ResultSet rows = statement.executeQuery()) {
-            assertThat(rows.next()).isTrue();
-            return GRANT_MAPPER.map(rows);
         }
     }
 
