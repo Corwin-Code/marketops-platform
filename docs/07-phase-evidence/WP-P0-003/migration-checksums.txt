@@ -1,5 +1,7 @@
 Command: shasum -a 256 backend/marketops-server/src/main/resources/db/migration/V*.sql
-Verified implementation: fc47e018d86902566a1219a6c4cbf84429c4d035
+Verified implementation: 7b555f5b32c96526e31f173efd221cf6d3bb99e3
+Verified implementation tree: d953a4c78029fce49ab92655fa51fb6a77c7f85f
+Migration delta from reviewed input 392d0c9a85e7898b565168e34f915d2721dc554e: NONE
 
 7c7f34ba3a3746883e236a5a4e6eb0efc87e58e3b33f895d7f1d71c369d0eb0d  V0001__create_foundation_schemas.sql
 438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16  V0002__enable_btree_gist_extension.sql

@@ -1,5 +1,5 @@
 Command: python3 scripts/validate_governance.py
-Verified implementation: fc47e018d86902566a1219a6c4cbf84429c4d035
+Verified implementation: 7b555f5b32c96526e31f173efd221cf6d3bb99e3
 
 Governance validation passed.
 exit 0
