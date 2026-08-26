@@ -84,6 +84,16 @@
       <artifactId>spring-boot-starter-flyway</artifactId>
     </dependency>
 
+    <!-- Human authentication happens at an external OpenID Connect provider and
+         reaches this application only as a signed token. The resource-server
+         starter validates that token; it neither stores nor issues a
+         credential, and it introduces no deployment boundary the product
+         contract has not already fixed. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
+
     <!-- PostgreSQL support for Flyway ships as a database-specific module. The
          version comes from the Spring Boot BOM so it matches the Flyway core the
          starter resolves. -->

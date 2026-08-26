@@ -105,6 +105,16 @@ APPROVED_MIGRATIONS = (
     "V0008__attach_control_epoch_triggers.sql",
     "V0009__create_control_boundary_kinds_and_decision_evidence.sql",
     "V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql",
+    "V0011__create_human_identity_and_business_authorization.sql",
+    "V0012__create_product_listing_identity_and_mapping.sql",
+    "V0013__create_cross_domain_operating_facts.sql",
+    "V0014__create_internal_fact_intake_and_file_import.sql",
+    "V0015__create_canonical_metric_definitions_and_values.sql",
+    "V0016__create_deterministic_diagnosis_rules_and_findings.sql",
+    "V0017__create_ai_projection_invocation_and_output.sql",
+    "V0018__create_recommendation_task_and_approval_workflow.sql",
+    "V0019__create_commercial_policy_and_guardrails.sql",
+    "V0020__create_price_command_outbox_readback_and_write_gate.sql",
 )
 
 # An applied migration is immutable. The pin covers the earliest migration,

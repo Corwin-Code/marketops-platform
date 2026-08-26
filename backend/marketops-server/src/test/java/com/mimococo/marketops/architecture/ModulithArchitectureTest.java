@@ -60,6 +60,6 @@ class ModulithArchitectureTest {
                 .toList();
 
         assertThat(detected).containsExactly("adminobservability", "identityaccess",
-                "marketplaceintegration", "organizationaccount", "shared");
+                "marketplaceintegration", "organizationaccount", "productlisting", "shared");
     }
 }
