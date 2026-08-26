@@ -1,6 +1,6 @@
-package com.mimococo.marketops.marketplaceintegration.adapter.secret;
+package com.mimococo.marketops.shared.internal.secret;
 
-import com.mimococo.marketops.marketplaceintegration.port.SecretResolverPort;
+import com.mimococo.marketops.shared.port.SecretResolverPort;
 import com.mimococo.marketops.shared.CorrelationId;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

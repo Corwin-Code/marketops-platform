@@ -28,4 +28,14 @@ public interface ListingIdentityDirectory {
 
     /** Whether an unresolved mapping conflict currently blocks this listing variant. */
     boolean hasOpenConflict(UUID platformListingVariantId);
+
+    /**
+     * Where one listing variant sits and what it maps to at an instant.
+     *
+     * <p>Returned as one value because consumers need the store, the platform
+     * and the internal variant together; separate lookups could disagree about
+     * the same instant, and a guardrail built on such a disagreement would be
+     * checking one listing's price against another listing's cost.
+     */
+    Optional<ListingVariantContext> variantContext(UUID platformListingVariantId, Instant at);
 }

@@ -6,7 +6,7 @@ import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdb
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionPort;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionRequest;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionResult;
-import com.mimococo.marketops.marketplaceintegration.port.SecretResolverPort;
+import com.mimococo.marketops.shared.port.SecretResolverPort;
 import com.mimococo.marketops.shared.CorrelationId;
 import java.io.IOException;
 import java.net.URI;

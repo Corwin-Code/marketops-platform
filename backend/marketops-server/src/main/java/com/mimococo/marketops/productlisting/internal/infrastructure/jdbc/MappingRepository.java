@@ -1,5 +1,6 @@
 package com.mimococo.marketops.productlisting.internal.infrastructure.jdbc;
 
+import com.mimococo.marketops.productlisting.ListingVariantContext;
 import com.mimococo.marketops.productlisting.internal.domain.CandidateState;
 import com.mimococo.marketops.productlisting.internal.domain.ConflictKind;
 import com.mimococo.marketops.productlisting.internal.domain.ConflictState;
@@ -321,6 +322,50 @@ public class MappingRepository {
                 .param("listingVariantId", platformListingVariantId)
                 .query(Boolean.class)
                 .single());
+    }
+
+    /**
+     * Where one listing variant sits and what it maps to at an instant.
+     *
+     * <p>One query rather than three, so the store, the platform and the mapping
+     * describe the same instant. Two lookups a moment apart could disagree if a
+     * mapping were confirmed between them.
+     */
+    public Optional<ListingVariantContext> variantContext(UUID platformListingVariantId,
+                                                          Instant at) {
+        return jdbc.sql("""
+                        SELECT variant.id AS listing_variant_id,
+                               listing.id AS listing_id, listing.store_id,
+                               listing.marketplace_account_id, listing.platform_code,
+                               listing.native_listing_key, variant.native_variant_key,
+                               mapping.product_variant_id,
+                               EXISTS (
+                                   SELECT 1 FROM core.mapping_conflict AS conflict
+                                    WHERE conflict.platform_listing_variant_id = variant.id
+                                      AND conflict.state = 'OPEN') AS conflict_open
+                          FROM core.platform_listing_variant AS variant
+                          JOIN core.platform_listing AS listing
+                            ON listing.id = variant.platform_listing_id
+                          LEFT JOIN core.listing_mapping AS mapping
+                            ON mapping.platform_listing_variant_id = variant.id
+                           AND mapping.status = 'ACTIVE'
+                           AND mapping.effective_from <= :at
+                           AND (mapping.effective_to IS NULL OR mapping.effective_to > :at)
+                         WHERE variant.id = :listingVariantId
+                        """)
+                .param("listingVariantId", platformListingVariantId)
+                .param("at", Timestamp.from(at))
+                .query((rows, rowNumber) -> new ListingVariantContext(
+                        rows.getObject("listing_variant_id", UUID.class),
+                        rows.getObject("listing_id", UUID.class),
+                        rows.getObject("store_id", UUID.class),
+                        rows.getObject("marketplace_account_id", UUID.class),
+                        rows.getString("platform_code"),
+                        rows.getString("native_listing_key"),
+                        rows.getString("native_variant_key"),
+                        rows.getObject("product_variant_id", UUID.class),
+                        rows.getBoolean("conflict_open")))
+                .optional();
     }
 
     /** The organization's open conflict queue, newest detection first. */

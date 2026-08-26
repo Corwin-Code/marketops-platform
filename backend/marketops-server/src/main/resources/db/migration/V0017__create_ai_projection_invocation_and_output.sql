@@ -24,6 +24,12 @@ CREATE TABLE ops.ai_provider (
     provider_code         text        NOT NULL,
     display_name          text        NOT NULL,
     service_region_label  text,
+    invocation_url        text,
+    request_template      text,
+    response_pointer      text,
+    auth_header_name      text,
+    auth_value_template   text,
+    request_timeout_ms    integer     NOT NULL DEFAULT 60000,
     eligibility_state     text        NOT NULL,
     last_verified_at      timestamptz,
     evidence_ref          text,
@@ -45,8 +51,32 @@ CREATE TABLE ops.ai_provider (
                 AND evidence_ref IS NOT NULL
                 AND verified_source_title IS NOT NULL)),
     CONSTRAINT ai_provider_status_ck CHECK (status IN ('ACTIVE', 'RETIRED')),
+    -- The wire shape is the provider's fact, recorded rather than coded. A
+    -- plain http endpoint would let a network position impersonate a provider,
+    -- and an unrecorded shape would mean a guess compiled into a release.
+    CONSTRAINT ai_provider_invocation_url_ck
+        CHECK (invocation_url IS NULL
+            OR invocation_url ~ '^https://[a-z0-9][a-z0-9.-]{0,252}(:[0-9]{2,5})?(/[A-Za-z0-9._~-]{1,64}){0,8}$'),
+    CONSTRAINT ai_provider_response_pointer_ck
+        CHECK (response_pointer IS NULL OR response_pointer ~ '^(/[^/~]*(~[01][^/~]*)*)+$'),
+    CONSTRAINT ai_provider_auth_header_ck
+        CHECK (auth_header_name IS NULL OR auth_header_name ~ '^[A-Za-z][A-Za-z0-9-]{0,63}$'),
+    CONSTRAINT ai_provider_auth_template_ck
+        CHECK (auth_value_template IS NULL
+            OR auth_value_template ~ '^[!-~ ]{0,32}\{value\}[!-~ ]{0,32}$'),
+    CONSTRAINT ai_provider_timeout_ck
+        CHECK (request_timeout_ms BETWEEN 1000 AND 300000),
+    -- A provider becomes usable only once every part of the call is recorded.
+    -- A verified contract with an unrecorded endpoint is not a callable
+    -- provider; it is a contract nobody can act on.
     CONSTRAINT ai_provider_active_readiness_ck
-        CHECK (status <> 'ACTIVE' OR eligibility_state = 'VERIFIED')
+        CHECK (status <> 'ACTIVE'
+            OR (eligibility_state = 'VERIFIED'
+                AND invocation_url IS NOT NULL
+                AND request_template IS NOT NULL
+                AND response_pointer IS NOT NULL
+                AND auth_header_name IS NOT NULL
+                AND auth_value_template IS NOT NULL))
 );
 
 -- A model offered by one provider. The credential the gateway resolves is named

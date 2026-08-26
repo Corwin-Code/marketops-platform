@@ -1,4 +1,4 @@
-package com.mimococo.marketops.marketplaceintegration.adapter.secret;
+package com.mimococo.marketops.shared.internal.secret;
 
 import java.nio.file.Path;
 import org.springframework.boot.context.properties.ConfigurationProperties;

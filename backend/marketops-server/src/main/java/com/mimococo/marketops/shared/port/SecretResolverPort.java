@@ -1,4 +1,4 @@
-package com.mimococo.marketops.marketplaceintegration.port;
+package com.mimococo.marketops.shared.port;
 
 import java.util.Optional;
 

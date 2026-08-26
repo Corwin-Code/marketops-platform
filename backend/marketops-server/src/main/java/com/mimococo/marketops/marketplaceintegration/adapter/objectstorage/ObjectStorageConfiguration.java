@@ -1,9 +1,7 @@
 package com.mimococo.marketops.marketplaceintegration.adapter.objectstorage;
 
-import com.mimococo.marketops.marketplaceintegration.adapter.secret.MountedSecretResolver;
-import com.mimococo.marketops.marketplaceintegration.adapter.secret.SecretMountProperties;
 import com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort;
-import com.mimococo.marketops.marketplaceintegration.port.SecretResolverPort;
+import com.mimococo.marketops.shared.port.SecretResolverPort;
 import java.net.http.HttpClient;
 import java.time.Clock;
 import java.time.Duration;
@@ -23,17 +21,11 @@ import org.springframework.context.annotation.Configuration;
  * place.
  */
 @Configuration
-@EnableConfigurationProperties({ObjectStorageProperties.class, SecretMountProperties.class})
+@EnableConfigurationProperties(ObjectStorageProperties.class)
 public class ObjectStorageConfiguration {
 
     /** How long the client waits to establish a connection to the store. */
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
-
-    /** Resolution of opaque secret references for every outbound adapter. */
-    @Bean
-    public SecretResolverPort secretResolverPort(SecretMountProperties properties) {
-        return new MountedSecretResolver(properties.getMountDirectory());
-    }
 
     /** The client the object-store adapter uses; never follows a redirect. */
     @Bean

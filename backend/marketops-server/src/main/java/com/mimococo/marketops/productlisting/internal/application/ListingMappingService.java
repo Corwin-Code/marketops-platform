@@ -7,6 +7,7 @@ import com.mimococo.marketops.adminobservability.audit.MetadataAuditChange;
 import com.mimococo.marketops.adminobservability.audit.MetadataAuditRecorder;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.productlisting.ListingIdentityDirectory;
+import com.mimococo.marketops.productlisting.ListingVariantContext;
 import com.mimococo.marketops.productlisting.internal.domain.CandidateState;
 import com.mimococo.marketops.productlisting.internal.domain.ConflictKind;
 import com.mimococo.marketops.productlisting.internal.domain.ConflictState;
@@ -95,6 +96,13 @@ public class ListingMappingService implements ListingIdentityDirectory {
     @Transactional(readOnly = true)
     public boolean hasOpenConflict(UUID platformListingVariantId) {
         return mappings.hasOpenConflict(platformListingVariantId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<ListingVariantContext> variantContext(UUID platformListingVariantId,
+                                                          Instant at) {
+        return mappings.variantContext(platformListingVariantId, at);
     }
 
     /**

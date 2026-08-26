@@ -1,7 +1,7 @@
 package com.mimococo.marketops.marketplaceintegration.adapter.objectstorage;
 
 import com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort;
-import com.mimococo.marketops.marketplaceintegration.port.SecretResolverPort;
+import com.mimococo.marketops.shared.port.SecretResolverPort;
 import com.mimococo.marketops.shared.CorrelationId;
 import com.mimococo.marketops.shared.Digest;
 import com.mimococo.marketops.shared.ErrorCode;

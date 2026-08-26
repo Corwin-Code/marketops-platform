@@ -2,7 +2,7 @@ package com.mimococo.marketops.marketplaceintegration.adapter.http;
 
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.PlatformCallSpecRepository;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionPort;
-import com.mimococo.marketops.marketplaceintegration.port.SecretResolverPort;
+import com.mimococo.marketops.shared.port.SecretResolverPort;
 import java.net.http.HttpClient;
 import java.time.Clock;
 import java.time.Duration;
