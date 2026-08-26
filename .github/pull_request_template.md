@@ -2,16 +2,20 @@
 
 ## Control references
 
-- Work Package:
-- Requirement IDs / Owner Decisions:
-- Approved design / ADRs:
-- Related Issue:
+- Product version:
+- Delivery Slice:
+- Acceptance IDs advanced:
+- Implementation tranche / Work Package (optional):
+- Owner Decisions / Requirement IDs / ADRs:
+- Controller Contract or findings:
+- Related Issue/Decision Request:
 
-## Outcome and scope
+## Observable outcome and scope
 
-- Intended outcome:
+- User/engineering outcome:
 - In-scope changes:
 - Explicit non-goals:
+- Why this PR is reviewable and leaves the repository coherent:
 
 ## Change summary
 
@@ -20,56 +24,70 @@
 - Database / Migration:
 - Infrastructure / CI:
 - Documentation / Traceability:
+- External Capability evidence:
 
-## Evidence
+## Production Assurance evidence
 
-| Check | Command / CI job | Result | Evidence reference |
-| --- | --- | --- | --- |
-| Governance | | | |
-| Build / Unit | | | |
-| Integration / Migration | | | |
-| Architecture | | | |
-| Frontend quality | | | |
-| Security / dependency | | | |
-| Smoke / E2E | | | |
+| Acceptance / risk | Evidence class | Command / CI / external test | Result | Durable reference |
+| --- | --- | --- | --- | --- |
+| Governance/source integrity | | | | |
+| Build/unit/property | | | | |
+| Real database/migration | | | | |
+| Contract/replay/reconciliation | | | | |
+| Security/privacy | | | | |
+| Browser/E2E | | | | |
+| Provider/readback | | | | |
+| Performance/recovery/runbook | | | | |
 
-## Data, security and privacy
+## Data, security, AI and controlled write
 
-- [ ] No secret, credential, private key or buyer PII was added.
-- [ ] Fixture or sample data is synthetic or formally redacted.
-- [ ] Logging and errors do not expose sensitive values.
-- [ ] Permission/scope impact is documented.
-- [ ] Raw/Ledger immutability and idempotency impact is documented where applicable.
+- [ ] No Secret, Credential, private key, signed URL or Buyer PII was added.
+- [ ] Fixtures/evidence are synthetic or formally redacted.
+- [ ] Logging/errors/browser/AI projections do not expose sensitive values.
+- [ ] Source of Truth, authority, permission and scope impacts are documented.
+- [ ] Raw/Ledger/Audit immutability, idempotency, late/unknown state and replay
+      impacts are documented where applicable.
+- [ ] AI does not become the canonical Fact, Policy, Approval, Command or
+      Credential authority.
+- [ ] Any Marketplace write remains disabled after merge unless a separate
+      enablement Gate explicitly says otherwise.
+- [ ] Any bounded real-write verification cites an exact Gate-EV authorization;
+      implementation, merge and Gate EV are not represented as Pilot enablement.
 
 ## Operational impact
 
-- Migration / backfill:
-- Compatibility:
+- Forward migration / backfill:
+- Compatibility / rollback:
 - Observability / alerts:
-- Rollback / recovery:
-- Feature flags:
+- Runbook / recovery:
+- Feature flags / Kill Switch:
+- Deployment / production enablement state:
 
-## AI disclosure
+## AI/agent disclosure
 
-- Maker/agent used:
+- Maker/rework agents:
 - Exact commands run:
 - Checks not run or failed:
 - Assumptions / unknowns:
-- Deferred items:
+- Conditional Design/Owner/External blockers:
+- Deferred items that are genuinely outside this PR/Contract:
 
 ## Owner Git workflow handoff
 
 - Current lifecycle step:
-- Branch and upstream:
-- PR and required-check state:
-- Is Owner-authorized merge execution allowed now? Why or why not?
-- Exact next Owner or active delegate action:
-- Post-merge local synchronization / cleanup:
+- Branch/upstream and Base/Head:
+- PR/check/conversation state:
+- Is Owner-authorized merge execution allowed now? Why/why not?
+- Exact next actor/action:
+- Post-merge synchronization/cleanup:
+- Does merge enable production behavior? (`NO` unless separately authorized):
 
 ## Reviewer checklist
 
-- [ ] Diff matches the approved Work Package and no hidden scope expansion exists.
-- [ ] Acceptance criteria have reproducible evidence.
-- [ ] Documentation and traceability are updated.
-- [ ] No unresolved BLOCKER or MAJOR finding remains.
-- [ ] Independent Controller verdict is attached before Owner-authorized merge execution.
+- [ ] Diff matches the active Slice Contract and Acceptance IDs.
+- [ ] No hidden product, authority, provider or scope change exists.
+- [ ] Required evidence is reproducible and correctly classified.
+- [ ] Historical migrations/evidence and source Baseline integrity are preserved.
+- [ ] Documentation/traceability/current state are truthful for this tranche.
+- [ ] No unresolved BLOCKER/MAJOR finding remains before final approval.
+- [ ] Independent Controller verdict is bound to the exact Head before merge.

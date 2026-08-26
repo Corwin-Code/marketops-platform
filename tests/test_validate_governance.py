@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import io
 import subprocess
 import unittest
@@ -9,13 +10,21 @@ from tempfile import TemporaryDirectory
 
 from scripts.validate_governance import (
     CANONICAL_DESIGN_RELATIVE_PATH,
+    DR0003_R1_ARTIFACT_HASHES,
+    DR0003_R1_REVIEW_RELATIVE_PATH,
+    DR0003_R2_ARTIFACT_HASHES,
+    DR0003_REQUIRED_FILES,
+    HISTORICAL_EVIDENCE_TREE_HASHES,
     HISTORIC_CONTRACT_BEGIN,
     HISTORIC_CONTRACT_END,
+    REQUIRED_FILES,
+    V1_ACTIVE_SLICE_CONTRACT_SHA256,
     WP_P0_002_ID,
     WP_P0_002_DESIGN_RELATIVE_PATH,
     WP_P0_002_RELATIVE_PATH,
     WP_P0_003_PREIMPLEMENTATION_EMPTY_TRACEABILITY_IDS,
     WP_P0_003_RELATIVE_PATH,
+    directory_tree_sha256,
     git_scan_paths,
     java_test_identity_inventory,
     validate_active_work_package_record_text,
@@ -24,11 +33,32 @@ from scripts.validate_governance import (
     validate_authorization_state_text,
     validate_completion_state_text,
     validate_controller_review_standard_text,
+    validate_decision_log_v1_text,
+    validate_dr0003_controller_review_text,
+    validate_dr0003_hash_binding_text,
+    validate_dr0003_r1_artifacts,
+    validate_dr0003_r1_whitespace_exception,
+    validate_dr0003_r2_artifacts,
+    validate_ai_execution_boundary_text,
+    validate_ai_operating_model_v1_text,
+    validate_backlog_v1_text,
+    validate_capability_matrix_v1_text,
+    validate_delivery_slices_v1_text,
+    validate_finding_vocabulary_texts,
+    validate_gate_ev_contract_texts,
     validate_lifecycle_state_text,
+    validate_open_questions_v1_text,
+    validate_owner_decisions_v1_text,
     validate_owner_control_state_text,
     validate_parallel_current_state_paths,
     validate_prior_closed_transition_text,
     validate_readme_runtime_state_text,
+    validate_required_file_set,
+    validate_slice_v1_001_text,
+    validate_v1_current_state_text,
+    validate_v1_authority_effect_texts,
+    validate_v1_product_contract_text,
+    validate_v1_traceability_text,
     validate_wp_p0_002_completion_text,
     validate_wp_p0_002_test_identity_contract,
     validate_wp_p0_002_traceability_text,
@@ -2052,6 +2082,50 @@ def repository_governance_text(relative: str) -> str:
     return (Path(__file__).resolve().parents[1] / relative).read_text(encoding="utf-8")
 
 
+def wp_p0_003_historical_current_state() -> str:
+    """Frozen live-state fixture for the now-historical WP-P0-003 validators."""
+    return """# Current State
+
+```yaml
+lifecycle_state: EXECUTING_PHASE_0
+active_work_package: WP-P0-003
+active_gate: CONTROLLER_WP_P0_003_DESIGN_FINALIZATION
+authorization: DESIGN_ONLY
+production_write_enabled: false
+implementation_backed_design_validation: VERIFIED
+bounded_validation_authorization: CLOSED
+pr16_merge_execution: VERIFIED
+full_design_approved: false
+full_implementation_authorized: false
+```
+
+## Active objective
+
+The Controller performs WP-P0-003 Design finalization.
+
+## Next authorized action
+
+CONTROLLER_WP_P0_003_DESIGN_FINALIZATION under DESIGN_ONLY. Full Design approval
+and implementation authorization remain false; OQ-006 remains a later Gate.
+"""
+
+
+def wp_p0_003_historical_open_questions() -> str:
+    return """# Open Questions
+
+| ID | Question | Status |
+| --- | --- | --- |
+| OQ-006 | Object storage and Secret provider | OPEN |
+
+## WP-P0-003 Planning dispositions — questions remain OPEN
+
+OQ-005, OQ-006, OQ-101, OQ-102, OQ-106 and OQ-107 remain explicit.
+No provider is selected. No Secret is selected.
+Implementation authorization remains gated.
+bounded INT-010/HR-01 Raw acceptance remains gated.
+"""
+
+
 def mutate_traceability_field(
     text: str, source_id: str, field: str, value: str
 ) -> str:
@@ -2083,8 +2157,7 @@ class WpP0003PostMergeClosureTests(unittest.TestCase):
         errors: list[str] = []
         validate_wp_p0_003_post_merge_closure_text(
             errors,
-            current
-            or repository_governance_text("docs/00-governance/CURRENT_STATE.md"),
+            current or wp_p0_003_historical_current_state(),
             work_package or repository_governance_text(WP_P0_003_RELATIVE_PATH),
             addendum
             or repository_governance_text(
@@ -2108,9 +2181,9 @@ class WpP0003PostMergeClosureTests(unittest.TestCase):
         self.assertEqual([], self.validate())
 
     def test_full_design_approval_inflation_is_rejected(self) -> None:
-        current = repository_governance_text(
-            "docs/00-governance/CURRENT_STATE.md"
-        ).replace("full_design_approved: false", "full_design_approved: true", 1)
+        current = wp_p0_003_historical_current_state().replace(
+            "full_design_approved: false", "full_design_approved: true", 1
+        )
         self.assertTrue(
             any(
                 "full_design_approved" in error
@@ -2119,9 +2192,7 @@ class WpP0003PostMergeClosureTests(unittest.TestCase):
         )
 
     def test_full_implementation_authorization_inflation_is_rejected(self) -> None:
-        current = repository_governance_text(
-            "docs/00-governance/CURRENT_STATE.md"
-        ).replace(
+        current = wp_p0_003_historical_current_state().replace(
             "full_implementation_authorized: false",
             "full_implementation_authorized: true",
             1,
@@ -2134,9 +2205,7 @@ class WpP0003PostMergeClosureTests(unittest.TestCase):
         )
 
     def test_production_write_enablement_is_rejected(self) -> None:
-        current = repository_governance_text(
-            "docs/00-governance/CURRENT_STATE.md"
-        ).replace(
+        current = wp_p0_003_historical_current_state().replace(
             "production_write_enabled: false",
             "production_write_enabled: true",
             1,
@@ -2198,9 +2267,7 @@ class WpP0003PostMergeClosureTests(unittest.TestCase):
                 )
 
     def test_bounded_validation_verified_cannot_be_removed(self) -> None:
-        current = repository_governance_text(
-            "docs/00-governance/CURRENT_STATE.md"
-        ).replace(
+        current = wp_p0_003_historical_current_state().replace(
             "implementation_backed_design_validation: VERIFIED",
             "implementation_backed_design_validation: PENDING",
             1,
@@ -2213,9 +2280,7 @@ class WpP0003PostMergeClosureTests(unittest.TestCase):
         )
 
     def test_pre_merge_gate_cannot_be_presented_as_current_authority(self) -> None:
-        current = repository_governance_text(
-            "docs/00-governance/CURRENT_STATE.md"
-        ).replace(
+        current = wp_p0_003_historical_current_state().replace(
             "active_gate: CONTROLLER_WP_P0_003_DESIGN_FINALIZATION",
             "active_gate: READY_FOR_DESIGN",
             1,
@@ -2249,10 +2314,10 @@ class WpP0003ActivationContractTests(unittest.TestCase):
         errors: list[str] = []
         validate_wp_p0_003_activation_text(
             errors,
-            current or repository_governance_text("docs/00-governance/CURRENT_STATE.md"),
+            current or wp_p0_003_historical_current_state(),
             work_package or repository_governance_text(WP_P0_003_RELATIVE_PATH),
             backlog or repository_governance_text("docs/03-work-items/BACKLOG-PHASE-0.md"),
-            open_questions or repository_governance_text("docs/00-governance/OPEN_QUESTIONS.md"),
+            open_questions or wp_p0_003_historical_open_questions(),
             decision_request or repository_governance_text(
                 "docs/00-governance/DR-0002-split-controlled-file-import-from-wp-p0-003.md"
             ),
@@ -2389,16 +2454,16 @@ class WpP0003ActivationContractTests(unittest.TestCase):
         )
 
     def test_current_state_must_remain_design_only(self) -> None:
-        current = repository_governance_text(
-            "docs/00-governance/CURRENT_STATE.md"
-        ).replace("authorization: DESIGN_ONLY", "authorization: PLANNING_ONLY", 1)
+        current = wp_p0_003_historical_current_state().replace(
+            "authorization: DESIGN_ONLY", "authorization: PLANNING_ONLY", 1
+        )
         errors = self.activation_errors(current=current)
         self.assertTrue(any("authorization: DESIGN_ONLY" in error for error in errors))
 
     def test_production_write_control_cannot_change_in_active_state(self) -> None:
-        current = repository_governance_text(
-            "docs/00-governance/CURRENT_STATE.md"
-        ).replace("production_write_enabled: false", "production_write_enabled: true", 1)
+        current = wp_p0_003_historical_current_state().replace(
+            "production_write_enabled: false", "production_write_enabled: true", 1
+        )
         errors = self.activation_errors(current=current)
         self.assertTrue(any("production_write_enabled: false" in error for error in errors))
 
@@ -2668,6 +2733,677 @@ class WpP0003ActivationContractTests(unittest.TestCase):
         )
         errors = self.activation_errors(decision_request=decision_request)
         self.assertTrue(any("No Design, migration or implementation" in error for error in errors))
+
+
+class V1RequiredFileTests(unittest.TestCase):
+    def test_complete_required_inventory_is_valid(self) -> None:
+        errors: list[str] = []
+        validate_required_file_set(
+            errors, set(REQUIRED_FILES + DR0003_REQUIRED_FILES)
+        )
+        self.assertEqual([], errors)
+
+    def test_missing_dr_owner_slice_capability_and_assurance_files_are_rejected(self) -> None:
+        required = set(REQUIRED_FILES + DR0003_REQUIRED_FILES)
+        for relative in (
+            "docs/00-governance/DR-0003-v1-product-delivery-baseline-reset.md",
+            "docs/00-governance/OWNER_DECISIONS_V1.md",
+            "docs/02-architecture/adr/ADR-0008-unified-capability-model-and-selective-controlled-write.md",
+            "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+            "docs/04-api/V1_CAPABILITY_MATRIX.md",
+            "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md",
+            "docs/08-handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md",
+            "docs/08-handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-RE-REVIEW-R2.md",
+        ):
+            with self.subTest(relative=relative):
+                errors: list[str] = []
+                validate_required_file_set(errors, required - {relative})
+                self.assertIn(f"missing required file: {relative}", errors)
+
+    def test_historical_evidence_tree_pins_match_and_detect_mutation(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        for relative, expected in HISTORICAL_EVIDENCE_TREE_HASHES.items():
+            with self.subTest(relative=relative):
+                self.assertEqual(expected, directory_tree_sha256(root / relative))
+        with TemporaryDirectory() as directory:
+            path = Path(directory)
+            evidence = path / "evidence.md"
+            evidence.write_text("accepted\n", encoding="utf-8")
+            before = directory_tree_sha256(path)
+            evidence.write_text("mutated\n", encoding="utf-8")
+            self.assertNotEqual(before, directory_tree_sha256(path))
+
+
+class Dr0003R1WhitespaceAttributeTests(unittest.TestCase):
+    def root(self) -> Path:
+        return Path(__file__).resolve().parents[1]
+
+    def attributes(self) -> str:
+        return (self.root() / ".gitattributes").read_text(encoding="utf-8")
+
+    def validate(
+        self,
+        attributes: str,
+        *,
+        root: Path | None = None,
+        required_files: set[str] | None = None,
+    ) -> list[str]:
+        errors: list[str] = []
+        validate_dr0003_r1_whitespace_exception(
+            errors,
+            attributes,
+            root=root or self.root(),
+            required_files=(
+                set(DR0003_REQUIRED_FILES)
+                if required_files is None
+                else required_files
+            ),
+        )
+        return errors
+
+    def test_exact_actual_whitespace_exception_path_is_accepted(self) -> None:
+        expected = f"{DR0003_R1_REVIEW_RELATIVE_PATH} -whitespace"
+        self.assertIn(expected, self.attributes().splitlines())
+        self.assertEqual([], self.validate(self.attributes()))
+
+    def test_slash_directory_typo_is_rejected(self) -> None:
+        wrong = (
+            "docs/08/handoffs/"
+            "CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md"
+        )
+        mutated = self.attributes().replace(DR0003_R1_REVIEW_RELATIVE_PATH, wrong)
+        errors = self.validate(mutated)
+        self.assertTrue(any("exact and singular" in error for error in errors))
+
+    def test_missing_whitespace_exception_target_is_rejected(self) -> None:
+        with TemporaryDirectory() as directory:
+            errors = self.validate(self.attributes(), root=Path(directory))
+        self.assertTrue(any("target does not exist" in error for error in errors))
+
+    def test_whitespace_exception_target_must_remain_required(self) -> None:
+        required = set(DR0003_REQUIRED_FILES) - {DR0003_R1_REVIEW_RELATIVE_PATH}
+        errors = self.validate(self.attributes(), required_files=required)
+        self.assertTrue(any("target must be a required file" in error for error in errors))
+
+    def test_second_or_directory_wide_whitespace_exception_is_rejected(self) -> None:
+        additions = (
+            f"{DR0003_R1_REVIEW_RELATIVE_PATH} -whitespace",
+            "docs/08-handoffs/** -whitespace",
+        )
+        for addition in additions:
+            with self.subTest(addition=addition):
+                errors = self.validate(self.attributes() + addition + "\n")
+                self.assertTrue(any("exact and singular" in error for error in errors))
+
+    def test_all_three_r1_artifact_hashes_remain_exact(self) -> None:
+        self.assertEqual(3, len(DR0003_R1_ARTIFACT_HASHES))
+        for relative, expected in DR0003_R1_ARTIFACT_HASHES.items():
+            with self.subTest(relative=relative):
+                actual = hashlib.sha256((self.root() / relative).read_bytes()).hexdigest()
+                self.assertEqual(expected, actual)
+        errors: list[str] = []
+        validate_dr0003_r1_artifacts(errors)
+        self.assertEqual([], errors)
+
+    def test_r2_artifacts_are_exact_and_non_authorizing(self) -> None:
+        self.assertEqual(3, len(DR0003_R2_ARTIFACT_HASHES))
+        for relative, expected in DR0003_R2_ARTIFACT_HASHES.items():
+            with self.subTest(relative=relative):
+                actual = hashlib.sha256((self.root() / relative).read_bytes()).hexdigest()
+                self.assertEqual(expected, actual)
+        errors: list[str] = []
+        validate_dr0003_r2_artifacts(errors)
+        self.assertEqual([], errors)
+
+
+class V1CurrentStateContractTests(unittest.TestCase):
+    def current(self) -> str:
+        return repository_governance_text("docs/00-governance/CURRENT_STATE.md")
+
+    def charter(self) -> str:
+        return repository_governance_text("docs/00-governance/PROJECT_CHARTER.md")
+
+    def slice_contract_bytes(self) -> bytes:
+        return (
+            Path(__file__).resolve().parents[1]
+            / "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md"
+        ).read_bytes()
+
+    def validate(
+        self,
+        current: str | None = None,
+        charter: str | None = None,
+        slice_contract_bytes: bytes | None = None,
+    ) -> list[str]:
+        errors: list[str] = []
+        validate_v1_current_state_text(
+            errors,
+            current or self.current(),
+            charter or self.charter(),
+            slice_contract_bytes,
+        )
+        return errors
+
+    def test_exact_v1_state_is_valid(self) -> None:
+        self.assertEqual([], self.validate())
+
+    def test_old_phase_wp_design_state_is_rejected(self) -> None:
+        current = self.current().replace(
+            "lifecycle_state: EXECUTING_V1",
+            "lifecycle_state: EXECUTING_PHASE_0\nactive_work_package: WP-P0-003",
+            1,
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("lifecycle_state" in error for error in errors))
+        self.assertTrue(any("Work Package" in error for error in errors))
+
+    def test_duplicate_lifecycle_is_rejected(self) -> None:
+        current = self.current().replace(
+            "lifecycle_state: EXECUTING_V1",
+            "lifecycle_state: EXECUTING_V1\nlifecycle_state: EXECUTING_V1",
+            1,
+        )
+        self.assertTrue(any("lifecycle_state" in error for error in self.validate(current=current)))
+
+    def test_duplicate_active_slice_is_rejected(self) -> None:
+        current = self.current().replace(
+            "active_delivery_slice: SLICE-V1-001",
+            "active_delivery_slice: SLICE-V1-001\nactive_delivery_slice: SLICE-V1-001",
+            1,
+        )
+        self.assertTrue(any("active_delivery_slice" in error for error in self.validate(current=current)))
+
+    def test_wrong_contract_gate_and_authorization_are_rejected(self) -> None:
+        mutations = (
+            (
+                "active_slice_contract: docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+                "active_slice_contract: docs/03-work-items/other.md",
+                "active_slice_contract",
+            ),
+            ("active_gate: SLICE_CONTRACT_APPROVED", "active_gate: READY_FOR_DESIGN", "active_gate"),
+            ("authorization: FULL_SCOPE_IMPLEMENTATION", "authorization: DESIGN_ONLY", "authorization"),
+        )
+        for old, new, field in mutations:
+            with self.subTest(field=field):
+                errors = self.validate(current=self.current().replace(old, new, 1))
+                self.assertTrue(any(field in error for error in errors))
+
+    def test_enabled_global_or_platform_write_is_rejected(self) -> None:
+        mutations = (
+            ("production_write_enabled: false", "production_write_enabled: true"),
+            (
+                "ozon_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+                "ozon_price_write: ENABLED",
+            ),
+            (
+                "wildberries_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+                "wildberries_price_write: ENABLED",
+            ),
+        )
+        for old, new in mutations:
+            with self.subTest(field=old.split(":", 1)[0]):
+                self.assertTrue(self.validate(current=self.current().replace(old, new, 1)))
+
+    def test_contract_byte_change_with_old_hash_is_rejected(self) -> None:
+        mutated = self.slice_contract_bytes().replace(
+            b"SKU Growth & Profit Diagnostic Loop",
+            b"SKU Growth & Profit Diagnostic Lo0p",
+            1,
+        )
+        errors = self.validate(slice_contract_bytes=mutated)
+        self.assertTrue(any("re-review" in error for error in errors))
+        self.assertTrue(any("does not match" in error for error in errors))
+
+    def test_hash_change_with_original_contract_is_rejected(self) -> None:
+        current = self.current().replace(
+            V1_ACTIVE_SLICE_CONTRACT_SHA256,
+            "0" * 64,
+            1,
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("active_slice_contract_sha256" in error for error in errors))
+        self.assertTrue(any("FULL_SCOPE_IMPLEMENTATION" in error for error in errors))
+
+    def test_coordinated_contract_and_hash_change_requires_controller_re_review(self) -> None:
+        mutated = self.slice_contract_bytes() + b"\nR1 mutation requiring re-review\n"
+        mutated_hash = hashlib.sha256(mutated).hexdigest()
+        current = self.current().replace(
+            V1_ACTIVE_SLICE_CONTRACT_SHA256,
+            mutated_hash,
+            1,
+        )
+        errors = self.validate(
+            current=current,
+            slice_contract_bytes=mutated,
+        )
+        self.assertTrue(any("re-review" in error for error in errors))
+
+    def test_full_scope_requires_exact_review_authorization_condition(self) -> None:
+        current = self.current().replace(
+            "EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN",
+            "HASH_UPDATED_WITHOUT_REVIEW",
+            1,
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("authorization_condition" in error for error in errors))
+        self.assertTrue(any("FULL_SCOPE_IMPLEMENTATION" in error for error in errors))
+
+
+class V1DecisionContractTests(unittest.TestCase):
+    def test_exact_decision_log_and_owner_decisions_are_valid(self) -> None:
+        errors: list[str] = []
+        validate_decision_log_v1_text(
+            errors, repository_governance_text("docs/00-governance/DECISION_LOG.md")
+        )
+        validate_owner_decisions_v1_text(
+            errors,
+            repository_governance_text("docs/00-governance/OWNER_DECISIONS_V1.md"),
+        )
+        self.assertEqual([], errors)
+
+    def test_superseded_decision_cannot_be_reactivated(self) -> None:
+        text = repository_governance_text("docs/00-governance/DECISION_LOG.md").replace(
+            "| D-01 | 2026-08-06 | SUPERSEDED |",
+            "| D-01 | 2026-08-06 | ACCEPTED |",
+            1,
+        )
+        errors: list[str] = []
+        validate_decision_log_v1_text(errors, text)
+        self.assertTrue(any("D-01" in error and "SUPERSEDED" in error for error in errors))
+
+    def test_retained_or_new_decision_cannot_be_removed(self) -> None:
+        original = repository_governance_text("docs/00-governance/DECISION_LOG.md")
+        for decision_id in ("D-03", "D-17", "D-24"):
+            with self.subTest(decision_id=decision_id):
+                text = "\n".join(
+                    line for line in original.splitlines()
+                    if not line.startswith(f"| {decision_id} |")
+                )
+                errors: list[str] = []
+                validate_decision_log_v1_text(errors, text)
+                self.assertTrue(any(decision_id in error for error in errors))
+
+    def test_owner_decision_missing_or_duplicate_is_rejected(self) -> None:
+        original = repository_governance_text(
+            "docs/00-governance/OWNER_DECISIONS_V1.md"
+        )
+        for mutated in (
+            original.replace("OD-V1-024", "OD-V1-999", 1),
+            original.replace("CD-V1-011", "CD-V1-010", 1),
+        ):
+            errors: list[str] = []
+            validate_owner_decisions_v1_text(errors, mutated)
+            self.assertTrue(errors)
+
+
+class V1SliceContractTests(unittest.TestCase):
+    def test_exact_backlog_delivery_plan_and_slice_are_valid(self) -> None:
+        errors: list[str] = []
+        validate_backlog_v1_text(
+            errors, repository_governance_text("docs/03-work-items/BACKLOG-PHASE-0.md")
+        )
+        validate_delivery_slices_v1_text(
+            errors, repository_governance_text("docs/03-work-items/V1_DELIVERY_SLICES.md")
+        )
+        validate_slice_v1_001_text(
+            errors,
+            repository_governance_text(
+                "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md"
+            ),
+        )
+        self.assertEqual([], errors)
+
+    def test_backlog_without_exact_historical_banner_is_rejected(self) -> None:
+        original = repository_governance_text("docs/03-work-items/BACKLOG-PHASE-0.md")
+        mutated = original.replace("HISTORICAL PROVENANCE ONLY", "ACTIVE PLAN", 1)
+        errors: list[str] = []
+        validate_backlog_v1_text(errors, mutated)
+        self.assertTrue(errors)
+
+    def test_missing_slice_section_is_rejected(self) -> None:
+        original = repository_governance_text(
+            "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md"
+        )
+        mutated = original.replace("## 12. Stop conditions during implementation", "## Stop conditions", 1)
+        errors: list[str] = []
+        validate_slice_v1_001_text(errors, mutated)
+        self.assertTrue(any("Stop conditions" in error for error in errors))
+
+    def test_missing_invariant_or_acceptance_id_is_rejected(self) -> None:
+        original = repository_governance_text(
+            "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md"
+        )
+        for mutated, expected in (
+            (original.replace("20. One Slice", "One Slice", 1), "invariants"),
+            (original.replace("S1-AC-041", "S1-AC-MISSING", 1), "S1-AC-041"),
+        ):
+            with self.subTest(expected=expected):
+                errors: list[str] = []
+                validate_slice_v1_001_text(errors, mutated)
+                self.assertTrue(any(expected in error for error in errors))
+
+    def test_unknown_readback_restore_and_kill_switch_chain_is_required(self) -> None:
+        original = repository_governance_text(
+            "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md"
+        )
+        for token in (
+            "Timeout/unknown platform result is never blindly resubmitted",
+            "Platform success is not final success until required Readback converges.",
+            "Restore/compensate cannot overwrite a later legitimate external change.",
+            "global and scoped Kill Switches prevent new writes",
+        ):
+            with self.subTest(token=token):
+                errors: list[str] = []
+                validate_slice_v1_001_text(errors, original.replace(token, "removed", 1))
+                self.assertTrue(errors)
+
+
+class V1CapabilityAiAndWriteContractTests(unittest.TestCase):
+    def test_exact_capability_ai_product_and_design_gate_contracts_are_valid(self) -> None:
+        errors: list[str] = []
+        validate_capability_matrix_v1_text(
+            errors, repository_governance_text("docs/04-api/V1_CAPABILITY_MATRIX.md")
+        )
+        validate_ai_execution_boundary_text(
+            errors,
+            repository_governance_text(
+                "docs/02-architecture/V1_AI_DATA_AND_EXECUTION_BOUNDARY.md"
+            ),
+        )
+        validate_v1_product_contract_text(
+            errors, repository_governance_text("docs/01-requirements/V1_PRODUCT_CONTRACT.md")
+        )
+        validate_ai_operating_model_v1_text(
+            errors, repository_governance_text("docs/00-governance/AI_OPERATING_MODEL.md")
+        )
+        self.assertEqual([], errors)
+
+    def test_write_capability_cannot_start_verified(self) -> None:
+        original = repository_governance_text("docs/04-api/V1_CAPABILITY_MATRIX.md")
+        row = next(
+            line
+            for line in original.splitlines()
+            if line.startswith("| Ozon | `PRICE_CHANGE` |")
+        )
+        mutated = original.replace(
+            row, row.replace("| UNVERIFIED |", "| PASS |", 1), 1
+        )
+        errors: list[str] = []
+        validate_capability_matrix_v1_text(errors, mutated)
+        self.assertTrue(any("UNVERIFIED" in error for error in errors))
+
+    def test_guessed_endpoint_or_quota_is_rejected(self) -> None:
+        original = repository_governance_text("docs/04-api/V1_CAPABILITY_MATRIX.md")
+        for addition in (
+            "\nendpoint: https://api-seller.example/v1/prices\n",
+            "\nquota: 100 requests per minute\n",
+        ):
+            with self.subTest(addition=addition.strip()):
+                errors: list[str] = []
+                validate_capability_matrix_v1_text(errors, original + addition)
+                self.assertTrue(any("guessed" in error for error in errors))
+
+    def test_ai_cannot_gain_fact_policy_approval_command_or_credential_authority(self) -> None:
+        original = repository_governance_text(
+            "docs/02-architecture/V1_AI_DATA_AND_EXECUTION_BOUNDARY.md"
+        )
+        mutated = original.replace(
+            "AI never owns the approval decision, idempotency key, Outbox writer, Marketplace",
+            "AI owns the approval decision, Outbox writer and Marketplace",
+            1,
+        )
+        errors: list[str] = []
+        validate_ai_execution_boundary_text(errors, mutated)
+        self.assertTrue(errors)
+
+    def test_controlled_write_chain_cannot_lose_readback_or_restore(self) -> None:
+        original = repository_governance_text("docs/01-requirements/V1_PRODUCT_CONTRACT.md")
+        for token in (
+            "→ Provider State + Readback",
+            "→ Audit + Restore/Compensate + Outcome Follow-up",
+        ):
+            with self.subTest(token=token):
+                errors: list[str] = []
+                validate_v1_product_contract_text(errors, original.replace(token, "removed", 1))
+                self.assertTrue(errors)
+
+    def test_conditional_gate_cannot_cover_ordinary_engineering(self) -> None:
+        original = repository_governance_text("docs/00-governance/AI_OPERATING_MODEL.md")
+        mutated = original.replace("not trigger the Gate.", "trigger the Gate.", 1)
+        errors: list[str] = []
+        validate_ai_operating_model_v1_text(errors, mutated)
+        self.assertTrue(errors)
+
+
+class V1R1GovernanceContractTests(unittest.TestCase):
+    def documents(self) -> dict[str, str]:
+        paths = {
+            "current": "docs/00-governance/CURRENT_STATE.md",
+            "charter": "docs/00-governance/PROJECT_CHARTER.md",
+            "dr": "docs/00-governance/DR-0003-v1-product-delivery-baseline-reset.md",
+            "owner": "docs/00-governance/OWNER_DECISIONS_V1.md",
+            "product": "docs/01-requirements/V1_PRODUCT_CONTRACT.md",
+            "slices": "docs/03-work-items/V1_DELIVERY_SLICES.md",
+            "slice": "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+            "review_standard": "docs/00-governance/CONTROLLER_REVIEW_STANDARD.md",
+            "quality": "docs/00-governance/QUALITY_GATES.md",
+            "assurance": "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md",
+            "operating": "docs/00-governance/AI_OPERATING_MODEL.md",
+            "capability": "docs/04-api/V1_CAPABILITY_MATRIX.md",
+            "handoff": "docs/00-governance/HANDOFF_PROTOCOL.md",
+            "guide": "docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md",
+            "questions": "docs/00-governance/OPEN_QUESTIONS.md",
+            "traceability": "docs/01-requirements/v1-traceability.csv",
+            "pr_template": ".github/pull_request_template.md",
+            "agents": "AGENTS.md",
+            "claude": "CLAUDE.md",
+            "claude_project": "docs/00-governance/CLAUDE_PROJECT_INSTRUCTIONS.md",
+            "chatgpt_project": "docs/00-governance/CHATGPT_PROJECT_INSTRUCTIONS.md",
+        }
+        return {
+            name: repository_governance_text(relative)
+            for name, relative in paths.items()
+        }
+
+    def test_exact_r1_finding_authority_and_gate_ev_contracts_are_valid(self) -> None:
+        documents = self.documents()
+        errors: list[str] = []
+        validate_finding_vocabulary_texts(errors, documents)
+        validate_v1_authority_effect_texts(errors, documents)
+        validate_gate_ev_contract_texts(errors, documents)
+        self.assertEqual([], errors)
+
+    def test_second_finding_taxonomy_is_rejected_but_delivery_risk_is_allowed(self) -> None:
+        documents = self.documents()
+        self.assertIn("delivery_risk: CRITICAL", documents["slice"])
+        errors: list[str] = []
+        validate_finding_vocabulary_texts(errors, documents)
+        self.assertEqual([], errors)
+        documents["product"] += "\nNo unresolved Critical/High finding remains.\n"
+        validate_finding_vocabulary_texts(errors, documents)
+        self.assertTrue(any("forbidden" in error for error in errors))
+
+    def test_stale_pending_merge_metadata_is_rejected_in_executing_v1(self) -> None:
+        mutations = {
+            "dr": (
+                "status: ACCEPTED_EFFECTIVE_ON_PROTECTED_MAIN",
+                "status: CONTROLLER_APPROVED_PENDING_REPOSITORY_EFFECT",
+            ),
+            "owner": (
+                "repository_effect: EFFECTIVE_WHEN_PRESENT_ON_PROTECTED_MAIN",
+                "repository_effect: PENDING_DR_0003_MERGE",
+            ),
+            "product": (
+                "status: APPROVED_EFFECTIVE_ON_PROTECTED_MAIN",
+                "status: APPROVED_BY_DR_0003_PENDING_REPOSITORY_EFFECT",
+            ),
+            "slices": (
+                "CONTRACT_APPROVED_EFFECTIVE_ON_PROTECTED_MAIN",
+                "CONTRACT_APPROVED / PENDING_RESET_MERGE",
+            ),
+        }
+        for name, (old, new) in mutations.items():
+            with self.subTest(document=name):
+                documents = self.documents()
+                self.assertIn("lifecycle_state: EXECUTING_V1", documents["current"])
+                documents[name] = documents[name].replace(old, new, 1)
+                errors: list[str] = []
+                validate_v1_authority_effect_texts(errors, documents)
+                self.assertTrue(any("pending-merge" in error for error in errors))
+
+    def test_gate_ev_cannot_be_collapsed_into_gate_e_or_enablement(self) -> None:
+        documents = self.documents()
+        documents["quality"] = documents["quality"].replace(
+            "## Gate EV — Bounded Real-Write Verification Authorization",
+            "## Gate E — Controlled Capability Enablement",
+            1,
+        )
+        errors: list[str] = []
+        validate_gate_ev_contract_texts(errors, documents)
+        self.assertTrue(any("Gate EV quality" in error for error in errors))
+
+        documents = self.documents()
+        documents["current"] = documents["current"].replace(
+            "bounded_real_write_verification_authorization: NONE",
+            "bounded_real_write_verification_authorization: AUTHORIZE_BOUNDED_REAL_WRITE_VERIFICATION",
+            1,
+        )
+        errors = []
+        validate_gate_ev_contract_texts(errors, documents)
+        self.assertTrue(any("Gate EV current" in error for error in errors))
+
+    def test_gate_ev_requires_the_complete_bounded_authorization_envelope(self) -> None:
+        required = (
+            "explicit Human Owner authorization",
+            "Platform, opaque Account/Store reference, Capability and SKU allowlist",
+            "one-time or time-bounded verification window",
+            "maximum price delta and cumulative exposure",
+            "current official-source and real-account Capability evidence",
+            "current deterministic Guardrails and a passing Dry Run",
+            "supervised operator, abort owner and manual-stop procedure",
+            "global and scoped Kill Switches",
+            "captured pre-state",
+            "Readback and Restore/Compensate procedure",
+            "unknown-result and manual-resolution behavior",
+            "complete Audit and durable redacted evidence-retention plan",
+        )
+        for token in required:
+            with self.subTest(token=token):
+                documents = self.documents()
+                documents["quality"] = documents["quality"].replace(
+                    token, "removed Gate-EV envelope field", 1
+                )
+                errors: list[str] = []
+                validate_gate_ev_contract_texts(errors, documents)
+                self.assertTrue(any("Gate EV quality" in error for error in errors))
+
+    def test_implementation_merge_and_gate_ev_cannot_enable_controlled_pilot(self) -> None:
+        mutations = {
+            "operating": (
+                "`FULL_SCOPE_IMPLEMENTATION`, merge and Gate EV do not authorize ongoing",
+                "`FULL_SCOPE_IMPLEMENTATION`, merge and Gate EV authorize ongoing",
+            ),
+            "product": (
+                "not substitute for Gate EV",
+                "substitute for Gate EV",
+            ),
+            "assurance": (
+                "completion or Gate EV does not automatically enable the Capability",
+                "completion or Gate EV automatically enables the Capability",
+            ),
+        }
+        for name, (old, new) in mutations.items():
+            with self.subTest(document=name):
+                documents = self.documents()
+                documents[name] = documents[name].replace(old, new, 1)
+                errors: list[str] = []
+                validate_gate_ev_contract_texts(errors, documents)
+                self.assertTrue(any(f"Gate EV {name}" in error for error in errors))
+
+    def test_r1_controller_artifacts_are_exact_and_non_authorizing(self) -> None:
+        errors: list[str] = []
+        validate_dr0003_r1_artifacts(errors)
+        self.assertEqual([], errors)
+
+
+class V1TraceabilityAndOpenQuestionTests(unittest.TestCase):
+    def traceability(self) -> str:
+        return repository_governance_text("docs/01-requirements/v1-traceability.csv")
+
+    def test_exact_v1_traceability_and_open_questions_are_valid(self) -> None:
+        errors: list[str] = []
+        validate_v1_traceability_text(errors, self.traceability())
+        validate_open_questions_v1_text(
+            errors, repository_governance_text("docs/00-governance/OPEN_QUESTIONS.md")
+        )
+        self.assertEqual([], errors)
+
+    def test_missing_decision_or_duplicate_source_id_is_rejected(self) -> None:
+        original = self.traceability()
+        missing = "\n".join(
+            line for line in original.splitlines() if not line.startswith("D-24,")
+        ) + "\n"
+        duplicate = original + next(
+            line for line in original.splitlines() if line.startswith("D-18,")
+        ) + "\n"
+        for mutated in (missing, duplicate):
+            errors: list[str] = []
+            validate_v1_traceability_text(errors, mutated)
+            self.assertTrue(errors)
+
+    def test_invalid_status_and_ungrounded_verified_are_rejected(self) -> None:
+        invalid = mutate_traceability_field(
+            self.traceability(), "D-18", "status", "COMPLETE"
+        )
+        ungrounded = mutate_traceability_field(
+            self.traceability(), "D-19", "status", "VERIFIED"
+        )
+        for mutated in (invalid, ungrounded):
+            errors: list[str] = []
+            validate_v1_traceability_text(errors, mutated)
+            self.assertTrue(errors)
+
+    def test_open_question_cannot_block_slice_start(self) -> None:
+        original = repository_governance_text("docs/00-governance/OPEN_QUESTIONS.md")
+        mutated = original.replace(
+            "| Onboarding and Pilot enablement |", "| IMPLEMENTATION_START |", 1
+        )
+        errors: list[str] = []
+        validate_open_questions_v1_text(errors, mutated)
+        self.assertTrue(any("implementation start" in error for error in errors))
+
+
+class Dr0003ArtifactAuthorityTests(unittest.TestCase):
+    def test_exact_review_and_hash_binding_are_valid(self) -> None:
+        errors: list[str] = []
+        validate_dr0003_controller_review_text(
+            errors,
+            repository_governance_text(
+                "docs/08-handoffs/CONTROLLER-DR-0003-V1-BASELINE-RESET-REVIEW.md"
+            ),
+        )
+        validate_dr0003_hash_binding_text(
+            errors,
+            repository_governance_text(
+                "docs/08-handoffs/DR-0003-CONTROLLER-ARTIFACT-HASHES.md"
+            ),
+        )
+        self.assertEqual([], errors)
+
+    def test_package_cannot_claim_merge_or_production_authority(self) -> None:
+        original = repository_governance_text(
+            "docs/08-handoffs/CONTROLLER-DR-0003-V1-BASELINE-RESET-REVIEW.md"
+        )
+        for old, new in (
+            ("merge_verdict: NOT_ISSUED", "merge_verdict: APPROVE_FOR_HUMAN_MERGE"),
+            ("production_enablement: NOT_AUTHORIZED", "production_enablement: AUTHORIZED"),
+        ):
+            with self.subTest(field=old.split(":", 1)[0]):
+                errors: list[str] = []
+                validate_dr0003_controller_review_text(
+                    errors, original.replace(old, new, 1)
+                )
+                self.assertTrue(errors)
 
 
 if __name__ == "__main__":

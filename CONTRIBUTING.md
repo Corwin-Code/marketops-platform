@@ -1,45 +1,77 @@
 # Contributing to MarketOps Russia
 
-## 1. Work must start from an approved Work Package
+## 1. Start from an active contract
 
-Every change must reference one Work Package ID and the applicable Requirement IDs, Owner Decisions, Hard Rules or ADRs.
+Every substantive change references:
 
-## 2. Branch naming
+- one active Production Delivery Slice;
+- the acceptance criteria it advances;
+- relevant Owner Decisions, Requirement IDs and ADRs;
+- any bounded implementation tranche/Work Package used to keep a PR reviewable.
+
+A Work Package is an engineering context/transport unit, not a new product stage.
+It cannot silently change the Slice Product Acceptance Contract.
+
+## 2. Branches and Pull Requests
+
+Use one short-lived task/Slice branch into protected `main`; do not create a
+long-lived `develop` branch.
+
+Examples:
 
 ```text
-feat/WP-P0-001-repository-foundation
-fix/WP-P0-001-ci-governance
-chore/WP-P0-001-docs
+feat/SLICE-V1-001-sku-diagnostic
+fix/SLICE-V1-001-price-readback
+chore/DR-0003-v1-baseline-reset
+codex/SLICE-V1-001-final-rework
 ```
 
-One Work Package should normally produce one focused Pull Request. Do not create a long-lived `develop` branch during the initial phase.
+One Slice may use bounded sequential PR tranches when a single diff would be
+unreviewable. Each PR leaves the repository coherent, says which acceptance items
+it advances and avoids claiming Slice completion.
 
-## 3. AI-generated changes
+## 3. Contract-governed implementation
 
-AI output is untrusted until reviewed and tested. The author must disclose the agent used, exact commands executed, failed checks, assumptions and unresolved risks in the PR body.
+Claude may perform Detailed Design and implementation continuously after the
+Slice Contract is approved. It must stop only for a Conditional Design Gate
+trigger defined by ADR-0006/active Contract. Ordinary `HOW` decisions stay within
+implementation.
 
-Claude is the Maker. GPT Controller is the independent
-scope/architecture/quality checker. CI is deterministic evidence. Human Owner
-retains final merge authorization/revocation; while D-17 delegation is active,
-Codex may execute only the already-gated Ready/merge operation and cannot approve
-its own changes.
+AI-generated output is untrusted until independently reviewed and supported by
+real tests/evidence. Disclose agent, exact commands, failures, assumptions and
+unresolved risks.
 
-## 4. No direct push to `main`
+## 4. Review and rework
 
-All changes go through a Pull Request and required status checks. Emergency bypass must be documented in `DECISION_LOG.md` and followed by a post-incident review.
+- GPT Controller reviews actual source/diff/migrations/tests/CI and external
+  evidence, not an agent summary.
+- Codex may perform full in-scope production rework/fix/verify against Controller
+  findings, including coherent refactoring needed to close them.
+- No agent approves its own authored/reworked result.
+- CI is evidence, not business approval.
 
-## 5. Secrets and personal data
+## 5. No direct push or implicit production enablement
+
+All accepted changes use a Pull Request and required checks. Merge authorization
+and production enablement are separate Human Owner decisions. A merged write
+Capability remains disabled until its specific Capability Gate passes.
+
+## 6. Secrets, PII and fixtures
 
 Never commit or paste:
 
-- Ozon/Wildberries Tokens, API keys, cookies or passwords;
-- private keys or certificates;
-- buyer name, phone, address or payment data;
-- unredacted production payloads;
-- credentials embedded in screenshots or logs.
+- Marketplace/cloud/model Tokens, credentials, Cookies or passwords;
+- private keys/certificates/recovery codes/signed object URLs;
+- Buyer name, phone, full address, payment data;
+- unredacted production payloads or screenshots containing sensitive values.
 
-Use synthetic or approved redacted fixtures. Store only Secret references and metadata in application data.
+Use synthetic or formally redacted fixtures and opaque Secret references.
 
-## 6. Review evidence
+## 7. Database and evidence
 
-A PR is not complete merely because code was generated. It must include relevant build, lint, test, migration, replay, security, observability and rollback evidence required by the Work Package.
+- V0001–V0010 are immutable; all new schema evolution is forward-only V0011+.
+- Raw/Ledger/Audit invariants must remain executable and replayable.
+- Existing WP evidence is historical provenance and must not be rewritten.
+- A PR includes applicable build, lint, unit/property, real database, migration,
+  contract, replay, security, browser, performance, observability and recovery
+  evidence from the Production Assurance Matrix.

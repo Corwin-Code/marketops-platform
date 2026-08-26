@@ -1,4 +1,4 @@
-# Project Charter — MarketOps Russia
+# Project Charter — MarketOps Russia V1
 
 ## 1. Identity
 
@@ -8,85 +8,112 @@
 | Formal English name | Russia Marketplace Operations & Decision Platform |
 | Product short name | MarketOps Russia |
 | Engineering short name | marketops |
-| Proposed monorepo | marketops-platform |
-| Baseline | Development Baseline v1.0, 2026-08-06 |
-| Current phase | Sprint 0 / Phase 0 |
-| Status | EXECUTING_PHASE_0 |
+| Repository | Corwin-Code/marketops-platform |
+| Foundational source | Development Baseline v1.0, 2026-08-06 |
+| Active reset authority | DR-0003 + `OWNER_DECISIONS_V1.md` + `V1_PRODUCT_CONTRACT.md` |
+| Product version | V1 |
+| Status | EXECUTING_V1 |
+| Delivery model | Production Vertical Slices + Shared Spine |
 
 ## 2. Mission
 
-Build an internal, production-grade and auditable operations and decision platform for a Russian local Marketplace business. The platform unifies Ozon, Wildberries, warehouse, procurement, cost, advertising, promotion, return and settlement facts; establishes traceable SKU-level operating truth; and turns verified exceptions into recommendations, tasks, approvals and later controlled execution.
+Build a production-grade, auditable internal operating system for one Russian
+Marketplace business. MarketOps unifies official Ozon/Wildberries facts with
+internal procurement, COGS, warehouse and finance facts; exposes trustworthy
+SKU-level operating truth; uses AI to discover and explain hidden patterns; and
+turns approved recommendations into guarded platform actions whose Readback and
+business outcomes are tracked.
 
-## 3. Phase 0 objective
+The success measure is a real operating loop that helps users improve sales and
+Contribution Profit—not the quantity of dashboards, roles, schemas or completed
+horizontal components.
 
-Phase 0 establishes Data, Identity & Visibility Foundation:
+## 3. V1 product outcome
 
-- Organization, account, store and warehouse identity;
-- Product Variant and platform-ID mapping;
-- immutable Raw evidence and replay;
-- historical backfill and data quality;
-- basic order, stock, return and cost visibility;
-- Daily Business Report v1;
-- credential metadata governance without exposing secrets.
+V1 must support:
 
-## 4. In scope
+- Ozon and Wildberries, including both platforms' FBO/FBS semantics;
+- Product/Listing, Price, Promotion, Inventory, Advertising, Order/Fulfillment,
+  Return and Finance decision data;
+- internal COGS, local physical stock and necessary finance facts through
+  controlled manual entry and Excel/CSV import until system APIs are known;
+- deterministic versioned facts, metrics, Freshness and Confidence;
+- embedded AI analysis, explanation and concrete Recommendation;
+- Recommendation, Task, Commercial Policy, Guardrail and Approval;
+- selected official-platform writes on both Ozon and Wildberries;
+- Readback, Audit, Kill Switch, Restore/Compensate and outcome follow-up;
+- secure public-network use with external OIDC/MFA and MarketOps business scopes;
+- Yandex Cloud `ru-central1` as the V1 primary production environment.
 
-- Ozon-first architecture and first end-to-end read vertical slice;
-- Wildberries parallel read foundation and unified analysis model;
-- Java 21 / Spring Boot / PostgreSQL / Flyway / React + TypeScript;
-- Modular Monolith and PostgreSQL Task/Outbox Worker;
-- Docker-based local and controlled deployment foundation;
-- traceability from Requirement to Evidence;
-- Maker–Checker AI collaboration with deterministic CI.
+## 4. Active delivery strategy
 
-## 5. Out of scope for the first phase
+The primary delivery unit is a `Production Delivery Slice`: a complete operating
+capability that can be released safely to bounded real users/data. Shared
+infrastructure is built to the production depth required by the current Slice and
+is reused and extended once.
 
-- generic external SaaS;
-- full ERP, WMS, statutory accounting or tax replacement;
-- browser automation, scraping or unpublished platform endpoints;
-- unapproved automatic price, stock, order, promotion or ads writes;
-- Kafka, Kubernetes, microservices or large-scale real-time streaming;
-- treating third-party market estimates as financial truth;
-- publishing AI-generated Russian content without authorized native review.
+The active first Slice is:
 
-## 6. Fixed Owner decisions
+```text
+SLICE-V1-001 — SKU Growth & Profit Diagnostic Loop
+```
 
-- D-01: dual-platform architecture; Ozon end-to-end first; WB Read Integration in parallel.
-- D-02: no unattended platform writes in the first version.
-- D-03: Modular Monolith + PostgreSQL Worker.
-- D-04: Raw, Inventory Ledger and Financial Ledger are immutable.
-- D-05: Variant / Color / Size / Purchase Batch are required operating granularity.
-- D-06: third-party competitor data is trend-only.
-- D-07: AI recommends only and holds no platform write credentials.
-- D-08: official APIs are the only permitted programmatic Marketplace integration.
-- D-09: Metrics and Mapping are versioned.
-- D-10: no automation expansion before the relevant Phase Gate passes.
-- D-15: the repository is Public during pre-production; when real production
-  go-live is reached, or earlier before confidential business material, it must
-  return to Private and all repository and security controls must be revalidated.
-- D-16: Owner Git Workflow Guidance Mode is mandatory at every task start until
-  the Human Owner explicitly confirms familiarity and asks to disable it.
-- D-17: while Current State records an active delegation, Codex may perform the
-  mechanical PR Ready/merge action only after all gates and an independent
-  Controller verdict; Human Owner authorization/revocation and all non-Git Owner
-  authority remain unchanged.
+It combines broad SKU diagnosis with Recommendation/Task/Approval and the first
+real dual-platform `PRICE_CHANGE → Readback` capability.
 
-## 7. Governance
+A Work Package is now an optional implementation tranche/context boundary inside
+an approved Slice. It is not an independent product phase and does not create a
+mandatory Design Approval on its own.
+
+## 5. Fixed V1 boundaries
+
+- one operating entity; not a public multi-tenant SaaS;
+- Modular Monolith + PostgreSQL Worker/Outbox;
+- official Marketplace APIs only;
+- immutable Raw, Inventory Ledger, Financial Ledger and audit evidence;
+- Variant/Color/Size/Purchase Batch operating granularity;
+- deterministic facts and rules; AI is an intelligence layer, not execution
+  authority or financial fact authority;
+- Buyer PII excluded from AI and general Analytics/Mart by default;
+- low-risk Policy-authorized semi-automation allowed; high-risk actions require
+  per-action approval;
+- all platform writes default disabled; bounded evidence generation requires an
+  exact Gate EV, while ongoing controlled Pilot use requires Gate E;
+- no Kafka, Kubernetes, microservices or multi-cloud without a demonstrated need
+  and a new Decision/ADR;
+- production capability completion is a release Gate; business uplift is measured
+  after release rather than required to declare V1 capability complete.
+
+## 6. Governance authorities
 
 | Decision type | Authority |
 | --- | --- |
-| Business scope, commercial floor, account ownership, high-risk automation | Human Owner |
-| Requirement interpretation, Work Package, architecture/quality verdict, Phase Gate | GPT Controller |
-| Detailed design, implementation, tests, Draft PR | Claude Maker |
-| Bounded repair and verification after findings | Codex/Rework Agent when enabled |
-| Build, lint, tests, migration checks, security checks | CI |
-| Final merge authorization, secret provisioning, production enablement | Human Owner |
-| Gated PR Ready/merge execution | Human Owner or active D-17 Codex delegate |
+| Product intent, commercial risk appetite, legal entity/accounts, production release and irreversible business decisions | Human Owner |
+| Product/Slice Contract, architecture hard boundaries, quality/release verdict and decision interpretation | GPT Controller |
+| Detailed Design and Initial Full Implementation inside an approved Slice Contract | Claude Fable 5 / Claude Code |
+| Full in-scope Production Rework, Fix and Verify after GPT Deep Review | Codex |
+| Deterministic build/test/migration/security evidence | CI |
+| Protected merge authorization/revocation, Gate-EV bounded write verification and Gate-E production enablement | Human Owner |
+| Mechanical Ready/merge execution after all Gates | Human Owner or active D-17 Codex delegate |
 
-## 8. Source-of-truth policy
+## 7. Source-of-truth order
 
-Chat history is not the project database. Every accepted decision, current state, requirement mapping, design and evidence must be committed to the repository. Any inconsistency must be raised; no agent may silently reconcile or replace the Baseline.
+For V1 conflicts, use:
 
-## 9. Initial success condition
+1. DR-0003 and explicit Owner decisions in `OWNER_DECISIONS_V1.md`;
+2. `V1_PRODUCT_CONTRACT.md`;
+3. accepted newer ADRs and active Slice Contract;
+4. unchanged hard rules/Requirement IDs in Baseline v1.0;
+5. live code, migrations, tests and provider evidence;
+6. `CURRENT_STATE.md`, Decision Log, Open Questions and Traceability;
+7. chat history only as non-authoritative work context.
 
-The project may leave `INITIATING` and enter `EXECUTING_PHASE_0` only after Gate G0 passes: the Public pre-production repository under D-15 is created, governance files are versioned, `main` is protected, governance CI is required, Claude/ChatGPT instructions are installed, and the WP-P0-001 design is approved.
+No agent may silently reconcile a conflict. It must cite the higher authority or
+raise one material question.
+
+## 8. Initial V1 success condition
+
+`V1 Product Complete` requires all V1-required Delivery Slices to be production-
+grade, integrated and operable. An individual Slice may be released earlier to a
+bounded production cohort after its own Gate. A Slice release does not imply the
+whole V1 is complete.

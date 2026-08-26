@@ -1,5 +1,11 @@
 # Test Strategy
 
+> **Active V1 assurance:** the test layers below remain valid historical and
+> reusable strategy. Active Slice and controlled-write evidence requirements are
+> governed by `docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md` and the active
+> Slice Acceptance IDs. WP-specific tables remain evidence provenance and do not
+> define the current delivery sequence.
+
 ## Baseline layers
 
 - Unit: parsers, mappings, money, state and rules;
@@ -43,3 +49,11 @@
 ## Evidence rule
 
 A model statement such as “tests should pass” is not evidence. Evidence must be a reproducible command result, CI check, test report, migration output or inspected runtime artifact.
+
+## V1 evidence classification
+
+Fixture/in-memory evidence proves only its stated local layer. Real PostgreSQL,
+approved Object Storage, Ozon/WB, OIDC IdP, model provider, browser, recovery and
+operator-drill obligations require the corresponding evidence class in the V1
+Production Assurance Matrix. CI success is necessary but does not promote a mock
+to real-provider evidence or enable a production write.

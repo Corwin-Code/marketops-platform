@@ -1,3 +1,14 @@
+> **DR-0003 status — HISTORICAL PROVENANCE ONLY**
+>
+> This Phase 0 Work Package backlog is preserved as the planning record that
+> produced WP-P0-001/002 and the bounded WP-P0-003 evidence. It is superseded as
+> active execution authority by `docs/01-requirements/V1_PRODUCT_CONTRACT.md` and
+> `docs/03-work-items/V1_DELIVERY_SLICES.md`. Its rows do not authorize Design,
+> implementation or production behavior. Existing WP records/evidence remain
+> valid historical provenance.
+
+---
+
 # Phase 0 Work Package Backlog
 
 Phase 0 is a Gate, not merely a date range. Work Packages are deliberately small enough for independent design, implementation and review.

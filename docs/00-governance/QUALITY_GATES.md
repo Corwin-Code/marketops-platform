@@ -1,95 +1,181 @@
-# Quality Gates
+# Quality Gates v2
 
-## G0 — Repository & Collaboration Foundation
+## G0 — Repository foundation
 
-All items must pass before product implementation begins:
+G0 remains historically verified. Protected PR flow, required CI, Secret scanning,
+source integrity, no direct `main` push and Owner merge authority remain binding.
 
-- Public pre-production repository created and source files committed under D-15;
-- Human Owner has explicitly accepted the Public exposure boundary;
-- `main` protected by a Ruleset;
-- Pull Request required for changes;
-- required status check `governance` passes;
-- force push and branch deletion disabled;
-- issue/PR templates available;
-- ChatGPT and Claude Project instructions installed;
-- Owner Git Workflow Guidance Mode installed and marked `REQUIRED` until explicit
-  Human Owner confirmation disables it;
-- any delegated merge executor is recorded in Current State, bounded by an
-  accepted Decision Request and separated from independent Controller approval;
-- no secret or production PII in repository or AI knowledge base;
-- WP-P0-001 design reviewed and verdict is `APPROVED_FOR_IMPLEMENTATION`.
+## Gate C — Product / Slice Contract
 
-Public visibility is valid for G0 during pre-production. At real production
-go-live, or earlier before confidential business material is committed, the
-repository must be converted to Private and repository/security controls must be
-revalidated as required by D-15.
+The Controller verifies:
 
-## Design Gate
-
-The Controller checks:
-
-- Requirement IDs and non-goals are explicit;
-- architecture respects accepted ADRs and Baseline hard rules;
-- external technology/platform facts are verified with current primary sources;
-- data model, state transitions and failure modes are explicit;
-- idempotency, replay, freshness and unknown states are addressed;
-- security, permissions, privacy and secret handling are addressed;
-- test, observability, migration and rollback plans are concrete;
-- open questions are not hidden behind implementation assumptions.
+- exact Slice Contract path and SHA-256; authorization is bound to those bytes,
+  and any revision requires an independent Contract re-review;
+- observable business/user outcome and complete in-scope loop;
+- explicit non-goals and delivery boundaries;
+- Owner decisions closed or assigned to exact external evidence Gates;
+- source of truth, authority and hard invariants;
+- data, AI, security, failure, recovery and controlled-write obligations;
+- acceptance evidence and stop conditions;
+- engineering freedom that does not need further approval.
 
 Verdicts:
 
 ```text
-APPROVED_FOR_IMPLEMENTATION
-CHANGES_REQUIRED
+AUTHORIZED_FOR_FULL_SCOPE_IMPLEMENTATION
+TARGETED_CONTRACT_REWORK
 BLOCKED_BY_OWNER_DECISION
 BLOCKED_BY_EXTERNAL_CAPABILITY
 ```
 
-## Pull Request Gate
+## Conditional Design Gate
 
-Required evidence is determined by the Work Package. Applicable checks include:
+Not a default stage. Trigger only under the conditions in
+`AI_OPERATING_MODEL.md`. Its result amends or confirms the Slice Contract; it must
+not become an unbounded sequence of implementation-detail approvals.
 
-- backend build and unit tests;
-- PostgreSQL integration and Flyway validation;
-- architecture boundary tests;
-- frontend lint, type check, tests and build;
-- contract, replay and reconciliation tests;
-- secret scanning, dependency review and SAST when configured;
-- documentation and traceability update;
-- migration/backfill/rollback notes;
-- logs, metrics and runbook changes;
-- no unresolved BLOCKER or MAJOR finding.
+## Gate D — Implementation Deep Review
 
-Finding severity:
+After Claude's Initial Full Implementation, GPT reviews the entire actual Slice
+surface against the Contract and the Production Assurance Matrix.
+
+Verdicts:
 
 ```text
-BLOCKER       unsafe to merge; scope/security/data correctness/irreversible risk
-MAJOR         required behavior or evidence missing; must fix before merge
-MINOR         should fix in current PR unless explicitly deferred and recorded
-INFORMATIONAL optional improvement or observation
+READY_FOR_CODEX_REWORK
+CHANGES_REQUIRED
+REJECTED_CONTRACT_VIOLATION
+BLOCKED_EVIDENCE_INCOMPLETE
 ```
 
-PR verdicts:
+A normal outcome is `READY_FOR_CODEX_REWORK` with a complete finding ledger. This
+is not failure; it is the independent production-hardening handoff.
+
+## Gate R — Codex Rework/Fix/Verify
+
+Codex resolves all BLOCKER/MAJOR findings and applicable MINOR findings across the
+full in-scope surface, reruns exact evidence and updates the same Draft PR. It may
+not redefine the Contract or self-approve.
+
+## Gate F — Final Pull Request
+
+Required evidence depends on the Slice but includes all applicable:
+
+- backend build/unit/property/integration/real-PostgreSQL;
+- Flyway clean/upgrade/validate and forward compatibility;
+- architecture and authority tests;
+- Ozon/WB contract and real controlled-provider evidence;
+- replay/reconciliation/unknown-state/recovery;
+- frontend lint/type/unit/browser E2E;
+- auth/security/privacy/secret/dependency/SAST;
+- AI structured-output/data-boundary tests;
+- documentation, runbooks, traceability and migration/rollback notes;
+- no unresolved BLOCKER/MAJOR.
+
+Verdicts:
 
 ```text
 APPROVE_FOR_HUMAN_MERGE
 CHANGES_REQUIRED
-REJECTED_SCOPE_VIOLATION
+REJECTED_CONTRACT_VIOLATION
 BLOCKED_EVIDENCE_INCOMPLETE
 ```
 
-## Phase 0 Gate
+Merge leaves real write Capabilities disabled unless a separate enablement Gate
+has already and explicitly approved the exact deployed identity—which is normally
+post-merge.
 
-Phase 0 acceptance follows the Baseline, including:
+## Gate EV — Bounded Real-Write Verification Authorization
 
-- all Marketplace Account, Store, Warehouse and Owner records registered;
-- Secret absent from Git/log/frontend/plain configuration;
-- Variant mapping at agreed threshold with exception queue;
-- historical data manifest and hashes;
-- Raw → Core traceability;
-- replay without duplication;
-- Daily Report by platform and SKU for order, stock, return and cost state;
-- Data Quality visibility for freshness, failures and gaps;
-- rate limit, retry, alert and manual recovery verified;
-- business Key User review on real or approved redacted data.
+Gate EV is the only authority that permits a real Marketplace write whose sole
+purpose is to generate bounded `Write → Readback → Restore/Compensate` evidence
+before Gate E. It is distinct from implementation, merge, deployment and ongoing
+Pilot enablement.
+
+Every Gate-EV authorization requires all of the following in one exact,
+reviewable envelope:
+
+- explicit Human Owner authorization;
+- Platform, opaque Account/Store reference, Capability and SKU allowlist;
+- a one-time or time-bounded verification window;
+- maximum price delta and cumulative exposure;
+- current official-source and real-account Capability evidence;
+- current deterministic Guardrails and a passing Dry Run;
+- supervised operator, abort owner and manual-stop procedure;
+- global and scoped Kill Switches;
+- captured pre-state;
+- Readback and Restore/Compensate procedure;
+- unknown-result and manual-resolution behavior;
+- complete Audit and durable redacted evidence-retention plan.
+
+Verdicts:
+
+```text
+AUTHORIZE_BOUNDED_REAL_WRITE_VERIFICATION
+CHANGES_REQUIRED
+BLOCKED_BY_EXTERNAL_CAPABILITY
+BLOCKED_EVIDENCE_INCOMPLETE
+```
+
+`AUTHORIZE_BOUNDED_REAL_WRITE_VERIFICATION` authorizes only the named evidence
+operation inside its scope and window. It does not authorize general Pilot
+enablement, unattended recurring execution, a broad Policy, production release
+or any unnamed scope. Expiry, completion, abort or scope mismatch returns the
+authorization to fail-closed `NONE`.
+
+## Gate E — Controlled Capability Enablement
+
+For every real write Capability and platform, independently prove:
+
+- the required real-write evidence was generated under a valid prior Gate-EV
+  authorization bound to the exact Platform/Account/Store/Capability/SKU/window;
+- current official API/role/quota evidence;
+- exact Store/SKU/Campaign allowlist;
+- deterministic Guardrail and Approval/Policy authority;
+- Idempotency and unknown-result behavior;
+- real `Write → Readback → Restore/Compensate` verification;
+- audit, alerting and Kill Switch;
+- bounded Pilot Cohort and rollback owner;
+- legal/security/credential/provider readiness.
+
+Gate E consumes Gate-EV evidence but does not retroactively authorize how it was
+created. Gate E remains the only Gate that can approve ongoing controlled Pilot
+production release, and its Human Owner authorization is separate from the
+earlier bounded verification authorization.
+
+Verdicts:
+
+```text
+APPROVE_FOR_CONTROLLED_PRODUCTION_RELEASE
+CHANGES_REQUIRED
+BLOCKED_BY_EXTERNAL_CAPABILITY
+BLOCKED_EVIDENCE_INCOMPLETE
+```
+
+## Gate S — Slice Production Release
+
+A Slice may release when its full Product Acceptance Contract is production-grade
+and every enabled Capability has passed Gate E. Enablement may expand gradually
+without rewriting implementation.
+
+## Gate V1 — Product Complete
+
+V1 is complete when all V1-required Slices are integrated, production-grade and
+operable, with cross-domain identity/metrics/workflow/AI/audit/recovery intact.
+Business sales/profit improvement is measured after release and does not block
+this capability Gate.
+
+## Evidence classes
+
+```text
+UNIT_OR_STATIC
+REAL_DATABASE
+INTEGRATION_SERVICE
+BROWSER_E2E
+REAL_PROVIDER_OR_EXTERNAL_SYSTEM
+CONTROLLED_PRODUCTION
+DISASTER_RECOVERY_DRILL
+```
+
+Claims must name their evidence class. Lower classes cannot masquerade as real
+provider or production proof.
