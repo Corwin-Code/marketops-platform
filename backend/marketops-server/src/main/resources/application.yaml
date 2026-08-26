@@ -100,6 +100,30 @@ marketops:
       # console API denies every request; a serving environment is required to
       # configure one and fails startup otherwise.
       session-recording-interval: 5m
+  analytics:
+    # Domain-specific freshness targets. A metric whose freshest contributing
+    # fact is older than its domain allows is downgraded to STALE, which the
+    # write gate reads and refuses.
+    funnel-freshness: 48h
+    sales-freshness: 24h
+    returns-freshness: 48h
+    inventory-freshness: 6h
+    advertising-freshness: 24h
+    cost-freshness: 7d
+    thresholds:
+      # Operating configuration the deterministic rules compare against. Every
+      # triggered finding records the value and the threshold it compared, so a
+      # number somebody disputes can be argued about with both in view.
+      minimum-data-completeness: 0.80
+      low-impression-floor: 100
+      low-click-through-rate: 0.0100
+      low-click-through-minimum-impressions: 500
+      low-conversion-rate: 0.0100
+      low-conversion-minimum-reach: 200
+      high-return-rate: 0.2000
+      high-return-minimum-units: 10
+      stock-cover-days-floor: 7
+      advertising-cost-of-sale-ceiling: 0.3000
   metadata-maintenance:
     # Fail closed: an environment accepts maintenance writes only when its
     # profile explicitly turns them on. Queries are not gated.

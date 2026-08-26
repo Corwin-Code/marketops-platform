@@ -79,9 +79,10 @@ INSERT INTO mart.diagnosis_rule
         'Advertising cost of sale is available and exceeds the configured '
         || 'ceiling over the window.',
         'WARNING', false, 'ACTIVE'),
-    ('PRICE_BELOW_MINIMUM', 1, 9, 'Price below minimum',
-        'The observed selling price is below the computed minimum price for the '
-        || 'policy in force.',
+    ('PRICE_BELOW_MINIMUM', 1, 9, 'Price below break-even',
+        'The observed selling price is below the computed break-even price, so '
+        || 'every further unit sold at it loses money. A commercial floor above '
+        || 'break-even is applied separately by the guardrail.',
         'CRITICAL', true, 'ACTIVE');
 
 -- The metrics a rule reads. Recorded rather than implied so a rule that
@@ -117,7 +118,8 @@ SELECT rule_code, 1, metric_code, requirement
     ('LOW_CONVERSION', 'CLICKS', 'OPTIONAL'),
     ('ADVERTISING_INEFFICIENT', 'AD_COST_OF_SALE', 'REQUIRED'),
     ('ADVERTISING_INEFFICIENT', 'AD_SPEND', 'REQUIRED'),
-    ('PRICE_BELOW_MINIMUM', 'MINIMUM_PRICE', 'REQUIRED')
+    ('PRICE_BELOW_MINIMUM', 'MINIMUM_PRICE', 'REQUIRED'),
+    ('PRICE_BELOW_MINIMUM', 'OBSERVED_SELLING_PRICE', 'REQUIRED')
   ) AS inputs(rule_code, metric_code, requirement);
 
 -- ---------------------------------------------------------------------------

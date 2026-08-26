@@ -124,9 +124,15 @@ INSERT INTO mart.metric_definition
     ('CONTRIBUTION_MARGIN', 1, 'Contribution margin', 'RATIO',
         'OPERATIONAL_CONTRIBUTION_PROFIT divided by COMPLETED_NET_SALES.',
         'PROFIT', 'analyticsdecision', 'ACTIVE'),
-    ('MINIMUM_PRICE', 1, 'Minimum price', 'MONEY',
-        'Unit price at which unit contribution profit equals the policy floor, '
-        || 'given unit cost, proportional fee rate, return loss per unit and tax rate.',
+    ('OBSERVED_SELLING_PRICE', 1, 'Observed selling price', 'MONEY',
+        'The most recent observed price a buyer pays, preferring a discounted '
+        || 'amount over a selling amount over a list amount.',
+        'PROFIT', 'analyticsdecision', 'ACTIVE'),
+    ('MINIMUM_PRICE', 1, 'Break-even unit price', 'MONEY',
+        'Unit price at which unit contribution profit is exactly zero, given unit '
+        || 'cost, the observed proportional fee rate, return loss per unit and the '
+        || 'variable tax rate. A commercial floor above break-even is a policy '
+        || 'decision applied by the guardrail, not part of this definition.',
         'PROFIT', 'analyticsdecision', 'ACTIVE'),
     ('DATA_COMPLETENESS', 1, 'Data completeness', 'RATIO',
         'Share of the profit definition inputs that resolved to a canonical value.',
