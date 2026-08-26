@@ -217,11 +217,35 @@ class RepositoryContractPatternTests(unittest.TestCase):
 
         self.assertTrue(any("auto-commit: true" in violation for violation in violations))
 
-    def test_open_authorization_with_no_active_work_package_is_rejected(self) -> None:
+    def test_old_phase_authorization_is_rejected(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)
-        mutated = source.replace("authorization: PLANNING_ONLY", "authorization: APPROVED_FOR_IMPLEMENTATION")
+        mutated = source.replace(
+            "authorization: FULL_SCOPE_IMPLEMENTATION",
+            "authorization: DESIGN_ONLY",
+        )
         violations = contract_token_violations(mutated, required=COMPLETION_STATE_TOKENS)
-        self.assertTrue(any("PLANNING_ONLY" in violation for violation in violations))
+        self.assertTrue(any("FULL_SCOPE_IMPLEMENTATION" in violation for violation in violations))
+
+    def test_enabled_production_write_is_rejected(self) -> None:
+        source = "\n".join(COMPLETION_STATE_TOKENS)
+        mutated = source.replace(
+            "production_write_enabled: false", "production_write_enabled: true"
+        )
+        violations = contract_token_violations(
+            mutated, required=COMPLETION_STATE_TOKENS
+        )
+        self.assertTrue(any("production_write_enabled: false" in item for item in violations))
+
+    def test_platform_write_must_remain_disabled(self) -> None:
+        source = "\n".join(COMPLETION_STATE_TOKENS)
+        mutated = source.replace(
+            "ozon_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+            "ozon_price_write: ENABLED",
+        )
+        violations = contract_token_violations(
+            mutated, required=COMPLETION_STATE_TOKENS
+        )
+        self.assertTrue(any("ozon_price_write" in item for item in violations))
 
     def test_candidate_completed_work_package_is_rejected(self) -> None:
         source = "\n".join(COMPLETED_WORK_PACKAGE_TOKENS)

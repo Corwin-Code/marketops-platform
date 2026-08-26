@@ -3,6 +3,13 @@
 - Status: ACCEPTED
 - Date: 2026-08-07
 - Source: Owner collaboration instruction
+- Refined by: ADR-0006 — Contract-Governed Vibe Coding
+
+> ADR-0006 refines the operating cadence: high-risk work does not automatically
+> require a separate Design-only stage. GPT still defines the Contract and
+> independently reviews the actual implementation; Claude may perform Detailed
+> Design + Initial Full Implementation continuously, and Codex performs in-scope
+> rework/verification without self-approval.
 
 ## Decision
 
@@ -13,7 +20,10 @@
 - Under D-17/DR-0001, Codex may be added as a bounded rework/verification agent
   and may mechanically execute Ready/merge while Current State records an active
   delegation, but it cannot approve its own changes or bypass any gate.
-- High-risk work requires Design Gate before implementation.
+- A separate pre-implementation Design Gate is conditional on material Owner,
+  irreversible, authority, security, provider or unbounded data/financial risk;
+  otherwise the approved Slice Contract authorizes continuous Detailed Design and
+  Initial Full Implementation.
 - Chat histories are not the source of truth; accepted decisions and state are committed to Git.
 
 ## Consequences

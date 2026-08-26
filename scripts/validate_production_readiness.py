@@ -315,9 +315,14 @@ LOCAL_LOGGING_TOKENS = (
 )
 
 COMPLETION_STATE_TOKENS = (
-    "active_work_package: NONE",
-    "active_gate: CONTROLLER_PHASE_0_PLANNING",
-    "authorization: PLANNING_ONLY",
+    "lifecycle_state: EXECUTING_V1",
+    "active_delivery_slice: SLICE-V1-001",
+    "active_slice_contract: docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+    "active_gate: SLICE_CONTRACT_APPROVED",
+    "authorization: FULL_SCOPE_IMPLEMENTATION",
+    "production_write_enabled: false",
+    "ozon_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+    "wildberries_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
 )
 
 COMPLETED_WORK_PACKAGE_TOKENS = (

@@ -1,0 +1,59 @@
+name: Production Delivery Slice
+description: Define a production-grade end-to-end business capability and its acceptance contract
+title: "[SLICE-] "
+body:
+  - type: input
+    id: slice_id
+    attributes:
+      label: Delivery Slice ID
+      placeholder: SLICE-V1-001
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Observable user/business outcome
+      description: Describe what a real user can complete end to end.
+    validations:
+      required: true
+  - type: textarea
+    id: contracts
+    attributes:
+      label: Product Contract, Owner Decisions, Requirement IDs and ADRs
+    validations:
+      required: true
+  - type: textarea
+    id: flow
+    attributes:
+      label: End-to-end flow and authority boundaries
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: In scope and explicit non-goals
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Production Acceptance IDs and evidence classes
+    validations:
+      required: true
+  - type: textarea
+    id: triggers
+    attributes:
+      label: Conditional Design/Owner/External blocker triggers
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: No Secret, Credential, Buyer PII or unredacted production payload is included.
+          required: true
+        - label: Production enablement is separate from implementation and merge.
+          required: true
+        - label: This Slice does not silently replace an Owner Decision, Source of Truth or accepted ADR.
+          required: true

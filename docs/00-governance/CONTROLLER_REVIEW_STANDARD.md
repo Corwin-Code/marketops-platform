@@ -1,93 +1,114 @@
-# Controller Review Standard — 11+1 and Artifact Contract
+# Controller Review Standard v2 — Risk-Driven Production Assurance
 
-## 1. Purpose and applicability
+## 1. Purpose
 
-This is the mandatory review standard for every substantive Controller Planning,
-Design Review, Implementation Review, Pull Request Review and Fix/Rework verdict.
-It supplements the stage-specific Quality Gates without changing accepted ADRs,
-Human Owner authority or repository protection.
+The Controller independently tests whether a Product/Slice Contract or its actual
+implementation is production-grade and faithful to Owner intent. Review effort is
+proportional to irreversible risk and executable evidence, not to the number of
+workflow transitions.
 
-The Controller reads the repository, source requirements, current state, active
-Work Package, actual diff, tests and CI appropriate to the stage. A Maker summary
-or chat transcript is never sufficient evidence.
+## 2. Mandatory review dimensions
 
-## 2. The 11+1 review standard
+For every applicable major Gate, record a result for:
 
-Every substantive Controller review records a result for all applicable items:
+1. **Product outcome and scope** — the observable user/business result, non-goals
+   and no hidden scope substitution.
+2. **Source and authority** — facts, decisions, external evidence, sources of
+   truth, writers and module ownership.
+3. **Data and migration** — identity, time, money, Confidence, Raw/Ledger,
+   idempotency, late data, forward migration and rollback.
+4. **State and concurrency** — explicit transitions, leases/fencing, retries,
+   duplicate/unknown outcomes and crash windows.
+5. **Security and privacy** — authentication, authorization, Secrets, PII,
+   external AI, least privilege, audit and abuse boundaries.
+6. **AI correctness** — deterministic facts, evidence-linked Fact/Inference/
+   Recommendation/Unknown, provider/data controls and no authorization bypass.
+7. **Controlled execution** — Policy/Guardrail, Approval, Outbox, idempotency,
+   Readback, restore/compensation, Kill Switch and Pilot scope.
+8. **User experience** — complete operational journey, Freshness/Confidence,
+   safe errors, accessibility and browser evidence.
+9. **Operations and recovery** — metrics, alerts, backlog, runbooks, backup/
+   restore, provider failure and manual resolution.
+10. **Executable evidence** — unit/property/real DB/contract/replay/browser/real
+    provider/DR evidence appropriate to the claim.
 
-1. **Full repository cross-check.** Cross-check requirements, accepted decisions,
-   ADRs, Work Package, current files, diff, tests, evidence, PR and CI rather than
-   reviewing a summary in isolation.
-2. **Stage target and blocker distinction.** Judge the artifact against its
-   current Planning, Design, Implementation or PR target and identify genuine
-   production blockers without pretending that a phase result is the whole
-   product.
-3. **Full production-grade scope.** Require the complete approved scope and its
-   failure/security/operations contract; do not approve a minimal vertical slice
-   when the Work Package requires a production-grade result.
-4. **No in-scope deferred item.** Reject an unhandled requirement that belongs to
-   the current authorized scope. A later requirement is acceptable only when its
-   ownership and boundary were already outside the current Work Package.
-5. **No compromise implementation.** Do not accept placeholders, weakened tests,
-   insecure defaults, silent unknown-state coercion or temporary behavior that
-   contradicts the approved contract.
-6. **Owner decisions only for genuine authority/business blockers.** Do not send
-   normal engineering judgment back to the Owner. Escalate only a real business,
-   risk, credential, production, legal or authorization choice.
-7. **Functional and current documentation.** JavaDoc, comments, runbooks and
-   evidence must describe actual behavior and current state rather than restating
-   syntax or retaining superseded claims.
-8. **Retire deprecated, stale and parallel state.** Remove or explicitly classify
-   superseded live language, duplicate runtime authorities and obsolete paths so
-   they cannot be mistaken for current truth.
-9. **Three global hard rules.** Recheck compromise retirement, functional JavaDoc
-   rewrite and production naming using the real validators and evidence; do not
-   infer a pass from unrelated checks.
-10. **Actionable design without endless micro-design.** Require enough detail to
-    implement and verify safely, then issue a concrete verdict and next action
-    instead of creating an unbounded sequence of design-only loops.
-11. **Standalone review and prompt artifacts.** The review and next-action prompt
-    must be understandable without the chat transcript and must bind decisions to
-    exact artifacts, versions, SHAs or evidence as applicable.
+Also distinguish explicitly:
 
-**+1 — Project-grade distinction.** State separately whether the reviewed result
-is project-grade for its approved stage, whether the current phase/work package
-is complete, and whether the whole product is production-ready. Never collapse
-those three claims.
+```text
+artifact/PR quality
+Slice completion
+V1 Product completion
+production Capability enablement
+```
 
-## 3. Finding and verdict contract
+No one claim implies another.
 
-Findings use `BLOCKER`, `MAJOR`, `MINOR` or `INFORMATIONAL` and cite an exact
-file/line, artifact identity, test failure or evidence gap. Verdict vocabulary is
-the stage-specific vocabulary in `QUALITY_GATES.md` and
-`CHATGPT_PROJECT_INSTRUCTIONS.md`.
+## 3. Source-first rule
 
-An approval is bound to the exact artifact and evidence reviewed. A content
-change, Base/Head movement, failing Gate, reopened thread or protection weakening
-invalidates a prior approval unless the Controller explicitly re-reviews it.
+A Maker summary or chat transcript is never sufficient. Inspect actual source,
+migrations, tests, diff, PR, CI and current primary-source/provider evidence.
+External facts must include source and last-verified date. Fixture/in-memory proof
+must be labeled as such.
 
-## 4. Artifact Contract
+## 4. Finding contract
 
-For every substantive Controller Planning, Design Review, Implementation Review,
-Pull Request Review or Fix/Rework verdict, the Owner-facing response must produce:
+Findings use:
 
-1. one standalone Controller Review `.md` artifact;
-2. one standalone Next-action Prompt `.md` artifact;
-3. the SHA-256 of each artifact;
-4. explicit `NEXT_AUTHORIZED_ACTOR` and `NEXT_ACTION` values.
+```text
+BLOCKER       unsafe, wrong product/authority/security/data or irreversible risk
+MAJOR         required behavior/evidence missing before the current Gate
+MINOR         bounded defect that should be fixed but does not redefine Contract
+INFORMATIONAL non-blocking observation or later improvement
+```
 
-The Next-action Prompt targets the actor required by current state: Claude for
-Design/Implementation, Codex for bounded Fix/Rework/Verify/Git execution, or the
-Human Owner for an authority decision. Artifact identity and status must be
-recorded without making chat history the source of truth.
+Each finding cites an exact file/line, diff, test, runtime fact or evidence gap and
+states the violated Contract clause and required observable correction.
 
-## 5. Owner-facing communication
+## 5. Gate vocabulary
 
-The main Owner-facing response uses natural Chinese and readable Markdown by
-default. It must explain the outcome, findings, evidence and next action directly.
-Large YAML blocks are prohibited as the primary response format; at most, a short
-machine-readable status summary may appear at the end.
+Use the exact verdicts in `AI_OPERATING_MODEL.md`. No conversational equivalent
+creates authorization.
 
-No review artifact may contain credentials, Buyer PII, unredacted production
-payloads or unsupported claims about Marketplace capability or production
-readiness.
+## 6. Artifact contract
+
+Produce one standalone Controller Review and one standalone Next-action Prompt,
+with SHA-256 and exact `NEXT_AUTHORIZED_ACTOR` / `NEXT_ACTION`, for:
+
+- Development Baseline Reset / Decision Request;
+- Product or Slice Contract Gate;
+- Implementation Deep Review;
+- Final PR Gate;
+- Controlled Capability Enablement;
+- V1 Product Complete Gate.
+
+A routine read-only analysis, CI observation or same-finding verification does not
+require a new full pair unless it changes scope, findings, verdict or authority.
+
+## 7. Owner question discipline
+
+Ask the Owner only when an answer can materially change product behavior, risk,
+legal/commercial authority, external account use, irreversible data treatment or
+production enablement. Ask one question at a time. Do not escalate normal
+engineering judgment.
+
+## 8. Independence
+
+- GPT Controller does not become the primary implementation author it later
+  approves.
+- Claude does not give itself final approval.
+- Codex does not approve its own rework.
+- CI does not make business decisions.
+- Human Owner retains final merge and production authority.
+
+## 9. No endless micro-design
+
+Once WHAT, hard boundaries, acceptance and stop conditions are sufficient for
+safe implementation, authorize implementation. Detailed HOW evolves inside the
+implementation and is judged against executable evidence. Insert a Design Gate
+only for the explicit Conditional Design Gate triggers.
+
+## 10. Owner-facing communication
+
+Use readable Chinese by default. Lead with verdict, load-bearing findings,
+evidence and exact next action. Do not hide uncertainty or collapse provider,
+Slice and whole-product readiness claims.

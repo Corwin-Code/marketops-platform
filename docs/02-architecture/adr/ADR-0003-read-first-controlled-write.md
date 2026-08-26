@@ -1,8 +1,14 @@
 # ADR-0003 — Read First, Controlled Write Later
 
-- Status: ACCEPTED
+- Status: SUPERSEDED_IN_PART
+- Superseded by: ADR-0008 — Unified Capability Model and Selective Controlled Write
 - Date: 2026-08-06
 - Source: D-02, D-07, D-08, D-10; HR-05, HR-10
+
+> DR-0003 / ADR-0008 supersedes only the old version/phase sequencing that kept
+> real controlled writes outside V1. This ADR's default-off behavior and complete
+> Recommendation → Guardrail → Preview → Approval/Policy → Idempotent Command →
+> Official API → Readback → Audit/Outcome chain remain binding.
 
 ## Decision
 
@@ -25,4 +31,6 @@ AI never receives Marketplace credentials or direct write authority.
 
 ## Consequences
 
-The first phases optimize trustworthy decision support and manual operations rather than speed of automation. Each write capability has its own kill switch, approval scope, replay/readback behavior and release evidence.
+V1 may deliver selected writes by Capability and Pilot Cohort once their complete
+chain passes; it does not wait for a legacy global phase sequence.
+Each write capability has its own kill switch, approval scope, replay/readback behavior and release evidence.

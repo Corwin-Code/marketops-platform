@@ -1,17 +1,17 @@
 name: Decision Request
-description: Request an Owner or Architecture decision before changing a fixed boundary
+description: Resolve a material Owner, product, architecture, authority, provider or irreversible decision
 title: "[DR-] "
 body:
   - type: textarea
     id: problem
     attributes:
-      label: Problem and trigger
+      label: Problem, evidence and trigger
     validations:
       required: true
   - type: textarea
     id: current
     attributes:
-      label: Current decision / rule
+      label: Current contract / decision / source of truth
     validations:
       required: true
   - type: textarea
@@ -23,13 +23,13 @@ body:
   - type: textarea
     id: impact
     attributes:
-      label: Requirements, modules, migration, security and compatibility impact
+      label: Product, requirements, modules, data/migration, security, compatibility and operations impact
     validations:
       required: true
   - type: textarea
     id: evidence
     attributes:
-      label: Evidence, tests and rollback
+      label: Tests/evidence, rollout, rollback and stop conditions
     validations:
       required: true
   - type: dropdown
@@ -40,5 +40,6 @@ body:
         - Human Owner
         - GPT Controller / Architecture
         - Joint Owner + Controller
+        - Owner + Legal/Security
     validations:
       required: true

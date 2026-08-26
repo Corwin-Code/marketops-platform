@@ -1,51 +1,50 @@
-name: Work Package
-description: Create a controlled unit of design and implementation work
+name: Implementation Tranche / Work Package
+description: Create a bounded engineering unit under an approved Production Delivery Slice
 title: "[WP-] "
 body:
   - type: input
     id: wp_id
     attributes:
-      label: Work Package ID
-      placeholder: WP-P0-001
+      label: Work Package / Tranche ID
+      placeholder: WP-S1-001A
     validations:
       required: true
-  - type: textarea
-    id: outcome
+  - type: input
+    id: slice_id
     attributes:
-      label: Business / engineering outcome
-      description: State the observable result, not merely the implementation activity.
-    validations:
-      required: true
-  - type: textarea
-    id: requirements
-    attributes:
-      label: Source Requirement IDs / Owner Decisions / ADRs
-      placeholder: D-03, HR-06, INT-003, ADR-0001
-    validations:
-      required: true
-  - type: textarea
-    id: scope
-    attributes:
-      label: In scope
-    validations:
-      required: true
-  - type: textarea
-    id: non_goals
-    attributes:
-      label: Non-goals
+      label: Parent Delivery Slice
+      placeholder: SLICE-V1-001
     validations:
       required: true
   - type: textarea
     id: acceptance
     attributes:
-      label: Acceptance criteria
-      description: Include observable behavior and required tests/evidence.
+      label: Parent Acceptance IDs advanced
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Coherent engineering outcome
+      description: State what this tranche leaves implemented and verifiable.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: In scope and explicit non-goals
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Required evidence and checks
     validations:
       required: true
   - type: textarea
     id: risks
     attributes:
-      label: Risks, dependencies and open decisions
+      label: Risks, dependencies and Conditional Gate triggers
     validations:
       required: true
   - type: checkboxes
@@ -53,7 +52,9 @@ body:
     attributes:
       label: Safety confirmation
       options:
-        - label: No secret, credential, buyer PII or unredacted production data is included.
+        - label: This tranche does not redefine the parent Slice Product Acceptance Contract.
           required: true
-        - label: This Work Package does not silently change an accepted Owner Decision or ADR.
+        - label: No Secret, Credential, Buyer PII or unredacted production data is included.
+          required: true
+        - label: Merge does not itself enable production Marketplace writes.
           required: true
