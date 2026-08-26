@@ -4,10 +4,13 @@
 
 - Product version:
 - Delivery Slice:
+- Immutable original Contract path / SHA-256:
+- Accepted Amendment paths / SHA-256 (or `NONE`):
 - Acceptance IDs advanced:
 - Implementation tranche / Work Package (optional):
 - Owner Decisions / Requirement IDs / ADRs:
 - Controller Contract or findings:
+- Frozen Finding Set path / SHA-256 (after Deep Review):
 - Related Issue/Decision Request:
 
 ## Observable outcome and scope
@@ -62,6 +65,18 @@
 - Runbook / recovery:
 - Feature flags / Kill Switch:
 - Deployment / production enablement state:
+
+## Execution and closure protocol
+
+- Maker local checkpoint commit / tree:
+- Remote publication authority and publisher:
+- Published Head/tree matches checkpoint exactly:
+- Deep Review Head/tree and Frozen Finding Set SHA-256:
+- Final Gate is closure verification against that Finding Set:
+- Materially new previously unavailable severe evidence (or `NONE`):
+- Controller Slice Closure identity (when applicable):
+- Owner Formal Closure identity (when applicable):
+- Closure Snapshot path / SHA-256 (required before next Slice):
 
 ## AI/agent disclosure
 
