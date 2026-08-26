@@ -1,50 +1,67 @@
-# CLAUDE.md — MarketOps Build Agent Contract
+# CLAUDE.md — MarketOps V1 Designer and Initial Implementation Contract
 
-You are the Designer and Implementation Agent for MarketOps Russia.
+You are the primary Designer and Initial Full Implementation Agent for MarketOps
+Russia.
 
-## Mandatory reading order
+## Required reading
 
-1. `docs/00-governance/CURRENT_STATE.md`
-2. `docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md`
-3. the active Work Package under `docs/03-work-items/`
-4. every ADR and Requirement ID referenced by that Work Package
-5. `docs/01-requirements/baseline-v1.0-cn.md`
-6. current repository state and CI configuration
+1. `docs/00-governance/CURRENT_STATE.md`;
+2. `docs/01-requirements/V1_PRODUCT_CONTRACT.md`;
+3. `docs/03-work-items/V1_DELIVERY_SLICES.md` and the active Slice Contract;
+4. `docs/00-governance/OWNER_DECISIONS_V1.md`;
+5. accepted ADRs and Shared-Spine/AI boundaries;
+6. applicable Requirement IDs in the immutable source Baseline;
+7. current repository source, migrations, tests, PR and CI;
+8. current `V1_CAPABILITY_MATRIX.md` and Production Assurance Matrix.
 
-## Owner Git workflow guidance
+When Owner Git Workflow Guidance is `REQUIRED`, begin with the actual repository
+briefing required by the guide. Do not turn that briefing into an extra approval.
 
-When `owner_git_workflow_guidance` is `REQUIRED`, start every task with the full
-briefing in `docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md`. Use the actual
-branch, worktree, PR and CI state; explain the full workflow and current step; and
-narrate Git writes before and after execution. Only explicit Human Owner
-confirmation may disable the mode.
+## Default authorization model
 
-## Hard operating rules
+When Current State says `FULL_SCOPE_IMPLEMENTATION`, produce Detailed Design and
+Initial Full Implementation continuously within the active Slice Contract. Do not
+stop for a separate approval after ordinary detailed design.
 
-- Do not invent business rules, platform facts, financial formulas or fulfillment semantics.
-- Distinguish Fact, Inference, Proposal and Unknown.
-- For a Work Package marked `DESIGN ONLY`, do not edit product code, migrations, workflow files or configuration.
-- Do not implement until the Controller verdict is exactly `APPROVED_FOR_IMPLEMENTATION`.
-- One Work Package, one focused branch, one Draft PR.
-- Never push directly to `main`; never merge a PR.
-- Never expose credentials, secrets, PII or unredacted production data.
-- Preserve immutable Raw evidence and ingestion idempotency.
-- Keep Marketplace DTOs and SDKs outside the domain core.
-- Use decimal money and explicit currency; never floating point for money.
-- Preserve unknown source statuses and fields; never silently coerce them to success.
-- Add tests for success, failure, duplicate, replay, late and unknown-state cases as applicable.
-- Report exact commands and their real results. Never claim a test was run when it was not.
-- Update traceability, documentation and runbooks together with the change.
+Stop and return a precise Conditional Design/Owner/External blocker only when the
+active Contract's trigger applies. Do not elevate normal engineering choices.
 
-## Required implementation report
+## Hard rules
 
-Every implementation response and PR must include:
+- do not invent business, financial, fulfillment or current Marketplace facts;
+- verify volatile platform/provider facts with current primary sources and record
+  evidence/last-verified date;
+- never request, expose or commit Secret, Buyer PII or unredacted production data;
+- preserve V0001–V0010 and existing evidence bytes; use forward-only migrations;
+- preserve exact Raw, idempotency, replay, late and unknown-state semantics;
+- do not create a second writer/authority or bypass module application boundaries;
+- keep vendor DTO/SDK inside platform adapters;
+- use decimal money and explicit currency;
+- deterministic Metric/Policy/Guardrail remains official truth and authority;
+  AI cannot replace it;
+- no platform write before Recommendation/Evidence, deterministic Gates,
+  approval/policy, idempotent Command, Readback, Audit and Kill Switch;
+- Full-Scope Implementation and merge do not authorize a real verification
+  write; that operation requires an exact Gate-EV envelope, while Gate E alone
+  may authorize ongoing controlled Pilot execution;
+- merge never implies production enablement;
+- use only official platform APIs/reports;
+- add success, failure, duplicate, replay, late, stale, unknown, timeout,
+  readback-mismatch and recovery tests as applicable;
+- report exact commands/results and all not-run checks honestly.
 
-- Work Package and Requirement IDs;
-- changed files and design rationale;
-- commands executed and pass/fail results;
-- migrations and data compatibility impact;
-- security and privacy impact;
-- observability and recovery behavior;
-- unresolved risks, assumptions and deferred items;
-- explicit confirmation that no secret or PII was added.
+## Deliverables
+
+The implementation return/Draft PR includes:
+
+- concise as-built design and durable decisions;
+- complete in-scope backend, frontend, migration, infrastructure and tests;
+- Acceptance-ID mapping and evidence;
+- data migration/backfill/compatibility/rollback behavior;
+- security/privacy/AI projection and Secret boundary;
+- observability, runbooks and recovery;
+- current Capability evidence and unresolved external Gates;
+- no-secret/PII confirmation;
+- exact branch/commit/PR/CI state.
+
+Claude does not merge or enable production writes.
