@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-08-26
+as_of: 2026-08-27
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -16,6 +16,27 @@ active_slice_contract_sha256: 0bf558d6539e9620424058e31ccd03062a5195642b58434c1c
 active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
 active_gate: SLICE_CONTRACT_APPROVED
 authorization: FULL_SCOPE_IMPLEMENTATION
+accepted_contract_mutation: PROHIBITED_APPEND_ONLY_AMENDMENT_REQUIRED
+execution_envelope: EXECUTION_ENVELOPE_V1
+maker_remote_git_authority: DENIED
+remote_git_publication_delegate: CODEX
+deep_review_mode: ONE_SHOT_DISCOVERY_FROZEN_FINDING_SET
+final_gate_mode: CLOSURE_VERIFICATION_ONLY
+owner_formal_slice_closure: REQUIRED
+closure_snapshot_before_next_slice: REQUIRED
+dual_truth_model: NORMATIVE_AND_IMPLEMENTATION_FACT
+dr0004_original_contract: docs/00-governance/DR-0004-engineering-execution-closure-protocol-alignment.md
+dr0004_original_contract_sha256: dcc073bb8f6593bd24b4a74a96f06d0c45ece2f1c192615deb7301cbb850da9a
+dr0004_amendment: docs/00-governance/DR-0004-AMENDMENT-001-activation-and-owner-acceptance-provenance.md
+dr0004_amendment_sha256: cea88c6b72b480ad7f39a45390e457de316b6be6511dad45a5d0f6c63716779c
+dr0004_owner_acceptance_evidence: docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md
+dr0004_owner_acceptance_evidence_sha256: f83349ea537fd48575787dccfaa624ec39c5079181ccf0da6c69e996768bda88
+dr0004_acceptance: HUMAN_OWNER_ACCEPTED
+dr0004_repository_effect: ACTIVE_ON_PROTECTED_MAIN
+dr0004_effective_condition: EXACT_HUMAN_OWNER_ACCEPTANCE_EVIDENCE_AND_PROTECTED_MAIN
+dr0004_frozen_original_status_semantics: PROPOSAL_TIME_PROVENANCE_ONLY
+execution_envelope_state: ACTIVE_UNDER_DR_0004
+closure_snapshot_standard_state: ACTIVE_UNDER_DR_0004
 conditional_design_gate: ENABLED
 mandatory_design_gate_for_every_slice: DISABLED
 next_authorized_actor: CLAUDE_FABLE_5
@@ -38,18 +59,63 @@ owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 
 ## Active authority
 
-The active authority is DR-0003, `OWNER_DECISIONS_V1.md`,
-`V1_PRODUCT_CONTRACT.md`, ADR-0005 through ADR-0008 and the Slice Contract named
-above. Claude is authorized to perform Detailed Design and Initial Full
-Implementation continuously inside that exact Contract after this state is
-merged. A separate Design Approval is not required unless a Conditional Design
-Gate trigger occurs.
+The active product and Slice authority remains DR-0003,
+`OWNER_DECISIONS_V1.md`, `V1_PRODUCT_CONTRACT.md`, ADR-0005 through ADR-0008 and
+the Slice Contract named above. DR-0004, `EXECUTION_ENVELOPE_POLICY.md` and
+`CLOSURE_SNAPSHOT_STANDARD.md` govern engineering execution and closure without
+changing that product outcome or the active Slice Contract bytes. Their authority
+is the immutable original DR-0004 plus exact Owner-accepted
+`DR-0004-AMENDMENT-001`, with durable acceptance provenance in
+`docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md`. Claude is authorized to
+perform local Detailed Design and Initial Full Implementation continuously inside
+that exact Contract. A separate Design Approval is not required unless a
+Conditional Design Gate trigger occurs.
+
+The frozen originals' `status: PROPOSED_PENDING_EXACT_OWNER_ACCEPTANCE` and
+`status: PROPOSED_BY_DR_0004` fields are proposal-time provenance only, not live
+repository-effect state. Human Owner acceptance is durably recorded, but
+`ACTIVE_ON_PROTECTED_MAIN`, `ACTIVE_UNDER_DR_0004` and the execution/closure
+effects above apply only when the exact original artifacts, accepted Amendment
+and acceptance evidence are present on protected `main` after independent
+Controller approval and Human Owner merge authorization. A proposal branch does
+not activate repository authority.
 
 `SLICE_CONTRACT_APPROVED` and `FULL_SCOPE_IMPLEMENTATION` are valid only for the
 exact `active_slice_contract` path and `active_slice_contract_sha256` recorded in
-the leading metadata. A byte change or identity mismatch makes that authorization
-stale and requires an independent Controller Contract re-review before
-Full-Scope Implementation can be restored.
+the leading metadata. A byte change or identity mismatch is prohibited and makes
+that authorization invalid; updating the original hash or re-reviewing edited
+original bytes cannot restore it. Restore the accepted bytes. Any normative
+change requires a separately accepted additive Amendment.
+
+The accepted original Contract is permanently byte-frozen. A normative change
+requires a separately identified, exact, Owner-accepted additive Amendment; a
+new hash for edited original bytes is not a valid update. Non-expansive
+Controller interpretation may clarify existing text but cannot accumulate into
+hidden scope, authority or acceptance expansion.
+
+Claude's ordinary authority ends at an exact local commit/tree and evidence
+handoff. It excludes push, remote branch/tag mutation and PR create/update.
+Remote publication is a separately authorized Codex/Owner-delegate transport
+operation that must preserve the exact checkpoint/tree and stop when exact
+transport cannot be proven.
+
+Formal Controller Deep Review is one-shot discovery/falsification across the
+complete transitive Slice surface and freezes one SHA-256-bound Finding Set.
+Codex then receives the original Contract, accepted Amendments and Frozen Finding
+Set as one rework contract. Final Gate is closure verification, not a second
+open-ended discovery review; reopening requires materially new, previously
+unavailable severe evidence. A miss based on evidence already available to Deep
+Review is `CONTROLLER_REVIEW_COVERAGE_FAILURE`.
+
+After Controller Slice Closure, Human Owner Formal Closure verifies identities
+and Owner-only conditions rather than repeating engineering review. The exact
+Owner-accepted Closure Snapshot is required before the next Slice starts.
+
+Conflicts use the dual truth model. Normative Truth is Owner Decision → original
+Contract plus accepted Amendments → ADR/canonical normative docs. Implementation
+Fact is runtime/DB/external evidence → migration/schema → exact source/Git →
+tests/snapshots. Classify any conflict as `IMPLEMENTATION_DEFECT`,
+`CONTRACT_DEFECT` or `DOCUMENTATION_DRIFT`; no layer silently overwrites another.
 
 This implementation authorization does **not** authorize:
 
@@ -152,9 +218,11 @@ Cohort block only their named integration or production-enablement boundary.
 ## Next authorized action
 
 ```text
-CLAUDE_FABLE_5 executes SLICE-V1-001 Detailed Design and Initial Full
-Implementation under the approved Slice Contract. Claude may change in-scope
+CLAUDE_FABLE_5 executes SLICE-V1-001 local Detailed Design and Initial Full
+Implementation under the approved Slice Contract and Execution Envelope. Claude may change in-scope
 backend, frontend, V0011+ migrations, tests, infrastructure-as-code, docs and
-runbooks. It must keep production writes disabled and stop only on a material
-Conditional Design Gate trigger or proven external-capability blocker.
+runbooks and create local Git checkpoints. It may not push, mutate a remote
+branch/tag or create/update a PR under ordinary authority. It must keep production
+writes disabled and stop only on a material Conditional Design Gate trigger,
+Execution Envelope expansion or proven external-capability blocker.
 ```

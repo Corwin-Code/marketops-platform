@@ -8,9 +8,11 @@ Read, in order:
 2. `docs/01-requirements/V1_PRODUCT_CONTRACT.md`;
 3. `docs/03-work-items/V1_DELIVERY_SLICES.md`;
 4. the active Slice Contract;
-5. `docs/00-governance/AI_OPERATING_MODEL.md`;
-6. the role-specific root/project instruction file;
-7. accepted ADRs, current source, tests, PR and CI evidence.
+5. every accepted additive Amendment to that Contract;
+6. `docs/00-governance/EXECUTION_ENVELOPE_POLICY.md`;
+7. `docs/00-governance/AI_OPERATING_MODEL.md`;
+8. the role-specific root/project instruction file;
+9. accepted ADRs, current source, tests, PR and CI evidence.
 
 Chat history and old phase/WP language are not live authority. Historical records
 remain valuable evidence but are explicitly classified.
@@ -25,23 +27,26 @@ Next Maker: Claude Fable 5 / Claude Code
 Production write enablement: DISABLED
 ```
 
-Claude performs Detailed Design and Initial Full Implementation continuously under
-the Slice Contract. A separate Design approval is not required unless a listed
-Conditional Design Gate trigger appears.
+Claude performs local Detailed Design and Initial Full Implementation continuously
+under the Slice Contract. Its ordinary authority ends at an exact local
+checkpoint and excludes remote Git/PR writes. A separate Design approval is not
+required unless a listed Conditional Design Gate trigger appears.
 
 ## 3. Standard Slice workflow
 
 ```text
 sync main
 → create/reuse Slice branch
-→ Claude design + implementation + tests + docs
-→ Draft PR and CI
-→ GPT source-first Deep Review
-→ Codex full in-scope Rework/Fix/Verify
-→ GPT Final Gate on exact Head/evidence
+→ Claude local design + implementation + tests + docs
+→ exact local checkpoint
+→ Codex exact remote publication → Draft PR and CI
+→ one GPT source-first Deep Review + Frozen Finding Set SHA-256
+→ one Codex full in-scope Root-Cause Rework/Fix/Verify cycle
+→ GPT Final closure verification on exact Head/evidence
 → Human Owner-authorized protected merge
-→ deployment readiness
-→ separate Capability/Production Enablement Gate
+→ Gate EV / Gate E / release as applicable
+→ Controller Slice Closure → Owner Formal Closure
+→ Closure Snapshot → next Slice
 ```
 
 A branch push or code merge never enables Ozon/WB writes. Enablement is a later,
@@ -71,6 +76,10 @@ upstream, PR and CI state. Do not push directly to `main` or merge without an
 independent Controller verdict and separate Human Owner authorization. D-17 may
 permit Codex to mechanically execute an already-authorized Ready/merge action;
 it does not grant business, credential or production authority.
+
+Accepted original Contracts are byte-frozen. Normative changes use separately
+identified, exact, Owner-accepted additive Amendments; non-expansive review
+interpretation cannot accumulate into hidden expansion.
 
 ## 6. Required safety
 

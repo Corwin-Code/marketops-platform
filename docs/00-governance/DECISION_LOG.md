@@ -26,6 +26,7 @@
 | D-22 | 2026-08-26 | ACCEPTED | Production Delivery Slice + Shared Spine is the primary delivery model; default workflow is Contract-governed Claude Design+Implementation followed by GPT Deep Review, Codex full rework and GPT Final Gate. | OD-V1-022 and CD-V1-010/011; ADR-0005/0006. |
 | D-23 | 2026-08-26 | ACCEPTED | Yandex Cloud `ru-central1` is the V1 primary infrastructure; human auth uses external OIDC/MFA with Yandex Identity Hub as default; provider boundaries remain replaceable; Buyer PII stays out of AI/general Mart. | OD-V1-011/014/015/016 and CD-V1-007; ADR-0007. |
 | D-24 | 2026-08-26 | ACCEPTED | A production-grade Slice may enter bounded production before V1 is complete; write Capability enablement uses a Pilot Cohort and its own Gate; V1 completion is capability-based, not uplift-proof-based. | OD-V1-010/023 and CD-V1-004/006. |
+| D-25 | 2026-08-26 | ACCEPTED | DR-0004 plus exact Owner-accepted DR-0004-AMENDMENT-001 is the engineering execution and closure protocol; frozen proposal-status fields are provenance only and repository effect requires the accepted result on protected main. No V1 Product scope change and no SLICE-V1-001 scope change. | DR-0004; DR-0004-AMENDMENT-001; durable Human Owner acceptance evidence. |
 
 ## Change rule
 

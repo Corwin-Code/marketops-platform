@@ -7,6 +7,12 @@
 `docs/00-governance/CURRENT_STATE.md` is the only live execution-state source.
 The active product contract is `docs/01-requirements/V1_PRODUCT_CONTRACT.md`; the
 active delivery plan is `docs/03-work-items/V1_DELIVERY_SLICES.md`.
+The immutable original DR-0004 plus exact Owner-accepted
+`DR-0004-AMENDMENT-001-activation-and-owner-acceptance-provenance.md`, durable
+Owner acceptance evidence, `EXECUTION_ENVELOPE_POLICY.md` and
+`CLOSURE_SNAPSHOT_STANDARD.md` govern engineering execution and Slice closure
+when the accepted result is on protected `main`, without changing the V1 Product
+or active Slice Contract.
 
 The 2026-08-06 Baseline remains immutable source provenance and a Requirement/NFR
 catalog. DR-0003 and the V1 contracts supersede only the rollout, version and
@@ -40,13 +46,16 @@ Capability Gate and Human Owner enablement.
 
 ```text
 V1 Product Contract
-→ Production Delivery Slice Contract
-→ Claude Detailed Design + Initial Full Implementation
-→ GPT Controller Deep Review
-→ Codex Full Production Rework / Fix / Verify
-→ GPT Controller Final Gate
-→ protected merge
-→ separate Controlled Production Enablement
+→ immutable Production Delivery Slice Contract + additive Amendments
+→ Claude local Detailed Design + Full Implementation
+→ exact local checkpoint
+→ Codex exact remote publication to Draft PR
+→ one GPT Controller Deep Review + Frozen Finding Set
+→ one Codex Root-Cause Rework / Fix / Verify cycle
+→ GPT Controller Final closure verification
+→ protected merge / Gate EV / Gate E as applicable
+→ Controller Slice Closure → Owner Formal Closure
+→ mandatory Closure Snapshot → next Slice
 ```
 
 The default active Slice after DR-0003 is:

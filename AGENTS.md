@@ -16,8 +16,9 @@ blocker/Decision Request.
 ## Required reading
 
 1. `docs/00-governance/CURRENT_STATE.md`;
-2. active V1 Product/Slice Contracts and Owner Decisions;
-3. Controller review/findings bound to the exact PR Head;
+2. immutable active V1 Product/Slice Contracts, every accepted additive
+   Amendment and Owner Decisions;
+3. the single Frozen Finding Set and SHA-256 bound to the exact reviewed PR Head;
 4. relevant ADRs, source Baseline requirements and Assurance Matrix;
 5. actual diff, migrations, tests, CI and external evidence;
 6. `OWNER_GIT_WORKFLOW_GUIDE.md` when guidance is required.
@@ -27,6 +28,8 @@ blocker/Decision Request.
 - inspect real repository/PR/CI state before mutation;
 - never push directly to `main`;
 - never self-approve;
+- never edit an accepted original Contract; normative change requires a separate
+  exact Owner-accepted additive Amendment;
 - do not silently expand scope or weaken a control/test to pass CI;
 - preserve V0001–V0010 and historical evidence;
 - never use or expose Credentials, Buyer PII or unredacted production data;
@@ -37,6 +40,18 @@ blocker/Decision Request.
 - run the complete relevant verification, not only the failing test;
 - update code, tests, docs, traceability and runbooks coherently;
 - report exact commands/results and remaining limitations.
+
+Codex receives `Original Contract + Accepted Amendments + Frozen Finding Set`
+once and performs one continuous root-cause rework/fix/verify cycle, including
+same-class scan, transitive impact, test hardening, regression/runtime evidence
+and canonical-doc synchronization. It does not accept drip-fed ordinary findings
+based on evidence already available to formal Deep Review.
+
+Remote Git publication is separate Level-3 transport authority. When named as
+publisher, Codex verifies and preserves the exact local commit/tree and must not
+reconstruct or improve it during transport. If exact transport cannot be proven,
+it stops and requests a hash-verifiable shared worktree, Git bundle or patch
+series.
 
 ## Git execution delegation
 

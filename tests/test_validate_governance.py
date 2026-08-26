@@ -14,6 +14,11 @@ from scripts.validate_governance import (
     DR0003_R1_REVIEW_RELATIVE_PATH,
     DR0003_R2_ARTIFACT_HASHES,
     DR0003_REQUIRED_FILES,
+    DR0004_ARTIFACT_HASHES,
+    DR0004_CURRENT_STATE,
+    DR0004_PROTECTED_CONTRACT_HASHES,
+    DR0004_R1_ARTIFACT_HASHES,
+    DR0004_REQUIRED_FILES,
     HISTORICAL_EVIDENCE_TREE_HASHES,
     HISTORIC_CONTRACT_BEGIN,
     HISTORIC_CONTRACT_END,
@@ -39,6 +44,8 @@ from scripts.validate_governance import (
     validate_dr0003_r1_artifacts,
     validate_dr0003_r1_whitespace_exception,
     validate_dr0003_r2_artifacts,
+    validate_dr0004_artifact_hashes,
+    validate_dr0004_protocol_texts,
     validate_ai_execution_boundary_text,
     validate_ai_operating_model_v1_text,
     validate_backlog_v1_text,
@@ -2739,12 +2746,13 @@ class V1RequiredFileTests(unittest.TestCase):
     def test_complete_required_inventory_is_valid(self) -> None:
         errors: list[str] = []
         validate_required_file_set(
-            errors, set(REQUIRED_FILES + DR0003_REQUIRED_FILES)
+            errors,
+            set(REQUIRED_FILES + DR0003_REQUIRED_FILES + DR0004_REQUIRED_FILES),
         )
         self.assertEqual([], errors)
 
     def test_missing_dr_owner_slice_capability_and_assurance_files_are_rejected(self) -> None:
-        required = set(REQUIRED_FILES + DR0003_REQUIRED_FILES)
+        required = set(REQUIRED_FILES + DR0003_REQUIRED_FILES + DR0004_REQUIRED_FILES)
         for relative in (
             "docs/00-governance/DR-0003-v1-product-delivery-baseline-reset.md",
             "docs/00-governance/OWNER_DECISIONS_V1.md",
@@ -2951,7 +2959,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
             1,
         )
         errors = self.validate(slice_contract_bytes=mutated)
-        self.assertTrue(any("re-review" in error for error in errors))
+        self.assertTrue(any("immutable" in error for error in errors))
         self.assertTrue(any("does not match" in error for error in errors))
 
     def test_hash_change_with_original_contract_is_rejected(self) -> None:
@@ -2964,7 +2972,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
         self.assertTrue(any("active_slice_contract_sha256" in error for error in errors))
         self.assertTrue(any("FULL_SCOPE_IMPLEMENTATION" in error for error in errors))
 
-    def test_coordinated_contract_and_hash_change_requires_controller_re_review(self) -> None:
+    def test_coordinated_contract_and_hash_change_is_not_an_amendment(self) -> None:
         mutated = self.slice_contract_bytes() + b"\nR1 mutation requiring re-review\n"
         mutated_hash = hashlib.sha256(mutated).hexdigest()
         current = self.current().replace(
@@ -2976,7 +2984,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
             current=current,
             slice_contract_bytes=mutated,
         )
-        self.assertTrue(any("re-review" in error for error in errors))
+        self.assertTrue(any("additive Amendment" in error for error in errors))
 
     def test_full_scope_requires_exact_review_authorization_condition(self) -> None:
         current = self.current().replace(
@@ -3013,7 +3021,7 @@ class V1DecisionContractTests(unittest.TestCase):
 
     def test_retained_or_new_decision_cannot_be_removed(self) -> None:
         original = repository_governance_text("docs/00-governance/DECISION_LOG.md")
-        for decision_id in ("D-03", "D-17", "D-24"):
+        for decision_id in ("D-03", "D-17", "D-24", "D-25"):
             with self.subTest(decision_id=decision_id):
                 text = "\n".join(
                     line for line in original.splitlines()
@@ -3341,7 +3349,7 @@ class V1TraceabilityAndOpenQuestionTests(unittest.TestCase):
     def test_missing_decision_or_duplicate_source_id_is_rejected(self) -> None:
         original = self.traceability()
         missing = "\n".join(
-            line for line in original.splitlines() if not line.startswith("D-24,")
+            line for line in original.splitlines() if not line.startswith("D-25,")
         ) + "\n"
         duplicate = original + next(
             line for line in original.splitlines() if line.startswith("D-18,")
@@ -3404,6 +3412,305 @@ class Dr0003ArtifactAuthorityTests(unittest.TestCase):
                     errors, original.replace(old, new, 1)
                 )
                 self.assertTrue(errors)
+
+
+class Dr0004GovernanceContractTests(unittest.TestCase):
+    def root(self) -> Path:
+        return Path(__file__).resolve().parents[1]
+
+    def documents(self) -> dict[str, str]:
+        paths = {
+            "dr0004": "docs/00-governance/DR-0004-engineering-execution-closure-protocol-alignment.md",
+            "envelope": "docs/00-governance/EXECUTION_ENVELOPE_POLICY.md",
+            "closure_standard": "docs/00-governance/CLOSURE_SNAPSHOT_STANDARD.md",
+            "current": "docs/00-governance/CURRENT_STATE.md",
+            "change": "docs/00-governance/CHANGE_CONTROL.md",
+            "claude_project": "docs/00-governance/CLAUDE_PROJECT_INSTRUCTIONS.md",
+            "claude": "CLAUDE.md",
+            "operating": "docs/00-governance/AI_OPERATING_MODEL.md",
+            "review_standard": "docs/00-governance/CONTROLLER_REVIEW_STANDARD.md",
+            "quality": "docs/00-governance/QUALITY_GATES.md",
+            "handoff": "docs/00-governance/HANDOFF_PROTOCOL.md",
+            "source": "docs/01-requirements/SOURCE_MANIFEST.md",
+            "guide": "docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md",
+            "agents": "AGENTS.md",
+            "chatgpt_project": "docs/00-governance/CHATGPT_PROJECT_INSTRUCTIONS.md",
+            "contributing": "CONTRIBUTING.md",
+            "readme": "README.md",
+            "start": "START_HERE.md",
+            "pr_template": ".github/pull_request_template.md",
+            "decision": "docs/00-governance/DECISION_LOG.md",
+            "v1_traceability": "docs/01-requirements/v1-traceability.csv",
+        }
+        return {
+            name: (self.root() / relative).read_text(encoding="utf-8-sig")
+            for name, relative in paths.items()
+        }
+
+    def validate(self, documents: dict[str, str] | None = None) -> list[str]:
+        errors: list[str] = []
+        validate_dr0004_protocol_texts(errors, documents or self.documents())
+        return errors
+
+    def test_exact_protocol_and_current_state_are_valid(self) -> None:
+        self.assertEqual([], self.validate())
+        errors: list[str] = []
+        validate_dr0004_artifact_hashes(errors)
+        self.assertEqual([], errors)
+
+    def test_all_required_current_state_modes_are_fail_closed(self) -> None:
+        for field, value in DR0004_CURRENT_STATE.items():
+            with self.subTest(field=field):
+                documents = self.documents()
+                documents["current"] = documents["current"].replace(
+                    f"{field}: {value}", f"{field}: REGRESSED", 1
+                )
+                errors = self.validate(documents)
+                self.assertTrue(
+                    any(f"CURRENT_STATE {field}" in error for error in errors)
+                )
+
+    def test_exact_accepted_r1_artifacts_and_original_contracts_are_byte_frozen(self) -> None:
+        expected = {
+            **DR0004_ARTIFACT_HASHES,
+            **DR0004_R1_ARTIFACT_HASHES,
+            **DR0004_PROTECTED_CONTRACT_HASHES,
+        }
+        for relative, digest in expected.items():
+            with self.subTest(relative=relative):
+                actual = hashlib.sha256((self.root() / relative).read_bytes()).hexdigest()
+                self.assertEqual(digest, actual)
+
+        with TemporaryDirectory() as directory:
+            temp_root = Path(directory)
+            for relative in expected:
+                target = temp_root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes((self.root() / relative).read_bytes())
+            protected = temp_root / next(iter(DR0004_PROTECTED_CONTRACT_HASHES))
+            protected.write_bytes(protected.read_bytes() + b"\nmutated original\n")
+            errors: list[str] = []
+            validate_dr0004_artifact_hashes(errors, root=temp_root)
+            self.assertTrue(any("immutable hash mismatch" in error for error in errors))
+
+    def test_missing_amendment_or_owner_acceptance_evidence_is_rejected(self) -> None:
+        expected = {
+            **DR0004_ARTIFACT_HASHES,
+            **DR0004_R1_ARTIFACT_HASHES,
+            **DR0004_PROTECTED_CONTRACT_HASHES,
+        }
+        targets = (
+            "docs/00-governance/DR-0004-AMENDMENT-001-activation-and-owner-acceptance-provenance.md",
+            "docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md",
+        )
+        for missing in targets:
+            with self.subTest(missing=missing), TemporaryDirectory() as directory:
+                temp_root = Path(directory)
+                for relative in expected:
+                    if relative == missing:
+                        continue
+                    target = temp_root / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes((self.root() / relative).read_bytes())
+                errors: list[str] = []
+                validate_dr0004_artifact_hashes(errors, root=temp_root)
+                self.assertTrue(
+                    any(
+                        "DR-0004 hash target missing" in error and missing in error
+                        for error in errors
+                    )
+                )
+
+    def test_mismatched_amendment_or_owner_acceptance_evidence_is_rejected(self) -> None:
+        expected = {
+            **DR0004_ARTIFACT_HASHES,
+            **DR0004_R1_ARTIFACT_HASHES,
+            **DR0004_PROTECTED_CONTRACT_HASHES,
+        }
+        targets = (
+            "docs/00-governance/DR-0004-AMENDMENT-001-activation-and-owner-acceptance-provenance.md",
+            "docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md",
+        )
+        for mismatched in targets:
+            with self.subTest(mismatched=mismatched), TemporaryDirectory() as directory:
+                temp_root = Path(directory)
+                for relative in expected:
+                    target = temp_root / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes((self.root() / relative).read_bytes())
+                target = temp_root / mismatched
+                target.write_bytes(target.read_bytes() + b"\nmutated provenance\n")
+                errors: list[str] = []
+                validate_dr0004_artifact_hashes(errors, root=temp_root)
+                self.assertTrue(
+                    any(
+                        "immutable hash mismatch" in error and mismatched in error
+                        for error in errors
+                    )
+                )
+
+    def test_proposal_status_cannot_be_interpreted_as_live_effective_state(self) -> None:
+        for field, live, proposal in (
+            (
+                "dr0004_acceptance",
+                "HUMAN_OWNER_ACCEPTED",
+                "PROPOSED_PENDING_EXACT_OWNER_ACCEPTANCE",
+            ),
+            (
+                "dr0004_repository_effect",
+                "ACTIVE_ON_PROTECTED_MAIN",
+                "PROPOSED_BY_DR_0004",
+            ),
+            (
+                "dr0004_frozen_original_status_semantics",
+                "PROPOSAL_TIME_PROVENANCE_ONLY",
+                "LIVE_REPOSITORY_STATE",
+            ),
+        ):
+            with self.subTest(field=field):
+                documents = self.documents()
+                documents["current"] = documents["current"].replace(
+                    f"{field}: {live}", f"{field}: {proposal}", 1
+                )
+                errors = self.validate(documents)
+                self.assertTrue(
+                    any(f"CURRENT_STATE {field}" in error for error in errors)
+                )
+
+    def test_activation_requires_amendment_and_acceptance_evidence_bindings(self) -> None:
+        for document, token in (
+            (
+                "current",
+                "docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md",
+            ),
+            (
+                "source",
+                "f83349ea537fd48575787dccfaa624ec39c5079181ccf0da6c69e996768bda88",
+            ),
+            (
+                "source",
+                "cea88c6b72b480ad7f39a45390e457de316b6be6511dad45a5d0f6c63716779c",
+            ),
+        ):
+            with self.subTest(document=document, token=token):
+                documents = self.documents()
+                documents[document] = documents[document].replace(token, "removed", 1)
+                errors = self.validate(documents)
+                expected_label = (
+                    "DR-0004 CURRENT_STATE"
+                    if document == "current"
+                    else f"DR-0004 {document}"
+                )
+                self.assertTrue(any(expected_label in error for error in errors))
+
+    def test_d25_indexes_dr0004_without_product_or_slice_scope_change(self) -> None:
+        documents = self.documents()
+        documents["decision"] = documents["decision"].replace(
+            "No V1 Product scope change and no SLICE-V1-001 scope change.",
+            "V1 and Slice scope may change.",
+            1,
+        )
+        errors = self.validate(documents)
+        self.assertTrue(any("DR-0004 decision" in error for error in errors))
+
+    def test_claude_has_one_combined_implementation_responsibility(self) -> None:
+        documents = self.documents()
+        documents["operating"] += (
+            "\n- performs Detailed Design and Initial Full Implementation "
+            "continuously inside the active Contract.\n"
+        )
+        errors = self.validate(documents)
+        self.assertTrue(
+            any("exactly one Claude implementation responsibility" in error for error in errors)
+        )
+
+    def test_accepted_contract_requires_additive_amendment(self) -> None:
+        documents = self.documents()
+        documents["change"] = documents["change"].replace(
+            "An accepted original Product or Slice Contract is permanently byte-frozen.",
+            "An accepted Contract may be edited and re-hashed.",
+            1,
+        )
+        errors = self.validate(documents)
+        self.assertTrue(any("DR-0004 change" in error for error in errors))
+
+    def test_ordinary_claude_remote_git_authority_is_rejected(self) -> None:
+        documents = self.documents()
+        documents["claude"] += "\nClaude may push and create a PR under ordinary authority.\n"
+        errors = self.validate(documents)
+        self.assertTrue(any("prohibited ordinary Claude" in error for error in errors))
+
+    def test_execution_envelope_levels_and_level_three_default_deny_are_required(self) -> None:
+        documents = self.documents()
+        documents["envelope"] = documents["envelope"].replace(
+            "remote_git_default: DENY", "remote_git_default: ALLOW", 1
+        )
+        errors = self.validate(documents)
+        self.assertTrue(any("DR-0004 envelope" in error for error in errors))
+
+    def test_remote_publication_cannot_reconstruct_checkpoint(self) -> None:
+        documents = self.documents()
+        documents["handoff"] = documents["handoff"].replace(
+            "It may not reconstruct, redesign or improve the\nimplementation during publication.",
+            "It may reconstruct the implementation during publication.",
+            1,
+        )
+        errors = self.validate(documents)
+        self.assertTrue(any("DR-0004 handoff" in error for error in errors))
+
+    def test_deep_review_requires_one_hash_bound_frozen_finding_set(self) -> None:
+        documents = self.documents()
+        documents["review_standard"] = documents["review_standard"].replace(
+            "## 7. One-shot Deep Review and Frozen Finding Set",
+            "## 7. Repeatable informal review",
+            1,
+        )
+        errors = self.validate(documents)
+        self.assertTrue(any("DR-0004 review_standard" in error for error in errors))
+
+    def test_final_gate_rejects_open_ended_second_discovery(self) -> None:
+        documents = self.documents()
+        documents["review_standard"] = documents["review_standard"].replace(
+            "It is not an open-ended second discovery review.",
+            "It is an open-ended second discovery review.",
+            1,
+        )
+        errors = self.validate(documents)
+        self.assertTrue(any("DR-0004 review_standard" in error for error in errors))
+
+    def test_old_evidence_miss_requires_coverage_failure_classification(self) -> None:
+        documents = self.documents()
+        documents["quality"] = documents["quality"].replace(
+            "`CONTROLLER_REVIEW_COVERAGE_FAILURE`",
+            "`NEW_DISCOVERY_ROUND`",
+            1,
+        )
+        errors = self.validate(documents)
+        self.assertTrue(any("DR-0004 quality" in error for error in errors))
+
+    def test_owner_formal_closure_and_snapshot_are_required_before_next_slice(self) -> None:
+        documents = self.documents()
+        documents["guide"] = documents["guide"].replace(
+            "Owner-accepted Closure Snapshot is required before the next Slice",
+            "Closure Snapshot is optional before the next Slice",
+            1,
+        )
+        errors = self.validate(documents)
+        self.assertTrue(any("DR-0004 guide" in error for error in errors))
+
+    def test_dual_truth_and_all_conflict_classes_are_required(self) -> None:
+        for token in (
+            "Normative Truth is ordered as:",
+            "Implementation Fact is ordered as:",
+            "IMPLEMENTATION_DEFECT",
+            "CONTRACT_DEFECT",
+            "DOCUMENTATION_DRIFT",
+        ):
+            with self.subTest(token=token):
+                documents = self.documents()
+                documents["source"] = documents["source"].replace(token, "removed", 1)
+                errors = self.validate(documents)
+                self.assertTrue(any("DR-0004 source" in error for error in errors))
 
 
 if __name__ == "__main__":

@@ -28,12 +28,15 @@ While state is `REQUIRED`, the active agent reports:
 5. the complete lifecycle:
 
    ```text
-   sync main → create/reuse Slice/task branch → edit → local checks
-   → stage/review → commit → push task branch → Draft PR → CI
-   → GPT review → Codex rework as needed → GPT Final Gate
+   sync main → create/reuse Slice/task branch → local edit/checkpoint
+   → stage/review → commit → Codex exact remote publication
+   → Draft PR → CI → one GPT Deep Review + Frozen Finding Set
+   → one Codex root-cause rework cycle → GPT Final closure verification
    → Human Owner-authorized merge execution → local sync/cleanup
    → Gate EV for any bounded real-write evidence when applicable
    → separate Gate-E production/capability enablement when applicable
+   → Controller Slice Closure → Owner Formal Closure
+   → Closure Snapshot → next Slice
    ```
 
 6. that branch commits/pushes do not change `main`, and merge does not itself
@@ -103,16 +106,31 @@ git diff --cached --check
 git diff --cached
 ```
 
-### Commit and push task branch
+### Create the exact local checkpoint
 
 ```bash
 git commit -m "type: concise outcome"
+```
+
+Claude ordinary authority ends at this exact local commit/tree. It does not
+include push, remote branch/tag mutation or PR create/update.
+
+### Exact remote publication by the named delegate
+
+Under a dedicated Level-3 Remote Publication authority, Codex or the named Owner
+delegate verifies the exact checkpoint/tree, immutable original Contract and
+accepted Amendment hashes, target repository/base/branch and prohibitions before:
+
+```bash
 git push -u origin HEAD
 ```
 
-Neither command updates `main`.
+Publication is transport, not redesign. The delegate may not reconstruct or
+improve the checkpoint. If exact transport cannot be proven, request a
+hash-verifiable shared worktree, Git bundle, patch series or equivalent. Local
+commit and task-branch push do not update `main`.
 
-### Open/update Draft PR
+### Open/update one Draft PR
 
 ```bash
 gh pr create --draft --base main --head "$(git branch --show-current)"
@@ -120,6 +138,12 @@ gh pr checks --watch
 ```
 
 Use the existing PR for rework. Do not create a new PR for every finding.
+
+Formal Deep Review inspects the complete transitive surface once and freezes one
+SHA-256-bound Finding Set. Codex receives the original Contract, accepted
+Amendments and Frozen Finding Set once. Final Gate is closure verification, not a
+second open-ended discovery pass; reopening requires materially new, previously
+unavailable severe evidence.
 
 ## 4. Review and merge eligibility
 
@@ -138,6 +162,11 @@ A Slice may remain incomplete after a valid tranche merge. A merged controlled
 write remains disabled. A bounded real-write verification first requires an
 exact Gate-EV authorization; ongoing Pilot use separately requires Gate E and
 Human Owner production authorization.
+
+After applicable release identities are known, Controller Slice Closure and
+Human Owner Formal Closure must complete. Owner Formal Closure is an identity and
+Owner-condition confirmation, not a third engineering review. An exact
+Owner-accepted Closure Snapshot is required before the next Slice starts.
 
 ## 5. D-17 mechanical delegation
 
