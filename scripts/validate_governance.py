@@ -12,6 +12,27 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
+DR0003_R1_REVIEW_RELATIVE_PATH = (
+    "docs/08-handoffs/"
+    "CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md"
+)
+DR0003_R1_PROMPT_RELATIVE_PATH = (
+    "docs/08-handoffs/CODEX-PR18-DR-0003-TARGETED-REWORK-R1.md"
+)
+DR0003_R1_MANIFEST_RELATIVE_PATH = (
+    "docs/08-handoffs/DR-0003-PR18-R1-ARTIFACT-HASHES.md"
+)
+DR0003_R2_REVIEW_RELATIVE_PATH = (
+    "docs/08-handoffs/"
+    "CONTROLLER-PR18-DR-0003-INDEPENDENT-RE-REVIEW-R2.md"
+)
+DR0003_R2_PROMPT_RELATIVE_PATH = (
+    "docs/08-handoffs/CODEX-PR18-DR-0003-TARGETED-REWORK-R2.md"
+)
+DR0003_R2_MANIFEST_RELATIVE_PATH = (
+    "docs/08-handoffs/DR-0003-PR18-R2-ARTIFACT-HASHES.md"
+)
+
 REQUIRED_FILES = [
     "README.md",
     "CLAUDE.md",
@@ -80,9 +101,12 @@ DR0003_REQUIRED_FILES = [
     "docs/08-handoffs/CONTROLLER-DR-0003-V1-BASELINE-RESET-REVIEW.md",
     "docs/08-handoffs/CODEX-DR-0003-GOVERNANCE-EXECUTION-PROMPT.md",
     "docs/08-handoffs/DR-0003-CONTROLLER-ARTIFACT-HASHES.md",
-    "docs/08-handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md",
-    "docs/08-handoffs/CODEX-PR18-DR-0003-TARGETED-REWORK-R1.md",
-    "docs/08-handoffs/DR-0003-PR18-R1-ARTIFACT-HASHES.md",
+    DR0003_R1_REVIEW_RELATIVE_PATH,
+    DR0003_R1_PROMPT_RELATIVE_PATH,
+    DR0003_R1_MANIFEST_RELATIVE_PATH,
+    DR0003_R2_REVIEW_RELATIVE_PATH,
+    DR0003_R2_PROMPT_RELATIVE_PATH,
+    DR0003_R2_MANIFEST_RELATIVE_PATH,
     ".github/ISSUE_TEMPLATE/decision_request.yml",
     ".github/ISSUE_TEMPLATE/delivery_slice.yml",
     ".github/ISSUE_TEMPLATE/work_package.yml",
@@ -176,14 +200,25 @@ DR0003_ARTIFACT_HASHES = {
     ),
 }
 DR0003_R1_ARTIFACT_HASHES = {
-    "docs/08-handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md": (
+    DR0003_R1_REVIEW_RELATIVE_PATH: (
         "d2abcf7ac5569ae3501e78b34bc421bcfa6a9e79275122117f39bc5f5155ac5d"
     ),
-    "docs/08-handoffs/CODEX-PR18-DR-0003-TARGETED-REWORK-R1.md": (
+    DR0003_R1_PROMPT_RELATIVE_PATH: (
         "782aff3289bbcc3c5443dc534451cdfbaea4b61dc3a7aea5910b1edfc6e7ea80"
     ),
-    "docs/08-handoffs/DR-0003-PR18-R1-ARTIFACT-HASHES.md": (
+    DR0003_R1_MANIFEST_RELATIVE_PATH: (
         "fd2412530831831e259b52822d2ba703de013dc3e76c58e70736475ec1c9d3ac"
+    ),
+}
+DR0003_R2_ARTIFACT_HASHES = {
+    DR0003_R2_REVIEW_RELATIVE_PATH: (
+        "dc2f36541acff66f0a656c334aedc78a77d538e80f38dffd5f3308750e430f65"
+    ),
+    DR0003_R2_PROMPT_RELATIVE_PATH: (
+        "de674494ec784d439c26a31721337b8254df55b4dfdc82729ea2801ce7d152a4"
+    ),
+    DR0003_R2_MANIFEST_RELATIVE_PATH: (
+        "9279cc9029646315f98e2e2da1f0f8edbfcbd2c104f55393870dfdda8d168811"
     ),
 }
 HISTORICAL_PROVENANCE_HASHES = {
@@ -4166,10 +4201,46 @@ def validate_dr0003_artifacts(errors: list[str]) -> None:
         )
 
 
+def validate_dr0003_r1_whitespace_exception(
+    errors: list[str],
+    attributes_text: str,
+    *,
+    root: Path = ROOT,
+    required_files: set[str] | None = None,
+) -> None:
+    """Bind the sole whitespace exception to the real, required R1 review file."""
+    whitespace_exception = f"{DR0003_R1_REVIEW_RELATIVE_PATH} -whitespace"
+    whitespace_rules: list[str] = []
+    for line in attributes_text.splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if "-whitespace" in stripped.split():
+            whitespace_rules.append(line)
+
+    if whitespace_rules != [whitespace_exception]:
+        errors.append(
+            "DR-0003 R1 CommonMark whitespace exception must be exact and singular"
+        )
+
+    inventory = (
+        set(DR0003_REQUIRED_FILES) if required_files is None else required_files
+    )
+    if DR0003_R1_REVIEW_RELATIVE_PATH not in inventory:
+        errors.append(
+            "DR-0003 R1 whitespace exception target must be a required file: "
+            f"{DR0003_R1_REVIEW_RELATIVE_PATH}"
+        )
+    if not (root / DR0003_R1_REVIEW_RELATIVE_PATH).is_file():
+        errors.append(
+            "DR-0003 R1 whitespace exception target does not exist: "
+            f"{DR0003_R1_REVIEW_RELATIVE_PATH}"
+        )
+
+
 def validate_dr0003_r1_artifacts(errors: list[str]) -> None:
     """Pin the independent R1 finding ledger and its targeted rework authority."""
-    manifest_relative = "docs/08-handoffs/DR-0003-PR18-R1-ARTIFACT-HASHES.md"
-    manifest_path = ROOT / manifest_relative
+    manifest_path = ROOT / DR0003_R1_MANIFEST_RELATIVE_PATH
     manifest_text = (
         manifest_path.read_text(encoding="utf-8") if manifest_path.exists() else ""
     )
@@ -4179,19 +4250,7 @@ def validate_dr0003_r1_artifacts(errors: list[str]) -> None:
         if attributes_path.exists()
         else ""
     )
-    whitespace_exception = (
-        "docs/08/handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md "
-        "-whitespace"
-    )
-    if attributes_text.count(whitespace_exception) != 1:
-        errors.append(
-            "DR-0003 R1 CommonMark whitespace exception must be exact and singular"
-        )
-    for line in attributes_text.splitlines():
-        if "-whitespace" in line and line != whitespace_exception:
-            errors.append(
-                "whitespace exception may apply only to the SHA-256-pinned DR-0003 R1 review"
-            )
+    validate_dr0003_r1_whitespace_exception(errors, attributes_text)
     for relative, expected in DR0003_R1_ARTIFACT_HASHES.items():
         path = ROOT / relative
         if not path.is_file():
@@ -4201,7 +4260,7 @@ def validate_dr0003_r1_artifacts(errors: list[str]) -> None:
             errors.append(
                 f"DR-0003 R1 artifact hash mismatch for {relative}: expected {expected}, found {actual}"
             )
-        if relative != manifest_relative and (
+        if relative != DR0003_R1_MANIFEST_RELATIVE_PATH and (
             relative not in manifest_text or expected not in manifest_text
         ):
             errors.append(f"DR-0003 R1 artifact hash binding missing for: {relative}")
@@ -4221,7 +4280,7 @@ def validate_dr0003_r1_artifacts(errors: list[str]) -> None:
         ),
     )
 
-    review_path = ROOT / "docs/08-handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md"
+    review_path = ROOT / DR0003_R1_REVIEW_RELATIVE_PATH
     if review_path.exists():
         review = review_path.read_text(encoding="utf-8")
         require_contract_tokens_text(
@@ -4238,7 +4297,7 @@ def validate_dr0003_r1_artifacts(errors: list[str]) -> None:
             ),
         )
 
-    prompt_path = ROOT / "docs/08-handoffs/CODEX-PR18-DR-0003-TARGETED-REWORK-R1.md"
+    prompt_path = ROOT / DR0003_R1_PROMPT_RELATIVE_PATH
     if prompt_path.exists():
         prompt = prompt_path.read_text(encoding="utf-8")
         require_contract_tokens_text(
@@ -4250,6 +4309,75 @@ def validate_dr0003_r1_artifacts(errors: list[str]) -> None:
                 "authorization: TARGETED_GOVERNANCE_REWORK_ONLY",
                 "requested_next_verdict: INDEPENDENT_DR_0003_RESET_PR_RE_REVIEW",
                 "Do not mark Ready and do not merge.",
+            ),
+        )
+
+
+def validate_dr0003_r2_artifacts(errors: list[str]) -> None:
+    """Pin the Controller R2 finding and the bounded F05 rework authority."""
+    manifest_path = ROOT / DR0003_R2_MANIFEST_RELATIVE_PATH
+    manifest_text = (
+        manifest_path.read_text(encoding="utf-8") if manifest_path.exists() else ""
+    )
+    for relative, expected in DR0003_R2_ARTIFACT_HASHES.items():
+        path = ROOT / relative
+        if not path.is_file():
+            continue
+        actual = sha256(path)
+        if actual != expected:
+            errors.append(
+                f"DR-0003 R2 artifact hash mismatch for {relative}: expected {expected}, found {actual}"
+            )
+        if relative != DR0003_R2_MANIFEST_RELATIVE_PATH and (
+            relative not in manifest_text or expected not in manifest_text
+        ):
+            errors.append(f"DR-0003 R2 artifact hash binding missing for: {relative}")
+
+    require_contract_tokens_text(
+        errors,
+        "DR-0003 R2 artifact hash binding",
+        manifest_text,
+        (
+            f"reviewed_base: {DR0003_REQUIRED_BASE}",
+            "reviewed_head: 37e04f7f02de8a52f0c8fd026724ec2dbaf99d60",
+            "reviewed_head_tree: 89b1caccf390f6abd9f1a30f8ff268f5091166da",
+            "controller_verdict: CHANGES_REQUIRED",
+            "merge_authorization: NOT_GRANTED",
+            "production_enablement: NOT_AUTHORIZED",
+            "next_action: DR_0003_PR18_WHITESPACE_ATTRIBUTE_PATH_TARGETED_REWORK_R2",
+        ),
+    )
+
+    review_path = ROOT / DR0003_R2_REVIEW_RELATIVE_PATH
+    if review_path.exists():
+        review = review_path.read_text(encoding="utf-8")
+        require_contract_tokens_text(
+            errors,
+            "DR-0003 R2 Controller review",
+            review,
+            (
+                "reviewed_head: 37e04f7f02de8a52f0c8fd026724ec2dbaf99d60",
+                "controller_verdict: CHANGES_REQUIRED",
+                "DR3-PR18-F05 — MAJOR",
+                "merge_authorization: NOT_GRANTED",
+                "production_enablement: NOT_AUTHORIZED",
+                "NEXT_ACTION: DR_0003_PR18_WHITESPACE_ATTRIBUTE_PATH_TARGETED_REWORK_R2",
+            ),
+        )
+
+    prompt_path = ROOT / DR0003_R2_PROMPT_RELATIVE_PATH
+    if prompt_path.exists():
+        prompt = prompt_path.read_text(encoding="utf-8")
+        require_contract_tokens_text(
+            errors,
+            "DR-0003 R2 targeted rework prompt",
+            prompt,
+            (
+                "controller_reviewed_starting_head: 37e04f7f02de8a52f0c8fd026724ec2dbaf99d60",
+                "authorization: TARGETED_GOVERNANCE_REWORK_ONLY",
+                "finding: DR3-PR18-F05",
+                "requested_next_verdict: INDEPENDENT_DR_0003_RESET_PR_FINAL_RE_REVIEW",
+                "Do not mark Ready, self-approve or merge.",
             ),
         )
 
@@ -4450,6 +4578,7 @@ def validate_v1_governance(errors: list[str]) -> None:
     validate_historical_provenance_hashes(errors)
     validate_dr0003_artifacts(errors)
     validate_dr0003_r1_artifacts(errors)
+    validate_dr0003_r2_artifacts(errors)
 
 
 def git_scan_paths(root: Path = ROOT) -> list[Path]:

@@ -10,6 +10,9 @@ from tempfile import TemporaryDirectory
 
 from scripts.validate_governance import (
     CANONICAL_DESIGN_RELATIVE_PATH,
+    DR0003_R1_ARTIFACT_HASHES,
+    DR0003_R1_REVIEW_RELATIVE_PATH,
+    DR0003_R2_ARTIFACT_HASHES,
     DR0003_REQUIRED_FILES,
     HISTORICAL_EVIDENCE_TREE_HASHES,
     HISTORIC_CONTRACT_BEGIN,
@@ -34,6 +37,8 @@ from scripts.validate_governance import (
     validate_dr0003_controller_review_text,
     validate_dr0003_hash_binding_text,
     validate_dr0003_r1_artifacts,
+    validate_dr0003_r1_whitespace_exception,
+    validate_dr0003_r2_artifacts,
     validate_ai_execution_boundary_text,
     validate_ai_operating_model_v1_text,
     validate_backlog_v1_text,
@@ -2748,6 +2753,7 @@ class V1RequiredFileTests(unittest.TestCase):
             "docs/04-api/V1_CAPABILITY_MATRIX.md",
             "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md",
             "docs/08-handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md",
+            "docs/08-handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-RE-REVIEW-R2.md",
         ):
             with self.subTest(relative=relative):
                 errors: list[str] = []
@@ -2766,6 +2772,88 @@ class V1RequiredFileTests(unittest.TestCase):
             before = directory_tree_sha256(path)
             evidence.write_text("mutated\n", encoding="utf-8")
             self.assertNotEqual(before, directory_tree_sha256(path))
+
+
+class Dr0003R1WhitespaceAttributeTests(unittest.TestCase):
+    def root(self) -> Path:
+        return Path(__file__).resolve().parents[1]
+
+    def attributes(self) -> str:
+        return (self.root() / ".gitattributes").read_text(encoding="utf-8")
+
+    def validate(
+        self,
+        attributes: str,
+        *,
+        root: Path | None = None,
+        required_files: set[str] | None = None,
+    ) -> list[str]:
+        errors: list[str] = []
+        validate_dr0003_r1_whitespace_exception(
+            errors,
+            attributes,
+            root=root or self.root(),
+            required_files=(
+                set(DR0003_REQUIRED_FILES)
+                if required_files is None
+                else required_files
+            ),
+        )
+        return errors
+
+    def test_exact_actual_whitespace_exception_path_is_accepted(self) -> None:
+        expected = f"{DR0003_R1_REVIEW_RELATIVE_PATH} -whitespace"
+        self.assertIn(expected, self.attributes().splitlines())
+        self.assertEqual([], self.validate(self.attributes()))
+
+    def test_slash_directory_typo_is_rejected(self) -> None:
+        wrong = (
+            "docs/08/handoffs/"
+            "CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md"
+        )
+        mutated = self.attributes().replace(DR0003_R1_REVIEW_RELATIVE_PATH, wrong)
+        errors = self.validate(mutated)
+        self.assertTrue(any("exact and singular" in error for error in errors))
+
+    def test_missing_whitespace_exception_target_is_rejected(self) -> None:
+        with TemporaryDirectory() as directory:
+            errors = self.validate(self.attributes(), root=Path(directory))
+        self.assertTrue(any("target does not exist" in error for error in errors))
+
+    def test_whitespace_exception_target_must_remain_required(self) -> None:
+        required = set(DR0003_REQUIRED_FILES) - {DR0003_R1_REVIEW_RELATIVE_PATH}
+        errors = self.validate(self.attributes(), required_files=required)
+        self.assertTrue(any("target must be a required file" in error for error in errors))
+
+    def test_second_or_directory_wide_whitespace_exception_is_rejected(self) -> None:
+        additions = (
+            f"{DR0003_R1_REVIEW_RELATIVE_PATH} -whitespace",
+            "docs/08-handoffs/** -whitespace",
+        )
+        for addition in additions:
+            with self.subTest(addition=addition):
+                errors = self.validate(self.attributes() + addition + "\n")
+                self.assertTrue(any("exact and singular" in error for error in errors))
+
+    def test_all_three_r1_artifact_hashes_remain_exact(self) -> None:
+        self.assertEqual(3, len(DR0003_R1_ARTIFACT_HASHES))
+        for relative, expected in DR0003_R1_ARTIFACT_HASHES.items():
+            with self.subTest(relative=relative):
+                actual = hashlib.sha256((self.root() / relative).read_bytes()).hexdigest()
+                self.assertEqual(expected, actual)
+        errors: list[str] = []
+        validate_dr0003_r1_artifacts(errors)
+        self.assertEqual([], errors)
+
+    def test_r2_artifacts_are_exact_and_non_authorizing(self) -> None:
+        self.assertEqual(3, len(DR0003_R2_ARTIFACT_HASHES))
+        for relative, expected in DR0003_R2_ARTIFACT_HASHES.items():
+            with self.subTest(relative=relative):
+                actual = hashlib.sha256((self.root() / relative).read_bytes()).hexdigest()
+                self.assertEqual(expected, actual)
+        errors: list[str] = []
+        validate_dr0003_r2_artifacts(errors)
+        self.assertEqual([], errors)
 
 
 class V1CurrentStateContractTests(unittest.TestCase):

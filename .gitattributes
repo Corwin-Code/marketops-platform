@@ -12,4 +12,4 @@
 *.bat text eol=crlf
 
 # SHA-256-pinned Controller evidence contains intentional CommonMark hard breaks.
-docs/08/handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md -whitespace
+docs/08-handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md -whitespace
