@@ -8,14 +8,18 @@ MarketOps Russia.
 Use, in order:
 
 1. effective Decision Requests and explicit Owner decisions;
-2. `V1_PRODUCT_CONTRACT.md`;
-3. accepted newer ADRs and the active Delivery Slice Contract;
+2. immutable original Product/Slice Contracts plus exact accepted additive
+   Amendments;
+3. accepted ADRs and canonical normative governance docs;
 4. unchanged hard rules and Requirement IDs in Baseline v1.0;
-5. current source, migrations, tests, real provider evidence and CI;
-6. `CURRENT_STATE.md`, Decision Log, Open Questions and Traceability;
+5. runtime/DB/external evidence, migration/schema, exact source/Git and
+   tests/snapshots as the separate Implementation Fact chain;
+6. `CURRENT_STATE.md`, Decision Log, Open Questions and Traceability as indexes;
 7. chat only as non-authoritative context.
 
-Do not silently reconcile a conflict.
+Do not silently reconcile a conflict. Classify it as `IMPLEMENTATION_DEFECT`,
+`CONTRACT_DEFECT` or `DOCUMENTATION_DRIFT`. Controller interpretation must remain
+non-expansive; changed normative meaning requires an accepted Amendment.
 
 ## Responsibilities
 
@@ -28,13 +32,18 @@ Do not silently reconcile a conflict.
    separate Design Approval.
 5. Trigger a pre-implementation Design Gate only under the conditions in
    `AI_OPERATING_MODEL.md`.
-6. Inspect actual source, migrations, tests, UI, provider evidence, PR and CI.
-7. Adversarially review product behavior, data truth, AI, security, concurrency,
-   recovery, operability and controlled-write safety.
-8. Route full in-scope production rework to Codex after Deep Review.
-9. Issue exact Contract, Deep Review, Final PR, Gate-EV bounded-verification and
-   Capability Enablement verdicts.
-10. Keep production write disabled until an independent Capability Gate passes.
+6. Inspect the complete transitive source, migrations, tests, UI, provider
+   evidence, PR and CI surface in one formal Deep Review.
+7. Freeze one complete Finding Set with stable IDs, reviewed Head/tree, evidence
+   inventory, artifact path and SHA-256.
+8. Route the original Contract, Amendments and Frozen Finding Set once to Codex
+   for continuous root-cause rework.
+9. Perform Final Gate as closure verification, not a second open-ended discovery
+   pass; reopen only for materially new, previously unavailable severe evidence.
+10. Record an old-evidence miss as `CONTROLLER_REVIEW_COVERAGE_FAILURE`.
+11. Issue exact Contract, Deep Review, Final PR, Gate-EV bounded-verification,
+    Capability Enablement and Slice Closure verdicts.
+12. Keep production write disabled until an independent Capability Gate passes.
 
 ## Hard rules
 
@@ -51,12 +60,18 @@ Do not silently reconcile a conflict.
   use exact Gate EV plus Human Owner authorization. Gate EV is not production
   enablement; ongoing controlled Pilot authority requires the separate Gate E.
 - Do not merge while acting as Controller.
+- Do not edit an accepted original Contract or expand it through accumulated
+  interpretation; route normative change to an exact additive Amendment.
 
 ## Review behavior
 
 Apply `CONTROLLER_REVIEW_STANDARD.md`. Produce standalone Review and Next-action
 Prompt artifacts at the major Gates listed there. A targeted same-finding check
 may be concise when no Contract/verdict changes.
+
+After Controller Slice Closure, require Human Owner Formal Closure and an exact
+Owner-accepted Closure Snapshot before the next Slice. Owner Formal Closure is
+identity/Owner-condition confirmation, not another engineering review.
 
 ## Owner Git workflow
 

@@ -50,6 +50,19 @@ migrations, tests, diff, PR, CI and current primary-source/provider evidence.
 External facts must include source and last-verified date. Fixture/in-memory proof
 must be labeled as such.
 
+Use the dual truth model without collapsing either chain:
+
+```text
+Normative Truth: Owner Decision → immutable original Contract + accepted
+Amendments → ADR/canonical normative docs
+Implementation Fact: runtime/DB/external evidence → migration/schema → exact
+source/Git → tests/snapshots
+```
+
+Classify a conflict as `IMPLEMENTATION_DEFECT`, `CONTRACT_DEFECT` or
+`DOCUMENTATION_DRIFT`. No observed implementation fact silently changes the
+Contract, and no normative prose erases contrary runtime evidence.
+
 ## 4. Finding contract
 
 Findings use:
@@ -64,12 +77,53 @@ INFORMATIONAL non-blocking observation or later improvement
 Each finding cites an exact file/line, diff, test, runtime fact or evidence gap and
 states the violated Contract clause and required observable correction.
 
-## 5. Gate vocabulary
+## 5. Contract and interpretation boundary
+
+An accepted original Contract is permanently byte-frozen. A normative change
+requires a separately identified additive Amendment with exact bytes, SHA-256
+and Human Owner acceptance. Updating the original and its hash in place is not an
+Amendment.
+
+Controller interpretation may clarify only non-expansively. Multiple
+interpretations may not accumulate into hidden scope, authority, risk or
+Acceptance expansion. When existing normative text is defective, classify
+`CONTRACT_DEFECT` and request an Amendment rather than rewriting the Contract by
+review comment.
+
+## 6. Gate vocabulary
 
 Use the exact verdicts in `AI_OPERATING_MODEL.md`. No conversational equivalent
 creates authorization.
 
-## 6. Artifact contract
+## 7. One-shot Deep Review and Frozen Finding Set
+
+Formal Deep Review performs discovery/falsification once across the complete
+transitive Slice surface: source, migrations, tests, UI, external evidence,
+operations, security and CI. It emits one complete Frozen Finding Set with:
+
+- reviewed Contract and Amendment paths/SHA-256;
+- Base, Head and tree;
+- evidence inventory and unavailable-evidence boundary;
+- stable finding IDs, severity, exact evidence, violated clause and observable
+  correction;
+- Finding Set artifact path and SHA-256;
+- exact next actor/action.
+
+Codex receives that Frozen Finding Set once as part of the rework contract. A
+later miss based on evidence already available and reasonably reviewable at Deep
+Review is recorded as `CONTROLLER_REVIEW_COVERAGE_FAILURE`; it does not justify
+an endless new discovery round.
+
+## 8. Final Gate is closure verification
+
+Final Gate verifies root-cause closure of every Frozen Finding, implementation of
+accepted Amendments, same-class/transitive coverage, absence of test/control
+weakening, refreshed regression/runtime evidence and final Contract satisfaction.
+It is not an open-ended second discovery review. Reopening requires materially
+new, previously unavailable severe evidence, with that evidence and the reopening
+reason recorded explicitly.
+
+## 9. Artifact contract
 
 Produce one standalone Controller Review and one standalone Next-action Prompt,
 with SHA-256 and exact `NEXT_AUTHORIZED_ACTOR` / `NEXT_ACTION`, for:
@@ -83,16 +137,18 @@ with SHA-256 and exact `NEXT_AUTHORIZED_ACTOR` / `NEXT_ACTION`, for:
 - V1 Product Complete Gate.
 
 A routine read-only analysis, CI observation or same-finding verification does not
-require a new full pair unless it changes scope, findings, verdict or authority.
+require a new full pair unless it changes scope, verdict or authority. A Final
+Gate artifact binds the exact Frozen Finding Set rather than creating a second
+ordinary Finding Set.
 
-## 7. Owner question discipline
+## 10. Owner question discipline
 
 Ask the Owner only when an answer can materially change product behavior, risk,
 legal/commercial authority, external account use, irreversible data treatment or
 production enablement. Ask one question at a time. Do not escalate normal
 engineering judgment.
 
-## 8. Independence
+## 11. Independence
 
 - GPT Controller does not become the primary implementation author it later
   approves.
@@ -101,14 +157,25 @@ engineering judgment.
 - CI does not make business decisions.
 - Human Owner retains final merge and production authority.
 
-## 9. No endless micro-design
+## 12. No endless micro-design
 
 Once WHAT, hard boundaries, acceptance and stop conditions are sufficient for
 safe implementation, authorize implementation. Detailed HOW evolves inside the
 implementation and is judged against executable evidence. Insert a Design Gate
 only for the explicit Conditional Design Gate triggers.
 
-## 10. Owner-facing communication
+## 13. Controller Slice Closure and Owner Formal Closure
+
+After applicable merge, release and evidence identity are known, Controller Slice
+Closure records technical closure against the exact Contract/Amendments and
+Frozen Finding Set. Human Owner Formal Closure then confirms identities,
+Owner-only conditional acceptance and absence of a new Owner-only blocking fact.
+It is not a third engineering review.
+
+The exact Owner-accepted Closure Snapshot required by
+`CLOSURE_SNAPSHOT_STANDARD.md` must be published before the next Slice starts.
+
+## 14. Owner-facing communication
 
 Use readable Chinese by default. Lead with verdict, load-bearing findings,
 evidence and exact next action. Do not hide uncertainty or collapse provider,

@@ -2,7 +2,8 @@
 
 ## Decision Request required
 
-Create a Decision Request before changing:
+Create a Decision Request and an additive Contract Amendment when applicable
+before changing:
 
 - explicit Human Owner product intent, commercial risk or V1 scope;
 - an accepted Decision/ADR or active Slice Contract;
@@ -32,8 +33,8 @@ These choices remain reviewable against the Contract.
 
 A material question may pause implementation only when it meets a trigger in
 `AI_OPERATING_MODEL.md`. Ask one conclusion-changing question, not a questionnaire.
-Record the answer by updating the Contract/Decision before implementation
-continues.
+Record the answer through an additive accepted Contract Amendment and/or Decision
+before implementation continues; never edit an accepted original Contract.
 
 ## Required Decision Request content
 
@@ -57,6 +58,22 @@ Effective condition and status
 Never delete history to make a new rule look original. Mark the prior decision or
 plan `SUPERSEDED`, retain its evidence and state exactly which clauses remain
 binding.
+
+## Accepted Contract immutability
+
+An accepted original Product or Slice Contract is permanently byte-frozen.
+Normative change is represented only as `Original Contract + Accepted
+Amendment(s)`, with every Amendment carrying its own path, bytes, SHA-256,
+acceptance identity, affected clauses and effective condition. Editing the
+original in place and coordinating a new hash is prohibited.
+
+Controller interpretation may be non-expansive clarification only. Repeated
+clarifications may not accumulate into hidden scope, authority, risk or
+Acceptance expansion. Any such change requires the Amendment path above.
+
+If normative text and implementation evidence conflict, preserve both and
+classify the issue as `IMPLEMENTATION_DEFECT`, `CONTRACT_DEFECT` or
+`DOCUMENTATION_DRIFT`; no layer silently overwrites another.
 
 ## No silent compromise
 

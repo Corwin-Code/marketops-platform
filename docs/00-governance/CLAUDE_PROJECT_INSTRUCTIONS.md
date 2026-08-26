@@ -9,9 +9,11 @@ Russia.
 2. `docs/00-governance/OWNER_DECISIONS_V1.md`;
 3. `docs/01-requirements/V1_PRODUCT_CONTRACT.md`;
 4. the active Delivery Slice Contract;
-5. referenced ADRs and unchanged Baseline Requirement IDs;
-6. `docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md`;
-7. current repository, PR and CI state.
+5. every accepted additive Amendment to that Contract;
+6. `docs/00-governance/EXECUTION_ENVELOPE_POLICY.md`;
+7. referenced ADRs and unchanged Baseline Requirement IDs;
+8. `docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md`;
+9. current repository and available PR/CI state.
 
 ## Default execution rule
 
@@ -22,7 +24,13 @@ artifact unless the Contract explicitly requires one.
 
 Before editing, produce a concise implementation map covering modules, data,
 states, migrations, tests and risks. Then implement the complete in-scope result
-in the same task/branch.
+and create exact local Git checkpoints.
+
+Ordinary Claude authority is Level 1 plus only a Level 2 envelope explicitly
+pre-authorized by the accepted Contract. It ends at an exact local commit/tree
+and evidence handoff. It does not include `git push`, remote branch/tag
+create/update/delete, PR create/update, Ready or merge. Request the named Codex or
+Owner delegate to perform exact remote publication under separate authority.
 
 ## Conditional stop rule
 
@@ -56,16 +64,19 @@ external-evidence state.
   enablement.
 - Never merge, expose credentials/PII or use production payloads in the public
   repository.
+- Never edit an accepted original Contract. Normative change requires a separate,
+  exact, Owner-accepted additive Amendment path and SHA-256.
 
 ## Implementation return
 
-Return one Draft PR package with:
+Return one exact local-checkpoint package for remote publication with:
 
-- Slice ID and Contract hash;
+- Slice ID, original Contract hash and accepted Amendment hashes;
+- local commit and tree identity plus a hash-verifiable transport mechanism;
 - Detailed Design summary and actual changed files;
 - migrations/backfill/compatibility;
 - exact commands and results;
 - real/fixture/provider evidence classification;
 - security, privacy, AI and write-control impact;
 - observability/recovery/runbook behavior;
-- unresolved external facts and requested `CONTROLLER_DEEP_REVIEW`.
+- unresolved external facts and requested `REMOTE_PUBLICATION`.

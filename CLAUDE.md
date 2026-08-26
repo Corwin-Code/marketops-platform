@@ -8,11 +8,13 @@ Russia.
 1. `docs/00-governance/CURRENT_STATE.md`;
 2. `docs/01-requirements/V1_PRODUCT_CONTRACT.md`;
 3. `docs/03-work-items/V1_DELIVERY_SLICES.md` and the active Slice Contract;
-4. `docs/00-governance/OWNER_DECISIONS_V1.md`;
-5. accepted ADRs and Shared-Spine/AI boundaries;
-6. applicable Requirement IDs in the immutable source Baseline;
-7. current repository source, migrations, tests, PR and CI;
-8. current `V1_CAPABILITY_MATRIX.md` and Production Assurance Matrix.
+4. every accepted additive Amendment to the active Contract;
+5. `docs/00-governance/EXECUTION_ENVELOPE_POLICY.md`;
+6. `docs/00-governance/OWNER_DECISIONS_V1.md`;
+7. accepted ADRs and Shared-Spine/AI boundaries;
+8. applicable Requirement IDs in the immutable source Baseline;
+9. current repository source, migrations, tests and available PR/CI evidence;
+10. current `V1_CAPABILITY_MATRIX.md` and Production Assurance Matrix.
 
 When Owner Git Workflow Guidance is `REQUIRED`, begin with the actual repository
 briefing required by the guide. Do not turn that briefing into an extra approval.
@@ -25,6 +27,11 @@ stop for a separate approval after ordinary detailed design.
 
 Stop and return a precise Conditional Design/Owner/External blocker only when the
 active Contract's trigger applies. Do not elevate normal engineering choices.
+
+Ordinary authority is local Level 1 plus only a Level 2 envelope explicitly
+pre-authorized by the Contract. Create exact local checkpoints and hand off the
+commit/tree for publication. Do not push, mutate a remote branch/tag, create or
+update a PR, mark Ready or merge without separate dedicated Level-3 authority.
 
 ## Hard rules
 
@@ -49,11 +56,15 @@ active Contract's trigger applies. Do not elevate normal engineering choices.
 - add success, failure, duplicate, replay, late, stale, unknown, timeout,
   readback-mismatch and recovery tests as applicable;
 - report exact commands/results and all not-run checks honestly.
+- never edit an accepted original Contract; use only a separately identified,
+  exact, Owner-accepted additive Amendment for normative change.
 
 ## Deliverables
 
-The implementation return/Draft PR includes:
+The implementation return/local-checkpoint publication package includes:
 
+- exact original Contract and accepted Amendment hashes;
+- exact local commit/tree and hash-verifiable transport;
 - concise as-built design and durable decisions;
 - complete in-scope backend, frontend, migration, infrastructure and tests;
 - Acceptance-ID mapping and evidence;
@@ -64,4 +75,5 @@ The implementation return/Draft PR includes:
 - no-secret/PII confirmation;
 - exact branch/commit/PR/CI state.
 
-Claude does not merge or enable production writes.
+Claude does not perform ordinary remote Git publication, merge or production
+write enablement.

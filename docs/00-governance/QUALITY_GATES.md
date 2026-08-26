@@ -9,8 +9,9 @@ source integrity, no direct `main` push and Owner merge authority remain binding
 
 The Controller verifies:
 
-- exact Slice Contract path and SHA-256; authorization is bound to those bytes,
-  and any revision requires an independent Contract re-review;
+- exact immutable original Slice Contract path and SHA-256 plus every accepted
+  additive Amendment path and SHA-256; editing an accepted original Contract in
+  place is prohibited;
 - observable business/user outcome and complete in-scope loop;
 - explicit non-goals and delivery boundaries;
 - Owner decisions closed or assigned to exact external evidence Gates;
@@ -36,8 +37,11 @@ not become an unbounded sequence of implementation-detail approvals.
 
 ## Gate D — Implementation Deep Review
 
-After Claude's Initial Full Implementation, GPT reviews the entire actual Slice
-surface against the Contract and the Production Assurance Matrix.
+After exact-checkpoint remote publication, GPT performs the single formal
+discovery/falsification review of the entire transitive Slice surface against the
+original Contract, accepted Amendments and Production Assurance Matrix. It
+produces one complete Frozen Finding Set artifact with stable finding IDs,
+reviewed Base/Head/tree, evidence inventory and SHA-256.
 
 Verdicts:
 
@@ -48,16 +52,28 @@ REJECTED_CONTRACT_VIOLATION
 BLOCKED_EVIDENCE_INCOMPLETE
 ```
 
-A normal outcome is `READY_FOR_CODEX_REWORK` with a complete finding ledger. This
-is not failure; it is the independent production-hardening handoff.
+A normal outcome is `READY_FOR_CODEX_REWORK` with the Frozen Finding Set. This is
+not failure; it is the independent production-hardening handoff. A later miss
+based on evidence already available and reasonably reviewable here is
+`CONTROLLER_REVIEW_COVERAGE_FAILURE`, not authority for endless discovery rounds.
 
 ## Gate R — Codex Rework/Fix/Verify
 
-Codex resolves all BLOCKER/MAJOR findings and applicable MINOR findings across the
-full in-scope surface, reruns exact evidence and updates the same Draft PR. It may
+Codex receives `Original Contract + Accepted Amendments + Frozen Finding Set` as
+one complete rework contract. It resolves all BLOCKER/MAJOR findings and
+applicable MINOR findings in one continuous Root-Cause Rework/Fix/Verify cycle,
+including same-class scan, transitive impact, test hardening, regression/runtime
+evidence and canonical-doc synchronization. It updates the same Draft PR and may
 not redefine the Contract or self-approve.
 
 ## Gate F — Final Pull Request
+
+Gate F is closure verification against the exact Frozen Finding Set, accepted
+Amendments and final Head/tree. It verifies root-cause closure, no test/control
+weakening, transitive coverage, regression/evidence and final Contract
+satisfaction. It is not an open-ended second discovery review. Reopening requires
+materially new, previously unavailable severe evidence and an explicit recorded
+reason.
 
 Required evidence depends on the Slice but includes all applicable:
 
@@ -84,6 +100,19 @@ BLOCKED_EVIDENCE_INCOMPLETE
 Merge leaves real write Capabilities disabled unless a separate enablement Gate
 has already and explicitly approved the exact deployed identity—which is normally
 post-merge.
+
+## Controller Slice Closure, Owner Formal Closure and Snapshot
+
+After applicable merge/release identities are known, Controller Slice Closure
+records technical closure of the exact Contract/Amendments and Frozen Finding
+Set. Human Owner Formal Closure confirms exact source/Git/migration/release
+identity, Owner-only conditions and absence of a new Owner-only blocking fact; it
+is not a third engineering review.
+
+An exact Owner-accepted Closure Snapshot conforming to
+`CLOSURE_SNAPSHOT_STANDARD.md` is mandatory before the next Slice starts. Docs
+remain part of Definition of Done and durable evidence, not an additional review
+Gate.
 
 ## Gate EV — Bounded Real-Write Verification Authorization
 

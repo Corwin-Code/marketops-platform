@@ -12,6 +12,10 @@ Every substantive change references:
 A Work Package is an engineering context/transport unit, not a new product stage.
 It cannot silently change the Slice Product Acceptance Contract.
 
+An accepted original Contract is byte-frozen. Any normative change is a separate
+additive Amendment with its own path, bytes, SHA-256 and Human Owner acceptance;
+do not edit and re-hash the original in place.
+
 ## 2. Branches and Pull Requests
 
 Use one short-lived task/Slice branch into protected `main`; do not create a
@@ -32,9 +36,13 @@ it advances and avoids claiming Slice completion.
 
 ## 3. Contract-governed implementation
 
-Claude may perform Detailed Design and implementation continuously after the
-Slice Contract is approved. It must stop only for a Conditional Design Gate
-trigger defined by ADR-0006/active Contract. Ordinary `HOW` decisions stay within
+Claude may perform local Detailed Design and implementation continuously after
+the Slice Contract is approved. Ordinary authority is Level 1 plus only an
+explicitly Contract-pre-authorized Level 2 envelope and ends at an exact local
+commit/tree. It excludes push, remote branch/tag mutation and PR create/update;
+a named Codex/Owner delegate performs exact remote publication under dedicated
+Level-3 authority. Claude stops only for a Conditional Design Gate trigger
+defined by ADR-0006/active Contract. Ordinary `HOW` decisions stay within
 implementation.
 
 AI-generated output is untrusted until independently reviewed and supported by
@@ -43,12 +51,18 @@ unresolved risks.
 
 ## 4. Review and rework
 
-- GPT Controller reviews actual source/diff/migrations/tests/CI and external
-  evidence, not an agent summary.
-- Codex may perform full in-scope production rework/fix/verify against Controller
-  findings, including coherent refactoring needed to close them.
+- GPT Controller reviews the complete transitive source/diff/migrations/tests/CI
+  and external-evidence surface once, then freezes one SHA-256-bound Finding Set.
+- Codex receives the original Contract, Amendments and Frozen Finding Set once and
+  performs continuous full in-scope root-cause rework/fix/verify.
+- Final Gate verifies closure and is not a second open-ended discovery pass;
+  reopening requires materially new, previously unavailable severe evidence.
 - No agent approves its own authored/reworked result.
 - CI is evidence, not business approval.
+
+After Controller Slice Closure, Human Owner Formal Closure confirms exact
+identities and Owner-only conditions rather than repeating engineering review.
+An Owner-accepted Closure Snapshot is required before the next Slice.
 
 ## 5. No direct push or implicit production enablement
 
