@@ -73,6 +73,33 @@ server:
 
 marketops:
   product: MarketOps Russia
+  object-storage:
+    # Immutable Raw custody. The workstation and continuous integration keep
+    # evidence in a local content-addressed directory; a managed environment
+    # selects the object store and names its bucket, region and credential
+    # reference. Both providers are write-once and read-back verified.
+    provider: FILESYSTEM
+    root-directory: ${MARKETOPS_RAW_CUSTODY_DIRECTORY:./local-data/raw-custody}
+  acquisition:
+    # Off. A worker that started itself wherever the application happened to run
+    # would reach marketplaces from a workstation and from a test container, so
+    # an environment that wants acquisition has to say so.
+    scheduler-enabled: false
+    lease-duration: 5m
+    maximum-calls-per-run: 20
+    retry-budget: 3
+    retry-delay: 2m
+    runs-per-scheduler-pass: 5
+  # The directory the platform's secret manager delivers values into. Absent by
+  # default: with no mount, every secret reference is unresolvable and every
+  # operation that would need one refuses.
+  secrets: {}
+  identity:
+    oidc:
+      # Absent by default. Without an issuer no token can be validated, so the
+      # console API denies every request; a serving environment is required to
+      # configure one and fails startup otherwise.
+      session-recording-interval: 5m
   metadata-maintenance:
     # Fail closed: an environment accepts maintenance writes only when its
     # profile explicitly turns them on. Queries are not gated.

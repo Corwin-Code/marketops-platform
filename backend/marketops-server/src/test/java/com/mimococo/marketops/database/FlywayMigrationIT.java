@@ -53,7 +53,10 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0017__create_ai_projection_invocation_and_output.sql",
             "V0018__create_recommendation_task_and_approval_workflow.sql",
             "V0019__create_commercial_policy_and_guardrails.sql",
-            "V0020__create_price_command_outbox_readback_and_write_gate.sql");
+            "V0020__create_price_command_outbox_readback_and_write_gate.sql",
+            "V0021__create_platform_api_profile_and_request_shape.sql",
+            "V0022__create_ingestion_run_lifecycle_and_replay_guard.sql",
+            "V0023__create_declared_normalization_and_drift_observation.sql");
 
     private static PostgreSQLContainer container;
 
@@ -202,15 +205,22 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "platform.credential_store_scope",
                     "platform.feature_flag",
                     "platform.ingestion_job",
+                    "platform.platform_api_profile",
+                    "platform.platform_auth_header",
                     "platform.platform_capability",
                     "platform.platform_endpoint",
                     "platform.platform_permission_requirement",
                     "raw.raw_acquisition_observation",
                     "raw.raw_content",
                     "raw.raw_logical_unit",
+                    "staging.canonical_field",
                     "staging.import_batch",
                     "staging.import_row",
-                    "staging.import_schema_profile");
+                    "staging.import_schema_profile",
+                    "staging.normalization_checkpoint",
+                    "staging.normalization_field",
+                    "staging.normalization_mapping",
+                    "staging.schema_drift_observation");
         }
     }
 

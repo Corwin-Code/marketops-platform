@@ -1,0 +1,48 @@
+# Staging profile.
+#
+# Staging runs the same wiring as production against a separate managed
+# environment. Every value that differs between the two arrives from the
+# environment rather than from this file, and no secret appears here: the
+# database passwords and the object-store credential are delivered by the
+# platform's secret manager and named by reference.
+
+marketops:
+  environment: staging
+  metadata-maintenance:
+    # The maintenance surface is loopback-only and bootstraps identity and
+    # catalogue reference data, which staging needs in order to be exercised.
+    write-enabled: true
+  object-storage:
+    provider: OBJECT_STORE
+    endpoint: ${MARKETOPS_OBJECT_STORAGE_ENDPOINT}
+    region: ${MARKETOPS_OBJECT_STORAGE_REGION}
+    bucket: ${MARKETOPS_OBJECT_STORAGE_BUCKET}
+    access-key-id: ${MARKETOPS_OBJECT_STORAGE_ACCESS_KEY_ID}
+    credential-reference: ${MARKETOPS_OBJECT_STORAGE_CREDENTIAL_REFERENCE}
+  secrets:
+    mount-directory: ${MARKETOPS_SECRET_MOUNT_DIRECTORY}
+  identity:
+    oidc:
+      issuer-uri: ${MARKETOPS_OIDC_ISSUER_URI}
+      jwk-set-uri: ${MARKETOPS_OIDC_JWK_SET_URI}
+      audience: ${MARKETOPS_OIDC_AUDIENCE}
+
+logging:
+  structured:
+    format:
+      console: ecs
+    json:
+      exclude: tags
+      context:
+        include: false
+      customizer: com.mimococo.marketops.shared.internal.logging.EcsCorrelationIdJsonMembersCustomizer
+      add:
+        application: ${spring.application.name}
+        environment: ${marketops.environment}
+        buildVersion: ${spring.application.version}
+    ecs:
+      service:
+        environment: ${marketops.environment}
+  level:
+    root: WARN
+    com.mimococo.marketops: INFO
