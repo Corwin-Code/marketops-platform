@@ -45,10 +45,31 @@ DR0004_EXECUTION_ENVELOPE_RELATIVE_PATH = (
 DR0004_CLOSURE_STANDARD_RELATIVE_PATH = (
     "docs/00-governance/CLOSURE_SNAPSHOT_STANDARD.md"
 )
+DR0004_AMENDMENT_RELATIVE_PATH = (
+    "docs/00-governance/"
+    "DR-0004-AMENDMENT-001-activation-and-owner-acceptance-provenance.md"
+)
+DR0004_OWNER_ACCEPTANCE_RELATIVE_PATH = (
+    "docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md"
+)
+DR0004_R1_DEEP_REVIEW_RELATIVE_PATH = (
+    "docs/08-handoffs/CONTROLLER-PR19-DR0004-DEEP-REVIEW-R1.md"
+)
+DR0004_R1_FROZEN_FINDINGS_RELATIVE_PATH = (
+    "docs/08-handoffs/FROZEN-FINDING-SET-DR0004-PR19-R1.md"
+)
+DR0004_R1_REWORK_AUTH_RELATIVE_PATH = (
+    "docs/08-handoffs/CONTROLLER-CODEX-REWORK-AUTHORIZATION-PR19-R1.md"
+)
 DR0004_REQUIRED_FILES = [
     DR0004_DR_RELATIVE_PATH,
     DR0004_EXECUTION_ENVELOPE_RELATIVE_PATH,
     DR0004_CLOSURE_STANDARD_RELATIVE_PATH,
+    DR0004_AMENDMENT_RELATIVE_PATH,
+    DR0004_OWNER_ACCEPTANCE_RELATIVE_PATH,
+    DR0004_R1_DEEP_REVIEW_RELATIVE_PATH,
+    DR0004_R1_FROZEN_FINDINGS_RELATIVE_PATH,
+    DR0004_R1_REWORK_AUTH_RELATIVE_PATH,
 ]
 DR0004_ARTIFACT_HASHES = {
     DR0004_DR_RELATIVE_PATH: (
@@ -59,6 +80,23 @@ DR0004_ARTIFACT_HASHES = {
     ),
     DR0004_CLOSURE_STANDARD_RELATIVE_PATH: (
         "487379bc00badc37cd81bd82dec31621c25fbad2d56a7acd6f40cf2244d7ece1"
+    ),
+}
+DR0004_R1_ARTIFACT_HASHES = {
+    DR0004_AMENDMENT_RELATIVE_PATH: (
+        "cea88c6b72b480ad7f39a45390e457de316b6be6511dad45a5d0f6c63716779c"
+    ),
+    DR0004_OWNER_ACCEPTANCE_RELATIVE_PATH: (
+        "f83349ea537fd48575787dccfaa624ec39c5079181ccf0da6c69e996768bda88"
+    ),
+    DR0004_R1_DEEP_REVIEW_RELATIVE_PATH: (
+        "f717c4a53abd597d73a0662c956f6f891bc394a144cb2abe72cd462a76cb7742"
+    ),
+    DR0004_R1_FROZEN_FINDINGS_RELATIVE_PATH: (
+        "b6ba27472ab8f0f1150468a48144eed0c20480a15bd32596df0e7834cf573116"
+    ),
+    DR0004_R1_REWORK_AUTH_RELATIVE_PATH: (
+        "83b81a024641f7db5e59515a6edaf1b301a224f57d530d49699098e9a8cd1ce2"
     ),
 }
 DR0004_PROTECTED_CONTRACT_HASHES = {
@@ -79,6 +117,26 @@ DR0004_CURRENT_STATE = {
     "owner_formal_slice_closure": "REQUIRED",
     "closure_snapshot_before_next_slice": "REQUIRED",
     "dual_truth_model": "NORMATIVE_AND_IMPLEMENTATION_FACT",
+    "dr0004_original_contract": DR0004_DR_RELATIVE_PATH,
+    "dr0004_original_contract_sha256": DR0004_ARTIFACT_HASHES[
+        DR0004_DR_RELATIVE_PATH
+    ],
+    "dr0004_amendment": DR0004_AMENDMENT_RELATIVE_PATH,
+    "dr0004_amendment_sha256": DR0004_R1_ARTIFACT_HASHES[
+        DR0004_AMENDMENT_RELATIVE_PATH
+    ],
+    "dr0004_owner_acceptance_evidence": DR0004_OWNER_ACCEPTANCE_RELATIVE_PATH,
+    "dr0004_owner_acceptance_evidence_sha256": DR0004_R1_ARTIFACT_HASHES[
+        DR0004_OWNER_ACCEPTANCE_RELATIVE_PATH
+    ],
+    "dr0004_acceptance": "HUMAN_OWNER_ACCEPTED",
+    "dr0004_repository_effect": "ACTIVE_ON_PROTECTED_MAIN",
+    "dr0004_effective_condition": (
+        "EXACT_HUMAN_OWNER_ACCEPTANCE_EVIDENCE_AND_PROTECTED_MAIN"
+    ),
+    "dr0004_frozen_original_status_semantics": "PROPOSAL_TIME_PROVENANCE_ONLY",
+    "execution_envelope_state": "ACTIVE_UNDER_DR_0004",
+    "closure_snapshot_standard_state": "ACTIVE_UNDER_DR_0004",
 }
 
 REQUIRED_FILES = [
@@ -228,7 +286,7 @@ V1_TRACEABILITY_STATUSES = {
     "SUPERSEDED",
 }
 V1_TRACEABILITY_REQUIRED_IDS = {
-    *(f"D-{number:02d}" for number in range(18, 25)),
+    *(f"D-{number:02d}" for number in range(18, 26)),
     "HR-01",
     "HR-02",
     "HR-05",
@@ -3870,13 +3928,26 @@ def validate_decision_log_v1_text(errors: list[str], text: str) -> None:
         "D-02": "SUPERSEDED",
         "D-10": "SUPERSEDED",
         **{f"D-{number:02d}": "ACCEPTED" for number in range(3, 10)},
-        **{f"D-{number:02d}": "ACCEPTED" for number in range(15, 25)},
+        **{f"D-{number:02d}": "ACCEPTED" for number in range(15, 26)},
     }
     for decision_id, expected in required_statuses.items():
         if counts[decision_id] != 1:
             errors.append(f"Decision Log must contain {decision_id} exactly once")
         elif statuses[decision_id] != expected:
             errors.append(f"Decision Log {decision_id} must be exactly: {expected}")
+
+    require_contract_tokens_text(
+        errors,
+        "Decision Log D-25",
+        text,
+        (
+            "DR-0004-AMENDMENT-001",
+            "frozen proposal-status fields are provenance only",
+            "repository effect requires the accepted result on protected main",
+            "No V1 Product scope change",
+            "no SLICE-V1-001 scope change",
+        ),
+    )
 
 
 def validate_owner_decisions_v1_text(errors: list[str], text: str) -> None:
@@ -4541,6 +4612,7 @@ def validate_dr0004_artifact_hashes(
     """Pin the exact Owner-accepted DR-0004 normative bytes and frozen Contracts."""
     for relative, expected in {
         **DR0004_ARTIFACT_HASHES,
+        **DR0004_R1_ARTIFACT_HASHES,
         **DR0004_PROTECTED_CONTRACT_HASHES,
     }.items():
         path = root / relative
@@ -4602,6 +4674,10 @@ def validate_dr0004_protocol_texts(
         ),
         "current": (
             "The accepted original Contract is permanently byte-frozen.",
+            "proposal-time provenance only, not live\nrepository-effect state",
+            "A proposal branch does\nnot activate repository authority.",
+            DR0004_AMENDMENT_RELATIVE_PATH,
+            DR0004_OWNER_ACCEPTANCE_RELATIVE_PATH,
             "exact local commit/tree and evidence",
             "one-shot discovery/falsification",
             "CONTROLLER_REVIEW_COVERAGE_FAILURE",
@@ -4630,6 +4706,7 @@ def validate_dr0004_protocol_texts(
             "Claude does not perform ordinary remote Git publication",
         ),
         "operating": (
+            "immutable original Contract plus accepted Amendments and the accepted Execution\n  Envelope",
             "exact remote publication to Draft PR without reconstruction",
             "one-shot Deep Review + SHA-256-bound Frozen Finding Set",
             "CONTROLLER_FINAL_CLOSURE_VERIFICATION",
@@ -4665,6 +4742,13 @@ def validate_dr0004_protocol_texts(
             "before the next Slice starts",
         ),
         "source": (
+            "## DR-0004 effective-source binding",
+            DR0004_ARTIFACT_HASHES[DR0004_DR_RELATIVE_PATH],
+            DR0004_R1_ARTIFACT_HASHES[DR0004_AMENDMENT_RELATIVE_PATH],
+            DR0004_R1_ARTIFACT_HASHES[DR0004_OWNER_ACCEPTANCE_RELATIVE_PATH],
+            "proposal-time provenance only",
+            "ACTIVE_ON_PROTECTED_MAIN",
+            "A proposal branch is not active\nrepository authority.",
             "## Dual truth and conflict order",
             "Normative Truth is ordered as:",
             "Implementation Fact is ordered as:",
@@ -4698,6 +4782,9 @@ def validate_dr0004_protocol_texts(
             "Owner-accepted Closure Snapshot is required before the next Slice",
         ),
         "readme": (
+            "exact Owner-accepted\n`DR-0004-AMENDMENT-001-activation-and-owner-acceptance-provenance.md`",
+            "durable\nOwner acceptance evidence",
+            "when the accepted result is on protected `main`",
             "Codex exact remote publication to Draft PR",
             "one GPT Controller Deep Review + Frozen Finding Set",
             "Controller Slice Closure → Owner Formal Closure",
@@ -4714,6 +4801,18 @@ def validate_dr0004_protocol_texts(
             "Accepted Amendment paths / SHA-256",
             "Frozen Finding Set path / SHA-256",
             "Closure Snapshot path / SHA-256",
+        ),
+        "decision": (
+            "| D-25 |",
+            "DR-0004-AMENDMENT-001",
+            "frozen proposal-status fields are provenance only",
+            "No V1 Product scope change",
+            "no SLICE-V1-001 scope change",
+        ),
+        "v1_traceability": (
+            "D-25,Owner Decision,V1,DR-0004 engineering execution and closure protocol",
+            "DR-0004;DR-0004-AMENDMENT-001",
+            "No V1 Product scope change and no SLICE-V1-001 scope change",
         ),
     }
     for name, tokens in requirements.items():
@@ -4733,6 +4832,16 @@ def validate_dr0004_protocol_texts(
             errors.append(
                 f"DR-0004 {name} grants prohibited ordinary Claude remote Git authority"
             )
+
+    maker_responsibilities = re.findall(
+        r"(?m)^- performs Detailed Design(?: \+| and) Initial Full Implementation",
+        documents.get("operating", ""),
+    )
+    if len(maker_responsibilities) != 1:
+        errors.append(
+            "DR-0004 operating must contain exactly one Claude implementation "
+            "responsibility bound to Contract/Amendments and Execution Envelope"
+        )
 
 
 def validate_dr0004_governance(errors: list[str]) -> None:
@@ -4756,6 +4865,8 @@ def validate_dr0004_governance(errors: list[str]) -> None:
         "readme": ROOT / "README.md",
         "start": ROOT / "START_HERE.md",
         "pr_template": ROOT / ".github/pull_request_template.md",
+        "decision": ROOT / "docs/00-governance/DECISION_LOG.md",
+        "v1_traceability": ROOT / "docs/01-requirements/v1-traceability.csv",
     }
     documents = {
         name: path.read_text(encoding="utf-8-sig")

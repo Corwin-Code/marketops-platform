@@ -83,9 +83,8 @@ select ordinary engineering details.
 ### Claude Maker
 
 - performs Detailed Design + Initial Full Implementation continuously inside the
-  accepted Execution Envelope;
-- performs Detailed Design and Initial Full Implementation continuously inside
-  the active Contract;
+  immutable original Contract plus accepted Amendments and the accepted Execution
+  Envelope;
 - may make normal engineering decisions without a separate approval;
 - produces backend, frontend, V0011+ migrations, tests, IaC, docs and runbooks as
   the Contract requires;

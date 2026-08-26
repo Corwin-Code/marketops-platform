@@ -17,6 +17,7 @@ from scripts.validate_governance import (
     DR0004_ARTIFACT_HASHES,
     DR0004_CURRENT_STATE,
     DR0004_PROTECTED_CONTRACT_HASHES,
+    DR0004_R1_ARTIFACT_HASHES,
     DR0004_REQUIRED_FILES,
     HISTORICAL_EVIDENCE_TREE_HASHES,
     HISTORIC_CONTRACT_BEGIN,
@@ -3020,7 +3021,7 @@ class V1DecisionContractTests(unittest.TestCase):
 
     def test_retained_or_new_decision_cannot_be_removed(self) -> None:
         original = repository_governance_text("docs/00-governance/DECISION_LOG.md")
-        for decision_id in ("D-03", "D-17", "D-24"):
+        for decision_id in ("D-03", "D-17", "D-24", "D-25"):
             with self.subTest(decision_id=decision_id):
                 text = "\n".join(
                     line for line in original.splitlines()
@@ -3348,7 +3349,7 @@ class V1TraceabilityAndOpenQuestionTests(unittest.TestCase):
     def test_missing_decision_or_duplicate_source_id_is_rejected(self) -> None:
         original = self.traceability()
         missing = "\n".join(
-            line for line in original.splitlines() if not line.startswith("D-24,")
+            line for line in original.splitlines() if not line.startswith("D-25,")
         ) + "\n"
         duplicate = original + next(
             line for line in original.splitlines() if line.startswith("D-18,")
@@ -3438,6 +3439,8 @@ class Dr0004GovernanceContractTests(unittest.TestCase):
             "readme": "README.md",
             "start": "START_HERE.md",
             "pr_template": ".github/pull_request_template.md",
+            "decision": "docs/00-governance/DECISION_LOG.md",
+            "v1_traceability": "docs/01-requirements/v1-traceability.csv",
         }
         return {
             name: (self.root() / relative).read_text(encoding="utf-8-sig")
@@ -3467,8 +3470,12 @@ class Dr0004GovernanceContractTests(unittest.TestCase):
                     any(f"CURRENT_STATE {field}" in error for error in errors)
                 )
 
-    def test_exact_accepted_artifacts_and_original_contracts_are_byte_frozen(self) -> None:
-        expected = {**DR0004_ARTIFACT_HASHES, **DR0004_PROTECTED_CONTRACT_HASHES}
+    def test_exact_accepted_r1_artifacts_and_original_contracts_are_byte_frozen(self) -> None:
+        expected = {
+            **DR0004_ARTIFACT_HASHES,
+            **DR0004_R1_ARTIFACT_HASHES,
+            **DR0004_PROTECTED_CONTRACT_HASHES,
+        }
         for relative, digest in expected.items():
             with self.subTest(relative=relative):
                 actual = hashlib.sha256((self.root() / relative).read_bytes()).hexdigest()
@@ -3485,6 +3492,137 @@ class Dr0004GovernanceContractTests(unittest.TestCase):
             errors: list[str] = []
             validate_dr0004_artifact_hashes(errors, root=temp_root)
             self.assertTrue(any("immutable hash mismatch" in error for error in errors))
+
+    def test_missing_amendment_or_owner_acceptance_evidence_is_rejected(self) -> None:
+        expected = {
+            **DR0004_ARTIFACT_HASHES,
+            **DR0004_R1_ARTIFACT_HASHES,
+            **DR0004_PROTECTED_CONTRACT_HASHES,
+        }
+        targets = (
+            "docs/00-governance/DR-0004-AMENDMENT-001-activation-and-owner-acceptance-provenance.md",
+            "docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md",
+        )
+        for missing in targets:
+            with self.subTest(missing=missing), TemporaryDirectory() as directory:
+                temp_root = Path(directory)
+                for relative in expected:
+                    if relative == missing:
+                        continue
+                    target = temp_root / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes((self.root() / relative).read_bytes())
+                errors: list[str] = []
+                validate_dr0004_artifact_hashes(errors, root=temp_root)
+                self.assertTrue(
+                    any(
+                        "DR-0004 hash target missing" in error and missing in error
+                        for error in errors
+                    )
+                )
+
+    def test_mismatched_amendment_or_owner_acceptance_evidence_is_rejected(self) -> None:
+        expected = {
+            **DR0004_ARTIFACT_HASHES,
+            **DR0004_R1_ARTIFACT_HASHES,
+            **DR0004_PROTECTED_CONTRACT_HASHES,
+        }
+        targets = (
+            "docs/00-governance/DR-0004-AMENDMENT-001-activation-and-owner-acceptance-provenance.md",
+            "docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md",
+        )
+        for mismatched in targets:
+            with self.subTest(mismatched=mismatched), TemporaryDirectory() as directory:
+                temp_root = Path(directory)
+                for relative in expected:
+                    target = temp_root / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes((self.root() / relative).read_bytes())
+                target = temp_root / mismatched
+                target.write_bytes(target.read_bytes() + b"\nmutated provenance\n")
+                errors: list[str] = []
+                validate_dr0004_artifact_hashes(errors, root=temp_root)
+                self.assertTrue(
+                    any(
+                        "immutable hash mismatch" in error and mismatched in error
+                        for error in errors
+                    )
+                )
+
+    def test_proposal_status_cannot_be_interpreted_as_live_effective_state(self) -> None:
+        for field, live, proposal in (
+            (
+                "dr0004_acceptance",
+                "HUMAN_OWNER_ACCEPTED",
+                "PROPOSED_PENDING_EXACT_OWNER_ACCEPTANCE",
+            ),
+            (
+                "dr0004_repository_effect",
+                "ACTIVE_ON_PROTECTED_MAIN",
+                "PROPOSED_BY_DR_0004",
+            ),
+            (
+                "dr0004_frozen_original_status_semantics",
+                "PROPOSAL_TIME_PROVENANCE_ONLY",
+                "LIVE_REPOSITORY_STATE",
+            ),
+        ):
+            with self.subTest(field=field):
+                documents = self.documents()
+                documents["current"] = documents["current"].replace(
+                    f"{field}: {live}", f"{field}: {proposal}", 1
+                )
+                errors = self.validate(documents)
+                self.assertTrue(
+                    any(f"CURRENT_STATE {field}" in error for error in errors)
+                )
+
+    def test_activation_requires_amendment_and_acceptance_evidence_bindings(self) -> None:
+        for document, token in (
+            (
+                "current",
+                "docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md",
+            ),
+            (
+                "source",
+                "f83349ea537fd48575787dccfaa624ec39c5079181ccf0da6c69e996768bda88",
+            ),
+            (
+                "source",
+                "cea88c6b72b480ad7f39a45390e457de316b6be6511dad45a5d0f6c63716779c",
+            ),
+        ):
+            with self.subTest(document=document, token=token):
+                documents = self.documents()
+                documents[document] = documents[document].replace(token, "removed", 1)
+                errors = self.validate(documents)
+                expected_label = (
+                    "DR-0004 CURRENT_STATE"
+                    if document == "current"
+                    else f"DR-0004 {document}"
+                )
+                self.assertTrue(any(expected_label in error for error in errors))
+
+    def test_d25_indexes_dr0004_without_product_or_slice_scope_change(self) -> None:
+        documents = self.documents()
+        documents["decision"] = documents["decision"].replace(
+            "No V1 Product scope change and no SLICE-V1-001 scope change.",
+            "V1 and Slice scope may change.",
+            1,
+        )
+        errors = self.validate(documents)
+        self.assertTrue(any("DR-0004 decision" in error for error in errors))
+
+    def test_claude_has_one_combined_implementation_responsibility(self) -> None:
+        documents = self.documents()
+        documents["operating"] += (
+            "\n- performs Detailed Design and Initial Full Implementation "
+            "continuously inside the active Contract.\n"
+        )
+        errors = self.validate(documents)
+        self.assertTrue(
+            any("exactly one Claude implementation responsibility" in error for error in errors)
+        )
 
     def test_accepted_contract_requires_additive_amendment(self) -> None:
         documents = self.documents()

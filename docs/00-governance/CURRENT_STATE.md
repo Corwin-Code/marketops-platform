@@ -25,6 +25,18 @@ final_gate_mode: CLOSURE_VERIFICATION_ONLY
 owner_formal_slice_closure: REQUIRED
 closure_snapshot_before_next_slice: REQUIRED
 dual_truth_model: NORMATIVE_AND_IMPLEMENTATION_FACT
+dr0004_original_contract: docs/00-governance/DR-0004-engineering-execution-closure-protocol-alignment.md
+dr0004_original_contract_sha256: dcc073bb8f6593bd24b4a74a96f06d0c45ece2f1c192615deb7301cbb850da9a
+dr0004_amendment: docs/00-governance/DR-0004-AMENDMENT-001-activation-and-owner-acceptance-provenance.md
+dr0004_amendment_sha256: cea88c6b72b480ad7f39a45390e457de316b6be6511dad45a5d0f6c63716779c
+dr0004_owner_acceptance_evidence: docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md
+dr0004_owner_acceptance_evidence_sha256: f83349ea537fd48575787dccfaa624ec39c5079181ccf0da6c69e996768bda88
+dr0004_acceptance: HUMAN_OWNER_ACCEPTED
+dr0004_repository_effect: ACTIVE_ON_PROTECTED_MAIN
+dr0004_effective_condition: EXACT_HUMAN_OWNER_ACCEPTANCE_EVIDENCE_AND_PROTECTED_MAIN
+dr0004_frozen_original_status_semantics: PROPOSAL_TIME_PROVENANCE_ONLY
+execution_envelope_state: ACTIVE_UNDER_DR_0004
+closure_snapshot_standard_state: ACTIVE_UNDER_DR_0004
 conditional_design_gate: ENABLED
 mandatory_design_gate_for_every_slice: DISABLED
 next_authorized_actor: CLAUDE_FABLE_5
@@ -51,10 +63,22 @@ The active product and Slice authority remains DR-0003,
 `OWNER_DECISIONS_V1.md`, `V1_PRODUCT_CONTRACT.md`, ADR-0005 through ADR-0008 and
 the Slice Contract named above. DR-0004, `EXECUTION_ENVELOPE_POLICY.md` and
 `CLOSURE_SNAPSHOT_STANDARD.md` govern engineering execution and closure without
-changing that product outcome or the active Slice Contract bytes. Claude is
-authorized to perform local Detailed Design and Initial Full Implementation
-continuously inside that exact Contract. A separate Design Approval is not
-required unless a Conditional Design Gate trigger occurs.
+changing that product outcome or the active Slice Contract bytes. Their authority
+is the immutable original DR-0004 plus exact Owner-accepted
+`DR-0004-AMENDMENT-001`, with durable acceptance provenance in
+`docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md`. Claude is authorized to
+perform local Detailed Design and Initial Full Implementation continuously inside
+that exact Contract. A separate Design Approval is not required unless a
+Conditional Design Gate trigger occurs.
+
+The frozen originals' `status: PROPOSED_PENDING_EXACT_OWNER_ACCEPTANCE` and
+`status: PROPOSED_BY_DR_0004` fields are proposal-time provenance only, not live
+repository-effect state. Human Owner acceptance is durably recorded, but
+`ACTIVE_ON_PROTECTED_MAIN`, `ACTIVE_UNDER_DR_0004` and the execution/closure
+effects above apply only when the exact original artifacts, accepted Amendment
+and acceptance evidence are present on protected `main` after independent
+Controller approval and Human Owner merge authorization. A proposal branch does
+not activate repository authority.
 
 `SLICE_CONTRACT_APPROVED` and `FULL_SCOPE_IMPLEMENTATION` are valid only for the
 exact `active_slice_contract` path and `active_slice_contract_sha256` recorded in
