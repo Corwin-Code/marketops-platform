@@ -188,7 +188,9 @@ objects/statuses remain traceable to Raw.
   checks; no blind rollback over a later legitimate change;
 - per-platform/account/store/SKU Capability flag, global Kill Switch and safe
   stop of new writes;
-- real low-risk allowlisted Pilot Cohort verification on both platforms.
+- real low-risk verification on both platforms only under an exact
+  `AUTHORIZE_BOUNDED_REAL_WRITE_VERIFICATION` Gate-EV envelope; later Pilot
+  enablement remains a separate Gate-E decision.
 
 ### 3.12 Structured UI
 
@@ -285,8 +287,9 @@ writer for another authority.
 16. Restore/compensate cannot overwrite a later legitimate external change.
 17. All user/Policy/Approval/Command/Readback/override/Kill-Switch events are
     attributable and append-only.
-18. Production writes remain disabled after code merge until the separate
-    Controlled Write Capability Gate and Human Owner enablement.
+18. Production writes remain disabled after code merge. The first real evidence
+    write requires exact Gate-EV and Human Owner authorization; ongoing controlled
+    Pilot use separately requires Gate E and Human Owner enablement.
 19. V0001–V0010 and existing evidence are immutable; schema evolution is V0011+.
 20. One Slice implementation may extend the Shared Spine but cannot fork it.
 
@@ -431,12 +434,15 @@ The Slice is not complete until each applicable criterion has executable evidenc
   version and prior platform value; stale previews cannot execute.
 - `S1-AC-030` — command idempotency, lease/fence, retry and state transitions pass
   unit, property and real-database tests.
-- `S1-AC-031` — low-risk real Ozon Pilot write reaches the intended final value,
-  Readback and complete Audit; unknown result is safely resolvable.
-- `S1-AC-032` — equivalent real WB Pilot evidence exists, including native
-  asynchronous/partial/quarantine semantics where applicable.
+- `S1-AC-031` — low-risk real Ozon bounded verification write reaches the intended final value,
+  Readback and complete Audit; unknown result is safely resolvable. The operation
+  is performed only inside an exact unexpired Gate-EV authorization envelope.
+- `S1-AC-032` — equivalent real WB bounded verification evidence exists, including native
+  asynchronous/partial/quarantine semantics where applicable, and is generated
+  only under its own exact Gate-EV authorization.
 - `S1-AC-033` — Restore/Compensate is actually verified on both platforms without
-  overwriting a later change.
+  overwriting a later change; its delta/exposure, pre-state, operator, abort,
+  Readback and evidence retention are bounded by Gate EV.
 - `S1-AC-034` — global and scoped Kill Switches prevent new writes; disabled flags
   are fail-closed under restart/concurrency.
 
@@ -455,7 +461,7 @@ The Slice is not complete until each applicable criterion has executable evidenc
 ### J. Release
 
 - `S1-AC-039` — all required CI/security/contract/integration/browser checks pass
-  on the exact release Head; no unresolved Critical/High finding remains.
+  on the exact release Head; no unresolved BLOCKER/MAJOR finding remains.
 - `S1-AC-040` — the Pilot Cohort, approved users, Stores, Capabilities, Policy
   limits, monitoring window and rollback/kill criteria are explicitly recorded.
 - `S1-AC-041` — merge, deployment and production enablement are distinct
@@ -552,3 +558,8 @@ NEXT_ACTION: SLICE_V1_001_DETAILED_DESIGN_AND_INITIAL_FULL_IMPLEMENTATION
 AUTHORIZATION: FULL_SCOPE_IMPLEMENTATION
 PRODUCTION_WRITE_ENABLEMENT: PROHIBITED_PENDING_SEPARATE_GATE
 ```
+
+The authorization above is bound to the exact Slice Contract path/SHA-256 in
+`CURRENT_STATE.md`. A Contract byte change invalidates the binding until an
+independent Controller Contract re-review records the new identity. Full-Scope
+Implementation does not grant Gate EV, Gate E or any real Marketplace write.

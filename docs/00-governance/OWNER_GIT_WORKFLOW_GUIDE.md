@@ -32,7 +32,8 @@ While state is `REQUIRED`, the active agent reports:
    → stage/review → commit → push task branch → Draft PR → CI
    → GPT review → Codex rework as needed → GPT Final Gate
    → Human Owner-authorized merge execution → local sync/cleanup
-   → separate production/capability enablement when applicable
+   → Gate EV for any bounded real-write evidence when applicable
+   → separate Gate-E production/capability enablement when applicable
    ```
 
 6. that branch commits/pushes do not change `main`, and merge does not itself
@@ -127,14 +128,16 @@ A PR is eligible for Owner-authorized merge execution only when:
 - the PR is Ready, current with `main` and all required checks pass;
 - all review conversations are resolved;
 - the active Contract's required evidence for the merged tranche is present;
-- no unresolved Critical/High or blocking finding remains;
+- no unresolved BLOCKER/MAJOR finding remains;
 - an independent GPT Controller reviewed the exact current Head and issued
   `APPROVE_FOR_HUMAN_MERGE`;
 - the Human Owner authorizes the merge;
 - no bypass or direct push is involved.
 
 A Slice may remain incomplete after a valid tranche merge. A merged controlled
-write remains disabled until a separate Capability/Production Enablement Gate.
+write remains disabled. A bounded real-write verification first requires an
+exact Gate-EV authorization; ongoing Pilot use separately requires Gate E and
+Human Owner production authorization.
 
 ## 5. D-17 mechanical delegation
 

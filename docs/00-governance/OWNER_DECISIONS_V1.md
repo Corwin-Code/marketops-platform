@@ -5,8 +5,14 @@ document_type: v1_owner_decisions
 source_session: Human Owner + GPT Controller discovery
 session_date: 2026-08-26
 effective_via: DR-0003
-repository_effect: PENDING_DR_0003_MERGE
+repository_effect: EFFECTIVE_WHEN_PRESENT_ON_PROTECTED_MAIN
+effective_condition: PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION
 ```
+
+`EFFECTIVE_WHEN_PRESENT_ON_PROTECTED_MAIN` does not make these decisions active
+from a proposal branch. It records durable repository semantics: the decisions
+become effective only through the independent Controller and Human Owner merge
+authority named by `effective_condition`.
 
 This document distinguishes explicit Human Owner decisions from implementation
 choices the Owner delegated to the Controller for best judgment. Both classes are

@@ -17,14 +17,23 @@ Codex
     ↓ full in-scope Production Rework / Fix / Verify
 CI
     ↓ refreshed deterministic evidence
+GPT Controller + Human Owner
+    ↓ Gate EV when bounded real-write acceptance evidence is required
+Supervised operator
+    ↓ one-time/time-bounded Write → Readback → Restore/Compensate evidence
 GPT Controller
     ↓ Final PR Gate
 Human Owner or active D-17 delegate
     ↓ protected merge execution
 GPT Controller + Human Owner
-    ↓ Capability-specific Production Enablement Gate
+    ↓ Gate E — Capability-specific controlled Pilot enablement
 Controlled Production Release
 ```
+
+Gate EV may occur before or after code merge when its prerequisites are ready;
+merge is neither a prerequisite nor an authorization for the real write. When
+Gate-F acceptance requires the resulting evidence, Gate EV necessarily precedes
+that Final PR verdict.
 
 ## 2. Primary unit hierarchy
 
@@ -117,6 +126,23 @@ V1_IN_PROGRESS → V1_PRODUCT_COMPLETE
 
 A released Slice does not imply V1 completion.
 
+Real-write authority uses a separate fail-closed state machine and does not
+replace the implementation/PR state machine:
+
+```text
+NO_BOUNDED_REAL_WRITE_AUTHORITY
+→ GATE_EV_REVIEW
+→ BOUNDED_REAL_WRITE_VERIFICATION_AUTHORIZED
+→ BOUNDED_EVIDENCE_CAPTURED | AUTHORIZATION_EXPIRED_OR_ABORTED
+→ GATE_E_REVIEW
+→ CONTROLLED_PRODUCTION_RELEASE
+```
+
+`FULL_SCOPE_IMPLEMENTATION`, merge and Gate EV do not authorize ongoing
+production execution. Gate EV permits only the exact supervised evidence action;
+Gate E alone may authorize the named controlled Pilot after consuming that
+evidence.
+
 ## 5. Conditional Design Gate
 
 A separate pre-implementation Design Gate is inserted only when at least one of
@@ -165,6 +191,15 @@ REJECTED_CONTRACT_VIOLATION
 BLOCKED_EVIDENCE_INCOMPLETE
 ```
 
+### Bounded real-write verification
+
+```text
+AUTHORIZE_BOUNDED_REAL_WRITE_VERIFICATION
+CHANGES_REQUIRED
+BLOCKED_BY_EXTERNAL_CAPABILITY
+BLOCKED_EVIDENCE_INCOMPLETE
+```
+
 ### Capability enablement
 
 ```text
@@ -189,6 +224,12 @@ Every major handoff carries:
 - security/privacy/AI/write impact;
 - unresolved findings and requested verdict.
 
+Any Gate-EV handoff additionally carries the exact Platform, opaque
+Account/Store reference, Capability, SKU allowlist, verification window, price
+delta/exposure bounds, operator/abort owner, pre-state, Kill Switch,
+Readback/Restore/Compensate plan and redacted evidence destination. A Contract
+path without its approved SHA-256 does not carry `FULL_SCOPE_IMPLEMENTATION`.
+
 Chat history is not the final source of truth.
 
 ## 8. Review frequency rule
@@ -199,6 +240,7 @@ The full Controller Artifact Contract applies to:
 - Development Baseline Reset or Decision Request;
 - Implementation Deep Review;
 - Final PR Gate;
+- Bounded Real-Write Verification Authorization;
 - Capability Production Enablement;
 - V1 Product Complete Gate.
 

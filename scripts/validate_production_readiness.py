@@ -318,9 +318,13 @@ COMPLETION_STATE_TOKENS = (
     "lifecycle_state: EXECUTING_V1",
     "active_delivery_slice: SLICE-V1-001",
     "active_slice_contract: docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+    "active_slice_contract_sha256: 0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5",
+    "active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN",
     "active_gate: SLICE_CONTRACT_APPROVED",
     "authorization: FULL_SCOPE_IMPLEMENTATION",
     "production_write_enabled: false",
+    "bounded_real_write_verification_authorization: NONE",
+    "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",
     "ozon_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
     "wildberries_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
 )

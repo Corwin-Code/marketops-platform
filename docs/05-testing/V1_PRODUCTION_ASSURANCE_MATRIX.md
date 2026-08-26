@@ -72,11 +72,41 @@ omitted.
 | UI | BROWSER, PERF, SEC_NEG | stale/estimated/unknown mislabeled, accessibility, API error, session expiry |
 | Deployment/recovery | SRC, REAL_EXT, DR, OPS | DB/object restore, deployment rollback, provider outage, credential revoke |
 
-## 5. Controlled-write Capability Gate
+## 5. Gate EV — Bounded Real-Write Verification Authorization
+
+Before any real write is used to generate assurance evidence, Gate EV requires:
+
+- explicit Human Owner authorization;
+- exact Platform, opaque Account/Store reference, Capability and SKU allowlist;
+- one-time or time-bounded window plus maximum price delta and cumulative
+  exposure;
+- current official-source and real-account Capability evidence;
+- deterministic Guardrails and a passing Dry Run;
+- supervised operator, abort owner, manual stop and global/scoped Kill Switch;
+- captured pre-state, Readback and Restore/Compensate procedure;
+- unknown-result/manual-resolution behavior;
+- complete Audit and durable redacted evidence-retention plan.
+
+Gate-EV verdicts are exactly:
+
+```text
+AUTHORIZE_BOUNDED_REAL_WRITE_VERIFICATION
+CHANGES_REQUIRED
+BLOCKED_BY_EXTERNAL_CAPABILITY
+BLOCKED_EVIDENCE_INCOMPLETE
+```
+
+The authorization is consumed or expires with its named operation/window. It
+does not authorize general Pilot scope, unattended scheduling, broad Policy,
+production release or any unnamed write.
+
+## 6. Gate E — Controlled-write Capability Enablement
 
 A write Capability is independently enabled per Platform/Account/Store/Scope only
 when all are true:
 
+- required real-write evidence was generated under a valid prior Gate-EV
+  authorization for the exact scope;
 - exact official and real-account Capability evidence is current;
 - deterministic Guardrails and permission tests pass;
 - Dry Run and stale-state refusal pass;
@@ -86,12 +116,14 @@ when all are true:
 - restore/compensate has real bounded proof;
 - audit and Kill Switch are complete;
 - Pilot Cohort and blast-radius limits are recorded;
-- no Critical/High finding remains;
+- no BLOCKER/MAJOR finding remains;
 - Human Owner explicitly enables the exact scope.
 
-Code merge or Slice completion does not automatically enable the Capability.
+Gate E consumes the bounded verification evidence and is the only Gate that may
+approve ongoing controlled Pilot production release. Code merge, Slice
+completion or Gate EV does not automatically enable the Capability.
 
-## 6. Evidence retention
+## 7. Evidence retention
 
 Evidence index entries record:
 
@@ -109,14 +141,14 @@ known limitation / expiry / re-verification date
 Never commit a credential, Buyer PII, unredacted production payload or a mutable
 external link as the only proof.
 
-## 7. Review verdict constraints
+## 8. Review verdict constraints
 
 - Passing CI is necessary but not sufficient.
 - A model claim is never test evidence.
 - Fixture evidence cannot be promoted to `REAL_EXT`.
 - Missing in-scope evidence is a blocker; it is not silently deferred.
-- External evidence that is needed only for production enablement may remain open
-  during implementation when the code remains fail-closed and the exact Gate is
-  recorded.
-- Findings are `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` or `INFORMATIONAL` and cite an
+- External evidence needed for Gate EV or production enablement may remain open
+  during implementation when code remains fail-closed and the exact consuming
+  Gate is recorded.
+- Findings use only `BLOCKER`, `MAJOR`, `MINOR` or `INFORMATIONAL` and cite an
   exact source/test/evidence gap.

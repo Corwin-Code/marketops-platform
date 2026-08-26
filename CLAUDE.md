@@ -41,6 +41,9 @@ active Contract's trigger applies. Do not elevate normal engineering choices.
   AI cannot replace it;
 - no platform write before Recommendation/Evidence, deterministic Gates,
   approval/policy, idempotent Command, Readback, Audit and Kill Switch;
+- Full-Scope Implementation and merge do not authorize a real verification
+  write; that operation requires an exact Gate-EV envelope, while Gate E alone
+  may authorize ongoing controlled Pilot execution;
 - merge never implies production enablement;
 - use only official platform APIs/reports;
 - add success, failure, duplicate, replay, late, stale, unknown, timeout,

@@ -9,6 +9,8 @@ source integrity, no direct `main` push and Owner merge authority remain binding
 
 The Controller verifies:
 
+- exact Slice Contract path and SHA-256; authorization is bound to those bytes,
+  and any revision requires an independent Contract re-review;
 - observable business/user outcome and complete in-scope loop;
 - explicit non-goals and delivery boundaries;
 - Owner decisions closed or assigned to exact external evidence Gates;
@@ -83,10 +85,50 @@ Merge leaves real write Capabilities disabled unless a separate enablement Gate
 has already and explicitly approved the exact deployed identity—which is normally
 post-merge.
 
+## Gate EV — Bounded Real-Write Verification Authorization
+
+Gate EV is the only authority that permits a real Marketplace write whose sole
+purpose is to generate bounded `Write → Readback → Restore/Compensate` evidence
+before Gate E. It is distinct from implementation, merge, deployment and ongoing
+Pilot enablement.
+
+Every Gate-EV authorization requires all of the following in one exact,
+reviewable envelope:
+
+- explicit Human Owner authorization;
+- Platform, opaque Account/Store reference, Capability and SKU allowlist;
+- a one-time or time-bounded verification window;
+- maximum price delta and cumulative exposure;
+- current official-source and real-account Capability evidence;
+- current deterministic Guardrails and a passing Dry Run;
+- supervised operator, abort owner and manual-stop procedure;
+- global and scoped Kill Switches;
+- captured pre-state;
+- Readback and Restore/Compensate procedure;
+- unknown-result and manual-resolution behavior;
+- complete Audit and durable redacted evidence-retention plan.
+
+Verdicts:
+
+```text
+AUTHORIZE_BOUNDED_REAL_WRITE_VERIFICATION
+CHANGES_REQUIRED
+BLOCKED_BY_EXTERNAL_CAPABILITY
+BLOCKED_EVIDENCE_INCOMPLETE
+```
+
+`AUTHORIZE_BOUNDED_REAL_WRITE_VERIFICATION` authorizes only the named evidence
+operation inside its scope and window. It does not authorize general Pilot
+enablement, unattended recurring execution, a broad Policy, production release
+or any unnamed scope. Expiry, completion, abort or scope mismatch returns the
+authorization to fail-closed `NONE`.
+
 ## Gate E — Controlled Capability Enablement
 
 For every real write Capability and platform, independently prove:
 
+- the required real-write evidence was generated under a valid prior Gate-EV
+  authorization bound to the exact Platform/Account/Store/Capability/SKU/window;
 - current official API/role/quota evidence;
 - exact Store/SKU/Campaign allowlist;
 - deterministic Guardrail and Approval/Policy authority;
@@ -95,6 +137,11 @@ For every real write Capability and platform, independently prove:
 - audit, alerting and Kill Switch;
 - bounded Pilot Cohort and rollback owner;
 - legal/security/credential/provider readiness.
+
+Gate E consumes Gate-EV evidence but does not retroactively authorize how it was
+created. Gate E remains the only Gate that can approve ongoing controlled Pilot
+production release, and its Human Owner authorization is separate from the
+earlier bounded verification authorization.
 
 Verdicts:
 

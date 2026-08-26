@@ -25,3 +25,8 @@ For V1 product and delivery conflicts:
 
 A superseded Phase/WP allocation remains historical provenance; it does not regain
 authority merely because it appears in Baseline v1.0 or an old Work Package.
+
+The byte-preserved Baseline's historical `Critical / High` release wording does
+not create a second active finding taxonomy. New Controller findings and all
+current merge/release decisions use only `BLOCKER / MAJOR / MINOR /
+INFORMATIONAL`; the historical wording is not assigned to new findings.

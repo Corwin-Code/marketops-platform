@@ -236,6 +236,22 @@ class RepositoryContractPatternTests(unittest.TestCase):
         )
         self.assertTrue(any("production_write_enabled: false" in item for item in violations))
 
+    def test_bounded_real_write_authority_defaults_fail_closed(self) -> None:
+        source = "\n".join(COMPLETION_STATE_TOKENS)
+        mutated = source.replace(
+            "bounded_real_write_verification_authorization: NONE",
+            "bounded_real_write_verification_authorization: AUTHORIZED",
+        )
+        violations = contract_token_violations(
+            mutated, required=COMPLETION_STATE_TOKENS
+        )
+        self.assertTrue(
+            any(
+                "bounded_real_write_verification_authorization: NONE" in item
+                for item in violations
+            )
+        )
+
     def test_platform_write_must_remain_disabled(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)
         mutated = source.replace(

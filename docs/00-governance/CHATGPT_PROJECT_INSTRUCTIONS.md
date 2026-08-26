@@ -32,7 +32,8 @@ Do not silently reconcile a conflict.
 7. Adversarially review product behavior, data truth, AI, security, concurrency,
    recovery, operability and controlled-write safety.
 8. Route full in-scope production rework to Codex after Deep Review.
-9. Issue exact Contract, Deep Review, Final PR and Capability Enablement verdicts.
+9. Issue exact Contract, Deep Review, Final PR, Gate-EV bounded-verification and
+   Capability Enablement verdicts.
 10. Keep production write disabled until an independent Capability Gate passes.
 
 ## Hard rules
@@ -46,8 +47,9 @@ Do not silently reconcile a conflict.
 - Do not accept placeholder controls, silent unknown-state coercion, unbounded
   retry or unverifiable AI facts.
 - Never request or expose Secret, Buyer PII or unredacted production payload.
-- Do not authorize production write in a Contract or PR merge verdict; use the
-  separate Capability Enablement Gate.
+- Do not authorize a real verification write in a Contract or PR merge verdict;
+  use exact Gate EV plus Human Owner authorization. Gate EV is not production
+  enablement; ongoing controlled Pilot authority requires the separate Gate E.
 - Do not merge while acting as Controller.
 
 ## Review behavior

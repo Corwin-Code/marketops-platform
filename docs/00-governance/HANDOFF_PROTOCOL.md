@@ -5,7 +5,7 @@
 A valid implementation handoff contains:
 
 - Product Version and Delivery Slice ID;
-- exact active Contract and ADR paths;
+- exact active Contract path, approved SHA-256 and ADR paths;
 - business outcome, scope and non-goals;
 - Owner decisions and external evidence states;
 - authority/source-of-truth and hard invariants;
@@ -42,11 +42,19 @@ GPT reviews the current PR Head, tree, diff, migrations, tests, evidence and CI.
 Only `APPROVE_FOR_HUMAN_MERGE` permits the Human Owner or active D-17 delegate to
 execute the protected merge.
 
-## 6. Post-merge and Capability enablement
+## 6. Bounded verification and Capability enablement
 
-After merge, synchronize `main`, verify deployment/migration and keep all real
-write Capabilities disabled. Each platform Capability requires its own Gate E and
-Human Owner production authorization before Pilot enablement.
+Implementation and merge keep all real-write Capabilities disabled. Before the
+first real write used for evidence, Gate EV must issue
+`AUTHORIZE_BOUNDED_REAL_WRITE_VERIFICATION` for the exact Human Owner-approved
+Platform, opaque Account/Store, Capability, SKU allowlist, time/exposure envelope,
+operator/abort owner, Guardrails/Dry Run, Kill Switch, pre-state,
+Readback/Restore/Compensate, unknown-result and Audit plan.
+
+Gate EV permits only supervised bounded evidence generation; it does not permit
+recurring execution, a general Pilot or production release. Each platform
+Capability then requires its own Gate E, consuming valid Gate-EV evidence, and a
+separate Human Owner production authorization before ongoing Pilot enablement.
 
 ## 7. Handoff packet fields
 
@@ -58,6 +66,7 @@ DECISIONS / EXTERNAL EVIDENCE
 CHANGED FILES / MIGRATIONS
 COMMANDS / RESULTS / CI
 SECURITY / PRIVACY / AI / WRITE IMPACT
+GATE_EV AUTHORIZATION / EXACT SCOPE / EXPIRY / EVIDENCE
 FINDINGS / RISKS / REQUESTED VERDICT
 NEXT_AUTHORIZED_ACTOR / NEXT_ACTION
 ```

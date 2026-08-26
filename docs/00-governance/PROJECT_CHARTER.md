@@ -77,7 +77,8 @@ mandatory Design Approval on its own.
 - Buyer PII excluded from AI and general Analytics/Mart by default;
 - low-risk Policy-authorized semi-automation allowed; high-risk actions require
   per-action approval;
-- all platform writes default disabled and open only by Capability-specific Gate;
+- all platform writes default disabled; bounded evidence generation requires an
+  exact Gate EV, while ongoing controlled Pilot use requires Gate E;
 - no Kafka, Kubernetes, microservices or multi-cloud without a demonstrated need
   and a new Decision/ADR;
 - production capability completion is a release Gate; business uplift is measured
@@ -92,7 +93,7 @@ mandatory Design Approval on its own.
 | Detailed Design and Initial Full Implementation inside an approved Slice Contract | Claude Fable 5 / Claude Code |
 | Full in-scope Production Rework, Fix and Verify after GPT Deep Review | Codex |
 | Deterministic build/test/migration/security evidence | CI |
-| Protected merge authorization/revocation and production enablement | Human Owner |
+| Protected merge authorization/revocation, Gate-EV bounded write verification and Gate-E production enablement | Human Owner |
 | Mechanical Ready/merge execution after all Gates | Human Owner or active D-17 Codex delegate |
 
 ## 7. Source-of-truth order

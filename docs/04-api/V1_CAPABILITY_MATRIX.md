@@ -100,7 +100,20 @@ These capabilities are diagnosis/task-only in Slice 1 unless separately promoted
 | `LISTING_CONTENT_CHANGE` | SLICE-V1-004 | DISABLED / UNVERIFIED |
 | `ORDER_FULFILLMENT_ACTION` | SLICE-V1-005 | DISABLED / UNVERIFIED |
 
-## 6. Verification and change protocol
+## 6. Gate-EV authority before write evidence
+
+No write row may perform the real call required for `PASS` until Gate EV issues
+`AUTHORIZE_BOUNDED_REAL_WRITE_VERIFICATION` for the exact Platform, opaque
+Account/Store, Capability, SKU allowlist, verification window, price-delta and
+cumulative-exposure limits. The envelope also binds current Capability evidence,
+Guardrails/Dry Run, supervised operator/abort owner, Kill Switch, captured
+pre-state, Readback/Restore/Compensate, unknown-result/manual-resolution and
+durable redacted Audit evidence.
+
+Gate EV authorizes only evidence generation. It does not turn the row into an
+enabled Pilot Capability, authorize recurring execution or replace Gate E.
+
+## 7. Verification and change protocol
 
 A Matrix row may become `PASS` only with:
 
@@ -109,7 +122,8 @@ A Matrix row may become `PASS` only with:
 3. real-account capability/permission proof when required;
 4. Raw evidence and safe redaction;
 5. rate-limit/failure/unknown-state behavior;
-6. write rows: real bounded write, Readback and restore/compensate evidence;
+6. write rows: real bounded write, Readback and restore/compensate evidence
+   generated under a valid exact Gate-EV authorization;
 7. reviewer, date and evidence reference.
 
 Platform changes do not require an Owner decision when they can be absorbed by the

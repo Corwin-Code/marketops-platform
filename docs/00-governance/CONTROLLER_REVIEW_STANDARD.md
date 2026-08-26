@@ -78,6 +78,7 @@ with SHA-256 and exact `NEXT_AUTHORIZED_ACTOR` / `NEXT_ACTION`, for:
 - Product or Slice Contract Gate;
 - Implementation Deep Review;
 - Final PR Gate;
+- Bounded Real-Write Verification Authorization;
 - Controlled Capability Enablement;
 - V1 Product Complete Gate.
 

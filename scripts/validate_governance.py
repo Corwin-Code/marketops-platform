@@ -80,6 +80,9 @@ DR0003_REQUIRED_FILES = [
     "docs/08-handoffs/CONTROLLER-DR-0003-V1-BASELINE-RESET-REVIEW.md",
     "docs/08-handoffs/CODEX-DR-0003-GOVERNANCE-EXECUTION-PROMPT.md",
     "docs/08-handoffs/DR-0003-CONTROLLER-ARTIFACT-HASHES.md",
+    "docs/08-handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md",
+    "docs/08-handoffs/CODEX-PR18-DR-0003-TARGETED-REWORK-R1.md",
+    "docs/08-handoffs/DR-0003-PR18-R1-ARTIFACT-HASHES.md",
     ".github/ISSUE_TEMPLATE/decision_request.yml",
     ".github/ISSUE_TEMPLATE/delivery_slice.yml",
     ".github/ISSUE_TEMPLATE/work_package.yml",
@@ -93,19 +96,30 @@ WP_EXECUTION_AUTHORIZATION_ALLOWED_STATES = ACTIVE_AUTHORIZATION_STATES | {"CLOS
 LIFECYCLE_ALLOWED_STATES = {"INITIATING", "EXECUTING_PHASE_0", "EXECUTING_V1"}
 
 DR0003_REQUIRED_BASE = "52a657f7f6358f43246e03457ba2d48ef658986a"
+V1_ACTIVE_SLICE_CONTRACT_PATH = (
+    "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md"
+)
+V1_ACTIVE_SLICE_CONTRACT_SHA256 = (
+    "0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5"
+)
+V1_SLICE_AUTHORIZATION_CONDITION = (
+    "EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN"
+)
 V1_ACTIVE_STATE = {
     "lifecycle_state": "EXECUTING_V1",
     "product_version": "V1",
     "delivery_model": "PRODUCTION_VERTICAL_SLICES",
     "active_delivery_slice": "SLICE-V1-001",
-    "active_slice_contract": (
-        "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md"
-    ),
+    "active_slice_contract": V1_ACTIVE_SLICE_CONTRACT_PATH,
+    "active_slice_contract_sha256": V1_ACTIVE_SLICE_CONTRACT_SHA256,
+    "active_slice_contract_authorization_condition": V1_SLICE_AUTHORIZATION_CONDITION,
     "active_gate": "SLICE_CONTRACT_APPROVED",
     "authorization": "FULL_SCOPE_IMPLEMENTATION",
     "next_authorized_actor": "CLAUDE_FABLE_5",
     "next_action": "SLICE_V1_001_DETAILED_DESIGN_AND_INITIAL_FULL_IMPLEMENTATION",
     "production_write_enabled": "false",
+    "bounded_real_write_verification_authorization": "NONE",
+    "bounded_real_write_verification_gate": "REQUIRED_BEFORE_FIRST_REAL_WRITE",
     "ozon_price_write": "DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
     "wildberries_price_write": (
         "DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE"
@@ -151,6 +165,7 @@ V1_TRACEABILITY_REQUIRED_IDS = {
     "METRIC-V1",
     "AI-V1",
     "UI-V1",
+    "GATE-EV",
 }
 DR0003_ARTIFACT_HASHES = {
     "docs/08-handoffs/CONTROLLER-DR-0003-V1-BASELINE-RESET-REVIEW.md": (
@@ -158,6 +173,17 @@ DR0003_ARTIFACT_HASHES = {
     ),
     "docs/08-handoffs/CODEX-DR-0003-GOVERNANCE-EXECUTION-PROMPT.md": (
         "d33fc9a391905747857cfb3d9295e09214c7afa60e7d57ec1a34bcc504931dd7"
+    ),
+}
+DR0003_R1_ARTIFACT_HASHES = {
+    "docs/08-handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md": (
+        "d2abcf7ac5569ae3501e78b34bc421bcfa6a9e79275122117f39bc5f5155ac5d"
+    ),
+    "docs/08-handoffs/CODEX-PR18-DR-0003-TARGETED-REWORK-R1.md": (
+        "782aff3289bbcc3c5443dc534451cdfbaea4b61dc3a7aea5910b1edfc6e7ea80"
+    ),
+    "docs/08-handoffs/DR-0003-PR18-R1-ARTIFACT-HASHES.md": (
+        "fd2412530831831e259b52822d2ba703de013dc3e76c58e70736475ec1c9d3ac"
     ),
 }
 HISTORICAL_PROVENANCE_HASHES = {
@@ -3465,8 +3491,190 @@ def require_contract_tokens_text(
             errors.append(f"{label} missing required contract: {token}")
 
 
+FORBIDDEN_FINDING_TAXONOMY_PATTERNS = (
+    re.compile(
+        r"(?is)(?:critical\s*/\s*high|`?critical`?\s*,\s*`?high`?\s*,\s*"
+        r"`?medium`?\s*,\s*`?low`?).{0,100}\b(?:finding|findings|defect|defects)\b"
+    ),
+    re.compile(
+        r"(?is)\b(?:finding|findings|defect|defects)\b.{0,100}"
+        r"(?:critical\s*/\s*high|`?critical`?\s*,\s*`?high`?\s*,\s*"
+        r"`?medium`?\s*,\s*`?low`?)"
+    ),
+)
+
+
+def validate_finding_vocabulary_texts(
+    errors: list[str], documents: dict[str, str]
+) -> None:
+    """Keep one Controller finding taxonomy without banning Slice risk labels."""
+    requirements = {
+        "review_standard": (
+            "BLOCKER       unsafe",
+            "MAJOR         required behavior/evidence missing",
+            "MINOR         bounded defect",
+            "INFORMATIONAL non-blocking observation",
+        ),
+        "quality": ("no unresolved BLOCKER/MAJOR",),
+        "assurance": (
+            "no BLOCKER/MAJOR finding remains",
+            "Findings use only `BLOCKER`, `MAJOR`, `MINOR` or `INFORMATIONAL`",
+        ),
+        "product": ("no unresolved BLOCKER/MAJOR finding",),
+        "slice": ("no unresolved BLOCKER/MAJOR finding",),
+        "guide": ("no unresolved BLOCKER/MAJOR finding",),
+        "pr_template": ("No unresolved BLOCKER/MAJOR finding",),
+    }
+    for name, tokens in requirements.items():
+        if name in documents:
+            require_contract_tokens_text(
+                errors, f"finding vocabulary {name}", documents[name], tokens
+            )
+    for name in requirements:
+        text = documents.get(name, "")
+        for pattern in FORBIDDEN_FINDING_TAXONOMY_PATTERNS:
+            if pattern.search(text):
+                errors.append(
+                    f"canonical Gate document {name} reintroduces the forbidden "
+                    "CRITICAL/HIGH/MEDIUM/LOW finding taxonomy"
+                )
+                break
+
+
+def validate_v1_authority_effect_texts(
+    errors: list[str], documents: dict[str, str]
+) -> None:
+    """Reject proposal-only pending metadata from the durable active baseline."""
+    requirements = {
+        "dr": (
+            "status: ACCEPTED_EFFECTIVE_ON_PROTECTED_MAIN",
+            "effective_condition: PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION",
+        ),
+        "owner": (
+            "repository_effect: EFFECTIVE_WHEN_PRESENT_ON_PROTECTED_MAIN",
+            "effective_condition: PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION",
+        ),
+        "product": (
+            "status: APPROVED_EFFECTIVE_ON_PROTECTED_MAIN",
+            "effective_condition: PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION",
+        ),
+        "slices": (
+            "CONTRACT_APPROVED_EFFECTIVE_ON_PROTECTED_MAIN",
+            "effective_condition: PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION",
+        ),
+    }
+    stale_tokens = (
+        "CONTROLLER_APPROVED_PENDING_REPOSITORY_EFFECT",
+        "APPROVED_BY_DR_0003_PENDING_REPOSITORY_EFFECT",
+        "PENDING_DR_0003_MERGE",
+        "PENDING_RESET_MERGE",
+    )
+    for name, tokens in requirements.items():
+        if name in documents:
+            require_contract_tokens_text(
+                errors, f"durable authority {name}", documents[name], tokens
+            )
+    for name in requirements:
+        text = documents.get(name, "")
+        for token in stale_tokens:
+            if token in text:
+                errors.append(
+                    f"canonical authority document {name} retains stale pending-merge metadata: {token}"
+                )
+
+
+def validate_gate_ev_contract_texts(
+    errors: list[str], documents: dict[str, str]
+) -> None:
+    """Keep bounded evidence authority separate from Gate-E Pilot enablement."""
+    common_verdicts = (
+        "AUTHORIZE_BOUNDED_REAL_WRITE_VERIFICATION",
+        "CHANGES_REQUIRED",
+        "BLOCKED_BY_EXTERNAL_CAPABILITY",
+        "BLOCKED_EVIDENCE_INCOMPLETE",
+    )
+    requirements = {
+        "current": (
+            "bounded_real_write_verification_authorization: NONE",
+            "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",
+            "production_write_enabled: false",
+            "cannot be implemented by changing either default flag to `ENABLED`",
+        ),
+        "quality": (
+            "## Gate EV — Bounded Real-Write Verification Authorization",
+            "exact Slice Contract path and SHA-256",
+            "any revision requires an independent Contract re-review",
+            *common_verdicts,
+            "explicit Human Owner authorization",
+            "Platform, opaque Account/Store reference, Capability and SKU allowlist",
+            "one-time or time-bounded verification window",
+            "maximum price delta and cumulative exposure",
+            "current official-source and real-account Capability evidence",
+            "current deterministic Guardrails and a passing Dry Run",
+            "supervised operator, abort owner and manual-stop procedure",
+            "global and scoped Kill Switches",
+            "captured pre-state",
+            "Readback and Restore/Compensate procedure",
+            "unknown-result and manual-resolution behavior",
+            "complete Audit and durable redacted evidence-retention plan",
+            "does not authorize general Pilot",
+            "Gate E remains the only Gate",
+        ),
+        "charter": (
+            "bounded evidence generation requires an\n  exact Gate EV",
+            "ongoing controlled Pilot use requires Gate E",
+        ),
+        "operating": (
+            "### Bounded real-write verification",
+            *common_verdicts,
+            "FULL_SCOPE_IMPLEMENTATION`, merge and Gate EV do not authorize ongoing",
+        ),
+        "assurance": (
+            "## 5. Gate EV — Bounded Real-Write Verification Authorization",
+            *common_verdicts,
+            "Gate E consumes the bounded verification evidence",
+            "completion or Gate EV does not automatically enable the Capability",
+        ),
+        "product": (
+            "Gate EV —\nBounded Real-Write Verification Authorization",
+            "Full-Scope\nImplementation, a code merge, Dry Run completion or a future Gate-E review does\nnot substitute for Gate EV",
+        ),
+        "slice": (
+            "AUTHORIZE_BOUNDED_REAL_WRITE_VERIFICATION",
+            "Full-Scope\nImplementation does not grant Gate EV, Gate E or any real Marketplace write",
+        ),
+        "capability": (
+            "## 6. Gate-EV authority before write evidence",
+            "Gate EV authorizes only evidence generation",
+        ),
+        "handoff": (
+            "## 6. Bounded verification and Capability enablement",
+            "Gate EV permits only supervised bounded evidence generation",
+        ),
+        "guide": (
+            "Gate EV for any bounded real-write evidence",
+            "ongoing Pilot use separately requires Gate E",
+        ),
+        "questions": ("OQ-113", "defaults to `NONE`"),
+        "traceability": ("GATE-EV,Governance Gate",),
+        "pr_template": ("bounded real-write verification cites an exact Gate-EV",),
+        "agents": ("never treat implementation, merge or Gate EV as production enablement",),
+        "claude": ("requires an exact Gate-EV envelope",),
+        "claude_project": ("Gate EV is bounded evidence authority",),
+        "chatgpt_project": ("Gate EV is not production",),
+    }
+    for name, tokens in requirements.items():
+        if name in documents:
+            require_contract_tokens_text(
+                errors, f"Gate EV {name}", documents[name], tokens
+            )
+
+
 def validate_v1_current_state_text(
-    errors: list[str], current_state_text: str, project_charter_text: str
+    errors: list[str],
+    current_state_text: str,
+    project_charter_text: str,
+    slice_contract_bytes: bytes | None = None,
 ) -> None:
     """Validate the one live post-DR-0003 Slice authority set."""
     metadata = fenced_yaml_body(current_state_text)
@@ -3484,6 +3692,49 @@ def validate_v1_current_state_text(
         errors.append(
             "CURRENT_STATE authorization must be exactly one of: "
             + ", ".join(sorted(V1_AUTHORIZATION_ALLOWED_STATES))
+        )
+
+    if slice_contract_bytes is None:
+        contract_path = ROOT / V1_ACTIVE_SLICE_CONTRACT_PATH
+        if not contract_path.is_file():
+            errors.append(
+                "CURRENT_STATE active Slice Contract path does not exist: "
+                + V1_ACTIVE_SLICE_CONTRACT_PATH
+            )
+            slice_contract_bytes = b""
+        else:
+            slice_contract_bytes = contract_path.read_bytes()
+    actual_contract_sha256 = hashlib.sha256(slice_contract_bytes).hexdigest()
+    recorded_contract_sha256 = unique_yaml_value(
+        metadata, "active_slice_contract_sha256"
+    )
+    if actual_contract_sha256 != V1_ACTIVE_SLICE_CONTRACT_SHA256:
+        errors.append(
+            "active Slice Contract bytes are not the fixed R1 rework target "
+            "identity; FULL_SCOPE_IMPLEMENTATION requires Controller Contract "
+            f"re-review: expected {V1_ACTIVE_SLICE_CONTRACT_SHA256}, found "
+            f"{actual_contract_sha256}"
+        )
+    if recorded_contract_sha256 != actual_contract_sha256:
+        errors.append(
+            "CURRENT_STATE active_slice_contract_sha256 does not match the active "
+            f"Slice Contract bytes: recorded {recorded_contract_sha256}, found "
+            f"{actual_contract_sha256}"
+        )
+    binding_valid = (
+        unique_yaml_value(metadata, "active_slice_contract")
+        == V1_ACTIVE_SLICE_CONTRACT_PATH
+        and recorded_contract_sha256 == V1_ACTIVE_SLICE_CONTRACT_SHA256
+        and unique_yaml_value(
+            metadata, "active_slice_contract_authorization_condition"
+        )
+        == V1_SLICE_AUTHORIZATION_CONDITION
+        and actual_contract_sha256 == V1_ACTIVE_SLICE_CONTRACT_SHA256
+    )
+    if authorization == "FULL_SCOPE_IMPLEMENTATION" and not binding_valid:
+        errors.append(
+            "FULL_SCOPE_IMPLEMENTATION requires the exact active Slice Contract "
+            "path/hash and an independent Controller Contract re-review binding"
         )
 
     for field, expected in {
@@ -3543,6 +3794,18 @@ def validate_decision_log_v1_text(errors: list[str], text: str) -> None:
 
 
 def validate_owner_decisions_v1_text(errors: list[str], text: str) -> None:
+    metadata = leading_yaml_body(text)
+    if metadata is None:
+        errors.append("Owner Decisions missing leading YAML metadata")
+    else:
+        for field, expected_value in {
+            "repository_effect": "EFFECTIVE_WHEN_PRESENT_ON_PROTECTED_MAIN",
+            "effective_condition": "PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION",
+        }.items():
+            if unique_yaml_value(metadata, field) != expected_value:
+                errors.append(
+                    f"Owner Decisions {field} must be exactly: {expected_value}"
+                )
     found = Counter(re.findall(r"\b(?:OD|CD)-V1-\d{3}\b", text))
     expected = {
         *(f"OD-V1-{number:03d}" for number in range(1, 25)),
@@ -3585,6 +3848,7 @@ def validate_delivery_slices_v1_text(errors: list[str], text: str) -> None:
         "source_contract": "docs/01-requirements/V1_PRODUCT_CONTRACT.md",
         "active_slice": "SLICE-V1-001",
         "old_phase_zero_backlog": "SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN",
+        "effective_condition": "PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION",
     }
     if metadata is None:
         errors.append("V1 Delivery Slices missing leading YAML metadata")
@@ -3598,7 +3862,7 @@ def validate_delivery_slices_v1_text(errors: list[str], text: str) -> None:
         text,
         (
             "SLICE-V1-001 — SKU Growth & Profit Diagnostic Loop",
-            "CONTRACT_APPROVED / PENDING_RESET_MERGE",
+            "CONTRACT_APPROVED_EFFECTIVE_ON_PROTECTED_MAIN",
             "production enablement is separate from merge",
             "AI cannot become the Metric, Policy, Approval, Command or Credential authority",
         ),
@@ -3730,6 +3994,18 @@ def validate_ai_execution_boundary_text(errors: list[str], text: str) -> None:
 
 
 def validate_v1_product_contract_text(errors: list[str], text: str) -> None:
+    metadata = leading_yaml_body(text)
+    if metadata is None:
+        errors.append("V1 Product Contract missing leading YAML metadata")
+    else:
+        for field, expected_value in {
+            "status": "APPROVED_EFFECTIVE_ON_PROTECTED_MAIN",
+            "effective_condition": "PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION",
+        }.items():
+            if unique_yaml_value(metadata, field) != expected_value:
+                errors.append(
+                    f"V1 Product Contract {field} must be exactly: {expected_value}"
+                )
     require_contract_tokens_text(
         errors,
         "V1 Product Contract",
@@ -3748,6 +4024,8 @@ def validate_v1_product_contract_text(errors: list[str], text: str) -> None:
             "→ Idempotent Command / Outbox",
             "→ Provider State + Readback",
             "→ Audit + Restore/Compensate + Outcome Follow-up",
+            "Gate EV —",
+            "Gate E separately consumes that evidence",
         ),
     )
 
@@ -3817,6 +4095,8 @@ def validate_open_questions_v1_text(errors: list[str], text: str) -> None:
             "No item below blocks DR-0003 or the start of SLICE-V1-001",
             "An external evidence item becomes a blocker only at the boundary that consumes",
             "No Secret, real Token, Buyer PII or unredacted production payload",
+            "OQ-113",
+            "defaults to `NONE`",
         ),
     )
     for line in text.splitlines():
@@ -3886,6 +4166,94 @@ def validate_dr0003_artifacts(errors: list[str]) -> None:
         )
 
 
+def validate_dr0003_r1_artifacts(errors: list[str]) -> None:
+    """Pin the independent R1 finding ledger and its targeted rework authority."""
+    manifest_relative = "docs/08-handoffs/DR-0003-PR18-R1-ARTIFACT-HASHES.md"
+    manifest_path = ROOT / manifest_relative
+    manifest_text = (
+        manifest_path.read_text(encoding="utf-8") if manifest_path.exists() else ""
+    )
+    attributes_path = ROOT / ".gitattributes"
+    attributes_text = (
+        attributes_path.read_text(encoding="utf-8")
+        if attributes_path.exists()
+        else ""
+    )
+    whitespace_exception = (
+        "docs/08/handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md "
+        "-whitespace"
+    )
+    if attributes_text.count(whitespace_exception) != 1:
+        errors.append(
+            "DR-0003 R1 CommonMark whitespace exception must be exact and singular"
+        )
+    for line in attributes_text.splitlines():
+        if "-whitespace" in line and line != whitespace_exception:
+            errors.append(
+                "whitespace exception may apply only to the SHA-256-pinned DR-0003 R1 review"
+            )
+    for relative, expected in DR0003_R1_ARTIFACT_HASHES.items():
+        path = ROOT / relative
+        if not path.is_file():
+            continue
+        actual = sha256(path)
+        if actual != expected:
+            errors.append(
+                f"DR-0003 R1 artifact hash mismatch for {relative}: expected {expected}, found {actual}"
+            )
+        if relative != manifest_relative and (
+            relative not in manifest_text or expected not in manifest_text
+        ):
+            errors.append(f"DR-0003 R1 artifact hash binding missing for: {relative}")
+
+    require_contract_tokens_text(
+        errors,
+        "DR-0003 R1 artifact hash binding",
+        manifest_text,
+        (
+            f"reviewed_base: {DR0003_REQUIRED_BASE}",
+            "reviewed_head: d933bd91cd7396999776e157cb3cf9223d888c34",
+            "reviewed_head_tree: 83fd24cf57d75f1931e9c705f965552a8a2e6e60",
+            "controller_verdict: CHANGES_REQUIRED",
+            "merge_authorization: NOT_GRANTED",
+            "production_enablement: NOT_AUTHORIZED",
+            "next_action: DR_0003_PR18_TARGETED_GOVERNANCE_REWORK_R1",
+        ),
+    )
+
+    review_path = ROOT / "docs/08-handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md"
+    if review_path.exists():
+        review = review_path.read_text(encoding="utf-8")
+        require_contract_tokens_text(
+            errors,
+            "DR-0003 R1 Controller review",
+            review,
+            (
+                "reviewed_head: d933bd91cd7396999776e157cb3cf9223d888c34",
+                "controller_verdict: CHANGES_REQUIRED",
+                "Four `MAJOR` findings remain.",
+                "merge_authorization: NOT_GRANTED",
+                "production_enablement: NOT_AUTHORIZED",
+                "NEXT_ACTION: DR_0003_PR18_TARGETED_GOVERNANCE_REWORK_R1",
+            ),
+        )
+
+    prompt_path = ROOT / "docs/08-handoffs/CODEX-PR18-DR-0003-TARGETED-REWORK-R1.md"
+    if prompt_path.exists():
+        prompt = prompt_path.read_text(encoding="utf-8")
+        require_contract_tokens_text(
+            errors,
+            "DR-0003 R1 targeted rework prompt",
+            prompt,
+            (
+                "controller_reviewed_starting_head: d933bd91cd7396999776e157cb3cf9223d888c34",
+                "authorization: TARGETED_GOVERNANCE_REWORK_ONLY",
+                "requested_next_verdict: INDEPENDENT_DR_0003_RESET_PR_RE_REVIEW",
+                "Do not mark Ready and do not merge.",
+            ),
+        )
+
+
 def validate_historical_provenance_hashes(errors: list[str]) -> None:
     for relative, expected in HISTORICAL_PROVENANCE_HASHES.items():
         path = ROOT / relative
@@ -3922,7 +4290,7 @@ def validate_owner_git_workflow_guidance_v2(errors: list[str]) -> None:
             "exit_authority: Human Owner explicit confirmation only",
             "sync main → create/reuse Slice/task branch",
             "Human Owner-authorized merge execution",
-            "separate production/capability enablement",
+            "separate Gate-E production/capability enablement",
             "D-17 mechanical delegation",
         ),
     )
@@ -3971,6 +4339,7 @@ def validate_controller_review_standard_v2(errors: list[str]) -> None:
             "Product or Slice Contract Gate",
             "Implementation Deep Review",
             "Final PR Gate",
+            "Bounded Real-Write Verification Authorization",
             "Controlled Capability Enablement",
             "V1 Product Complete Gate",
             "SHA-256",
@@ -4004,6 +4373,16 @@ def validate_v1_governance(errors: list[str]) -> None:
         "operating": ROOT / "docs/00-governance/AI_OPERATING_MODEL.md",
         "questions": ROOT / "docs/00-governance/OPEN_QUESTIONS.md",
         "traceability": ROOT / "docs/01-requirements/v1-traceability.csv",
+        "review_standard": ROOT / "docs/00-governance/CONTROLLER_REVIEW_STANDARD.md",
+        "quality": ROOT / "docs/00-governance/QUALITY_GATES.md",
+        "assurance": ROOT / "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md",
+        "guide": ROOT / "docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md",
+        "handoff": ROOT / "docs/00-governance/HANDOFF_PROTOCOL.md",
+        "pr_template": ROOT / ".github/pull_request_template.md",
+        "agents": ROOT / "AGENTS.md",
+        "claude": ROOT / "CLAUDE.md",
+        "claude_project": ROOT / "docs/00-governance/CLAUDE_PROJECT_INSTRUCTIONS.md",
+        "chatgpt_project": ROOT / "docs/00-governance/CHATGPT_PROJECT_INSTRUCTIONS.md",
     }
     texts = {
         name: path.read_text(encoding="utf-8-sig")
@@ -4037,8 +4416,9 @@ def validate_v1_governance(errors: list[str]) -> None:
             "DR-0003",
             texts["dr"],
             (
-                "status: CONTROLLER_APPROVED_PENDING_REPOSITORY_EFFECT",
+                "status: ACCEPTED_EFFECTIVE_ON_PROTECTED_MAIN",
                 f"reviewed_repository_base: {DR0003_REQUIRED_BASE}",
+                "effective_condition: PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION",
                 "migration_effect: NONE",
                 "production_write_effect: NONE",
                 "APPROVE_RESET_PACKAGE_FOR_CODEX_GOVERNANCE_EXECUTION",
@@ -4054,6 +4434,8 @@ def validate_v1_governance(errors: list[str]) -> None:
                 "Highest authority for V1 supersession and delivery model",
                 "unchanged Requirement IDs, NFRs and hard rules",
                 "A superseded Phase/WP allocation remains historical provenance",
+                "does\nnot create a second active finding taxonomy",
+                "BLOCKER / MAJOR / MINOR /\nINFORMATIONAL",
             ),
         )
     if "product" in texts:
@@ -4061,8 +4443,13 @@ def validate_v1_governance(errors: list[str]) -> None:
     if "operating" in texts:
         validate_ai_operating_model_v1_text(errors, texts["operating"])
 
+    validate_finding_vocabulary_texts(errors, texts)
+    validate_v1_authority_effect_texts(errors, texts)
+    validate_gate_ev_contract_texts(errors, texts)
+
     validate_historical_provenance_hashes(errors)
     validate_dr0003_artifacts(errors)
+    validate_dr0003_r1_artifacts(errors)
 
 
 def git_scan_paths(root: Path = ROOT) -> list[Path]:

@@ -2,7 +2,7 @@
 
 ```yaml
 decision_request: DR-0003
-status: CONTROLLER_APPROVED_PENDING_REPOSITORY_EFFECT
+status: ACCEPTED_EFFECTIVE_ON_PROTECTED_MAIN
 decision_class: JOINT_OWNER_CONTROLLER
 trigger: OWNER_CONFIRMED_PRODUCT_INTENT_REBASE
 owner_direction: EXPLICIT
@@ -13,6 +13,11 @@ effective_condition: PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AN
 migration_effect: NONE
 production_write_effect: NONE
 ```
+
+`ACCEPTED_EFFECTIVE_ON_PROTECTED_MAIN` is a durable conditional status, not a
+claim that a proposal branch is already active. DR-0003 takes repository effect
+only when an independent Controller review and Human Owner authorization permit
+this exact change to enter protected `main`.
 
 ## 1. Problem and trigger
 
@@ -120,7 +125,8 @@ GPT Controller: Product/Slice Acceptance Contract
 → Codex: Full in-scope Production Rework / Fix / Verify
 → GPT: Final PR Gate
 → Human Owner / delegated Git executor: protected merge
-→ Capability-specific Production Enablement Gate
+→ Gate EV for any bounded real-write evidence operation
+→ Gate E for Capability-specific controlled Pilot enablement
 → Controlled Production Release
 ```
 
@@ -186,7 +192,7 @@ The following remain binding unless a later formal decision changes them:
 The exact classification is recorded in
 `docs/00-governance/ASSET_DISPOSITION_LEDGER.md`.
 
-## 7. Active post-merge state
+## 7. Active state when effective on protected main
 
 After this reset PR is merged, the repository moves to:
 
@@ -197,6 +203,8 @@ active_gate: SLICE_CONTRACT_APPROVED
 authorization: FULL_SCOPE_IMPLEMENTATION
 next_actor: CLAUDE_FABLE_5
 next_action: DETAILED_DESIGN_AND_INITIAL_FULL_IMPLEMENTATION
+bounded_real_write_verification_authorization: NONE
+bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE
 production_write: DISABLED_PENDING_CAPABILITY_ENABLEMENT_GATE
 ```
 

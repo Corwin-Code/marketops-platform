@@ -12,6 +12,8 @@ legacy_phase_model: SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN
 active_delivery_slice: SLICE-V1-001
 active_slice_title: SKU Growth & Profit Diagnostic Loop
 active_slice_contract: docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md
+active_slice_contract_sha256: 0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5
+active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
 active_gate: SLICE_CONTRACT_APPROVED
 authorization: FULL_SCOPE_IMPLEMENTATION
 conditional_design_gate: ENABLED
@@ -20,6 +22,8 @@ next_authorized_actor: CLAUDE_FABLE_5
 next_action: SLICE_V1_001_DETAILED_DESIGN_AND_INITIAL_FULL_IMPLEMENTATION
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
+bounded_real_write_verification_authorization: NONE
+bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE
 ozon_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
 wildberries_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
 production_infrastructure: YANDEX_CLOUD_RU_CENTRAL1
@@ -41,15 +45,28 @@ Implementation continuously inside that exact Contract after this state is
 merged. A separate Design Approval is not required unless a Conditional Design
 Gate trigger occurs.
 
+`SLICE_CONTRACT_APPROVED` and `FULL_SCOPE_IMPLEMENTATION` are valid only for the
+exact `active_slice_contract` path and `active_slice_contract_sha256` recorded in
+the leading metadata. A byte change or identity mismatch makes that authorization
+stale and requires an independent Controller Contract re-review before
+Full-Scope Implementation can be restored.
+
 This implementation authorization does **not** authorize:
 
 - production platform writes or Capability enablement;
+- bounded real-write verification without an exact Gate-EV verdict and explicit
+  Human Owner authorization;
 - real credentials in Git, chat, logs, fixtures or ordinary configuration;
 - Buyer PII in AI or general Analytics/Mart;
 - destructive migration or changes to V0001–V0010;
 - a second ingestion, metric, policy, command or audit authority;
 - a product-scope expansion outside SLICE-V1-001;
 - merge or production release without later independent Gates.
+
+The Ozon/WB price-write fields remain disabled production/scheduling flags. A
+future Gate-EV envelope is represented as a separate, exact, expiring authority;
+it cannot be implemented by changing either default flag to `ENABLED`, and it is
+consumed without creating recurring execution authority.
 
 ## Preserved historical provenance
 

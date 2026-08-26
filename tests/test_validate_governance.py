@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import io
 import subprocess
 import unittest
@@ -14,6 +15,7 @@ from scripts.validate_governance import (
     HISTORIC_CONTRACT_BEGIN,
     HISTORIC_CONTRACT_END,
     REQUIRED_FILES,
+    V1_ACTIVE_SLICE_CONTRACT_SHA256,
     WP_P0_002_ID,
     WP_P0_002_DESIGN_RELATIVE_PATH,
     WP_P0_002_RELATIVE_PATH,
@@ -31,11 +33,14 @@ from scripts.validate_governance import (
     validate_decision_log_v1_text,
     validate_dr0003_controller_review_text,
     validate_dr0003_hash_binding_text,
+    validate_dr0003_r1_artifacts,
     validate_ai_execution_boundary_text,
     validate_ai_operating_model_v1_text,
     validate_backlog_v1_text,
     validate_capability_matrix_v1_text,
     validate_delivery_slices_v1_text,
+    validate_finding_vocabulary_texts,
+    validate_gate_ev_contract_texts,
     validate_lifecycle_state_text,
     validate_open_questions_v1_text,
     validate_owner_decisions_v1_text,
@@ -46,6 +51,7 @@ from scripts.validate_governance import (
     validate_required_file_set,
     validate_slice_v1_001_text,
     validate_v1_current_state_text,
+    validate_v1_authority_effect_texts,
     validate_v1_product_contract_text,
     validate_v1_traceability_text,
     validate_wp_p0_002_completion_text,
@@ -2741,6 +2747,7 @@ class V1RequiredFileTests(unittest.TestCase):
             "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
             "docs/04-api/V1_CAPABILITY_MATRIX.md",
             "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md",
+            "docs/08-handoffs/CONTROLLER-PR18-DR-0003-INDEPENDENT-REVIEW-R1.md",
         ):
             with self.subTest(relative=relative):
                 errors: list[str] = []
@@ -2768,10 +2775,24 @@ class V1CurrentStateContractTests(unittest.TestCase):
     def charter(self) -> str:
         return repository_governance_text("docs/00-governance/PROJECT_CHARTER.md")
 
-    def validate(self, current: str | None = None, charter: str | None = None) -> list[str]:
+    def slice_contract_bytes(self) -> bytes:
+        return (
+            Path(__file__).resolve().parents[1]
+            / "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md"
+        ).read_bytes()
+
+    def validate(
+        self,
+        current: str | None = None,
+        charter: str | None = None,
+        slice_contract_bytes: bytes | None = None,
+    ) -> list[str]:
         errors: list[str] = []
         validate_v1_current_state_text(
-            errors, current or self.current(), charter or self.charter()
+            errors,
+            current or self.current(),
+            charter or self.charter(),
+            slice_contract_bytes,
         )
         return errors
 
@@ -2834,6 +2855,50 @@ class V1CurrentStateContractTests(unittest.TestCase):
         for old, new in mutations:
             with self.subTest(field=old.split(":", 1)[0]):
                 self.assertTrue(self.validate(current=self.current().replace(old, new, 1)))
+
+    def test_contract_byte_change_with_old_hash_is_rejected(self) -> None:
+        mutated = self.slice_contract_bytes().replace(
+            b"SKU Growth & Profit Diagnostic Loop",
+            b"SKU Growth & Profit Diagnostic Lo0p",
+            1,
+        )
+        errors = self.validate(slice_contract_bytes=mutated)
+        self.assertTrue(any("re-review" in error for error in errors))
+        self.assertTrue(any("does not match" in error for error in errors))
+
+    def test_hash_change_with_original_contract_is_rejected(self) -> None:
+        current = self.current().replace(
+            V1_ACTIVE_SLICE_CONTRACT_SHA256,
+            "0" * 64,
+            1,
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("active_slice_contract_sha256" in error for error in errors))
+        self.assertTrue(any("FULL_SCOPE_IMPLEMENTATION" in error for error in errors))
+
+    def test_coordinated_contract_and_hash_change_requires_controller_re_review(self) -> None:
+        mutated = self.slice_contract_bytes() + b"\nR1 mutation requiring re-review\n"
+        mutated_hash = hashlib.sha256(mutated).hexdigest()
+        current = self.current().replace(
+            V1_ACTIVE_SLICE_CONTRACT_SHA256,
+            mutated_hash,
+            1,
+        )
+        errors = self.validate(
+            current=current,
+            slice_contract_bytes=mutated,
+        )
+        self.assertTrue(any("re-review" in error for error in errors))
+
+    def test_full_scope_requires_exact_review_authorization_condition(self) -> None:
+        current = self.current().replace(
+            "EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN",
+            "HASH_UPDATED_WITHOUT_REVIEW",
+            1,
+        )
+        errors = self.validate(current=current)
+        self.assertTrue(any("authorization_condition" in error for error in errors))
+        self.assertTrue(any("FULL_SCOPE_IMPLEMENTATION" in error for error in errors))
 
 
 class V1DecisionContractTests(unittest.TestCase):
@@ -3020,6 +3085,157 @@ class V1CapabilityAiAndWriteContractTests(unittest.TestCase):
         errors: list[str] = []
         validate_ai_operating_model_v1_text(errors, mutated)
         self.assertTrue(errors)
+
+
+class V1R1GovernanceContractTests(unittest.TestCase):
+    def documents(self) -> dict[str, str]:
+        paths = {
+            "current": "docs/00-governance/CURRENT_STATE.md",
+            "charter": "docs/00-governance/PROJECT_CHARTER.md",
+            "dr": "docs/00-governance/DR-0003-v1-product-delivery-baseline-reset.md",
+            "owner": "docs/00-governance/OWNER_DECISIONS_V1.md",
+            "product": "docs/01-requirements/V1_PRODUCT_CONTRACT.md",
+            "slices": "docs/03-work-items/V1_DELIVERY_SLICES.md",
+            "slice": "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+            "review_standard": "docs/00-governance/CONTROLLER_REVIEW_STANDARD.md",
+            "quality": "docs/00-governance/QUALITY_GATES.md",
+            "assurance": "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md",
+            "operating": "docs/00-governance/AI_OPERATING_MODEL.md",
+            "capability": "docs/04-api/V1_CAPABILITY_MATRIX.md",
+            "handoff": "docs/00-governance/HANDOFF_PROTOCOL.md",
+            "guide": "docs/00-governance/OWNER_GIT_WORKFLOW_GUIDE.md",
+            "questions": "docs/00-governance/OPEN_QUESTIONS.md",
+            "traceability": "docs/01-requirements/v1-traceability.csv",
+            "pr_template": ".github/pull_request_template.md",
+            "agents": "AGENTS.md",
+            "claude": "CLAUDE.md",
+            "claude_project": "docs/00-governance/CLAUDE_PROJECT_INSTRUCTIONS.md",
+            "chatgpt_project": "docs/00-governance/CHATGPT_PROJECT_INSTRUCTIONS.md",
+        }
+        return {
+            name: repository_governance_text(relative)
+            for name, relative in paths.items()
+        }
+
+    def test_exact_r1_finding_authority_and_gate_ev_contracts_are_valid(self) -> None:
+        documents = self.documents()
+        errors: list[str] = []
+        validate_finding_vocabulary_texts(errors, documents)
+        validate_v1_authority_effect_texts(errors, documents)
+        validate_gate_ev_contract_texts(errors, documents)
+        self.assertEqual([], errors)
+
+    def test_second_finding_taxonomy_is_rejected_but_delivery_risk_is_allowed(self) -> None:
+        documents = self.documents()
+        self.assertIn("delivery_risk: CRITICAL", documents["slice"])
+        errors: list[str] = []
+        validate_finding_vocabulary_texts(errors, documents)
+        self.assertEqual([], errors)
+        documents["product"] += "\nNo unresolved Critical/High finding remains.\n"
+        validate_finding_vocabulary_texts(errors, documents)
+        self.assertTrue(any("forbidden" in error for error in errors))
+
+    def test_stale_pending_merge_metadata_is_rejected_in_executing_v1(self) -> None:
+        mutations = {
+            "dr": (
+                "status: ACCEPTED_EFFECTIVE_ON_PROTECTED_MAIN",
+                "status: CONTROLLER_APPROVED_PENDING_REPOSITORY_EFFECT",
+            ),
+            "owner": (
+                "repository_effect: EFFECTIVE_WHEN_PRESENT_ON_PROTECTED_MAIN",
+                "repository_effect: PENDING_DR_0003_MERGE",
+            ),
+            "product": (
+                "status: APPROVED_EFFECTIVE_ON_PROTECTED_MAIN",
+                "status: APPROVED_BY_DR_0003_PENDING_REPOSITORY_EFFECT",
+            ),
+            "slices": (
+                "CONTRACT_APPROVED_EFFECTIVE_ON_PROTECTED_MAIN",
+                "CONTRACT_APPROVED / PENDING_RESET_MERGE",
+            ),
+        }
+        for name, (old, new) in mutations.items():
+            with self.subTest(document=name):
+                documents = self.documents()
+                self.assertIn("lifecycle_state: EXECUTING_V1", documents["current"])
+                documents[name] = documents[name].replace(old, new, 1)
+                errors: list[str] = []
+                validate_v1_authority_effect_texts(errors, documents)
+                self.assertTrue(any("pending-merge" in error for error in errors))
+
+    def test_gate_ev_cannot_be_collapsed_into_gate_e_or_enablement(self) -> None:
+        documents = self.documents()
+        documents["quality"] = documents["quality"].replace(
+            "## Gate EV — Bounded Real-Write Verification Authorization",
+            "## Gate E — Controlled Capability Enablement",
+            1,
+        )
+        errors: list[str] = []
+        validate_gate_ev_contract_texts(errors, documents)
+        self.assertTrue(any("Gate EV quality" in error for error in errors))
+
+        documents = self.documents()
+        documents["current"] = documents["current"].replace(
+            "bounded_real_write_verification_authorization: NONE",
+            "bounded_real_write_verification_authorization: AUTHORIZE_BOUNDED_REAL_WRITE_VERIFICATION",
+            1,
+        )
+        errors = []
+        validate_gate_ev_contract_texts(errors, documents)
+        self.assertTrue(any("Gate EV current" in error for error in errors))
+
+    def test_gate_ev_requires_the_complete_bounded_authorization_envelope(self) -> None:
+        required = (
+            "explicit Human Owner authorization",
+            "Platform, opaque Account/Store reference, Capability and SKU allowlist",
+            "one-time or time-bounded verification window",
+            "maximum price delta and cumulative exposure",
+            "current official-source and real-account Capability evidence",
+            "current deterministic Guardrails and a passing Dry Run",
+            "supervised operator, abort owner and manual-stop procedure",
+            "global and scoped Kill Switches",
+            "captured pre-state",
+            "Readback and Restore/Compensate procedure",
+            "unknown-result and manual-resolution behavior",
+            "complete Audit and durable redacted evidence-retention plan",
+        )
+        for token in required:
+            with self.subTest(token=token):
+                documents = self.documents()
+                documents["quality"] = documents["quality"].replace(
+                    token, "removed Gate-EV envelope field", 1
+                )
+                errors: list[str] = []
+                validate_gate_ev_contract_texts(errors, documents)
+                self.assertTrue(any("Gate EV quality" in error for error in errors))
+
+    def test_implementation_merge_and_gate_ev_cannot_enable_controlled_pilot(self) -> None:
+        mutations = {
+            "operating": (
+                "`FULL_SCOPE_IMPLEMENTATION`, merge and Gate EV do not authorize ongoing",
+                "`FULL_SCOPE_IMPLEMENTATION`, merge and Gate EV authorize ongoing",
+            ),
+            "product": (
+                "not substitute for Gate EV",
+                "substitute for Gate EV",
+            ),
+            "assurance": (
+                "completion or Gate EV does not automatically enable the Capability",
+                "completion or Gate EV automatically enables the Capability",
+            ),
+        }
+        for name, (old, new) in mutations.items():
+            with self.subTest(document=name):
+                documents = self.documents()
+                documents[name] = documents[name].replace(old, new, 1)
+                errors: list[str] = []
+                validate_gate_ev_contract_texts(errors, documents)
+                self.assertTrue(any(f"Gate EV {name}" in error for error in errors))
+
+    def test_r1_controller_artifacts_are_exact_and_non_authorizing(self) -> None:
+        errors: list[str] = []
+        validate_dr0003_r1_artifacts(errors)
+        self.assertEqual([], errors)
 
 
 class V1TraceabilityAndOpenQuestionTests(unittest.TestCase):

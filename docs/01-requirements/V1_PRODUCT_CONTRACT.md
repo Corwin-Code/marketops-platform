@@ -2,13 +2,19 @@
 
 ```yaml
 contract_id: MARKETOPS-V1-PRODUCT
-status: APPROVED_BY_DR_0003_PENDING_REPOSITORY_EFFECT
+status: APPROVED_EFFECTIVE_ON_PROTECTED_MAIN
+effective_condition: PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION
 owner: Human Owner
 controller: GPT-5.6 Sol Pro
 effective_date: 2026-08-26
 product: MarketOps Russia
 delivery_model: PRODUCTION_VERTICAL_SLICES
 ```
+
+`APPROVED_EFFECTIVE_ON_PROTECTED_MAIN` is conditional rather than a claim about
+the current proposal branch. This Contract becomes active only when the exact
+reviewed change enters protected `main` after independent Controller review and
+Human Owner merge authorization.
 
 ## 1. Product definition
 
@@ -163,6 +169,13 @@ Evidence-linked Recommendation
 - Pilot Cohort limits real scope without weakening implementation;
 - AI may propose a command but cannot authorize it.
 
+A real write used to generate acceptance evidence requires a separate `Gate EV —
+Bounded Real-Write Verification Authorization` before the call occurs. Full-Scope
+Implementation, a code merge, Dry Run completion or a future Gate-E review does
+not substitute for Gate EV. Gate EV is one-time or time-bounded evidence-generation
+authority only; Gate E separately consumes that evidence and may authorize an
+ongoing controlled Pilot scope.
+
 `PRICE_CHANGE` is the first target capability for both platforms. Exact endpoint,
 permission, quota and Readback semantics remain `UNVERIFIED` until primary-source
 and real-account evidence is recorded.
@@ -207,6 +220,10 @@ and real-account evidence is recorded.
 - external AI models stay behind an AI Provider Gateway;
 - exact topology, RPO/RTO, retention and recovery require executable evidence.
 
+Infrastructure or application readiness does not itself create real-write
+authority. The first real verification write is separately bounded by Gate EV;
+ongoing controlled Pilot execution remains Gate E authority.
+
 ## 10. Product interaction
 
 The structured console is the primary interface. AI is embedded in Command
@@ -223,6 +240,8 @@ path.
 - Codex performs full in-scope production rework/fix/verify;
 - GPT performs Final PR Gate;
 - production write enablement is a separate Capability Gate;
+- bounded real-write evidence generation requires Gate EV before the first real
+  write, and controlled Pilot enablement remains Gate E authority;
 - a Slice may release to bounded real users/data before all V1 Slices are complete;
 - `V1 Product Complete` is separate from Slice release and from business uplift.
 
@@ -254,7 +273,7 @@ V1 is complete only when:
 - Recommendation/Task/Approval/Policy/Command/Readback/Audit works end to end;
 - authentication, RBAC/scope, provider security, backup/restore, monitoring and
   runbooks pass;
-- no unresolved Critical/High defect or unowned data gap remains;
+- no unresolved BLOCKER/MAJOR finding or unowned data gap remains;
 - production release is legally/security approved.
 
 A predetermined sales or profit uplift is not required to declare capability

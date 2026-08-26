@@ -51,6 +51,8 @@
       Credential authority.
 - [ ] Any Marketplace write remains disabled after merge unless a separate
       enablement Gate explicitly says otherwise.
+- [ ] Any bounded real-write verification cites an exact Gate-EV authorization;
+      implementation, merge and Gate EV are not represented as Pilot enablement.
 
 ## Operational impact
 
@@ -87,5 +89,5 @@
 - [ ] Required evidence is reproducible and correctly classified.
 - [ ] Historical migrations/evidence and source Baseline integrity are preserved.
 - [ ] Documentation/traceability/current state are truthful for this tranche.
-- [ ] No unresolved Critical/High/blocking finding remains before final approval.
+- [ ] No unresolved BLOCKER/MAJOR finding remains before final approval.
 - [ ] Independent Controller verdict is bound to the exact Head before merge.

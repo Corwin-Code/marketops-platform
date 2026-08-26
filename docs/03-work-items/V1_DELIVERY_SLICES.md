@@ -7,7 +7,12 @@ delivery_model: PRODUCTION_VERTICAL_SLICES
 source_contract: docs/01-requirements/V1_PRODUCT_CONTRACT.md
 active_slice: SLICE-V1-001
 old_phase_zero_backlog: SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN
+effective_condition: PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION
 ```
+
+The roadmap state below is durable but conditional: it becomes active only when
+this exact reviewed baseline is present on protected `main` after independent
+Controller review and Human Owner merge authorization.
 
 ## 1. Purpose
 
@@ -42,7 +47,7 @@ See `docs/02-architecture/V1_SHARED_SPINE.md`.
 
 | Order | Slice | User outcome | New controlled-write target | Status |
 | ---: | --- | --- | --- | --- |
-| 1 | `SLICE-V1-001 — SKU Growth & Profit Diagnostic Loop` | Cross-domain SKU diagnosis, evidence-linked AI recommendation, task/approval and dual-platform guarded price execution | `PRICE_CHANGE` on Ozon and WB | CONTRACT_APPROVED / PENDING_RESET_MERGE |
+| 1 | `SLICE-V1-001 — SKU Growth & Profit Diagnostic Loop` | Cross-domain SKU diagnosis, evidence-linked AI recommendation, task/approval and dual-platform guarded price execution | `PRICE_CHANGE` on Ozon and WB | CONTRACT_APPROVED_EFFECTIVE_ON_PROTECTED_MAIN |
 | 2 | `SLICE-V1-002 — Inventory & Availability Optimization` | Internal/platform stock truth, FBO/FBS drift, stockout/overstock diagnosis and allocation workflow | selected `STOCK_CHANGE` | PLANNED |
 | 3 | `SLICE-V1-003 — Advertising & Traffic Efficiency` | Campaign/target efficiency tied to inventory, conversion and Contribution Profit | selected budget/bid/campaign command | PLANNED |
 | 4 | `SLICE-V1-004 — Promotion & Listing Conversion` | Listing Health, content/promotion diagnosis, experiments and governed content/promotion workflow | selected promotion/listing command | PLANNED |
@@ -127,6 +132,8 @@ hard-code its data model or algorithm for a handful of pilot SKUs.
   Capability model;
 - historical migrations and evidence are never rewritten to fit a new Slice;
 - production enablement is separate from merge and remains Human Owner authority.
+- bounded real-write evidence requires Gate EV before the first real write;
+  ongoing controlled Pilot enablement separately requires Gate E.
 
 ## 8. Slice documentation requirement
 

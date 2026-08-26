@@ -32,6 +32,8 @@ blocker/Decision Request.
 - never use or expose Credentials, Buyer PII or unredacted production data;
 - preserve exact Raw, official facts, idempotency, unknown states, deterministic
   Metric/Policy and controlled-write invariants;
+- never treat implementation, merge or Gate EV as production enablement; any real
+  verification write requires the exact Human Owner-approved Gate-EV envelope;
 - run the complete relevant verification, not only the failing test;
 - update code, tests, docs, traceability and runbooks coherently;
 - report exact commands/results and remaining limitations.

@@ -51,6 +51,9 @@ external-evidence state.
   the Slice; no hidden deferred in-scope item.
 - Keep all real write Capability flags disabled in implementation and deployment
   defaults until a later Enablement Gate.
+- Do not generate real-write evidence without exact Gate EV and Human Owner
+  authorization; Gate EV is bounded evidence authority and is not Gate-E Pilot
+  enablement.
 - Never merge, expose credentials/PII or use production payloads in the public
   repository.
 
