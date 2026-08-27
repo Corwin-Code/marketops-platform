@@ -243,11 +243,17 @@ public class ImportIntakeService {
                 Math.clamp(limit, 1, MAXIMUM_PREVIEW_ROWS));
     }
 
-    /** The exact bytes a batch was created from. */
+    /**
+     * The exact bytes a batch was created from.
+     *
+     * <p>Resolved by the custody identifier the batch recorded. Building a
+     * reference here from the identifier alone would mean inventing a digest
+     * and a locator, and a reference with an invented digest is not a reference
+     * to anything.
+     */
     @Transactional(readOnly = true)
     public Optional<byte[]> storedContent(UUID batchId) {
-        ImportRepository.ImportBatch batch = require(batchId);
-        return custody.read(new RawContentRef(batch.contentId(), null, 0L, null));
+        return custody.readById(require(batchId).contentId());
     }
 
     /**

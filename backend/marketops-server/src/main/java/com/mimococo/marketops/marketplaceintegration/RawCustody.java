@@ -34,6 +34,17 @@ public interface RawCustody {
     /** The stored bytes for a custody reference, when custody still holds them. */
     Optional<byte[]> read(RawContentRef reference);
 
+    /**
+     * The stored bytes for a custody record, by its identifier.
+     *
+     * <p>A consumer that recorded only the custody identifier — an import batch
+     * does exactly that — should not have to fabricate a reference in order to
+     * read its own evidence back. Asking custody to resolve the identifier
+     * keeps the digest and the locator where they belong, which is inside
+     * custody.
+     */
+    Optional<byte[]> readById(java.util.UUID contentId);
+
     /** Whether custody still holds bytes matching the reference's digest. */
     boolean verify(RawContentRef reference);
 }

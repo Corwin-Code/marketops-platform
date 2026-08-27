@@ -100,7 +100,11 @@ public class AnalyticsCalculationService {
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
 
         Instant now = clock.instant();
-        FactWindow factWindow = FactWindow.endingAt(now, window.length());
+        // Aligned rather than ending at this instant: the reproducibility
+        // digest covers the window, so an unaligned one would make every
+        // recomputation a different question and fill a figure's history with
+        // rows that differ only in when somebody asked.
+        FactWindow factWindow = FactWindow.alignedEndingAt(now, window.length());
         UUID runId = idGenerator.newId();
         metrics.openRun(runId, store.organizationId(), triggerKind, "STORE", storeId,
                 window.name(), factWindow.periodStart(), factWindow.periodEnd(),

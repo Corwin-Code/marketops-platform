@@ -43,6 +43,24 @@ public class RawCustodyService implements RawCustody {
     /** Namespace shape accepted inside a locator. */
     private static final Pattern NAMESPACE = Pattern.compile("^[a-z0-9][a-z0-9-]{0,62}$");
 
+    /**
+     * The locator shape the custody schema accepts, byte for byte.
+     *
+     * <p>Copied from the check constraint in V0010 and asserted against every
+     * locator this service builds. The shape was previously stated in three
+     * places — the constraint and both adapters — and nothing checked that a
+     * locator this service actually produced satisfied it. It did not: a
+     * segment is capped at 63 characters and a SHA-256 in hexadecimal is 64,
+     * so every filesystem custody write was refused. Validating here turns a
+     * silent mismatch between the code and the schema into a refusal with a
+     * name.
+     */
+    private static final Pattern LOCATOR = Pattern.compile(
+            "^object-ref://[a-z0-9][a-z0-9-]{0,62}(/[a-z0-9][a-z0-9._-]{0,62}){1,6}$");
+
+    /** How much of the digest names the fan-out directory. */
+    private static final int FAN_OUT_LENGTH = 2;
+
     private final ObjectStoragePort objectStorage;
     private final RawContentRepository contents;
     private final IdGenerator idGenerator;
@@ -91,6 +109,12 @@ public class RawCustodyService implements RawCustody {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<byte[]> readById(java.util.UUID contentId) {
+        return contents.findById(contentId).flatMap(this::read);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<byte[]> read(RawContentRef reference) {
         return objectStorage.read(reference.objectRef());
     }
@@ -119,8 +143,26 @@ public class RawCustodyService implements RawCustody {
      * accumulating every object ever stored, which matters for both a filesystem
      * store and an object store's listing behaviour.
      */
-    private static String locatorFor(String namespace, String sha256) {
-        return "object-ref://" + CUSTODY_BUCKET + "/" + namespace + "/"
-                + sha256.substring(0, 2) + "/" + sha256;
+    /**
+     * Where one content-addressed object lives.
+     *
+     * <p>The digest is split across two segments rather than written whole: a
+     * locator segment is capped at 63 characters by the custody schema and a
+     * SHA-256 in hexadecimal is 64, so the whole digest cannot be one segment.
+     * The two halves concatenate back to the digest, so the object is still
+     * addressed by its content and nothing about the identity is lost.
+     *
+     * <p>The result is checked against the schema's own shape before it is
+     * used. A locator the database would refuse must not reach an adapter,
+     * where it would fail as a storage error rather than as what it is.
+     */
+    static String locatorFor(String namespace, String sha256) {
+        String locator = "object-ref://" + CUSTODY_BUCKET + "/" + namespace + "/"
+                + sha256.substring(0, FAN_OUT_LENGTH) + "/"
+                + sha256.substring(FAN_OUT_LENGTH);
+        if (!LOCATOR.matcher(locator).matches()) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        return locator;
     }
 }

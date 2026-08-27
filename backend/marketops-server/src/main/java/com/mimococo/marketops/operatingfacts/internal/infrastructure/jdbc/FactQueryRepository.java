@@ -414,7 +414,15 @@ public class FactQueryRepository {
                         SELECT sum(latest.quantity_on_hand) AS quantity_on_hand,
                                sum(latest.quantity_reserved) AS quantity_reserved,
                                max(latest.observed_at) AS observed_at,
-                               min(latest.provenance_id) AS provenance_id
+                               -- The provenance of the newest contributing
+                               -- snapshot, which is the one an operator asking
+                               -- "where did this come from" means. PostgreSQL
+                               -- has no min() over an identifier, and picking an
+                               -- arbitrary one would name a source that does not
+                               -- explain the number beside it.
+                               (array_agg(latest.provenance_id
+                                          ORDER BY latest.observed_at DESC))[1]
+                                   AS provenance_id
                           FROM (
                               SELECT DISTINCT ON (snapshot.warehouse_id)
                                      snapshot.quantity_on_hand, snapshot.quantity_reserved,
