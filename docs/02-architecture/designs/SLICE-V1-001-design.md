@@ -21,9 +21,9 @@ The complete diagnostic loop, from a marketplace fact arriving to a price
 changing on a marketplace and being read back — with every step of the last part
 refusing to happen until somebody has decided it should.
 
-Nine local checkpoints, sixteen forward migrations (V0011–V0026), four hundred
-and seventeen backend source and test files, and an operating console. Nothing
-was pushed, no pull request exists, and no external system was contacted.
+Twelve local checkpoints, sixteen forward migrations (V0011–V0026), the backend,
+an operating console, the Yandex topology and eight runbooks. Nothing was
+pushed, no pull request exists, and no external system was contacted.
 
 ## 2. The five decisions everything else follows from
 
@@ -256,6 +256,7 @@ point of the Assurance Matrix.
 | Any real platform write | Requires a Gate-EV envelope. Not authorized, not attempted. |
 | Terraform validity | No `terraform` binary was available and no provider could be downloaded. The configuration is reviewed, not machine-checked. |
 | Performance under representative load | No environment exists to load. |
+| The backend coverage gate | It ran and failed: 68.67% lines against a required 80%. Every test passes; the ratio is short because the slice added a large volume of adapter and repository code that the flow tests reach only along their own paths. Recorded rather than worked around, and the threshold was deliberately not changed. |
 
 ## 8. Local checkpoints
 
@@ -269,4 +270,7 @@ a9b57a5  Internal fact intake: files, manual entry and versioned cost
 18c9ab3  Prove the write path against a real database
 0df670f  The operating console, from sign-in to the command timeline
 02c3b73  Yandex topology and the runbooks an operator actually needs
+e2bff73  As-built design, three ADRs and an honest acceptance record
+1231a07  Exercise the product end to end, and fix what that found
+34c89b2  Read the files a Russian finance team actually sends
 ```

@@ -21,9 +21,24 @@ cd backend/marketops-server && ./mvnw -B -ntp verify
 
 | Suite | Result |
 | --- | --- |
-| Unit and architecture (surefire) | 324 tests, 0 failures, 0 errors |
-| Integration (failsafe, real PostgreSQL 18.4 in Testcontainers) | 197 tests, 0 failures, 0 errors |
-| Build | `BUILD SUCCESS` |
+| Unit and architecture (surefire) | 380 tests, 0 failures, 0 errors |
+| Integration (failsafe, real PostgreSQL 18.4 in Testcontainers) | 225 tests, 0 failures, 0 errors |
+| Coverage gate (JaCoCo) | **FAILS** — 68.67% lines against a required 80%, 52.39% branches against a required 70% |
+| Build | `BUILD FAILURE`, caused solely by the coverage gate |
+
+**The coverage gate does not pass, and that is reported rather than worked
+around.** Every test passes; the ratio is short. The slice roughly quadrupled
+the codebase with adapter, repository and controller code, and while the
+decisions that carry risk are covered — the guardrail engine, the diagnosis
+rules, the price-command state machine, the write gate, output validation,
+custody, the confidence rule — a large volume of straightforward JDBC and
+request-mapping code is exercised only along the paths the flow tests take.
+
+Closing the remaining 1,519 lines and 546 branches means writing tests whose
+purpose is the ratio rather than a guarantee, which is the wrong reason to
+write one. It also means roughly fifteen to twenty further test classes. The
+threshold itself was set when the codebase was a fraction of this size;
+changing it is a governance decision and was deliberately not made here.
 
 The architecture suite includes 65 boundary tests: module internals private, no
 cycles, `shared` a leaf, domain and port never depending outward, vendor SDK
@@ -69,6 +84,23 @@ functions the application calls:
 | `TC-WRITE-107` | 3 | An attempt completes exactly once; the application cannot change a command row directly; the application cannot delete a readback. |
 | `TC-WRITE-108` | 8 | A bounded authorization is bounded in magnitude, scope, uses and status; the application cannot move the counter. |
 
+### The product running end to end
+
+```bash
+./mvnw -B -ntp -Dit.test='OperatingFlowIT,FileIntakeFlowIT,PriceCommandWorkerIT' verify
+```
+
+| Suite | Cases | What it exercises |
+| --- | --- | --- |
+| `OperatingFlowIT` | 12 | The whole loop through the application's own services: identity and grants, listing mapping, facts, canonical values and their reproducibility, the nine rules, a proposal, a guardrail refusal with no policy, publishing a policy, a decision, and a command that cannot be created because no capability is verified. |
+| `FileIntakeFlowIT` | 7 | A file with good and bad rows, the same file refused twice, a file where nothing passed, applying only the rows that passed, a stock count landing as a traceable fact, and a withdrawn batch. |
+| `PriceCommandWorkerIT` | 9 | The worker against a scripted platform: accepted then read back, a mismatch, a refusal, an unclassifiable write that is never repeated, a rate limit, an unreadable readback, an asynchronous write, attempts recorded before the call, and a pass with the switch off. |
+
+The scripted platform in the last of those is a queue of answers written in the
+test. **It is not a marketplace and nothing there is evidence about one.** What
+it proves is that this product responds to each shape of answer the way its own
+state machine says it must.
+
 ### Frontend
 
 ```bash
@@ -82,7 +114,7 @@ npm run test:ci && npm run build && npm run verify:bundle
 | ESLint (`--max-warnings 0`) | clean |
 | TypeScript (`--noEmit`) | clean |
 | Prettier | all files formatted |
-| Vitest with coverage | 124 tests passing; statements 83.46%, branches 75.0%, functions 92.02%, lines 83.66% — all above the configured thresholds |
+| Vitest with coverage | 124 tests passing; statements 83.6%, branches 75.04%, functions 92.02%, lines 83.77% — all above the configured thresholds |
 | Build | 32 modules, `BUILD SUCCESS` |
 | Bundle isolation | `only prefixed values reached the bundle` |
 
@@ -137,11 +169,11 @@ Clean at every checkpoint.
 | Failure injection against a deployed environment | No environment exists. |
 | Performance measurement | No representative data set and no environment. |
 | CI | Nothing was pushed. No pull request exists. |
-| JaCoCo coverage gate | Skipped during iteration with `-Djacoco.skip=true`; the final `verify` ran without it and passed. |
+| Nothing | The JaCoCo gate ran and failed; it is recorded above rather than skipped. |
 
 ## Defects this evidence found
 
-Three, each fixed and each recorded in the checkpoint that fixed it.
+Eight, each fixed and each recorded in the checkpoint that fixed it.
 
 1. **The write gate crashed whenever it had a reason to give.** `reasons ||
    'CODE'` resolves against array-concatenation for an untyped literal, so every
@@ -156,7 +188,25 @@ Three, each fixed and each recorded in the checkpoint that fixed it.
    with an identity provider could never have completed a sign-in. Found by the
    browser suite, which reported the blocked connection in the page console.
 
-A fourth was found by review rather than by a test: `capability_code` meant a
+4. **Custody could never store anything on the filesystem provider.** A locator
+   segment is capped at 63 characters by the schema and a SHA-256 in hexadecimal
+   is 64, so every content-addressed write was refused with a validation error
+   that named nothing. The shape was stated in three places and nothing checked
+   that a locator the product builds satisfied it.
+5. **Reading an import file back always threw.** It built a custody reference
+   from an identifier alone, which means inventing a digest.
+6. **Internal stock could never be read.** The query aggregated with `min()`
+   over an identifier, and PostgreSQL has no such aggregate.
+7. **No recomputation could ever reproduce.** The reproducibility digest covers
+   the window and the window ended at the instant somebody asked, so two runs a
+   second apart each wrote a full set of values differing only in when the
+   question was put.
+8. **A semicolon-separated file parsed as one column.** Office software in a
+   locale that writes decimals with a comma exports semicolons, which is what a
+   Russian finance team's spreadsheet very often is; every row then failed with
+   a message that explained nothing.
+
+A ninth was found by review rather than by a test: `capability_code` meant a
 lowercase registry identifier in `platform` and an uppercase business action in
 `ops`, so joining the two on the shared name returns nothing and reads as "not
 allowlisted". Renamed in V0026, with a check that refuses to let it come back.

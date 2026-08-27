@@ -115,7 +115,7 @@ because its first half is.
 
 | ID | Verdict | Evidence and what is missing |
 | --- | --- | --- |
-| `S1-AC-039` | `IMPLEMENTED_UNPROVEN` | Locally: 324 unit and architecture tests, 197 integration tests, 118 frontend tests, 8 browser tests, both repository validators, lint, type check, format check and bundle isolation — all passing on the final tree. **Missing:** no CI run exists, because nothing was pushed. |
+| `S1-AC-039` | `NOT_MET` | 380 unit and architecture tests, 225 integration tests, 124 frontend tests and 8 browser tests all pass on the final tree, as do both repository validators, lint, type check, format check and bundle isolation. **The backend coverage gate does not pass:** 68.67% lines against a required 80% and 52.39% branches against a required 70%. Every test passes; the ratio is short, because the slice quadrupled the codebase with adapter and repository code that the flow tests reach only along their own paths. Closing it needs tests written for the ratio rather than for a guarantee. No CI run exists either, because nothing was pushed. |
 | `S1-AC-040` | `NOT_MET` | The mechanisms are complete — pilot allowlist, policy limits, bounded authorizations, monitoring window, kill criteria — and every one of them is empty. Recording the actual cohort is an Owner decision. |
 | `S1-AC-041` | `MET` | Production writes are disabled in every profile; the worker switch is off by default; enabling a write needs a verified capability, verified operations, both flag scopes on, an allowlisted entity, a live authorization and a passing guardrail — six separate decisions, none implied by a merge. |
 
@@ -124,11 +124,17 @@ because its first half is.
 | Verdict | Count | Criteria |
 | --- | --- | --- |
 | `MET` | 21 | 002, 003, 004, 013, 014, 016, 018, 019, 020, 021, 022, 023, 024, 025, 027, 028, 029, 030, 034, 036, 041 |
-| `IMPLEMENTED_UNPROVEN` | 13 | 001, 005, 006, 007, 010, 011, 012, 015, 017, 033, 035, 038, 039 |
-| `NOT_MET` | 7 | 008, 009, 026, 031, 032, 037, 040 |
+| `IMPLEMENTED_UNPROVEN` | 12 | 001, 005, 006, 007, 010, 011, 012, 015, 017, 033, 035, 038 |
+| `NOT_MET` | 8 | 008, 009, 026, 031, 032, 037, 039, 040 |
 
-Every `NOT_MET` criterion needs something outside this authorization: a real
-marketplace account, an Owner-approved golden case set, a Gate-EV envelope, a
-running environment, or an Owner decision about who the pilot is.
+Seven of the eight `NOT_MET` criteria need something outside this
+authorization: a real marketplace account, an Owner-approved golden case set, a
+Gate-EV envelope, a running environment, or an Owner decision about who the
+pilot is.
 
-No criterion is blocked by something this work could have done and did not.
+The eighth is different and should be read as a gap in this work.
+`S1-AC-039` fails on the backend coverage gate — 68.67% against 80% — and that
+is a threshold this repository already set for itself. Every test passes and
+the guarantees that carry risk are covered; the ratio is short because the
+slice added a large volume of adapter and repository code. Closing it is
+ordinary further work, not a blocked dependency.
