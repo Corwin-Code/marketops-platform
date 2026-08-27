@@ -33,6 +33,33 @@ Evidence strength is classified independently from a model or reviewer opinion.
 | `OPS` | Operator runbook drill | executed runbook with observable result | runbook file existence |
 | `AUDIT` | Audit trace | end-to-end actor/evidence/command/readback chain | log line only |
 
+## 2a. SLICE-V1-001 evidence state
+
+```yaml
+assessed_at: 2026-08-27
+assessed_against: LOCAL_CHECKPOINT_ONLY
+detail: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
+executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
+```
+
+| Class | State | What exists | What is missing |
+| --- | --- | --- | --- |
+| `SRC` | `SATISFIED` | The Contract, the accepted ADRs and the exact repository source. | — |
+| `UNIT` | `SATISFIED` | 324 unit and architecture tests, including 65 boundary rules each with a deliberately invalid fixture. | — |
+| `RDB` | `SATISFIED` | 197 integration tests against real PostgreSQL 18.4, of which 45 exercise the write path through the same functions the application calls, as the application role. | — |
+| `OBJ` | `PARTIAL` | Hash, length and provenance per object; read-back verification; filesystem and S3-compatible adapters; compliance-lock configuration. | No approved object store was contacted. |
+| `REAL_EXT` | `ABSENT` | Nothing. | No marketplace, identity provider, model provider or cloud account was contacted. Every capability and provider row is `UNVERIFIED`, which is why no call is reachable. |
+| `SEC_NEG` | `SATISFIED` | Authorization refusals asserted against the running backend; bundle isolation; repository secret scan; AI output rejection of ungrounded, unrecognised and instruction-shaped claims. | — |
+| `REPLAY` | `SATISFIED` | Idempotent fact keys, digest-keyed metric values, and a database trigger refusing a marketplace call during replay. | — |
+| `BROWSER` | `PARTIAL` | 8 browser tests against the real backend and built console, including sign-in through to subject diagnosis. | The full chain in one browser run needs seeded operating data and a real identity provider. |
+| `PERF` | `ABSENT` | Indexes for the queue and subject queries. | No representative data set and no environment to measure against. |
+| `DR` | `PARTIAL` | Crash and lease-recovery behaviour proven against a real database; restore controls configured in reviewed infrastructure code. | The restore drill has never run, because there is nothing to restore. |
+| `OPS` | `PARTIAL` | Eight runbooks committed, five of them new for this slice. | None has been executed by support personnel. |
+| `AUDIT` | `SATISFIED` | Actor, evidence, decision, command and readback chain is complete and append-only, with the digest of the reviewed facts carried from proposal to decision to gate. | — |
+
+Two classes are `ABSENT` and neither can be moved by engineering work: both need
+an Owner-authorized act against a real external system.
+
 ## 3. Risk dimensions
 
 Every Deep Review and Final Gate explicitly assesses applicable dimensions:

@@ -46,6 +46,38 @@ unredacted production payload may appear here, in a PR, Issue or test fixture.
 | Verifier and evidence | source URL/reference + test/evidence ID |
 | Contract-test status | `UNVERIFIED`, `PASS`, `FAIL`, `BLOCKED` |
 
+## 2a. Implementation state after SLICE-V1-001
+
+Every row in this register is still `UNVERIFIED`, and the implementation is
+built so that this is a working state rather than a blocked one.
+
+The fields this document requires are now recorded columns, each carrying its
+own verification state and evidence reference:
+
+| Required field | Where it lives |
+| --- | --- |
+| Native method/endpoint, path, query, body | `platform.platform_endpoint` |
+| API base and timeouts | `platform.platform_api_profile` |
+| Credential presentation | `platform.platform_auth_header` |
+| Read/write class, subscription requirement | `platform.platform_capability` |
+| Write result model | `platform.platform_capability.write_result_model` |
+| Apply, status enquiry, readback and restore shape | `platform.capability_operation` |
+| Rate limit, pagination, freshness, idempotency, late-data behaviour | `platform.platform_endpoint` |
+| Payload field locations | `staging.normalization_mapping`, `staging.normalization_field` |
+| Store-level availability | `platform.capability_subject_status` |
+| Verification provenance | `verification_state`, `last_verified_at`, `evidence_ref`, `verified_source_title` on each |
+
+A row is reachable only when it is `VERIFIED` **and** `ACTIVE`, and the
+relational contract refuses `ACTIVE` without `VERIFIED`. An unverified
+capability therefore has no reachable specification, and the fail-closed
+behaviour is the absence of a call rather than a check somebody could forget.
+
+Verifying a row is a separate act from recording it: recording a shape is a
+claim about documentation, verifying it is a claim that somebody exercised it
+against a real account and watched what happened. Only the second makes an
+operation reachable, and only an Owner-authorized session against a real account
+can produce it.
+
 ## 3. Slice 1 required read capabilities
 
 All rows begin `UNVERIFIED`. Implementation may refine internal codes, but it may

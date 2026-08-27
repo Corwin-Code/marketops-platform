@@ -39,8 +39,13 @@ execution_envelope_state: ACTIVE_UNDER_DR_0004
 closure_snapshot_standard_state: ACTIVE_UNDER_DR_0004
 conditional_design_gate: ENABLED
 mandatory_design_gate_for_every_slice: DISABLED
+slice_v1_001_implementation_state: LOCAL_CHECKPOINT_COMPLETE_UNPUBLISHED
+slice_v1_001_as_built_design: docs/02-architecture/designs/SLICE-V1-001-design.md
+slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
+slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 next_authorized_actor: CLAUDE_FABLE_5
 next_action: SLICE_V1_001_DETAILED_DESIGN_AND_INITIAL_FULL_IMPLEMENTATION
+slice_v1_001_handoff_pending: HUMAN_OWNER_AUTHORIZE_OR_DECLINE_CODEX_EXACT_REMOTE_PUBLICATION
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
 bounded_real_write_verification_authorization: NONE
@@ -197,14 +202,38 @@ V0011. DR-0003 itself contains no migration.
 - Owner-level decisions required to start Slice 1 are closed or assigned to a
   precise external evidence/production enablement Gate.
 
+## SLICE-V1-001 local implementation
+
+Detailed Design and Initial Full Implementation are complete as a local,
+unpublished checkpoint chain descending from `89fc29be…`. Nine checkpoints, six-
+teen forward migrations (V0011–V0026), the operating console, the Yandex
+topology and five new runbooks.
+
+The canonical account is `docs/02-architecture/designs/SLICE-V1-001-design.md`.
+The criterion-by-criterion state is
+`docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md`: twenty-one criteria
+`MET`, thirteen `IMPLEMENTED_UNPROVEN`, seven `NOT_MET`. Every `NOT_MET`
+criterion needs something outside this authorization — a real marketplace
+account, an Owner-approved golden case set, a Gate-EV envelope, a running
+environment, or an Owner decision about who the pilot is.
+
+Nothing was pushed. No pull request exists. No remote branch or tag was
+mutated.
+
 ## Not completed and not claimed
 
 - No real Ozon/WB client, credential retrieval, platform call or production write
-  is enabled by the reset.
-- Human OIDC authentication is not yet implemented.
-- Yandex infrastructure is selected but not provisioned or accepted.
-- Product/Listing identity, cross-domain operating facts, AI analysis, workflow,
-  price command, UI and production deployment remain Slice 1 implementation.
+  is enabled by the reset. Every capability row remains `UNVERIFIED`, which is
+  why no call is reachable.
+- No model provider was contacted. Every provider row remains `UNVERIFIED`.
+- Human OIDC authentication is implemented and proven against the console's own
+  flow; no real identity provider was contacted.
+- Yandex infrastructure is selected and written as reviewed code, and has never
+  been applied. No account was contacted, no state exists, and
+  `terraform validate` did not run because no binary or provider was available.
+- The point-in-time recovery drill and the environment bootstrap are procedures,
+  not records. Neither has been executed.
+- No CI run exists for this work, because nothing was pushed.
 - V1 and SLICE-V1-001 are not production-ready until their future Gates pass.
 - Business sales/profit uplift is not claimed.
 
@@ -226,3 +255,9 @@ branch/tag or create/update a PR under ordinary authority. It must keep producti
 writes disabled and stop only on a material Conditional Design Gate trigger,
 Execution Envelope expansion or proven external-capability blocker.
 ```
+
+That local work is complete and unpublished; see the SLICE-V1-001 section
+above. Advancing `next_authorized_actor` and `next_action` is the Human Owner's
+transition on accepting the handoff, not part of producing it, so those fields
+are left as approved on protected `main` and the pending handoff is recorded in
+`slice_v1_001_handoff_pending`.
