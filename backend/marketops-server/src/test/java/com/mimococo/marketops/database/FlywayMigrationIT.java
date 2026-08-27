@@ -56,7 +56,9 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0020__create_price_command_outbox_readback_and_write_gate.sql",
             "V0021__create_platform_api_profile_and_request_shape.sql",
             "V0022__create_ingestion_run_lifecycle_and_replay_guard.sql",
-            "V0023__create_declared_normalization_and_drift_observation.sql");
+            "V0023__create_declared_normalization_and_drift_observation.sql",
+            "V0024__create_capability_write_operation_shape.sql",
+            "V0025__create_price_command_attempt_completion_and_lease_recovery.sql");
 
     private static PostgreSQLContainer container;
 
@@ -194,6 +196,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ops.recommendation",
                     "ops.recommendation_evidence",
                     "ops.work_task",
+                    "platform.capability_operation",
                     "platform.capability_subject_status",
                     "platform.capability_verification_event",
                     "platform.control_boundary_kind",

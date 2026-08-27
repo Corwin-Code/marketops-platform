@@ -21,6 +21,16 @@ marketops:
     credential-reference: ${MARKETOPS_OBJECT_STORAGE_CREDENTIAL_REFERENCE}
   secrets:
     mount-directory: ${MARKETOPS_SECRET_MOUNT_DIRECTORY}
+  acquisition:
+    # Staging exercises the acquisition path against real sandbox accounts, so
+    # this environment is one that runs a worker.
+    scheduler-enabled: ${MARKETOPS_ACQUISITION_SCHEDULER_ENABLED:false}
+  price-write:
+    # Off unless an operator turns it on for a specific exercise. Even then the
+    # write gate decides every command: the capability must be verified, both
+    # switches explicitly on, the entity allowlisted, the authorization live and
+    # the deterministic guardrail passed.
+    worker-enabled: ${MARKETOPS_PRICE_WRITE_WORKER_ENABLED:false}
   identity:
     oidc:
       issuer-uri: ${MARKETOPS_OIDC_ISSUER_URI}

@@ -90,6 +90,16 @@ marketops:
     retry-budget: 3
     retry-delay: 2m
     runs-per-scheduler-pass: 5
+
+  price-write:
+    # Off, and for a stronger reason than acquisition: a worker that started
+    # itself would change real marketplace prices from a workstation and from a
+    # test container. Turning it on does not enable writes — every command still
+    # passes the write gate — it only decides whether this process is one of the
+    # ones that tries.
+    worker-enabled: false
+    commands-per-pass: 5
+    retry-budget: 3
   # The directory the platform's secret manager delivers values into. Absent by
   # default: with no mount, every secret reference is unresolvable and every
   # operation that would need one refuses.

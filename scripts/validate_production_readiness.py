@@ -118,6 +118,8 @@ APPROVED_MIGRATIONS = (
     "V0021__create_platform_api_profile_and_request_shape.sql",
     "V0022__create_ingestion_run_lifecycle_and_replay_guard.sql",
     "V0023__create_declared_normalization_and_drift_observation.sql",
+    "V0024__create_capability_write_operation_shape.sql",
+    "V0025__create_price_command_attempt_completion_and_lease_recovery.sql",
 )
 
 # An applied migration is immutable. The pin covers the earliest migration,

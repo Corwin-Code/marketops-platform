@@ -22,6 +22,14 @@ marketops:
     credential-reference: ${MARKETOPS_OBJECT_STORAGE_CREDENTIAL_REFERENCE}
   secrets:
     mount-directory: ${MARKETOPS_SECRET_MOUNT_DIRECTORY}
+  acquisition:
+    scheduler-enabled: ${MARKETOPS_ACQUISITION_SCHEDULER_ENABLED:false}
+  price-write:
+    # Off. Enabling the worker is one of several separate decisions a real
+    # platform write needs, and none of them is implied by deploying this
+    # profile: the capability must be verified, both switches explicitly on, the
+    # entity allowlisted, the authorization live and the guardrail passed.
+    worker-enabled: ${MARKETOPS_PRICE_WRITE_WORKER_ENABLED:false}
   identity:
     oidc:
       issuer-uri: ${MARKETOPS_OIDC_ISSUER_URI}
