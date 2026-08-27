@@ -82,18 +82,25 @@ public class SpreadsheetReader {
     // -----------------------------------------------------------------------
 
     /**
-     * Read comma-separated values, honouring quoted fields.
+     * Read separated values, honouring quoted fields.
      *
      * <p>A quoted field may contain a separator, a newline and a doubled quote,
      * which is what the format actually allows; a reader that split on commas
      * would silently corrupt exactly the rows that carry a product name with a
      * comma in it.
+     *
+     * <p>The separator is detected rather than assumed. Office software in a
+     * locale that writes decimals with a comma exports semicolons instead, and
+     * a Russian finance team's spreadsheet is very often exactly that. A reader
+     * that insisted on commas would read such a file as one column, fail every
+     * row, and tell the submitter nothing about why.
      */
     private static Sheet readSeparatedValues(byte[] content) {
         String text = new String(content, StandardCharsets.UTF_8);
         if (!text.isEmpty() && text.charAt(0) == '﻿') {
             text = text.substring(1);
         }
+        char separator = detectSeparator(text);
         List<List<String>> rows = new ArrayList<>();
         List<String> row = new ArrayList<>();
         StringBuilder field = new StringBuilder();
@@ -116,25 +123,24 @@ public class SpreadsheetReader {
                 }
                 continue;
             }
-            switch (character) {
-                case '"' -> quoted = true;
-                case ',' -> {
-                    row.add(field.toString());
-                    field.setLength(0);
+            if (character == '"') {
+                quoted = true;
+            } else if (character == separator) {
+                row.add(field.toString());
+                field.setLength(0);
+            } else if (character == '\r') {
+                // A carriage return is part of a line ending, never data.
+                continue;
+            } else if (character == '\n') {
+                row.add(field.toString());
+                field.setLength(0);
+                rows.add(List.copyOf(row));
+                row.clear();
+                if (rows.size() > MAXIMUM_ROWS + 1) {
+                    throw OperationRejectedException.of(ErrorCode.IMPORT_TOO_LARGE);
                 }
-                case '\r' -> {
-                    // A carriage return is part of a line ending, never data.
-                }
-                case '\n' -> {
-                    row.add(field.toString());
-                    field.setLength(0);
-                    rows.add(List.copyOf(row));
-                    row.clear();
-                    if (rows.size() > MAXIMUM_ROWS + 1) {
-                        throw OperationRejectedException.of(ErrorCode.IMPORT_TOO_LARGE);
-                    }
-                }
-                default -> field.append(character);
+            } else {
+                field.append(character);
             }
         }
         if (!field.isEmpty() || !row.isEmpty()) {
@@ -142,6 +148,44 @@ public class SpreadsheetReader {
             rows.add(List.copyOf(row));
         }
         return toSheet(rows);
+    }
+
+    /**
+     * Which character separates the fields of this file.
+     *
+     * <p>Decided from the header line alone, by counting each candidate outside
+     * quotes and taking the one that actually divides it. A file whose header
+     * contains none of them is a single-column file, and the comma is as good
+     * an answer as any: nothing will be split either way.
+     */
+    private static char detectSeparator(String text) {
+        int lineEnd = text.indexOf('\n');
+        String header = lineEnd < 0 ? text : text.substring(0, lineEnd);
+        char best = ',';
+        int bestCount = 0;
+        for (char candidate : new char[] {',', ';', '\t'}) {
+            int count = countOutsideQuotes(header, candidate);
+            if (count > bestCount) {
+                best = candidate;
+                bestCount = count;
+            }
+        }
+        return best;
+    }
+
+    /** How many times a character divides a line, ignoring quoted regions. */
+    private static int countOutsideQuotes(String line, char candidate) {
+        int count = 0;
+        boolean quoted = false;
+        for (int index = 0; index < line.length(); index++) {
+            char character = line.charAt(index);
+            if (character == '"') {
+                quoted = !quoted;
+            } else if (!quoted && character == candidate) {
+                count++;
+            }
+        }
+        return count;
     }
 
     // -----------------------------------------------------------------------
