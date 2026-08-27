@@ -127,7 +127,7 @@ public class PriceCommandRepository {
         return jdbc.sql("""
                         SELECT id FROM platform.platform_capability
                          WHERE platform_code = :platformCode
-                           AND capability_code = 'PRICE_CHANGE'
+                           AND capability_code = 'price-change'
                            AND read_write_class = 'WRITE'
                            AND status = 'ACTIVE'
                            AND verification_state = 'VERIFIED'

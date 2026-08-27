@@ -120,6 +120,7 @@ APPROVED_MIGRATIONS = (
     "V0023__create_declared_normalization_and_drift_observation.sql",
     "V0024__create_capability_write_operation_shape.sql",
     "V0025__create_price_command_attempt_completion_and_lease_recovery.sql",
+    "V0026__rename_operational_capability_column_to_action_kind.sql",
 )
 
 # An applied migration is immutable. The pin covers the earliest migration,

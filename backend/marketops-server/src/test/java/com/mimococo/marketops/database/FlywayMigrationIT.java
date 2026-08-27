@@ -58,7 +58,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0022__create_ingestion_run_lifecycle_and_replay_guard.sql",
             "V0023__create_declared_normalization_and_drift_observation.sql",
             "V0024__create_capability_write_operation_shape.sql",
-            "V0025__create_price_command_attempt_completion_and_lease_recovery.sql");
+            "V0025__create_price_command_attempt_completion_and_lease_recovery.sql",
+            "V0026__rename_operational_capability_column_to_action_kind.sql");
 
     private static PostgreSQLContainer container;
 
@@ -287,7 +288,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                             + " WHERE domain = 'PROFIT' ORDER BY metric_code"))
                     .containsExactly(
                             "CONTRIBUTION_MARGIN", "MINIMUM_PRICE",
-                            "OPERATIONAL_CONTRIBUTION_PROFIT", "SETTLED_CONTRIBUTION_PROFIT");
+                            "OBSERVED_SELLING_PRICE", "OPERATIONAL_CONTRIBUTION_PROFIT",
+                            "SETTLED_CONTRIBUTION_PROFIT");
             assertThat(strings(connection,
                     "SELECT rule_code FROM mart.diagnosis_rule ORDER BY ordinal"))
                     .containsExactly(

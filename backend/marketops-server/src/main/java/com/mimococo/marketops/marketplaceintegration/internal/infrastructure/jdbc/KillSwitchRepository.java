@@ -94,22 +94,22 @@ public class KillSwitchRepository {
     }
 
     /** Record who moved a switch, when and why. */
-    public void recordEvent(UUID id, UUID organizationId, String capabilityCode,
+    public void recordEvent(UUID id, UUID organizationId, String actionKind,
                             String scopeKind, String scopeReference, String action,
                             UUID actorUserId, String reason, int inFlightCommandCount,
                             Instant occurredAt, String correlationId) {
         jdbc.sql("""
                         INSERT INTO ops.kill_switch_event (
-                            id, organization_id, capability_code, scope_kind, scope_reference,
+                            id, organization_id, action_kind, scope_kind, scope_reference,
                             action, actor_user_id, reason, in_flight_command_count,
                             occurred_at, correlation_id)
-                        VALUES (:id, :organizationId, :capabilityCode, :scopeKind,
+                        VALUES (:id, :organizationId, :actionKind, :scopeKind,
                             :scopeReference, :action, :actorUserId, :reason,
                             :inFlightCommandCount, :occurredAt, :correlationId)
                         """)
                 .param("id", id)
                 .param("organizationId", organizationId)
-                .param("capabilityCode", capabilityCode)
+                .param("actionKind", actionKind)
                 .param("scopeKind", scopeKind)
                 .param("scopeReference", scopeReference)
                 .param("action", action)
@@ -124,7 +124,7 @@ public class KillSwitchRepository {
     /** Every switch movement of one organization, newest first. */
     public List<SwitchEventRow> history(UUID organizationId, int limit) {
         return jdbc.sql("""
-                        SELECT id, capability_code, scope_kind, scope_reference, action,
+                        SELECT id, action_kind, scope_kind, scope_reference, action,
                                actor_user_id, reason, in_flight_command_count, occurred_at
                           FROM ops.kill_switch_event
                          WHERE organization_id = :organizationId
@@ -153,7 +153,7 @@ public class KillSwitchRepository {
     private static SwitchEventRow mapEvent(ResultSet rows, int rowNumber) throws SQLException {
         return new SwitchEventRow(
                 rows.getObject("id", UUID.class),
-                rows.getString("capability_code"),
+                rows.getString("action_kind"),
                 rows.getString("scope_kind"),
                 rows.getString("scope_reference"),
                 rows.getString("action"),
@@ -180,7 +180,7 @@ public class KillSwitchRepository {
      * One recorded switch movement.
      *
      * @param id the event
-     * @param capabilityCode which capability was affected
+     * @param actionKind which business action was affected
      * @param scopeKind what scope was moved
      * @param scopeReference the scope's identifier, or {@code null} when global
      * @param action whether it was turned off or on
@@ -189,7 +189,7 @@ public class KillSwitchRepository {
      * @param inFlightCommandCount how many commands were still moving at the time
      * @param occurredAt when
      */
-    public record SwitchEventRow(UUID id, String capabilityCode, String scopeKind,
+    public record SwitchEventRow(UUID id, String actionKind, String scopeKind,
                                  String scopeReference, String action, UUID actorUserId,
                                  String reason, int inFlightCommandCount, Instant occurredAt) {
     }

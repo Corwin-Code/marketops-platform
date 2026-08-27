@@ -36,7 +36,7 @@ public class AllowlistRepository {
                        UUID grantedByUserId, String reason, Instant now) {
         jdbc.sql("""
                         INSERT INTO ops.pilot_allowlist_entry (
-                            id, organization_id, capability_code, platform_code, store_id,
+                            id, organization_id, action_kind, platform_code, store_id,
                             platform_listing_variant_id, valid_from, valid_until, status,
                             granted_by_user_id, reason, created_at, updated_at, version)
                         VALUES (:id, :organizationId, 'PRICE_CHANGE', :platformCode, :storeId,
@@ -76,7 +76,7 @@ public class AllowlistRepository {
     public boolean covers(UUID storeId, UUID platformListingVariantId, Instant at) {
         return !jdbc.sql("""
                         SELECT id FROM ops.pilot_allowlist_entry
-                         WHERE capability_code = 'PRICE_CHANGE' AND status = 'ACTIVE'
+                         WHERE action_kind = 'PRICE_CHANGE' AND status = 'ACTIVE'
                            AND store_id = :storeId
                            AND (platform_listing_variant_id IS NULL
                                 OR platform_listing_variant_id = :platformListingVariantId)
