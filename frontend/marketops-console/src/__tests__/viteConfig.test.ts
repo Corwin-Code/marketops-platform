@@ -1,8 +1,13 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   BUILD_COMMIT_KEY,
   BUILD_VERSION_KEY,
   buildTimeConstants,
+  CONNECT_SOURCE_PLACEHOLDER,
+  connectSourceDirective,
+  connectSources,
   ENV_PREFIX,
   frontendPackageVersion,
   UNKNOWN_COMMIT,
@@ -84,5 +89,47 @@ describe('bundle configuration', () => {
     );
 
     expect(JSON.stringify(constants)).not.toContain(withheld);
+  });
+});
+
+describe('TC-UI-050 the page permits exactly the origins this deployment talks to', () => {
+  it('permits only the console itself when nothing is configured', () => {
+    expect(connectSourceDirective({})).toBe("'self'");
+  });
+
+  it('permits the backend it is pointed at', () => {
+    expect(
+      connectSourceDirective({ VITE_MARKETOPS_API_BASE_URL: 'https://api.example.test/v1' }),
+    ).toBe("'self' https://api.example.test");
+  });
+
+  it('permits the identity provider so a sign-in can complete', () => {
+    expect(
+      connectSourceDirective({
+        VITE_MARKETOPS_API_BASE_URL: 'https://api.example.test',
+        VITE_MARKETOPS_OIDC_TOKEN_ENDPOINT: 'https://id.example.test/token',
+        VITE_MARKETOPS_OIDC_AUTHORIZATION_ENDPOINT: 'https://id.example.test/authorize',
+      }),
+    ).toBe("'self' https://api.example.test https://id.example.test");
+  });
+
+  it('names an origin rather than a path', () => {
+    expect(
+      connectSources({ VITE_MARKETOPS_API_BASE_URL: 'https://api.example.test/deep/path' }),
+    ).toEqual(['https://api.example.test']);
+  });
+
+  it('leaves a setting that is not a URL out of the policy entirely', () => {
+    expect(connectSources({ VITE_MARKETOPS_API_BASE_URL: "not a url'; script-src *" })).toEqual([]);
+  });
+
+  it('resolves the placeholder the page carries', () => {
+    const page = readFileSync(resolve(process.cwd(), 'index.html'), 'utf8');
+    const policy = /content="(default-src[^"]+)"/.exec(page)?.[1] ?? '';
+
+    expect(policy).toContain(CONNECT_SOURCE_PLACEHOLDER);
+    // A directive browsers ignore in a meta element reads as protection that
+    // is not there; framing is refused by the serving layer instead.
+    expect(policy).not.toContain('frame-ancestors');
   });
 });

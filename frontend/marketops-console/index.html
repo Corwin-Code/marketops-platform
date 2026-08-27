@@ -4,13 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!--
-      The console renders nothing but the platform's own state, and it holds no
-      credential. A restrictive policy is still declared here so a later change
-      that pulls in a third-party script has to state that intention explicitly.
+      The console holds no credential and loads nothing from a third party, so
+      the policy names exactly the origins this deployment talks to: its own
+      backend and, where one is configured, the identity provider. The list is
+      resolved at build time from the same settings the console reads, because
+      a fixed origin written here would be true only on a workstation.
+
+      frame-ancestors is deliberately absent: browsers ignore it when it arrives
+      in a meta element, and a directive that is ignored reads as protection
+      that is not there. Framing is refused by the serving layer instead, which
+      is where a response header can actually be set.
     -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; connect-src 'self' http://127.0.0.1:8080; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"
+      content="default-src 'self'; connect-src %MARKETOPS_CONNECT_SRC%; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'none'"
     />
     <meta name="referrer" content="no-referrer" />
     <title>MarketOps Russia</title>
