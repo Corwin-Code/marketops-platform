@@ -1,0 +1,29 @@
+# Example values for the production environment.
+#
+# Copy to terraform.tfvars, fill in the identifiers for the account this is
+# applied against, and never commit the result. No password appears here: both
+# role passwords are supplied at apply time from Lockbox.
+
+cloud_id  = "REPLACE_WITH_CLOUD_ID"
+folder_id = "REPLACE_WITH_FOLDER_ID"
+
+availability_zones = {
+  "ru-central1-a" = "10.20.1.0/24"
+  "ru-central1-b" = "10.20.2.0/24"
+  "ru-central1-d" = "10.20.3.0/24"
+}
+
+database_resource_preset_id    = "s3-c4-m16"
+database_disk_size_gib         = 200
+database_backup_retention_days = 30
+
+evidence_bucket_name    = "REPLACE-WITH-BUCKET-NAME"
+evidence_retention_days = 730
+evidence_kms_key_id     = "REPLACE_WITH_KMS_KEY_ID"
+evidence_certificate_id = "REPLACE_WITH_CERTIFICATE_ID"
+
+application_secret_ids = ["REPLACE_WITH_SECRET_ID"]
+acquisition_secret_ids = ["REPLACE_WITH_SECRET_ID"]
+migration_secret_id    = "REPLACE_WITH_SECRET_ID"
+
+notification_channel_id = "REPLACE_WITH_CHANNEL_ID"

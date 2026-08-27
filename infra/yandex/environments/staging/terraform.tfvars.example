@@ -1,0 +1,29 @@
+# Example values for the staging environment.
+#
+# Staging runs the same wiring as production against a separate account, at a
+# smaller size and with a shorter recovery reach, because it holds no real
+# commercial history.
+
+cloud_id  = "REPLACE_WITH_CLOUD_ID"
+folder_id = "REPLACE_WITH_FOLDER_ID"
+
+availability_zones = {
+  "ru-central1-a" = "10.30.1.0/24"
+  "ru-central1-b" = "10.30.2.0/24"
+  "ru-central1-d" = "10.30.3.0/24"
+}
+
+database_resource_preset_id    = "s3-c2-m8"
+database_disk_size_gib         = 64
+database_backup_retention_days = 7
+
+evidence_bucket_name    = "REPLACE-WITH-BUCKET-NAME"
+evidence_retention_days = 365
+evidence_kms_key_id     = "REPLACE_WITH_KMS_KEY_ID"
+evidence_certificate_id = "REPLACE_WITH_CERTIFICATE_ID"
+
+application_secret_ids = ["REPLACE_WITH_SECRET_ID"]
+acquisition_secret_ids = ["REPLACE_WITH_SECRET_ID"]
+migration_secret_id    = "REPLACE_WITH_SECRET_ID"
+
+notification_channel_id = "REPLACE_WITH_CHANNEL_ID"
