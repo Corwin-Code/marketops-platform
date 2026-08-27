@@ -23,7 +23,10 @@ source suppression was disabled to obtain a passing result.
 Candidate `6e44ed49de90e55b4558f1c0b76229d257729511` was analyzed on merge
 `3026db2129870789095be0f1c4bd6fc69c500a1e`. GitHub reports original alerts
 67–72 fixed. The following corrections preserve the original safety behavior;
-remote confirmation is required after the follow-up commit.
+C2 `cb799390f69f85982aa41a530a764c07dc7684f3`, analyzed on merge
+`89ac1a82ee6bbe87f7e32f1360d038c83092b96e`, confirms all alerts 77–96 fixed.
+[Remote C2 evidence](remote-ci-c2/alerts.json) contains 26 fixed alerts and only
+the five open alerts assessed below. This is not aggregate CodeQL success.
 
 | Alerts | Correction | Verification |
 | --- | --- | --- |

@@ -7,7 +7,7 @@ executed_at: 2026-08-28
 executed_on: LOCAL_ISOLATED_FIXTURES
 assessment: REWORK_IN_PROGRESS
 final_exact_commit_verified: false
-remote_rework_ci: C1_REQUIRED_CONTEXTS_PASS_FOLLOWUP_PENDING
+remote_rework_ci: FINAL_VERIFICATION_AND_ALERT_DISPOSITION_PENDING
 external_business_systems_contacted: NONE
 ```
 
@@ -31,6 +31,8 @@ external evidence and Owner/Gate conditions separate.
 | Governance/frontend, 144 | 372 Python and 196 frontend tests; validators, lint, format, types, coverage, build and bundle checks pass | [Compressed logs](rework-r1/checks-142/ARTIFACT-HASHES.json) |
 | Terraform clean copy, 142 | All three environments pass with the three exact provider lockfiles and no copied `.terraform` cache | [Fresh-copy verification](rework-r1/checks-142/terraform-summary.json); readonly init retained, mock plans only |
 | Remote C1 workflows | All 11 required contexts pass, including 196 frontend unit and 11 Chromium scenarios; additional infrastructure and aggregate CodeQL fail | [C1 exact Head/merge/parents and workflow evidence](rework-r1/remote-ci-c1/summary.json); not final CI approval |
+| Remote C2 source analysis | All 26 source-corrected CodeQL alerts are fixed; only 66 and 73–76 remain open | [C2 exact analysis and CI snapshot](rework-r1/remote-ci-c2/summary.json); remote dismissals have not been executed |
+| Cross-platform Terraform lock, 147/148 | Origin-registry generation adds only the Linux unpacked package hash; all previous hashes and version pins retained; clean local verification passes | [Signed provider output, three-root lock identity and plans](rework-r1/terraform-cross-platform-148/summary.json); the preceding C2 Linux validation failure is preserved |
 | `make backend-check`, 128 | 845 unit/architecture + 370 integration tests; zero failures/errors/skips; coverage gates pass | [Input hashes, counters and full log](rework-r1/full-backend-128/ARTIFACT-HASHES.json); all 609 input hashes unchanged after the run |
 | Independent `make backend-integration`, 131 | 845 unit/architecture + 371 integration; zero failures/errors/skips | [610 unchanged inputs and full report](rework-r1/full-backend-131/ARTIFACT-HASHES.json), including stored-Raw crash/replay |
 | Coverage, 131 | LINE 12155/14466; BRANCH 3209/4450 | JaCoCo in the same checkpoint; required 80%/70% unchanged |
@@ -86,8 +88,10 @@ remain in checkpoint logs; successful later runs are not retroactive passes.
 
 Final exact commit/merge identities and full remote CI remain outstanding.
 On C1, CodeQL reports six original source alerts fixed and their machine threads
-resolved; individual correction evidence replies are recorded. The missing
-provider lockfiles and new source alerts are being corrected in the follow-up.
+resolved; individual correction evidence replies are recorded. C2 fixes the
+remaining 20 source alerts. C2's Linux infrastructure validation then exposed
+a missing platform-specific unpacked hash; the cross-platform lock correction
+passes local validation and still requires remote confirmation.
 Five narrow false-positive assessments are documented in
 [CodeQL disposition](rework-r1/codeql-disposition.md); remote dismissal has not
 been performed and requires explicit additional authorization. No security

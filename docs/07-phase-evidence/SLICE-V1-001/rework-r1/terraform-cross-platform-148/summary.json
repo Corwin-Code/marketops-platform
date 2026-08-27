@@ -1,0 +1,30 @@
+{
+  "scope": "SOURCE_WORKTREE_NOT_FINAL_COMMIT",
+  "terraform": "1.14.9",
+  "provider": "yandex-cloud/yandex 0.220.0",
+  "signing_key_id": "E40F590B50BB8E40",
+  "generation_command": "terraform -chdir=infra/yandex/bootstrap providers lock -platform=darwin_arm64 -platform=linux_amd64",
+  "all_three_roots_have_identical_lock": true,
+  "previous_lock_sha256": "91e8b02344af73b17188edb36c4ce7c33dd2221ef1dfee5f8d65d415ee9b2cde",
+  "new_lock_sha256": "ad2cbf55acc008b0c54953b67a073a7ba494624cdfcb2c8d0d0af6a518669a37",
+  "only_delta": "Added Terraform-verified linux_amd64 unpacked h1; all existing hashes/version/constraints retained",
+  "new_linux_h1": "nMm8ZJhqZ20uuCfJlx9dt4aUPRdM96dbwCJD3tHyYXA=",
+  "clean_copy_verification": "PASS: no .terraform cache copied, readonly init, all three roots validate/mock plan",
+  "governance": "PASS; 372 tests",
+  "raw_log_sha256": {
+    "bootstrap-validate.log": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+    "staging-validate.log": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+    "fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bootstrap-plan.jsonl": "9598b9e3bc6f6a6a8002cc86374327c7eebdd0a7e1ca4e86c97112bdcc07fa52",
+    "bootstrap-init.log": "8869e619b7010a30326d82b84670f6788519ab032ea8bdf995151c9a3910cf37",
+    "production-validate.log": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+    "production-plan.jsonl": "03055c2f587efef89ae4c14328c6e82db03165445e27d5d465b46e556038004b",
+    "staging-init.log": "f00b36bd9e007785d9f7d772d7e31b00e58771fd8a87df800253954eee241c40",
+    "staging-plan.jsonl": "9b1c0bf640488e9b0378386aa72ca6232552458be820ffa0af446d9b6c55f0e6",
+    "production-init.log": "f00b36bd9e007785d9f7d772d7e31b00e58771fd8a87df800253954eee241c40",
+    "provider-lock-cross-platform-147.log": "0ba28bd68fd1b7c9c24d39b7491f445186fa6b8affa47b725bd850df8b2c7c35",
+    "governance-148.log": "88c848aec3f15b428ee0643f7b7b1ccca3b715d26cf982aea6040662bad38207"
+  },
+  "real_provider_api_calls": "NONE; public software release downloads only",
+  "apply": "NOT_EXECUTED"
+}

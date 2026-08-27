@@ -74,6 +74,23 @@ python3 -m unittest tests.test_validate_terraform_plan tests.test_yandex_runtime
 The verifier initializes without a backend and uses only mock-provider plans
 with locked Yandex provider 0.220.0. No Yandex account or real state is inspected.
 
+All three `.terraform.lock.hcl` files are committed build inputs. They include
+the unpacked package hashes for both `darwin_arm64` development and
+`linux_amd64` CI. When intentionally maintaining the pinned provider lock,
+generate these hashes from the origin registry before review:
+
+```bash
+terraform -chdir=infra/yandex/bootstrap providers lock -platform=darwin_arm64 -platform=linux_amd64
+terraform -chdir=infra/yandex/environments/staging providers lock -platform=darwin_arm64 -platform=linux_amd64
+terraform -chdir=infra/yandex/environments/production providers lock -platform=darwin_arm64 -platform=linux_amd64
+```
+
+Review the signing-key output and exact lockfile diff, then run the verifier.
+This downloads public provider software, not account data. CI retains
+`init -backend=false -lockfile=readonly`; it must not silently update missing
+platform hashes. The [Terraform lock command](https://developer.hashicorp.com/terraform/cli/commands/providers/lock)
+documents why supported platforms should be declared explicitly.
+
 ## Applying this
 
 Not from here, and not by an agent. The sequence an Owner follows is recorded
