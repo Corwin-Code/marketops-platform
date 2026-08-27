@@ -295,7 +295,7 @@ class RegistryVerificationFlowIT {
                 Map.of("endpointIds",List.of(endpoint),"authHeaderIds",List.of(header),"evidence",evidence("REAL_ACCOUNT"),
                         "expectedDigest",service.configuration(author,account,capability).digest()))))
                 .andExpect(status().isCreated()).andReturn().getResponse();
-        UUID id=UUID.fromString(mapper.readTree(response.getContentAsByteArray()).path("id").asText());
+        UUID id=UUID.fromString(mapper.readTree(response.getContentAsByteArray()).path("id").asString());
         mvc.perform(post("/api/v1/console/registry-verification/cases/"+id+"/review").with(auth(reviewer))
                 .contentType(MediaType.APPLICATION_JSON).content("{\"expectedVersion\":0,\"approve\":true}"))
                 .andExpect(status().isNoContent());

@@ -134,8 +134,8 @@ class StoredRawReplayIT {
         private final InMemoryObjectStoragePort delegate = new InMemoryObjectStoragePort();
         boolean readable = true;
         int reads;
-        public PutOutcome putIfAbsent(String ref, byte[] body) { return delegate.putIfAbsent(ref, body); }
-        public Optional<byte[]> read(String ref) { reads++; return readable ? delegate.read(ref) : Optional.empty(); }
-        public boolean verify(String ref, String digest) { return readable && delegate.verify(ref,digest); }
+        @Override public PutOutcome putIfAbsent(String ref, byte[] body) { return delegate.putIfAbsent(ref, body); }
+        @Override public Optional<byte[]> read(String ref) { reads++; return readable ? delegate.read(ref) : Optional.empty(); }
+        @Override public boolean verify(String ref, String digest) { return readable && delegate.verify(ref,digest); }
     }
 }

@@ -18,6 +18,47 @@ Adding cookie/session authentication requires revisiting CSRF protection before
 that change ships. No CodeQL query, ruleset, workflow, security job or broad
 source suppression was disabled to obtain a passing result.
 
+## First published rework candidate: alerts 73–96
+
+Candidate `6e44ed49de90e55b4558f1c0b76229d257729511` was analyzed on merge
+`3026db2129870789095be0f1c4bd6fc69c500a1e`. GitHub reports original alerts
+67–72 fixed. The following corrections preserve the original safety behavior;
+remote confirmation is required after the follow-up commit.
+
+| Alerts | Correction | Verification |
+| --- | --- | --- |
+| 77–81 — concatenated SQL | Capability provenance refusal uses a prepared statement. Managed fixture role creation binds synthetic passwords into PostgreSQL `format` with `%L` literal quoting; it no longer concatenates values into SQL. | `MetadataConstraintIT` keeps both application-role and owner-role refusal assertions; `ManagedProfileMigrationIT` exercises passwords containing an apostrophe, PG17 bootstrap/equivalence/recovery and PG18 refusal. |
+| 82–83 — numeric parsing | Migration inventory compares the canonical padded version prefix; fixture fence reads use JDBC `getLong`. | `ManagedMigrationRunnerTest`, `ManagedProfileMigrationIT`, all real-DB `PriceWritePathIT` transitions. |
+| 84 — unused local | Capability existence is an explicit refusal precondition without an unused UUID binding. | `OperatingFlowIT`, command authority tests. |
+| 85 — constant loop condition | Exactly 64 upload iterations, followed by an explicit exhausted/non-exhausted snapshot check. No 65th upload is possible. | `DiagnosticExportIT.partCeilingNeverUploadsA65thPartAndOnlyCompletesWhenTheSnapshotIsExhausted` tests both outcomes; existing real-DB export/recovery tests remain. |
+| 86 — grouped enum arm | UNKNOWN_RESULT, SCHEMA_DRIFT, UNREADABLE and CONFIG_INVALID each have an explicit arm; all retain BLOCKED and the exact reason. | `AcquisitionRunnerTest` and acquisition real-DB tests. |
+| 87–89 — override annotations | Mark all three fixture object-storage port implementations with `@Override`. | `StoredRawReplayIT`. |
+| 90–92 — deprecated calls | Use Jackson 3 `asString` for string fields. | `DiagnosticExportIT`, `RegistryVerificationFlowIT`. |
+| 93–96 — unused parameters | Remove unused fixture attempt count/outcome and exception-handler parameters. Attempt opening, response completion and exception types remain separate and explicit. | `PriceWritePathIT`, `OperatingFlowIT`, exception/refusal tests. |
+
+### Narrow false-positive assessments
+
+These are individual alert dispositions, not query exclusions or risk waivers.
+All five must be revisited if the described authentication, configuration or
+data-flow model changes. Their remote state is recorded separately from this
+source assessment.
+
+| Alert | Exact reason the reported vulnerability does not occur | Executable basis |
+| --- | --- | --- |
+| 66 | No cookie or servlet session supplies authentication; only an explicit validated bearer token can authorize a console mutation. Maintenance requires the actual loopback peer, operator header and disabled-by-default switch. | `SignedBearerIdentityIT` negative cookie/query/form/session and hostile-Origin cases, plus the positive signed mutation. Full backend 134 and 136 pass. |
+| 73 | `spring.flyway.enabled: false` disables application-owned migration. The empty inactive password override prevents inheritance of the required migration-secret placeholder; the application receives only its own database credential. No empty-password connection is made by this setting. The separate managed migration executable requires its own credential and evidence envelope. | `ApplicationConfigurationTest.rolesAreSeparated`; packaged migration refusal tests and managed-profile tests. Do not remove the override and accidentally require a migration secret in the application process. |
+| 74 | The reported `setEntity` target is Apache `HttpUriRequestBase`, an outgoing HTTP request, not a browser/servlet response. It sends exact approved provider request bytes. HTML escaping would corrupt those bytes and their digest binding. | `BoundedOutboundHttpTest.outgoingRequestEntityPreservesExactBytesIncludingMarkup` uses a local transport fixture and observes exact bytes. Public destination preparation still rejects loopback/HTTP, private addresses, redirects and unapproved headers. |
+| 75–76 | Invalid part numbers and corrupt content throw a refusal and return no bytes. Every returning path checks stored requester/organization/current scope and DB read authority before I/O, then repeats DB authorization after I/O. A guard that denies a request cannot bypass authorization to obtain data. | `DiagnosticExportIT`: invalid inputs, corrupt/expired content, foreign IDs, revoked store access and revocation during object read all refuse. Audited successful download remains after integrity verification; it is not moved ahead of a refusal merely to satisfy analysis. |
+
+Focused run 141 passes 105 unit tests and 127 integration tests with zero
+failures, errors or skips. [Checks 142](checks-142/summary.json) preserves its
+exact command and compressed output, as well as failed preparatory attempts;
+it is not final exact-commit verification. Full regression 143 additionally
+passes 846 unit/architecture and 374 integration tests, with LINE 12186/14485
+and BRANCH 3218/4461. Final exact-commit verification and remote CI remain
+separately required. The five false-positive dismissals have not been executed;
+the remote security-state mutation requires additional explicit authorization.
+
 Raw, SHA-256-bound command logs retain the tools' original whitespace inside
 lossless `.log.gz` artifacts. `LOG-CUSTODY.json` records both compressed and
 original-byte hashes. No whitespace exception or other check exemption was

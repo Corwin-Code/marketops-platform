@@ -37,15 +37,11 @@ public class DiagnosticExportWorker {
         Lease lease = claimed.get();
         try {
             exports.snapshot(lease);
-            for (int part = 0; part <= 64; part++) {
+            for (int part = 0; part < 64; part++) {
                 exports.renew(lease);
                 var rows = exports.nextRows(lease);
                 if (rows.isEmpty()) {
                     exports.complete(lease);
-                    return true;
-                }
-                if (part == 64) {
-                    exports.fail(lease, "LIMIT_EXCEEDED", false);
                     return true;
                 }
                 var buffer = new ByteArrayOutputStream();
@@ -63,7 +59,13 @@ public class DiagnosticExportWorker {
                 var content = custody.store("diagnostic-export", buffer.toByteArray());
                 exports.recordPart(lease, rows.getFirst().ordinal(), rows.getLast().ordinal(), content.contentId());
             }
-            throw new IllegalStateException("export pass bound violated");
+            exports.renew(lease);
+            if (exports.nextRows(lease).isEmpty()) {
+                exports.complete(lease);
+            } else {
+                exports.fail(lease, "LIMIT_EXCEEDED", false);
+            }
+            return true;
         } catch (DataAccessException failure) {
             String state = sqlState(failure);
             if (!"MO081".equals(state)) {

@@ -61,11 +61,11 @@ public class IdentitySecurityConfig {
     /**
      * The loopback maintenance surface.
      *
-     * <p>Its posture is unchanged: the process binds to the loopback interface,
-     * mutations require a validated operator attribution header, and the write
-     * switch is off unless an environment explicitly turns it on. The deployed
-     * topology publishes only the console path, so this surface is reachable
-     * only from the host the process runs on.
+     * <p>The maintenance guard checks the actual peer for loopback access;
+     * forwarded headers cannot supply it. Mutations additionally require a
+     * validated operator attribution header and the normally disabled write
+     * switch. The production listener binds the private interface, while the
+     * ALB route allowlist does not publish this maintenance surface.
      */
     private static final String MAINTENANCE_PATTERN = "/api/v1/admin/metadata/**";
 

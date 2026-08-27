@@ -126,9 +126,9 @@ public class ExecutionService {
         ListingVariantContext context = listings
                 .variantContext(proposal.subjectId(), now)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.MAPPING_UNRESOLVED));
-        UUID capabilityId = commands.priceChangeCapability(context.platformCode())
-                .orElseThrow(() -> OperationRejectedException.of(
-                        ErrorCode.CAPABILITY_NOT_USABLE));
+        if (commands.priceChangeCapability(context.platformCode()).isEmpty()) {
+            throw OperationRejectedException.of(ErrorCode.CAPABILITY_NOT_USABLE);
+        }
 
         PriceSnapshot priceNow = facts.latestPrice(proposal.subjectId(), now)
                 .orElseThrow(() -> OperationRejectedException.of(

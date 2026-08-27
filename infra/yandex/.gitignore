@@ -4,7 +4,8 @@
 *.tfstate
 *.tfstate.*
 .terraform/
-.terraform.lock.hcl
+
+# Provider dependency lockfiles are reviewed build inputs and must be committed.
 
 # Real values for a real environment. Only the example stays.
 terraform.tfvars

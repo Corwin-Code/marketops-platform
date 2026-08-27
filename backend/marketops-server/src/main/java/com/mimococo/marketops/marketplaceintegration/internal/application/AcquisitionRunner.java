@@ -112,10 +112,10 @@ public class AcquisitionRunner {
 
             if (outcome.observationId() != null) pagesStored++;
             switch (outcome.kind()) {
-                case UNKNOWN_RESULT, SCHEMA_DRIFT, UNREADABLE, CONFIG_INVALID -> {
-                    runs.transition(runId, fence, workerName, "BLOCKED", null, null);
-                    return new RunOutcome(runId, pagesStored, outcome.kind().name());
-                }
+                case UNKNOWN_RESULT -> { return block(runId, fence, workerName, pagesStored, outcome); }
+                case SCHEMA_DRIFT -> { return block(runId, fence, workerName, pagesStored, outcome); }
+                case UNREADABLE -> { return block(runId, fence, workerName, pagesStored, outcome); }
+                case CONFIG_INVALID -> { return block(runId, fence, workerName, pagesStored, outcome); }
                 case RETRY_LATER -> {
                     return rest(runId, fence, workerName, pagesStored, "READ_RETRY");
                 }
@@ -127,6 +127,12 @@ public class AcquisitionRunner {
             }
         }
         return rest(runId, fence, workerName, pagesStored, "CALL_CEILING_REACHED");
+    }
+
+    private RunOutcome block(UUID runId, long fence, String workerName, int pagesStored,
+                             AcquisitionPageWorker.PageOutcome outcome) {
+        runs.transition(runId, fence, workerName, "BLOCKED", null, null);
+        return new RunOutcome(runId, pagesStored, outcome.kind().name());
     }
 
     /**

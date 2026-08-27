@@ -7,7 +7,7 @@ executed_at: 2026-08-28
 executed_on: LOCAL_ISOLATED_FIXTURES
 assessment: REWORK_IN_PROGRESS
 final_exact_commit_verified: false
-remote_rework_ci: NOT_YET_PUBLISHED
+remote_rework_ci: C1_REQUIRED_CONTEXTS_PASS_FOLLOWUP_PENDING
 external_business_systems_contacted: NONE
 ```
 
@@ -24,7 +24,13 @@ external evidence and Owner/Gate conditions separate.
 
 | Command / checkpoint | Observed result | Scope and artifact |
 | --- | --- | --- |
-| `make backend-check`, 134 | 845 unit/architecture + 373 integration; zero failures/errors/skips; LINE 12177/14480, BRANCH 3211/4456 | [610 unchanged inputs, method-level results and full report](rework-r1/full-backend-134/ARTIFACT-HASHES.json); includes all seven scanner corrections and profile-audit/numeric-boundary checks |
+| `make backend-check`, 143 | 846 unit/architecture + 374 integration; zero failures/errors/skips; LINE 12186/14485, BRANCH 3218/4461 | [610 unchanged inputs and full report](rework-r1/full-backend-143/ARTIFACT-HASHES.json); CI follow-up source, boundary tests and complete performance/restore regression |
+| `make backend-check`, 134 | 845 unit/architecture + 373 integration; zero failures/errors/skips; LINE 12177/14480, BRANCH 3211/4456 | [610 unchanged inputs, method-level results and full report](rework-r1/full-backend-134/ARTIFACT-HASHES.json); original source-alert corrections and profile-audit/numeric-boundary checks; CSRF disposition remains separate |
+| Independent `make backend-integration`, 136 | 845 unit/architecture + 373 integration; zero failures/errors/skips; same coverage and JAR hash as 134 | [C1 backend inputs and full report](rework-r1/full-backend-136/ARTIFACT-HASHES.json) |
+| CI follow-up focused run, 141 | 105 unit + 127 integration; zero failures/errors/skips | [Exact command and prior failed attempts](rework-r1/checks-142/summary.json); includes 64-part ceiling, exact outbound body and quoted managed-role password tests |
+| Governance/frontend, 144 | 372 Python and 196 frontend tests; validators, lint, format, types, coverage, build and bundle checks pass | [Compressed logs](rework-r1/checks-142/ARTIFACT-HASHES.json) |
+| Terraform clean copy, 142 | All three environments pass with the three exact provider lockfiles and no copied `.terraform` cache | [Fresh-copy verification](rework-r1/checks-142/terraform-summary.json); readonly init retained, mock plans only |
+| Remote C1 workflows | All 11 required contexts pass, including 196 frontend unit and 11 Chromium scenarios; additional infrastructure and aggregate CodeQL fail | [C1 exact Head/merge/parents and workflow evidence](rework-r1/remote-ci-c1/summary.json); not final CI approval |
 | `make backend-check`, 128 | 845 unit/architecture + 370 integration tests; zero failures/errors/skips; coverage gates pass | [Input hashes, counters and full log](rework-r1/full-backend-128/ARTIFACT-HASHES.json); all 609 input hashes unchanged after the run |
 | Independent `make backend-integration`, 131 | 845 unit/architecture + 371 integration; zero failures/errors/skips | [610 unchanged inputs and full report](rework-r1/full-backend-131/ARTIFACT-HASHES.json), including stored-Raw crash/replay |
 | Coverage, 131 | LINE 12155/14466; BRANCH 3209/4450 | JaCoCo in the same checkpoint; required 80%/70% unchanged |
@@ -78,8 +84,14 @@ Its report remains in Git at `30d16e5d7db2d2190635a06fececd5883093a876`, and
 records those failures. They were not waived. Subsequent failed worktree attempts
 remain in checkpoint logs; successful later runs are not retroactive passes.
 
-Full regression after the latest changes, exact final commit/merge identities,
-remote CI and seven CodeQL review-thread resolutions remain outstanding.
+Final exact commit/merge identities and full remote CI remain outstanding.
+On C1, CodeQL reports six original source alerts fixed and their machine threads
+resolved; individual correction evidence replies are recorded. The missing
+provider lockfiles and new source alerts are being corrected in the follow-up.
+Five narrow false-positive assessments are documented in
+[CodeQL disposition](rework-r1/codeql-disposition.md); remote dismissal has not
+been performed and requires explicit additional authorization. No security
+success or Controller handoff is claimed while that boundary remains open.
 Real Yandex bootstrap/state secrecy/PITR/alert delivery, real OIDC/Marketplace/AI
 provider interoperability, Gate EV/E and Owner cohort evidence remain separate
 unauthorized boundaries. Local mocks, public documentation and test counts

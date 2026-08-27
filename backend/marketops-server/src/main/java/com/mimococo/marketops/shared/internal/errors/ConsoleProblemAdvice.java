@@ -3,7 +3,6 @@ package com.mimococo.marketops.shared.internal.errors;
 import com.mimococo.marketops.shared.CorrelationId;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.OperationRejectedException;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +31,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ConsoleProblemAdvice {
 
     private static final Logger log = LoggerFactory.getLogger(ConsoleProblemAdvice.class);
-
-    private static final String CONSOLE_PREFIX = "/api/v1/console";
 
     private static final Map<ErrorCode, HttpStatus> STATUS = Map.ofEntries(
             Map.entry(ErrorCode.VALIDATION_FAILED, HttpStatus.BAD_REQUEST),
@@ -80,8 +77,7 @@ public class ConsoleProblemAdvice {
 
     /** Render a business refusal raised anywhere under the console surface. */
     @ExceptionHandler(OperationRejectedException.class)
-    ProblemDetail handleRefusal(HttpServletRequest request,
-                                OperationRejectedException exception) {
+    ProblemDetail handleRefusal(OperationRejectedException exception) {
         ErrorCode code = exception.errorCode();
         HttpStatus status = STATUS.getOrDefault(code, BUSINESS_REFUSAL);
         log.atInfo()
@@ -103,8 +99,8 @@ public class ConsoleProblemAdvice {
             org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class,
             org.springframework.web.bind.ServletRequestBindingException.class,
             org.springframework.web.method.annotation.HandlerMethodValidationException.class})
-    ProblemDetail invalidRequest(Exception exception) {
-        return handleRefusal(null, OperationRejectedException.of(ErrorCode.VALIDATION_FAILED));
+    ProblemDetail invalidRequest() {
+        return handleRefusal(OperationRejectedException.of(ErrorCode.VALIDATION_FAILED));
     }
 
     /** A relational race is translated without exposing SQL, values or connection details. */
@@ -125,6 +121,6 @@ public class ConsoleProblemAdvice {
             case "MO084" -> ErrorCode.EXPORT_UNAVAILABLE;
             default -> ErrorCode.INTERNAL_ERROR;
         };
-        return handleRefusal(null, OperationRejectedException.of(code));
+        return handleRefusal(OperationRejectedException.of(code));
     }
 }

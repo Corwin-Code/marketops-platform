@@ -428,8 +428,7 @@ class PriceWritePathIT extends PostgresContainerSupport {
         @Test
         void aReadbackObservingSomethingElseCannotBeClaimedAsSuccess() throws SQLException {
             long fence = reachReadbackPending();
-            UUID attempt = recordAttempt(connection, COMMAND, 1, "READBACK", fence, WORKER,
-                    "ACCEPTED");
+            UUID attempt = recordAttempt(connection, COMMAND, "READBACK", fence, WORKER);
             UUID readback = recordReadback(connection, COMMAND, attempt, "100.0000",
                     "MATCHES_PRIOR");
 
@@ -443,8 +442,7 @@ class PriceWritePathIT extends PostgresContainerSupport {
         @Test
         void aReadbackFromAnotherCommandCannotBeBorrowed() throws SQLException {
             long fence = reachReadbackPending();
-            UUID attempt = recordAttempt(connection, COMMAND, 1, "READBACK", fence, WORKER,
-                    "ACCEPTED");
+            UUID attempt = recordAttempt(connection, COMMAND, "READBACK", fence, WORKER);
             recordReadback(connection, COMMAND, attempt, "105.0000", "MATCHES_TARGET");
 
             assertThatThrownBy(() -> transition(connection, COMMAND, fence, WORKER,
@@ -457,8 +455,7 @@ class PriceWritePathIT extends PostgresContainerSupport {
         @Test
         void aMatchingReadbackCompletesTheCommand() throws SQLException {
             long fence = reachReadbackPending();
-            UUID attempt = recordAttempt(connection, COMMAND, 1, "READBACK", fence, WORKER,
-                    "ACCEPTED");
+            UUID attempt = recordAttempt(connection, COMMAND, "READBACK", fence, WORKER);
             UUID readback = recordReadback(connection, COMMAND, attempt, "105.0000",
                     "MATCHES_TARGET");
 
@@ -515,13 +512,13 @@ class PriceWritePathIT extends PostgresContainerSupport {
             long fence = lease(connection,COMMAND,WORKER,LEASE_SECONDS);
             transition(connection,COMMAND,fence,WORKER,"EXECUTING",null,null,null);
             if (applyState.equals("REJECTED")) {
-                UUID apply = recordAttempt(connection,COMMAND,1,"APPLY",fence,WORKER,"ACCEPTED");
+                UUID apply = recordAttempt(connection, COMMAND, "APPLY", fence, WORKER);
                 PriceWritePathFixture.completeResponse(connection,apply,"{\"error\":\"synthetic rejection\"}",400);
                 assertThat(single(connection,"SELECT outcome_class FROM ops.price_command_attempt WHERE id='"+apply+"'"))
                         .isEqualTo("REJECTED");
             }
             transition(connection,COMMAND,fence,WORKER,"READBACK_PENDING",null,null,null);
-            UUID readback = recordAttempt(connection,COMMAND,1,"READBACK",fence,WORKER,"ACCEPTED");
+            UUID readback = recordAttempt(connection, COMMAND, "READBACK", fence, WORKER);
             recordReadback(connection,COMMAND,readback,"105.0000","MATCHES_TARGET");
             transition(connection,COMMAND,fence,WORKER,"READBACK_MISMATCH",null,null,null);
             assertThatThrownBy(() -> transition(connection,COMMAND,fence,WORKER,"COMPENSATION_PENDING",null,null,null))
@@ -572,11 +569,11 @@ class PriceWritePathIT extends PostgresContainerSupport {
             transition(connection, COMMAND, fence, WORKER, "COMPENSATION_PENDING", null, null,
                     null);
             long restoreFence = leaseCompensation();
-            UUID fresh = recordAttempt(connection, COMMAND, 2, "READBACK", restoreFence, WORKER, "ACCEPTED");
+            UUID fresh = recordAttempt(connection, COMMAND, "READBACK", restoreFence, WORKER);
             recordReadback(connection, COMMAND, fresh, "105.0000", "MATCHES_TARGET");
-            UUID restore = recordAttempt(connection, COMMAND, 3, "RESTORE", restoreFence, WORKER, "ACCEPTED");
+            UUID restore = recordAttempt(connection, COMMAND, "RESTORE", restoreFence, WORKER);
             PriceWritePathFixture.completeResponse(connection, restore, "{\"accepted\":true}");
-            UUID attempt = recordAttempt(connection, COMMAND, 4, "READBACK", restoreFence, WORKER, "ACCEPTED");
+            UUID attempt = recordAttempt(connection, COMMAND, "READBACK", restoreFence, WORKER);
             recordReadback(connection, COMMAND, attempt, "100.0000", "MATCHES_PRIOR");
 
             String state = transition(connection, COMMAND, restoreFence, WORKER, "COMPENSATED",
@@ -662,7 +659,7 @@ class PriceWritePathIT extends PostgresContainerSupport {
         void aCallerCannotLabelAmbiguousBytesAccepted(String body) throws SQLException {
             long fence=lease(connection,COMMAND,WORKER,LEASE_SECONDS);
             transition(connection,COMMAND,fence,WORKER,"EXECUTING",null,null,null);
-            UUID attempt=recordAttempt(connection,COMMAND,1,"APPLY",fence,WORKER,"IN_FLIGHT");
+            UUID attempt=recordAttempt(connection, COMMAND, "APPLY", fence, WORKER);
             PriceWritePathFixture.completeResponse(connection,attempt,body);
             assertThat(single(connection,"SELECT outcome_class FROM ops.price_command_attempt WHERE id='"+attempt+"'"))
                     .isEqualTo("UNKNOWN_STATE");
@@ -673,7 +670,7 @@ class PriceWritePathIT extends PostgresContainerSupport {
         @Test
         void responseInterpretationUsesThePreparedVersionEvenAfterMaintenance() throws SQLException {
             long fence=reachReadbackPending();
-            UUID attempt=recordAttempt(connection,COMMAND,1,"READBACK",fence,WORKER,"IN_FLIGHT");
+            UUID attempt=recordAttempt(connection, COMMAND, "READBACK", fence, WORKER);
             String pinnedVersion=single(connection,"SELECT operation_snapshot->'operation'->>'version' FROM ops.price_command_attempt WHERE id='"+attempt+"'");
             execute(arranger,"UPDATE platform.capability_operation SET observed_price_pointer='/unexpected', version=version+1 WHERE capability_id='"
                     +CAPABILITY+"' AND operation='READBACK'");
@@ -711,7 +708,7 @@ class PriceWritePathIT extends PostgresContainerSupport {
             transition(connection,COMMAND,fence,WORKER,"EXECUTING",null,null,null);
             execute(arranger,"UPDATE platform.platform_endpoint SET "+mutation+" WHERE id="
                     +"(SELECT endpoint_id FROM platform.capability_operation WHERE capability_id='"+CAPABILITY+"' AND operation='APPLY')");
-            assertThatThrownBy(() -> recordAttempt(connection,COMMAND,1,"APPLY",fence,WORKER,"IN_FLIGHT"))
+            assertThatThrownBy(() -> recordAttempt(connection, COMMAND, "APPLY", fence, WORKER))
                     .isInstanceOf(SQLException.class).extracting(f -> ((SQLException)f).getSQLState()).isEqualTo("MO033");
         }
 
@@ -719,7 +716,7 @@ class PriceWritePathIT extends PostgresContainerSupport {
         void anAttemptIsCompletedExactlyOnce() throws SQLException {
             long fence = lease(connection, COMMAND, WORKER, LEASE_SECONDS);
             transition(connection, COMMAND, fence, WORKER, "EXECUTING", null, null, null);
-            UUID attempt = recordAttempt(connection, COMMAND, 1, "APPLY", fence, WORKER, "IN_FLIGHT");
+            UUID attempt = recordAttempt(connection, COMMAND, "APPLY", fence, WORKER);
             PriceWritePathFixture.completeResponse(connection, attempt, "{\"accepted\":true}");
             assertThatThrownBy(() -> PriceWritePathFixture.completeResponse(connection, attempt,
                     "{\"accepted\":false}"))
@@ -733,9 +730,9 @@ class PriceWritePathIT extends PostgresContainerSupport {
         void aSecondApplyIsRefusedEvenIfSqlKeepsTheCommandExecuting(String body) throws SQLException {
             long fence=lease(connection,COMMAND,WORKER,LEASE_SECONDS);
             transition(connection,COMMAND,fence,WORKER,"EXECUTING",null,null,null);
-            UUID attempt=recordAttempt(connection,COMMAND,1,"APPLY",fence,WORKER,"IN_FLIGHT");
+            UUID attempt=recordAttempt(connection, COMMAND, "APPLY", fence, WORKER);
             PriceWritePathFixture.completeResponse(connection,attempt,body);
-            assertThatThrownBy(() -> recordAttempt(connection,COMMAND,2,"APPLY",fence,WORKER,"IN_FLIGHT"))
+            assertThatThrownBy(() -> recordAttempt(connection, COMMAND, "APPLY", fence, WORKER))
                     .isInstanceOf(SQLException.class).extracting(f -> ((SQLException)f).getSQLState()).isEqualTo("MO030");
         }
 
@@ -752,8 +749,7 @@ class PriceWritePathIT extends PostgresContainerSupport {
         @Test
         void theApplicationCannotDeleteAReadback() throws SQLException {
             long fence = reachReadbackPending();
-            UUID attempt = recordAttempt(connection, COMMAND, 1, "READBACK", fence, WORKER,
-                    "ACCEPTED");
+            UUID attempt = recordAttempt(connection, COMMAND, "READBACK", fence, WORKER);
             UUID readback = recordReadback(connection, COMMAND, attempt, "105.0000",
                     "MATCHES_TARGET");
 
@@ -881,13 +877,12 @@ class PriceWritePathIT extends PostgresContainerSupport {
     private long reachReadbackMismatch(String observedPrice,String matchState,int applyStatus) throws SQLException {
         long fence = lease(connection,COMMAND,WORKER,LEASE_SECONDS);
         transition(connection,COMMAND,fence,WORKER,"EXECUTING",null,null,null);
-        UUID apply = recordAttempt(connection,COMMAND,1,"APPLY",fence,WORKER,"ACCEPTED");
+        UUID apply = recordAttempt(connection, COMMAND, "APPLY", fence, WORKER);
         PriceWritePathFixture.completeResponse(connection,apply,"{\"accepted\":true}",applyStatus);
         assertThat(single(connection,"SELECT outcome_class FROM ops.price_command_attempt WHERE id='"+apply+"'"))
                 .isEqualTo(applyStatus==200 ? "ACCEPTED" : "UNKNOWN_STATE");
         transition(connection,COMMAND,fence,WORKER,"READBACK_PENDING",null,null,null);
-        UUID attempt = recordAttempt(connection, COMMAND, 1, "READBACK", fence, WORKER,
-                "ACCEPTED");
+        UUID attempt = recordAttempt(connection, COMMAND, "READBACK", fence, WORKER);
         recordReadback(connection, COMMAND, attempt, observedPrice, matchState);
         transition(connection, COMMAND, fence, WORKER, "READBACK_MISMATCH", null, null, null);
         return fence;

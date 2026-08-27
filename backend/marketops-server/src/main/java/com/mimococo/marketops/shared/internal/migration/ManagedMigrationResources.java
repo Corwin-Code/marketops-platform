@@ -24,7 +24,7 @@ final class ManagedMigrationResources implements ResourceProvider {
             }
             int expected = 1;
             for (String filename : inventory.keySet()) {
-                if (Integer.parseInt(filename.substring(1, 5)) != expected++) {
+                if (!filename.startsWith(String.format(java.util.Locale.ROOT, "V%04d__", expected++))) {
                     throw new IllegalStateException("Canonical migration inventory has a gap");
                 }
             }

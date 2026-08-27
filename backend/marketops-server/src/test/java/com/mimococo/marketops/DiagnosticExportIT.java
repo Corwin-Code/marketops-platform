@@ -4,7 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -141,6 +145,34 @@ class DiagnosticExportIT {
     }
 
     @Test
+    void partCeilingNeverUploadsA65thPartAndOnlyCompletesWhenTheSnapshotIsExhausted() {
+        for (boolean hasMoreRows : List.of(false, true)) {
+            var repository = mock(DiagnosticExportRepository.class);
+            var objects = mock(RawCustody.class);
+            var lease = new DiagnosticExportRepository.Lease(UUID.randomUUID(), UUID.randomUUID());
+            var reads = new java.util.concurrent.atomic.AtomicInteger();
+            when(repository.claim()).thenReturn(Optional.of(lease));
+            when(repository.nextRows(lease)).thenAnswer(invocation -> {
+                int ordinal = reads.incrementAndGet();
+                return ordinal <= 64 || hasMoreRows
+                        ? List.of(new DiagnosticExportRepository.SnapshotRow(ordinal, "{}")) : List.of();
+            });
+            when(objects.store(eq("diagnostic-export"), any(byte[].class)))
+                    .thenAnswer(invocation -> {
+                        byte[] body = invocation.getArgument(1);
+                        return new com.mimococo.marketops.marketplaceintegration.RawContentRef(
+                                UUID.randomUUID(), Digest.ofBytes(body), body.length, "object-ref://synthetic/part");
+                    });
+            assertThat(new DiagnosticExportWorker(repository, objects).runOnce()).isTrue();
+            verify(objects, times(64))
+                    .store(eq("diagnostic-export"), any(byte[].class));
+            verify(repository, times(hasMoreRows ? 0 : 1)).complete(lease);
+            verify(repository, times(hasMoreRows ? 1 : 0))
+                    .fail(lease, "LIMIT_EXCEEDED", false);
+        }
+    }
+
+    @Test
     void largeApiResultIsQueuedThenDownloadedAsVerifiedBoundedParts() throws Exception {
         seedMetrics(5000);
         long start = System.nanoTime();
@@ -149,7 +181,7 @@ class DiagnosticExportIT {
                 .andExpect(status().isAccepted()).andReturn().getResponse();
         assertThat(response.getContentAsByteArray().length).isLessThan(2048);
         assertThat(response.getHeader("Cache-Control")).isEqualTo("no-store");
-        UUID id = UUID.fromString(mapper.readTree(response.getContentAsString()).path("id").asText());
+        UUID id = UUID.fromString(mapper.readTree(response.getContentAsString()).path("id").asString());
         assertThat(exports.status(actor, id).state()).isEqualTo("QUEUED");
         assertThat(count("SELECT count(*) FROM mart.diagnostic_export_row WHERE export_id='" + id + "'")).isZero();
         assertThat(objects).isEmpty();
@@ -173,7 +205,7 @@ class DiagnosticExportIT {
                     .with(authentication(actor))).andExpect(status().isOk()).andReturn().getResponse();
             byte[] body = downloaded.getContentAsByteArray();
             assertThat(body.length).isBetween(1, 4194304);
-            assertThat(Digest.ofBytes(body)).isEqualTo(part.path("sha256").asText());
+            assertThat(Digest.ofBytes(body)).isEqualTo(part.path("sha256").asString());
             assertThat(downloaded.getHeader("Content-Disposition")).startsWith("attachment; filename=\"diagnostic-");
             assertThat(downloaded.getHeader("X-Content-Type-Options")).isEqualTo("nosniff");
             assertThat(downloaded.getHeader("Content-Security-Policy")).contains("sandbox");

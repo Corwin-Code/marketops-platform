@@ -111,6 +111,36 @@ class BoundedOutboundHttpTest {
         } finally { client.close(); server.stop(0); executor.shutdownNow(); }
     }
 
+    @Test
+    void outgoingRequestEntityPreservesExactBytesIncludingMarkup() throws Exception {
+        byte[] requestBody = "{\"text\":\"<script>synthetic & \\u003c payload</script>\",\"price\":\"123.40\"}"
+                .getBytes(StandardCharsets.UTF_8);
+        var received = new java.util.concurrent.atomic.AtomicReference<byte[]>();
+        var server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
+        server.createContext("/request", exchange -> {
+            received.set(exchange.getRequestBody().readAllBytes());
+            byte[] response = "{\"accepted\":true}".getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, response.length);
+            exchange.getResponseBody().write(response);
+            exchange.close();
+        });
+        server.start();
+        var client = new BoundedOutboundHttp(new OutboundDestinationProperties(List.of()), java.time.Clock.systemUTC());
+        try {
+            var destination = new OutboundHttp.Destination("fixture",
+                    URI.create("http://fixture.example:" + server.getAddress().getPort() + "/request"),
+                    "POST", Set.of("Content-Type"), requestBody, 1000, 128);
+            // The package-private plan exercises transport only; public prepare still denies loopback HTTP.
+            var plan = new BoundedOutboundHttp.Prepared(destination, new InetAddress[]{server.getAddress().getAddress()},
+                    Set.of("content-type"), Instant.now().plusSeconds(5));
+            var response = client.exchange(plan, Map.of("Content-Type", "application/json"));
+            assertThat(response.statusCode()).isEqualTo(200);
+            assertThat(received.get()).isEqualTo(requestBody);
+            assertThat(new String(response.body(), StandardCharsets.UTF_8)).isEqualTo("{\"accepted\":true}");
+        } finally { client.close(); server.stop(0); }
+    }
+
     private static OutboundHttp.Destination destination(String uri, int responseLimit, int timeout) {
         return new OutboundHttp.Destination("fixture", URI.create(uri), "GET", Set.of("Accept"), new byte[0], timeout, responseLimit);
     }

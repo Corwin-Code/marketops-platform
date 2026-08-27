@@ -21,8 +21,8 @@ class ManagedProfileMigrationIT {
     private static final PostgreSQLContainer DATABASE = new PostgreSQLContainer(
             DockerImageName.parse(IMAGE).asCompatibleSubstituteFor("postgres"))
             .withDatabaseName("marketops").withUsername("bootstrap_admin");
-    private static final String MIGRATION_PASSWORD = UUID.randomUUID().toString();
-    private static final String APPLICATION_PASSWORD = UUID.randomUUID().toString();
+    private static final String MIGRATION_PASSWORD = UUID.randomUUID() + "'migration";
+    private static final String APPLICATION_PASSWORD = UUID.randomUUID() + "'application";
     private static DriverManagerDataSource managed;
     private static DriverManagerDataSource standard;
     private static DriverManagerDataSource admin;
@@ -32,8 +32,7 @@ class ManagedProfileMigrationIT {
         DATABASE.start();
         admin = dataSource(DATABASE.getJdbcUrl(), DATABASE.getUsername(), DATABASE.getPassword());
         var jdbc = new JdbcTemplate(admin);
-        jdbc.execute("CREATE ROLE marketops_migration LOGIN NOINHERIT NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD '" + MIGRATION_PASSWORD + "'");
-        jdbc.execute("CREATE ROLE marketops_app LOGIN NOINHERIT NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD '" + APPLICATION_PASSWORD + "'");
+        createRuntimeRoles(jdbc, MIGRATION_PASSWORD, APPLICATION_PASSWORD);
         jdbc.execute("CREATE EXTENSION btree_gist WITH SCHEMA public");
         jdbc.execute("CREATE EXTENSION pgcrypto WITH SCHEMA public");
         jdbc.execute("ALTER DATABASE marketops OWNER TO marketops_migration");
@@ -285,8 +284,7 @@ class ManagedProfileMigrationIT {
             String applicationPassword = UUID.randomUUID().toString();
             var root = dataSource(database.getJdbcUrl(),database.getUsername(),database.getPassword());
             var jdbc = new JdbcTemplate(root);
-            jdbc.execute("CREATE ROLE marketops_migration LOGIN NOINHERIT NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD '"+migrationPassword+"'");
-            jdbc.execute("CREATE ROLE marketops_app LOGIN NOINHERIT NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD '"+applicationPassword+"'");
+            createRuntimeRoles(jdbc, migrationPassword, applicationPassword);
             jdbc.execute("CREATE EXTENSION btree_gist WITH SCHEMA public");
             jdbc.execute("CREATE EXTENSION pgcrypto WITH SCHEMA public");
             jdbc.execute("ALTER DATABASE marketops OWNER TO marketops_migration");
@@ -317,6 +315,19 @@ class ManagedProfileMigrationIT {
     private static Map<String,Object> attempt(Path directory, String correlation) throws Exception {
         String digest = ManagedMigrationEvidence.digest(correlation.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         return ManagedMigrationEvidence.read(directory.resolve("attempt-"+digest+".result.json"));
+    }
+
+    private static void createRuntimeRoles(JdbcTemplate jdbc, String migrationPassword, String applicationPassword) {
+        // DDL cannot bind a password directly. PostgreSQL format %L quotes each
+        // bound synthetic value as a literal before the local administrator executes it.
+        String migrationDdl = jdbc.queryForObject("""
+                SELECT format('CREATE ROLE marketops_migration LOGIN NOINHERIT NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD %L', ?::text)
+                """, String.class, migrationPassword);
+        String applicationDdl = jdbc.queryForObject("""
+                SELECT format('CREATE ROLE marketops_app LOGIN NOINHERIT NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD %L', ?::text)
+                """, String.class, applicationPassword);
+        jdbc.execute(migrationDdl);
+        jdbc.execute(applicationDdl);
     }
 
     private static void retain(Path directory, String scenario) throws Exception {

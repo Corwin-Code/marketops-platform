@@ -1,0 +1,27 @@
+{
+  "head": "6e44ed49de90e55b4558f1c0b76229d257729511",
+  "tree": "15174f58a107be793d8176f460693454e931443f",
+  "tested_merge": "3026db2129870789095be0f1c4bd6fc69c500a1e",
+  "merge_parents": [
+    "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+    "6e44ed49de90e55b4558f1c0b76229d257729511"
+  ],
+  "snapshot_status": "INCOMPLETE; not final CI approval",
+  "infrastructure_run": 33120177494,
+  "infrastructure_result": "FAILURE; inherited ignore rule omitted provider lockfiles from Git; readonly init correctly refused",
+  "codeql_result": "Six original source alerts fixed; original CSRF plus 24 new alerts require disposition",
+  "raw_log_hashes": {
+    "infrastructure-failed.log": "1f7f9f9b4b8328e1364907194efae67ea68a8dc7d6a27612d6c9fe4f48a06ed1",
+    "bootstrap-init-failed.log": "ceba222516bc8157499dee8a87a45620fcbab60b9ac87a22069816bf96f296ad",
+    "frontend-workflow.log": "99db20d96aa47e15d6372b486c87dfbb3a50754a52bea56c0745fbaf40e4c193"
+  },
+  "checks": "pr20-checks-c1.json",
+  "required_contexts": "All 11 required contexts passed on C1; additional infrastructure and aggregate CodeQL failed",
+  "final_candidate": false,
+  "false_positive_disposition": "Not performed: explicit remote alert-dismissal authorization requested; five alert source assessments documented",
+  "frontend_tests": {
+    "unit": 196,
+    "browser": 11,
+    "result": "PASS"
+  }
+}

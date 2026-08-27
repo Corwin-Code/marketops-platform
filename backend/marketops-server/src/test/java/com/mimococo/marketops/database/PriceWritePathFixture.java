@@ -486,14 +486,18 @@ final class PriceWritePathFixture {
         }
     }
 
-    /** Record an attempt and its outcome in one step, for tests that need one. */
-    static UUID recordAttempt(Connection connection, UUID commandId, int attemptNo,
-                              String purpose, long fence, String owner, String outcomeClass)
+    /** Open an in-flight attempt; completion and response custody remain separate. */
+    static UUID recordAttempt(Connection connection, UUID commandId,
+                              String purpose, long fence, String owner)
             throws SQLException {
         UUID attemptId = UUID.randomUUID();
-        execute(connection, "SELECT ops.open_price_command_attempt('" + attemptId + "', '"
-                + commandId + "', '" + purpose + "', " + fence + ", '" + owner
-                + "', '" + "3".repeat(64) + "', 'fixture')");
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT ops.open_price_command_attempt(?, ?, ?, ?, ?, ?, 'fixture')")) {
+            statement.setObject(1, attemptId); statement.setObject(2, commandId);
+            statement.setString(3, purpose); statement.setLong(4, fence);
+            statement.setString(5, owner); statement.setString(6, "3".repeat(64));
+            statement.execute();
+        }
         return attemptId;
     }
 
@@ -503,10 +507,16 @@ final class PriceWritePathFixture {
         UUID readbackId = UUID.randomUUID();
         String body = price == null ? "{}" : "{\"price\":\"" + price + "\",\"currency\":\"RUB\"}";
         completeResponse(connection, attemptId, body);
-        String fence = PostgresContainerSupport.single(connection,
-                "SELECT fence_token FROM ops.price_command_attempt WHERE id = '" + attemptId + "'");
-        String owner = PostgresContainerSupport.single(connection,
-                "SELECT lease_owner FROM ops.price_command_attempt WHERE id = '" + attemptId + "'");
+        long fence;
+        String owner;
+        try (PreparedStatement lookup = connection.prepareStatement(
+                "SELECT fence_token, lease_owner FROM ops.price_command_attempt WHERE id = ?")) {
+            lookup.setObject(1, attemptId);
+            try (ResultSet row = lookup.executeQuery()) {
+                if (!row.next()) throw new SQLException("Fixture attempt is missing");
+                fence = row.getLong(1); owner = row.getString(2);
+            }
+        }
         String derived = PostgresContainerSupport.single(connection,
                 "SELECT ops.record_price_command_readback('" + readbackId + "', '" + commandId
                 + "', '" + attemptId + "', " + fence + ", '" + owner + "', 'fixture')");
@@ -529,16 +539,22 @@ final class PriceWritePathFixture {
                 """.formatted(content, digest, bytes.length, content));
         String contentId = PostgresContainerSupport.single(connection,
                 "SELECT id FROM raw.raw_content WHERE hash_value = '" + digest + "'");
-        String fence = PostgresContainerSupport.single(connection,
-                "SELECT fence_token FROM ops.price_command_attempt WHERE id = '" + attemptId + "'");
-        String owner = PostgresContainerSupport.single(connection,
-                "SELECT lease_owner FROM ops.price_command_attempt WHERE id = '" + attemptId + "'");
+        long fence;
+        String owner;
+        try (PreparedStatement lookup = connection.prepareStatement(
+                "SELECT fence_token, lease_owner FROM ops.price_command_attempt WHERE id = ?")) {
+            lookup.setObject(1, attemptId);
+            try (ResultSet row = lookup.executeQuery()) {
+                if (!row.next()) throw new SQLException("Fixture attempt is missing");
+                fence = row.getLong(1); owner = row.getString(2);
+            }
+        }
         try (PreparedStatement statement = connection.prepareStatement("""
                 SELECT ops.complete_price_command_attempt(?::uuid, ?::bigint, ?, 'ACCEPTED',
                     'HTTP fixture', NULL, NULL, ?::uuid, ?, ?, '{"etag":"fixture-v1"}'::jsonb,
                     'PROTOCOL_FIXTURE', ?)
                 """)) {
-            statement.setObject(1, attemptId); statement.setLong(2, Long.parseLong(fence));
+            statement.setObject(1, attemptId); statement.setLong(2, fence);
             statement.setString(3, owner); statement.setObject(4, UUID.fromString(contentId));
             statement.setBytes(5, bytes); statement.setInt(6,httpStatus); statement.setString(7, "3".repeat(64));
             statement.execute();

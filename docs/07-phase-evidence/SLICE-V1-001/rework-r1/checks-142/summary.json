@@ -1,0 +1,46 @@
+{
+  "scope": "C1_CI_FOLLOWUP_WORKTREE",
+  "focused_command": "JAVA_HOME=<JDK21> ./mvnw -B -ntp -Dtest=ManagedMigrationRunnerTest,AcquisitionRunnerTest,ApplicationConfigurationTest,BoundedOutboundHttpTest -Dit.test=DiagnosticExportIT,PriceWritePathIT,MetadataConstraintIT,ManagedProfileMigrationIT,OperatingFlowIT,StoredRawReplayIT integration-test failsafe:verify",
+  "focused_result": {
+    "unit": 105,
+    "integration": 127,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "prior_failures": {
+    "138": "test compilation failed: org field shadows package name",
+    "139": "same compilation error; attempted repair had not applied",
+    "140": "wrong Maven wrapper working directory; no tests ran"
+  },
+  "terraform_command": "python3 scripts/verify_terraform.py --terraform <checksum-pinned 1.14.9> --provider-mirror <lockfile-verified local provider mirror> --output evidence",
+  "terraform_scope": "Fresh source-only copy; no .terraform cache copied; three exact lockfiles included; no account calls/apply",
+  "final_exact_commit_verified": false,
+  "raw_log_sha256": {
+    "focused-backend-140.log": "cd48f1ff07092267cc70e003b8cf073419608024db7ecfbb595bf51d443a9032",
+    "focused-backend-141.log": "3d1cc20c390ef9671885081a3fd532a3ab232bef701d830b5797c2e75c12fd5d",
+    "bootstrap-validate.log": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+    "staging-validate.log": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+    "fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bootstrap-plan.jsonl": "8a4a446b90a7d08c5759a77ee26fa9cb82b0505a9bcf5a31b1b367af9ab841b9",
+    "bootstrap-init.log": "8869e619b7010a30326d82b84670f6788519ab032ea8bdf995151c9a3910cf37",
+    "production-validate.log": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+    "production-plan.jsonl": "4e59cf22b3fbb33511030474434ef2ef000368f0c2f1cdfa2ae6605cf5a39040",
+    "staging-init.log": "f00b36bd9e007785d9f7d772d7e31b00e58771fd8a87df800253954eee241c40",
+    "staging-plan.jsonl": "f939db0523153583e373a1addb89311b9e8dce799b61e186a71fa886c46d4a4f",
+    "production-init.log": "f00b36bd9e007785d9f7d772d7e31b00e58771fd8a87df800253954eee241c40",
+    "governance-144.log": "d47102ad9d21d7f0b67dade747c87251ccc3c617762e704da45885f4f516bc7c",
+    "frontend-check-144.log": "f1486bec17649908c19dadd772afdec7438858544fde8fdd576bcc0d08142b86",
+    "governance-145.log": "cc0d8fa9c7dee0eeb51f755d54ad353de307017c8940d5fa573dd3d837227233"
+  },
+  "additional_checks": {
+    "make governance": "PASS; 372 Python tests",
+    "make frontend-check": "PASS; 196 tests; lint/format/typecheck/coverage/build/bundle",
+    "make governance after documentation update (145)": "PASS; 372 tests"
+  },
+  "log_secret_scan": {
+    "compressed_logs_scanned": 19,
+    "private_key_aws_access_key_bearer_jwt_hits": 0,
+    "scope": "High-specificity heuristic; not universal PII proof"
+  }
+}
