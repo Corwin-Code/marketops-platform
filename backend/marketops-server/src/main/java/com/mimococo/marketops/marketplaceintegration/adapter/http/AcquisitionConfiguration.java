@@ -3,7 +3,7 @@ package com.mimococo.marketops.marketplaceintegration.adapter.http;
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.PlatformCallSpecRepository;
 import com.mimococo.marketops.marketplaceintegration.port.AcquisitionPort;
 import com.mimococo.marketops.shared.port.SecretResolverPort;
-import java.net.http.HttpClient;
+import com.mimococo.marketops.shared.port.OutboundHttp;
 import java.time.Clock;
 import java.time.Duration;
 import org.springframework.context.annotation.Bean;
@@ -23,18 +23,10 @@ public class AcquisitionConfiguration {
     /** How long the client waits to establish a connection to a marketplace. */
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
 
-    /** The client outbound acquisition uses; never follows a redirect. */
-    @Bean
-    public HttpClient acquisitionHttpClient() {
-        return HttpClient.newBuilder()
-                .connectTimeout(CONNECT_TIMEOUT)
-                .followRedirects(HttpClient.Redirect.NEVER)
-                .build();
-    }
 
     /** The single outbound acquisition port. */
     @Bean
-    public AcquisitionPort acquisitionPort(HttpClient acquisitionHttpClient,
+    public AcquisitionPort acquisitionPort(OutboundHttp acquisitionHttpClient,
                                            PlatformCallSpecRepository callSpecs,
                                            SecretResolverPort secretResolverPort,
                                            Clock clock) {

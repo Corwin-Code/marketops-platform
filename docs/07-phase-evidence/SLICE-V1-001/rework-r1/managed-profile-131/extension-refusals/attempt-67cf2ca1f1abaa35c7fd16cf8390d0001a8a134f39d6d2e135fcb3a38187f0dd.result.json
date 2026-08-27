@@ -1,0 +1,59 @@
+{
+  "schemaVersion" : "2.0",
+  "serviceProfile" : "YANDEX_MANAGED_EMULATION",
+  "environmentReference" : "test:postgres17:marketops",
+  "repositoryCommit" : "1111111111111111111111111111111111111111111111111111111111111111",
+  "repositoryTree" : "2222222222222222222222222222222222222222222222222222222222222222",
+  "artifactSha256" : "7777777777777777777777777777777777777777777777777777777777777777",
+  "databaseUrlSha256" : "01278b2b0ade204fcd5a8a6f1f2244138b21fcdec42f3a15f2dfbffc81449b81",
+  "expectedPostgresqlMajor" : 17,
+  "postgresqlMajor" : 17,
+  "attestationState" : "NOT_ATTESTED",
+  "canonicalV0002Path" : "db/migration/V0002__enable_btree_gist_extension.sql",
+  "canonicalV0002GitBlob" : "bd3e55ea737ffda9d519a931eea1f3cc58b8c522",
+  "canonicalV0002Sha256" : "438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16",
+  "canonicalV0002FlywayChecksum" : 1291326236,
+  "resolvedVersion" : "0002",
+  "resolvedDescription" : "enable btree gist extension",
+  "executorMode" : "EXTERNALLY_SATISFIED_PROVIDER_EXTENSION",
+  "requiredExtensions" : {
+    "btree_gist" : "1.7",
+    "pgcrypto" : "1.3"
+  },
+  "extensions" : {
+    "btree_gist" : "1.7",
+    "pgcrypto" : "1.3"
+  },
+  "providerEvidenceSha256" : "3333333333333333333333333333333333333333333333333333333333333333",
+  "providerDocumentSha256" : "34e1f92c87f22eb1256f49b2a31c49911cd62bb7c18ce4f7960e43f585584c96",
+  "providerControlPlaneApplied" : false,
+  "artifactKind" : "MIGRATION_ATTEMPT",
+  "expectedBootstrapSha256" : "ABSENT",
+  "timestamp" : "2026-08-28T00:00:01Z",
+  "correlation" : "managed-negative-owner",
+  "failureStage" : "ROLE_AND_EXTENSION_PREFLIGHT",
+  "migrationResult" : "FAILED",
+  "flywayHistoryBefore" : {
+    "state" : "ABSENT",
+    "v0002" : "ABSENT"
+  },
+  "flywayHistoryAfter" : {
+    "state" : "ABSENT",
+    "v0002" : "ABSENT"
+  },
+  "extensionFacts" : {
+    "btree_gist" : {
+      "version" : "1.7",
+      "schema" : "public",
+      "owner" : "bootstrap_admin"
+    },
+    "pgcrypto" : {
+      "version" : "1.3",
+      "schema" : "public",
+      "owner" : "marketops_migration"
+    }
+  },
+  "roleAssertions" : { },
+  "startedEvidenceSha256" : "e1a5d0c9bb2a9fa3892113825d953bfa37c9acfb68e2244ab95e4ecd38823902",
+  "databaseIdentity" : "NOT_ATTESTED"
+}

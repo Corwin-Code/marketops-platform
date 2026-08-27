@@ -114,7 +114,7 @@ CREATE TABLE platform.platform_auth_header (
 );
 
 CREATE UNIQUE INDEX platform_auth_header_live_uq
-    ON platform.platform_auth_header (platform_code, header_name)
+    ON platform.platform_auth_header (platform_code, credential_purpose, lower(header_name))
     WHERE status = 'ACTIVE';
 
 CREATE INDEX platform_auth_header_platform_ix
@@ -134,6 +134,9 @@ CREATE INDEX platform_auth_header_platform_ix
 -- anything else is refused when the request is built, so a recorded shape
 -- cannot smuggle a value the caller did not intend to send.
 ALTER TABLE platform.platform_endpoint
+    ADD COLUMN operation_function text NOT NULL DEFAULT 'UNDECLARED',
+    ADD CONSTRAINT platform_endpoint_function_ck CHECK (operation_function IN
+        ('UNDECLARED', 'READ_DATA', 'PRICE_APPLY', 'PRICE_STATUS', 'PRICE_READBACK', 'PRICE_RESTORE')),
     ADD COLUMN query_template text,
     ADD COLUMN body_template  text,
     ADD COLUMN response_content_type text,

@@ -33,32 +33,36 @@ Evidence strength is classified independently from a model or reviewer opinion.
 | `OPS` | Operator runbook drill | executed runbook with observable result | runbook file existence |
 | `AUDIT` | Audit trace | end-to-end actor/evidence/command/readback chain | log line only |
 
-## 2a. SLICE-V1-001 evidence state
+## 2a. SLICE-V1-001 candidate evidence state
 
 ```yaml
-assessed_at: 2026-08-27
-assessed_against: LOCAL_CHECKPOINT_ONLY
+assessed_at: 2026-08-28
+assessed_against: PR20_REWORK_IN_PROGRESS
+controller_verdict: NOT_CLAIMED
 detail: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 ```
 
-| Class | State | What exists | What is missing |
-| --- | --- | --- | --- |
-| `SRC` | `SATISFIED` | The Contract, the accepted ADRs and the exact repository source. | — |
-| `UNIT` | `SATISFIED` | 324 unit and architecture tests, including 65 boundary rules each with a deliberately invalid fixture. | — |
-| `RDB` | `SATISFIED` | 197 integration tests against real PostgreSQL 18.4, of which 45 exercise the write path through the same functions the application calls, as the application role. | — |
-| `OBJ` | `PARTIAL` | Hash, length and provenance per object; read-back verification; filesystem and S3-compatible adapters; compliance-lock configuration. | No approved object store was contacted. |
-| `REAL_EXT` | `ABSENT` | Nothing. | No marketplace, identity provider, model provider or cloud account was contacted. Every capability and provider row is `UNVERIFIED`, which is why no call is reachable. |
-| `SEC_NEG` | `SATISFIED` | Authorization refusals asserted against the running backend; bundle isolation; repository secret scan; AI output rejection of ungrounded, unrecognised and instruction-shaped claims. | — |
-| `REPLAY` | `SATISFIED` | Idempotent fact keys, digest-keyed metric values, and a database trigger refusing a marketplace call during replay. | — |
-| `BROWSER` | `PARTIAL` | 8 browser tests against the real backend and built console, including sign-in through to subject diagnosis. | The full chain in one browser run needs seeded operating data and a real identity provider. |
-| `PERF` | `ABSENT` | Indexes for the queue and subject queries. | No representative data set and no environment to measure against. |
-| `DR` | `PARTIAL` | Crash and lease-recovery behaviour proven against a real database; restore controls configured in reviewed infrastructure code. | The restore drill has never run, because there is nothing to restore. |
-| `OPS` | `PARTIAL` | Eight runbooks committed, five of them new for this slice. | None has been executed by support personnel. |
-| `AUDIT` | `SATISFIED` | Actor, evidence, decision, command and readback chain is complete and append-only, with the digest of the reviewed facts carried from proposal to decision to gate. | — |
+This implementation-fact section does not amend the evidence classes or
+requirements below. Counts are checkpoint results, not a final release verdict.
 
-Two classes are `ABSENT` and neither can be moved by engineering work: both need
-an Owner-authorized act against a real external system.
+| Class | Candidate evidence | Remaining boundary |
+| --- | --- | --- |
+| `SRC` | Immutable original Contract, accepted Amendment-001, preserved ADRs and source-bound worktree manifests. | Final commit/merge/tree binding. |
+| `UNIT` | Full backend 128: 845 unit/architecture tests; frontend 130: 196 tests; unchanged coverage gates pass. | Final full regression and remote CI. |
+| `RDB` | Full 128: 370 real database integration tests; PG17 application/managed/representative paths plus standard PG18 compatibility. | Final regression including the subsequently added replay drill. |
+| `OBJ` | Actual filesystem and local HTTP adapter tests, exact hash/length verification, immutable DB custody and retention IaC. | Approved Yandex store, real retention/IAM operation and provider recovery remain unverified. |
+| `REAL_EXT` | No real business provider or cloud account used. Synthetic verification fixtures are explicitly scoped. | OIDC, Marketplace, Yandex and model provider evidence remains pending; production registry defaults stay UNVERIFIED. |
+| `SEC_NEG` | Signed-token/live-scope refusal, cross-store access denial, bounded outbound requests, symlink/redirect/response bounds, AI grounding and browser export integrity. | Final exact-source security scan and CodeQL closure. |
+| `REPLAY` | Real PG17 stored-Raw replay at 130: parser/missing-object refusal, crash after fact commit, repeat with no duplicate logical fact or source call. | Final suite integration; real source coverage remains external. |
+| `BROWSER` | 11 Chromium scenarios at 129, including real signed JWT/SQL evidence→approval→command→readback, export, new-login command recovery and actual local database outage. | Real identity/Marketplace interoperability and final exact-commit execution. |
+| `PERF` | PG17 representative 5,000-SKU/360,000-order profile, query plans, 488,000-record asynchronous export, explicit thresholds and settings. | Owner cohort and deployed capacity are unproven; no production throughput claim. |
+| `DR` | Executed isolated PG17 dump/restore, migration/privilege validation, missing-object refusal and exact-byte recovery. | Real Yandex PITR, deployment rollback and environment restore remain pending. |
+| `OPS` | Failure-drill index maps runbooks to executed local faults. Private signals and bounded telemetry transport/No Data are tested. | Actual alert creation, channel delivery, support acknowledgement and staging drill. |
+| `AUDIT` | DB authority, immutable attempt/readback/approval/import/verification evidence, and actor-bound browser/service paths. | Controller closure, real Gate-EV evidence and final exact identity. |
+
+The original Maker evidence assessment is preserved at the reviewed PR Head.
+Local evidence does not replace REAL_EXT, Owner approval, Gate EV or Gate E.
 
 ## 3. Risk dimensions
 

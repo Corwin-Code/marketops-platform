@@ -10,7 +10,6 @@ import com.mimococo.marketops.productlisting.ListingVariantContext;
 import com.mimococo.marketops.shared.CorrelationId;
 import com.mimococo.marketops.shared.IdGenerator;
 import com.mimococo.marketops.shared.Money;
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Optional;
@@ -42,6 +41,7 @@ import org.springframework.stereotype.Service;
  * process that started it.
  */
 @Service
+@org.springframework.transaction.annotation.Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)
 public class PriceCommandWorker {
 
     private static final Logger log = LoggerFactory.getLogger(PriceCommandWorker.class);
@@ -63,6 +63,7 @@ public class PriceCommandWorker {
 
     private final PriceCommandRepository commands;
     private final PriceWritePort writePort;
+    private final com.mimococo.marketops.marketplaceintegration.RawCustody custody;
     private final ListingIdentityDirectory listings;
     private final CredentialDirectory credentials;
     private final IdGenerator idGenerator;
@@ -71,12 +72,14 @@ public class PriceCommandWorker {
 
     PriceCommandWorker(PriceCommandRepository commands,
                        PriceWritePort writePort,
+                       com.mimococo.marketops.marketplaceintegration.RawCustody custody,
                        ListingIdentityDirectory listings,
                        CredentialDirectory credentials,
                        IdGenerator idGenerator,
                        Clock clock) {
         this.commands = commands;
         this.writePort = writePort;
+        this.custody = custody;
         this.listings = listings;
         this.credentials = credentials;
         this.idGenerator = idGenerator;
@@ -119,8 +122,17 @@ public class PriceCommandWorker {
      * @return whether the command was claimed and acted on
      */
     public boolean advance(UUID commandId) {
+        PriceCommandState initial = currentState(commandId);
+        if (initial == PriceCommandState.COMPENSATION_PENDING) {
+            return compensate(commandId);
+        }
         long fence;
         try {
+            if (initial == PriceCommandState.UNKNOWN_REQUIRES_READBACK) {
+                fence = commands.leaseReadback(commandId, workerName, LEASE_SECONDS);
+                readbackFrom(commands.row(commandId).orElseThrow(), fence, PriceCommandState.READBACK_PENDING);
+                return true;
+            }
             fence = commands.lease(commandId, workerName, LEASE_SECONDS);
         } catch (DataAccessException refused) {
             reportRefusal(commandId, refused);
@@ -136,7 +148,8 @@ public class PriceCommandWorker {
                 case STATUS_ENQUIRY -> enquire(command, fence);
                 case READBACK -> readbackFrom(command, fence,
                         PriceCommandState.EXECUTING);
-                case RESTORE -> apply(command, fence);
+                case RESTORE -> commands.transition(commandId, fence, workerName,
+                        PriceCommandState.UNKNOWN_REQUIRES_READBACK.name(), null, null, null);
             }
             return true;
         } catch (DataAccessException refused) {
@@ -163,6 +176,15 @@ public class PriceCommandWorker {
         }
 
         PriceCommandRepository.CommandRow command = commands.row(commandId).orElseThrow();
+        if (!commands.conditionalRestoreAvailable(command.capabilityId())
+                || observe(command, fence, "MATCHES_TARGET").isEmpty()
+                || commands.restoreVersion(commandId, fence).isEmpty()) {
+            if (currentState(commandId) == PriceCommandState.COMPENSATION_PENDING) {
+                commands.transition(commandId, fence, workerName,
+                        PriceCommandState.MANUAL_RESOLUTION.name(), null, null, null);
+            }
+            return true;
+        }
         UUID attemptId = idGenerator.newId();
         PriceWriteResult result = call(command, attemptId, fence,
                 PriceWriteRequest.Operation.RESTORE,
@@ -170,7 +192,8 @@ public class PriceCommandWorker {
 
         if (result.outcome() != PriceWriteResult.Outcome.ACCEPTED) {
             commands.transition(commandId, fence, workerName,
-                    PriceCommandState.COMPENSATION_FAILED.name(),
+                    (result.outcome() == PriceWriteResult.Outcome.REJECTED
+                            ? PriceCommandState.COMPENSATION_FAILED : PriceCommandState.MANUAL_RESOLUTION).name(),
                     result.errorCode() == null ? "restore_not_accepted" : result.errorCode(),
                     null, null);
             return true;
@@ -181,9 +204,11 @@ public class PriceCommandWorker {
         // trusting the platform's acknowledgement.
         Optional<UUID> readback = observe(command, fence, "MATCHES_PRIOR");
         if (readback.isEmpty()) {
-            commands.transition(commandId, fence, workerName,
-                    PriceCommandState.COMPENSATION_FAILED.name(),
-                    "restore_not_observed", null, null);
+            if (currentState(commandId) == PriceCommandState.COMPENSATION_PENDING) {
+                commands.transition(commandId, fence, workerName,
+                        PriceCommandState.MANUAL_RESOLUTION.name(),
+                        "restore_not_observed", null, null);
+            }
             return true;
         }
         commands.transition(commandId, fence, workerName,
@@ -213,7 +238,9 @@ public class PriceCommandWorker {
                     result.errorCode() == null ? "platform_rejected" : result.errorCode(),
                     null, null);
             case RETRIABLE_ERROR -> retriable(command, fence, result.errorCode());
-            case TIMEOUT, UNKNOWN_STATE -> commands.transition(command.id(), fence, workerName,
+            case TIMEOUT -> commands.transition(command.id(), fence, workerName,
+                    PriceCommandState.UNKNOWN_REQUIRES_READBACK.name(), null, null, null);
+            case UNKNOWN_STATE -> commands.transition(command.id(), fence, workerName,
                     PriceCommandState.UNKNOWN_REQUIRES_READBACK.name(), null, null, null);
         }
     }
@@ -244,7 +271,9 @@ public class PriceCommandWorker {
                     result.errorCode() == null ? "platform_task_rejected" : result.errorCode(),
                     null, null);
             case RETRIABLE_ERROR -> retriable(command, fence, result.errorCode());
-            case TIMEOUT, UNKNOWN_STATE -> commands.transition(command.id(), fence, workerName,
+            case TIMEOUT -> commands.transition(command.id(), fence, workerName,
+                    PriceCommandState.UNKNOWN_REQUIRES_READBACK.name(), null, null, null);
+            case UNKNOWN_STATE -> commands.transition(command.id(), fence, workerName,
                     PriceCommandState.UNKNOWN_REQUIRES_READBACK.name(), null, null, null);
         }
     }
@@ -290,28 +319,24 @@ public class PriceCommandWorker {
                 PriceWriteRequest.Operation.READBACK,
                 Money.of(command.targetPrice(), command.currencyCode()), null);
 
-        Instant observedAt = clock.instant();
+        if (result.response() == null) {
+            unresolvedObservation(command, fence);
+            return Optional.empty();
+        }
         UUID readbackId = idGenerator.newId();
-        if (result.outcome() == PriceWriteResult.Outcome.RETRIABLE_ERROR) {
-            retriable(command, fence, result.errorCode());
+        String matchState = commands.insertReadback(readbackId, command.id(), attemptId,
+                fence, workerName, command.id().toString());
+        if ("UNREADABLE".equals(matchState)) {
+            unresolvedObservation(command, fence);
             return Optional.empty();
         }
-        if (result.outcome() != PriceWriteResult.Outcome.ACCEPTED
-                || result.observedPrice() == null) {
-            commands.insertReadback(readbackId, command.id(), attemptId, observedAt, null, null,
-                    "UNREADABLE", null, CorrelationId.current());
-            commands.transition(command.id(), fence, workerName,
-                    PriceCommandState.UNKNOWN_REQUIRES_READBACK.name(), null, null, null);
-            return Optional.empty();
-        }
-
-        String matchState = classify(command, result);
-        commands.insertReadback(readbackId, command.id(), attemptId, observedAt,
-                result.observedPrice(),
-                result.observedCurrency() == null
-                        ? command.currencyCode() : result.observedCurrency(),
-                matchState, null, CorrelationId.current());
         return matchState.equals(expectedMatch) ? Optional.of(readbackId) : Optional.empty();
+    }
+
+    private void unresolvedObservation(PriceCommandRepository.CommandRow command, long fence) {
+        PriceCommandState next = currentState(command.id()) == PriceCommandState.COMPENSATION_PENDING
+                ? PriceCommandState.MANUAL_RESOLUTION : PriceCommandState.UNKNOWN_REQUIRES_READBACK;
+        commands.transition(command.id(), fence, workerName, next.name(), null, null, null);
     }
 
     /**
@@ -321,20 +346,6 @@ public class PriceCommandWorker {
      * number matches, so the currency is part of the comparison rather than an
      * afterthought.
      */
-    private static String classify(PriceCommandRepository.CommandRow command,
-                                   PriceWriteResult result) {
-        String observedCurrency = result.observedCurrency() == null
-                ? command.currencyCode() : result.observedCurrency();
-        if (!observedCurrency.equals(command.currencyCode())) {
-            return "DIFFERENT";
-        }
-        BigDecimal observed = result.observedPrice();
-        if (observed.compareTo(command.targetPrice()) == 0) {
-            return "MATCHES_TARGET";
-        }
-        return observed.compareTo(command.priorPrice()) == 0 ? "MATCHES_PRIOR" : "DIFFERENT";
-    }
-
     /**
      * Make one call, bracketed by the record that it happened.
      *
@@ -346,32 +357,26 @@ public class PriceCommandWorker {
                                   long fence, PriceWriteRequest.Operation operation,
                                   Money price, String taskKey) {
         Instant startedAt = clock.instant();
-        commands.openAttempt(attemptId, command.id(), command.attemptNo(), operation.name(),
-                fence, workerName, startedAt, CorrelationId.current());
-
         Optional<ListingVariantContext> context =
                 listings.variantContext(command.platformListingVariantId(), startedAt);
-        PriceWriteResult result = writePort.perform(new PriceWriteRequest(
-                operation, command.capabilityId(),
-                credentials.writeCredential(command.storeId(), command.capabilityId())
-                        .orElse(null),
+        PriceWriteRequest request = new PriceWriteRequest(operation, command.capabilityId(),
+                credentials.writeCredential(command.storeId(), command.capabilityId()).orElse(null),
                 context.map(ListingVariantContext::nativeListingKey).orElse(null),
                 context.map(ListingVariantContext::nativeVariantKey).orElse(null),
-                price, command.idempotencyKey(), taskKey));
-
-        commands.completeAttempt(attemptId, outcomeClassOf(result), result.nativeStatus(),
-                result.nativeTaskKey(), null, result.errorCode(), result.completedAt());
-        return result;
-    }
-
-    private static String outcomeClassOf(PriceWriteResult result) {
-        return switch (result.outcome()) {
-            case ACCEPTED -> "ACCEPTED";
-            case REJECTED -> "REJECTED";
-            case RETRIABLE_ERROR -> "RETRIABLE_ERROR";
-            case TIMEOUT -> "TIMEOUT";
-            case UNKNOWN_STATE -> "UNKNOWN_STATE";
-        };
+                price, PriceWriteRequest.operationIdempotencyKey(operation, command.idempotencyKey()), taskKey,
+                operation == PriceWriteRequest.Operation.RESTORE
+                        ? commands.restoreVersion(command.id(), fence).orElse(null) : null, attemptId);
+        commands.openAttempt(attemptId, command.id(), operation.name(), fence, workerName,
+                request.digest(), command.id().toString());
+        PriceWriteResult result = writePort.perform(request);
+        if ((result.response() == null && result.outcome() == PriceWriteResult.Outcome.ACCEPTED)
+                || (result.response() != null && !request.digest().equals(result.response().requestDigest()))) {
+            result = new PriceWriteResult(PriceWriteResult.Outcome.UNKNOWN_STATE, null, null,
+                    null, null, new byte[0], clock.instant(), "provider_evidence_missing_or_unbound");
+        }
+        UUID contentId = result.response() == null ? null
+                : custody.store("price-response", result.body()).contentId();
+        return commands.completeAttempt(attemptId, fence, workerName, result, contentId, request.digest());
     }
 
     /**

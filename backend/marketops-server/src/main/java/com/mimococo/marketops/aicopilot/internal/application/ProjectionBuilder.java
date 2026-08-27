@@ -45,7 +45,7 @@ public class ProjectionBuilder {
 
     /** The projection this product sends, and the version of its field set. */
     static final String PROJECTION_CODE = "SKU_GROWTH_PROFIT_DIAGNOSIS";
-    static final int PROJECTION_VERSION = 1;
+    static final int PROJECTION_VERSION = 2;
 
     private final MetricQuery metrics;
     private final DiagnosisQuery diagnoses;
@@ -118,6 +118,7 @@ public class ProjectionBuilder {
 
         findings.forEach(finding -> {
             findingIds.add(finding.findingId());
+            fields.add(field("findings.findingRef", finding.findingId().toString()));
             fields.add(field("findings.ruleCode", finding.ruleCode()));
             fields.add(field("findings.outcome", finding.outcome().name()));
             fields.add(field("findings.severity",

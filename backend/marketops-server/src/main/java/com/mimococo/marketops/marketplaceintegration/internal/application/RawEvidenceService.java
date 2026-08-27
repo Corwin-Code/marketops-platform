@@ -58,7 +58,7 @@ public class RawEvidenceService implements RawEvidenceQuery {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)
     public Optional<byte[]> verifiedBody(UUID observationId) {
         Optional<RawEvidenceRepository.StoredObservation> stored =
                 evidence.findObservation(observationId);
@@ -68,7 +68,7 @@ public class RawEvidenceService implements RawEvidenceQuery {
         RawContentRef reference = new RawContentRef(stored.get().contentId(),
                 stored.get().sha256(), stored.get().byteLength(), stored.get().objectRef());
         Optional<byte[]> body = custody.read(reference);
-        if (body.isEmpty() || !custody.verify(reference)) {
+        if (body.isEmpty()) {
             log.atError()
                     .addKeyValue("event", "raw_evidence_object_unverifiable")
                     .addKeyValue("observationId", observationId.toString())

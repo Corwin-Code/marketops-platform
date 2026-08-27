@@ -1,0 +1,18 @@
+# Non-secret shape only. Replace every placeholder from the reviewed release
+# envelope, mount read-only, and never commit a populated manifest.
+serviceProfile=YANDEX_MANAGED
+jdbcUrl=jdbc:postgresql://c-<20-lowercase-id>.rw.mdb.yandexcloud.net:6432/marketops?sslmode=verify-full&sslrootcert=/opt/marketops/certs/yandex-root.crt&targetServerType=primary
+credentialFile=/run/marketops-migration/database-password
+artifactSha256=<64-lowercase-hex>
+approvalReference=<exact-release-approval-reference>
+environmentReference=<opaque-environment-reference>
+repositoryCommit=<40-or-64-lowercase-hex>
+repositoryTree=<40-or-64-lowercase-hex>
+providerEvidenceFile=/run/marketops-migration/provider/database.json
+providerEvidenceSha256=<64-lowercase-hex>
+providerDocumentSha256=34e1f92c87f22eb1256f49b2a31c49911cd62bb7c18ce4f7960e43f585584c96
+bootstrapEvidenceFile=/run/marketops-migration/evidence/managed-bootstrap.json
+# ABSENT only for a new database. Every replay/upgrade pins the immutable
+# original bootstrap, even when this release has different commit/tree IDs.
+expectedBootstrapSha256=<ABSENT-or-exact-prior-bootstrap-sha256>
+correlation=<unique-release-correlation>

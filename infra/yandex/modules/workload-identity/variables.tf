@@ -27,3 +27,7 @@ variable "migration_secret_id" {
   description = "The single Lockbox secret the migration runner may read."
   type        = string
 }
+
+variable "container_registry_id" {
+  type = string
+}

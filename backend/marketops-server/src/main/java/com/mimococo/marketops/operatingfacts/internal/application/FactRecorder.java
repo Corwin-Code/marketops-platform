@@ -69,6 +69,14 @@ public class FactRecorder {
     public int record(IngestionJobView job,
                       RawObservationView observation,
                       CanonicalRecord canonical) {
+        // Every DECIMAL field in the Slice's canonical source catalog is money.
+        // PostgreSQL numeric(18,4) would otherwise silently round source facts.
+        for (Object value : canonical.values().values()) {
+            if (value instanceof java.math.BigDecimal amount && amount.signum()!=0
+                    && ((long)amount.precision()-amount.scale()>14 || amount.stripTrailingZeros().scale()>4)) {
+                throw new ArithmeticException("source money is not exactly representable");
+            }
+        }
         Optional<UUID> listingVariantId = resolveListingVariant(job, canonical, observation);
         if (listingVariantId.isEmpty()) {
             return 0;

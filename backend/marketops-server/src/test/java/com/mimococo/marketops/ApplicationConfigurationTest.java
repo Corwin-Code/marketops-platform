@@ -92,6 +92,11 @@ class ApplicationConfigurationTest {
                 .isEqualTo("${MARKETOPS_DB_APP_PASSWORD}");
         assertThat(String.valueOf(base.getProperty("spring.flyway.password")))
                 .isEqualTo("${MARKETOPS_DB_MIGRATION_PASSWORD}");
+        PropertySource<?> production = load("application-production.yaml");
+        assertThat(production.getProperty("spring.flyway.enabled")).isEqualTo(false);
+        assertThat(production.getProperty("spring.flyway.password")).isEqualTo("");
+        assertThat(production.getProperty("marketops.metadata-maintenance.write-enabled")).isEqualTo(false);
+        assertThat(production.getProperty("server.address")).isEqualTo("0.0.0.0");
     }
 
     @Test

@@ -5,7 +5,7 @@ import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdb
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.WriteOperationRepository;
 import com.mimococo.marketops.marketplaceintegration.port.PriceWritePort;
 import com.mimococo.marketops.shared.port.SecretResolverPort;
-import java.net.http.HttpClient;
+import com.mimococo.marketops.shared.port.OutboundHttp;
 import java.time.Clock;
 import java.time.Duration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,18 +33,10 @@ public class PriceWriteRuntimeConfiguration {
     /** How long the client waits to establish a connection to a marketplace. */
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
 
-    /** The client price writes are made with. */
-    @Bean
-    public HttpClient priceWriteHttpClient() {
-        return HttpClient.newBuilder()
-                .connectTimeout(CONNECT_TIMEOUT)
-                .followRedirects(HttpClient.Redirect.NEVER)
-                .build();
-    }
 
     /** The adapter that performs a recorded write operation. */
     @Bean
-    public PriceWritePort priceWritePort(HttpClient priceWriteHttpClient,
+    public PriceWritePort priceWritePort(OutboundHttp priceWriteHttpClient,
                                          WriteOperationRepository operations,
                                          PlatformCallSpecRepository specs,
                                          SecretResolverPort secretResolverPort,

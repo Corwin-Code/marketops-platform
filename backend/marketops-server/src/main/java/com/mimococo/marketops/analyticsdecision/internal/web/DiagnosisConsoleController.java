@@ -9,10 +9,12 @@ import com.mimococo.marketops.analyticsdecision.MetricWindow;
 import com.mimococo.marketops.analyticsdecision.PrioritySubjectView;
 import com.mimococo.marketops.analyticsdecision.SubjectKind;
 import com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationService;
+import com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsQueryService;
 import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
+import com.mimococo.marketops.identityaccess.OwnedResource;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -38,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
  * the run journal with the person who asked for it.
  */
 @RestController
+@com.mimococo.marketops.shared.ConsoleApi
 @RequestMapping("/api/v1/console/diagnosis")
 class DiagnosisConsoleController {
 
@@ -45,15 +48,29 @@ class DiagnosisConsoleController {
     private final DiagnosisQuery diagnosisQuery;
     private final AnalyticsCalculationService calculation;
     private final BusinessAuthorization authorization;
+    private final AnalyticsQueryService queries;
 
     DiagnosisConsoleController(MetricQuery metricQuery,
                                DiagnosisQuery diagnosisQuery,
                                AnalyticsCalculationService calculation,
-                               BusinessAuthorization authorization) {
+                               BusinessAuthorization authorization,
+                               AnalyticsQueryService queries) {
         this.metricQuery = metricQuery;
         this.diagnosisQuery = diagnosisQuery;
         this.calculation = calculation;
         this.authorization = authorization;
+        this.queries = queries;
+    }
+
+    /** Source edges of one exact metric version, with independent evidence permission. */
+    @GetMapping(value = "/listing-variants/{subjectId}/metrics/{metricValueId}/inputs",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    AnalyticsQueryService.InputPage inputs(AuthenticatedActor actor, @PathVariable UUID subjectId,
+                                           @PathVariable UUID metricValueId,
+                                           @RequestParam UUID storeId) {
+        authorization.requireOwned(actor, ActionScopeCode.EVIDENCE_VIEW,
+                new OwnedResource(OwnedResource.Kind.LISTING_VARIANT, subjectId, storeId));
+        return queries.inputs(subjectId, metricValueId);
     }
 
     /** The store's daily work list, most urgent first. */
@@ -77,8 +94,8 @@ class DiagnosisConsoleController {
                              @RequestParam UUID storeId,
                              @RequestParam(required = false, defaultValue = "D30")
                              MetricWindow window) {
-        authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
-                ResourceScope.store(storeId));
+        authorization.requireOwned(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
+                new OwnedResource(OwnedResource.Kind.LISTING_VARIANT, subjectId, storeId));
         return new SubjectDiagnosis(
                 subjectId,
                 storeId,
@@ -100,8 +117,8 @@ class DiagnosisConsoleController {
                                   MetricWindow window,
                                   @RequestParam(required = false, defaultValue = "20")
                                   int limit) {
-        authorization.require(actor, ActionScopeCode.EVIDENCE_VIEW,
-                ResourceScope.store(storeId));
+        authorization.requireOwned(actor, ActionScopeCode.EVIDENCE_VIEW,
+                new OwnedResource(OwnedResource.Kind.LISTING_VARIANT, subjectId, storeId));
         return metricQuery.history(metricCode, SubjectKind.PLATFORM_LISTING_VARIANT, subjectId,
                 window, limit);
     }

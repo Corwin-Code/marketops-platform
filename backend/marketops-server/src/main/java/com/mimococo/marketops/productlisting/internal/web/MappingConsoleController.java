@@ -4,6 +4,7 @@ import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
+import com.mimococo.marketops.identityaccess.OwnedResource;
 import com.mimococo.marketops.productlisting.internal.application.ListingMappingService;
 import com.mimococo.marketops.productlisting.internal.domain.ConflictState;
 import com.mimococo.marketops.productlisting.internal.domain.ListingMapping;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
  * site rather than hidden in a filter.
  */
 @RestController
+@com.mimococo.marketops.shared.ConsoleApi
 @RequestMapping("/api/v1/console/mapping")
 class MappingConsoleController {
 
@@ -83,8 +85,8 @@ class MappingConsoleController {
     @ResponseStatus(HttpStatus.CREATED)
     MappingCandidate propose(AuthenticatedActor actor,
                              @Valid @RequestBody ProposeRequest request) {
-        authorization.require(actor, ActionScopeCode.MAPPING_RESOLVE,
-                ResourceScope.organization(actor.organizationId()));
+        authorization.requireOwned(actor, ActionScopeCode.MAPPING_RESOLVE,
+                new OwnedResource(OwnedResource.Kind.LISTING_VARIANT, request.platformListingVariantId()));
         return mappingService.proposeManually(actor, request.platformListingVariantId(),
                 request.productVariantId(), request.note());
     }
@@ -95,8 +97,8 @@ class MappingConsoleController {
     ListingMapping confirm(AuthenticatedActor actor,
                            @PathVariable UUID id,
                            @Valid @RequestBody DecisionRequest request) {
-        authorization.require(actor, ActionScopeCode.MAPPING_RESOLVE,
-                ResourceScope.organization(actor.organizationId()));
+        authorization.requireOwned(actor, ActionScopeCode.MAPPING_RESOLVE,
+                new OwnedResource(OwnedResource.Kind.MAPPING_CANDIDATE, id));
         return mappingService.confirm(actor, id, request.reason(), request.expectedVersion());
     }
 
@@ -106,8 +108,8 @@ class MappingConsoleController {
     void reject(AuthenticatedActor actor,
                 @PathVariable UUID id,
                 @Valid @RequestBody DecisionRequest request) {
-        authorization.require(actor, ActionScopeCode.MAPPING_RESOLVE,
-                ResourceScope.organization(actor.organizationId()));
+        authorization.requireOwned(actor, ActionScopeCode.MAPPING_RESOLVE,
+                new OwnedResource(OwnedResource.Kind.MAPPING_CANDIDATE, id));
         mappingService.reject(actor, id, request.reason(), request.expectedVersion());
     }
 
@@ -117,8 +119,8 @@ class MappingConsoleController {
     void resolveConflict(AuthenticatedActor actor,
                          @PathVariable UUID id,
                          @Valid @RequestBody ConflictResolutionRequest request) {
-        authorization.require(actor, ActionScopeCode.MAPPING_RESOLVE,
-                ResourceScope.organization(actor.organizationId()));
+        authorization.requireOwned(actor, ActionScopeCode.MAPPING_RESOLVE,
+                new OwnedResource(OwnedResource.Kind.MAPPING_CONFLICT, id));
         mappingService.resolveConflict(actor, id, request.state(), request.reason(),
                 request.expectedVersion());
     }

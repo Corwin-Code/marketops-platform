@@ -10,15 +10,22 @@ output "subnet_ids" {
 
 output "application_security_group_id" {
   description = "Group the application hosts join."
-  value       = yandex_vpc_security_group.application.id
+  value       = yandex_vpc_security_group.groups["application"].id
 }
 
 output "database_security_group_id" {
   description = "Group the managed database is reachable through."
-  value       = yandex_vpc_security_group.database.id
+  value       = yandex_vpc_security_group.groups["database"].id
 }
 
 output "load_balancer_security_group_id" {
   description = "Group the public entry point joins."
-  value       = yandex_vpc_security_group.load_balancer.id
+  value       = yandex_vpc_security_group.groups["load-balancer"].id
+}
+
+output "worker_security_group_id" {
+  value = yandex_vpc_security_group.groups["worker"].id
+}
+output "migration_security_group_id" {
+  value = yandex_vpc_security_group.groups["migration"].id
 }

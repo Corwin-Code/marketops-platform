@@ -143,10 +143,7 @@ public class ExecutionService {
         }
 
         UUID commandId = commands.submit(new PriceCommandRequest(
-                proposal.organizationId(), recommendationId, decision.id(), proposal.storeId(),
-                proposal.subjectId(), context.platformCode(), capabilityId, priorPrice,
-                targetPrice, priceNow.observationId(), proposal.entityVersionDigest(),
-                RETRY_BUDGET));
+                recommendationId, expectedVersion, actor.userId()));
 
         recommendations.transition(actor.userId().toString(), recommendationId,
                 RecommendationState.COMMAND_CREATED, null, expectedVersion);

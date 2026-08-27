@@ -107,6 +107,10 @@
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.springframework.modulith</groupId>
@@ -121,6 +125,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webmvc-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -151,7 +160,17 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <!-- The one-shot migration CLI is a second main, not the server entrypoint. -->
+          <mainClass>com.mimococo.marketops.MarketOpsServerApplication</mainClass>
+        </configuration>
         <executions>
+          <execution>
+            <id>browser-fixture</id>
+            <configuration>
+              <mainClass>com.mimococo.marketops.BrowserFixtureApplication</mainClass>
+            </configuration>
+          </execution>
           <execution>
             <id>build-info</id>
             <goals>

@@ -54,6 +54,9 @@ public class WorkTaskRepository {
                             updated_at = :at, version = :newVersion
                         WHERE id = :id AND version = :expectedVersion
                           AND state IN ('OPEN', 'ASSIGNED')
+                          AND EXISTS (SELECT 1 FROM iam.user_account assignee
+                               WHERE assignee.id = :assigneeUserId AND assignee.status = 'ACTIVE'
+                                 AND assignee.organization_id = ops.work_task.organization_id)
                         """)
                 .param("assigneeUserId", assigneeUserId)
                 .param("at", Timestamp.from(at))

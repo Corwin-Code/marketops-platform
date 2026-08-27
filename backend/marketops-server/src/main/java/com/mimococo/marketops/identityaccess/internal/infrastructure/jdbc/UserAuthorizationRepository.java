@@ -3,6 +3,7 @@ package com.mimococo.marketops.identityaccess.internal.infrastructure.jdbc;
 import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.BusinessRoleCode;
 import com.mimococo.marketops.identityaccess.ResourceScopeType;
+import com.mimococo.marketops.identityaccess.OwnedResource;
 import com.mimococo.marketops.identityaccess.internal.domain.ScopeChain;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -139,6 +140,65 @@ public class UserAuthorizationRepository {
                         rows.getObject("store_id", UUID.class),
                         rows.getObject("warehouse_id", UUID.class)))
                 .optional();
+    }
+
+    /** Ownership is selected by a closed query set; client identifiers never become SQL. */
+    public Optional<ScopeChain> resolveOwner(OwnedResource resource) {
+        String target = switch (resource.kind()) {
+            case LISTING_VARIANT -> """
+                    SELECT v.organization_id, l.store_id
+                      FROM core.platform_listing_variant v
+                      JOIN core.platform_listing l ON l.id = v.platform_listing_id
+                     WHERE v.id = :resourceId
+                    """;
+            case IMPORT_BATCH -> "SELECT organization_id, NULL::uuid AS store_id"
+                    + " FROM staging.import_batch WHERE id = :resourceId";
+            case AI_INVOCATION -> """
+                    SELECT i.organization_id, l.store_id FROM ops.ai_invocation i
+                      JOIN core.platform_listing_variant v ON v.id = i.subject_id
+                       AND v.organization_id = i.organization_id
+                      JOIN core.platform_listing l ON l.id = v.platform_listing_id
+                     WHERE i.id = :resourceId AND i.subject_kind = 'PLATFORM_LISTING_VARIANT'
+                    """;
+            case WORK_TASK -> """
+                    SELECT t.organization_id, r.store_id FROM ops.work_task t
+                      JOIN ops.recommendation r ON r.id = t.recommendation_id
+                       AND r.organization_id = t.organization_id WHERE t.id = :resourceId
+                    """;
+            case RECOMMENDATION -> "SELECT organization_id, store_id"
+                    + " FROM ops.recommendation WHERE id = :resourceId";
+            case MAPPING_CANDIDATE, MAPPING_CONFLICT -> """
+                    SELECT m.organization_id, l.store_id FROM %s m
+                      JOIN core.platform_listing_variant v ON v.id = m.platform_listing_variant_id
+                       AND v.organization_id = m.organization_id
+                      JOIN core.platform_listing l ON l.id = v.platform_listing_id
+                     WHERE m.id = :resourceId
+                    """.formatted(resource.kind() == OwnedResource.Kind.MAPPING_CANDIDATE
+                            ? "core.listing_mapping_candidate" : "core.mapping_conflict");
+            case PROVENANCE -> """
+                    SELECT p.organization_id, j.store_id FROM core.fact_provenance p
+                      LEFT JOIN raw.raw_acquisition_observation o ON o.id = p.raw_observation_id
+                      LEFT JOIN ops.ingestion_run r ON r.id = o.run_id
+                      LEFT JOIN platform.ingestion_job j ON j.id = r.job_id
+                     WHERE p.id = :resourceId AND (p.raw_observation_id IS NULL
+                       OR (j.store_id IS NOT NULL AND EXISTS (SELECT 1 FROM core.store s
+                           WHERE s.id = j.store_id AND s.organization_id = p.organization_id)))
+                    """;
+        };
+        return jdbc.sql("""
+                SELECT target.organization_id, account.legal_entity_id,
+                       store.marketplace_account_id, target.store_id, NULL::uuid AS warehouse_id
+                  FROM (%s) target
+                  LEFT JOIN core.store store ON store.id = target.store_id
+                   AND store.organization_id = target.organization_id
+                  LEFT JOIN core.marketplace_account account ON account.id = store.marketplace_account_id
+                 WHERE target.store_id IS NULL OR store.id IS NOT NULL
+                """.formatted(target)).param("resourceId", resource.id())
+                .query((rows, number) -> new ScopeChain(
+                        rows.getObject("organization_id", UUID.class),
+                        rows.getObject("legal_entity_id", UUID.class),
+                        rows.getObject("marketplace_account_id", UUID.class),
+                        rows.getObject("store_id", UUID.class), null)).optional();
     }
 
     /** Whether a live grant covers any level of this chain for this action. */

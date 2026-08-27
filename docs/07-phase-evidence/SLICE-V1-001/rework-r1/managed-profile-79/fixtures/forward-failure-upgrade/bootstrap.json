@@ -1,0 +1,83 @@
+{
+  "schemaVersion" : "2.0",
+  "serviceProfile" : "YANDEX_MANAGED_EMULATION",
+  "environmentReference" : "test:postgres17:marketops",
+  "repositoryCommit" : "1111111111111111111111111111111111111111111111111111111111111111",
+  "repositoryTree" : "2222222222222222222222222222222222222222222222222222222222222222",
+  "expectedPostgresqlMajor" : 17,
+  "postgresqlMajor" : 17,
+  "attestationState" : "ATTESTED",
+  "canonicalV0002Path" : "db/migration/V0002__enable_btree_gist_extension.sql",
+  "canonicalV0002GitBlob" : "bd3e55ea737ffda9d519a931eea1f3cc58b8c522",
+  "canonicalV0002Sha256" : "438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16",
+  "canonicalV0002FlywayChecksum" : 1291326236,
+  "resolvedVersion" : "0002",
+  "resolvedDescription" : "enable btree gist extension",
+  "executorMode" : "EXTERNALLY_SATISFIED_PROVIDER_EXTENSION",
+  "requiredExtensions" : {
+    "pgcrypto" : "1.3",
+    "btree_gist" : "1.7"
+  },
+  "extensions" : {
+    "pgcrypto" : "1.3",
+    "btree_gist" : "1.7"
+  },
+  "providerEvidenceSha256" : "3333333333333333333333333333333333333333333333333333333333333333",
+  "providerDocumentSha256" : "34e1f92c87f22eb1256f49b2a31c49911cd62bb7c18ce4f7960e43f585584c96",
+  "providerControlPlaneApplied" : false,
+  "artifactKind" : "MANAGED_V0002_BOOTSTRAP",
+  "expectedBootstrapSha256" : "ABSENT",
+  "timestamp" : "2026-08-28T00:03:00Z",
+  "correlation" : "managed-forward-failure",
+  "failureStage" : "NONE",
+  "migrationResult" : "SUCCESS",
+  "flywayHistoryBefore" : {
+    "state" : "ABSENT",
+    "v0002" : "ABSENT"
+  },
+  "flywayHistoryAfter" : {
+    "v0002" : "CANONICAL",
+    "state" : "PRESENT",
+    "migrations" : [ {
+      "version" : "0001",
+      "description" : "create foundation schemas",
+      "type" : "SQL",
+      "script" : "db/migration/V0001__create_foundation_schemas.sql",
+      "checksum" : -216558555,
+      "success" : true
+    }, {
+      "version" : "0002",
+      "description" : "enable btree gist extension",
+      "type" : "SQL",
+      "script" : "V0002__enable_btree_gist_extension.sql",
+      "checksum" : 1291326236,
+      "success" : true
+    } ]
+  },
+  "extensionFacts" : {
+    "pgcrypto" : {
+      "version" : "1.3",
+      "owner" : "bootstrap_admin",
+      "schema" : "public"
+    },
+    "btree_gist" : {
+      "version" : "1.7",
+      "owner" : "bootstrap_admin",
+      "schema" : "public"
+    }
+  },
+  "roleAssertions" : {
+    "currentUserIsMigration" : true,
+    "providerSqlExtensionDdlDenied" : true,
+    "applicationCannotCreateDatabaseObjects" : true,
+    "runtimeCannotAssumeExtensionOwner" : true,
+    "managedExtensionsNotOwnedByRuntimeRoles" : true,
+    "runtimeRolesAreNonPrivileged" : true,
+    "serverMajorIs17" : true,
+    "applicationIsNotMigrationMember" : true,
+    "extensionMembersInSecureSchema" : true
+  },
+  "startedEvidenceSha256" : "0d46136527294a32504ea1ba36a8b9fb4ab3c8cc4ed48280a423e56b77453624",
+  "databaseIdentity" : "test:postgres17:marketops",
+  "attestedEvidenceSha256" : "f1cb4ca746499fba4d10eef08624a19aed404a308826c1c1edd30bcf1806325e"
+}

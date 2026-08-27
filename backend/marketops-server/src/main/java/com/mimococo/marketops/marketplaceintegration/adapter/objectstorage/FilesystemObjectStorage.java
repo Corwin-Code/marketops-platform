@@ -6,11 +6,9 @@ import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.OperationRejectedException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,7 +22,7 @@ import java.util.regex.Pattern;
  * read-back-verified are properties of this implementation, not concessions
  * made because the managed store is elsewhere.
  *
- * <p>A write lands in a temporary file and is moved into place atomically, so a
+ * <p>A write lands in a temporary file and is linked into place atomically, so a
  * process that dies mid-write leaves no partial object under a name that claims
  * to be complete. An existing name is never replaced; the move is refused and
  * the caller is told the reference already holds content.
@@ -39,6 +37,8 @@ public final class FilesystemObjectStorage implements ObjectStoragePort {
             "^object-ref://[a-z0-9][a-z0-9-]{0,62}(/[a-z0-9][a-z0-9._-]{0,62}){1,6}$");
 
     private static final String SCHEME = "object-ref://";
+    /** Same custody body ceiling as the managed adapter and import boundary. */
+    private static final int MAXIMUM_BYTES = 8 * 1024 * 1024;
 
     private final Path root;
 
@@ -48,6 +48,9 @@ public final class FilesystemObjectStorage implements ObjectStoragePort {
 
     @Override
     public PutOutcome putIfAbsent(String objectRef, byte[] body) {
+        if (body == null || body.length > MAXIMUM_BYTES) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
         Path target = resolve(objectRef);
         try {
             Files.createDirectories(target.getParent());
@@ -56,15 +59,17 @@ public final class FilesystemObjectStorage implements ObjectStoragePort {
             }
             Path staged = Files.createTempFile(target.getParent(), "staged-", ".part");
             try {
-                Files.write(staged, body);
+                try (var channel = java.nio.channels.FileChannel.open(staged, java.nio.file.StandardOpenOption.WRITE)) {
+                    var bytes = java.nio.ByteBuffer.wrap(body);
+                    while (bytes.hasRemaining()) { channel.write(bytes); }
+                    channel.force(true);
+                }
                 moveIntoPlace(staged, target);
                 return PutOutcome.STORED;
             } catch (FileAlreadyExistsException raced) {
-                Files.deleteIfExists(staged);
                 return PutOutcome.ALREADY_PRESENT;
-            } catch (IOException | RuntimeException failure) {
+            } finally {
                 Files.deleteIfExists(staged);
-                throw failure;
             }
         } catch (IOException failure) {
             throw new UncheckedIOException(failure);
@@ -74,11 +79,17 @@ public final class FilesystemObjectStorage implements ObjectStoragePort {
     @Override
     public Optional<byte[]> read(String objectRef) {
         Path target = resolve(objectRef);
-        if (!Files.isRegularFile(target)) {
+        if (!Files.isRegularFile(target, java.nio.file.LinkOption.NOFOLLOW_LINKS)) {
             return Optional.empty();
         }
         try {
-            return Optional.of(Files.readAllBytes(target));
+            try (var input = Files.newInputStream(target, java.nio.file.LinkOption.NOFOLLOW_LINKS)) {
+                byte[] bytes = input.readNBytes(MAXIMUM_BYTES + 1);
+                if (bytes.length > MAXIMUM_BYTES) {
+                    throw OperationRejectedException.of(ErrorCode.OBJECT_STORAGE_VERIFICATION_FAILED);
+                }
+                return Optional.of(bytes);
+            }
         } catch (IOException failure) {
             throw new UncheckedIOException(failure);
         }
@@ -94,16 +105,14 @@ public final class FilesystemObjectStorage implements ObjectStoragePort {
     /**
      * Move the staged file into place without replacing an existing object.
      *
-     * <p>An atomic move is preferred and is what makes a concurrent writer see
-     * either the whole object or none of it. Filesystems that cannot promise
-     * atomicity fall back to a non-replacing move, which still refuses to
-     * overwrite; only the all-or-nothing visibility is weaker there.
+     * <p>Atomic move does not promise non-replacement on every filesystem.
+     * Creating a hard link fails if the name exists, so two competing writers
+     * cannot replace one another. Unsupported filesystems fail closed.
      */
     private static void moveIntoPlace(Path staged, Path target) throws IOException {
-        try {
-            Files.move(staged, target, StandardCopyOption.ATOMIC_MOVE);
-        } catch (AtomicMoveNotSupportedException unsupported) {
-            Files.move(staged, target);
+        Files.createLink(target, staged);
+        try (var directory = java.nio.channels.FileChannel.open(target.getParent(), java.nio.file.StandardOpenOption.READ)) {
+            directory.force(true);
         }
     }
 

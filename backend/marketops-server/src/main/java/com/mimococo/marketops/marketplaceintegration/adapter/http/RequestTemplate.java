@@ -25,6 +25,9 @@ final class RequestTemplate {
 
     /** A placeholder occurrence in a recorded template. */
     private static final Pattern PLACEHOLDER = Pattern.compile("\\{([a-zA-Z][a-zA-Z0-9]{0,31})}");
+    private static final java.util.Set<String> ALLOWED = java.util.Set.of(
+            "cursor", "limit", "accountKey", "endpointCode", "nativeListingKey", "nativeVariantKey",
+            "targetPrice", "currencyCode", "idempotencyKey", "nativeTaskKey");
 
     /** How a substituted value is escaped for the position it occupies. */
     enum Escaping {
@@ -57,7 +60,7 @@ final class RequestTemplate {
         while (matcher.find()) {
             String name = matcher.group(1);
             String value = values.get(name);
-            if (value == null) {
+            if (value == null || !ALLOWED.contains(name)) {
                 throw OperationRejectedException.of(ErrorCode.CAPABILITY_NOT_USABLE);
             }
             matcher.appendReplacement(rendered, Matcher.quoteReplacement(escape(value, escaping)));

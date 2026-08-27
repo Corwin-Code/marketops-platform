@@ -13,8 +13,8 @@ import com.mimococo.marketops.shared.ErrorCode;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Service;
@@ -64,8 +64,8 @@ public class TokenIdentityResolver {
      * @param subject the {@code sub} claim
      * @param sessionId the provider session or token identifier, or {@code null}
      * @param issuedAt the {@code iat} claim
-     * @param authenticatedAt the {@code auth_time} claim, or the issue time when absent
-     * @param authenticationMethods values of the provider's multi-factor claim
+     * @param authenticatedAt the {@code auth_time} claim, or EPOCH when unknown (never fresh step-up evidence)
+     * @param claims validated token claims; only the provider's exact configured MFA claim is consulted
      */
     @Transactional
     public TokenResolution resolve(String issuer,
@@ -73,7 +73,14 @@ public class TokenIdentityResolver {
                                    String sessionId,
                                    Instant issuedAt,
                                    Instant authenticatedAt,
-                                   Collection<String> authenticationMethods) {
+                                   Map<String, Object> claims) {
+        Instant now = clock.instant();
+        if (issuer == null || issuer.isBlank() || subject == null || subject.isBlank()
+                || issuedAt == null || authenticatedAt == null || claims == null
+                || issuedAt.isBefore(Instant.EPOCH) || issuedAt.isAfter(now)
+                || authenticatedAt.isBefore(Instant.EPOCH) || authenticatedAt.isAfter(issuedAt)) {
+            return new TokenResolution.Refused(ErrorCode.AUTHENTICATION_REQUIRED);
+        }
         String subjectDigest = Digest.ofComponents(List.of(issuer, subject));
         String sessionDigest =
                 sessionId == null ? null : Digest.ofComponents(List.of(issuer, sessionId));
@@ -88,7 +95,8 @@ public class TokenIdentityResolver {
         }
         IdentityProviderRecord provider = registration.get();
 
-        boolean multiFactorPresent = authenticationMethods.contains(provider.mfaClaimValue());
+        boolean multiFactorPresent = matchesMultiFactorClaim(
+                claims.get(provider.mfaClaimName()), provider.mfaClaimValue());
         if (!multiFactorPresent) {
             journal.recordAuthenticationDenial(issuer, provider.id(), subjectDigest,
                     sessionDigest, ErrorCode.MULTI_FACTOR_REQUIRED.name(), authenticatedAt, false);
@@ -112,7 +120,6 @@ public class TokenIdentityResolver {
             return new TokenResolution.Refused(ErrorCode.USER_INACTIVE);
         }
 
-        Instant now = clock.instant();
         Set<BusinessRoleCode> roles = authorization.liveRoles(profile.id(), now);
         AuthenticatedActor actor = new AuthenticatedActor(
                 profile.id(),
@@ -129,6 +136,16 @@ public class TokenIdentityResolver {
 
         recordContinuedActivity(profile, provider, actor, now);
         return new TokenResolution.Accepted(actor);
+    }
+
+    private static boolean matchesMultiFactorClaim(Object claim, String expected) {
+        if (claim instanceof String value) {
+            return value.equals(expected);
+        }
+        if (claim instanceof List<?> values) {
+            return values.stream().allMatch(String.class::isInstance) && values.contains(expected);
+        }
+        return false;
     }
 
     /**

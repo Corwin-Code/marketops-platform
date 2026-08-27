@@ -169,7 +169,14 @@ final class SignatureV4 {
     }
 
     private static byte[] signingKey(char[] secretKey, Instant instant, String region) {
-        byte[] initial = ("AWS4" + new String(secretKey)).getBytes(StandardCharsets.UTF_8);
+        char[] material = new char[secretKey.length + 4];
+        "AWS4".getChars(0,4,material,0);
+        System.arraycopy(secretKey,0,material,4,secretKey.length);
+        java.nio.ByteBuffer encoded = StandardCharsets.UTF_8.encode(java.nio.CharBuffer.wrap(material));
+        java.util.Arrays.fill(material,'\0');
+        byte[] initial = new byte[encoded.remaining()];
+        encoded.get(initial);
+        java.util.Arrays.fill(encoded.array(),(byte)0);
         byte[] dateKey = hmac(initial, amzDate(instant).getBytes(StandardCharsets.UTF_8));
         java.util.Arrays.fill(initial, (byte) 0);
         byte[] regionKey = hmac(dateKey, region.getBytes(StandardCharsets.UTF_8));

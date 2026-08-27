@@ -11,6 +11,10 @@ import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.MetadataFieldPolicy;
 import com.mimococo.marketops.shared.OperationRejectedException;
 import java.time.Clock;
+import com.mimococo.marketops.identityaccess.AuthenticatedActor;
+import com.mimococo.marketops.identityaccess.BusinessAuthorization;
+import com.mimococo.marketops.identityaccess.ActionScopeCode;
+import com.mimococo.marketops.identityaccess.OwnedResource;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,18 +37,23 @@ public class WorkTaskService {
     private final WorkTaskRepository tasks;
     private final MetadataAuditRecorder auditRecorder;
     private final Clock clock;
+    private final BusinessAuthorization authorization;
 
     WorkTaskService(WorkTaskRepository tasks, MetadataAuditRecorder auditRecorder,
-                    Clock clock) {
+                    Clock clock, BusinessAuthorization authorization) {
         this.tasks = tasks;
         this.auditRecorder = auditRecorder;
         this.clock = clock;
+        this.authorization = authorization;
     }
 
     /** Give a task an owner. */
     @Transactional
-    public void assign(String operator, UUID taskId, UUID assigneeUserId,
+    public void assign(AuthenticatedActor actor, UUID taskId, UUID assigneeUserId,
                        long expectedVersion) {
+        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
+                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        String operator = actor.userId().toString();
         WorkTaskView task = require(taskId);
         if (!tasks.assign(taskId, assigneeUserId, clock.instant(), expectedVersion)) {
             throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
@@ -63,7 +72,10 @@ public class WorkTaskService {
 
     /** Record that somebody has started. */
     @Transactional
-    public void start(String operator, UUID taskId, long expectedVersion) {
+    public void start(AuthenticatedActor actor, UUID taskId, long expectedVersion) {
+        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
+                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        String operator = actor.userId().toString();
         WorkTaskView task = require(taskId);
         if (!tasks.start(taskId, clock.instant(), expectedVersion)) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
@@ -77,8 +89,11 @@ public class WorkTaskService {
 
     /** Finish a task, whether it was done or abandoned. */
     @Transactional
-    public void close(String operator, UUID taskId, boolean done, String closureReason,
+    public void close(AuthenticatedActor actor, UUID taskId, boolean done, String closureReason,
                       long expectedVersion) {
+        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
+                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        String operator = actor.userId().toString();
         WorkTaskView task = require(taskId);
         String reason = MetadataFieldPolicy.requireText("closureReason", closureReason);
         String state = done ? "DONE" : "CANCELLED";

@@ -1,0 +1,36 @@
+{
+  "package": "MarketOps_SLICE_V1_001_Controller_Deep_Review_and_Codex_Rework_Package_R1",
+  "version": "1.0",
+  "artifacts": [
+    {
+      "path": "CONTROLLER-SLICE-V1-001-COMPREHENSIVE-DEEP-REVIEW-R1.md",
+      "sha256": "df8a3cca26d1b4d0efd9f7f883764971cad8adb43ca698c6de545d52d46b6754",
+      "bytes": 8757
+    },
+    {
+      "path": "FROZEN-FINDING-SET-SLICE-V1-001-PR20-R1.json",
+      "sha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8",
+      "bytes": 51061
+    },
+    {
+      "path": "CODEX-SLICE-V1-001-FULL-PRODUCTION-ROOT-CAUSE-REWORK-R1.md",
+      "sha256": "4f0e9bf95b2d1d00854da6420ca7a2fa65d4ef28f01e9088008296b93ed2066c",
+      "bytes": 9900
+    },
+    {
+      "path": "CONTROLLER-REVIEW-EVIDENCE-SLICE-V1-001-PR20-R1.json",
+      "sha256": "a4b0e22c64a89272dfec3b90d91c6181d1a65b7b36c1ba32cec1023fb15ce6bb",
+      "bytes": 13930
+    },
+    {
+      "path": "OWNER-RETURN-AFTER-CODEX-SLICE-V1-001-REWORK.md",
+      "sha256": "b67407d960505fa391039409a9e79dcd9098e7a0a9454cc9186d940cce651223",
+      "bytes": 1035
+    },
+    {
+      "path": "README.md",
+      "sha256": "586dace0f345b7cf37ba615d7f24bce85918ecf02cecad1638d9b57c33c56c0e",
+      "bytes": 983
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.AuthorizationVerdict;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
+import com.mimococo.marketops.identityaccess.OwnedResource;
 import com.mimococo.marketops.identityaccess.internal.domain.IdentityDecisionOutcome;
 import com.mimococo.marketops.identityaccess.internal.domain.ScopeChain;
 import com.mimococo.marketops.identityaccess.internal.domain.UserProfile;
@@ -63,7 +64,7 @@ public class JdbcBusinessAuthorization implements BusinessAuthorization {
             return refuse(actor, action, resource, AuthorizationVerdict.PROFILE_INACTIVE);
         }
 
-        if (!authorization.rolesGrantAction(actor.roles(), action)) {
+        if (!authorization.rolesGrantAction(authorization.liveRoles(actor.userId(), now), action)) {
             return refuse(actor, action, resource, AuthorizationVerdict.ACTION_NOT_GRANTED);
         }
 
@@ -99,9 +100,25 @@ public class JdbcBusinessAuthorization implements BusinessAuthorization {
     }
 
     @Override
+    public void requireOwned(AuthenticatedActor actor, ActionScopeCode action, OwnedResource resource) {
+        Optional<ScopeChain> owner = authorization.resolveOwner(resource);
+        if (owner.isEmpty() || !owner.get().organizationId().equals(actor.organizationId())
+                || (resource.expectedStoreId() != null
+                    && !resource.expectedStoreId().equals(owner.get().storeId()))) {
+            refuse(actor, action, ResourceScope.organization(actor.organizationId()),
+                    AuthorizationVerdict.RESOURCE_NOT_IN_SCOPE);
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
+        require(actor, action, owner.get().storeId() == null
+                ? ResourceScope.organization(owner.get().organizationId())
+                : ResourceScope.store(owner.get().storeId()));
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<UUID> permittedStoreIds(AuthenticatedActor actor, ActionScopeCode action) {
-        if (!authorization.rolesGrantAction(actor.roles(), action)) {
+        Instant now = clock.instant();
+        if (!authorization.rolesGrantAction(authorization.liveRoles(actor.userId(), now), action)) {
             return List.of();
         }
         Optional<UserProfile> profile = profiles.findById(actor.userId());

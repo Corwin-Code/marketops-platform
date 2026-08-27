@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import { createHash } from 'node:crypto';
 
 /**
  * The operating console in a real browser.
@@ -157,6 +158,152 @@ async function routeIdentityProvider(page: Page): Promise<void> {
     });
   });
 }
+
+test.describe('TC-BROWSER-012 asynchronous export presentation and browser download integrity', () => {
+  for (const corrupt of [false, true]) {
+    test(
+      corrupt
+        ? 'refuses a corrupt final part without offering a partial file'
+        : 'waits for 202 completion and saves only the verified large export',
+      async ({ page }) => {
+        // UI/network fixtures only. DiagnosticExportIT separately exercises these
+        // routes, authorization, SQL and custody against the real PG17 backend.
+        await routeIdentityProvider(page);
+        const id = '00000000-0000-4000-8000-000000000123';
+        const line =
+          JSON.stringify({
+            schemaVersion: 1,
+            recordType: 'METRIC_INPUT',
+            metricValueId: id,
+            referenceKind: 'METRIC_VALUE',
+            referenceId: id,
+          }) + '\n';
+        const part = line.repeat(10000);
+        const digest = (body: string): string => createHash('sha256').update(body).digest('hex');
+        const job = {
+          id,
+          storeId: STORE_ID,
+          window: 'D30',
+          state: 'SUCCEEDED',
+          createdAt: '2026-08-28T00:00:00Z',
+          snapshotAt: '2026-08-28T00:00:01Z',
+          expiresAt: '2026-08-28T01:00:01Z',
+          rowCount: 30000,
+          byteLength: Buffer.byteLength(part) * 3,
+          completedParts: 3,
+          failureCode: null,
+        };
+        const document = JSON.stringify({
+          schemaVersion: 1,
+          format: 'marketops-diagnostic-ndjson-v1',
+          exportId: id,
+          storeId: STORE_ID,
+          window: 'D30',
+          snapshotAt: job.snapshotAt,
+          rowCount: job.rowCount,
+          byteLength: job.byteLength,
+          parts: [1, 2, 3].map((n) => ({
+            partNumber: n,
+            firstOrdinal: (n - 1) * 10000 + 1,
+            lastOrdinal: n * 10000,
+            rowCount: 10000,
+            byteLength: Buffer.byteLength(part),
+            sha256: digest(part),
+          })),
+        });
+        let submitted = false;
+        let statusRead = false;
+        const downloadedParts: number[] = [];
+        await page.route(`${API_ORIGIN}/api/v1/console/diagnosis/**`, async (target) => {
+          const path = new URL(target.request().url()).pathname;
+          const headers = {
+            'access-control-allow-origin': 'http://127.0.0.1:4173',
+            'access-control-allow-headers': 'Authorization, Idempotency-Key, X-Correlation-ID',
+            'access-control-allow-methods': 'GET,POST,OPTIONS',
+            'cache-control': 'no-store',
+          };
+          if (target.request().method() === 'OPTIONS') {
+            await target.fulfill({ status: 204, headers });
+            return;
+          }
+          let body: unknown = [];
+          let status = 200;
+          if (path.endsWith(`/stores/${STORE_ID}/exports`)) {
+            expect(target.request().method()).toBe('POST');
+            expect(target.request().headers()['idempotency-key']).toMatch(/^[0-9a-f-]{36}$/);
+            submitted = true;
+            status = 202;
+            body = {
+              ...job,
+              state: 'QUEUED',
+              rowCount: 0,
+              byteLength: 0,
+              completedParts: 0,
+              snapshotAt: null,
+              expiresAt: null,
+            };
+          } else if (path.endsWith(`/exports/${id}`)) {
+            expect(submitted).toBe(true);
+            statusRead = true;
+            body = job;
+          } else if (path.endsWith('/manifest')) {
+            expect(statusRead).toBe(true);
+            body = { document, sha256: digest(document) };
+          } else if (path.includes('/parts/')) {
+            expect(statusRead).toBe(true);
+            const number = Number(path.split('/').at(-1));
+            downloadedParts.push(number);
+            await target.fulfill({
+              status: 200,
+              headers,
+              contentType: 'application/octet-stream',
+              body: corrupt && number === 3 ? part.replace('METRIC_INPUT', 'METRIC_BROKE') : part,
+            });
+            return;
+          }
+          await target.fulfill({
+            status,
+            headers,
+            contentType: 'application/json',
+            body: JSON.stringify(body),
+          });
+        });
+        await page.goto('/');
+        await page.getByRole('button', { name: 'Continue to sign in' }).click();
+        await page.getByRole('button', { name: 'Prepare export' }).click();
+        await expect(page.getByLabel('Diagnostic export')).toContainText('QUEUED');
+        expect(downloadedParts).toEqual([]);
+        const button = page.getByRole('button', { name: 'Download verified export' });
+        await expect(button).toBeVisible();
+        if (corrupt) {
+          let downloads = 0;
+          page.on('download', () => {
+            downloads++;
+          });
+          await button.click();
+          await expect(page.getByRole('alert')).toContainText('No file was saved');
+          expect(downloads).toBe(0);
+        } else {
+          const ready = page.waitForEvent('download');
+          await button.click();
+          const download = await ready;
+          expect(download.suggestedFilename()).toBe(`diagnostic-${id}.ndjson`);
+          const stream = await download.createReadStream();
+          const actual = createHash('sha256');
+          let size = 0;
+          for await (const chunk of stream) {
+            const bytes = Buffer.from(chunk as Uint8Array);
+            size += bytes.length;
+            actual.update(bytes);
+          }
+          expect(size).toBe(job.byteLength);
+          expect(actual.digest('hex')).toBe(digest(part.repeat(3)));
+        }
+        expect(downloadedParts).toEqual([1, 2, 3]);
+      },
+    );
+  }
+});
 
 test.describe('TC-BROWSER-011 the operator journey runs in a real browser', () => {
   test('signs in, reaches the work list, and never labels doubt as certainty', async ({ page }) => {

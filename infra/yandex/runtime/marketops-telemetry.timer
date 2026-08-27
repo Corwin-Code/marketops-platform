@@ -1,0 +1,11 @@
+[Unit]
+Description=Sample MarketOps operational signals every thirty seconds
+
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=30
+AccuracySec=1
+Unit=marketops-telemetry.service
+
+[Install]
+WantedBy=timers.target

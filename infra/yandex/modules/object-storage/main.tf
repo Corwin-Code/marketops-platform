@@ -12,19 +12,20 @@
 # that can be deleted by whoever is embarrassed by it is not evidence.
 
 terraform {
-  required_version = ">= 1.9.0"
+  required_version = ">= 1.14.9, < 2.0.0"
 
   required_providers {
     yandex = {
       source  = "yandex-cloud/yandex"
-      version = "~> 0.140"
+      version = "= 0.220.0"
     }
   }
 }
 
 resource "yandex_storage_bucket" "evidence" {
-  bucket    = var.bucket_name
-  folder_id = var.folder_id
+  bucket        = var.bucket_name
+  folder_id     = var.folder_id
+  force_destroy = false
 
   # Versioning is a precondition for object lock, and it is also what makes an
   # accidental overwrite recoverable rather than final.
@@ -98,6 +99,14 @@ resource "yandex_storage_bucket_policy" "evidence" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid       = "WorkloadsCannotDeleteOrRelaxCustody"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = ["s3:DeleteObject", "s3:DeleteObjectVersion", "s3:PutObjectRetention", "s3:PutBucketPolicy", "s3:DeleteBucketPolicy"]
+        Resource  = ["arn:aws:s3:::${var.bucket_name}", "arn:aws:s3:::${var.bucket_name}/*"]
+        Condition = { StringEquals = { "aws:userid" = var.permitted_service_account_ids } }
+      },
+      {
         Sid       = "RefuseUnencryptedTransport"
         Effect    = "Deny"
         Principal = "*"
@@ -121,10 +130,26 @@ resource "yandex_storage_bucket_policy" "evidence" {
         ]
         Condition = {
           StringNotEquals = {
-            "aws:userid" = var.permitted_service_account_ids
+            "aws:userid" = concat(var.permitted_service_account_ids, [var.infrastructure_service_account_id])
           }
         }
       },
     ]
   })
+}
+
+resource "yandex_storage_bucket_iam_binding" "readers" {
+  bucket  = yandex_storage_bucket.evidence.bucket
+  role    = "storage.viewer"
+  members = [for id in var.permitted_service_account_ids : "serviceAccount:${id}"]
+}
+resource "yandex_storage_bucket_iam_binding" "writers" {
+  bucket  = yandex_storage_bucket.evidence.bucket
+  role    = "storage.uploader"
+  members = [for id in var.permitted_service_account_ids : "serviceAccount:${id}"]
+}
+resource "yandex_kms_symmetric_key_iam_binding" "evidence" {
+  symmetric_key_id = var.kms_key_id
+  role             = "kms.keys.encrypterDecrypter"
+  members          = [for id in var.permitted_service_account_ids : "serviceAccount:${id}"]
 }

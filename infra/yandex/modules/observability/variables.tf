@@ -29,3 +29,7 @@ variable "labels" {
   type        = map(string)
   default     = {}
 }
+
+variable "audit_service_account_id" {
+  type = string
+}

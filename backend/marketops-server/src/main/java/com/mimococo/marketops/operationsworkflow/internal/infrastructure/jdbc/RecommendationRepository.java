@@ -165,16 +165,24 @@ public class RecommendationRepository {
     /** The proposals of one store awaiting attention, most urgent first. */
     public List<RecommendationView> queue(UUID storeId, List<RecommendationState> states,
                                           int limit) {
+        return queue(storeId, null, states, limit);
+    }
+
+    /** Apply subject scope before the bounded page, so other subjects cannot displace it. */
+    public List<RecommendationView> queue(UUID storeId, UUID subjectId,
+                                          List<RecommendationState> states, int limit) {
         List<RecommendationView> rows = jdbc.sql(SELECT_RECOMMENDATION + """
                          WHERE recommendation.store_id = :storeId
+                           AND (CAST(:subjectId AS uuid) IS NULL OR recommendation.subject_id = :subjectId)
                            AND recommendation.state = ANY (:states)
                          ORDER BY recommendation.priority_score DESC,
                                   recommendation.valid_until
                          LIMIT :limit
                         """)
                 .param("storeId", storeId)
+                .param("subjectId", subjectId, java.sql.Types.OTHER)
                 .param("states", states.stream().map(Enum::name).toArray(String[]::new))
-                .param("limit", limit)
+                .param("limit", Math.clamp(limit, 1, 200))
                 .query(this::map)
                 .list();
         return rows.stream().map(this::withEvidence).toList();

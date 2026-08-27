@@ -93,6 +93,25 @@ class CorsContractTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void diagnosticExportPreflightPermitsItsIdempotencyKeyWithoutAmbientCredentials() throws Exception {
+        MockMvc client = client(List.of(DEVELOPMENT_ORIGIN));
+        String export = "/api/v1/console/diagnosis/stores/00000000-0000-0000-0000-000000000001/exports";
+        client.perform(options(export).header(HttpHeaders.ORIGIN, DEVELOPMENT_ORIGIN)
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Authorization,Idempotency-Key"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Authorization, Idempotency-Key"))
+                .andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS));
+        client.perform(options(export).header(HttpHeaders.ORIGIN, "https://untrusted.example.test")
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST"))
+                .andExpect(status().isForbidden());
+        client.perform(options(export).header(HttpHeaders.ORIGIN, DEVELOPMENT_ORIGIN)
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "X-Object-Ref"))
+                .andExpect(status().isForbidden());
+    }
+
     private static MockMvc client(List<String> allowedOrigins) {
         CorsProperties properties = new CorsProperties();
         properties.setAllowedOrigins(allowedOrigins);

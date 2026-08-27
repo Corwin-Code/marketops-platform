@@ -63,6 +63,8 @@ ALTER TABLE ops.ingestion_run
     ADD COLUMN window_from timestamptz,
     ADD COLUMN window_to timestamptz,
     ADD COLUMN failure_code text,
+    ADD COLUMN next_attempt_at timestamptz,
+    ADD COLUMN max_claims integer NOT NULL DEFAULT 4 CHECK (max_claims BETWEEN 1 AND 11),
     ADD CONSTRAINT ingestion_run_kind_ck
         CHECK (run_kind IN ('SCHEDULED', 'MANUAL', 'BACKFILL', 'REPLAY')),
     ADD CONSTRAINT ingestion_run_window_ck
@@ -117,7 +119,8 @@ CREATE FUNCTION ops.enqueue_ingestion_run(
     p_job_id      uuid,
     p_run_kind    text,
     p_window_from timestamptz,
-    p_window_to   timestamptz)
+    p_window_to   timestamptz,
+    p_max_claims  integer DEFAULT 4)
 RETURNS uuid
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -138,10 +141,10 @@ BEGIN
     BEGIN
         INSERT INTO ops.ingestion_run (
             id, job_id, state, fence_token, lease_owner, lease_expires_at,
-            attempt_no, last_call_seq, run_kind, window_from, window_to,
+            attempt_no, last_call_seq, run_kind, window_from, window_to, max_claims,
             created_at, updated_at)
         VALUES (p_run_id, p_job_id, 'QUEUED', 1, NULL, NULL,
-            0, 0, p_run_kind, p_window_from, p_window_to,
+            0, 0, p_run_kind, p_window_from, p_window_to, p_max_claims,
             clock_timestamp(), clock_timestamp());
     EXCEPTION WHEN unique_violation THEN
         RAISE EXCEPTION 'job % already has a live run', p_job_id
@@ -163,7 +166,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION ops.enqueue_ingestion_run(uuid, uuid, text, timestamptz, timestamptz)
+REVOKE ALL ON FUNCTION ops.enqueue_ingestion_run(uuid, uuid, text, timestamptz, timestamptz, integer)
     FROM PUBLIC;
 
 -- Claim a run for one worker and return the fence token it must carry.
@@ -192,7 +195,7 @@ BEGIN
             USING ERRCODE = 'MO040';
     END IF;
 
-    SELECT run.id, run.state, run.lease_expires_at
+    SELECT run.id, run.state, run.lease_expires_at, run.next_attempt_at, run.attempt_no, run.max_claims
       INTO run_row
       FROM ops.ingestion_run AS run
      WHERE run.id = p_run_id
@@ -202,7 +205,7 @@ BEGIN
         RAISE EXCEPTION 'run % does not exist', p_run_id USING ERRCODE = 'MO040';
     END IF;
 
-    IF NOT (run_row.state IN ('QUEUED', 'RETRY_WAIT')
+    IF NOT (run_row.state='QUEUED' OR (run_row.state='RETRY_WAIT' AND run_row.next_attempt_at <= clock_timestamp())
             OR (run_row.state IN ('LEASED', 'RUNNING')
                 AND run_row.lease_expires_at <= clock_timestamp()))
     THEN
@@ -210,8 +213,17 @@ BEGIN
             USING ERRCODE = 'MO040';
     END IF;
 
+    -- A stopped worker consumes a claim too. Persist exhaustion without raising
+    -- an exception, which would roll back the terminal recovery transition.
+    IF run_row.attempt_no >= run_row.max_claims THEN
+        UPDATE ops.ingestion_run SET state='FAILED_TERMINAL', failure_code='RETRY_BUDGET_EXHAUSTED',
+            lease_owner=NULL, lease_expires_at=NULL, next_attempt_at=NULL, updated_at=clock_timestamp()
+         WHERE id=p_run_id;
+        RETURN NULL;
+    END IF;
+
     UPDATE ops.ingestion_run AS run
-       SET state = 'LEASED',
+       SET state = 'LEASED', next_attempt_at = NULL,
            fence_token = run.fence_token + 1,
            attempt_no = run.attempt_no + 1,
            lease_owner = p_lease_owner,
@@ -243,7 +255,8 @@ CREATE FUNCTION ops.transition_ingestion_run(
     p_expected_lease_owner text,
     p_to_state             text,
     p_lease_seconds        integer,
-    p_failure_code         text)
+    p_failure_code         text,
+    p_retry_delay_seconds  integer DEFAULT 120)
 RETURNS text
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -255,7 +268,11 @@ DECLARE
     releases      boolean;
     updated_state text;
 BEGIN
-    SELECT run.id, run.state, run.fence_token, run.lease_owner, run.lease_expires_at
+    IF p_to_state='RETRY_WAIT' AND (p_retry_delay_seconds IS NULL OR p_retry_delay_seconds < 1 OR p_retry_delay_seconds > 3600) THEN
+        RAISE EXCEPTION 'retry delay is outside its bound' USING ERRCODE='MO040';
+    END IF;
+    SELECT run.id, run.state, run.fence_token, run.lease_owner, run.lease_expires_at,
+           run.attempt_no, run.max_claims
       INTO run_row
       FROM ops.ingestion_run AS run
      WHERE run.id = p_run_id
@@ -263,6 +280,11 @@ BEGIN
 
     IF run_row.id IS NULL THEN
         RAISE EXCEPTION 'run % does not exist', p_run_id USING ERRCODE = 'MO040';
+    END IF;
+
+    IF p_to_state='RETRY_WAIT' AND run_row.attempt_no >= run_row.max_claims THEN
+        p_to_state := 'FAILED_TERMINAL';
+        p_failure_code := 'RETRY_BUDGET_EXHAUSTED';
     END IF;
 
     allowed := (run_row.state, p_to_state) IN (
@@ -304,6 +326,11 @@ BEGIN
 
     UPDATE ops.ingestion_run AS run
        SET state = p_to_state,
+           next_attempt_at = CASE WHEN p_to_state='RETRY_WAIT'
+               THEN GREATEST(clock_timestamp()+make_interval(secs=>p_retry_delay_seconds),
+                   (SELECT quota.blocked_until FROM platform.ingestion_job job
+                       JOIN ops.endpoint_quota_window quota ON quota.endpoint_id=job.endpoint_id WHERE job.id=run.job_id))
+               ELSE NULL END,
            lease_owner = CASE WHEN releases THEN NULL ELSE run.lease_owner END,
            lease_expires_at = CASE
                                   WHEN releases THEN NULL
@@ -328,7 +355,7 @@ END;
 $$;
 
 REVOKE ALL ON FUNCTION ops.transition_ingestion_run(
-    uuid, bigint, text, text, integer, text) FROM PUBLIC;
+    uuid, bigint, text, text, integer, text, integer) FROM PUBLIC;
 
 -- Extend a live lease without changing state.
 --
@@ -384,9 +411,208 @@ REVOKE ALL ON FUNCTION ops.renew_ingestion_run_lease(uuid, bigint, text, integer
 -- transition set and the replay guard cannot be bypassed by any SQL client
 -- connecting as this role.
 GRANT EXECUTE ON FUNCTION ops.enqueue_ingestion_run(
-    uuid, uuid, text, timestamptz, timestamptz) TO marketops_app;
+    uuid, uuid, text, timestamptz, timestamptz, integer) TO marketops_app;
 GRANT EXECUTE ON FUNCTION ops.claim_ingestion_run(uuid, text, integer) TO marketops_app;
 GRANT EXECUTE ON FUNCTION ops.transition_ingestion_run(
-    uuid, bigint, text, text, integer, text) TO marketops_app;
+    uuid, bigint, text, text, integer, text, integer) TO marketops_app;
 GRANT EXECUTE ON FUNCTION ops.renew_ingestion_run_lease(uuid, bigint, text, integer)
     TO marketops_app;
+
+-- One database bucket per endpoint is shared by every process and account.
+-- Missing or invalid limits grant no calls; memory and row growth are bounded by endpoint count.
+CREATE TABLE ops.endpoint_quota_window (
+    endpoint_id uuid PRIMARY KEY REFERENCES platform.platform_endpoint(id),
+    window_started_at timestamptz NOT NULL,
+    blocked_until timestamptz,
+    used_calls integer NOT NULL CHECK (used_calls > 0)
+);
+GRANT SELECT ON ops.endpoint_quota_window TO marketops_app;
+CREATE FUNCTION platform.reserve_endpoint_quota(p_endpoint uuid) RETURNS boolean
+LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $$
+DECLARE published_limit integer; permitted integer; window_start timestamptz;
+BEGIN
+    SELECT rate_limit_per_minute INTO published_limit FROM platform.platform_endpoint
+     WHERE id=p_endpoint AND status='ACTIVE' AND verification_state='VERIFIED';
+    IF published_limit IS NULL OR published_limit <= 0 OR published_limit > 60000 THEN RETURN false; END IF;
+    window_start := clock_timestamp();
+    INSERT INTO ops.endpoint_quota_window(endpoint_id,window_started_at,used_calls)
+      VALUES(p_endpoint,window_start,1)
+      ON CONFLICT(endpoint_id) DO UPDATE SET window_started_at=
+        CASE WHEN ops.endpoint_quota_window.window_started_at <= EXCLUDED.window_started_at-interval '1 minute'
+             THEN EXCLUDED.window_started_at ELSE ops.endpoint_quota_window.window_started_at END,
+        used_calls=CASE WHEN ops.endpoint_quota_window.window_started_at <= EXCLUDED.window_started_at-interval '1 minute'
+                       THEN 1 ELSE ops.endpoint_quota_window.used_calls+1 END
+      WHERE (ops.endpoint_quota_window.blocked_until IS NULL OR ops.endpoint_quota_window.blocked_until<=EXCLUDED.window_started_at)
+       AND (ops.endpoint_quota_window.window_started_at <= EXCLUDED.window_started_at-interval '1 minute'
+         OR (ops.endpoint_quota_window.window_started_at <= EXCLUDED.window_started_at
+             AND ops.endpoint_quota_window.used_calls < published_limit))
+      RETURNING used_calls INTO permitted;
+    RETURN permitted IS NOT NULL;
+END $$;
+REVOKE ALL ON FUNCTION platform.reserve_endpoint_quota(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION platform.reserve_endpoint_quota(uuid) TO marketops_app;
+INSERT INTO platform.control_route_inventory(schema_name,table_name,route_kind,scope_kind,routing_note)
+    VALUES ('ops','endpoint_quota_window','NO_ROUTE',NULL,'Internal bounded quota; only reserve_endpoint_quota mutates it');
+
+ALTER TABLE raw.raw_acquisition_observation ADD COLUMN response_complete boolean NOT NULL DEFAULT true,
+    ADD COLUMN transport_failure_code text,
+    ADD COLUMN authority_decision_id uuid REFERENCES ops.authorization_decision_evidence(id),
+    ADD COLUMN response_headers jsonb NOT NULL DEFAULT '{}' CHECK (jsonb_typeof(response_headers)='object'),
+    ADD COLUMN pagination_outcome text NOT NULL DEFAULT 'UNASSESSED'
+        CHECK (pagination_outcome IN ('UNASSESSED','END','NEXT','UNKNOWN_RESULT','SCHEMA_DRIFT','UNREADABLE','CONFIG_INVALID','RETRY_LATER'));
+
+-- Provider backpressure shares the same durable bucket as call admission.
+CREATE FUNCTION platform.defer_endpoint_quota(p_endpoint uuid,p_status integer,p_headers jsonb) RETURNS void
+LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $$
+DECLARE retry_after text; delay_seconds integer := 60;
+BEGIN
+    IF p_status NOT IN (429,503) THEN RETURN; END IF;
+    retry_after := p_headers->>'retry-after';
+    BEGIN
+        IF retry_after ~ '^[0-9]{1,9}$' THEN
+            delay_seconds := LEAST(86400,GREATEST(1,retry_after::bigint));
+        ELSIF retry_after ~ '^[A-Za-z]{3}, [0-9]{2} [A-Za-z]{3} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT$' THEN
+            delay_seconds := LEAST(86400,GREATEST(1,ceil(extract(epoch FROM (retry_after::timestamptz-clock_timestamp())))::bigint));
+        END IF;
+    EXCEPTION WHEN invalid_datetime_format OR datetime_field_overflow OR numeric_value_out_of_range THEN
+        delay_seconds := 60;
+    END;
+    UPDATE ops.endpoint_quota_window SET blocked_until=GREATEST(blocked_until,
+            clock_timestamp()+make_interval(secs=>delay_seconds)) WHERE endpoint_id=p_endpoint;
+END $$;
+REVOKE ALL ON FUNCTION platform.defer_endpoint_quota(uuid,integer,jsonb) FROM PUBLIC;
+
+CREATE FUNCTION raw.bind_acquisition_receipt() RETURNS trigger
+LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $$
+DECLARE endpoint uuid; header record;
+BEGIN
+    IF NEW.outcome_class='SUCCESS_BYTES' AND NOT NEW.response_complete THEN
+        RAISE EXCEPTION 'partial bytes cannot prove acquisition success' USING ERRCODE='MO009';
+    END IF;
+    FOR header IN SELECT key,value FROM jsonb_each_text(NEW.response_headers) LOOP
+        IF header.key NOT IN ('content-type','retry-after','x-ratelimit-remaining','x-ratelimit-reset','x-ratelimit-limit')
+           OR length(header.value)>256 OR header.value ~ '[[:cntrl:]]' THEN
+            RAISE EXCEPTION 'unsafe acquisition response metadata' USING ERRCODE='MO009';
+        END IF;
+    END LOOP;
+    IF NEW.authority_decision_id IS NOT NULL THEN
+        SELECT decision.endpoint_id INTO endpoint FROM ops.authorization_decision_evidence decision
+          JOIN raw.raw_logical_unit unit ON unit.id=NEW.logical_unit_id
+          JOIN platform.ingestion_job job ON job.id=decision.job_id
+         WHERE decision.id=NEW.authority_decision_id AND decision.run_id=NEW.run_id AND decision.call_seq=NEW.call_seq
+           AND unit.job_id=decision.job_id AND unit.marketplace_account_id=job.marketplace_account_id;
+        IF endpoint IS NULL THEN
+            RAISE EXCEPTION 'acquisition receipt does not match its committed authority' USING ERRCODE='MO009';
+        END IF;
+        IF NEW.native_status ~ '^HTTP [0-9]{3}$' THEN
+            PERFORM platform.defer_endpoint_quota(endpoint,substring(NEW.native_status FROM 6)::integer,NEW.response_headers);
+        END IF;
+    END IF;
+    RETURN NEW;
+END $$;
+REVOKE ALL ON FUNCTION raw.bind_acquisition_receipt() FROM PUBLIC;
+CREATE TRIGGER acquisition_receipt_integrity BEFORE INSERT ON raw.raw_acquisition_observation
+    FOR EACH ROW EXECUTE FUNCTION raw.bind_acquisition_receipt();
+
+-- Checkpoints require both immutable bytes and an explicit successful pagination assessment.
+CREATE OR REPLACE FUNCTION ops.acknowledge_checkpoint(
+    p_run_id               uuid,
+    p_expected_fence       bigint,
+    p_expected_lease_owner text,
+    p_observation_id       uuid,
+    p_expected_version     bigint,
+    p_position_value       text)
+RETURNS bigint
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE
+    target_job  uuid;
+    new_version bigint;
+BEGIN
+    -- Lock the run and hold the lock through the checkpoint write.
+    SELECT run.job_id INTO target_job
+      FROM ops.ingestion_run AS run
+     WHERE run.id = p_run_id
+       AND run.fence_token = p_expected_fence
+       AND run.lease_owner = p_expected_lease_owner
+       AND run.state = 'RUNNING'
+       AND run.lease_expires_at > clock_timestamp()
+       FOR UPDATE OF run;
+
+    IF target_job IS NULL THEN
+        RAISE EXCEPTION
+            'run % is not held by % at fence % with a live lease',
+            p_run_id, p_expected_lease_owner, p_expected_fence
+            USING ERRCODE = 'MO008';
+    END IF;
+
+    -- The evidence must exist, belong to this run, and be durable content.
+    PERFORM 1
+      FROM raw.raw_acquisition_observation AS observation
+      JOIN raw.raw_logical_unit AS unit ON unit.id = observation.logical_unit_id
+      JOIN raw.raw_content AS content ON content.id = observation.content_id
+     WHERE observation.id = p_observation_id
+       AND observation.run_id = p_run_id
+       AND observation.response_complete AND observation.outcome_class='SUCCESS_BYTES'
+       AND observation.pagination_outcome IN ('END','NEXT')
+       AND unit.job_id = target_job;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION
+            'checkpoint for run % has no committed observation %', p_run_id, p_observation_id
+            USING ERRCODE = 'MO009',
+                  HINT = 'store and hash the returned bytes before acknowledging a cursor';
+    END IF;
+
+    -- Lock the exact checkpoint row after the run. A concurrent holder may
+    -- delay this acquisition past the lease deadline; after the row is obtained
+    -- the final UPDATE below therefore rechecks wall-clock lease truth.
+    PERFORM 1
+      FROM ops.ingestion_checkpoint AS checkpoint
+     WHERE checkpoint.job_id = target_job
+       AND checkpoint.checkpoint_version = p_expected_version
+       FOR UPDATE OF checkpoint;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION
+            'checkpoint for job % is not at expected version %', target_job, p_expected_version
+            USING ERRCODE = 'MO008';
+    END IF;
+
+    UPDATE ops.ingestion_checkpoint AS checkpoint
+       SET position_value     = p_position_value,
+           checkpoint_version = checkpoint.checkpoint_version + 1,
+           updated_at         = clock_timestamp()
+      FROM ops.ingestion_run AS run
+     WHERE checkpoint.job_id = target_job
+       AND checkpoint.checkpoint_version = p_expected_version
+       AND run.id = p_run_id
+       AND run.job_id = checkpoint.job_id
+       AND run.state = 'RUNNING'
+       AND run.fence_token = p_expected_fence
+       AND run.lease_owner = p_expected_lease_owner
+       AND run.lease_expires_at > clock_timestamp()
+       AND EXISTS (
+           SELECT 1
+             FROM raw.raw_acquisition_observation AS observation
+             JOIN raw.raw_logical_unit AS unit
+               ON unit.id = observation.logical_unit_id
+             JOIN raw.raw_content AS content
+               ON content.id = observation.content_id
+            WHERE observation.id = p_observation_id
+              AND observation.run_id = run.id
+              AND observation.response_complete AND observation.outcome_class='SUCCESS_BYTES'
+              AND observation.pagination_outcome IN ('END','NEXT')
+              AND unit.job_id = run.job_id)
+    RETURNING checkpoint.checkpoint_version INTO new_version;
+
+    IF new_version IS NULL THEN
+        RAISE EXCEPTION
+            'checkpoint authority for run % was lost before version % could advance',
+            p_run_id, p_expected_version
+            USING ERRCODE = 'MO008';
+    END IF;
+
+    RETURN new_version;
+END;
+$$;

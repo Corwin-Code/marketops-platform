@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Asks a model to explain one subject, and records everything about the asking.
@@ -52,7 +54,7 @@ public class AiDiagnosisService implements AiCopilot {
 
     /** The prompt template this release sends, and its version. */
     private static final String PROMPT_TEMPLATE_CODE = "sku-growth-profit-diagnosis";
-    private static final int PROMPT_VERSION = 1;
+    private static final int PROMPT_VERSION = 2;
 
     /** Ceiling on how long an answer may be. */
     private static final int MAXIMUM_OUTPUT_TOKENS = 2_000;
@@ -85,7 +87,12 @@ public class AiDiagnosisService implements AiCopilot {
             risk and validationWindowDays. It authorises nothing.
             An unknown names a missingFact, whyItMatters and nextEvidence.
 
-            Every claim has a statement of at most 2000 characters.
+            This is output schema version 2. Every claim has a statement of at most 2000 characters.
+            validationWindowDays is an integer from 1 through 90. confidence is LOW, MEDIUM or HIGH.
+            For PRICE_CHANGE, optional proposedParameters is exactly an object with a positive
+            numeric targetPrice (at most four decimal places) and uppercase three-letter currencyCode.
+            Other actions may propose only a reviewFocus string. expectedEffect and risk may be text;
+            counterEvidence and nextEvidence may be nonempty lists of text. Do not add other fields.
             """;
 
     private final ListingIdentityDirectory listings;
@@ -96,6 +103,7 @@ public class AiDiagnosisService implements AiCopilot {
     private final MetadataAuditRecorder auditRecorder;
     private final IdGenerator idGenerator;
     private final Clock clock;
+    private final TransactionTemplate transactions;
 
     AiDiagnosisService(ListingIdentityDirectory listings,
                        ProjectionBuilder projectionBuilder,
@@ -104,7 +112,7 @@ public class AiDiagnosisService implements AiCopilot {
                        AiRepository repository,
                        MetadataAuditRecorder auditRecorder,
                        IdGenerator idGenerator,
-                       Clock clock) {
+                       Clock clock, PlatformTransactionManager transactionManager) {
         this.listings = listings;
         this.projectionBuilder = projectionBuilder;
         this.validator = validator;
@@ -113,15 +121,17 @@ public class AiDiagnosisService implements AiCopilot {
         this.auditRecorder = auditRecorder;
         this.idGenerator = idGenerator;
         this.clock = clock;
+        this.transactions = new TransactionTemplate(transactionManager);
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)
     public AiDiagnosis explain(UUID requestedByUserId,
                                UUID organizationId,
                                UUID listingVariantId,
                                MetricWindow window,
                                String lifecycleObjective) {
+        transactions.executeWithoutResult(status -> recover());
         Instant startedAt = clock.instant();
         UUID invocationId = idGenerator.newId();
 
@@ -133,26 +143,43 @@ public class AiDiagnosisService implements AiCopilot {
         if (projection.isEmpty() || model.isEmpty()) {
             String failureCode = projection.isEmpty()
                     ? "NOTHING_TO_EXPLAIN" : "NO_ELIGIBLE_PROVIDER";
-            return refuse(invocationId, organizationId, listingVariantId, window, projection,
-                    requestedByUserId, startedAt, failureCode);
+            return transactions.execute(status -> refuse(invocationId, organizationId,
+                    listingVariantId, window, projection, requestedByUserId, startedAt, failureCode));
         }
 
         AiRepository.EligibleModel eligible = model.get();
-        repository.openInvocation(invocationId, organizationId,
+        transactions.executeWithoutResult(status -> {
+            repository.openInvocation(invocationId, organizationId,
                 ProjectionBuilder.PROJECTION_CODE, ProjectionBuilder.PROJECTION_VERSION,
                 PROMPT_TEMPLATE_CODE, PROMPT_VERSION, eligible.modelId(),
                 SubjectKind.PLATFORM_LISTING_VARIANT.name(), listingVariantId, window.name(),
                 projection.requestDigest(), "DISPATCHED", requestedByUserId, startedAt,
                 CorrelationId.current());
+            auditOutcome(requestedByUserId, invocationId, "DISPATCHED", null);
+        });
 
-        ModelResponse response = gateway.invoke(new ModelRequest(
-                eligible.modelCode(), eligible.secretReference(), SYSTEM_PROMPT,
-                "BEGIN SUBJECT DATA\n" + projection.render(), MAXIMUM_OUTPUT_TOKENS));
+        ModelResponse response;
+        try {
+            response = gateway.invoke(new ModelRequest(
+                    eligible.modelCode(), eligible.secretReference(), SYSTEM_PROMPT,
+                    "BEGIN SUBJECT DATA\n" + projection.render(), MAXIMUM_OUTPUT_TOKENS));
+        } catch (RuntimeException failure) {
+            response = new ModelResponse(ModelResponse.Outcome.FAILED, "", "PROVIDER_CALL_FAILED", 0);
+        }
+        ModelResponse completed = response;
+        return transactions.execute(status -> complete(invocationId, requestedByUserId,
+                eligible, projection, completed));
+    }
 
+    private AiDiagnosis complete(UUID invocationId, UUID requestedByUserId,
+            AiRepository.EligibleModel eligible, SubjectProjection projection, ModelResponse response) {
         Instant completedAt = clock.instant();
+        recover();
+        if (!"DISPATCHED".equals(read(invocationId).state())) return read(invocationId);
         if (response.outcome() == ModelResponse.Outcome.FAILED) {
             repository.closeInvocation(invocationId, "PROVIDER_FAILED", response.failureCode(),
                     true, Math.toIntExact(response.latencyMillis()), completedAt);
+            auditOutcome(requestedByUserId, invocationId, "PROVIDER_FAILED", response.failureCode());
             log.atWarn()
                     .addKeyValue("event", "ai_invocation_provider_failed")
                     .addKeyValue("failureCode", response.failureCode())
@@ -165,9 +192,10 @@ public class AiDiagnosisService implements AiCopilot {
                 validator.validate(response.body(), projection);
         storeClaims(invocationId, claims);
         boolean anyAccepted = claims.stream().anyMatch(OutputValidator.ValidatedClaim::accepted);
-        String state = anyAccepted ? "SUCCEEDED" : "OUTPUT_REJECTED";
-        String failureCode = anyAccepted ? null : firstRejection(claims);
-        repository.closeInvocation(invocationId, state, failureCode, !anyAccepted,
+        boolean anyRejected = claims.stream().anyMatch(claim -> !claim.accepted());
+        String state = anyAccepted ? (anyRejected ? "PARTIAL_OUTPUT_REJECTED" : "SUCCEEDED") : "OUTPUT_REJECTED";
+        String failureCode = anyAccepted && !anyRejected ? null : firstRejection(claims);
+        repository.closeInvocation(invocationId, state, failureCode, !anyAccepted || anyRejected,
                 Math.toIntExact(response.latencyMillis()), completedAt);
 
         auditRecorder.recordChange(new MetadataAuditChange(
@@ -191,8 +219,9 @@ public class AiDiagnosisService implements AiCopilot {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Optional<AiDiagnosis> invocation(UUID invocationId) {
+        recover();
         return repository.findInvocation(invocationId).map(this::assemble);
     }
 
@@ -219,7 +248,29 @@ public class AiDiagnosisService implements AiCopilot {
                 CorrelationId.current());
         repository.closeInvocation(invocationId, "REFUSED", failureCode, true, null,
                 clock.instant());
+        auditOutcome(requestedByUserId, invocationId, "REFUSED", failureCode);
         return read(invocationId);
+    }
+
+    /** Bounded database-only recovery; it never retries a model call. */
+    @Transactional
+    public int recoverAbandonedInvocations() {
+        return recover();
+    }
+
+    private int recover() {
+        var recovered = repository.recoverExpired();
+        recovered.forEach(invocation -> auditOutcome(invocation.requestedBy(), invocation.id(),
+                "PROVIDER_OUTCOME_UNKNOWN", "WORKER_INTERRUPTED_OR_DEADLINE_EXPIRED"));
+        return recovered.size();
+    }
+
+    private void auditOutcome(UUID requestedBy, UUID invocationId, String state, String failureCode) {
+        auditRecorder.recordChange(new MetadataAuditChange(AuditSourceDomain.AI_COPILOT,
+                requestedBy == null ? "analytics-scheduler" : requestedBy.toString(),
+                AuditAction.AI_INVOCATION, ENTITY_TYPE, invocationId, null,
+                Map.of("state", new FieldChange(null, state),
+                        "failureCode", new FieldChange(null, failureCode)), null, null));
     }
 
     private void storeClaims(UUID invocationId, List<OutputValidator.ValidatedClaim> claims) {
@@ -248,7 +299,7 @@ public class AiDiagnosisService implements AiCopilot {
 
     private AiDiagnosis assemble(AiRepository.InvocationRow row) {
         List<AiClaim> claims = repository.claimsOf(row.id());
-        return new AiDiagnosis(row.id(), row.subjectId(), row.state(), row.failureCode(),
+        return new AiDiagnosis(row.id(), row.subjectId(), row.outputSchemaVersion(), row.state(), row.failureCode(),
                 row.degraded(), row.providerCode(), row.modelCode(), claims, row.startedAt(),
                 row.completedAt());
     }

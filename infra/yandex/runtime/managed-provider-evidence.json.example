@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "resourceMode": "APPLIED_RESOURCE",
+  "serviceProfile": "YANDEX_MANAGED",
+  "postgresqlMajor": 17,
+  "providerVersion": "yandex-cloud/yandex 0.220.0",
+  "resourceReference": "<opaque-applied-database-reference>",
+  "environmentReference": "<same-opaque-environment-reference-as-manifest>",
+  "databaseUrlSha256": "<sha256-of-exact-private-tls-jdbc-url-in-manifest>",
+  "extensions": {
+    "btree_gist": "1.7",
+    "pgcrypto": "1.3"
+  },
+  "providerDocumentSha256": "34e1f92c87f22eb1256f49b2a31c49911cd62bb7c18ce4f7960e43f585584c96"
+}

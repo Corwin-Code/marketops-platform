@@ -10,9 +10,7 @@ import com.mimococo.marketops.shared.port.SecretResolverPort;
 import com.mimococo.marketops.shared.CorrelationId;
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import com.mimococo.marketops.shared.port.OutboundHttp;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Duration;
@@ -68,13 +66,12 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
     /** Page size requested when a recorded template asks for one. */
     private static final String DEFAULT_PAGE_SIZE = "100";
 
-    private final HttpClient httpClient;
+    private final OutboundHttp httpClient;
     private final PlatformCallSpecRepository specs;
     private final SecretResolverPort secrets;
-    private final EndpointRateLimiter rateLimiter;
     private final Clock clock;
 
-    public PlatformHttpAcquisitionAdapter(HttpClient httpClient,
+    public PlatformHttpAcquisitionAdapter(OutboundHttp httpClient,
                                           PlatformCallSpecRepository specs,
                                           SecretResolverPort secrets,
                                           Clock clock) {
@@ -82,25 +79,26 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
         this.specs = Objects.requireNonNull(specs, "specs");
         this.secrets = Objects.requireNonNull(secrets, "secrets");
         this.clock = Objects.requireNonNull(clock, "clock");
-        this.rateLimiter = new EndpointRateLimiter(clock);
     }
 
     @Override
     public AcquisitionResult acquire(AcquisitionRequest request) {
         Instant startedAt = clock.instant();
+        if (!request.callAuthorityExpiresAt().isAfter(startedAt)) return refused("call_authority_expired",startedAt);
+        Optional<String> evidence=specs.acquisitionEvidenceDigest(request.endpointId(),request.credentialId());
+        if (evidence.isEmpty()) return refused("account_evidence_not_current",startedAt);
         Optional<EndpointCallSpec> found = specs.findVerifiedSpec(request.endpointId());
         if (found.isEmpty()) {
             return refused("endpoint_not_verified", startedAt);
         }
         EndpointCallSpec spec = found.get();
 
-        List<AuthHeaderSpec> authHeaders = specs.verifiedAuthHeaders(spec.platformCode());
+        List<AuthHeaderSpec> authHeaders = specs.verifiedAuthHeaders(spec.platformCode(), "READ");
         if (authHeaders.isEmpty()) {
             return refused("authentication_not_recorded", startedAt);
         }
 
-        Duration wait = rateLimiter.acquire(spec.endpointId(), spec.rateLimitPerMinute());
-        if (!wait.isZero()) {
+        if (!specs.reserveCallBudget(spec.endpointId())) {
             // Reporting the wait as an unclassified answer is deliberate: the
             // call did not happen, and a caller must not record it as a source
             // that returned nothing.
@@ -108,10 +106,10 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
         }
 
         Map<String, String> placeholders = placeholders(request, spec);
-        HttpRequest.Builder builder;
+        OutboundHttp.Request builder;
         List<char[]> resolvedSecrets = new ArrayList<>();
         try {
-            builder = buildRequest(spec, placeholders, request, authHeaders, resolvedSecrets);
+            builder = buildRequest(spec, placeholders, request, authHeaders, resolvedSecrets,evidence.get());
         } catch (RuntimeException refusal) {
             return refused("request_could_not_be_built", startedAt);
         } finally {
@@ -120,27 +118,31 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
         if (builder == null) {
             return refused("credential_unresolvable", startedAt);
         }
+        if (!request.callAuthorityExpiresAt().isAfter(clock.instant())) return refused("call_authority_expired",startedAt);
+        if (!evidence.equals(specs.acquisitionEvidenceDigest(request.endpointId(),request.credentialId()))) return refused("account_evidence_changed",startedAt);
 
         try {
-            HttpResponse<byte[]> response =
-                    httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofByteArray());
+            OutboundHttp.Response response =
+                    httpClient.exchange(builder.plan(), builder.headers());
             return classify(response, spec, startedAt);
         } catch (IOException transportFailure) {
             // The call may or may not have reached the source. That is exactly
             // what UNKNOWN_STATE means, and treating it as a failure would let a
             // caller acknowledge a page that might have been produced.
             return refused("transport_failed", startedAt);
+        } catch (IllegalArgumentException rejectedPlan) {
+            return refused("outbound_plan_rejected", startedAt);
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
             return refused("interrupted", startedAt);
         }
     }
 
-    private HttpRequest.Builder buildRequest(EndpointCallSpec spec,
+    private OutboundHttp.Request buildRequest(EndpointCallSpec spec,
                                              Map<String, String> placeholders,
                                              AcquisitionRequest request,
                                              List<AuthHeaderSpec> authHeaders,
-                                             List<char[]> resolvedSecrets) {
+                                             List<char[]> resolvedSecrets,String evidenceDigest) {
         String path = RequestTemplate.render(
                 spec.pathTemplate(), placeholders, RequestTemplate.Escaping.URL);
         String query = RequestTemplate.render(
@@ -148,17 +150,20 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
         String body = RequestTemplate.render(
                 spec.bodyTemplate(), placeholders, RequestTemplate.Escaping.JSON);
 
-        HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(spec.baseUrl() + path + (query == null ? "" : "?" + query)))
-                .timeout(Duration.ofMillis(spec.requestTimeoutMillis()))
-                .header("Accept",
-                        spec.responseContentType() == null
-                                ? "application/json" : spec.responseContentType())
-                .method(spec.httpMethod(), body == null
-                        ? HttpRequest.BodyPublishers.noBody()
-                        : HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8));
-        if (body != null) {
-            builder.header("Content-Type", "application/json");
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Accept", spec.responseContentType() == null ? "application/json" : spec.responseContentType());
+        if (body != null) headers.put("Content-Type", "application/json");
+        java.util.Set<String> names = new java.util.HashSet<>(headers.keySet());
+        authHeaders.forEach(header -> { names.add(header.headerName()); OutboundHttp.requireHeaderTemplate(header.valueTemplate()); });
+        headers.values().forEach(OutboundHttp::requireHeaderTemplate);
+        OutboundHttp.Plan plan = httpClient.prepare(new OutboundHttp.Destination(
+                "platform:" + spec.platformCode() + ":read",
+                URI.create(spec.baseUrl() + path + (query == null ? "" : "?" + query)), spec.httpMethod(), names,
+                body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8),
+                spec.requestTimeoutMillis(), Math.toIntExact(spec.maxResponseBytes())));
+
+        if (!specs.acquisitionEvidenceDigest(request.endpointId(),request.credentialId()).filter(evidenceDigest::equals).isPresent()) {
+            throw new IllegalArgumentException("verified configuration changed before credential resolution");
         }
 
         for (AuthHeaderSpec header : authHeaders) {
@@ -166,9 +171,9 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
             if (value.isEmpty()) {
                 return null;
             }
-            builder.header(header.headerName(), value.get());
+            headers.put(header.headerName(), value.get());
         }
-        return builder;
+        return new OutboundHttp.Request(plan, headers);
     }
 
     private Optional<String> headerValue(AuthHeaderSpec header,
@@ -217,17 +222,21 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
      * timeout, a rate-limit response or a server failure leaves the caller
      * unable to say whether the source produced anything.
      */
-    private AcquisitionResult classify(HttpResponse<byte[]> response,
+    private AcquisitionResult classify(OutboundHttp.Response response,
                                        EndpointCallSpec spec,
                                        Instant startedAt) {
         int status = response.statusCode();
         byte[] body = response.body() == null ? new byte[0] : response.body();
-        if (body.length > spec.maxResponseBytes()) {
-            return refused("response_exceeded_recorded_bound", startedAt);
-        }
+        boolean complete = response.complete() && body.length <= spec.maxResponseBytes();
+        if (!complete) body = Arrays.copyOf(body, (int) Math.min(body.length,spec.maxResponseBytes()));
+        String contentType = response.firstHeader("content-type").orElse("").split(";",2)[0].trim();
+        boolean declaredContentType = spec.responseContentType()!=null && spec.responseContentType().equalsIgnoreCase(contentType);
+        String failureCode = !complete ? "RESPONSE_INCOMPLETE" : declaredContentType ? response.failureCode() : "UNEXPECTED_CONTENT_TYPE";
         String nativeStatus = "HTTP " + status;
         AcquisitionResult.AcquisitionOutcome outcome;
-        if (status >= 200 && status < 300) {
+        if (!complete || !declaredContentType) {
+            outcome = AcquisitionResult.AcquisitionOutcome.UNKNOWN_STATE;
+        } else if (status >= 200 && status < 300) {
             outcome = AcquisitionResult.AcquisitionOutcome.SUCCESS_BYTES;
         } else if (status == 408 || status == 429 || status >= 500) {
             outcome = AcquisitionResult.AcquisitionOutcome.UNKNOWN_STATE;
@@ -243,7 +252,10 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
                 .addKeyValue("elapsedMillis", Duration.between(startedAt, clock.instant()).toMillis())
                 .addKeyValue("correlationId", CorrelationId.current())
                 .log("Acquisition call completed");
-        return new AcquisitionResult(body, nativeStatus, outcome, clock.instant());
+        java.util.Map<String,String> metadata = new java.util.LinkedHashMap<>();
+        response.headers().forEach((name,values) -> { if (values.size()==1) metadata.put(name,values.getFirst()); });
+        return new AcquisitionResult(body, nativeStatus, outcome, null, complete, failureCode,
+                status == 408 || status == 429 || status >= 500, null, null).withResponseHeaders(metadata);
     }
 
     /**
@@ -265,6 +277,7 @@ public final class PlatformHttpAcquisitionAdapter implements AcquisitionPort {
                 new byte[0],
                 "MARKETOPS_REFUSED " + reason,
                 AcquisitionResult.AcquisitionOutcome.UNKNOWN_STATE,
-                clock.instant());
+                null, false, reason,
+                java.util.Set.of("transport_failed", "rate_limit_window_exhausted", "interrupted").contains(reason), null, null);
     }
 }

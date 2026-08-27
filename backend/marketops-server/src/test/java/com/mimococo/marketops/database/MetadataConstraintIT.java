@@ -194,15 +194,22 @@ class MetadataConstraintIT extends PostgresContainerSupport {
                 credential(UUID.randomUUID(), ORG_A, ACCOUNT_A, "verified-credential",
                         "secret-ref://vault/marketops/account-a/other")
                         .replace("'UNVERIFIED'", "'VERIFIED'"));
-        assertRejected(CHECK_VIOLATION,
-                "INSERT INTO platform.platform_capability (id, platform_code,"
+        String invalidCapability = "INSERT INTO platform.platform_capability (id, platform_code,"
                         + " capability_code, display_name, applies_to, read_write_class,"
                         + " subscription_required, verification_state, owner_label,"
                         + " contract_test_status, status, created_at, updated_at)"
                         + " VALUES ('" + UUID.randomUUID() + "', 'OZON', 'orders.push',"
                         + " 'Push orders', 'MARKETPLACE_ACCOUNT', 'WRITE', 'UNKNOWN',"
                         + " 'VERIFIED', 'platform-team', 'NOT_IMPLEMENTED', 'ACTIVE',"
-                        + " now(), now())");
+                        + " now(), now())";
+        assertRejected("MO039", invalidCapability);
+        // The application writer is denied before constraints run. The schema
+        // must independently refuse missing provenance for its owning role.
+        try (Connection connection = asMigrationRole(container);
+             Statement statement = connection.createStatement()) {
+            Throwable failure = Assertions.catchThrowable(() -> statement.execute(invalidCapability));
+            assertThat(carriesSqlState(failure, CHECK_VIOLATION)).isTrue();
+        }
     }
 
     private static void assertRejected(String sqlState, String sql) throws SQLException {

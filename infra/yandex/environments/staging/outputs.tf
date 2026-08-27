@@ -31,3 +31,13 @@ output "alerts" {
   description = "Every alert defined for this environment."
   value       = module.observability.alert_names
 }
+
+output "https_origin" {
+  value = try(module.workload[0].https_origin, null)
+}
+output "instance_groups" {
+  value = try(module.workload[0].instance_group_ids, {})
+}
+output "alert_configuration_required" {
+  value = module.observability.alert_configuration_required
+}

@@ -59,7 +59,9 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0023__create_declared_normalization_and_drift_observation.sql",
             "V0024__create_capability_write_operation_shape.sql",
             "V0025__create_price_command_attempt_completion_and_lease_recovery.sql",
-            "V0026__rename_operational_capability_column_to_action_kind.sql");
+            "V0026__rename_operational_capability_column_to_action_kind.sql",
+            "V0027__create_account_bound_registry_verification.sql",
+            "V0028__create_bounded_diagnostic_export.sql");
 
     private static PostgreSQLContainer container;
 
@@ -168,6 +170,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "mart.diagnosis_finding_input",
                     "mart.diagnosis_rule",
                     "mart.diagnosis_rule_input",
+                    "mart.diagnostic_export_row",
                     "mart.metric_definition",
                     "mart.metric_input_reference",
                     "mart.metric_value",
@@ -182,6 +185,9 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ops.authorization_decision_evidence",
                     "ops.commercial_policy",
                     "ops.commercial_policy_limit",
+                    "ops.diagnostic_export",
+                    "ops.diagnostic_export_part",
+                    "ops.endpoint_quota_window",
                     "ops.guardrail_evaluation",
                     "ops.ingestion_checkpoint",
                     "ops.ingestion_run",
@@ -214,6 +220,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "platform.platform_capability",
                     "platform.platform_endpoint",
                     "platform.platform_permission_requirement",
+                    "platform.registry_verification_case",
+                    "raw.price_response_observation",
                     "raw.raw_acquisition_observation",
                     "raw.raw_content",
                     "raw.raw_logical_unit",
@@ -477,6 +485,36 @@ class FlywayMigrationIT extends PostgresContainerSupport {
         assertThatThrownBy(() -> migrator(container).clean())
                 .as("no path in this project may drop a schema")
                 .isInstanceOf(Exception.class);
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("TC-DB-115 provider-preinstalled btree_gist cannot satisfy immutable V0002")
+    void preinstalledExtensionDoesNotBecomeAnAppliedMigration() throws Exception {
+        try (PostgreSQLContainer isolated = create()) {
+            isolated.start();
+            // Execute V0001 normally so even a valid history cannot make V0002
+            // tolerate an extension installed by a separate control plane.
+            Flyway.configure().configuration(migrator(isolated).getConfiguration())
+                    .target("0001").load().migrate();
+            try (Connection connection = asSuperuser(isolated);
+                 Statement statement = connection.createStatement()) {
+                statement.execute("CREATE EXTENSION btree_gist WITH SCHEMA public");
+            }
+            Throwable failure = Assertions.catchThrowable(() -> migrator(isolated).migrate());
+            assertThat(carriesSqlState(failure, "42710"))
+                    .as("immutable V0002 must refuse a duplicate extension")
+                    .isTrue();
+            try (Connection connection = asSuperuser(isolated)) {
+                assertThat(strings(connection,
+                        "SELECT script FROM public.flyway_schema_history WHERE type='SQL' ORDER BY installed_rank"))
+                        .containsExactly("V0001__create_foundation_schemas.sql");
+                assertThat(single(connection,
+                        "SELECT extname FROM pg_extension WHERE extname='btree_gist'"))
+                        .isEqualTo("btree_gist");
+                assertThat(single(connection,"SELECT to_regclass('ops.metadata_audit_event')")).isNull();
+            }
+        }
     }
 
     private static String schemaOwner(Connection connection, String schema) throws SQLException {

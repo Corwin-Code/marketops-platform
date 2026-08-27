@@ -35,6 +35,7 @@ export function CommandTimeline({ context, commandId }: CommandTimelineProps): R
   const [command, setCommand] = useState<PriceCommand | undefined>(undefined);
   const [gate, setGate] = useState<readonly string[] | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -57,7 +58,7 @@ export function CommandTimeline({ context, commandId }: CommandTimelineProps): R
     return () => {
       active = false;
     };
-  }, [context, commandId]);
+  }, [context, commandId, refresh]);
 
   if (failure !== undefined) {
     return (
@@ -81,6 +82,14 @@ export function CommandTimeline({ context, commandId }: CommandTimelineProps): R
   return (
     <section aria-label="Command timeline" data-command={command.id} data-state={command.state}>
       <h2>Price change on {command.platformCode}</h2>
+      <button
+        type="button"
+        onClick={() => {
+          setRefresh((value) => value + 1);
+        }}
+      >
+        Refresh command
+      </button>
 
       <p role="status" data-testid="command-state">
         {describeState(command.state)}

@@ -1,6 +1,7 @@
 package com.mimococo.marketops.marketplaceintegration.internal.application;
 
 import com.mimococo.marketops.marketplaceintegration.RawContentRef;
+import com.mimococo.marketops.adminobservability.OperationalFaultSignals;
 import com.mimococo.marketops.marketplaceintegration.RawCustody;
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.RawContentRepository;
 import com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort;
@@ -46,14 +47,10 @@ public class RawCustodyService implements RawCustody {
     /**
      * The locator shape the custody schema accepts, byte for byte.
      *
-     * <p>Copied from the check constraint in V0010 and asserted against every
-     * locator this service builds. The shape was previously stated in three
-     * places — the constraint and both adapters — and nothing checked that a
-     * locator this service actually produced satisfied it. It did not: a
-     * segment is capped at 63 characters and a SHA-256 in hexadecimal is 64,
-     * so every filesystem custody write was refused. Validating here turns a
-     * silent mismatch between the code and the schema into a refusal with a
-     * name.
+     * <p>Matches the V0010 check constraint and validates every generated locator.
+     * Each segment is capped at 63 characters, so the 64-character hexadecimal
+     * SHA-256 is split across two segments. Invalid adapter locators are refused
+     * before any metadata row is written.
      */
     private static final Pattern LOCATOR = Pattern.compile(
             "^object-ref://[a-z0-9][a-z0-9-]{0,62}(/[a-z0-9][a-z0-9._-]{0,62}){1,6}$");
@@ -64,17 +61,19 @@ public class RawCustodyService implements RawCustody {
     private final ObjectStoragePort objectStorage;
     private final RawContentRepository contents;
     private final IdGenerator idGenerator;
+    private final OperationalFaultSignals faults;
 
     RawCustodyService(ObjectStoragePort objectStorage,
                       RawContentRepository contents,
-                      IdGenerator idGenerator) {
+                      IdGenerator idGenerator, OperationalFaultSignals faults) {
         this.objectStorage = objectStorage;
         this.contents = contents;
         this.idGenerator = idGenerator;
+        this.faults = faults;
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)
     public RawContentRef store(String namespace, byte[] body) {
         if (namespace == null || !NAMESPACE.matcher(namespace).matches()) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
@@ -92,14 +91,19 @@ public class RawCustodyService implements RawCustody {
         }
 
         String objectRef = locatorFor(namespace, sha256);
-        objectStorage.putIfAbsent(objectRef, body);
-        if (!objectStorage.verify(objectRef, sha256)) {
-            log.atError()
-                    .addKeyValue("event", "raw_custody_verification_failed")
-                    .addKeyValue("namespace", namespace)
-                    .addKeyValue("correlationId", CorrelationId.current())
-                    .log("Stored content did not read back with its written digest");
-            throw OperationRejectedException.of(ErrorCode.OBJECT_STORAGE_VERIFICATION_FAILED);
+        try {
+            objectStorage.putIfAbsent(objectRef, body);
+            if (!objectStorage.verify(objectRef, sha256)) {
+                log.atError()
+                        .addKeyValue("event", "raw_custody_verification_failed")
+                        .addKeyValue("namespace", namespace)
+                        .addKeyValue("correlationId", CorrelationId.current())
+                        .log("Stored content did not read back with its written digest");
+                throw OperationRejectedException.of(ErrorCode.OBJECT_STORAGE_VERIFICATION_FAILED);
+            }
+        } catch (RuntimeException failure) {
+            recordCustodyFailure();
+            throw failure;
         }
 
         contents.recordIfAbsent(idGenerator.newId(), sha256, body.length, objectRef);
@@ -108,32 +112,46 @@ public class RawCustodyService implements RawCustody {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)
     public Optional<byte[]> readById(java.util.UUID contentId) {
         return contents.findById(contentId).flatMap(this::read);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)
     public Optional<byte[]> read(RawContentRef reference) {
-        return objectStorage.read(reference.objectRef());
+        return objectStorage.read(reference.objectRef()).filter(body ->
+                body.length == reference.byteLength()
+                        && Digest.ofBytes(body).equals(reference.sha256()));
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)
     public boolean verify(RawContentRef reference) {
         return objectStorage.verify(reference.objectRef(), reference.sha256());
     }
 
     private RawContentRef requireVerified(RawContentRef reference) {
-        if (!objectStorage.verify(reference.objectRef(), reference.sha256())) {
-            log.atError()
-                    .addKeyValue("event", "raw_custody_object_missing")
-                    .addKeyValue("correlationId", CorrelationId.current())
-                    .log("A custody record no longer resolves to matching content");
-            throw OperationRejectedException.of(ErrorCode.OBJECT_STORAGE_VERIFICATION_FAILED);
+        try {
+            if (!objectStorage.verify(reference.objectRef(), reference.sha256())) {
+                log.atError()
+                        .addKeyValue("event", "raw_custody_object_missing")
+                        .addKeyValue("correlationId", CorrelationId.current())
+                        .log("A custody record no longer resolves to matching content");
+                throw OperationRejectedException.of(ErrorCode.OBJECT_STORAGE_VERIFICATION_FAILED);
+            }
+        } catch (RuntimeException failure) {
+            recordCustodyFailure();
+            throw failure;
         }
         return reference;
+    }
+
+    private void recordCustodyFailure() {
+        faults.custodyWriteFailed();
+        log.atError().addKeyValue("event", "raw_custody_write_failed")
+                .addKeyValue("correlationId", CorrelationId.current())
+                .log("Custody write or verification failed");
     }
 
     /**

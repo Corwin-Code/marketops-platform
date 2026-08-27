@@ -85,13 +85,18 @@ public class ImportRowValidator {
     }
 
     private Outcome validatePurchaseCost(UUID organizationId, Map<String, Object> values) {
+        values.putIfAbsent("costKind", "PURCHASE");
+        if (!enumValue(values, "costKind", "PURCHASE", "LANDED")
+                || !currency(values, "currencyCode")) {
+            return Outcome.rejected(values, VALUE_OUT_OF_RANGE, "costKind/currencyCode");
+        }
         Optional<UUID> variantId = references.productVariantIdBySku(
                 organizationId, values.get("skuCode").toString());
         if (variantId.isEmpty()) {
             return Outcome.rejected(values, REFERENCE_NOT_FOUND, "skuCode");
         }
         BigDecimal unitCost = (BigDecimal) values.get("unitCost");
-        if (unitCost.signum() < 0) {
+        if (!decimalFits(unitCost, 18, 4)) {
             return Outcome.rejected(values, VALUE_OUT_OF_RANGE, "unitCost");
         }
         return Outcome.accepted(values, variantId.get().toString());
@@ -109,8 +114,12 @@ public class ImportRowValidator {
             return Outcome.rejected(values, REFERENCE_NOT_FOUND, "warehouseCode");
         }
         long onHand = (Long) values.get("quantityOnHand");
-        if (onHand < 0) {
+        if (onHand < 0 || onHand > Integer.MAX_VALUE) {
             return Outcome.rejected(values, VALUE_OUT_OF_RANGE, "quantityOnHand");
+        }
+        if (values.get("quantityReserved") instanceof Long reserved
+                && (reserved < 0 || reserved > Integer.MAX_VALUE)) {
+            return Outcome.rejected(values, VALUE_OUT_OF_RANGE, "quantityReserved");
         }
         return Outcome.accepted(values, variantId.get() + "|" + warehouseId.get());
     }
@@ -124,26 +133,42 @@ public class ImportRowValidator {
      * nobody notices in a profit report.
      */
     private Outcome validateFinanceInput(UUID organizationId, Map<String, Object> values) {
+        if (!enumValue(values, "inputCode", "VARIABLE_TAX_RATE", "PAYMENT_PROCESSING_RATE",
+                "RETURN_HANDLING_UNIT_COST", "INBOUND_LOGISTICS_UNIT_COST")
+                || !enumValue(values, "scopeKind", "ORGANIZATION", "STORE", "PRODUCT_VARIANT")
+                || !enumValue(values, "valueKind", "RATE", "AMOUNT")) {
+            return Outcome.rejected(values, VALUE_OUT_OF_RANGE, "inputCode/scopeKind/valueKind");
+        }
         String valueKind = values.get("valueKind").toString().toUpperCase(Locale.ROOT);
+        if (values.get("inputCode").toString().endsWith("_RATE") != "RATE".equals(valueKind)) {
+            return Outcome.rejected(values, INCONSISTENT_VALUE_KIND, "inputCode/valueKind");
+        }
         boolean hasRate = values.containsKey("rateValue");
         boolean hasAmount = values.containsKey("amountValue");
         if ("RATE".equals(valueKind)) {
-            if (!hasRate || hasAmount) {
+            if (!hasRate || hasAmount || values.containsKey("currencyCode")) {
                 return Outcome.rejected(values, INCONSISTENT_VALUE_KIND, "rateValue");
             }
             BigDecimal rate = (BigDecimal) values.get("rateValue");
-            if (rate.signum() < 0 || rate.compareTo(BigDecimal.ONE) > 0) {
+            if (!decimalFits(rate, 9, 6) || rate.compareTo(BigDecimal.ONE) > 0) {
                 return Outcome.rejected(values, VALUE_OUT_OF_RANGE, "rateValue");
             }
         } else if ("AMOUNT".equals(valueKind)) {
             if (!hasAmount || hasRate || !values.containsKey("currencyCode")) {
                 return Outcome.rejected(values, INCONSISTENT_VALUE_KIND, "amountValue");
             }
+            if (!decimalFits((BigDecimal) values.get("amountValue"), 18, 4)
+                    || !currency(values, "currencyCode")) {
+                return Outcome.rejected(values, VALUE_OUT_OF_RANGE, "amountValue/currencyCode");
+            }
         } else {
             return Outcome.rejected(values, INCONSISTENT_VALUE_KIND, "valueKind");
         }
 
         String scopeKind = values.get("scopeKind").toString().toUpperCase(Locale.ROOT);
+        if ("ORGANIZATION".equals(scopeKind) && values.containsKey("scopeCode")) {
+            return Outcome.rejected(values, INCONSISTENT_VALUE_KIND, "scopeCode");
+        }
         if (!"ORGANIZATION".equals(scopeKind)) {
             Object scopeCode = values.get("scopeCode");
             if (scopeCode == null) {
@@ -170,6 +195,7 @@ public class ImportRowValidator {
      */
     private static Object convert(String raw, IntakeDataset.FieldKind kind) {
         String text = raw.trim();
+        if (text.length() > 512) return null;
         return switch (kind) {
             case TEXT -> text;
             case INTEGER -> {
@@ -181,6 +207,7 @@ public class ImportRowValidator {
             }
             case DECIMAL -> {
                 try {
+                    if (!text.matches("[+-]?[0-9]{1,32}([.,][0-9]{1,12})?")) yield null;
                     yield new BigDecimal(text.replace(",", "."));
                 } catch (NumberFormatException notANumber) {
                     yield null;
@@ -192,14 +219,41 @@ public class ImportRowValidator {
 
     private static Instant parseInstant(String text) {
         try {
-            return Instant.parse(text);
+            Instant parsed = Instant.parse(text);
+            return validInstant(parsed) ? parsed : null;
         } catch (DateTimeParseException notAnInstant) {
             try {
-                return LocalDate.parse(text).atStartOfDay(ZoneOffset.UTC).toInstant();
+                Instant parsed = LocalDate.parse(text).atStartOfDay(ZoneOffset.UTC).toInstant();
+                return validInstant(parsed) ? parsed : null;
             } catch (DateTimeParseException notADate) {
                 return null;
             }
         }
+    }
+
+    private static boolean validInstant(Instant instant) {
+        return !instant.isBefore(Instant.parse("0001-01-01T00:00:00Z"))
+                && instant.isBefore(Instant.parse("+10000-01-01T00:00:00Z"));
+    }
+
+    private static boolean decimalFits(BigDecimal value, int precision, int scale) {
+        BigDecimal canonical = value.stripTrailingZeros();
+        return canonical.signum() >= 0 && canonical.scale() <= scale
+                && canonical.precision() - canonical.scale() <= precision - scale;
+    }
+
+    private static boolean enumValue(Map<String, Object> values, String field, String... allowed) {
+        String value = String.valueOf(values.get(field)).toUpperCase(Locale.ROOT);
+        if (!java.util.List.of(allowed).contains(value)) return false;
+        values.put(field, value);
+        return true;
+    }
+
+    private static boolean currency(Map<String, Object> values, String field) {
+        String value = String.valueOf(values.get(field)).toUpperCase(Locale.ROOT);
+        if (!value.matches("[A-Z]{3}")) return false;
+        values.put(field, value);
+        return true;
     }
 
     /**

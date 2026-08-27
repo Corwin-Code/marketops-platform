@@ -32,20 +32,26 @@ public class GuardrailRepository {
         this.objectMapper = objectMapper;
     }
 
+    /** Capture the exact database inputs before gathering an evaluation. */
+    public String authoritySnapshot(UUID recommendationId) {
+        return jdbc.sql("SELECT ops.price_authority_snapshot(:id)::text")
+                .param("id", recommendationId).query(String.class).single();
+    }
+
     /** Record one verdict. */
     public void insert(UUID id, UUID organizationId, UUID recommendationId, UUID policyId,
                        Integer policyVersion, GuardrailPurpose purpose, boolean passed,
                        List<GuardrailReason> reasons, Map<String, String> detail,
-                       String inputDigest, Instant evaluatedAt, String correlationId) {
+                       String inputDigest, String authoritySnapshot, Instant evaluatedAt, String correlationId) {
         jdbc.sql("""
                         INSERT INTO ops.guardrail_evaluation (
                             id, organization_id, recommendation_id, policy_id, policy_version,
                             purpose, outcome, reason_codes, detail, input_digest, evaluated_at,
-                            correlation_id)
+                            correlation_id, authority_snapshot)
                         VALUES (:id, :organizationId, :recommendationId, :policyId,
                             :policyVersion, :purpose, :outcome, :reasonCodes,
                             CAST(:detail AS jsonb), :inputDigest, :evaluatedAt,
-                            :correlationId)
+                            :correlationId, CAST(:authoritySnapshot AS jsonb))
                         """)
                 .param("id", id)
                 .param("organizationId", organizationId)
@@ -57,6 +63,7 @@ public class GuardrailRepository {
                 .param("reasonCodes", reasons.stream().map(Enum::name).toArray(String[]::new))
                 .param("detail", objectMapper.writeValueAsString(detail))
                 .param("inputDigest", inputDigest)
+                .param("authoritySnapshot", authoritySnapshot)
                 .param("evaluatedAt", Timestamp.from(evaluatedAt))
                 .param("correlationId", correlationId)
                 .update();

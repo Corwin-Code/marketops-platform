@@ -58,6 +58,25 @@ class AuthorizedAcquisitionFlowIT extends PostgresContainerSupport {
     }
 
     @Test
+    void operationalBacklogTracksDurableRunAgeAndClearsAfterControlledCompletion() throws SQLException {
+        try (Connection connection = asMigrationRole(container);
+             var statement = connection.prepareStatement("UPDATE ops.ingestion_run SET created_at=now()-interval '32 minutes' WHERE id=?")) {
+            statement.setObject(1, IngestionControlPlaneFixture.RUN);
+            assertThat(statement.executeUpdate()).isEqualTo(1);
+        }
+        var jdbc = org.springframework.jdbc.core.simple.JdbcClient.create(applicationDataSource());
+        var telemetry = new com.mimococo.marketops.adminobservability.internal.infrastructure.jdbc.OperationalTelemetryRepository(jdbc);
+        assertThat(telemetry.snapshot().get("ingestion_run_backlog_age_seconds")).isBetween(1919L, 1930L);
+        for (String state : java.util.List.of("RUNNING", "SUCCEEDED")) {
+            assertThat(jdbc.sql("SELECT ops.transition_ingestion_run(:id,1,'worker-a',:state,300,NULL)")
+                    .param("id", IngestionControlPlaneFixture.RUN).param("state", state).query(String.class).single()).isEqualTo(state);
+        }
+        assertThat(telemetry.snapshot().get("ingestion_run_backlog_age_seconds")).isZero();
+        assertThat(jdbc.sql("SELECT checkpoint_version FROM ops.ingestion_checkpoint WHERE job_id=:id")
+                .param("id", IngestionControlPlaneFixture.JOB).query(Long.class).single()).isZero();
+    }
+
+    @Test
     @DisplayName("TC-CTRL-500 a granted, acquired, stored, verified and acknowledged"
             + " flow completes with zero outbound and zero secret movement")
     void wholeFlowCompletesWithZeroOutbound() throws SQLException {
@@ -246,8 +265,8 @@ class AuthorizedAcquisitionFlowIT extends PostgresContainerSupport {
         IngestionControlPlaneFixture.execute(connection, """
                 INSERT INTO raw.raw_acquisition_observation
                     (id, run_id, logical_unit_id, content_id, call_seq,
-                     native_status, outcome_class)
-                VALUES ('%s', '%s', '%s', '%s', 1, '%s', 'SUCCESS_BYTES')
+                     native_status, outcome_class, pagination_outcome)
+                VALUES ('%s', '%s', '%s', '%s', 1, '%s', 'SUCCESS_BYTES', 'NEXT')
                 """.formatted(observation, IngestionControlPlaneFixture.RUN, unit, content,
                 nativeStatus));
         return observation;

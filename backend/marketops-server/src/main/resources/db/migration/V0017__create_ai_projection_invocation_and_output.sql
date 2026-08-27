@@ -194,6 +194,18 @@ SELECT 'SKU_GROWTH_PROFIT_DIAGNOSIS', 1, field_path, data_classification
     ('guardrails.outcome', 'DETERMINISTIC_FINDING')
   ) AS fields(field_path, data_classification);
 
+-- Version two exposes the opaque finding citation that the validator accepts.
+UPDATE ops.ai_projection_definition SET status='RETIRED'
+ WHERE projection_code='SKU_GROWTH_PROFIT_DIAGNOSIS' AND projection_version=1;
+INSERT INTO ops.ai_projection_definition
+    (projection_code,projection_version,purpose,retention_policy,owner_label,status)
+SELECT projection_code,2,purpose,retention_policy,owner_label,'ACTIVE'
+ FROM ops.ai_projection_definition WHERE projection_code='SKU_GROWTH_PROFIT_DIAGNOSIS' AND projection_version=1;
+INSERT INTO ops.ai_projection_field(projection_code,projection_version,field_path,data_classification)
+SELECT projection_code,2,field_path,data_classification FROM ops.ai_projection_field
+ WHERE projection_code='SKU_GROWTH_PROFIT_DIAGNOSIS' AND projection_version=1;
+INSERT INTO ops.ai_projection_field VALUES ('SKU_GROWTH_PROFIT_DIAGNOSIS',2,'findings.findingRef','OPAQUE_IDENTIFIER');
+
 -- ---------------------------------------------------------------------------
 -- Invocation
 -- ---------------------------------------------------------------------------
@@ -208,6 +220,7 @@ CREATE TABLE ops.ai_invocation (
     projection_version   integer     NOT NULL,
     prompt_template_code text        NOT NULL,
     prompt_version       integer     NOT NULL,
+    output_schema_version integer    NOT NULL DEFAULT 2 CHECK (output_schema_version=2),
     model_id             uuid,
     subject_kind         text        NOT NULL,
     subject_id           uuid        NOT NULL,
@@ -219,6 +232,7 @@ CREATE TABLE ops.ai_invocation (
     requested_by_user_id uuid,
     started_at           timestamptz NOT NULL,
     completed_at         timestamptz,
+    execution_deadline_at timestamptz NOT NULL DEFAULT (clock_timestamp()+interval '2 minutes'),
     latency_ms           integer,
     correlation_id       text        NOT NULL,
     CONSTRAINT ai_invocation_pk PRIMARY KEY (id),
@@ -236,9 +250,9 @@ CREATE TABLE ops.ai_invocation (
     CONSTRAINT ai_invocation_digest_ck CHECK (request_digest ~ '^[0-9a-f]{64}$'),
     CONSTRAINT ai_invocation_state_ck
         CHECK (state IN ('PREPARED', 'DISPATCHED', 'SUCCEEDED',
-                         'OUTPUT_REJECTED', 'PROVIDER_FAILED', 'REFUSED')),
+                         'OUTPUT_REJECTED', 'PARTIAL_OUTPUT_REJECTED', 'PROVIDER_FAILED', 'PROVIDER_OUTCOME_UNKNOWN', 'REFUSED')),
     CONSTRAINT ai_invocation_failure_ck
-        CHECK (state NOT IN ('OUTPUT_REJECTED', 'PROVIDER_FAILED', 'REFUSED')
+        CHECK (state NOT IN ('OUTPUT_REJECTED', 'PARTIAL_OUTPUT_REJECTED', 'PROVIDER_FAILED', 'PROVIDER_OUTCOME_UNKNOWN', 'REFUSED')
             OR failure_code IS NOT NULL),
     -- A refused call never reached a provider, so it cannot name a model. Every
     -- call that was dispatched must name the model it was dispatched to.
@@ -296,7 +310,7 @@ CREATE TABLE ops.ai_output_claim (
                 'SCHEMA_INVALID', 'UNKNOWN_FIELD', 'EVIDENCE_REFERENCE_UNRESOLVED',
                 'EVIDENCE_REFERENCE_MISSING', 'METRIC_NOT_RECOGNISED',
                 'DERIVED_CALCULATION_NOT_PRODUCTIZED', 'CAPABILITY_NOT_RECOGNISED',
-                'STATEMENT_TOO_LONG', 'INSTRUCTION_LIKE_CONTENT'))
+                'STATEMENT_TOO_LONG', 'INSTRUCTION_LIKE_CONTENT', 'SECRET_LIKE_CONTENT'))
 );
 
 CREATE INDEX ai_output_claim_invocation_ix
@@ -324,6 +338,72 @@ CREATE TABLE ops.ai_claim_evidence (
 );
 
 CREATE INDEX ai_claim_evidence_claim_ix ON ops.ai_claim_evidence (claim_id);
+
+-- The short prepare is committed before dispatch. A result may close it only once.
+CREATE FUNCTION ops.guard_ai_invocation() RETURNS trigger
+LANGUAGE plpgsql SET search_path=pg_catalog AS $$
+DECLARE accepted_count integer; rejected_count integer;
+BEGIN
+    IF TG_OP='INSERT' AND NEW.state NOT IN ('PREPARED','DISPATCHED') THEN
+        RAISE EXCEPTION 'AI invocation must begin with a durable intent' USING ERRCODE='MO065';
+    END IF;
+    IF (NEW.subject_kind='PLATFORM_LISTING_VARIANT' AND NOT EXISTS (
+           SELECT 1 FROM core.platform_listing_variant WHERE id=NEW.subject_id AND organization_id=NEW.organization_id))
+       OR (NEW.subject_kind='PRODUCT_VARIANT' AND NOT EXISTS (
+           SELECT 1 FROM core.product_variant WHERE id=NEW.subject_id AND organization_id=NEW.organization_id))
+       OR (NEW.subject_kind='STORE' AND NOT EXISTS (
+           SELECT 1 FROM core.store WHERE id=NEW.subject_id AND organization_id=NEW.organization_id))
+       OR (NEW.requested_by_user_id IS NOT NULL AND NOT EXISTS (
+           SELECT 1 FROM iam.user_account WHERE id=NEW.requested_by_user_id AND organization_id=NEW.organization_id)) THEN
+        RAISE EXCEPTION 'AI subject ownership mismatch' USING ERRCODE='MO064';
+    END IF;
+    IF TG_OP='UPDATE' THEN
+        IF OLD.state NOT IN ('PREPARED','DISPATCHED')
+           OR NEW.state IN ('PREPARED','DISPATCHED')
+           OR (NEW.organization_id,NEW.subject_kind,NEW.subject_id,NEW.model_id,NEW.request_digest,
+               NEW.projection_code,NEW.projection_version,NEW.prompt_template_code,NEW.prompt_version,
+               NEW.output_schema_version,NEW.requested_by_user_id,NEW.started_at,NEW.execution_deadline_at)
+             IS DISTINCT FROM
+              (OLD.organization_id,OLD.subject_kind,OLD.subject_id,OLD.model_id,OLD.request_digest,
+               OLD.projection_code,OLD.projection_version,OLD.prompt_template_code,OLD.prompt_version,
+               OLD.output_schema_version,OLD.requested_by_user_id,OLD.started_at,OLD.execution_deadline_at) THEN
+            RAISE EXCEPTION 'AI invocation is already closed or its intent changed' USING ERRCODE='MO065';
+        END IF;
+        SELECT count(*) FILTER(WHERE validation_state='ACCEPTED'),
+               count(*) FILTER(WHERE validation_state='REJECTED')
+          INTO accepted_count,rejected_count FROM ops.ai_output_claim WHERE invocation_id=OLD.id;
+        IF (OLD.state='PREPARED' AND NEW.state<>'REFUSED')
+           OR (OLD.state='DISPATCHED' AND NEW.state='REFUSED')
+           OR (NEW.state='SUCCEEDED' AND (accepted_count=0 OR rejected_count>0 OR NEW.degraded))
+           OR (NEW.state='OUTPUT_REJECTED' AND accepted_count>0)
+           OR (NEW.state='PARTIAL_OUTPUT_REJECTED' AND (accepted_count=0 OR rejected_count=0))
+           OR (NEW.state IN ('REFUSED','PROVIDER_FAILED','PROVIDER_OUTCOME_UNKNOWN') AND accepted_count+rejected_count>0)
+           OR (NEW.state<>'SUCCEEDED' AND NOT NEW.degraded)
+           OR (OLD.state='DISPATCHED' AND NEW.state<>'PROVIDER_OUTCOME_UNKNOWN'
+               AND OLD.execution_deadline_at <= clock_timestamp()) THEN
+            RAISE EXCEPTION 'AI final state does not match its claims or deadline' USING ERRCODE='MO065';
+        END IF;
+    END IF;
+    RETURN NEW;
+END $$;
+CREATE TRIGGER ai_invocation_integrity BEFORE INSERT OR UPDATE ON ops.ai_invocation
+    FOR EACH ROW EXECUTE FUNCTION ops.guard_ai_invocation();
+REVOKE ALL ON FUNCTION ops.guard_ai_invocation() FROM PUBLIC;
+
+CREATE FUNCTION ops.guard_ai_claim() RETURNS trigger
+LANGUAGE plpgsql SET search_path=pg_catalog AS $$
+DECLARE invocation_state text; deadline timestamptz;
+BEGIN
+    SELECT state,execution_deadline_at INTO invocation_state,deadline FROM ops.ai_invocation
+        WHERE id=NEW.invocation_id FOR UPDATE;
+    IF invocation_state IS DISTINCT FROM 'DISPATCHED' OR deadline <= clock_timestamp() THEN
+        RAISE EXCEPTION 'AI response is late or already closed' USING ERRCODE='MO065';
+    END IF;
+    RETURN NEW;
+END $$;
+CREATE TRIGGER ai_claim_live_invocation BEFORE INSERT ON ops.ai_output_claim
+    FOR EACH ROW EXECUTE FUNCTION ops.guard_ai_claim();
+REVOKE ALL ON FUNCTION ops.guard_ai_claim() FROM PUBLIC;
 
 -- ---------------------------------------------------------------------------
 -- Route inventory

@@ -615,8 +615,8 @@ class CallAuthorityExclusivityIT extends PostgresContainerSupport {
             execute(connection, """
                     INSERT INTO raw.raw_acquisition_observation
                         (id, run_id, logical_unit_id, content_id, call_seq,
-                         native_status, outcome_class)
-                    VALUES ('%s', '%s', '%s', '%s', 1, 'OK', 'SUCCESS_BYTES')
+                         native_status, outcome_class, pagination_outcome)
+                    VALUES ('%s', '%s', '%s', '%s', 1, 'OK', 'SUCCESS_BYTES', 'NEXT')
                     """.formatted(observation, RUN, unit, content));
         }
     }

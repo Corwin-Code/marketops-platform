@@ -41,26 +41,18 @@ final class PriceWriteAnswers {
      * Classify an answer that was not a success.
      *
      * <p>The distinction that matters is whether the call could have taken
-     * effect. A rate-limit refusal is the one status where HTTP genuinely says
-     * the request was not processed, so it is safely retriable for anything. A
-     * timeout or a server failure says nothing of the kind: for a read that is
-     * merely inconvenient and worth retrying, but for a write the request may
-     * have reached the marketplace and changed a real price, so the honest
-     * answer is that the outcome is unknown.
-     *
-     * <p>This is HTTP semantics rather than a marketplace fact, which is why it
-     * can be decided here. What each platform does with a request it refuses is
-     * recorded elsewhere; what an unanswered write means is universal.
+     * effect. A timeout, rate limit or server failure cannot prove that a write
+     * had no effect. Reads can be repeated; ambiguous writes require readback.
      */
     PriceWriteResult inconclusive(PriceWriteRequest request, int status,
                                           String nativeStatus, byte[] body) {
         boolean mutating = request.operation() == PriceWriteRequest.Operation.APPLY
                 || request.operation() == PriceWriteRequest.Operation.RESTORE;
-        if (status == 429) {
+        if (status == 429 && !mutating) {
             return new PriceWriteResult(PriceWriteResult.Outcome.RETRIABLE_ERROR, nativeStatus,
                     null, null, null, body, clock.instant(), "platform_rate_limited");
         }
-        if (status == 408 || status >= 500) {
+        if (status == 408 || status == 429 || status >= 500) {
             if (mutating) {
                 return new PriceWriteResult(PriceWriteResult.Outcome.UNKNOWN_STATE,
                         nativeStatus, null, null, null, body, clock.instant(),
@@ -83,11 +75,16 @@ final class PriceWriteAnswers {
      */
     PriceWriteResult applied(WriteOperationSpec spec, JsonNode document,
                                      String nativeStatus, byte[] body) {
-        if (!spec.asynchronous()) {
+        if (document == null || spec.acceptedPointer() == null || spec.acceptedValue() == null
+                || !spec.acceptedValue().equals(document.at(spec.acceptedPointer()))) {
+            return unknown("acceptance_not_at_recorded_pointer");
+        }
+        if ("SYNCHRONOUS".equals(spec.writeResultModel())) {
             return new PriceWriteResult(PriceWriteResult.Outcome.ACCEPTED, nativeStatus, null,
                     null, null, body, clock.instant(), null);
         }
-        String taskKey = text(document, spec.taskKeyPointer());
+        if (!spec.asynchronous()) return unknown("write_result_model_not_verified");
+        String taskKey = exactString(document, spec.taskKeyPointer());
         if (taskKey == null) {
             return unknown("task_key_not_at_recorded_pointer");
         }
@@ -99,13 +96,13 @@ final class PriceWriteAnswers {
      * What a status enquiry answered.
      *
      * <p>The platform's own words for finished and rejected are recorded values,
-     * compared literally. Anything else means the work is still running, which
-     * is a retriable condition rather than an outcome.
+     * compared literally. Only explicitly recorded pending values can be
+     * polled again; an unrecognized value is schema drift and stays unknown.
      */
     PriceWriteResult enquired(WriteOperationSpec spec, JsonNode document,
-                                      String nativeStatus, byte[] body,
+                                      byte[] body,
                                       PriceWriteRequest request) {
-        String taskStatus = text(document, spec.taskStatusPointer());
+        String taskStatus = exactString(document, spec.taskStatusPointer());
         if (taskStatus == null) {
             return unknown("task_status_not_at_recorded_pointer");
         }
@@ -116,6 +113,9 @@ final class PriceWriteAnswers {
         if (taskStatus.equals(spec.taskFailureValue())) {
             return new PriceWriteResult(PriceWriteResult.Outcome.REJECTED, taskStatus, null,
                     null, null, body, clock.instant(), "platform_task_rejected");
+        }
+        if (!spec.taskPendingValues().contains(taskStatus)) {
+            return unknown("task_status_not_recognized");
         }
         return new PriceWriteResult(PriceWriteResult.Outcome.RETRIABLE_ERROR, taskStatus,
                 request.nativeTaskKey(), null, null, body, clock.instant(),
@@ -142,8 +142,13 @@ final class PriceWriteAnswers {
         } catch (NumberFormatException notANumber) {
             return unknown("observed_price_not_a_number");
         }
-        String currency = spec.observedCurrencyPointer() == null
-                ? null : text(document, spec.observedCurrencyPointer());
+        if (!price.matches("[0-9]{1,14}([.][0-9]{1,4})?") || observed.signum() <= 0) {
+            return unknown("observed_price_out_of_bounds");
+        }
+        String currency = exactString(document, spec.observedCurrencyPointer());
+        if (currency == null || !currency.matches("[A-Z]{3}")) {
+            return unknown("observed_currency_not_at_recorded_pointer");
+        }
         return new PriceWriteResult(PriceWriteResult.Outcome.ACCEPTED, nativeStatus, null,
                 observed, currency, body, clock.instant(), null);
     }
@@ -156,7 +161,7 @@ final class PriceWriteAnswers {
      * the pointer mechanism useless for exactly the field it exists for.
      */
     static String text(JsonNode document, String pointer) {
-        if (pointer == null) {
+        if (document == null || pointer == null) {
             return null;
         }
         JsonNode node = document.at(pointer);
@@ -164,10 +169,19 @@ final class PriceWriteAnswers {
             return null;
         }
         if (node.isString()) {
-            String value = node.asString().trim();
-            return value.isEmpty() ? null : value;
+            String value = node.asString();
+            return value.isBlank() ? null : value;
         }
         return node.isNumber() || node.isBoolean() ? node.asString() : null;
+    }
+
+    private static String exactString(JsonNode document, String pointer) {
+        if (document == null || pointer == null) return null;
+        JsonNode node = document.at(pointer);
+        if (!node.isString()) return null;
+        String value = node.asString();
+        return value.isBlank() || value.length() > 256 || value.chars().anyMatch(Character::isISOControl)
+                ? null : value;
     }
 
     /**

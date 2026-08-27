@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
  * enough for their identity provider's recorded maximum authentication age.
  */
 @RestController
+@com.mimococo.marketops.shared.ConsoleApi
 @RequestMapping("/api/v1/console/workflow")
 class ApprovalConsoleController {
 

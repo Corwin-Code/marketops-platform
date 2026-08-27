@@ -32,9 +32,13 @@ make frontend-install
 make frontend-dev
 ```
 
-The console is then at <http://127.0.0.1:5173>. Both the backend and the console
-bind to the loopback interface. The backend has no authentication in this
-foundation, so neither may be reachable from the network.
+The console is then at <http://127.0.0.1:5173>. Both processes bind to loopback
+for workstation use. The console API requires a validated bearer token and
+refuses access while OIDC is unconfigured. Only the explicitly public health,
+build and metadata paths are available before login. The maintenance surface
+has a separate local write gate and must never be published to the network.
+See [identity and mounted secrets](identity-and-mounted-secrets.md) for the
+authentication boundary and local verification limits.
 
 ## What `make bootstrap` writes
 
@@ -62,9 +66,9 @@ who owns a schema.
 | `make doctor` | Report unmet prerequisites; changes nothing |
 | `make up` / `make down` | Start or stop the database, keeping its data |
 | `make reset` | Delete the database volume; asks for confirmation first |
-| `make backend-test` | Compile and run the unit, architecture and configuration tests |
+| `make backend-test` | Clean full backend verification, including unit, architecture, real database and Linux filesystem tests; requires Docker |
 | `make backend-arch` | Run only the boundary rules and their fixtures |
-| `make backend-verify` | Everything above plus the database integration tests |
+| `make backend-verify`, `make backend-check`, `make backend-integration` | The same clean full verification and unchanged JaCoCo 80% line / 70% branch gate |
 | `make frontend-check` | Lint, formatting, types, tests with coverage, and build |
 | `make governance` | The governance and production readiness rules |
 | `make verify` | All of the above |

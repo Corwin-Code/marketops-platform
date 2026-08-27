@@ -1,59 +1,61 @@
-# Marketplace facts are falling behind
+# Acquisition backlog
 
-This is the runbook for the alert `marketops-acquisition-backlog`.
+This procedure supports the `acquisition-backlog` control in
+`infra/yandex/modules/observability/alert-requirements.json`. See
+[operational monitoring](operational-monitoring.md) for delivery and No Data
+semantics. Real alert provisioning and delivery remain unverified.
 
-## What has happened
+## Meaning and authority
 
-Acquisition runs are not keeping up. Nothing is broken and nothing is lost — the
-platform is behind, and every figure derived from marketplace facts is ageing.
+`ingestion_run_backlog_age_seconds` is the age of the oldest queued, retrying,
+leased or running job execution. It does not prove source completeness or that
+all scheduled jobs exist. Missing telemetry is unknown, not zero backlog.
+Stale source facts may block deterministic guardrails with `INPUT_TOO_STALE`.
+Tell operators which data is delayed; do not promise a recovery time without
+observed progress.
 
-## Why it matters before it looks urgent
+This rework authorizes local synthetic drills only. Production inspection or
+recovery needs the environment's approved operator access; this runbook grants
+no credentials, provider calls, scheduler enablement or writes.
 
-The product refuses to support a price write from stale inputs. As the backlog
-grows, metrics cross the policy's maximum input age and the guardrail begins
-returning `INPUT_TOO_STALE`. Operators then see recommendations they cannot act
-on, with no obvious cause, because the cause is in a different part of the
-system entirely.
+## Inspect durable state
 
-So the first thing to tell the affected operators is that the platform is
-behind. They will otherwise spend the morning wondering why approvals stopped
-working.
+There is no `/api/v1/console/ingestion/jobs` route. An authorized operator can
+use a read-only database session to inspect the affected job IDs and compare
+checkpoint age/version with recorded run and observation evidence:
 
-## Step 1 — find out which jobs are behind
-
+```sql
+SELECT run.id, run.job_id, run.state, run.attempt_no, run.max_claims,
+       run.failure_code, run.lease_expires_at, run.next_attempt_at,
+       run.created_at, checkpoint.checkpoint_version, checkpoint.updated_at
+FROM ops.ingestion_run AS run
+LEFT JOIN ops.ingestion_checkpoint AS checkpoint ON checkpoint.job_id = run.job_id
+WHERE run.state IN ('QUEUED','RETRY_WAIT','LEASED','RUNNING','BLOCKED','FAILED_TERMINAL')
+ORDER BY run.created_at
+LIMIT 200;
 ```
-GET /api/v1/console/ingestion/jobs
-```
 
-Read the checkpoint age per job. One job behind is a job problem; every job
-behind is a worker or a marketplace problem.
+Scope inspection to the incident's organization/jobs under the operator's
+approved access. This bounded query is an incident sample, not a complete
+export. Do not attach raw provider payloads, secrets or buyer data to a ticket.
 
-## Step 2 — decide which of four things it is
+| Observation | Investigation and recovery boundary |
+| --- | --- |
+| Quota refusal or rate limiting | Check shared quota reservations, recorded retry time and current verified endpoint limits. Do not raise quotas to bypass a refusal. |
+| Terminal retry failure | Inspect the named failure and durable checkpoint before a separately authorized scheduled/backfill execution. Terminal state does not prove that a later schedule repairs every missing source window. |
+| No claims | Check process health and configured scheduler posture. Disabled is the default until separately authorized; do not enable it merely to clear an alert. |
+| Expired lease | A later authorized worker can recover only under a new fence and remaining retry budget. A live lease must not be stolen. Repeated expiry requires crash investigation. |
+| `BLOCKED` / schema drift | Correct and verify the recorded capability/parser contract. Do not reinterpret unknown fields or force a state transition. Recovery requires an approved execution path and verified source coverage. |
 
-| Symptom | Cause | What to do |
-| --- | --- | --- |
-| Runs are claimed and completing, just slowly | Rate limiting. The adapter refuses a call rather than exceeding a recorded limit. | Nothing to fix. Confirm the recorded rate limit still matches the marketplace's published one; if the marketplace tightened it, the recorded fact is stale and must be re-verified. |
-| Runs are claimed and failing | The marketplace is refusing or timing out. | Read the run's failure code. A run that exhausts its retry budget fails terminally and is re-enqueued by schedule, not by hand. |
-| Runs are not being claimed at all | No worker is running, or the scheduler is switched off in this environment. | Check `marketops.acquisition.scheduler-enabled` for the deployment. A worker that was never started is the commonest cause and the easiest to miss. |
-| Runs are claimed and never finish | A worker died holding a lease. | The lease expires and the run becomes claimable again. If runs are cycling through this repeatedly, the worker is crashing; read its logs before restarting it. |
+## Recovery proof
 
-## Step 3 — do not skip the backlog
+Never edit a cursor, fence, attempt or historical observation to skip work.
+Confirm that committed, hash-verified Raw precedes checkpoint advancement,
+that duplicate pages create no duplicate logical effects, and that backlog age
+falls while source coverage becomes current. Replay consumes existing custody
+and makes no Marketplace acquisition call; backfill is a different operation
+and may need provider authority. Neither is a blanket remedy for absent bytes.
 
-The temptation is to move the checkpoint forward so the job catches up. Do not.
-The cursor cannot outrun committed evidence by design, and moving it by hand
-would leave a window of marketplace facts that were never acquired, silently,
-for ever. A backlog that takes a day to clear is a day of slow figures; a
-skipped window is a permanent hole in the history every profit figure is
-computed from.
-
-## Step 4 — tell people what is uncertain
-
-While the backlog persists, the console is already honest: figures show their
-age, and stale ones are labelled. What the console cannot say is when it will
-be current again. Tell the operators that, in words, with an estimate.
-
-## Recovery is automatic
-
-Nothing here requires a manual replay. Runs are restartable, duplicate
-processing creates no duplicate effects, and a replay makes no marketplace call
-at all. Once the cause is removed, the backlog drains on its own.
+Local executable scenarios are indexed in
+[the failure-drill evidence](../07-phase-evidence/SLICE-V1-001/rework-r1/failure-drill-index.md).
+They do not establish real-account recovery or notification delivery.

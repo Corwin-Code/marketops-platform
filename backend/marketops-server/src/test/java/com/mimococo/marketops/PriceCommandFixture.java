@@ -12,17 +12,26 @@ import org.springframework.jdbc.core.simple.JdbcClient;
  * claimed would prove only that the gate works, which the database contract
  * tests already prove separately.
  */
-final class PriceCommandFixture {
+public final class PriceCommandFixture {
 
     private PriceCommandFixture() {
     }
 
     /** Build one command that the write gate currently permits. */
     static UUID seed(JdbcClient jdbc, String suffix) {
+        return seed(jdbc, suffix, null, false).commandId();
+    }
+
+    /** A fresh review graph; no approval, command or fabricated decision history is inserted. */
+    static SeedIds seedReviewGraph(JdbcClient jdbc, String suffix, UUID storeId) {
+        return seed(jdbc, suffix, storeId, true);
+    }
+
+    private static SeedIds seed(JdbcClient jdbc, String suffix, UUID fixedStoreId, boolean reviewOnly) {
         UUID organizationId = UUID.randomUUID();
         UUID legalEntityId = UUID.randomUUID();
         UUID accountId = UUID.randomUUID();
-        UUID storeId = UUID.randomUUID();
+        UUID storeId = fixedStoreId == null ? UUID.randomUUID() : fixedStoreId;
         UUID providerId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
@@ -31,6 +40,7 @@ final class PriceCommandFixture {
         UUID listingVariantId = UUID.randomUUID();
         UUID mappingId = UUID.randomUUID();
         UUID capabilityId = sharedCapability(jdbc);
+        seedOperations(jdbc, capabilityId, false);
         UUID subjectStatusId = UUID.randomUUID();
         UUID provenanceId = UUID.randomUUID();
         UUID observationId = UUID.randomUUID();
@@ -41,7 +51,8 @@ final class PriceCommandFixture {
         UUID guardrailId = UUID.randomUUID();
         UUID allowlistId = UUID.randomUUID();
         UUID commandId = UUID.randomUUID();
-        String digest = "1".repeat(64);
+        String digest = com.mimococo.marketops.shared.Digest.ofComponents(
+                java.util.List.of("OBSERVED_SELLING_PRICE", "AVAILABLE", "1".repeat(64)));
         String code = shortCode(suffix);
 
         run(jdbc, """
@@ -167,6 +178,19 @@ final class PriceCommandFixture {
                 """.formatted(runId, organizationId, storeId, "4".repeat(64), userId));
 
         run(jdbc, """
+                INSERT INTO mart.metric_value (id, organization_id, calculation_run_id,
+                    metric_code, definition_version, subject_kind, subject_id, window_code,
+                    period_start, period_end, value_state, numeric_value, currency_code,
+                    confidence_state, estimated, input_digest, computed_at)
+                VALUES (gen_random_uuid(), '%s', '%s', 'OBSERVED_SELLING_PRICE', 1,
+                    'PLATFORM_LISTING_VARIANT', '%s', 'D30', now() - interval '30 days', now(),
+                    'AVAILABLE', 100, 'RUB', 'CANONICAL_CONFIRMED', false, '%s', now())
+                """.formatted(organizationId, runId, listingVariantId, "1".repeat(64)));
+        if (reviewOnly) {
+            return new SeedIds(organizationId, storeId, listingVariantId, providerId, userId,
+                    provenanceId, runId, null);
+        }
+        run(jdbc, """
                 INSERT INTO ops.commercial_policy (id, organization_id, policy_code,
                     policy_version, scope_kind, lifecycle_objective, currency_code,
                     effective_from, status, published_by_user_id, reason, created_at,
@@ -187,6 +211,13 @@ final class PriceCommandFixture {
                 """.formatted(recommendationId, organizationId, storeId, listingVariantId,
                         runId, digest));
         run(jdbc, """
+                INSERT INTO ops.guardrail_evaluation (id, organization_id, recommendation_id,
+                    policy_id, policy_version, purpose, outcome, reason_codes, detail,
+                    input_digest, evaluated_at, correlation_id, authority_snapshot)
+                VALUES ('%s', '%s', '%s', '%s', 1, 'APPROVAL', 'PASS', ARRAY[]::text[],
+                        '{}'::jsonb, '%s', now(), 'fixture', ops.price_authority_snapshot('%s'))
+                """.formatted(UUID.randomUUID(), organizationId, recommendationId, policyId, digest, recommendationId));
+        run(jdbc, """
                 INSERT INTO ops.approval_decision (id, organization_id, recommendation_id,
                     decision, decided_by_user_id, authenticated_at, step_up_satisfied,
                     entity_version_digest, scope_expires_at, reason, decided_at,
@@ -197,10 +228,10 @@ final class PriceCommandFixture {
         run(jdbc, """
                 INSERT INTO ops.guardrail_evaluation (id, organization_id, recommendation_id,
                     policy_id, policy_version, purpose, outcome, reason_codes, detail,
-                    input_digest, evaluated_at, correlation_id)
+                    input_digest, evaluated_at, correlation_id, authority_snapshot)
                 VALUES ('%s', '%s', '%s', '%s', 1, 'EXECUTION', 'PASS', ARRAY[]::text[],
-                        '{}'::jsonb, '%s', now(), 'fixture')
-                """.formatted(guardrailId, organizationId, recommendationId, policyId, digest));
+                        '{}'::jsonb, '%s', now(), 'fixture', ops.price_authority_snapshot('%s'))
+                """.formatted(guardrailId, organizationId, recommendationId, policyId, digest, recommendationId));
         run(jdbc, """
                 INSERT INTO ops.pilot_allowlist_entry (id, organization_id, action_kind,
                     platform_code, store_id, platform_listing_variant_id, valid_from,
@@ -221,10 +252,15 @@ final class PriceCommandFixture {
                         100.0000, 105.0000, '%s', '%s', 'PENDING', 0, 3, 1, now(), now(),
                         now())
                 """.formatted(commandId, organizationId, recommendationId, approvalId, storeId,
-                        listingVariantId, capabilityId, idempotencyKey(code), observationId,
+                        listingVariantId, capabilityId, recommendationId, observationId,
                         digest));
-        return commandId;
+        return new SeedIds(organizationId, storeId, listingVariantId, providerId, userId,
+                provenanceId, runId, commandId);
     }
+
+    /** Synthetic graph identities shared by worker and browser fixtures. */
+    record SeedIds(UUID organizationId, UUID storeId, UUID subjectId, UUID providerId,
+                    UUID userId, UUID provenanceId, UUID calculationRunId, UUID commandId) { }
 
     /**
      * The one price-change capability this platform may have.
@@ -277,6 +313,48 @@ final class PriceCommandFixture {
                 SET write_result_model = 'ASYNCHRONOUS_TASK'
                 WHERE capability_code = 'price-change'
                 """);
+        seedOperations(jdbc, sharedCapability(jdbc), true);
+    }
+
+    /** Synthetic protocol shapes, used only in isolated database/worker tests. */
+    public static void seedOperations(JdbcClient jdbc, UUID capabilityId, boolean asynchronous) {
+        for (String purpose : asynchronous ? java.util.List.of("STATUS_ENQUIRY")
+                : java.util.List.of("APPLY", "READBACK", "RESTORE")) {
+            if (jdbc.sql("SELECT count(*) FROM platform.capability_operation WHERE capability_id = :id AND operation = :purpose")
+                    .param("id", capabilityId).param("purpose", purpose).query(Integer.class).single() > 0) {
+                continue;
+            }
+            UUID endpoint = UUID.randomUUID();
+            boolean writing = java.util.Set.of("APPLY", "RESTORE").contains(purpose);
+            jdbc.sql("""
+                    INSERT INTO platform.platform_endpoint (id, platform_code, endpoint_code, api_version,
+                        http_method, path_template, query_template, operation_function, capability_id, read_write_class, pagination_model,
+                        idempotency_support, verification_state, last_verified_at, evidence_ref,
+                        verified_source_title, owner_label, contract_test_status, status, created_at, updated_at)
+                    VALUES (:id, 'OZON', :code, 'v1', :method, :path, :query, :function, :capability, :kind, 'NONE', 'YES',
+                        'VERIFIED', now(), 'evidence://fixture/price-protocol', 'SYNTHETIC protocol fixture',
+                        'test-fixture', 'PASSING', 'ACTIVE', now(), now())
+                    """).param("id", endpoint).param("code", "fixture." + purpose.toLowerCase(java.util.Locale.ROOT) + "." + endpoint)
+                    .param("method", writing ? "POST" : "GET").param("path", "/fixture/" + purpose.toLowerCase(java.util.Locale.ROOT))
+                    .param("query", writing ? null : "STATUS_ENQUIRY".equals(purpose) ? "task={nativeTaskKey}" : "sku={nativeVariantKey}")
+                    .param("function", "STATUS_ENQUIRY".equals(purpose) ? "PRICE_STATUS" : "PRICE_" + purpose)
+                    .param("capability", capabilityId).param("kind", writing ? "WRITE" : "READ").update();
+            jdbc.sql("""
+                    INSERT INTO platform.capability_operation (id, capability_id, platform_code, operation,
+                        endpoint_id, request_template, accepted_pointer, accepted_value, task_key_pointer, task_status_pointer,
+                        task_success_value, task_failure_value, task_pending_values, observed_price_pointer, observed_currency_pointer,
+                        conditional_write_header, version_token_header, verification_state, last_verified_at,
+                        evidence_ref, verified_source_title, owner_label, status, created_at, updated_at)
+                    VALUES (:id, :capability, 'OZON', :purpose, :endpoint, :template,
+                        '/accepted', 'true'::jsonb, '/task', '/status', 'done', 'failed', ARRAY['pending'], '/price', '/currency',
+                        :conditional, :versionHeader, 'VERIFIED', now(), 'evidence://fixture/price-protocol',
+                        'SYNTHETIC protocol fixture', 'test-fixture', 'ACTIVE', now(), now())
+                    """).param("id", UUID.randomUUID()).param("capability", capabilityId)
+                    .param("purpose", purpose).param("endpoint", endpoint)
+                    .param("template", writing ? "{\"price\":\"{targetPrice}\",\"currency\":\"{currencyCode}\",\"sku\":\"{nativeVariantKey}\"}" : "")
+                    .param("conditional", "RESTORE".equals(purpose) ? "If-Match" : null)
+                    .param("versionHeader", "READBACK".equals(purpose) ? "etag" : null).update();
+        }
     }
 
     /** Turn every price write off. */

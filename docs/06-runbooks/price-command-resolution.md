@@ -9,17 +9,21 @@ A price command has stopped moving on its own. The platform will not resolve it
 automatically, and it is right not to: every remaining path involves a judgement
 about a real marketplace price.
 
-Three states bring a command here, and they mean different things.
+The following durable states require operator attention.
 
 | State | What is true | What is not known |
 | --- | --- | --- |
 | `UNKNOWN_REQUIRES_READBACK` | A call was made and its outcome could not be classified — a timeout, a server failure, or an answer this product cannot read. | Whether the marketplace applied the change. |
 | `READBACK_MISMATCH` | A readback succeeded and observed a price other than the intended one. | Whether this product wrote the wrong value or something else moved the price afterwards. |
+| `COMPENSATION_FAILED` | A restore was not confirmed. | Whether the prior price was restored; do not retry blindly. |
 | `MANUAL_RESOLUTION` | A person has already taken the command over. | Whatever they had not yet decided. |
 
 The one thing that is never true here is that the change succeeded. Success
 requires a readback that observed the intended value, and the database refuses
 the transition without one.
+
+Real provider reads/writes and production incident actions need their separately
+approved execution envelope. This runbook does not authorize them during rework.
 
 ## Before anything else
 
@@ -39,7 +43,10 @@ GET /api/v1/console/commands/{commandId}
 
 The timeline shows every call made and every observation taken. Read the last
 attempt's `outcomeClass` and `errorCode`, then read the readbacks. A command
-with no readback at all has never been compared against the marketplace.
+with no readback at all has no recorded comparison against the marketplace.
+After a new login, the recommendation review can open its existing command
+through `GET /api/v1/console/commands/recommendations/{recommendationId}`;
+this is an ownership-checked read and creates no command.
 
 ## Step 2 — ask the marketplace what it holds
 
@@ -93,8 +100,9 @@ POST /api/v1/console/commands/{commandId}/closure
 { "reason": "why this will not be completed" }
 ```
 
-The command ends as failed. Nothing is restored — closing says the change was
-not applied, and if it was applied, restoring is step 6 instead.
+The command ends as failed. Nothing is restored. Closure records an operator
+decision; it is not independent evidence that no remote change occurred.
+Keep the last observation and any unresolved uncertainty in the incident record.
 
 ## Step 6 — restore the previous price
 
@@ -105,8 +113,10 @@ POST /api/v1/console/commands/{commandId}/compensation
 { "reason": "why the previous price should be put back" }
 ```
 
-The platform refuses this unless the most recent readback still observes the
-value this command wrote. If it refuses with `COMPENSATION_UNSAFE`, take a fresh
+The platform takes a fresh preflight readback and requires both the command
+target and a usable provider version token. The restore carries that token as
+a conditional write, so a concurrent change must be refused by the provider.
+A capability without those verified semantics cannot restore safely. If it refuses with `COMPENSATION_UNSAFE`, take a fresh
 readback first and re-read step 3: the world has moved since.
 
 A restore is a platform write. It passes the same gate an apply does, and it is

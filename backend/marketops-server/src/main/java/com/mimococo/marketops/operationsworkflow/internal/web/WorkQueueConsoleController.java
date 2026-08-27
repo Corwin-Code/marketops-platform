@@ -4,6 +4,7 @@ import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
+import com.mimococo.marketops.identityaccess.OwnedResource;
 import com.mimococo.marketops.operationsworkflow.RecommendationState;
 import com.mimococo.marketops.operationsworkflow.RecommendationView;
 import com.mimococo.marketops.operationsworkflow.WorkTaskView;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
  * produce one change and one refusal.
  */
 @RestController
+@com.mimococo.marketops.shared.ConsoleApi
 @RequestMapping("/api/v1/console/workflow")
 class WorkQueueConsoleController {
 
@@ -63,10 +65,16 @@ class WorkQueueConsoleController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     List<RecommendationView> queue(AuthenticatedActor actor,
                                    @PathVariable UUID storeId,
+                                   @RequestParam(required = false) UUID subjectId,
                                    @RequestParam(required = false, defaultValue = "50")
                                    int limit) {
         authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
                 ResourceScope.store(storeId));
+        if (subjectId != null) {
+            authorization.requireOwned(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
+                    new OwnedResource(OwnedResource.Kind.LISTING_VARIANT, subjectId, storeId));
+            return recommendations.queueForSubject(storeId, subjectId, OPEN_STATES, limit);
+        }
         return recommendations.queue(storeId, OPEN_STATES, limit);
     }
 
@@ -134,9 +142,9 @@ class WorkQueueConsoleController {
     void assign(AuthenticatedActor actor,
                 @PathVariable UUID taskId,
                 @Valid @RequestBody AssignRequest request) {
-        authorization.require(actor, ActionScopeCode.TASK_ASSIGN,
-                ResourceScope.organization(actor.organizationId()));
-        tasks.assign(actor.userId().toString(), taskId, request.assigneeUserId(),
+        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
+                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        tasks.assign(actor, taskId, request.assigneeUserId(),
                 request.expectedVersion());
     }
 
@@ -146,9 +154,9 @@ class WorkQueueConsoleController {
     void start(AuthenticatedActor actor,
                @PathVariable UUID taskId,
                @Valid @RequestBody VersionedRequest request) {
-        authorization.require(actor, ActionScopeCode.TASK_ASSIGN,
-                ResourceScope.organization(actor.organizationId()));
-        tasks.start(actor.userId().toString(), taskId, request.expectedVersion());
+        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
+                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        tasks.start(actor, taskId, request.expectedVersion());
     }
 
     /** Finish a task, whether it was done or abandoned. */
@@ -157,9 +165,9 @@ class WorkQueueConsoleController {
     void close(AuthenticatedActor actor,
                @PathVariable UUID taskId,
                @Valid @RequestBody CloseRequest request) {
-        authorization.require(actor, ActionScopeCode.TASK_ASSIGN,
-                ResourceScope.organization(actor.organizationId()));
-        tasks.close(actor.userId().toString(), taskId, request.done(),
+        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
+                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        tasks.close(actor, taskId, request.done(),
                 request.closureReason(), request.expectedVersion());
     }
 

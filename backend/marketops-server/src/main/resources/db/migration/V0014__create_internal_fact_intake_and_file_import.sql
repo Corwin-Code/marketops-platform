@@ -85,6 +85,7 @@ CREATE TABLE staging.import_batch (
     approved_by_user_id   uuid,
     approved_at           timestamptz,
     applied_at            timestamptz,
+    applied_row_count     integer,
     supersedes_batch_id   uuid,
     created_at            timestamptz NOT NULL,
     updated_at            timestamptz NOT NULL,
@@ -128,7 +129,10 @@ CREATE TABLE staging.import_batch (
         CHECK (state NOT IN ('APPROVED', 'APPLIED')
             OR (approved_by_user_id IS NOT NULL AND approved_at IS NOT NULL)),
     CONSTRAINT import_batch_applied_ck
-        CHECK ((state = 'APPLIED') = (applied_at IS NOT NULL)),
+        CHECK ((state IN ('APPLIED', 'SUPERSEDED')) = (applied_at IS NOT NULL)),
+    CONSTRAINT import_batch_applied_count_ck
+        CHECK ((state IN ('APPLIED', 'SUPERSEDED')) = (applied_row_count IS NOT NULL)
+            AND (applied_row_count IS NULL OR applied_row_count = accepted_row_count)),
     CONSTRAINT import_batch_effective_ck
         CHECK (state NOT IN ('APPROVED', 'APPLIED') OR effective_from IS NOT NULL)
 );
@@ -363,6 +367,84 @@ CREATE TABLE core.finance_input_version (
 
 CREATE INDEX finance_input_version_lookup_ix
     ON core.finance_input_version (organization_id, input_code, effective_from DESC);
+
+-- Validated content and target ownership cannot drift between preview and application.
+CREATE FUNCTION staging.guard_import_batch() RETURNS trigger
+LANGUAGE plpgsql SET search_path = pg_catalog AS $$
+DECLARE total_rows integer; accepted_rows integer; actual_facts integer;
+BEGIN
+    PERFORM 1 FROM staging.import_schema_profile p
+        WHERE p.id=NEW.schema_profile_id AND p.organization_id=NEW.organization_id
+          AND p.dataset_kind=NEW.dataset_kind;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'import ownership mismatch' USING ERRCODE='MO060';
+    END IF;
+    PERFORM 1 FROM iam.user_account u WHERE u.id=NEW.submitted_by_user_id AND u.organization_id=NEW.organization_id;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'import ownership mismatch' USING ERRCODE='MO060';
+    END IF;
+    IF NEW.approved_by_user_id IS NOT NULL THEN
+        PERFORM 1 FROM iam.user_account u WHERE u.id=NEW.approved_by_user_id
+            AND u.organization_id=NEW.organization_id AND u.status='ACTIVE';
+        IF NOT FOUND THEN RAISE EXCEPTION 'import ownership mismatch' USING ERRCODE='MO060'; END IF;
+    END IF;
+    IF TG_OP='INSERT' THEN
+        IF NEW.state <> 'RECEIVED' THEN
+            RAISE EXCEPTION 'an import must begin at receipt' USING ERRCODE='MO061';
+        END IF;
+        RETURN NEW;
+    END IF;
+    IF (NEW.organization_id,NEW.dataset_kind,NEW.schema_profile_id,NEW.content_id,
+        NEW.declared_file_name,NEW.declared_media_type,NEW.submitted_by_user_id,NEW.submitted_at)
+       IS DISTINCT FROM
+       (OLD.organization_id,OLD.dataset_kind,OLD.schema_profile_id,OLD.content_id,
+        OLD.declared_file_name,OLD.declared_media_type,OLD.submitted_by_user_id,OLD.submitted_at)
+       OR NOT ((OLD.state='RECEIVED' AND NEW.state IN ('VALIDATED','REJECTED'))
+          OR (OLD.state='VALIDATED' AND NEW.state IN ('APPROVED','REJECTED'))
+          OR (OLD.state='APPROVED' AND NEW.state='APPLIED')
+          OR (OLD.state='APPLIED' AND NEW.state='SUPERSEDED')) THEN
+        RAISE EXCEPTION 'import content or transition is immutable' USING ERRCODE='MO061';
+    END IF;
+    SELECT count(*), count(*) FILTER (WHERE validation_state='ACCEPTED')
+      INTO total_rows,accepted_rows FROM staging.import_row WHERE batch_id=NEW.id;
+    IF (NEW.total_row_count,NEW.accepted_row_count,NEW.rejected_row_count)
+       IS DISTINCT FROM (total_rows,accepted_rows,total_rows-accepted_rows)
+       OR (NEW.state IN ('VALIDATED','APPROVED','APPLIED') AND accepted_rows=0) THEN
+        RAISE EXCEPTION 'import row reconciliation failed' USING ERRCODE='MO062';
+    END IF;
+    IF NEW.state='APPLIED' THEN
+        SELECT CASE NEW.dataset_kind
+          WHEN 'PURCHASE_COST' THEN (SELECT count(*) FROM core.cost_version f
+            JOIN core.fact_provenance p ON p.id=f.provenance_id WHERE p.import_batch_id=NEW.id)
+          WHEN 'INTERNAL_STOCK' THEN (SELECT count(*) FROM core.internal_stock_snapshot f
+            JOIN core.fact_provenance p ON p.id=f.provenance_id WHERE p.import_batch_id=NEW.id)
+          WHEN 'FINANCE_INPUT' THEN (SELECT count(*) FROM core.finance_input_version f
+            JOIN core.fact_provenance p ON p.id=f.provenance_id WHERE p.import_batch_id=NEW.id)
+          END INTO actual_facts;
+        IF actual_facts IS DISTINCT FROM accepted_rows
+           OR NEW.applied_row_count IS DISTINCT FROM accepted_rows THEN
+            RAISE EXCEPTION 'import fact reconciliation failed' USING ERRCODE='MO062';
+        END IF;
+    END IF;
+    RETURN NEW;
+END $$;
+CREATE TRIGGER import_batch_integrity BEFORE INSERT OR UPDATE ON staging.import_batch
+    FOR EACH ROW EXECUTE FUNCTION staging.guard_import_batch();
+REVOKE ALL ON FUNCTION staging.guard_import_batch() FROM PUBLIC;
+
+CREATE FUNCTION staging.guard_import_row() RETURNS trigger
+LANGUAGE plpgsql SET search_path = pg_catalog AS $$
+DECLARE batch_state text;
+BEGIN
+    SELECT state INTO batch_state FROM staging.import_batch WHERE id=NEW.batch_id FOR UPDATE;
+    IF batch_state IS DISTINCT FROM 'RECEIVED' THEN
+        RAISE EXCEPTION 'validated import rows are immutable' USING ERRCODE='MO063';
+    END IF;
+    RETURN NEW;
+END $$;
+CREATE TRIGGER import_row_receipt_only BEFORE INSERT ON staging.import_row
+    FOR EACH ROW EXECUTE FUNCTION staging.guard_import_row();
+REVOKE ALL ON FUNCTION staging.guard_import_row() FROM PUBLIC;
 
 -- ---------------------------------------------------------------------------
 -- Route inventory

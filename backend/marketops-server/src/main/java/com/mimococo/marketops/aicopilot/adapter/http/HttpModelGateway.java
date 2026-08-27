@@ -8,9 +8,7 @@ import com.mimococo.marketops.shared.port.SecretResolverPort;
 import com.mimococo.marketops.shared.CorrelationId;
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import com.mimococo.marketops.shared.port.OutboundHttp;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Duration;
@@ -47,13 +45,13 @@ public final class HttpModelGateway implements ModelGatewayPort {
 
     private static final Logger log = LoggerFactory.getLogger(HttpModelGateway.class);
 
-    private final HttpClient httpClient;
+    private final OutboundHttp httpClient;
     private final AiRepository repository;
     private final SecretResolverPort secrets;
     private final ObjectMapper objectMapper;
     private final Clock clock;
 
-    public HttpModelGateway(HttpClient httpClient,
+    public HttpModelGateway(OutboundHttp httpClient,
                             AiRepository repository,
                             SecretResolverPort secrets,
                             ObjectMapper objectMapper,
@@ -75,6 +73,20 @@ public final class HttpModelGateway implements ModelGatewayPort {
         }
         AiRepository.ProviderCallSpec spec = found.get();
 
+        OutboundHttp.Plan plan;
+        try {
+            String body = renderRequest(spec.requestTemplate(), request);
+            JsonNode rendered = com.mimococo.marketops.shared.JsonValues.read(objectMapper,body);
+            if (rendered == null || !rendered.isObject()) throw new IllegalArgumentException("model request must be a JSON object");
+            OutboundHttp.requireHeaderTemplate(spec.authValueTemplate());
+            plan = httpClient.prepare(new OutboundHttp.Destination("ai:" + spec.providerCode(),
+                    URI.create(spec.invocationUrl()), "POST",
+                    java.util.Set.of("Content-Type", "Accept", spec.authHeaderName()),
+                    body.getBytes(StandardCharsets.UTF_8), spec.requestTimeoutMillis(), 131_072));
+        } catch (RuntimeException invalidDestination) {
+            return refuse("DESTINATION_POLICY_REFUSED", startedAt);
+        }
+
         Optional<char[]> secret = secrets.resolve(request.secretReference());
         if (secret.isEmpty()) {
             return refuse("CREDENTIAL_UNRESOLVABLE", startedAt);
@@ -87,24 +99,17 @@ public final class HttpModelGateway implements ModelGatewayPort {
             Arrays.fill(secret.get(), '\0');
         }
 
-        String body = renderRequest(spec.requestTemplate(), request);
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(spec.invocationUrl()))
-                .timeout(Duration.ofMillis(spec.requestTimeoutMillis()))
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .header(spec.authHeaderName(), authorization)
-                .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
-                .build();
-
         try {
-            HttpResponse<String> response =
-                    httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            OutboundHttp.Response response = httpClient.exchange(plan, Map.of("Content-Type", "application/json",
+                    "Accept", "application/json", spec.authHeaderName(), authorization));
             long latency = Duration.between(startedAt, clock.instant()).toMillis();
+            if (!response.complete()) return ModelResponse.failed(response.failureCode(), latency);
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
                 return refuseWithStatus(response.statusCode(), latency);
             }
             return extractAnswer(response.body(), spec.responsePointer(), latency);
+        } catch (IllegalArgumentException invalidDestination) {
+            return refuse("DESTINATION_POLICY_REFUSED", startedAt);
         } catch (IOException transportFailure) {
             return refuse("TRANSPORT_FAILED", startedAt);
         } catch (InterruptedException interrupted) {
@@ -126,6 +131,10 @@ public final class HttpModelGateway implements ModelGatewayPort {
                 "systemPrompt", request.systemPrompt(),
                 "userPrompt", request.userPrompt(),
                 "maxOutputTokens", Integer.toString(request.maximumOutputTokens()));
+        var placeholders = java.util.regex.Pattern.compile("\\{([A-Za-z][A-Za-z0-9_]*)}").matcher(template);
+        while (placeholders.find()) {
+            if (!values.containsKey(placeholders.group(1))) throw new IllegalArgumentException("unknown model placeholder");
+        }
         String rendered = template;
         for (Map.Entry<String, String> value : values.entrySet()) {
             rendered = rendered.replace("{" + value.getKey() + "}",
@@ -135,16 +144,17 @@ public final class HttpModelGateway implements ModelGatewayPort {
         return rendered;
     }
 
-    private ModelResponse extractAnswer(String body, String pointer, long latencyMillis) {
+    private ModelResponse extractAnswer(byte[] body, String pointer, long latencyMillis) {
         try {
-            JsonNode document = objectMapper.readTree(body);
+            JsonNode document = com.mimococo.marketops.shared.JsonValues.read(objectMapper,body);
+            if (document == null) return ModelResponse.failed("RESPONSE_NOT_READABLE", latencyMillis);
             JsonNode answer = document.at(pointer);
             if (answer.isMissingNode() || answer.isNull() || !answer.isString()) {
                 return new ModelResponse(ModelResponse.Outcome.FAILED, "",
                         "ANSWER_NOT_AT_RECORDED_POINTER", latencyMillis);
             }
             return ModelResponse.answered(answer.asString(), latencyMillis);
-        } catch (JacksonException unreadable) {
+        } catch (JacksonException | IllegalArgumentException unreadable) {
             return new ModelResponse(ModelResponse.Outcome.FAILED, "",
                     "RESPONSE_NOT_READABLE", latencyMillis);
         }

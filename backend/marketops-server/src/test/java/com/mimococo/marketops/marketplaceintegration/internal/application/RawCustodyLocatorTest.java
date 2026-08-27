@@ -25,6 +25,40 @@ import org.junit.jupiter.api.Test;
  */
 class RawCustodyLocatorTest {
 
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"write", "verify-throw", "verify-false", "existing-false", "existing-throw"})
+    void objectFailuresRemainFailuresAndProduceOnlyAnExpiringAggregateSignal(String mode) {
+        var clock = org.mockito.Mockito.mock(java.time.Clock.class);
+        var now = java.time.Instant.parse("2026-08-28T00:00:00Z");
+        org.mockito.Mockito.when(clock.instant()).thenReturn(now);
+        var faults = new com.mimococo.marketops.adminobservability.OperationalFaultSignals(clock);
+        var objects = org.mockito.Mockito.mock(com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort.class);
+        var repository = org.mockito.Mockito.mock(com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.RawContentRepository.class);
+        byte[] body = "custody-fault-fixture".getBytes(StandardCharsets.UTF_8);
+        String digest = Digest.ofBytes(body);
+        String locator = RawCustodyService.locatorFor("internal-intake", digest);
+        if (mode.startsWith("existing")) {
+            org.mockito.Mockito.when(repository.findByDigest(digest)).thenReturn(java.util.Optional.of(
+                    new com.mimococo.marketops.marketplaceintegration.RawContentRef(java.util.UUID.randomUUID(), digest, body.length, locator)));
+        }
+        if (mode.equals("write")) org.mockito.Mockito.doThrow(new IllegalStateException("synthetic storage failure"))
+                .when(objects).putIfAbsent(locator, body);
+        if (mode.endsWith("throw")) org.mockito.Mockito.when(objects.verify(locator, digest))
+                .thenThrow(new IllegalStateException("synthetic verification failure"));
+        var service = new RawCustodyService(objects, repository, java.util.UUID::randomUUID, faults);
+        assertThat(faults.recentCustodyWriteFailure()).isZero();
+        assertThatThrownBy(() -> service.store("INVALID", body)).isInstanceOf(OperationRejectedException.class);
+        assertThat(faults.recentCustodyWriteFailure()).isZero();
+        org.mockito.Mockito.verifyNoInteractions(objects);
+        assertThatThrownBy(() -> service.store("internal-intake", body)).isInstanceOf(RuntimeException.class);
+        assertThat(faults.recentCustodyWriteFailure()).isEqualTo(1);
+        org.mockito.Mockito.verify(repository, org.mockito.Mockito.never()).recordIfAbsent(
+                org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyLong(), org.mockito.ArgumentMatchers.anyString());
+        org.mockito.Mockito.when(clock.instant()).thenReturn(now.plusSeconds(301));
+        assertThat(faults.recentCustodyWriteFailure()).isZero();
+    }
+
     /** The exact shape `raw.raw_content.object_ref` accepts, from V0010. */
     private static final Pattern SCHEMA_SHAPE = Pattern.compile(
             "^object-ref://[a-z0-9][a-z0-9-]{0,62}(/[a-z0-9][a-z0-9._-]{0,62}){1,6}$");

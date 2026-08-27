@@ -9,8 +9,19 @@
 # deliberate, separately enabled operation rather than a standing capability,
 # and it is reachable only from the host the process runs on.
 
+# Only the authenticated console and read-only status routes are published by
+# ALB. Maintenance remains disabled and rejects non-loopback callers. This
+# listener binds the private VM interface; no VM has a public IP.
+server:
+  address: 0.0.0.0
+
+spring:
+  flyway:
+    enabled: false
+    password: ""
+
 marketops:
-  environment: production
+  environment: ${MARKETOPS_ENVIRONMENT:production}
   metadata-maintenance:
     write-enabled: false
   object-storage:
@@ -22,6 +33,9 @@ marketops:
     credential-reference: ${MARKETOPS_OBJECT_STORAGE_CREDENTIAL_REFERENCE}
   secrets:
     mount-directory: ${MARKETOPS_SECRET_MOUNT_DIRECTORY}
+  diagnostic-export:
+    # Internal, authorized export work only. Does not enable marketplace writes.
+    worker-enabled: ${MARKETOPS_DIAGNOSTIC_EXPORT_WORKER_ENABLED:true}
   acquisition:
     scheduler-enabled: ${MARKETOPS_ACQUISITION_SCHEDULER_ENABLED:false}
   price-write:

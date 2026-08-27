@@ -27,8 +27,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * safe to return, and the diagnostic detail stays in the log under the same
  * correlation identifier the caller received.
  */
-@RestControllerAdvice(basePackages = "com.mimococo.marketops")
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+@RestControllerAdvice(annotations = com.mimococo.marketops.shared.ConsoleApi.class)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class ConsoleProblemAdvice {
 
     private static final Logger log = LoggerFactory.getLogger(ConsoleProblemAdvice.class);
@@ -56,6 +56,9 @@ public class ConsoleProblemAdvice {
             Map.entry(ErrorCode.RESOURCE_SCOPE_DENIED, HttpStatus.FORBIDDEN),
             Map.entry(ErrorCode.IDENTITY_PROVIDER_NOT_ACCEPTED, HttpStatus.UNAUTHORIZED),
             Map.entry(ErrorCode.IMPORT_TOO_LARGE, HttpStatus.PAYLOAD_TOO_LARGE),
+            Map.entry(ErrorCode.EXPORT_QUEUE_FULL, HttpStatus.TOO_MANY_REQUESTS),
+            Map.entry(ErrorCode.EXPORT_UNAVAILABLE, HttpStatus.CONFLICT),
+            Map.entry(ErrorCode.EXPORT_INTEGRITY_FAILED, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.IMPORT_DUPLICATE_CONTENT, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.PRODUCTION_WRITE_DISABLED, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.WRITE_GATE_CLOSED, HttpStatus.CONFLICT),
@@ -79,9 +82,6 @@ public class ConsoleProblemAdvice {
     @ExceptionHandler(OperationRejectedException.class)
     ProblemDetail handleRefusal(HttpServletRequest request,
                                 OperationRejectedException exception) {
-        if (!isConsoleRequest(request)) {
-            throw exception;
-        }
         ErrorCode code = exception.errorCode();
         HttpStatus status = STATUS.getOrDefault(code, BUSINESS_REFUSAL);
         log.atInfo()
@@ -97,8 +97,34 @@ public class ConsoleProblemAdvice {
         return detail;
     }
 
-    private static boolean isConsoleRequest(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        return path != null && path.startsWith(CONSOLE_PREFIX);
+    /** Parsing failures stay on the console surface and never echo the rejected body. */
+    @ExceptionHandler({org.springframework.web.bind.MethodArgumentNotValidException.class,
+            org.springframework.http.converter.HttpMessageNotReadableException.class,
+            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class,
+            org.springframework.web.bind.ServletRequestBindingException.class,
+            org.springframework.web.method.annotation.HandlerMethodValidationException.class})
+    ProblemDetail invalidRequest(Exception exception) {
+        return handleRefusal(null, OperationRejectedException.of(ErrorCode.VALIDATION_FAILED));
+    }
+
+    /** A relational race is translated without exposing SQL, values or connection details. */
+    @ExceptionHandler(org.springframework.dao.DataAccessException.class)
+    ProblemDetail relationalRefusal(org.springframework.dao.DataAccessException failure) {
+        String state = "";
+        for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+            if (cause instanceof java.sql.SQLException sql) {
+                state = java.util.Objects.toString(sql.getSQLState(), ""); break;
+            }
+        }
+        ErrorCode code = switch (state) {
+            case "23505", "23P01", "MO061", "MO063", "MO065" -> ErrorCode.VERSION_CONFLICT;
+            case "23503", "23514", "22007", "22008", "22003", "22P02", "MO036", "MO039" -> ErrorCode.VALIDATION_FAILED;
+            case "MO060", "MO064" -> ErrorCode.RESOURCE_SCOPE_DENIED;
+            case "MO062" -> ErrorCode.IMPORT_VALIDATION_FAILED;
+            case "MO080" -> ErrorCode.EXPORT_QUEUE_FULL;
+            case "MO084" -> ErrorCode.EXPORT_UNAVAILABLE;
+            default -> ErrorCode.INTERNAL_ERROR;
+        };
+        return handleRefusal(null, OperationRejectedException.of(code));
     }
 }

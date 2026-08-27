@@ -91,7 +91,7 @@ public class AiRepository {
      */
     public Optional<ProviderCallSpec> eligibleProviderSpec(String modelCode) {
         return jdbc.sql("""
-                        SELECT provider.invocation_url, provider.request_template,
+                        SELECT provider.provider_code, provider.invocation_url, provider.request_template,
                                provider.response_pointer, provider.auth_header_name,
                                provider.auth_value_template, provider.request_timeout_ms
                           FROM ops.ai_model AS model
@@ -109,7 +109,7 @@ public class AiRepository {
                         rows.getString("response_pointer"),
                         rows.getString("auth_header_name"),
                         rows.getString("auth_value_template"),
-                        rows.getInt("request_timeout_ms")))
+                        rows.getInt("request_timeout_ms"), rows.getString("provider_code")))
                 .optional();
     }
 
@@ -152,11 +152,12 @@ public class AiRepository {
     /** Record how a model call ended. */
     public void closeInvocation(UUID id, String state, String failureCode, boolean degraded,
                                 Integer latencyMillis, Instant completedAt) {
-        jdbc.sql("""
+        int changed = jdbc.sql("""
                         UPDATE ops.ai_invocation
                         SET state = :state, failure_code = :failureCode, degraded = :degraded,
                             latency_ms = :latencyMillis, completed_at = :completedAt
-                        WHERE id = :id
+                        WHERE id = :id AND state IN ('PREPARED','DISPATCHED')
+                          AND (state='PREPARED' OR execution_deadline_at > clock_timestamp())
                         """)
                 .param("state", state)
                 .param("failureCode", failureCode)
@@ -165,11 +166,29 @@ public class AiRepository {
                 .param("completedAt", Timestamp.from(completedAt))
                 .param("id", id)
                 .update();
+        if (changed != 1) throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                com.mimococo.marketops.shared.ErrorCode.VERSION_CONFLICT);
     }
+
+    /** A dispatched call past its deadline is uncertain, and is never sent again. */
+    public List<RecoveredInvocation> recoverExpired() {
+        return jdbc.sql("""
+                UPDATE ops.ai_invocation SET state='PROVIDER_OUTCOME_UNKNOWN',
+                    failure_code='WORKER_INTERRUPTED_OR_DEADLINE_EXPIRED', degraded=true,
+                    completed_at=clock_timestamp()
+                 WHERE id IN (SELECT id FROM ops.ai_invocation WHERE state='DISPATCHED'
+                    AND execution_deadline_at <= clock_timestamp()
+                    ORDER BY execution_deadline_at LIMIT 100 FOR UPDATE SKIP LOCKED)
+                 RETURNING id,requested_by_user_id
+                """).query((row, index) -> new RecoveredInvocation(row.getObject("id", UUID.class),
+                        row.getObject("requested_by_user_id", UUID.class))).list();
+    }
+
+    public record RecoveredInvocation(UUID id, UUID requestedBy) { }
 
     /** Record one claim and its citations. */
     public void recordClaim(UUID id, UUID invocationId, int ordinal, AiClaimKind kind,
-                            String statement, Map<String, String> payload,
+                            String statement, Map<String, Object> payload,
                             String confidenceLabel, boolean accepted, String rejectionCode,
                             List<UUID> metricValueRefs, List<UUID> findingRefs,
                             java.util.function.Supplier<UUID> evidenceIdSupplier) {
@@ -213,7 +232,7 @@ public class AiRepository {
     /** One recorded invocation. */
     public Optional<InvocationRow> findInvocation(UUID id) {
         return jdbc.sql("""
-                        SELECT invocation.id, invocation.subject_id, invocation.state,
+                        SELECT invocation.id, invocation.subject_id, invocation.output_schema_version, invocation.state,
                                invocation.failure_code, invocation.degraded,
                                invocation.started_at, invocation.completed_at,
                                provider.provider_code, model.model_code
@@ -247,9 +266,8 @@ public class AiRepository {
 
     private AiClaim mapClaim(ResultSet rows) throws SQLException {
         UUID claimId = rows.getObject("id", UUID.class);
-        Map<String, String> payload = new LinkedHashMap<>();
-        objectMapper.readTree(rows.getString("payload")).properties()
-                .forEach(entry -> payload.put(entry.getKey(), entry.getValue().asString()));
+        Map<String, Object> payload = com.mimococo.marketops.shared.JsonValues.object(
+                com.mimococo.marketops.shared.JsonValues.read(objectMapper, rows.getString("payload")));
         return new AiClaim(
                 claimId,
                 AiClaimKind.valueOf(rows.getString("claim_kind")),
@@ -284,7 +302,7 @@ public class AiRepository {
                 rows.getString("provider_code"),
                 rows.getString("model_code"),
                 rows.getTimestamp("started_at").toInstant(),
-                completedAt == null ? null : completedAt.toInstant());
+                completedAt == null ? null : completedAt.toInstant(), rows.getInt("output_schema_version"));
     }
 
     /**
@@ -299,7 +317,7 @@ public class AiRepository {
      */
     public record ProviderCallSpec(
             String invocationUrl, String requestTemplate, String responsePointer,
-            String authHeaderName, String authValueTemplate, int requestTimeoutMillis) {
+            String authHeaderName, String authValueTemplate, int requestTimeoutMillis, String providerCode) {
     }
 
     /**
@@ -331,6 +349,6 @@ public class AiRepository {
      */
     public record InvocationRow(
             UUID id, UUID subjectId, String state, String failureCode, boolean degraded,
-            String providerCode, String modelCode, Instant startedAt, Instant completedAt) {
+            String providerCode, String modelCode, Instant startedAt, Instant completedAt, int outputSchemaVersion) {
     }
 }

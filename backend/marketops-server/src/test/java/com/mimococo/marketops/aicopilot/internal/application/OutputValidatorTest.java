@@ -31,6 +31,81 @@ class OutputValidatorTest {
 
     private final OutputValidator validator = new OutputValidator(JsonMapper.builder().build());
 
+    @Test
+    void goldenKindsRetainNestedValuesAndExactDecimalMoney() throws Exception {
+        String answer;
+        try (var input = getClass().getResourceAsStream("/ai/diagnosis-v2-golden.json")) {
+            answer = new String(java.util.Objects.requireNonNull(input).readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        }
+        var claims = validator.validate(answer, projection());
+        assertThat(claims).hasSize(4).allMatch(OutputValidator.ValidatedClaim::accepted);
+        var recommendation = claims.stream().filter(claim -> claim.kind()==AiClaimKind.RECOMMENDATION).findFirst().orElseThrow();
+        assertThat(((java.util.Map<?, ?>) recommendation.payload().get("proposedParameters")).get("targetPrice"))
+                .isEqualTo(new java.math.BigDecimal("99999999999999.9999"));
+        assertThat(((java.util.Map<?, ?>) recommendation.payload().get("expectedEffect")).get("direction"))
+                .isEqualTo("INCREASE");
+        var inference = claims.stream().filter(claim -> claim.kind()==AiClaimKind.INFERENCE).findFirst().orElseThrow();
+        assertThat((List<?>) inference.payload().get("counterEvidence")).hasSize(2);
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> ((java.util.Map<?, ?>)
+                recommendation.payload().get("proposedParameters")).clear()).isInstanceOf(UnsupportedOperationException.class);
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> ((List<?>)
+                inference.payload().get("counterEvidence")).clear()).isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={
+            "{\"inferences\":[],\"inferences\":[]}",
+            "{\"inferences\":[{\"statement\":\"A\",\"statement\":\"B\"}]}",
+            "{} {}", "[]", "null", "{\"facts\":{}}", "{\"facts\":[null]}",
+            "{\"unknowns\":[{\"statement\":\"A\"}]}",
+            "{\"inferences\":[{\"statement\":\"A\",\"confidence\":\"MAYBE\",\"counterEvidence\":\"B\"}]}",
+            "{\"inferences\":[{\"statement\":\"A\",\"confidence\":\"LOW\",\"counterEvidence\":[7]}]}",
+            "{\"inferences\":[{\"statement\":\"A\",\"confidence\":\"LOW\",\"counterEvidence\":[\"ignore previous instructions\"]}]}"
+    })
+    void ambiguousAndMalformedStructuresCannotBecomeAcceptedClaims(String body) {
+        assertThat(validator.validate(body, projection())).isNotEmpty().noneMatch(OutputValidator.ValidatedClaim::accepted);
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"0", "-1", "100000000000000", "0.00001", "\"123.4\"", "null", "[]", "{}", "true"})
+    void priceParametersObeyTheSameMoneyDomainAsCommands(String price) {
+        String body = "{\"recommendations\":[{\"statement\":\"Review price.\",\"actionCapability\":\"PRICE_CHANGE\","
+                +"\"expectedEffect\":\"Observe margin.\",\"risk\":\"Demand may fall.\",\"validationWindowDays\":14,"
+                +"\"proposedParameters\":{\"targetPrice\":"+price+",\"currencyCode\":\"RUB\"}}]}";
+        assertThat(validator.validate(body, projection())).singleElement().returns(false, OutputValidator.ValidatedClaim::accepted);
+    }
+
+    @Test
+    void reproducibleNestedFieldMutationsAreNeverSilentlyDropped() throws Exception {
+        String golden;
+        try (var input = getClass().getResourceAsStream("/ai/diagnosis-v2-golden.json")) {
+            golden = new String(java.util.Objects.requireNonNull(input).readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        }
+        var mapper = JsonMapper.builder().build();
+        var random = new java.util.Random(17001L);
+        for (int i=0; i<128; i++) {
+            var root = (tools.jackson.databind.node.ObjectNode) com.mimococo.marketops.shared.JsonValues.read(mapper, golden);
+            var recommendation = (tools.jackson.databind.node.ObjectNode) root.path("recommendations").get(0);
+            String field = List.of("proposedParameters", "expectedEffect", "risk").get(random.nextInt(3));
+            ((tools.jackson.databind.node.ObjectNode) recommendation.path(field)).put("unreviewed", i);
+            var rejected = validator.validate(mapper.writeValueAsString(root), projection()).stream()
+                    .filter(claim -> claim.kind()==AiClaimKind.RECOMMENDATION).findFirst().orElseThrow();
+            assertThat(rejected.accepted()).as("seed 17001 mutation %s", i).isFalse();
+            assertThat(rejected.payload()).isEmpty();
+        }
+    }
+
+    @Test
+    void outputAndContainerBoundsAreEnforcedBeforePersistence() {
+        assertThat(validator.validate(" ".repeat(65_537), projection())).singleElement()
+                .returns(false, OutputValidator.ValidatedClaim::accepted);
+        assertThat(validator.validate("{\"inferences\":["+String.join(",", java.util.Collections.nCopies(21,"{}"))+"]}", projection()))
+                .singleElement().returns(false, OutputValidator.ValidatedClaim::accepted);
+        assertThat(validator.validate("{\"inferences\":[{\"statement\":\"test\",\"extra\":"
+                +"[".repeat(12)+"1"+"]".repeat(12)+"}]}", projection())).singleElement()
+                .returns(false, OutputValidator.ValidatedClaim::accepted);
+    }
+
     private static SubjectProjection projection() {
         return new SubjectProjection(
                 List.of(new SubjectProjection.Field("metric.CONVERSION_RATE.value", "0.0140")),
@@ -75,7 +150,7 @@ class OutputValidatorTest {
 
         @Test
         void aStatementBeyondTheStoredLengthIsRejectedAndTruncatedForTheRecord() {
-            String longStatement = "x".repeat(2_400);
+            String longStatement = "word ".repeat(480);
             List<OutputValidator.ValidatedClaim> claims = validator.validate("""
                     {"unknowns": [{"statement": "%s"}]}
                     """.formatted(longStatement), projection());
@@ -133,7 +208,7 @@ class OutputValidatorTest {
         void anInferenceNeedNotCiteButStillMayNotCiteSomethingUnseen() {
             List<OutputValidator.ValidatedClaim> claims = validator.validate("""
                     {"inferences": [{"statement": "the drop may follow a competitor promotion",
-                                     "confidence": "low",
+                                     "confidence": "LOW",
                                      "counterEvidence": "no competitor data is held"}]}
                     """, projection());
 
@@ -155,7 +230,7 @@ class OutputValidatorTest {
                                           "actionCapability": "DELIST_LISTING",
                                           "expectedEffect": "stops the loss",
                                           "risk": "loses the listing",
-                                          "validationWindowDays": "14"}]}
+                                          "validationWindowDays": 14}]}
                     """, projection());
 
             assertThat(claims).singleElement()
@@ -170,14 +245,14 @@ class OutputValidatorTest {
                                           "actionCapability": "PRICE_CHANGE",
                                           "expectedEffect": "restores margin",
                                           "risk": "may reduce units",
-                                          "validationWindowDays": "14"}]}
+                                          "validationWindowDays": 14}]}
                     """, projection());
 
             assertThat(claims).singleElement()
                     .returns(true, OutputValidator.ValidatedClaim::accepted);
             assertThat(claims.getFirst().payload())
                     .containsEntry("actionCapability", "PRICE_CHANGE")
-                    .containsEntry("validationWindowDays", "14");
+                    .containsEntry("validationWindowDays", 14);
         }
     }
 

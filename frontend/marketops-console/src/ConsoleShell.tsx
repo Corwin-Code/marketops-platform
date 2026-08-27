@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { ConsoleRequest, Recommendation } from './api/console';
 import { CommandTimeline } from './commands/CommandTimeline';
 import { SubjectDiagnosisView } from './diagnosis/SubjectDiagnosisView';
+import { DiagnosticExportPanel } from './diagnosis/DiagnosticExportPanel';
 import { PriorityQueue } from './queue/PriorityQueue';
 import { RecommendationReview } from './workflow/RecommendationReview';
 import type { Session } from './session/session';
@@ -75,6 +76,10 @@ export function ConsoleShell({
       </nav>
 
       {view.name === 'queue' && (
+        <DiagnosticExportPanel key={storeId} context={context} storeId={storeId} />
+      )}
+
+      {view.name === 'queue' && (
         <PriorityQueue
           context={context}
           storeId={storeId}
@@ -86,24 +91,38 @@ export function ConsoleShell({
 
       {view.name === 'diagnosis' && (
         <SubjectDiagnosisView
+          key={`${storeId}:${view.subjectId}`}
           context={context}
           subjectId={view.subjectId}
           storeId={storeId}
           onBack={() => {
             setView({ name: 'queue' });
           }}
+          onReview={(recommendation) => {
+            setView({ name: 'review', recommendation });
+          }}
         />
       )}
 
       {view.name === 'review' && (
-        <RecommendationReview
-          context={context}
-          recommendation={view.recommendation}
-          onDecided={(state, commandId) => {
-            setView(commandId === undefined ? { name: 'queue' } : { name: 'command', commandId });
-            void state;
-          }}
-        />
+        <>
+          <button
+            type="button"
+            onClick={() => {
+              setView({ name: 'diagnosis', subjectId: view.recommendation.subjectId });
+            }}
+          >
+            Back to diagnosis
+          </button>
+          <RecommendationReview
+            context={context}
+            recommendation={view.recommendation}
+            onDecided={(state, commandId) => {
+              setView(commandId === undefined ? { name: 'queue' } : { name: 'command', commandId });
+              void state;
+            }}
+          />
+        </>
       )}
 
       {view.name === 'command' && <CommandTimeline context={context} commandId={view.commandId} />}

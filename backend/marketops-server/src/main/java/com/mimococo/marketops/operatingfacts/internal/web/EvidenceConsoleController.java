@@ -4,6 +4,7 @@ import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
+import com.mimococo.marketops.identityaccess.OwnedResource;
 import com.mimococo.marketops.operatingfacts.EvidenceQuery;
 import com.mimococo.marketops.operatingfacts.EvidenceTrail;
 import com.mimococo.marketops.shared.ErrorCode;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
  * inline would let a source choose what appears inside the console.
  */
 @RestController
+@com.mimococo.marketops.shared.ConsoleApi
 @RequestMapping("/api/v1/console/evidence")
 class EvidenceConsoleController {
 
@@ -57,7 +59,7 @@ class EvidenceConsoleController {
     /** Where one fact came from. */
     @GetMapping(value = "/{provenanceId}", produces = MediaType.APPLICATION_JSON_VALUE)
     EvidenceTrail trail(AuthenticatedActor actor, @PathVariable UUID provenanceId) {
-        requireEvidenceView(actor);
+        requireEvidenceView(actor, provenanceId);
         return evidence.trail(provenanceId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
     }
@@ -66,7 +68,10 @@ class EvidenceConsoleController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     List<EvidenceTrail> trails(AuthenticatedActor actor,
                                @RequestParam List<UUID> provenanceId) {
-        requireEvidenceView(actor);
+        if (provenanceId.isEmpty() || provenanceId.size() > 200) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        provenanceId.forEach(id -> requireEvidenceView(actor, id));
         return evidence.trails(provenanceId);
     }
 
@@ -81,7 +86,7 @@ class EvidenceConsoleController {
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     ResponseEntity<byte[]> content(AuthenticatedActor actor,
                                    @PathVariable UUID provenanceId) {
-        requireEvidenceView(actor);
+        requireEvidenceView(actor, provenanceId);
         byte[] body = evidence.verifiedBytes(provenanceId)
                 .orElseThrow(() -> OperationRejectedException.of(
                         ErrorCode.OBJECT_STORAGE_VERIFICATION_FAILED));
@@ -95,8 +100,8 @@ class EvidenceConsoleController {
                 .body(body);
     }
 
-    private void requireEvidenceView(AuthenticatedActor actor) {
-        authorization.require(actor, ActionScopeCode.EVIDENCE_VIEW,
-                ResourceScope.organization(actor.organizationId()));
+    private void requireEvidenceView(AuthenticatedActor actor, UUID provenanceId) {
+        authorization.requireOwned(actor, ActionScopeCode.EVIDENCE_VIEW,
+                new OwnedResource(OwnedResource.Kind.PROVENANCE, provenanceId));
     }
 }

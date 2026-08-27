@@ -41,13 +41,13 @@ public class EvidenceService implements EvidenceQuery {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, timeout = 5)
     public Optional<EvidenceTrail> trail(UUID provenanceId) {
         return provenance.find(provenanceId).map(this::assemble);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, timeout = 5)
     public List<EvidenceTrail> trails(List<UUID> provenanceIds) {
         return provenanceIds.stream()
                 .map(this::trail)
@@ -56,7 +56,7 @@ public class EvidenceService implements EvidenceQuery {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)
     public Optional<byte[]> verifiedBytes(UUID provenanceId) {
         return provenance.find(provenanceId)
                 .map(ProvenanceRepository.ProvenanceRow::rawObservationId)

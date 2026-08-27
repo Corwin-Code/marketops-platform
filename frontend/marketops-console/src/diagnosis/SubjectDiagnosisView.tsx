@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react';
 import { fetchDiagnosis } from '../api/console';
-import type { ConsoleFailure, ConsoleRequest, SubjectDiagnosis } from '../api/console';
+import type {
+  ConsoleFailure,
+  ConsoleRequest,
+  SubjectDiagnosis,
+  Recommendation,
+} from '../api/console';
+import { MetricEvidencePanel } from './MetricEvidencePanel';
+import { SubjectRecommendations } from '../workflow/SubjectRecommendations';
 import { ValueCell } from '../state/ValueCell';
+import { AiExplanationPanel } from './AiExplanationPanel';
 
 /** What the diagnosis view needs in order to load itself. */
 export interface SubjectDiagnosisProps {
@@ -13,6 +21,7 @@ export interface SubjectDiagnosisProps {
   readonly storeId: string;
   /** Called when the operator goes back to the work list. */
   readonly onBack: () => void;
+  readonly onReview?: (recommendation: Recommendation) => void;
 }
 
 /**
@@ -32,9 +41,11 @@ export function SubjectDiagnosisView({
   subjectId,
   storeId,
   onBack,
+  onReview,
 }: SubjectDiagnosisProps): React.JSX.Element {
   const [diagnosis, setDiagnosis] = useState<SubjectDiagnosis | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
+  const [evidenceMetric, setEvidenceMetric] = useState<string>();
 
   useEffect(() => {
     let active = true;
@@ -72,18 +83,36 @@ export function SubjectDiagnosisView({
             <h3>What the platform measured</h3>
             <div className="value-grid">
               {Object.entries(diagnosis.metrics).map(([code, metric]) => (
-                <ValueCell
-                  key={code}
-                  label={code}
-                  value={metric.numericValue}
-                  currencyCode={metric.currencyCode}
-                  valueState={metric.valueState}
-                  confidenceState={metric.confidenceState}
-                  freshnessSeconds={metric.freshnessSeconds}
-                />
+                <div key={code}>
+                  <ValueCell
+                    label={code}
+                    value={metric.numericValue}
+                    currencyCode={metric.currencyCode}
+                    valueState={metric.valueState}
+                    confidenceState={metric.confidenceState}
+                    freshnessSeconds={metric.freshnessSeconds}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEvidenceMetric(metric.metricValueId);
+                    }}
+                  >
+                    View evidence for {code}
+                  </button>
+                </div>
               ))}
             </div>
           </section>
+          {evidenceMetric !== undefined && (
+            <MetricEvidencePanel
+              key={evidenceMetric}
+              context={context}
+              subjectId={subjectId}
+              storeId={storeId}
+              metricValueId={evidenceMetric}
+            />
+          )}
 
           <section aria-label="Rule outcomes" data-state="findings">
             <h3>What the rules concluded</h3>
@@ -120,6 +149,15 @@ export function SubjectDiagnosisView({
               ))}
             </ul>
           </section>
+          <AiExplanationPanel context={context} subjectId={subjectId} storeId={storeId} />
+          {onReview !== undefined && (
+            <SubjectRecommendations
+              context={context}
+              storeId={storeId}
+              subjectId={subjectId}
+              onReview={onReview}
+            />
+          )}
         </>
       )}
     </section>

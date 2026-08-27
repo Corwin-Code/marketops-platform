@@ -1,0 +1,56 @@
+{
+  "scope": "FULL_BACKEND_WORKTREE_CHECKPOINT_NOT_FINAL_COMMIT",
+  "command": "make backend-integration",
+  "result": "PASS",
+  "inputManifestSha256": "b28c6e70260c767f9b5c4c8c32c06e918a88942a513610984eb6a34796777e17",
+  "boundInputsUnchanged": true,
+  "tests": {
+    "surefire-reports": {
+      "tests": 836,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "failsafe-reports": {
+      "tests": 355,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "coverage": [
+    {
+      "type": "INSTRUCTION",
+      "missed": "12279",
+      "covered": "58627"
+    },
+    {
+      "type": "BRANCH",
+      "missed": "1243",
+      "covered": "3141"
+    },
+    {
+      "type": "LINE",
+      "missed": "2442",
+      "covered": "11766"
+    },
+    {
+      "type": "COMPLEXITY",
+      "missed": "1596",
+      "covered": "3279"
+    },
+    {
+      "type": "METHOD",
+      "missed": "523",
+      "covered": "2105"
+    },
+    {
+      "type": "CLASS",
+      "missed": "66",
+      "covered": "502"
+    }
+  ],
+  "logSha256": "95146eb53b573b01811235c2b51b0cd38b8c2349dc89df068e90dc88aee254ea",
+  "artifactSha256": "4ee1bd781a6f5e97120258951c3420175539ce4356e719f4e705611373d2e6c1",
+  "fixtureWarning": "Synthetic repository/provider identities; not real Yandex evidence."
+}

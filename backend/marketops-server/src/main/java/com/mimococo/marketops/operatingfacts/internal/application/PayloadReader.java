@@ -38,6 +38,8 @@ public class PayloadReader {
 
     /** How deep inside a record drift detection looks. */
     private static final int DRIFT_DEPTH = 2;
+    static final int MAXIMUM_RECORDS = 50000;
+    static final int MAXIMUM_DRIFT_POINTERS = 256;
 
     private final ObjectMapper objectMapper;
 
@@ -57,19 +59,26 @@ public class PayloadReader {
                            Map<String, String> valueKinds) {
         JsonNode document;
         try {
-            document = objectMapper.readTree(payload);
-        } catch (JacksonException unreadable) {
+            document = com.mimococo.marketops.shared.JsonValues.read(objectMapper,payload);
+        } catch (JacksonException | IllegalArgumentException unreadable) {
             throw new PayloadUnreadableException("the payload is not readable as JSON");
         }
 
-        JsonNode located = recordPointer == null || recordPointer.isEmpty()
-                ? document : document.at(recordPointer);
+        if (document == null) throw new PayloadUnreadableException("empty payload");
+        JsonNode located;
+        try {
+            located = recordPointer == null || recordPointer.isEmpty()
+                    ? document : document.at(recordPointer);
+        } catch (IllegalArgumentException invalidPointer) {
+            throw new PayloadUnreadableException("the record pointer is invalid");
+        }
         if (located.isMissingNode()) {
             throw new PayloadUnreadableException("the record pointer addresses nothing");
         }
 
         List<JsonNode> records = new ArrayList<>();
         if (located.isArray()) {
+            if (located.size()>MAXIMUM_RECORDS) throw new PayloadUnreadableException("record limit exceeded");
             located.forEach(records::add);
         } else if (located.isObject()) {
             records.add(located);
@@ -82,6 +91,7 @@ public class PayloadReader {
         Set<String> unmapped = new LinkedHashSet<>();
         Set<String> declaredPointers = Set.copyOf(fieldPointers.values());
         for (JsonNode record : records) {
+            if (!record.isObject()) throw new PayloadUnreadableException("every record must be an object");
             canonical.add(readRecord(record, fieldPointers, valueKinds));
             collectUnmapped(record, "", declaredPointers, unmapped, DRIFT_DEPTH);
         }
@@ -117,8 +127,8 @@ public class PayloadReader {
         return switch (valueKind) {
             case "TEXT" -> node.isValueNode() ? node.asString() : null;
             case "INTEGER" -> node.isIntegralNumber()
-                    ? node.asLong()
-                    : parseLong(node.isValueNode() ? node.asString() : null);
+                    ? (node.canConvertToLong() ? node.longValue() : null)
+                    : parseLong(node.isString() ? node.asString() : null);
             case "DECIMAL" -> node.isNumber()
                     ? node.decimalValue()
                     : parseDecimal(node.isValueNode() ? node.asString() : null);
@@ -187,6 +197,9 @@ public class PayloadReader {
                             || candidate.startsWith(pointer + "/"));
             if (!declared) {
                 unmapped.add(pointer);
+                if (unmapped.size()>MAXIMUM_DRIFT_POINTERS) {
+                    throw new PayloadUnreadableException("schema drift pointer limit exceeded");
+                }
                 return;
             }
             collectUnmapped(property.getValue(), pointer, declaredPointers, unmapped,

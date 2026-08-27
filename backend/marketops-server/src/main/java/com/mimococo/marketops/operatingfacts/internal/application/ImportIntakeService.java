@@ -25,6 +25,8 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import tools.jackson.databind.ObjectMapper;
 
 /**
@@ -64,6 +66,7 @@ public class ImportIntakeService {
     private final ObjectMapper objectMapper;
     private final IdGenerator idGenerator;
     private final Clock clock;
+    private final TransactionTemplate transactions;
 
     ImportIntakeService(ImportRepository imports,
                         RawCustody custody,
@@ -73,7 +76,7 @@ public class ImportIntakeService {
                         MetadataAuditRecorder auditRecorder,
                         ObjectMapper objectMapper,
                         IdGenerator idGenerator,
-                        Clock clock) {
+                        Clock clock, PlatformTransactionManager transactionManager) {
         this.imports = imports;
         this.custody = custody;
         this.spreadsheetReader = spreadsheetReader;
@@ -83,6 +86,7 @@ public class ImportIntakeService {
         this.objectMapper = objectMapper;
         this.idGenerator = idGenerator;
         this.clock = clock;
+        this.transactions = new TransactionTemplate(transactionManager);
     }
 
     /**
@@ -92,19 +96,39 @@ public class ImportIntakeService {
      * <p>Validation happens on submission rather than on demand, so the
      * submitter sees the rejection report while they still have the file open.
      */
-    @Transactional
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)
     public ImportRepository.ImportBatch submit(AuthenticatedActor actor,
                                                IntakeDataset dataset,
                                                String fileName,
                                                String mediaType,
                                                byte[] content) {
         String validFileName = MetadataFieldPolicy.requireText("fileName", fileName);
+        if (!validFileName.matches("[A-Za-z0-9][A-Za-z0-9 ._-]{0,127}\\.(csv|xlsx)")) {
+            throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+        }
         ImportRepository.SchemaProfile profile =
                 imports.liveProfile(actor.organizationId(), dataset.name())
                         .orElseThrow(() -> OperationRejectedException.of(
                                 ErrorCode.IMPORT_SCHEMA_PROFILE_MISSING));
 
+        SpreadsheetReader.Sheet sheet = spreadsheetReader.read(content, mediaType);
+        Map<String, String> mappedColumns = columnMapping(profile);
+        if (!new java.util.HashSet<>(sheet.header()).equals(mappedColumns.keySet())) {
+            throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+        }
+        // Check all admitted cells before immutable custody: a rejected pasted
+        // credential must not become a stored Raw object.
+        sheet.rows().forEach(row -> row.forEach((field, value) ->
+                com.mimococo.marketops.shared.SecretMaterialGuard.requireNonSecret(field, value)));
         RawContentRef stored = custody.store(CUSTODY_NAMESPACE, content);
+        return transactions.execute(status -> validateAndRecord(actor, dataset, validFileName,
+                mediaType, profile, stored, sheet));
+    }
+
+    private ImportRepository.ImportBatch validateAndRecord(AuthenticatedActor actor,
+            IntakeDataset dataset, String validFileName, String mediaType,
+            ImportRepository.SchemaProfile profile, RawContentRef stored,
+            SpreadsheetReader.Sheet sheet) {
         imports.liveBatchWithContent(actor.organizationId(), dataset.name(),
                 stored.contentId()).ifPresent(existing -> {
             throw OperationRejectedException.duplicate(
@@ -116,7 +140,6 @@ public class ImportIntakeService {
         imports.insertBatch(batchId, actor.organizationId(), dataset.name(), profile.id(),
                 stored.contentId(), validFileName, mediaType, actor.userId(), now);
 
-        SpreadsheetReader.Sheet sheet = spreadsheetReader.read(content, mediaType);
         Map<String, String> columnToField = columnMapping(profile);
         int accepted = 0;
         int rejected = 0;
@@ -126,7 +149,7 @@ public class ImportIntakeService {
             ImportRowValidator.Outcome outcome =
                     validator.validate(actor.organizationId(), dataset, columnToField, row);
             imports.insertRow(idGenerator.newId(), batchId, rowNumber,
-                    objectMapper.writeValueAsString(asText(outcome.values())),
+                    objectMapper.writeValueAsString(outcome.values()),
                     outcome.accepted() ? "ACCEPTED" : "REJECTED",
                     outcome.rejectionCode(), outcome.rejectionDetail(), outcome.targetKey());
             if (outcome.accepted()) {
@@ -202,6 +225,9 @@ public class ImportIntakeService {
     public ImportRepository.ImportBatch reject(AuthenticatedActor actor, UUID batchId,
                                                String reason, long expectedVersion) {
         ImportRepository.ImportBatch batch = require(batchId);
+        if (!batch.organizationId().equals(actor.organizationId())) {
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
         String validReason = MetadataFieldPolicy.requireText("reason", reason);
         if (!"VALIDATED".equals(batch.state())) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
@@ -251,7 +277,7 @@ public class ImportIntakeService {
      * and a locator, and a reference with an invented digest is not a reference
      * to anything.
      */
-    @Transactional(readOnly = true)
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)
     public Optional<byte[]> storedContent(UUID batchId) {
         return custody.readById(require(batchId).contentId());
     }
@@ -265,12 +291,6 @@ public class ImportIntakeService {
      * today, and keeps a date from being stored as a number nobody can
      * interpret without knowing which epoch produced it.
      */
-    private static Map<String, String> asText(Map<String, Object> values) {
-        Map<String, String> rendered = new LinkedHashMap<>();
-        values.forEach((field, value) -> rendered.put(field, String.valueOf(value)));
-        return Map.copyOf(rendered);
-    }
-
     /**
      * Turn the registered contract into a column-to-field mapping.
      *
@@ -305,18 +325,34 @@ public class ImportIntakeService {
         String validName = MetadataFieldPolicy.requireText("displayName", displayName);
         String validOwner = MetadataFieldPolicy.requireText("ownerLabel", ownerLabel);
         List<Map<String, Object>> declarations = new ArrayList<>();
+        java.util.Set<String> columns = new java.util.HashSet<>();
+        java.util.Set<String> fields = new java.util.HashSet<>();
         for (Map<String, Object> declaration : columnContract) {
             Object field = declaration.get("field");
-            if (field == null || dataset.field(field.toString()).isEmpty()) {
+            Object column = declaration.get("column");
+            if (!(field instanceof String fieldName) || !(column instanceof String columnName)
+                    || columnName.isBlank() || columnName.length() > 128
+                    || !columns.add(columnName.trim().toLowerCase(Locale.ROOT))
+                    || !fields.add(fieldName) || dataset.field(fieldName).isEmpty()) {
                 throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
             }
             declarations.add(Map.copyOf(declaration));
         }
-        if (declarations.isEmpty()) {
+        if (declarations.isEmpty() || !dataset.requiredFields().stream()
+                .allMatch(field -> fields.contains(field.name()))) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
-        imports.insertProfile(idGenerator.newId(), organizationId, dataset.name(), validCode,
+        UUID profileId = idGenerator.newId();
+        imports.insertProfile(profileId, organizationId, dataset.name(), validCode,
                 profileVersion, validName, objectMapper.writeValueAsString(declarations),
                 validOwner, clock.instant());
+        auditRecorder.recordChange(new MetadataAuditChange(
+                AuditSourceDomain.OPERATING_FACTS, operator, AuditAction.CREATE,
+                "import-schema-profile", profileId, validCode,
+                Map.of("organizationId", new FieldChange(null, organizationId.toString()),
+                        "datasetKind", new FieldChange(null, dataset.name()),
+                        "profileVersion", new FieldChange(null, Integer.toString(profileVersion)),
+                        "ownerLabel", new FieldChange(null, validOwner)),
+                null, null));
     }
 }

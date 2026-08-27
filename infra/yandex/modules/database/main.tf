@@ -12,12 +12,12 @@
 # resource, and the drill is what the acceptance criterion actually asks for.
 
 terraform {
-  required_version = ">= 1.9.0"
+  required_version = ">= 1.14.9, < 2.0.0"
 
   required_providers {
     yandex = {
       source  = "yandex-cloud/yandex"
-      version = "~> 0.140"
+      version = "= 0.220.0"
     }
   }
 }
@@ -53,8 +53,8 @@ resource "yandex_mdb_postgresql_cluster" "this" {
 
     # A cluster that accepts an unencrypted connection accepts one eventually.
     postgresql_config = {
-      max_connections                   = var.max_connections
-      log_min_duration_statement        = 500
+      max_connections                     = var.max_connections
+      log_min_duration_statement          = 500
       idle_in_transaction_session_timeout = 60000
       # Every statement that changes data is attributable to a session, and a
       # session that cannot be attributed is one nobody can review.
@@ -104,14 +104,15 @@ resource "yandex_mdb_postgresql_cluster" "this" {
 resource "yandex_mdb_postgresql_database" "this" {
   cluster_id = yandex_mdb_postgresql_cluster.this.id
   name       = var.database_name
-  owner      = var.migration_role_name
+  owner      = yandex_mdb_postgresql_user.migration.name
   lc_collate = "C"
   lc_type    = "C"
 
+  # Accepted Amendment-001: the provider manages extension lifecycle. The
+  # explicit managed runner attests V0002; the standard runner still executes it.
   extension {
     name = "btree_gist"
   }
-
   extension {
     name = "pgcrypto"
   }
@@ -121,10 +122,10 @@ resource "yandex_mdb_postgresql_user" "migration" {
   cluster_id = yandex_mdb_postgresql_cluster.this.id
   name       = var.migration_role_name
 
-  # Read from Lockbox at plan time. The value never appears in this repository,
-  # in a variables file, or in the state this configuration is applied with —
-  # which is why the reference names a secret rather than carrying one.
-  password = var.migration_role_password
+  # Ephemeral input plus a provider write-only attribute prevents persistence
+  # in plan/state. Ordinary sensitive=true alone only redacts the display.
+  password_wo         = var.migration_role_password
+  password_wo_version = var.migration_password_version
 
   conn_limit = 10
 
@@ -135,9 +136,10 @@ resource "yandex_mdb_postgresql_user" "migration" {
 }
 
 resource "yandex_mdb_postgresql_user" "application" {
-  cluster_id = yandex_mdb_postgresql_cluster.this.id
-  name       = var.application_role_name
-  password   = var.application_role_password
+  cluster_id          = yandex_mdb_postgresql_cluster.this.id
+  name                = var.application_role_name
+  password_wo         = var.application_role_password
+  password_wo_version = var.application_password_version
 
   conn_limit = var.max_connections - 20
 

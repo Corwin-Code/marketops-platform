@@ -3,12 +3,21 @@ package com.mimococo.marketops.shared.internal.secret;
 import com.mimococo.marketops.shared.port.SecretResolverPort;
 import com.mimococo.marketops.shared.CorrelationId;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.util.Locale;
+import java.nio.file.SecureDirectoryStream;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +45,7 @@ public final class MountedSecretResolver implements SecretResolverPort {
     private static final String SCHEME = "secret-ref://";
 
     /** Largest value this resolver will read; a larger file is not a credential. */
-    private static final long MAXIMUM_VALUE_BYTES = 16 * 1024L;
+    private static final int MAXIMUM_VALUE_BYTES = 16 * 1024;
 
     private final Path mountDirectory;
 
@@ -53,25 +62,77 @@ public final class MountedSecretResolver implements SecretResolverPort {
         if (secretReference == null || !REFERENCE.matcher(secretReference).matches()) {
             return refuse("secret_reference_malformed");
         }
-        Path resolved = mountDirectory
-                .resolve(secretReference.substring(SCHEME.length()).toLowerCase(Locale.ROOT))
-                .normalize();
-        if (!resolved.startsWith(mountDirectory)) {
-            return refuse("secret_reference_outside_mount");
+        Path resolved = mountDirectory.resolve(secretReference.substring(SCHEME.length()));
+        // Walk from the filesystem root using directory descriptors. A lexical
+        // startsWith check and a final NOFOLLOW are insufficient: any parent,
+        // including the configured mount, could otherwise redirect the read.
+        try (var root = Files.newDirectoryStream(resolved.getRoot())) {
+            if (!(root instanceof SecureDirectoryStream<Path> directory)) {
+                return refuse("secret_mount_unsupported");
+            }
+            return readRelative(directory, resolved.getRoot().relativize(resolved));
+        } catch (IOException | SecurityException | UnsupportedOperationException unreadable) {
+            return refuse("secret_value_unreadable");
         }
-        if (!Files.isRegularFile(resolved)) {
-            return refuse("secret_reference_absent");
+    }
+
+    private static Optional<char[]> readRelative(SecureDirectoryStream<Path> directory,
+                                                 Path remaining) throws IOException {
+        Path name = remaining.getName(0);
+        if (remaining.getNameCount() > 1) {
+            try (var child = directory.newDirectoryStream(name, LinkOption.NOFOLLOW_LINKS)) {
+                return readRelative(child, remaining.subpath(1, remaining.getNameCount()));
+            }
         }
+        var attributes = directory.getFileAttributeView(name, BasicFileAttributeView.class,
+                LinkOption.NOFOLLOW_LINKS).readAttributes();
+        if (!attributes.isRegularFile()) {
+            return refuse("secret_reference_not_regular");
+        }
+        if (attributes.size() > MAXIMUM_VALUE_BYTES) {
+            return refuse("secret_value_oversized");
+        }
+        try (var channel = directory.newByteChannel(name,
+                Set.of(StandardOpenOption.READ, LinkOption.NOFOLLOW_LINKS))) {
+            return readValue(channel);
+        }
+    }
+
+    /** Bounded even if the platform rotates or grows a file after the size check. */
+    static Optional<char[]> readValue(SeekableByteChannel channel) throws IOException {
+        byte[] raw = new byte[MAXIMUM_VALUE_BYTES + 1];
+        CharBuffer decoded = null;
         try {
-            if (Files.size(resolved) > MAXIMUM_VALUE_BYTES) {
+            ByteBuffer buffer = ByteBuffer.wrap(raw);
+            while (buffer.hasRemaining() && channel.read(buffer) != -1) {
+                // File channels may return fewer bytes than requested.
+            }
+            if (buffer.position() > MAXIMUM_VALUE_BYTES) {
                 return refuse("secret_value_oversized");
             }
-            byte[] raw = Files.readAllBytes(resolved);
-            char[] value = new String(raw, StandardCharsets.UTF_8).strip().toCharArray();
-            java.util.Arrays.fill(raw, (byte) 0);
-            return value.length == 0 ? refuse("secret_value_empty") : Optional.of(value);
-        } catch (IOException unreadable) {
-            return refuse("secret_value_unreadable");
+            buffer.flip();
+            decoded = CharBuffer.allocate(buffer.remaining());
+            var decoder = StandardCharsets.UTF_8.newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT);
+            var result = decoder.decode(buffer, decoded, true);
+            if (result.isError()) {
+                result.throwException();
+            }
+            decoder.flush(decoded);
+            decoded.flip();
+            if (decoded.isEmpty() || decoded.chars().allMatch(Character::isWhitespace)) {
+                return refuse("secret_value_empty");
+            }
+            // No String copy and no strip(): whitespace may be part of a secret.
+            char[] value = new char[decoded.remaining()];
+            decoded.get(value);
+            return Optional.of(value);
+        } finally {
+            Arrays.fill(raw, (byte) 0);
+            if (decoded != null && decoded.hasArray()) {
+                Arrays.fill(decoded.array(), '\0');
+            }
         }
     }
 

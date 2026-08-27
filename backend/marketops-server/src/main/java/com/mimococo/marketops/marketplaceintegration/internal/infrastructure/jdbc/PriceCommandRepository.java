@@ -29,49 +29,22 @@ import org.springframework.stereotype.Repository;
 public class PriceCommandRepository {
 
     private final JdbcClient jdbc;
+    private final tools.jackson.databind.ObjectMapper objectMapper;
 
-    PriceCommandRepository(JdbcClient jdbc) {
+    PriceCommandRepository(JdbcClient jdbc, tools.jackson.databind.ObjectMapper objectMapper) {
         this.jdbc = jdbc;
+        this.objectMapper = objectMapper;
     }
 
     /** Create a command in its pending state. */
-    public void insert(UUID id, UUID organizationId, UUID recommendationId,
-                       UUID approvalDecisionId, UUID storeId, UUID platformListingVariantId,
-                       String platformCode, UUID capabilityId, String idempotencyKey,
-                       String currencyCode, BigDecimal priorPrice, BigDecimal targetPrice,
-                       UUID priorPriceObservationId, String entityVersionDigest,
-                       int retryBudget, Instant now) {
-        jdbc.sql("""
-                        INSERT INTO ops.price_command (
-                            id, organization_id, recommendation_id, approval_decision_id,
-                            store_id, platform_listing_variant_id, platform_code,
-                            capability_id, idempotency_key, currency_code, prior_price,
-                            target_price, prior_price_observation_id, entity_version_digest,
-                            state, attempt_no, retry_budget_remaining, fence_token,
-                            next_attempt_at, created_at, updated_at)
-                        VALUES (:id, :organizationId, :recommendationId, :approvalDecisionId,
-                            :storeId, :platformListingVariantId, :platformCode, :capabilityId,
-                            :idempotencyKey, :currencyCode, :priorPrice, :targetPrice,
-                            :priorPriceObservationId, :entityVersionDigest, 'PENDING', 0,
-                            :retryBudget, 1, :now, :now, :now)
-                        """)
-                .param("id", id)
-                .param("organizationId", organizationId)
-                .param("recommendationId", recommendationId)
-                .param("approvalDecisionId", approvalDecisionId)
-                .param("storeId", storeId)
-                .param("platformListingVariantId", platformListingVariantId)
-                .param("platformCode", platformCode)
-                .param("capabilityId", capabilityId)
-                .param("idempotencyKey", idempotencyKey)
-                .param("currencyCode", currencyCode)
-                .param("priorPrice", priorPrice)
-                .param("targetPrice", targetPrice)
-                .param("priorPriceObservationId", priorPriceObservationId)
-                .param("entityVersionDigest", entityVersionDigest)
-                .param("retryBudget", retryBudget)
-                .param("now", Timestamp.from(now))
-                .update();
+    public UUID create(UUID recommendationId, long expectedVersion, UUID actorId,
+                       String correlationId) {
+        return jdbc.sql("SELECT ops.create_price_command(:recommendation, :version, :actor, :correlation)")
+                .param("recommendation", recommendationId)
+                .param("version", expectedVersion)
+                .param("actor", actorId)
+                .param("correlation", correlationId)
+                .query(UUID.class).single();
     }
 
     /**
@@ -89,6 +62,17 @@ public class PriceCommandRepository {
                 .param("seconds", leaseSeconds)
                 .query(Long.class)
                 .single();
+    }
+
+    public void requestReadback(UUID commandId, long fence) {
+        jdbc.sql("SELECT ops.request_price_readback(:id, :fence)")
+                .param("id", commandId).param("fence", fence).query(Boolean.class).single();
+    }
+
+    public long leaseReadback(UUID commandId, String owner, int seconds) {
+        return jdbc.sql("SELECT ops.lease_price_readback(:id, :owner, :seconds)")
+                .param("id", commandId).param("owner", owner).param("seconds", seconds)
+                .query(Long.class).single();
     }
 
     /**
@@ -201,9 +185,11 @@ public class PriceCommandRepository {
     public List<UUID> claimable(Instant now, int limit) {
         return jdbc.sql("""
                         SELECT id FROM ops.price_command
-                         WHERE state IN ('PENDING', 'RETRY_WAIT')
+                         WHERE (state IN ('PENDING', 'RETRY_WAIT')
                            AND (next_attempt_at IS NULL OR next_attempt_at <= :now)
-                           AND retry_budget_remaining > 0
+                           AND retry_budget_remaining > 0)
+                           OR (state = 'UNKNOWN_REQUIRES_READBACK' AND requested_operation = 'READBACK')
+                           OR (state = 'COMPENSATION_PENDING' AND lease_owner IS NULL)
                          ORDER BY created_at
                          LIMIT :limit
                         """)
@@ -214,69 +200,72 @@ public class PriceCommandRepository {
     }
 
     /** Record that a call is being made. */
-    public void openAttempt(UUID id, UUID commandId, int attemptNo, String purpose,
-                            long fenceToken, String leaseOwner, Instant startedAt,
-                            String correlationId) {
-        jdbc.sql("""
-                        INSERT INTO ops.price_command_attempt (
-                            id, command_id, attempt_no, purpose, fence_token, lease_owner,
-                            started_at, outcome_class, correlation_id)
-                        VALUES (:id, :commandId, :attemptNo, :purpose, :fenceToken,
-                            :leaseOwner, :startedAt, 'IN_FLIGHT', :correlationId)
-                        """)
-                .param("id", id)
-                .param("commandId", commandId)
-                .param("attemptNo", attemptNo)
-                .param("purpose", purpose)
-                .param("fenceToken", fenceToken)
-                .param("leaseOwner", leaseOwner)
-                .param("startedAt", Timestamp.from(startedAt))
-                .param("correlationId", correlationId)
-                .update();
+    public void openAttempt(UUID id, UUID commandId, String purpose, long fenceToken,
+                            String leaseOwner, String requestDigest, String correlationId) {
+        jdbc.sql("SELECT ops.open_price_command_attempt(:id, :command, :purpose, :fence, :owner, :digest, :correlation)")
+                .param("id", id).param("command", commandId).param("purpose", purpose)
+                .param("fence", fenceToken).param("owner", leaseOwner).param("digest", requestDigest)
+                .param("correlation", correlationId).query(UUID.class).single();
     }
 
-    /** Record what the platform answered. Permitted exactly once per attempt. */
-    public void completeAttempt(UUID id, String outcomeClass, String nativeStatus,
-                                String nativeTaskKey, UUID rawObservationId, String errorCode,
-                                Instant completedAt) {
+    public com.mimococo.marketops.marketplaceintegration.port.PriceWriteResult completeAttempt(UUID id, long fenceToken, String leaseOwner,
+            com.mimococo.marketops.marketplaceintegration.port.PriceWriteResult result,
+            UUID contentId, String requestDigest) {
+        var response = result.response();
         jdbc.sql("""
-                        UPDATE ops.price_command_attempt
-                        SET completed_at = :completedAt, outcome_class = :outcomeClass,
-                            native_status = :nativeStatus, native_task_key = :nativeTaskKey,
-                            raw_observation_id = :rawObservationId, error_code = :errorCode
-                        WHERE id = :id
-                        """)
-                .param("completedAt", Timestamp.from(completedAt))
-                .param("outcomeClass", outcomeClass)
-                .param("nativeStatus", nativeStatus)
-                .param("nativeTaskKey", nativeTaskKey)
-                .param("rawObservationId", rawObservationId)
-                .param("errorCode", errorCode)
-                .param("id", id)
-                .update();
+                SELECT ops.complete_price_command_attempt(:id, :fence, :owner, :outcome, :status,
+                    :task, :error, :content, :body, :httpStatus, CAST(:headers AS jsonb), :evidence, :digest, :complete)
+                """)
+                .param("id", id).param("fence", fenceToken).param("owner", leaseOwner)
+                .param("outcome", result.outcome().name()).param("status", result.nativeStatus())
+                .param("task", result.nativeTaskKey()).param("error", result.errorCode())
+                .param("content", contentId).param("body", result.body())
+                .param("httpStatus", response == null ? null : response.httpStatus())
+                .param("headers", response == null ? null : objectMapper.writeValueAsString(response.headers()))
+                .param("evidence", response == null ? null : response.evidenceClass())
+                .param("complete", response == null || response.complete())
+                .param("digest", requestDigest).query(UUID.class).optional().orElse(null);
+        return jdbc.sql("""
+                SELECT a.outcome_class,a.native_status,a.native_task_key,a.error_code,a.completed_at,
+                       evidence.observed_price,evidence.observed_currency
+                  FROM ops.price_command_attempt a
+                  LEFT JOIN raw.price_response_observation evidence ON evidence.id=a.raw_observation_id
+                 WHERE a.id=:id AND a.outcome_class <> 'IN_FLIGHT'
+                """).param("id",id).query((row,index) ->
+                    new com.mimococo.marketops.marketplaceintegration.port.PriceWriteResult(
+                        com.mimococo.marketops.marketplaceintegration.port.PriceWriteResult.Outcome.valueOf(row.getString("outcome_class")),
+                        row.getString("native_status"),row.getString("native_task_key"),
+                        row.getBigDecimal("observed_price"),row.getString("observed_currency"),
+                        result.body(),row.getTimestamp("completed_at").toInstant(),row.getString("error_code"),response)).single();
     }
 
-    /** Record what a later read of the platform observed. */
-    public void insertReadback(UUID id, UUID commandId, UUID attemptId, Instant observedAt,
-                               BigDecimal observedPrice, String currencyCode, String matchState,
-                               UUID rawObservationId, String correlationId) {
-        jdbc.sql("""
-                        INSERT INTO ops.price_command_readback (
-                            id, command_id, attempt_id, observed_at, observed_price,
-                            currency_code, match_state, raw_observation_id, correlation_id)
-                        VALUES (:id, :commandId, :attemptId, :observedAt, :observedPrice,
-                            :currencyCode, :matchState, :rawObservationId, :correlationId)
-                        """)
-                .param("id", id)
-                .param("commandId", commandId)
-                .param("attemptId", attemptId)
-                .param("observedAt", Timestamp.from(observedAt))
-                .param("observedPrice", observedPrice)
-                .param("currencyCode", currencyCode)
-                .param("matchState", matchState)
-                .param("rawObservationId", rawObservationId)
-                .param("correlationId", correlationId)
-                .update();
+    /** The database derives the comparison from the exact custodied response. */
+    public String insertReadback(UUID id, UUID commandId, UUID attemptId, long fence,
+                                 String owner, String correlation) {
+        return jdbc.sql("SELECT ops.record_price_command_readback(:id, :command, :attempt, :fence, :owner, :correlation)")
+                .param("id", id).param("command", commandId).param("attempt", attemptId)
+                .param("fence", fence).param("owner", owner).param("correlation", correlation)
+                .query(String.class).single();
+    }
+
+    public Optional<String> restoreVersion(UUID commandId, long fence) {
+        return jdbc.sql("""
+                SELECT evidence.version_token FROM ops.price_command_readback r
+                JOIN ops.price_command_attempt a ON a.id = r.attempt_id
+                JOIN raw.price_response_observation evidence ON evidence.id = r.raw_observation_id
+                WHERE r.command_id = :command AND a.fence_token = :fence
+                    AND r.match_state = 'MATCHES_TARGET' AND evidence.version_token IS NOT NULL
+                ORDER BY r.observed_at DESC LIMIT 1
+                """).param("command", commandId).param("fence", fence).query(String.class).optional();
+    }
+
+    public boolean conditionalRestoreAvailable(UUID capabilityId) {
+        return jdbc.sql("""
+                SELECT EXISTS (SELECT 1 FROM platform.capability_operation
+                    WHERE capability_id = :capability AND operation = 'RESTORE'
+                        AND conditional_write_header IS NOT NULL
+                        AND status = 'ACTIVE' AND verification_state = 'VERIFIED')
+                """).param("capability", capabilityId).query(Boolean.class).single();
     }
 
     /** The most recent asynchronous handle a platform gave for this command. */

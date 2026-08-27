@@ -4,9 +4,6 @@ import com.mimococo.marketops.marketplaceintegration.internal.domain.EndpointCal
 import com.mimococo.marketops.marketplaceintegration.internal.domain.WriteOperationSpec;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -39,7 +36,9 @@ public class WriteOperationRepository {
                                operation.request_template, operation.task_key_pointer,
                                operation.task_status_pointer, operation.task_success_value,
                                operation.task_failure_value, operation.observed_price_pointer,
-                               operation.observed_currency_pointer,
+                               operation.observed_currency_pointer, operation.conditional_write_header,
+                               operation.accepted_pointer, operation.accepted_value,
+                               operation.task_pending_values,
                                endpoint.id AS endpoint_id, endpoint.endpoint_code,
                                profile.base_url, endpoint.http_method, endpoint.path_template,
                                endpoint.query_template, endpoint.body_template,
@@ -72,93 +71,6 @@ public class WriteOperationRepository {
                 .optional();
     }
 
-    /** Register an operation shape, unverified and unreachable. */
-    public void insert(UUID id, UUID capabilityId, String platformCode, String operation,
-                       UUID endpointId, String requestTemplate, String acceptedPointer,
-                       String taskKeyPointer, String taskStatusPointer,
-                       String taskSuccessValue, String taskFailureValue,
-                       String observedPricePointer, String observedCurrencyPointer,
-                       String ownerLabel, Instant now) {
-        jdbc.sql("""
-                        INSERT INTO platform.capability_operation (
-                            id, capability_id, platform_code, operation, endpoint_id,
-                            request_template, accepted_pointer, task_key_pointer,
-                            task_status_pointer, task_success_value, task_failure_value,
-                            observed_price_pointer, observed_currency_pointer,
-                            verification_state, owner_label, status, created_at, updated_at,
-                            version)
-                        VALUES (:id, :capabilityId, :platformCode, :operation, :endpointId,
-                            :requestTemplate, :acceptedPointer, :taskKeyPointer,
-                            :taskStatusPointer, :taskSuccessValue, :taskFailureValue,
-                            :observedPricePointer, :observedCurrencyPointer, 'UNVERIFIED',
-                            :ownerLabel, 'RETIRED', :now, :now, 0)
-                        """)
-                .param("id", id)
-                .param("capabilityId", capabilityId)
-                .param("platformCode", platformCode)
-                .param("operation", operation)
-                .param("endpointId", endpointId)
-                .param("requestTemplate", requestTemplate)
-                .param("acceptedPointer", acceptedPointer)
-                .param("taskKeyPointer", taskKeyPointer)
-                .param("taskStatusPointer", taskStatusPointer)
-                .param("taskSuccessValue", taskSuccessValue)
-                .param("taskFailureValue", taskFailureValue)
-                .param("observedPricePointer", observedPricePointer)
-                .param("observedCurrencyPointer", observedCurrencyPointer)
-                .param("ownerLabel", ownerLabel)
-                .param("now", Timestamp.from(now))
-                .update();
-    }
-
-    /** Record that the shape was checked against a real source, and activate. */
-    public boolean verifyAndActivate(UUID id, Instant verifiedAt, String evidenceRef,
-                                     String verifiedSourceTitle, long expectedVersion) {
-        return jdbc.sql("""
-                        UPDATE platform.capability_operation
-                        SET verification_state = 'VERIFIED', last_verified_at = :verifiedAt,
-                            evidence_ref = :evidenceRef,
-                            verified_source_title = :verifiedSourceTitle,
-                            status = 'ACTIVE', updated_at = :verifiedAt, version = :newVersion
-                        WHERE id = :id AND version = :expectedVersion
-                        """)
-                .param("verifiedAt", Timestamp.from(verifiedAt))
-                .param("evidenceRef", evidenceRef)
-                .param("verifiedSourceTitle", verifiedSourceTitle)
-                .param("newVersion", expectedVersion + 1)
-                .param("id", id)
-                .param("expectedVersion", expectedVersion)
-                .update() == 1;
-    }
-
-    /** Stop performing an operation. */
-    public boolean retire(UUID id, Instant at, long expectedVersion) {
-        return jdbc.sql("""
-                        UPDATE platform.capability_operation
-                        SET status = 'RETIRED', updated_at = :at, version = :newVersion
-                        WHERE id = :id AND version = :expectedVersion
-                        """)
-                .param("at", Timestamp.from(at))
-                .param("newVersion", expectedVersion + 1)
-                .param("id", id)
-                .param("expectedVersion", expectedVersion)
-                .update() == 1;
-    }
-
-    /** Every recorded operation of one capability. */
-    public List<OperationRow> list(UUID capabilityId) {
-        return jdbc.sql("""
-                        SELECT id, operation, endpoint_id, verification_state, status,
-                               last_verified_at, owner_label, version
-                          FROM platform.capability_operation
-                         WHERE capability_id = :capabilityId
-                         ORDER BY operation
-                        """)
-                .param("capabilityId", capabilityId)
-                .query(WriteOperationRepository::mapRow)
-                .list();
-    }
-
     private static WriteOperationSpec map(ResultSet rows, int rowNumber) throws SQLException {
         int rateLimitValue = rows.getInt("rate_limit_per_minute");
         Integer rateLimit = rows.wasNull() ? null : rateLimitValue;
@@ -189,36 +101,11 @@ public class WriteOperationRepository {
                 rows.getString("task_failure_value"),
                 rows.getString("observed_price_pointer"),
                 rows.getString("observed_currency_pointer"),
-                endpoint);
+                endpoint, rows.getString("conditional_write_header"), rows.getString("accepted_pointer"),
+                rows.getString("accepted_value") == null ? null
+                    : com.mimococo.marketops.shared.JsonValues.read(tools.jackson.databind.json.JsonMapper.builder().build(),
+                            rows.getString("accepted_value")),
+                java.util.Set.of((String[]) rows.getArray("task_pending_values").getArray()));
     }
 
-    private static OperationRow mapRow(ResultSet rows, int rowNumber) throws SQLException {
-        Timestamp verified = rows.getTimestamp("last_verified_at");
-        return new OperationRow(
-                rows.getObject("id", UUID.class),
-                rows.getString("operation"),
-                rows.getObject("endpoint_id", UUID.class),
-                rows.getString("verification_state"),
-                rows.getString("status"),
-                verified == null ? null : verified.toInstant(),
-                rows.getString("owner_label"),
-                rows.getLong("version"));
-    }
-
-    /**
-     * One recorded operation, as maintenance sees it.
-     *
-     * @param id the operation
-     * @param operation what the call is for
-     * @param endpointId the endpoint it goes through
-     * @param verificationState how well its shape is known
-     * @param status whether the write path may perform it
-     * @param lastVerifiedAt when it was last checked, or {@code null}
-     * @param ownerLabel responsible owner
-     * @param version optimistic-lock version
-     */
-    public record OperationRow(UUID id, String operation, UUID endpointId,
-                               String verificationState, String status, Instant lastVerifiedAt,
-                               String ownerLabel, long version) {
-    }
 }

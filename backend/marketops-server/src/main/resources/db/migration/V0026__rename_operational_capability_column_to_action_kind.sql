@@ -70,6 +70,10 @@ BEGIN
         RETURN ARRAY['COMMAND_NOT_FOUND'];
     END IF;
 
+    IF NOT ops.price_command_authority_matches(p_command_id) THEN
+        reasons := array_append(reasons, 'COMMAND_AUTHORITY_MISMATCH');
+    END IF;
+
     -- The capability itself must be verified against recorded evidence and
     -- available for this exact store.
     PERFORM 1
@@ -213,9 +217,8 @@ BEGIN
 END;
 $$;
 
--- Nothing named capability_code may remain outside the platform registry, so a
--- future migration that reintroduces the collision fails here rather than in an
--- incident.
+-- Only the platform registry may expose capability_code. Operational columns
+-- use action_kind; any naming collision aborts this migration.
 DO $verify$
 DECLARE
     offenders text;

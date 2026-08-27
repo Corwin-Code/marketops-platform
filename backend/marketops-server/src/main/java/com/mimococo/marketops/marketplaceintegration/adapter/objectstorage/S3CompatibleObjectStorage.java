@@ -8,9 +8,7 @@ import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.OperationRejectedException;
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import com.mimococo.marketops.shared.port.OutboundHttp;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -65,12 +63,12 @@ public final class S3CompatibleObjectStorage implements ObjectStoragePort {
 
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(30);
 
-    private final HttpClient httpClient;
+    private final OutboundHttp httpClient;
     private final ObjectStorageProperties properties;
     private final SecretResolverPort secrets;
     private final Clock clock;
 
-    public S3CompatibleObjectStorage(HttpClient httpClient,
+    public S3CompatibleObjectStorage(OutboundHttp httpClient,
                                      ObjectStorageProperties properties,
                                      SecretResolverPort secrets,
                                      Clock clock) {
@@ -83,9 +81,8 @@ public final class S3CompatibleObjectStorage implements ObjectStoragePort {
     @Override
     public PutOutcome putIfAbsent(String objectRef, byte[] body) {
         String key = keyOf(objectRef);
-        HttpResponse<Void> response = send(
-                "PUT", key, body, Map.of(IF_NONE_MATCH_HEADER, "*"),
-                HttpResponse.BodyHandlers.discarding());
+        OutboundHttp.Response response = send(
+                "PUT", key, body, Map.of(IF_NONE_MATCH_HEADER, "*"));
         int status = response.statusCode();
         if (status == 200 || status == 201) {
             return PutOutcome.STORED;
@@ -101,8 +98,8 @@ public final class S3CompatibleObjectStorage implements ObjectStoragePort {
     @Override
     public Optional<byte[]> read(String objectRef) {
         String key = keyOf(objectRef);
-        HttpResponse<byte[]> response = send(
-                "GET", key, new byte[0], Map.of(), HttpResponse.BodyHandlers.ofByteArray());
+        OutboundHttp.Response response = send(
+                "GET", key, new byte[0], Map.of());
         int status = response.statusCode();
         if (status == 200) {
             return Optional.of(response.body());
@@ -120,11 +117,10 @@ public final class S3CompatibleObjectStorage implements ObjectStoragePort {
                 .orElse(false);
     }
 
-    private <T> HttpResponse<T> send(String method,
+    private OutboundHttp.Response send(String method,
                                      String key,
                                      byte[] body,
-                                     Map<String, String> extraHeaders,
-                                     HttpResponse.BodyHandler<T> handler) {
+                                     Map<String, String> extraHeaders) {
         requireConfigured();
         Instant now = clock.instant();
         URI endpoint = URI.create(properties.getEndpoint());
@@ -137,6 +133,17 @@ public final class S3CompatibleObjectStorage implements ObjectStoragePort {
         String stringToSign =
                 SignatureV4.stringToSign(now, properties.getRegion(), canonicalRequest);
 
+        OutboundHttp.Plan plan;
+        try {
+            java.util.Set<String> names = new java.util.HashSet<>(headers.keySet());
+            names.remove("host"); names.add("Authorization");
+            plan = httpClient.prepare(new OutboundHttp.Destination("object-storage:raw",
+                    URI.create(endpoint + canonicalUri), method, names, body,
+                    Math.toIntExact(REQUEST_TIMEOUT.toMillis()), 8 * 1024 * 1024));
+        } catch (RuntimeException invalidDestination) {
+            throw refusal("raw_custody_destination_refused", 0);
+        }
+
         char[] secret = secrets.resolve(properties.getCredentialReference())
                 .orElseThrow(() -> refusal("raw_custody_secret_unresolvable", 0));
         String authorization;
@@ -147,15 +154,15 @@ public final class S3CompatibleObjectStorage implements ObjectStoragePort {
             Arrays.fill(secret, '\0');
         }
 
-        HttpRequest.Builder request = HttpRequest.newBuilder()
-                .uri(URI.create(endpoint + canonicalUri))
-                .timeout(REQUEST_TIMEOUT)
-                .method(method, HttpRequest.BodyPublishers.ofByteArray(body))
-                .header("Authorization", authorization);
-        headers.forEach(request::header);
-
+        Map<String, String> requestHeaders = new java.util.HashMap<>(headers);
+        requestHeaders.remove("host");
+        requestHeaders.put("Authorization", authorization);
         try {
-            return httpClient.send(request.build(), handler);
+            OutboundHttp.Response response = httpClient.exchange(plan, requestHeaders);
+            if (!response.complete()) throw refusal("raw_custody_response_incomplete", response.statusCode());
+            return response;
+        } catch (IllegalArgumentException invalidDestination) {
+            throw refusal("raw_custody_destination_refused", 0);
         } catch (IOException failure) {
             throw refusal("raw_custody_transport_failed", 0);
         } catch (InterruptedException interrupted) {
@@ -190,6 +197,12 @@ public final class S3CompatibleObjectStorage implements ObjectStoragePort {
                 && properties.getBucket() != null
                 && properties.getAccessKeyId() != null
                 && properties.getCredentialReference() != null;
+        configured = configured
+                && properties.getEndpoint().matches("https://[a-z0-9][a-z0-9.-]{0,252}")
+                && properties.getRegion().matches("[a-z0-9][a-z0-9-]{0,62}")
+                && properties.getBucket().matches("[a-z0-9][a-z0-9.-]{1,62}")
+                && properties.getAccessKeyId().matches("[A-Za-z0-9][A-Za-z0-9._-]{0,127}")
+                && properties.getCredentialReference().matches("secret-ref://[a-z0-9][a-z0-9-]{0,62}(/[a-z0-9][a-z0-9._-]{0,62}){1,4}");
         if (!configured) {
             throw refusal("raw_custody_not_configured", 0);
         }

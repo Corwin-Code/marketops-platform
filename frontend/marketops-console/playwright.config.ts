@@ -23,8 +23,9 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: 'make -C ../.. backend-run',
-      url: 'http://127.0.0.1:8080/actuator/health/readiness',
+      command: 'make -C ../.. backend-browser-run',
+      url: 'http://127.0.0.1:8082/fixture',
+      stdout: 'pipe',
       reuseExistingServer: false,
       timeout: 180_000,
     },

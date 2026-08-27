@@ -50,7 +50,7 @@ public record IdentityProviderRecord(
     public boolean acceptsTokens() {
         return status == IdentityProviderStatus.ACTIVE
                 && verificationState == ProviderVerificationState.VERIFIED
-                && mfaClaimName != null
-                && mfaClaimValue != null;
+                && mfaClaimName != null && !mfaClaimName.isBlank()
+                && mfaClaimValue != null && !mfaClaimValue.isBlank();
     }
 }

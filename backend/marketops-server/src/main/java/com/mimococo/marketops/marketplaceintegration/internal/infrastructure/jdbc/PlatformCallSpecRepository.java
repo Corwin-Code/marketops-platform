@@ -64,17 +64,19 @@ public class PlatformCallSpecRepository {
     }
 
     /** The verified authentication headers of one platform, in recorded order. */
-    public List<AuthHeaderSpec> verifiedAuthHeaders(String platformCode) {
+    public List<AuthHeaderSpec> verifiedAuthHeaders(String platformCode, String credentialPurpose) {
         return jdbc.sql("""
                         SELECT header_name, value_source, value_template,
                                credential_purpose, ordinal
                           FROM platform.platform_auth_header
                          WHERE platform_code = :platformCode
+                           AND credential_purpose = :credentialPurpose
                            AND status = 'ACTIVE'
                            AND verification_state = 'VERIFIED'
                          ORDER BY ordinal, header_name
                         """)
                 .param("platformCode", platformCode)
+                .param("credentialPurpose", credentialPurpose)
                 .query((rows, rowNumber) -> new AuthHeaderSpec(
                         rows.getString("header_name"),
                         AuthValueSource.valueOf(rows.getString("value_source")),
@@ -131,6 +133,90 @@ public class PlatformCallSpecRepository {
                 .param("jobId", jobId)
                 .query(String.class)
                 .optional();
+    }
+
+    /** Atomically consumes the deployment-wide endpoint quota; an absent limit denies. */
+    public boolean reserveCallBudget(UUID endpointId) {
+        return Boolean.TRUE.equals(jdbc.sql("SELECT platform.reserve_endpoint_quota(:id)")
+                .param("id", endpointId).query(Boolean.class).single());
+    }
+
+    public Optional<String> acquisitionEvidenceDigest(UUID endpointId,UUID credentialId) {
+        return jdbc.sql("""
+                SELECT encode(sha256(convert_to(platform.registry_configuration_snapshot(endpoint.capability_id)::text,'UTF8')),'hex')
+                    FROM platform.platform_endpoint endpoint
+                    JOIN platform.credential_metadata credential ON credential.id=:credential
+                    JOIN core.marketplace_account account ON account.id=credential.marketplace_account_id
+                    WHERE endpoint.id=:endpoint AND endpoint.platform_code=account.platform_code
+                      AND endpoint.operation_function='READ_DATA' AND credential.purpose_code='READ'
+                      AND credential.status='ACTIVE' AND credential.effective_from<=clock_timestamp() AND credential.expires_at>clock_timestamp()
+                      AND account.status='ACTIVE'
+                      AND platform.capability_evidence_current(account.id,endpoint.capability_id,endpoint.id)
+                """).param("endpoint",endpointId).param("credential",credentialId).query(String.class).optional();
+    }
+
+    /**
+     * A durable intent must match both the recorded configuration and the approved command.
+     * The caller supplies the attempt digest, so digest equality alone cannot authorize
+     * its target, native identifiers, idempotency key or asynchronous task handle.
+     */
+    public boolean priceAttemptCurrent(com.mimococo.marketops.marketplaceintegration.port.PriceWriteRequest request) {
+        if (request.attemptId() == null || request.credentialId() == null) return false;
+        return Boolean.TRUE.equals(jdbc.sql("""
+                SELECT EXISTS (
+                    SELECT 1 FROM ops.price_command_attempt a
+                    JOIN ops.price_command c ON c.id=a.command_id
+                    JOIN core.store store ON store.id=c.store_id
+                    JOIN core.platform_listing_variant variant ON variant.id=c.platform_listing_variant_id
+                    JOIN core.platform_listing listing ON listing.id=variant.platform_listing_id
+                    JOIN platform.credential_metadata credential ON credential.marketplace_account_id=store.marketplace_account_id
+                    WHERE a.id=:attempt AND a.request_digest=:digest AND a.outcome_class='IN_FLIGHT'
+                      AND a.purpose=:purpose AND c.capability_id=:capability
+                      AND listing.native_listing_key=:listing AND variant.native_variant_key=:variant
+                      AND :idempotency=CASE WHEN a.purpose='RESTORE'
+                          THEN encode(sha256(convert_to(c.idempotency_key||chr(31)||'RESTORE'||chr(31),'UTF8')),'hex')
+                          ELSE c.idempotency_key END
+                      AND c.currency_code=:currency
+                      AND :price=CASE WHEN a.purpose='RESTORE' THEN c.prior_price ELSE c.target_price END
+                      AND CASE WHEN a.purpose='STATUS_ENQUIRY'
+                          THEN CAST(:task AS text)=(SELECT prior.native_task_key FROM ops.price_command_attempt prior
+                              WHERE prior.command_id=c.id AND prior.native_task_key IS NOT NULL
+                              ORDER BY prior.started_at DESC,prior.attempt_no DESC LIMIT 1)
+                          ELSE CAST(:task AS text) IS NULL END
+                      AND c.fence_token=a.fence_token AND c.lease_owner=a.lease_owner
+                      AND c.lease_expires_at > clock_timestamp()
+                      AND a.expected_version_token IS NOT DISTINCT FROM CAST(:precondition AS text)
+                      AND (a.purpose<>'RESTORE' OR (c.state='COMPENSATION_PENDING' AND EXISTS (
+                          SELECT 1 FROM ops.price_command_readback r
+                          JOIN ops.price_command_attempt read_attempt ON read_attempt.id=r.attempt_id
+                          JOIN raw.price_response_observation evidence ON evidence.id=r.raw_observation_id
+                          WHERE r.command_id=c.id AND r.match_state='MATCHES_TARGET'
+                            AND read_attempt.purpose='READBACK' AND read_attempt.fence_token=c.fence_token
+                            AND evidence.version_token=a.expected_version_token
+                            AND r.observed_at>=c.updated_at
+                            AND r.observed_at>clock_timestamp()-interval '30 seconds'
+                            AND r.id=(SELECT latest.id FROM ops.price_command_readback latest
+                                WHERE latest.command_id=c.id ORDER BY latest.observed_at DESC,latest.id DESC LIMIT 1)
+                            AND EXISTS (SELECT 1 FROM ops.price_command_attempt applied
+                                WHERE applied.command_id=c.id AND applied.purpose='APPLY'
+                                  AND applied.outcome_class IN ('ACCEPTED','UNKNOWN_STATE')
+                                  AND applied.completed_at<=r.observed_at))))
+                      AND a.operation_snapshot=platform.price_operation_snapshot(c.capability_id,a.purpose)
+                      AND platform.capability_evidence_current(store.marketplace_account_id,c.capability_id,
+                          (a.operation_snapshot #>> '{operation,endpoint_id}')::uuid)
+                      AND credential.id=:credential AND credential.organization_id=c.organization_id
+                      AND credential.purpose_code='PRICE_WRITE' AND credential.status='ACTIVE'
+                      AND credential.effective_from<=clock_timestamp() AND credential.expires_at>clock_timestamp()
+                      AND (credential.scope_mode='ACCOUNT' OR EXISTS (SELECT 1 FROM platform.credential_store_scope scope
+                          WHERE scope.credential_id=credential.id AND scope.store_id=store.id AND scope.status='ACTIVE'))
+                      AND (a.purpose NOT IN ('APPLY','RESTORE') OR cardinality(ops.evaluate_price_write_gate(c.id))=0))
+                """).param("attempt",request.attemptId()).param("digest",request.digest())
+                .param("purpose",request.operation().name()).param("capability",request.capabilityId())
+                .param("listing",request.nativeListingKey()).param("variant",request.nativeVariantKey())
+                .param("idempotency",request.idempotencyKey()).param("currency",request.targetPrice().currencyCode())
+                .param("price",request.targetPrice().amount()).param("task",request.nativeTaskKey())
+                .param("credential",request.credentialId()).param("precondition",request.expectedVersionToken())
+                .query(Boolean.class).single());
     }
 
     private static EndpointCallSpec mapSpec(ResultSet rows, int rowNumber) throws SQLException {

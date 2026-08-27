@@ -47,10 +47,10 @@ class PriceWriteClassificationTest {
     class Inconclusive {
 
         @Test
-        void aRateLimitIsRetriableForEitherKindOfCall() {
+        void aRateLimitOnAWriteDoesNotProveThatNoChangeOccurred() {
             assertThat(adapter.inconclusive(request(PriceWriteRequest.Operation.APPLY), 429,
                     "HTTP 429", new byte[0]).outcome())
-                    .isEqualTo(PriceWriteResult.Outcome.RETRIABLE_ERROR);
+                    .isEqualTo(PriceWriteResult.Outcome.UNKNOWN_STATE);
             assertThat(adapter.inconclusive(request(PriceWriteRequest.Operation.READBACK), 429,
                     "HTTP 429", new byte[0]).outcome())
                     .isEqualTo(PriceWriteResult.Outcome.RETRIABLE_ERROR);
@@ -108,7 +108,7 @@ class PriceWriteClassificationTest {
         @Test
         void aSynchronousPlatformNeedsNoHandle() {
             PriceWriteResult result = adapter.applied(spec("SYNCHRONOUS", null, null, null,
-                    null, null, null), json("{\"result\":\"ok\"}"), "HTTP 200", new byte[0]);
+                    null, null, null), json("{\"accepted\":true,\"result\":\"ok\"}"), "HTTP 200", new byte[0]);
 
             assertThat(result.outcome()).isEqualTo(PriceWriteResult.Outcome.ACCEPTED);
             assertThat(result.nativeTaskKey()).isNull();
@@ -118,7 +118,7 @@ class PriceWriteClassificationTest {
         void anAsynchronousPlatformYieldsItsHandle() {
             PriceWriteResult result = adapter.applied(
                     spec("ASYNCHRONOUS_TASK", "/result/task_id", null, null, null, null, null),
-                    json("{\"result\":{\"task_id\":\"TASK-9\"}}"), "HTTP 202", new byte[0]);
+                    json("{\"accepted\":true,\"result\":{\"task_id\":\"TASK-9\"}}"), "HTTP 202", new byte[0]);
 
             assertThat(result.outcome()).isEqualTo(PriceWriteResult.Outcome.ACCEPTED);
             assertThat(result.nativeTaskKey()).isEqualTo("TASK-9");
@@ -130,7 +130,7 @@ class PriceWriteClassificationTest {
             // became of it. Calling that a success would be a guess.
             PriceWriteResult result = adapter.applied(
                     spec("ASYNCHRONOUS_TASK", "/result/task_id", null, null, null, null, null),
-                    json("{\"result\":{}}"), "HTTP 202", new byte[0]);
+                    json("{\"accepted\":true,\"result\":{}}"), "HTTP 202", new byte[0]);
 
             assertThat(result.outcome()).isEqualTo(PriceWriteResult.Outcome.UNKNOWN_STATE);
             assertThat(result.errorCode()).isEqualTo("task_key_not_at_recorded_pointer");
@@ -147,7 +147,7 @@ class PriceWriteClassificationTest {
         @Test
         void thePlatformsWordForFinishedIsAccepted() {
             PriceWriteResult result = adapter.enquired(status,
-                    json("{\"result\":{\"state\":\"COMPLETED\"}}"), "HTTP 200", new byte[0],
+                    json("{\"result\":{\"state\":\"COMPLETED\"}}"), new byte[0],
                     request(PriceWriteRequest.Operation.STATUS_ENQUIRY));
 
             assertThat(result.outcome()).isEqualTo(PriceWriteResult.Outcome.ACCEPTED);
@@ -156,7 +156,7 @@ class PriceWriteClassificationTest {
         @Test
         void thePlatformsWordForRejectedIsARefusal() {
             PriceWriteResult result = adapter.enquired(status,
-                    json("{\"result\":{\"state\":\"FAILED\"}}"), "HTTP 200", new byte[0],
+                    json("{\"result\":{\"state\":\"FAILED\"}}"), new byte[0],
                     request(PriceWriteRequest.Operation.STATUS_ENQUIRY));
 
             assertThat(result.outcome()).isEqualTo(PriceWriteResult.Outcome.REJECTED);
@@ -164,9 +164,9 @@ class PriceWriteClassificationTest {
         }
 
         @Test
-        void anythingElseMeansStillRunning() {
+        void onlyARecordedPendingValueMeansStillRunning() {
             PriceWriteResult result = adapter.enquired(status,
-                    json("{\"result\":{\"state\":\"PROCESSING\"}}"), "HTTP 200", new byte[0],
+                    json("{\"result\":{\"state\":\"PROCESSING\"}}"), new byte[0],
                     request(PriceWriteRequest.Operation.STATUS_ENQUIRY));
 
             assertThat(result.outcome()).isEqualTo(PriceWriteResult.Outcome.RETRIABLE_ERROR);
@@ -176,7 +176,7 @@ class PriceWriteClassificationTest {
         @Test
         void anAnswerWithoutAStatusIsUnknown() {
             PriceWriteResult result = adapter.enquired(status, json("{\"result\":{}}"),
-                    "HTTP 200", new byte[0],
+                    new byte[0],
                     request(PriceWriteRequest.Operation.STATUS_ENQUIRY));
 
             assertThat(result.outcome()).isEqualTo(PriceWriteResult.Outcome.UNKNOWN_STATE);
@@ -273,6 +273,32 @@ class PriceWriteClassificationTest {
         return MAPPER.readTree(body);
     }
 
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"{}", "null", "{\"accepted\":false}",
+            "{\"accepted\":\"true\"}", "{\"accepted\":1}", "{\"accepted\":[]}"})
+    void anHttpSuccessWithoutTheExactAcceptancePredicateRemainsUnknown(String body) {
+        assertThat(adapter.applied(spec("SYNCHRONOUS",null,null,null,null,null,null),json(body),
+                "HTTP 200",body.getBytes(java.nio.charset.StandardCharsets.UTF_8)).outcome())
+                .isEqualTo(PriceWriteResult.Outcome.UNKNOWN_STATE);
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"CANCELLED", "completed", " COMPLETED", "PROCESSING ", "UNKNOWN"})
+    void anUnrecordedTaskStateIsNeverGuessedToBePending(String value) {
+        var spec=spec("ASYNCHRONOUS_TASK","/task","/status","COMPLETED","FAILED",null,null);
+        assertThat(adapter.enquired(spec,MAPPER.valueToTree(java.util.Map.of("status",value)),
+                new byte[0],request(PriceWriteRequest.Operation.STATUS_ENQUIRY)).outcome())
+                .isEqualTo(PriceWriteResult.Outcome.UNKNOWN_STATE);
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"0","-1","1.00001","100000000000000","NaN"," 1"})
+    void invalidReadbackMoneyCannotBecomeAccepted(String value) {
+        var spec=spec("SYNCHRONOUS",null,null,null,null,"/price","/currency");
+        assertThat(adapter.observed(spec,MAPPER.valueToTree(java.util.Map.of("price",value,"currency","RUB")),
+                "HTTP 200",new byte[0]).outcome()).isEqualTo(PriceWriteResult.Outcome.UNKNOWN_STATE);
+    }
+
     private static PriceWriteRequest request(PriceWriteRequest.Operation operation) {
         return new PriceWriteRequest(operation, CAPABILITY, null, "LIST-1", "VAR-1",
                 Money.of(new BigDecimal("105.0000"), "RUB"), "classification-test-key", null);
@@ -287,6 +313,7 @@ class PriceWriteClassificationTest {
                 null, "application/json", null, "NONE", null, 3000, 1_048_576L);
         return new WriteOperationSpec(CAPABILITY, "OZON", "APPLY", writeResultModel,
                 "{\"price\":\"{targetPrice}\"}", taskKeyPointer, taskStatusPointer,
-                successValue, failureValue, pricePointer, currencyPointer, endpoint);
+                successValue, failureValue, pricePointer, currencyPointer, endpoint, null,
+                "/accepted", MAPPER.readTree("true"), java.util.Set.of("PROCESSING"));
     }
 }

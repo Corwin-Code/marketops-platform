@@ -32,7 +32,7 @@ public record AiClaim(
         String confidenceLabel,
         List<UUID> metricValueRefs,
         List<UUID> findingRefs,
-        Map<String, String> payload,
+        Map<String, Object> payload,
         boolean accepted,
         String rejectionCode) {
 
@@ -41,6 +41,6 @@ public record AiClaim(
         Objects.requireNonNull(statement, "statement");
         metricValueRefs = List.copyOf(Objects.requireNonNull(metricValueRefs, "metricValueRefs"));
         findingRefs = List.copyOf(Objects.requireNonNull(findingRefs, "findingRefs"));
-        payload = Map.copyOf(Objects.requireNonNull(payload, "payload"));
+        payload = com.mimococo.marketops.shared.JsonValues.copyObject(Objects.requireNonNull(payload, "payload"));
     }
 }

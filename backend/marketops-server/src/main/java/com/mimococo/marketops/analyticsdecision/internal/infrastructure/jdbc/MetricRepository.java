@@ -257,6 +257,28 @@ public class MetricRepository {
                 .list();
     }
 
+    /** Typed references distinguish a derived metric from source provenance. */
+    public List<InputReference> typedInputsOf(UUID metricValueId) {
+        return jdbc.sql("""
+                SELECT reference_kind,reference_id FROM mart.metric_input_reference
+                WHERE metric_value_id=:id ORDER BY reference_kind,reference_id LIMIT 201
+                """).param("id", metricValueId)
+                .query((row, number) -> new InputReference(row.getString("reference_kind"),
+                        row.getObject("reference_id", UUID.class))).list();
+    }
+
+    /** Verify the requested value belongs to the already authorized listing variant. */
+    public boolean valueBelongsTo(UUID metricValueId, UUID subjectId) {
+        return jdbc.sql("""
+                SELECT EXISTS(SELECT 1 FROM mart.metric_value WHERE id=:id
+                    AND subject_id=:subject AND subject_kind='PLATFORM_LISTING_VARIANT')
+                """).param("id", metricValueId).param("subject", subjectId)
+                .query(Boolean.class).single();
+    }
+
+    /** One source or derived-value edge in the stored calculation graph. */
+    public record InputReference(String kind, UUID id) { }
+
     /** Whether a stored metric value exists, used to reject an invented citation. */
     public boolean valueExists(UUID metricValueId) {
         return Boolean.TRUE.equals(jdbc.sql(

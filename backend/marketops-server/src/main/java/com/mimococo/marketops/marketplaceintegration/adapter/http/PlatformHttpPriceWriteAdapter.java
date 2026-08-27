@@ -13,9 +13,7 @@ import com.mimococo.marketops.shared.port.SecretResolverPort;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import com.mimococo.marketops.shared.port.OutboundHttp;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Duration;
@@ -60,7 +58,7 @@ public final class PlatformHttpPriceWriteAdapter implements PriceWritePort {
     private static final Logger log =
             LoggerFactory.getLogger(PlatformHttpPriceWriteAdapter.class);
 
-    private final HttpClient httpClient;
+    private final OutboundHttp httpClient;
     private final WriteOperationRepository operations;
     private final PlatformCallSpecRepository specs;
     private final SecretResolverPort secrets;
@@ -69,7 +67,7 @@ public final class PlatformHttpPriceWriteAdapter implements PriceWritePort {
 
     private final PriceWriteAnswers answers;
 
-    public PlatformHttpPriceWriteAdapter(HttpClient httpClient,
+    public PlatformHttpPriceWriteAdapter(OutboundHttp httpClient,
                                          WriteOperationRepository operations,
                                          PlatformCallSpecRepository specs,
                                          SecretResolverPort secrets,
@@ -86,20 +84,25 @@ public final class PlatformHttpPriceWriteAdapter implements PriceWritePort {
 
     @Override
     public PriceWriteResult perform(PriceWriteRequest request) {
+        if (!specs.priceAttemptCurrent(request)) return refused("attempt_authority_not_current");
         Optional<WriteOperationSpec> found = operations.verifiedOperation(
                 request.capabilityId(), request.operation().name());
         if (found.isEmpty()) {
             return refused("write_operation_not_verified");
         }
         WriteOperationSpec spec = found.get();
+        if (!specs.reserveCallBudget(spec.endpoint().endpointId())) {
+            return new PriceWriteResult(PriceWriteResult.Outcome.RETRIABLE_ERROR, null, null, null,
+                    null, new byte[0], clock.instant(), "rate_limit_window_exhausted");
+        }
 
-        List<AuthHeaderSpec> authHeaders = specs.verifiedAuthHeaders(spec.platformCode());
+        List<AuthHeaderSpec> authHeaders = specs.verifiedAuthHeaders(spec.platformCode(), "PRICE_WRITE");
         if (authHeaders.isEmpty()) {
             return refused("authentication_not_recorded");
         }
 
         List<char[]> resolvedSecrets = new ArrayList<>();
-        HttpRequest httpRequest;
+        OutboundHttp.Request httpRequest;
         try {
             httpRequest = build(spec, request, authHeaders, resolvedSecrets);
         } catch (RuntimeException notBuildable) {
@@ -112,22 +115,36 @@ public final class PlatformHttpPriceWriteAdapter implements PriceWritePort {
         }
 
         try {
-            HttpResponse<byte[]> response =
-                    httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
-            return classify(response, spec, request);
+            if (!specs.priceAttemptCurrent(request)) return refused("attempt_authority_not_current");
+            OutboundHttp.Response response =
+                    httpClient.exchange(httpRequest.plan(), httpRequest.headers());
+            Map<String, String> safeHeaders = new HashMap<>();
+            for (String name : List.of("content-type", "retry-after", "x-request-id", "etag", "x-version-id")) {
+                response.firstHeader(name)
+                        .filter(value -> value.length() <= 256
+                                && value.chars().noneMatch(Character::isISOControl))
+                        .ifPresent(value -> safeHeaders.put(name, value));
+            }
+            PriceWriteResult classified = response.complete() ? classify(response, spec, request)
+                    : transportFailed(request, response.failureCode());
+            return classified.withResponse(response.body(),
+                    new PriceWriteResult.Response(response.statusCode(), safeHeaders,
+                            request.digest(), "PROVIDER_RESPONSE", response.complete()));
         } catch (IOException transportFailure) {
             // For a write the call may have reached the marketplace and may
             // have changed a real price. That is precisely what an unknown
             // state means, and it is the reason there is no transition from it
             // back to executing. A read has no such consequence.
             return transportFailed(request, "transport_failed");
+        } catch (IllegalArgumentException invalidPlan) {
+            return transportFailed(request, "outbound_plan_rejected");
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
             return transportFailed(request, "interrupted");
         }
     }
 
-    private HttpRequest build(WriteOperationSpec spec,
+    private OutboundHttp.Request build(WriteOperationSpec spec,
                               PriceWriteRequest request,
                               List<AuthHeaderSpec> authHeaders,
                               List<char[]> resolvedSecrets) {
@@ -139,27 +156,39 @@ public final class PlatformHttpPriceWriteAdapter implements PriceWritePort {
                 RequestTemplate.Escaping.URL);
         String body = RequestTemplate.render(spec.requestTemplate(), placeholders,
                 RequestTemplate.Escaping.JSON);
-
-        HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(endpoint.baseUrl() + path + (query == null ? "" : "?" + query)))
-                .timeout(Duration.ofMillis(endpoint.requestTimeoutMillis()))
-                .header("Accept", endpoint.responseContentType() == null
-                        ? "application/json" : endpoint.responseContentType())
-                .method(endpoint.httpMethod(), body == null
-                        ? HttpRequest.BodyPublishers.noBody()
-                        : HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8));
-        if (body != null) {
-            builder.header("Content-Type", "application/json");
+        if (body != null && body.isEmpty()) body = null;
+        if (body != null && !com.mimococo.marketops.shared.JsonValues.read(objectMapper, body).isObject()) {
+            throw new IllegalArgumentException("write operation body must be a JSON object");
         }
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Accept", endpoint.responseContentType() == null ? "application/json" : endpoint.responseContentType());
+        if (body != null) headers.put("Content-Type", "application/json");
+        if (request.operation() == PriceWriteRequest.Operation.RESTORE) {
+            if (spec.conditionalWriteHeader() == null || request.expectedVersionToken() == null) {
+                throw new IllegalArgumentException("restore has no verified conditional precondition");
+            }
+            headers.put(spec.conditionalWriteHeader(), request.expectedVersionToken());
+        }
+        java.util.Set<String> names = new java.util.HashSet<>(headers.keySet());
+        authHeaders.forEach(header -> { names.add(header.headerName()); OutboundHttp.requireHeaderTemplate(header.valueTemplate()); });
+        headers.values().forEach(OutboundHttp::requireHeaderTemplate);
+        OutboundHttp.Plan plan = httpClient.prepare(new OutboundHttp.Destination(
+                "platform:" + spec.platformCode() + ":write",
+                URI.create(endpoint.baseUrl() + path + (query == null ? "" : "?" + query)), endpoint.httpMethod(), names,
+                body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8),
+                endpoint.requestTimeoutMillis(), Math.toIntExact(endpoint.maxResponseBytes())));
+
+        if (!specs.priceAttemptCurrent(request)) throw new IllegalArgumentException("call authority expired before credential resolution");
 
         for (AuthHeaderSpec header : authHeaders) {
             Optional<String> value = headerValue(header, request, resolvedSecrets);
             if (value.isEmpty()) {
                 return null;
             }
-            builder.header(header.headerName(), value.get());
+            headers.put(header.headerName(), value.get());
         }
-        return builder.build();
+        return new OutboundHttp.Request(plan, headers);
     }
 
     private Optional<String> headerValue(AuthHeaderSpec header,
@@ -218,7 +247,7 @@ public final class PlatformHttpPriceWriteAdapter implements PriceWritePort {
      * answers differently is a row somebody edits rather than a branch somebody
      * writes.
      */
-    private PriceWriteResult classify(HttpResponse<byte[]> response,
+    private PriceWriteResult classify(OutboundHttp.Response response,
                                       WriteOperationSpec spec,
                                       PriceWriteRequest request) {
         int status = response.statusCode();
@@ -236,14 +265,14 @@ public final class PlatformHttpPriceWriteAdapter implements PriceWritePort {
 
         JsonNode document;
         try {
-            document = objectMapper.readTree(new String(body, StandardCharsets.UTF_8));
-        } catch (JacksonException unreadable) {
+            document = com.mimococo.marketops.shared.JsonValues.read(objectMapper,body);
+        } catch (JacksonException | IllegalArgumentException unreadable) {
             return answers.unknown("response_not_readable");
         }
 
         return switch (request.operation()) {
             case APPLY, RESTORE -> answers.applied(spec, document, nativeStatus, body);
-            case STATUS_ENQUIRY -> answers.enquired(spec, document, nativeStatus, body,
+            case STATUS_ENQUIRY -> answers.enquired(spec, document, body,
                     request);
             case READBACK -> answers.observed(spec, document, nativeStatus, body);
         };

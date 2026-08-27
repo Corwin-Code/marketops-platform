@@ -1,0 +1,257 @@
+{
+  "schemaVersion" : "2.0",
+  "serviceProfile" : "YANDEX_MANAGED_EMULATION",
+  "environmentReference" : "test:postgres17:marketops",
+  "repositoryCommit" : "1111111111111111111111111111111111111111111111111111111111111111",
+  "repositoryTree" : "2222222222222222222222222222222222222222222222222222222222222222",
+  "expectedPostgresqlMajor" : 17,
+  "postgresqlMajor" : 17,
+  "attestationState" : "ATTESTED",
+  "canonicalV0002Path" : "db/migration/V0002__enable_btree_gist_extension.sql",
+  "canonicalV0002GitBlob" : "bd3e55ea737ffda9d519a931eea1f3cc58b8c522",
+  "canonicalV0002Sha256" : "438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16",
+  "canonicalV0002FlywayChecksum" : 1291326236,
+  "resolvedVersion" : "0002",
+  "resolvedDescription" : "enable btree gist extension",
+  "executorMode" : "EXTERNALLY_SATISFIED_PROVIDER_EXTENSION",
+  "requiredExtensions" : {
+    "pgcrypto" : "1.3",
+    "btree_gist" : "1.7"
+  },
+  "extensions" : {
+    "pgcrypto" : "1.3",
+    "btree_gist" : "1.7"
+  },
+  "providerEvidenceSha256" : "3333333333333333333333333333333333333333333333333333333333333333",
+  "providerDocumentSha256" : "34e1f92c87f22eb1256f49b2a31c49911cd62bb7c18ce4f7960e43f585584c96",
+  "providerControlPlaneApplied" : false,
+  "artifactKind" : "MIGRATION_ATTEMPT",
+  "expectedBootstrapSha256" : "fe906f464dcdd66cccfd226f1646b5aeab57a75a48211d7d5bdafe494b186478",
+  "timestamp" : "2026-08-28T00:00:05Z",
+  "correlation" : "managed-restored-profile",
+  "failureStage" : "BOOTSTRAP_IDENTITY",
+  "migrationResult" : "ATTESTED",
+  "flywayHistoryBefore" : {
+    "v0002" : "CANONICAL",
+    "state" : "PRESENT",
+    "migrations" : [ {
+      "version" : "0001",
+      "description" : "create foundation schemas",
+      "type" : "SQL",
+      "script" : "db/migration/V0001__create_foundation_schemas.sql",
+      "checksum" : -216558555,
+      "success" : true
+    }, {
+      "version" : "0002",
+      "description" : "enable btree gist extension",
+      "type" : "SQL",
+      "script" : "V0002__enable_btree_gist_extension.sql",
+      "checksum" : 1291326236,
+      "success" : true
+    }, {
+      "version" : "0003",
+      "description" : "create metadata audit event",
+      "type" : "SQL",
+      "script" : "db/migration/V0003__create_metadata_audit_event.sql",
+      "checksum" : -1538154543,
+      "success" : true
+    }, {
+      "version" : "0004",
+      "description" : "create core organization metadata",
+      "type" : "SQL",
+      "script" : "db/migration/V0004__create_core_organization_metadata.sql",
+      "checksum" : 2027689260,
+      "success" : true
+    }, {
+      "version" : "0005",
+      "description" : "create iam access metadata",
+      "type" : "SQL",
+      "script" : "db/migration/V0005__create_iam_access_metadata.sql",
+      "checksum" : -989145577,
+      "success" : true
+    }, {
+      "version" : "0006",
+      "description" : "create platform registry metadata",
+      "type" : "SQL",
+      "script" : "db/migration/V0006__create_platform_registry_metadata.sql",
+      "checksum" : 326972708,
+      "success" : true
+    }, {
+      "version" : "0007",
+      "description" : "create ingestion control plane authority",
+      "type" : "SQL",
+      "script" : "db/migration/V0007__create_ingestion_control_plane_authority.sql",
+      "checksum" : 510276987,
+      "success" : true
+    }, {
+      "version" : "0008",
+      "description" : "attach control epoch triggers",
+      "type" : "SQL",
+      "script" : "db/migration/V0008__attach_control_epoch_triggers.sql",
+      "checksum" : 804811341,
+      "success" : true
+    }, {
+      "version" : "0009",
+      "description" : "create control boundary kinds and decision evidence",
+      "type" : "SQL",
+      "script" : "db/migration/V0009__create_control_boundary_kinds_and_decision_evidence.sql",
+      "checksum" : 1135080635,
+      "success" : true
+    }, {
+      "version" : "0010",
+      "description" : "create ingestion run checkpoint and raw evidence",
+      "type" : "SQL",
+      "script" : "db/migration/V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql",
+      "checksum" : -110000428,
+      "success" : true
+    }, {
+      "version" : "0011",
+      "description" : "create human identity and business authorization",
+      "type" : "SQL",
+      "script" : "db/migration/V0011__create_human_identity_and_business_authorization.sql",
+      "checksum" : 513325678,
+      "success" : true
+    }, {
+      "version" : "0012",
+      "description" : "create product listing identity and mapping",
+      "type" : "SQL",
+      "script" : "db/migration/V0012__create_product_listing_identity_and_mapping.sql",
+      "checksum" : 1610558496,
+      "success" : true
+    }, {
+      "version" : "0013",
+      "description" : "create cross domain operating facts",
+      "type" : "SQL",
+      "script" : "db/migration/V0013__create_cross_domain_operating_facts.sql",
+      "checksum" : 182788145,
+      "success" : true
+    }, {
+      "version" : "0014",
+      "description" : "create internal fact intake and file import",
+      "type" : "SQL",
+      "script" : "db/migration/V0014__create_internal_fact_intake_and_file_import.sql",
+      "checksum" : -231269046,
+      "success" : true
+    }, {
+      "version" : "0015",
+      "description" : "create canonical metric definitions and values",
+      "type" : "SQL",
+      "script" : "db/migration/V0015__create_canonical_metric_definitions_and_values.sql",
+      "checksum" : 1886333913,
+      "success" : true
+    }, {
+      "version" : "0016",
+      "description" : "create deterministic diagnosis rules and findings",
+      "type" : "SQL",
+      "script" : "db/migration/V0016__create_deterministic_diagnosis_rules_and_findings.sql",
+      "checksum" : 1173612683,
+      "success" : true
+    }, {
+      "version" : "0017",
+      "description" : "create ai projection invocation and output",
+      "type" : "SQL",
+      "script" : "db/migration/V0017__create_ai_projection_invocation_and_output.sql",
+      "checksum" : -210332737,
+      "success" : true
+    }, {
+      "version" : "0018",
+      "description" : "create recommendation task and approval workflow",
+      "type" : "SQL",
+      "script" : "db/migration/V0018__create_recommendation_task_and_approval_workflow.sql",
+      "checksum" : -1551978384,
+      "success" : true
+    }, {
+      "version" : "0019",
+      "description" : "create commercial policy and guardrails",
+      "type" : "SQL",
+      "script" : "db/migration/V0019__create_commercial_policy_and_guardrails.sql",
+      "checksum" : 872993619,
+      "success" : true
+    }, {
+      "version" : "0020",
+      "description" : "create price command outbox readback and write gate",
+      "type" : "SQL",
+      "script" : "db/migration/V0020__create_price_command_outbox_readback_and_write_gate.sql",
+      "checksum" : -501764210,
+      "success" : true
+    }, {
+      "version" : "0021",
+      "description" : "create platform api profile and request shape",
+      "type" : "SQL",
+      "script" : "db/migration/V0021__create_platform_api_profile_and_request_shape.sql",
+      "checksum" : -1878771448,
+      "success" : true
+    }, {
+      "version" : "0022",
+      "description" : "create ingestion run lifecycle and replay guard",
+      "type" : "SQL",
+      "script" : "db/migration/V0022__create_ingestion_run_lifecycle_and_replay_guard.sql",
+      "checksum" : -281710905,
+      "success" : true
+    }, {
+      "version" : "0023",
+      "description" : "create declared normalization and drift observation",
+      "type" : "SQL",
+      "script" : "db/migration/V0023__create_declared_normalization_and_drift_observation.sql",
+      "checksum" : 782483817,
+      "success" : true
+    }, {
+      "version" : "0024",
+      "description" : "create capability write operation shape",
+      "type" : "SQL",
+      "script" : "db/migration/V0024__create_capability_write_operation_shape.sql",
+      "checksum" : -1138859957,
+      "success" : true
+    }, {
+      "version" : "0025",
+      "description" : "create price command attempt completion and lease recovery",
+      "type" : "SQL",
+      "script" : "db/migration/V0025__create_price_command_attempt_completion_and_lease_recovery.sql",
+      "checksum" : -547418792,
+      "success" : true
+    }, {
+      "version" : "0026",
+      "description" : "rename operational capability column to action kind",
+      "type" : "SQL",
+      "script" : "db/migration/V0026__rename_operational_capability_column_to_action_kind.sql",
+      "checksum" : 404882275,
+      "success" : true
+    }, {
+      "version" : "0027",
+      "description" : "create account bound registry verification",
+      "type" : "SQL",
+      "script" : "db/migration/V0027__create_account_bound_registry_verification.sql",
+      "checksum" : 1708288601,
+      "success" : true
+    } ]
+  },
+  "flywayHistoryAfter" : {
+    "state" : "NOT_OBSERVED"
+  },
+  "extensionFacts" : {
+    "pgcrypto" : {
+      "version" : "1.3",
+      "owner" : "bootstrap_admin",
+      "schema" : "public"
+    },
+    "btree_gist" : {
+      "version" : "1.7",
+      "owner" : "bootstrap_admin",
+      "schema" : "public"
+    }
+  },
+  "roleAssertions" : {
+    "currentUserIsMigration" : true,
+    "providerSqlExtensionDdlDenied" : true,
+    "applicationCannotCreateDatabaseObjects" : true,
+    "runtimeCannotAssumeExtensionOwner" : true,
+    "managedExtensionsNotOwnedByRuntimeRoles" : true,
+    "runtimeRolesAreNonPrivileged" : true,
+    "serverMajorIs17" : true,
+    "applicationIsNotMigrationMember" : true,
+    "extensionMembersInSecureSchema" : true
+  },
+  "startedEvidenceSha256" : "15623e968e15d1fa5a35c221c7deace57866278918eed5894802b15e745e13c2",
+  "bootstrapEvidenceSha256" : "fe906f464dcdd66cccfd226f1646b5aeab57a75a48211d7d5bdafe494b186478",
+  "databaseIdentity" : "test:postgres17:marketops"
+}

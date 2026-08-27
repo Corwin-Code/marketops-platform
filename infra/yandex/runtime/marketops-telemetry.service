@@ -1,0 +1,21 @@
+[Unit]
+Description=MarketOps bounded operational telemetry
+After=network-online.target marketops.service
+Wants=network-online.target
+ConditionPathExists=/etc/marketops/telemetry.json
+
+[Service]
+Type=oneshot
+DynamicUser=yes
+ExecStart=/usr/bin/python3 /usr/local/lib/marketops-telemetry.py /etc/marketops/telemetry.json
+TimeoutStartSec=20
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+CapabilityBoundingSet=
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes

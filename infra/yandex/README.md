@@ -4,39 +4,50 @@
 document_type: infrastructure_as_code
 cloud: YANDEX_CLOUD
 region: ru-central1
+status: CANDIDATE_REWORK_INCOMPLETE
+deployment_compatibility: AMENDMENT_001_ACCEPTED_IMPLEMENTATION_IN_PROGRESS
 applied: NEVER
 apply_authority: OWNER_ONLY
 ```
 
 ## What this is
 
-The complete `ru-central1` topology MarketOps V1 runs on, written so that the
-environment can be rebuilt from this directory rather than from somebody's
-memory of what they clicked.
+The candidate `ru-central1` topology for MarketOps V1. Exact Amendment-001 is
+accepted and pins the managed database to PostgreSQL 17 with provider-managed
+`btree_gist` and `pgcrypto`. The environment is not deployed or accepted as
+operational. Terraform schema validation and synthetic plans do not prove a
+real managed database.
+
+**Deployment remains unauthorized.** Read the accepted
+[Amendment-001](../../docs/03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md)
+and current [implementation evidence](../../docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-pg-bootstrap-progress.md).
+Do not apply this candidate or bypass migration history.
 
 ## What this is not
 
-**Nothing here has ever been applied.** No Yandex Cloud account has been
-contacted, no state file exists, and no credential for one is present in this
-repository or in any environment this work was produced in. Applying it is a
+**This rework has not applied this infrastructure or called a Yandex account.**
+Mock plans and local fixtures do not establish real provider state or secret
+absence in a deployed state artifact. Applying this infrastructure is a
 separate act that only the Owner can authorize, and it is not implied by this
 code existing, by the branch merging, or by any check passing.
 
-The configuration is therefore *reviewed* rather than *proven*. Its acceptance
-criterion (`S1-AC-005`) asks for a reproducible topology from reviewed
-infrastructure code; the second half of that criterion — that a real
-environment was built from it — remains open and is recorded as open in the
-Production Assurance Matrix.
+Independent closure review is pending. `S1-AC-005` remains
+`IMPLEMENTATION_DEFECT` in the candidate acceptance matrix; it is not merely
+waiting for production apply. Foundation/runtime sequencing, artifact guards
+and complete public input examples now have local checks. Final runtime/alert
+verification, exact-commit CI and real staging evidence remain incomplete.
 
 ## Shape
 
 | Module | What it owns | Why it is separate |
 | --- | --- | --- |
 | `network` | VPC, subnets per availability zone, security groups | The blast radius of a network change is different from that of a database change, and separating them means one can be reviewed without re-reading the other. |
-| `database` | Managed PostgreSQL cluster, backup window, retention, point-in-time recovery | Recovery settings belong beside the thing they recover, not in a global variables file where they are edited without a second thought. |
+| `database` | Managed PostgreSQL 17 cluster, provider extensions, backup window, retention, point-in-time recovery | Amendment-001 makes the control plane the extension lifecycle authority. |
 | `object-storage` | Evidence bucket, versioning, object lock, lifecycle | Raw evidence is immutable by product rule; the storage that holds it has to enforce that independently of the application. |
 | `workload-identity` | Service accounts and role bindings for each workload | Least privilege is a property of these bindings. Keeping them in one place makes the total set of what each workload may do readable in one sitting. |
-| `observability` | Log groups, metric alerts, notification channel | An alert nobody defined is an outage nobody notices. |
+| `observability` | Log group, dashboard, audit trail and six alert requirements | Workload timers submit private aggregate signals with scoped Monitoring roles. Actual alert creation, metric receipt and notification delivery remain unverified; see `docs/06-runbooks/operational-monitoring.md`. |
+| `workload` | Private instance groups, digest-pinned containers, readiness, HTTPS ALB/router and DNS | Disabled in the foundation stage; a hash-pinned successful managed migration result is required for runtime. Real environment verification remains pending. |
+| `bootstrap` | Versioned KMS-encrypted state storage, YDB lock database and audit | Backend use and lock-table creation require separate authorized environment verification. |
 
 ## Environments
 
@@ -44,6 +55,24 @@ Production Assurance Matrix.
 concrete value appears. Both are declarative compositions of the modules above;
 neither carries a secret, and every credential is referenced by the Lockbox
 name it lives under rather than by value.
+
+Database credential inputs are ephemeral and use provider write-only attributes.
+The synthetic plan check proves their absence from that artifact, not from a
+real deployed state file. Public tfvars examples cover the current input schema
+and default to foundation-only. They deliberately omit both ephemeral password
+inputs and contain placeholders requiring independent environment review.
+
+## Local verification only
+
+With exactly Terraform 1.14.9, run from the repository root:
+
+```bash
+python3 scripts/verify_terraform.py --terraform /path/to/terraform --output build/terraform-evidence
+python3 -m unittest tests.test_validate_terraform_plan tests.test_yandex_runtime
+```
+
+The verifier initializes without a backend and uses only mock-provider plans
+with locked Yandex provider 0.220.0. No Yandex account or real state is inspected.
 
 ## Applying this
 

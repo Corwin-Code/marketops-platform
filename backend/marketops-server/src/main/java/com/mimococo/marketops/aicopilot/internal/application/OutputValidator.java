@@ -52,11 +52,15 @@ public class OutputValidator {
             Set.of("facts", "inferences", "recommendations", "unknowns");
 
     /** The members one claim may carry. */
-    private static final Set<String> CLAIM_MEMBERS = Set.of(
-            "statement", "evidenceRefs", "findingRefs", "confidence",
-            "actionCapability", "proposedParameters", "expectedEffect", "risk",
-            "validationWindowDays", "counterEvidence", "missingFact", "whyItMatters",
-            "nextEvidence");
+    static final int SCHEMA_VERSION = 2;
+    static final int MAXIMUM_OUTPUT_BYTES = 65_536;
+    static final int MAXIMUM_CLAIMS_PER_KIND = 20;
+    private static final Map<AiClaimKind, Set<String>> MEMBERS = Map.of(
+            AiClaimKind.FACT, Set.of("statement", "evidenceRefs", "findingRefs"),
+            AiClaimKind.INFERENCE, Set.of("statement", "evidenceRefs", "findingRefs", "confidence", "counterEvidence"),
+            AiClaimKind.RECOMMENDATION, Set.of("statement", "evidenceRefs", "findingRefs", "confidence",
+                    "actionCapability", "proposedParameters", "expectedEffect", "risk", "validationWindowDays"),
+            AiClaimKind.UNKNOWN, Set.of("statement", "missingFact", "whyItMatters", "nextEvidence"));
 
     /** The actions this product has a gate for. */
     private static final Set<String> KNOWN_CAPABILITIES = Set.of(
@@ -92,14 +96,17 @@ public class OutputValidator {
      *         rejection when the answer is not readable as the contract
      */
     public List<ValidatedClaim> validate(String answer, SubjectProjection projection) {
+        if (answer == null || answer.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > MAXIMUM_OUTPUT_BYTES) {
+            return List.of(ValidatedClaim.rejected(AiClaimKind.UNKNOWN, 1, "answer outside the output bound", SCHEMA_INVALID));
+        }
         JsonNode document;
         try {
-            document = objectMapper.readTree(answer);
+            document = com.mimococo.marketops.shared.JsonValues.read(objectMapper, answer);
         } catch (JacksonException unreadable) {
             return List.of(ValidatedClaim.rejected(AiClaimKind.UNKNOWN, 1,
                     "the answer was not readable as the output contract", SCHEMA_INVALID));
         }
-        if (!document.isObject()) {
+        if (document == null || !document.isObject()) {
             return List.of(ValidatedClaim.rejected(AiClaimKind.UNKNOWN, 1,
                     "the answer was not an object", SCHEMA_INVALID));
         }
@@ -128,10 +135,10 @@ public class OutputValidator {
                                           AiClaimKind kind,
                                           SubjectProjection projection) {
         JsonNode array = document.get(member);
-        if (array == null || array.isNull()) {
+        if (array == null) {
             return List.of();
         }
-        if (!array.isArray()) {
+        if (!array.isArray() || array.size() > MAXIMUM_CLAIMS_PER_KIND) {
             return List.of(ValidatedClaim.rejected(kind, 1,
                     "the member was not a list of claims", SCHEMA_INVALID));
         }
@@ -152,9 +159,15 @@ public class OutputValidator {
             return ValidatedClaim.rejected(kind, ordinal, "the claim was not an object",
                     SCHEMA_INVALID);
         }
+        if (!boundedTree(node, 0)) return ValidatedClaim.rejected(kind, ordinal, "claim outside structural bounds", SCHEMA_INVALID);
+        try {
+            guardSecretStrings(node);
+        } catch (com.mimococo.marketops.shared.OperationRejectedException unsafe) {
+            return ValidatedClaim.rejected(kind, ordinal, "unsafe content was refused", "SECRET_LIKE_CONTENT");
+        }
         List<String> unexpected = node.propertyStream()
                 .map(Map.Entry::getKey)
-                .filter(name -> !CLAIM_MEMBERS.contains(name))
+                .filter(name -> !MEMBERS.get(kind).contains(name))
                 .sorted()
                 .toList();
         JsonNode statementNode = node.get("statement");
@@ -171,14 +184,20 @@ public class OutputValidator {
             return ValidatedClaim.rejected(kind, ordinal,
                     statement.substring(0, MAXIMUM_STATEMENT_LENGTH), STATEMENT_TOO_LONG);
         }
-        if (INSTRUCTION_SHAPED.matcher(statement).find()) {
+        if (containsInstruction(node)) {
             return ValidatedClaim.rejected(kind, ordinal, statement,
                     INSTRUCTION_LIKE_CONTENT);
         }
 
-        List<UUID> metricRefs = readReferences(node.get("evidenceRefs"));
-        List<UUID> findingRefs = readReferences(node.get("findingRefs"));
-        Map<String, String> payload = readPayload(node);
+        List<UUID> metricRefs;
+        List<UUID> findingRefs;
+        try {
+            metricRefs = readReferences(node.get("evidenceRefs"));
+            findingRefs = readReferences(node.get("findingRefs"));
+        } catch (IllegalArgumentException malformed) {
+            return ValidatedClaim.rejected(kind, ordinal, statement, EVIDENCE_REFERENCE_UNRESOLVED);
+        }
+        Map<String, Object> payload = readPayload(node);
 
         // A fact only restates something the deterministic layer computed, so it
         // must cite at least one thing, and everything it cites must be
@@ -198,51 +217,129 @@ public class OutputValidator {
         }
 
         if (kind == AiClaimKind.RECOMMENDATION) {
-            String capability = payload.getOrDefault("actionCapability", "")
-                    .toUpperCase(Locale.ROOT);
+            String capability = node.path("actionCapability").isString()
+                    ? node.path("actionCapability").asString() : "";
             if (!KNOWN_CAPABILITIES.contains(capability)) {
                 return ValidatedClaim.rejected(kind, ordinal, statement,
                         CAPABILITY_NOT_RECOGNISED);
             }
         }
-        return ValidatedClaim.accepted(kind, ordinal, statement, metricRefs, findingRefs,
-                payload);
+        if (!validKind(node, kind)) {
+            return ValidatedClaim.rejected(kind, ordinal, statement, SCHEMA_INVALID);
+        }
+        return ValidatedClaim.accepted(kind, ordinal, statement, metricRefs, findingRefs, payload);
     }
 
     /**
-     * Read a list of references, dropping anything that is not an identifier.
-     *
-     * <p>A malformed reference is not silently ignored: dropping it leaves the
-     * claim citing fewer things than it named, and a factual claim that ends up
-     * citing nothing is rejected by the rule above.
+     * Read a list of references. Every member must be a unique identifier;
+     * malformed members reject the complete claim.
      */
     private static List<UUID> readReferences(JsonNode node) {
-        if (node == null || !node.isArray()) {
-            return List.of();
-        }
+        if (node == null) return List.of();
+        if (!node.isArray() || node.size() > 20) throw new IllegalArgumentException("reference shape");
         List<UUID> references = new ArrayList<>();
         for (JsonNode element : node) {
-            if (!element.isString()) {
-                continue;
+            if (!element.isString() || !element.asString().matches(
+                    "[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}")) {
+                throw new IllegalArgumentException("reference identifier");
             }
-            try {
-                references.add(UUID.fromString(element.asString().trim()));
-            } catch (IllegalArgumentException notAnIdentifier) {
-                // Left out deliberately; see the note above.
-            }
+            UUID id = UUID.fromString(element.asString());
+            if (references.contains(id)) throw new IllegalArgumentException("duplicate reference");
+            references.add(id);
         }
         return List.copyOf(references);
     }
 
-    private static Map<String, String> readPayload(JsonNode node) {
-        Map<String, String> payload = new LinkedHashMap<>();
+    private Map<String, Object> readPayload(JsonNode node) {
+        Map<String, Object> payload = new LinkedHashMap<>();
         node.propertyStream()
-                .filter(entry -> !"statement".equals(entry.getKey()))
-                .filter(entry -> !"evidenceRefs".equals(entry.getKey()))
-                .filter(entry -> !"findingRefs".equals(entry.getKey()))
-                .filter(entry -> entry.getValue().isValueNode())
-                .forEach(entry -> payload.put(entry.getKey(), entry.getValue().asString()));
-        return Map.copyOf(payload);
+                .filter(entry -> !Set.of("statement", "evidenceRefs", "findingRefs").contains(entry.getKey()))
+                .forEach(entry -> payload.put(entry.getKey(), com.mimococo.marketops.shared.JsonValues.value(entry.getValue())));
+        return java.util.Collections.unmodifiableMap(payload);
+    }
+
+    private static boolean validKind(JsonNode node, AiClaimKind kind) {
+        if (node.has("confidence") && !enumString(node.get("confidence"), "LOW", "MEDIUM", "HIGH")) return false;
+        return switch (kind) {
+            case FACT -> true;
+            case INFERENCE -> node.has("confidence") && textOrList(node.get("counterEvidence"));
+            case UNKNOWN -> text(node.get("missingFact")) && text(node.get("whyItMatters"))
+                    && textOrList(node.get("nextEvidence"));
+            case RECOMMENDATION -> effect(node.get("expectedEffect")) && risk(node.get("risk"))
+                    && boundedInteger(node.get("validationWindowDays"), 1, 90)
+                    && parameters(node.path("actionCapability").asString(), node.get("proposedParameters"));
+        };
+    }
+
+    private static boolean parameters(String capability, JsonNode parameters) {
+        if (parameters == null) return true; // An advisory review need not invent a target price.
+        if (!parameters.isObject()) return false;
+        if ("PRICE_CHANGE".equalsIgnoreCase(capability)) {
+            if (!keys(parameters, "targetPrice", "currencyCode")) return false;
+            JsonNode price = parameters.get("targetPrice");
+            JsonNode currency = parameters.get("currencyCode");
+            if (price == null || !price.isNumber() || currency == null || !currency.isString()
+                    || !currency.asString().matches("[A-Z]{3}")) return false;
+            java.math.BigDecimal amount = price.decimalValue().stripTrailingZeros();
+            return amount.signum() > 0 && amount.scale() <= 4
+                    && amount.precision() - amount.scale() <= 14;
+        }
+        return parameters.isEmpty() || (keys(parameters, "reviewFocus") && text(parameters.get("reviewFocus")));
+    }
+
+    private static boolean effect(JsonNode node) {
+        return text(node) || (node != null && node.isObject() && keys(node, "metric", "direction", "rationale")
+                && text(node.get("metric")) && text(node.get("rationale"))
+                && enumString(node.get("direction"), "INCREASE", "DECREASE", "STABILIZE"));
+    }
+
+    private static boolean risk(JsonNode node) {
+        return text(node) || (node != null && node.isObject() && keys(node, "level", "description")
+                && enumString(node.get("level"), "LOW", "MEDIUM", "HIGH") && text(node.get("description")));
+    }
+
+    private static boolean keys(JsonNode node, String... names) {
+        Set<String> allowed = Set.of(names);
+        return node.size() == allowed.size() && node.propertyStream().allMatch(entry -> allowed.contains(entry.getKey()));
+    }
+
+    private static boolean boundedInteger(JsonNode node, int min, int max) {
+        return node != null && node.isIntegralNumber() && node.canConvertToInt()
+                && node.intValue() >= min && node.intValue() <= max;
+    }
+
+    private static boolean enumString(JsonNode node, String... allowed) {
+        return node != null && node.isString()
+                && List.of(allowed).contains(node.asString());
+    }
+
+    private static boolean text(JsonNode node) {
+        return node != null && node.isString() && !node.asString().isBlank()
+                && node.asString().length() <= MAXIMUM_STATEMENT_LENGTH;
+    }
+
+    private static boolean textOrList(JsonNode node) {
+        if (text(node)) return true;
+        if (node == null || !node.isArray() || node.isEmpty() || node.size() > 20) return false;
+        for (JsonNode item : node) if (!text(item)) return false;
+        return true;
+    }
+
+    private static boolean boundedTree(JsonNode node, int depth) {
+        if (depth > 8 || node.size() > 64) return false;
+        for (JsonNode child : node) if (!boundedTree(child, depth + 1)) return false;
+        return true;
+    }
+
+    private static boolean containsInstruction(JsonNode node) {
+        if (node.isString()) return INSTRUCTION_SHAPED.matcher(node.asString()).find();
+        for (JsonNode child : node) if (containsInstruction(child)) return true;
+        return false;
+    }
+
+    private static void guardSecretStrings(JsonNode node) {
+        if (node.isString()) com.mimococo.marketops.shared.SecretMaterialGuard.requireNonSecret("ai-output", node.asString());
+        else for (JsonNode child : node) guardSecretStrings(child);
     }
 
     /**
@@ -263,13 +360,19 @@ public class OutputValidator {
             String statement,
             List<UUID> metricValueRefs,
             List<UUID> findingRefs,
-            Map<String, String> payload,
+            Map<String, Object> payload,
             boolean accepted,
             String rejectionCode) {
 
+        public ValidatedClaim {
+            metricValueRefs = List.copyOf(metricValueRefs);
+            findingRefs = List.copyOf(findingRefs);
+            payload = com.mimococo.marketops.shared.JsonValues.copyObject(payload);
+        }
+
         static ValidatedClaim accepted(AiClaimKind kind, int ordinal, String statement,
                                        List<UUID> metricValueRefs, List<UUID> findingRefs,
-                                       Map<String, String> payload) {
+                                       Map<String, Object> payload) {
             return new ValidatedClaim(kind, ordinal, statement, metricValueRefs, findingRefs,
                     payload, true, null);
         }
@@ -282,7 +385,7 @@ public class OutputValidator {
 
         /** The confidence the model stated, when it stated one. */
         public String confidenceLabel() {
-            String label = payload.get("confidence");
+            String label = (String) payload.get("confidence");
             return label == null ? null : label.toUpperCase(Locale.ROOT);
         }
     }

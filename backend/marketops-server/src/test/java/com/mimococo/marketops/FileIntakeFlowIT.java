@@ -295,6 +295,103 @@ class FileIntakeFlowIT {
         assertThat(rejected.rejectionCode()).isNotBlank();
     }
 
+    @Test
+    @Order(8)
+    @DisplayName("TC-INTAKE-008 every row beyond the first 5000 is applied and reconciled")
+    void applyMoreThanOnePage() {
+        StringBuilder csv = new StringBuilder("sku,warehouse,onhand,at\n");
+        for (int row = 0; row < 6001; row++) {
+            csv.append("intake-widget-s,intake-warehouse,").append(row)
+                    .append(",2026-08-20T00:00:00Z\n");
+        }
+        var batch = intake.submit(actor, IntakeDataset.INTERNAL_STOCK, "stock-many.csv",
+                "text/csv", csv.toString().getBytes(StandardCharsets.UTF_8));
+        assertThat(batch.acceptedRowCount()).isEqualTo(6001);
+        var applied = intake.approveAndApply(actor, batch.id(), null, batch.version());
+        assertThat(applied.state()).isEqualTo("APPLIED");
+        assertThat(jdbc.sql("SELECT count(*) FROM core.internal_stock_snapshot f JOIN core.fact_provenance p"
+                + " ON p.id=f.provenance_id WHERE p.import_batch_id=:id")
+                .param("id", batch.id()).query(Integer.class).single()).isEqualTo(6001);
+        assertThat(jdbc.sql("SELECT applied_row_count FROM staging.import_batch WHERE id=:id")
+                .param("id", batch.id()).query(Integer.class).single()).isEqualTo(6001);
+        assertThatThrownBy(() -> intake.approveAndApply(actor, batch.id(), null, applied.version()))
+                .isInstanceOf(OperationRejectedException.class);
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("TC-INTAKE-009 a mid-apply database failure rolls back the whole batch and permits a safe retry")
+    void atomicFailureAndRetry() {
+        var batch = intake.submit(actor, IntakeDataset.INTERNAL_STOCK, "stock-atomic.csv", "text/csv",
+                ("sku,warehouse,onhand,at\n"
+                    + "intake-widget-s,intake-warehouse,10001,2026-08-21T00:00:00Z\n"
+                    + "intake-widget-s,intake-warehouse,10002,2026-08-21T00:00:00Z\n")
+                .getBytes(StandardCharsets.UTF_8));
+        var arranger = JdbcClient.create(new org.springframework.jdbc.datasource.DriverManagerDataSource(
+                TestDatabase.container().getJdbcUrl(), TestDatabase.migrationRole(), TestDatabase.migrationPassword()));
+        arranger.sql("CREATE FUNCTION public.synthetic_import_failure() RETURNS trigger LANGUAGE plpgsql AS $$"
+                + " BEGIN IF NEW.quantity_on_hand=10002 THEN RAISE EXCEPTION 'synthetic failure'; END IF; RETURN NEW; END $$").update();
+        arranger.sql("CREATE TRIGGER synthetic_import_failure BEFORE INSERT ON core.internal_stock_snapshot"
+                + " FOR EACH ROW EXECUTE FUNCTION public.synthetic_import_failure()").update();
+        try {
+            assertThatThrownBy(() -> intake.approveAndApply(actor, batch.id(), null, batch.version()))
+                    .isInstanceOf(org.springframework.dao.DataAccessException.class);
+            assertThat(intake.require(batch.id()).state()).isEqualTo("VALIDATED");
+            assertThat(jdbc.sql("SELECT count(*) FROM core.fact_provenance WHERE import_batch_id=:id")
+                    .param("id", batch.id()).query(Integer.class).single()).isZero();
+        } finally {
+            arranger.sql("DROP TRIGGER synthetic_import_failure ON core.internal_stock_snapshot").update();
+            arranger.sql("DROP FUNCTION public.synthetic_import_failure()").update();
+        }
+        assertThat(intake.approveAndApply(actor, batch.id(), null, batch.version()).state()).isEqualTo("APPLIED");
+        assertThat(jdbc.sql("SELECT applied_row_count FROM staging.import_batch WHERE id=:id")
+                .param("id", batch.id()).query(Integer.class).single()).isEqualTo(2);
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("TC-INTAKE-010 profile creation is operator-attributed and rolls back if audit is refused")
+    void profileRegistrationIsAuditedAtomically() {
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.metadata_audit_event a"
+                + " JOIN staging.import_schema_profile p ON p.id=a.entity_id"
+                + " WHERE p.organization_id=:organization AND a.entity_type='import-schema-profile'"
+                + " AND a.actor_id=:operator AND a.action='CREATE'")
+                .param("organization", organizationId).param("operator", OPERATOR)
+                .query(Integer.class).single()).isEqualTo(2);
+        assertThatThrownBy(() -> intake.registerProfile("invalid operator", organizationId,
+                IntakeDataset.INTERNAL_STOCK, "refused-audit-profile", 1, "Refused audit fixture",
+                List.of(Map.of("column", "sku", "field", "skuCode"),
+                        Map.of("column", "warehouse", "field", "warehouseCode"),
+                        Map.of("column", "onhand", "field", "quantityOnHand"),
+                        Map.of("column", "at", "field", "observedAt")), "operations-team"))
+                .isInstanceOf(org.springframework.dao.DataAccessException.class);
+        assertThat(jdbc.sql("SELECT count(*) FROM staging.import_schema_profile"
+                + " WHERE organization_id=:organization AND profile_code='refused-audit-profile'")
+                .param("organization", organizationId).query(Integer.class).single()).isZero();
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("TC-INTAKE-011 nonintegral and overflowing stock cells are rejected before typed application")
+    void stockNumericBoundaryIsValidatedBeforeApplication() {
+        String header = "sku,warehouse,onhand,at\n";
+        for (String value : List.of("NaN", "1.5", "2147483648", "9223372036854775808")) {
+            var batch = intake.submit(actor, IntakeDataset.INTERNAL_STOCK, "stock-invalid.csv", "text/csv",
+                    (header + "intake-widget-s,intake-warehouse," + value + ",2026-08-22T00:00:00Z\n")
+                            .getBytes(StandardCharsets.UTF_8));
+            assertThat(batch.state()).isEqualTo("REJECTED");
+            assertThatThrownBy(() -> intake.approveAndApply(actor, batch.id(), null, batch.version()))
+                    .isInstanceOf(OperationRejectedException.class);
+        }
+        var maximum = intake.submit(actor, IntakeDataset.INTERNAL_STOCK, "stock-maximum.csv", "text/csv",
+                (header + "intake-widget-s,intake-warehouse,2147483647,2026-08-22T00:00:00Z\n")
+                        .getBytes(StandardCharsets.UTF_8));
+        assertThat(intake.approveAndApply(actor, maximum.id(), null, maximum.version()).state()).isEqualTo("APPLIED");
+        assertThat(jdbc.sql("SELECT f.quantity_on_hand FROM core.internal_stock_snapshot f"
+                + " JOIN core.fact_provenance p ON p.id=f.provenance_id WHERE p.import_batch_id=:id")
+                .param("id", maximum.id()).query(Integer.class).single()).isEqualTo(Integer.MAX_VALUE);
+    }
+
     private static byte[] costFile(String skuCode) {
         return ("sku,cost,currency,from\n" + skuCode + ",60.0000,RUB,2026-08-01T00:00:00Z\n")
                 .getBytes(StandardCharsets.UTF_8);

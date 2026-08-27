@@ -16,7 +16,7 @@ MVNW := ./mvnw -B -ntp
 .DEFAULT_GOAL := help
 
 .PHONY: help require-repo-root require-env-local doctor env-init bootstrap \
-        up down reset backend-run backend-test backend-arch backend-verify \
+        up down reset backend-run backend-test backend-arch backend-verify backend-check backend-integration \
         frontend-install frontend-dev frontend-check frontend-browser verify-local-config \
         governance supply-chain fresh-clone verify
 
@@ -65,14 +65,23 @@ backend-run: require-env-local ## Run the backend against the local database
 	  SPRING_CONFIG_IMPORT='file:../../.env.local[.properties]' \
 	  $(MVNW) spring-boot:run -Dspring-boot.run.profiles=local
 
-backend-test: require-repo-root ## Compile and run unit, architecture and smoke tests
-	@cd "$(BACKEND_DIR)" && $(MVNW) -DskipITs verify
+backend-browser-run: require-env-local ## Run the test-classpath fixture against an empty local database
+	@cd "$(BACKEND_DIR)" && \
+	  SPRING_CONFIG_IMPORT='file:../../.env.local[.properties]' \
+	  MARKETOPS_BROWSER_FIXTURE=ISOLATED_SYNTHETIC_DATABASE \
+	  $(MVNW) spring-boot:test-run@browser-fixture
+
+backend-test: backend-verify ## Run all backend tests and the combined coverage gate (requires Docker)
+
+backend-check: backend-verify ## Verify the backend with the required combined coverage thresholds
+
+backend-integration: backend-verify ## Verify real PostgreSQL integration with all backend checks
 
 backend-arch: require-repo-root ## Run only the architecture boundary tests
 	@cd "$(BACKEND_DIR)" && $(MVNW) -Dtest='*ArchitectureTest' test
 
 backend-verify: require-repo-root ## Run the full backend verification including integration tests
-	@cd "$(BACKEND_DIR)" && $(MVNW) verify
+	@cd "$(BACKEND_DIR)" && $(MVNW) clean verify
 
 frontend-install: require-repo-root ## Install frontend dependencies from the lockfile
 	@cd "$(FRONTEND_DIR)" && npm ci

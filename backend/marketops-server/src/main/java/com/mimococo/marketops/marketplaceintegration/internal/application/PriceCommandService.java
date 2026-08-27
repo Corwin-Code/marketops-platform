@@ -1,19 +1,12 @@
 package com.mimococo.marketops.marketplaceintegration.internal.application;
 
-import com.mimococo.marketops.adminobservability.audit.AuditAction;
-import com.mimococo.marketops.adminobservability.audit.AuditSourceDomain;
-import com.mimococo.marketops.adminobservability.audit.FieldChange;
-import com.mimococo.marketops.adminobservability.audit.MetadataAuditChange;
-import com.mimococo.marketops.adminobservability.audit.MetadataAuditRecorder;
 import com.mimococo.marketops.marketplaceintegration.PriceChangeHistory;
 import com.mimococo.marketops.marketplaceintegration.PriceCommandGateway;
 import com.mimococo.marketops.marketplaceintegration.PriceCommandRequest;
 import com.mimococo.marketops.marketplaceintegration.PriceCommandView;
 import com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.PriceCommandRepository;
-import com.mimococo.marketops.shared.Digest;
-import com.mimococo.marketops.shared.IdGenerator;
+import com.mimococo.marketops.shared.CorrelationId;
 import java.math.BigDecimal;
-import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -41,56 +34,16 @@ public class PriceCommandService implements PriceCommandGateway, PriceChangeHist
 
     static final String ENTITY_TYPE = "price-command";
 
-    /** How much of the derived digest the idempotency key carries. */
-    private static final int KEY_DIGEST_LENGTH = 40;
-
     private final PriceCommandRepository commands;
-    private final MetadataAuditRecorder auditRecorder;
-    private final IdGenerator idGenerator;
-    private final Clock clock;
-
-    PriceCommandService(PriceCommandRepository commands,
-                        MetadataAuditRecorder auditRecorder,
-                        IdGenerator idGenerator,
-                        Clock clock) {
+    PriceCommandService(PriceCommandRepository commands) {
         this.commands = commands;
-        this.auditRecorder = auditRecorder;
-        this.idGenerator = idGenerator;
-        this.clock = clock;
     }
 
     @Override
     @Transactional
     public UUID submit(PriceCommandRequest request) {
-        Optional<PriceCommandView> existing =
-                commands.forRecommendation(request.recommendationId());
-        if (existing.isPresent()) {
-            return existing.get().id();
-        }
-
-        UUID id = idGenerator.newId();
-        String idempotencyKey = idempotencyKey(request);
-        commands.insert(id, request.organizationId(), request.recommendationId(),
-                request.approvalDecisionId(), request.storeId(),
-                request.platformListingVariantId(), request.platformCode(),
-                request.capabilityId(), idempotencyKey,
-                request.targetPrice().currencyCode(), request.priorPrice().amount(),
-                request.targetPrice().amount(), request.priorPriceObservationId(),
-                request.entityVersionDigest(), request.retryBudget(), clock.instant());
-
-        auditRecorder.recordChange(new MetadataAuditChange(
-                AuditSourceDomain.MARKETPLACE_INTEGRATION, "price-command-gateway",
-                AuditAction.COMMAND_TRANSITION, ENTITY_TYPE, id, idempotencyKey,
-                java.util.Map.of(
-                        "state", new FieldChange(null, "PENDING"),
-                        "recommendationId", new FieldChange(null,
-                                request.recommendationId().toString()),
-                        "priorPrice", new FieldChange(null,
-                                request.priorPrice().amount().toPlainString()),
-                        "targetPrice", new FieldChange(null,
-                                request.targetPrice().amount().toPlainString())),
-                null, null));
-        return id;
+        return commands.create(request.recommendationId(), request.expectedVersion(),
+                request.actorId(), CorrelationId.current());
     }
 
     @Override
@@ -135,21 +88,4 @@ public class PriceCommandService implements PriceCommandGateway, PriceChangeHist
         return commands.gateReasons(commandId);
     }
 
-    /**
-     * The identity a platform retry must not duplicate.
-     *
-     * <p>Derived rather than random so that resubmitting the same authorized
-     * change produces the same key. A random key would let a retry at this
-     * level become a second change at the marketplace, which is the exact
-     * failure idempotency exists to prevent.
-     */
-    private static String idempotencyKey(PriceCommandRequest request) {
-        String digest = Digest.ofComponents(List.of(
-                request.recommendationId().toString(),
-                request.approvalDecisionId().toString(),
-                request.platformListingVariantId().toString(),
-                request.targetPrice().amount().toPlainString(),
-                request.targetPrice().currencyCode()));
-        return "pc-" + digest.substring(0, KEY_DIGEST_LENGTH);
-    }
 }

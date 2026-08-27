@@ -59,6 +59,8 @@ spring:
       fail-on-unknown-properties: true
 
 server:
+  # Internal telemetry trusts the socket peer only, never Forwarded/X-Forwarded-For.
+  forward-headers-strategy: none
   # Loopback only. The process has no authentication, so neither the metadata
   # resource nor the maintenance surface may be reachable from another host.
   address: 127.0.0.1
@@ -80,6 +82,9 @@ marketops:
     # reference. Both providers are write-once and read-back verified.
     provider: FILESYSTEM
     root-directory: ${MARKETOPS_RAW_CUSTODY_DIRECTORY:./local-data/raw-custody}
+  diagnostic-export:
+    # Local/CI opt in explicitly; a timer never starts provider I/O by default.
+    worker-enabled: ${MARKETOPS_DIAGNOSTIC_EXPORT_WORKER_ENABLED:false}
   acquisition:
     # Off. A worker that started itself wherever the application happened to run
     # would reach marketplaces from a workstation and from a test container, so

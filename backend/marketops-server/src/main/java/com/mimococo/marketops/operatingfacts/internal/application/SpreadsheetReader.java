@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -70,6 +71,7 @@ public class SpreadsheetReader {
         if (content == null || content.length == 0 || content.length > MAXIMUM_FILE_BYTES) {
             throw OperationRejectedException.of(ErrorCode.IMPORT_TOO_LARGE);
         }
+        if (mediaType == null) throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         return switch (mediaType) {
             case CSV_MEDIA_TYPE -> readSeparatedValues(content);
             case WORKSHEET_MEDIA_TYPE -> readWorksheet(content);
@@ -96,7 +98,14 @@ public class SpreadsheetReader {
      * row, and tell the submitter nothing about why.
      */
     private static Sheet readSeparatedValues(byte[] content) {
-        String text = new String(content, StandardCharsets.UTF_8);
+        String text;
+        try {
+            text = StandardCharsets.UTF_8.newDecoder()
+                    .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
+                    .decode(java.nio.ByteBuffer.wrap(content)).toString();
+        } catch (java.nio.charset.CharacterCodingException malformed) {
+            throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+        }
         if (!text.isEmpty() && text.charAt(0) == '﻿') {
             text = text.substring(1);
         }
@@ -105,6 +114,7 @@ public class SpreadsheetReader {
         List<String> row = new ArrayList<>();
         StringBuilder field = new StringBuilder();
         boolean quoted = false;
+        boolean closedQuote = false;
 
         for (int index = 0; index < text.length(); index++) {
             char character = text.charAt(index);
@@ -117,25 +127,31 @@ public class SpreadsheetReader {
                         index++;
                     } else {
                         quoted = false;
+                        closedQuote = true;
                     }
                 } else {
                     field.append(character);
                 }
                 continue;
             }
+            if (closedQuote && character != separator && character != '\r' && character != '\n') {
+                throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+            }
             if (character == '"') {
+                if (!field.isEmpty()) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
                 quoted = true;
             } else if (character == separator) {
                 row.add(field.toString());
                 field.setLength(0);
-            } else if (character == '\r') {
-                // A carriage return is part of a line ending, never data.
-                continue;
-            } else if (character == '\n') {
+                closedQuote = false;
+                if (row.size() >= MAXIMUM_COLUMNS) throw OperationRejectedException.of(ErrorCode.IMPORT_TOO_LARGE);
+            } else if (character == '\r' || character == '\n') {
+                if (character == '\r' && index + 1 < text.length() && text.charAt(index + 1) == '\n') index++;
                 row.add(field.toString());
                 field.setLength(0);
                 rows.add(List.copyOf(row));
                 row.clear();
+                closedQuote = false;
                 if (rows.size() > MAXIMUM_ROWS + 1) {
                     throw OperationRejectedException.of(ErrorCode.IMPORT_TOO_LARGE);
                 }
@@ -143,10 +159,12 @@ public class SpreadsheetReader {
                 field.append(character);
             }
         }
+        if (quoted) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
         if (!field.isEmpty() || !row.isEmpty()) {
             row.add(field.toString());
             rows.add(List.copyOf(row));
         }
+        if (rows.size() > MAXIMUM_ROWS + 1) throw OperationRejectedException.of(ErrorCode.IMPORT_TOO_LARGE);
         return toSheet(rows);
     }
 
@@ -160,6 +178,8 @@ public class SpreadsheetReader {
      */
     private static char detectSeparator(String text) {
         int lineEnd = text.indexOf('\n');
+        int carriageReturn = text.indexOf('\r');
+        if (carriageReturn >= 0 && (lineEnd < 0 || carriageReturn < lineEnd)) lineEnd = carriageReturn;
         String header = lineEnd < 0 ? text : text.substring(0, lineEnd);
         char best = ',';
         int bestCount = 0;
@@ -211,23 +231,29 @@ public class SpreadsheetReader {
      */
     private static Map<String, byte[]> unpack(byte[] content) {
         Map<String, byte[]> parts = new HashMap<>();
+        var names = new HashSet<String>();
         long expanded = 0;
+        int entryCount = 0;
         try (ZipInputStream archive = new ZipInputStream(new ByteArrayInputStream(content))) {
             ZipEntry entry;
             while ((entry = archive.getNextEntry()) != null) {
+                if (++entryCount > 512) throw OperationRejectedException.of(ErrorCode.IMPORT_TOO_LARGE);
                 String name = entry.getName();
+                if (!names.add(name)) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
                 boolean needed = name.equals("xl/workbook.xml")
+                        || name.equals("xl/_rels/workbook.xml.rels")
                         || name.equals("xl/sharedStrings.xml")
                         || name.startsWith("xl/worksheets/");
-                if (!needed) {
-                    continue;
-                }
-                byte[] part = archive.readAllBytes();
+                // Account for every expanded entry, including ignored content;
+                // allocating first and checking afterwards cannot bound a ZIP bomb.
+                byte[] part = archive.readNBytes(Math.toIntExact(MAXIMUM_ENTRY_BYTES - expanded + 1));
                 expanded += part.length;
                 if (expanded > MAXIMUM_ENTRY_BYTES) {
                     throw OperationRejectedException.of(ErrorCode.IMPORT_TOO_LARGE);
                 }
-                parts.put(name, part);
+                if (needed && parts.putIfAbsent(name, part) != null) {
+                    throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+                }
             }
         } catch (IOException unreadable) {
             throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
@@ -235,21 +261,55 @@ public class SpreadsheetReader {
         return parts;
     }
 
-    /**
-     * The first worksheet in the archive.
-     *
-     * <p>Sheets are numbered in the package, so the lowest-numbered part is the
-     * first sheet. Reading only the first is a stated limit of this intake
-     * rather than an accident: a file whose data is on a second sheet is
-     * rejected with a reason instead of imported as empty.
-     */
+    /** Resolve the first declared sheet through its internal package relationship, never filename order or a URL. */
     private static byte[] firstWorksheet(Map<String, byte[]> parts) {
-        return parts.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith("xl/worksheets/sheet"))
-                .sorted(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElse(null);
+        byte[] workbook = parts.get("xl/workbook.xml");
+        byte[] relationships = parts.get("xl/_rels/workbook.xml.rels");
+        if (workbook == null || relationships == null) return null;
+        String firstId = null;
+        try (var reader = openXml(workbook)) {
+            while (reader.stream().hasNext()) {
+                int event = reader.stream().next();
+                if (event == XMLStreamConstants.DTD) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+                if (event == XMLStreamConstants.START_ELEMENT && "sheet".equals(reader.stream().getLocalName()) && firstId == null) {
+                    firstId = reader.stream().getAttributeValue("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id");
+                    if (firstId == null) firstId = reader.stream().getAttributeValue("http://purl.oclc.org/ooxml/officeDocument/relationships", "id");
+                    if (firstId == null || firstId.isBlank()) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+                }
+            }
+        } catch (XMLStreamException malformed) {
+            throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+        }
+        if (firstId == null) return null;
+        byte[] sheet = null;
+        var ids = new HashSet<String>();
+        try (var reader = openXml(relationships)) {
+            while (reader.stream().hasNext()) {
+                int event = reader.stream().next();
+                if (event == XMLStreamConstants.DTD) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+                if (event != XMLStreamConstants.START_ELEMENT || !"Relationship".equals(reader.stream().getLocalName())) continue;
+                var stream = reader.stream();
+                String id = stream.getAttributeValue(null, "Id");
+                if (id == null || !ids.add(id)) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+                if (!id.equals(firstId)) continue;
+                String target = stream.getAttributeValue(null, "Target");
+                String type = stream.getAttributeValue(null, "Type");
+                String mode = stream.getAttributeValue(null, "TargetMode");
+                if (target == null || (mode != null && !"Internal".equals(mode))
+                        || !("http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet".equals(type)
+                            || "http://purl.oclc.org/ooxml/officeDocument/relationships/worksheet".equals(type))) {
+                    throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+                }
+                String path = target.startsWith("/xl/") ? target.substring(1) : "xl/" + target;
+                if (!path.matches("xl/worksheets/[A-Za-z0-9_-][A-Za-z0-9_.-]*[.]xml")) {
+                    throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+                }
+                sheet = parts.get(path);
+            }
+        } catch (XMLStreamException malformed) {
+            throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+        }
+        return sheet;
     }
 
     private static List<String> readSharedStrings(byte[] part) {
@@ -259,18 +319,32 @@ public class SpreadsheetReader {
         }
         try (AutoCloseableReader reader = openXml(part)) {
             StringBuilder current = null;
+            boolean collecting = false;
+            boolean phonetic = false;
             while (reader.stream().hasNext()) {
                 int event = reader.stream().next();
+                if (event == XMLStreamConstants.DTD) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
                 if (event == XMLStreamConstants.START_ELEMENT) {
                     if ("si".equals(reader.stream().getLocalName())) {
+                        if (current != null) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
                         current = new StringBuilder();
+                    } else if ("rPh".equals(reader.stream().getLocalName())) {
+                        phonetic = true;
+                    } else if ("t".equals(reader.stream().getLocalName()) && !phonetic) {
+                        collecting = true;
                     }
-                } else if (event == XMLStreamConstants.CHARACTERS && current != null) {
+                } else if ((event == XMLStreamConstants.CHARACTERS || event == XMLStreamConstants.CDATA) && collecting && current != null) {
                     current.append(reader.stream().getText());
-                } else if (event == XMLStreamConstants.END_ELEMENT
-                        && "si".equals(reader.stream().getLocalName()) && current != null) {
-                    strings.add(current.toString());
-                    current = null;
+                } else if (event == XMLStreamConstants.END_ELEMENT) {
+                    switch (reader.stream().getLocalName()) {
+                        case "t" -> collecting = false;
+                        case "rPh" -> phonetic = false;
+                        case "si" -> {
+                            if (current != null) strings.add(current.toString());
+                            current = null;
+                        }
+                        default -> { }
+                    }
                 }
             }
         } catch (XMLStreamException malformed) {
@@ -283,6 +357,9 @@ public class SpreadsheetReader {
         List<List<String>> rows = new ArrayList<>();
         try (AutoCloseableReader reader = openXml(part)) {
             List<String> row = null;
+            var occupied = new HashSet<Integer>();
+            var rowReferences = new HashSet<String>();
+            String rowReference = null;
             String cellType = null;
             String cellReference = null;
             StringBuilder value = null;
@@ -290,13 +367,29 @@ public class SpreadsheetReader {
 
             while (reader.stream().hasNext()) {
                 int event = reader.stream().next();
+                if (event == XMLStreamConstants.DTD) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
                 XMLStreamReader stream = reader.stream();
                 if (event == XMLStreamConstants.START_ELEMENT) {
                     switch (stream.getLocalName()) {
-                        case "row" -> row = new ArrayList<>();
+                        case "f" -> throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+                        case "row" -> {
+                            if (row != null) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+                            rowReference = stream.getAttributeValue(null, "r");
+                            if (rowReference != null && (!rowReference.matches("[1-9][0-9]{0,6}") || !rowReferences.add(rowReference))) {
+                                throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+                            }
+                            row = new ArrayList<>();
+                            occupied.clear();
+                        }
                         case "c" -> {
+                            if (row == null || value != null) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
                             cellType = stream.getAttributeValue(null, "t");
                             cellReference = stream.getAttributeValue(null, "r");
+                            int column = columnIndex(cellReference);
+                            if (column < 0 || !occupied.add(column)
+                                    || (rowReference != null && !cellReference.replaceFirst("^[A-Za-z]+", "").equals(rowReference))) {
+                                throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+                            }
                             value = new StringBuilder();
                         }
                         // Characters are collected only inside the two elements
@@ -308,7 +401,7 @@ public class SpreadsheetReader {
                             // No other element carries a value this reader wants.
                         }
                     }
-                } else if (event == XMLStreamConstants.CHARACTERS && collecting && value != null) {
+                } else if ((event == XMLStreamConstants.CHARACTERS || event == XMLStreamConstants.CDATA) && collecting && value != null) {
                     value.append(stream.getText());
                 } else if (event == XMLStreamConstants.END_ELEMENT) {
                     switch (stream.getLocalName()) {
@@ -348,14 +441,24 @@ public class SpreadsheetReader {
                                       StringBuilder value,
                                       List<String> sharedStrings) {
         String raw = value == null ? "" : value.toString();
+        if ("e".equals(cellType) || (cellType != null && !List.of("s", "inlineStr", "str", "n", "b", "d").contains(cellType))) {
+            throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+        }
+        if ("b".equals(cellType)) {
+            if (!List.of("0", "1").contains(raw)) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+            return "1".equals(raw) ? "true" : "false";
+        }
         if (!"s".equals(cellType)) {
             return raw;
         }
         try {
             int index = Integer.parseInt(raw.trim());
-            return index >= 0 && index < sharedStrings.size() ? sharedStrings.get(index) : "";
+            if (index < 0 || index >= sharedStrings.size()) {
+                throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+            }
+            return sharedStrings.get(index);
         } catch (NumberFormatException notAnIndex) {
-            return "";
+            throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
         }
     }
 
@@ -369,7 +472,7 @@ public class SpreadsheetReader {
     private static void placeCell(List<String> row, String reference, String value) {
         int column = columnIndex(reference);
         if (column < 0 || column >= MAXIMUM_COLUMNS) {
-            return;
+            throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
         }
         while (row.size() <= column) {
             row.add("");
@@ -379,7 +482,7 @@ public class SpreadsheetReader {
 
     /** The zero-based column a cell reference such as {@code AB7} names. */
     private static int columnIndex(String reference) {
-        if (reference == null || reference.isEmpty()) {
+        if (reference == null || !reference.matches("[A-Za-z]{1,3}[1-9][0-9]{0,6}")) {
             return -1;
         }
         int index = 0;
@@ -425,8 +528,13 @@ public class SpreadsheetReader {
         if (header.size() > MAXIMUM_COLUMNS) {
             throw OperationRejectedException.of(ErrorCode.IMPORT_TOO_LARGE);
         }
+        if (header.stream().anyMatch(String::isBlank)
+                || header.stream().distinct().count() != header.size()) {
+            throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+        }
         List<Map<String, String>> dataRows = new ArrayList<>(nonEmpty.size() - 1);
         for (List<String> row : nonEmpty.subList(1, nonEmpty.size())) {
+            if (row.size() > header.size()) throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
             Map<String, String> named = new LinkedHashMap<>();
             for (int column = 0; column < header.size(); column++) {
                 named.put(header.get(column),

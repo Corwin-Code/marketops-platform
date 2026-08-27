@@ -29,9 +29,13 @@ variable "security_group_id" {
 }
 
 variable "postgresql_version" {
-  description = "Major PostgreSQL version. The migrations are written against 18."
+  description = "Managed target pinned by accepted SLICE-V1-001-AMENDMENT-001."
   type        = string
-  default     = "18"
+  default     = "17"
+  validation {
+    condition     = var.postgresql_version == "17"
+    error_message = "This Slice authorizes only Yandex Managed PostgreSQL 17."
+  }
 }
 
 variable "resource_preset_id" {
@@ -90,12 +94,32 @@ variable "migration_role_password" {
   description = "Migration role password, supplied from Lockbox. Never written down."
   type        = string
   sensitive   = true
+  ephemeral   = true
 }
 
 variable "application_role_password" {
   description = "Application role password, supplied from Lockbox. Never written down."
   type        = string
   sensitive   = true
+  ephemeral   = true
+}
+
+variable "migration_password_version" {
+  description = "Increment only after an authorized migration credential rotation."
+  type        = number
+  validation {
+    condition     = var.migration_password_version >= 1 && floor(var.migration_password_version) == var.migration_password_version
+    error_message = "A positive integral credential version is required."
+  }
+}
+
+variable "application_password_version" {
+  description = "Increment only after an authorized application credential rotation."
+  type        = number
+  validation {
+    condition     = var.application_password_version >= 1 && floor(var.application_password_version) == var.application_password_version
+    error_message = "A positive integral credential version is required."
+  }
 }
 
 variable "maintenance_day" {

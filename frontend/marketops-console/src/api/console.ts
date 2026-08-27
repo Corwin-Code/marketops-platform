@@ -83,6 +83,159 @@ export interface SubjectDiagnosis {
   readonly findings: readonly DiagnosisFinding[];
 }
 
+/** AI output is advisory. Decimal money is encoded as text on this API. */
+export type ClaimValue =
+  string | number | boolean | null | readonly ClaimValue[] | { readonly [key: string]: ClaimValue };
+
+export interface ExplanationClaim {
+  readonly claimId: string;
+  readonly kind: 'FACT' | 'INFERENCE' | 'RECOMMENDATION' | 'UNKNOWN';
+  readonly ordinal: number;
+  readonly statement: string;
+  readonly confidenceLabel: string | null;
+  readonly metricValueRefs: readonly string[];
+  readonly findingRefs: readonly string[];
+  readonly payload: Readonly<Record<string, ClaimValue>>;
+  readonly accepted: boolean;
+  readonly rejectionCode: string | null;
+}
+
+export interface AiExplanation {
+  readonly invocationId: string;
+  readonly subjectId: string;
+  readonly outputSchemaVersion: 2;
+  readonly state: string;
+  readonly failureCode: string | null;
+  readonly degraded: boolean;
+  readonly claims: readonly ExplanationClaim[];
+}
+
+function boundedClaimValue(value: unknown, depth = 0): value is ClaimValue {
+  if (depth > 8) return false;
+  if (value === null || typeof value === 'boolean') return true;
+  if (typeof value === 'string') return value.length <= 2000;
+  if (typeof value === 'number') return Number.isSafeInteger(value);
+  if (Array.isArray(value))
+    return value.length <= 64 && value.every((item: unknown) => boundedClaimValue(item, depth + 1));
+  return (
+    isRecord(value) &&
+    Object.keys(value).length <= 64 &&
+    Object.values(value).every((item) => boundedClaimValue(item, depth + 1))
+  );
+}
+
+function strictReferences(value: unknown): value is readonly string[] {
+  return (
+    Array.isArray(value) &&
+    value.length <= 20 &&
+    new Set(value).size === value.length &&
+    value.every(
+      (item: unknown) =>
+        typeof item === 'string' && /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(item),
+    )
+  );
+}
+
+function parseExplanationClaim(body: unknown): ExplanationClaim | undefined {
+  if (
+    !isRecord(body) ||
+    typeof body.claimId !== 'string' ||
+    typeof body.statement !== 'string' ||
+    body.statement.length === 0 ||
+    body.statement.length > 2000 ||
+    typeof body.ordinal !== 'number' ||
+    !Number.isInteger(body.ordinal) ||
+    body.ordinal < 1 ||
+    body.ordinal > 20 ||
+    (body.kind !== 'FACT' &&
+      body.kind !== 'INFERENCE' &&
+      body.kind !== 'RECOMMENDATION' &&
+      body.kind !== 'UNKNOWN') ||
+    typeof body.accepted !== 'boolean' ||
+    !strictReferences(body.metricValueRefs) ||
+    !strictReferences(body.findingRefs) ||
+    !isRecord(body.payload) ||
+    Array.isArray(body.payload) ||
+    !boundedClaimValue(body.payload) ||
+    (body.confidenceLabel !== null &&
+      (typeof body.confidenceLabel !== 'string' ||
+        !['LOW', 'MEDIUM', 'HIGH'].includes(body.confidenceLabel))) ||
+    (body.accepted ? body.rejectionCode !== null : typeof body.rejectionCode !== 'string')
+  )
+    return undefined;
+  const parameters = body.payload.proposedParameters;
+  if (
+    isRecord(parameters) &&
+    'targetPrice' in parameters &&
+    (typeof parameters.targetPrice !== 'string' ||
+      !/^\d{1,14}(?:\.\d{1,4})?$/.test(parameters.targetPrice))
+  )
+    return undefined;
+  return {
+    claimId: body.claimId,
+    kind: body.kind,
+    ordinal: body.ordinal,
+    statement: body.statement,
+    confidenceLabel: body.confidenceLabel,
+    metricValueRefs: body.metricValueRefs,
+    findingRefs: body.findingRefs,
+    payload: body.payload,
+    accepted: body.accepted,
+    rejectionCode: body.rejectionCode as string | null,
+  };
+}
+
+/** Malformed members reject the response; partial failures are never filtered away. */
+export function parseAiExplanation(body: unknown): AiExplanation | undefined {
+  if (
+    !isRecord(body) ||
+    body.outputSchemaVersion !== 2 ||
+    typeof body.invocationId !== 'string' ||
+    typeof body.subjectId !== 'string' ||
+    typeof body.state !== 'string' ||
+    typeof body.degraded !== 'boolean' ||
+    (body.failureCode !== null && typeof body.failureCode !== 'string') ||
+    !Array.isArray(body.claims) ||
+    body.claims.length > 80
+  )
+    return undefined;
+  const claims = body.claims.map(parseExplanationClaim);
+  if (claims.some((claim) => claim === undefined)) return undefined;
+  const validated = claims.filter((claim): claim is ExplanationClaim => claim !== undefined);
+  const accepted = validated.filter((claim) => claim.accepted).length;
+  const rejected = validated.length - accepted;
+  const states = [
+    'PREPARED',
+    'DISPATCHED',
+    'SUCCEEDED',
+    'PARTIAL_OUTPUT_REJECTED',
+    'OUTPUT_REJECTED',
+    'REFUSED',
+    'PROVIDER_FAILED',
+    'PROVIDER_OUTCOME_UNKNOWN',
+  ];
+  if (
+    !states.includes(body.state) ||
+    (body.state === 'SUCCEEDED' && (accepted === 0 || rejected !== 0 || body.degraded)) ||
+    (body.state === 'PARTIAL_OUTPUT_REJECTED' &&
+      (accepted === 0 || rejected === 0 || !body.degraded)) ||
+    (body.state === 'OUTPUT_REJECTED' && (accepted !== 0 || !body.degraded)) ||
+    (['REFUSED', 'PROVIDER_FAILED', 'PROVIDER_OUTCOME_UNKNOWN'].includes(body.state) &&
+      (!body.degraded || validated.length !== 0)) ||
+    (['PREPARED', 'DISPATCHED'].includes(body.state) && validated.length !== 0)
+  )
+    return undefined;
+  return {
+    invocationId: body.invocationId,
+    subjectId: body.subjectId,
+    outputSchemaVersion: 2,
+    state: body.state,
+    failureCode: body.failureCode,
+    degraded: body.degraded,
+    claims: validated,
+  };
+}
+
 /** One proposal awaiting a decision. */
 export interface Recommendation {
   readonly id: string;
@@ -531,11 +684,12 @@ async function request<T>(
   path: string,
   parse: (body: unknown) => T | undefined,
   init?: RequestInit,
+  timeoutMillis = REQUEST_TIMEOUT_MS,
 ): Promise<ConsoleOutcome<T>> {
   const controller = new AbortController();
   const timer = setTimeout(() => {
     controller.abort();
-  }, REQUEST_TIMEOUT_MS);
+  }, timeoutMillis);
   const send = context.fetchImpl ?? fetch;
 
   try {
@@ -662,15 +816,124 @@ export function fetchDiagnosis(
   );
 }
 
+/** An explicit request only; neither component mounting nor polling spends provider quota. */
+export function requestExplanation(
+  context: ConsoleRequest,
+  subjectId: string,
+  storeId: string,
+): Promise<ConsoleOutcome<AiExplanation>> {
+  return request(
+    context,
+    `/api/v1/console/explanations/listing-variants/${encodeURIComponent(subjectId)}?storeId=${encodeURIComponent(storeId)}&window=D30`,
+    parseAiExplanation,
+    { method: 'POST' },
+    70_000,
+  );
+}
+
 /** The store's open proposals, most urgent first. */
 export function fetchRecommendations(
   context: ConsoleRequest,
   storeId: string,
+  subjectId?: string,
 ): Promise<ConsoleOutcome<readonly Recommendation[]>> {
   return request(
     context,
-    `/api/v1/console/workflow/stores/${storeId}/recommendations`,
+    `/api/v1/console/workflow/stores/${encodeURIComponent(storeId)}/recommendations` +
+      (subjectId === undefined ? '' : `?subjectId=${encodeURIComponent(subjectId)}`),
     list(parseRecommendation),
+  );
+}
+
+/** The bounded, typed input edges of one exact stored metric version. */
+export interface MetricInputs {
+  readonly metricValueId: string;
+  readonly references: readonly { readonly kind: string; readonly id: string }[];
+  readonly truncated: boolean;
+}
+
+/** Source metadata only: source bytes and storage locators are not fetched by this view. */
+export interface EvidenceSource {
+  readonly provenanceId: string;
+  readonly sourceKind: string;
+  readonly sourceTime: string | null;
+  readonly ingestionTime: string;
+  readonly contentSha256: string | null;
+}
+
+export function fetchMetricInputs(
+  context: ConsoleRequest,
+  subjectId: string,
+  storeId: string,
+  metricValueId: string,
+): Promise<ConsoleOutcome<MetricInputs>> {
+  return request(
+    context,
+    `/api/v1/console/diagnosis/listing-variants/${encodeURIComponent(subjectId)}/metrics/${encodeURIComponent(metricValueId)}/inputs?storeId=${encodeURIComponent(storeId)}`,
+    (body) => {
+      if (
+        !isRecord(body) ||
+        body.metricValueId !== metricValueId ||
+        typeof body.truncated !== 'boolean' ||
+        !Array.isArray(body.references) ||
+        body.references.length > 200
+      )
+        return undefined;
+      const references: { kind: string; id: string }[] = [];
+      for (const ref of body.references) {
+        if (
+          !isRecord(ref) ||
+          typeof ref.kind !== 'string' ||
+          ![
+            'FACT_PROVENANCE',
+            'COST_VERSION',
+            'FINANCE_INPUT_VERSION',
+            'METRIC_VALUE',
+            'LISTING_MAPPING',
+          ].includes(ref.kind) ||
+          typeof ref.id !== 'string' ||
+          !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(ref.id)
+        )
+          return undefined;
+        references.push({ kind: ref.kind, id: ref.id });
+      }
+      return { metricValueId, references, truncated: body.truncated };
+    },
+  );
+}
+
+export function fetchEvidenceSource(
+  context: ConsoleRequest,
+  provenanceId: string,
+): Promise<ConsoleOutcome<EvidenceSource>> {
+  return request(
+    context,
+    `/api/v1/console/evidence/${encodeURIComponent(provenanceId)}`,
+    (body) => {
+      if (
+        !isRecord(body) ||
+        body.provenanceId !== provenanceId ||
+        typeof body.sourceKind !== 'string' ||
+        typeof body.ingestionTime !== 'string' ||
+        !Number.isFinite(Date.parse(body.ingestionTime)) ||
+        !(
+          body.sourceTime === null ||
+          (typeof body.sourceTime === 'string' && Number.isFinite(Date.parse(body.sourceTime)))
+        ) ||
+        !(
+          body.contentSha256 === null ||
+          (typeof body.contentSha256 === 'string' && /^[0-9a-f]{64}$/.test(body.contentSha256))
+        )
+      )
+        return undefined;
+      return {
+        provenanceId,
+        sourceKind: body.sourceKind,
+        sourceTime: body.sourceTime,
+        ingestionTime: body.ingestionTime,
+        contentSha256: body.contentSha256,
+      };
+    },
   );
 }
 
@@ -737,6 +1000,18 @@ export function fetchCommand(
   commandId: string,
 ): Promise<ConsoleOutcome<PriceCommand>> {
   return request(context, `/api/v1/console/commands/${commandId}`, parseCommand);
+}
+
+/** Recover an existing command without repeating an approval or execution request. */
+export function fetchRecommendationCommand(
+  context: ConsoleRequest,
+  recommendationId: string,
+): Promise<ConsoleOutcome<PriceCommand>> {
+  return request(
+    context,
+    `/api/v1/console/commands/recommendations/${encodeURIComponent(recommendationId)}`,
+    parseCommand,
+  );
 }
 
 /** Why the write gate is currently closed for a command, if it is. */

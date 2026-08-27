@@ -45,3 +45,8 @@ variable "labels" {
   type        = map(string)
   default     = {}
 }
+
+variable "infrastructure_service_account_id" {
+  description = "Separately authorized Terraform identity; not attached to any application VM."
+  type        = string
+}

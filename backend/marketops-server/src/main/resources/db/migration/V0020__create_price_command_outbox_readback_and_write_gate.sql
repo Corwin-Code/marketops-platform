@@ -52,6 +52,8 @@ CREATE TABLE ops.price_command (
     target_price                numeric(18, 4) NOT NULL,
     prior_price_observation_id  uuid           NOT NULL,
     entity_version_digest       text           NOT NULL,
+    authority_snapshot          jsonb          NOT NULL,
+    requested_operation         text CHECK (requested_operation = 'READBACK'),
     state                       text           NOT NULL,
     attempt_no                  integer        NOT NULL DEFAULT 0,
     retry_budget_remaining      integer        NOT NULL,
@@ -205,7 +207,7 @@ INSERT INTO ops.price_command_transition
         'the previous value was restored and read back'),
     ('COMPENSATION_PENDING', 'COMPENSATION_FAILED', true, true,
         'the restore could not be completed'),
-    ('COMPENSATION_PENDING', 'MANUAL_RESOLUTION', false, false,
+    ('COMPENSATION_PENDING', 'MANUAL_RESOLUTION', false, true,
         'the restore was withdrawn and returned to an operator');
 
 -- ---------------------------------------------------------------------------
@@ -231,13 +233,11 @@ CREATE TABLE ops.price_command_attempt (
     raw_observation_id uuid,
     error_code         text,
     correlation_id     text        NOT NULL,
+    request_digest     text        NOT NULL CHECK (request_digest ~ '^[0-9a-f]{64}$'),
     CONSTRAINT price_command_attempt_pk PRIMARY KEY (id),
     CONSTRAINT price_command_attempt_command_fk
         FOREIGN KEY (command_id) REFERENCES ops.price_command (id),
-    CONSTRAINT price_command_attempt_raw_fk
-        FOREIGN KEY (raw_observation_id)
-        REFERENCES raw.raw_acquisition_observation (id),
-    CONSTRAINT price_command_attempt_no_uq UNIQUE (command_id, attempt_no, purpose),
+    CONSTRAINT price_command_attempt_no_uq UNIQUE (command_id, attempt_no),
     CONSTRAINT price_command_attempt_no_ck CHECK (attempt_no > 0),
     CONSTRAINT price_command_attempt_purpose_ck
         CHECK (purpose IN ('APPLY', 'STATUS_ENQUIRY', 'READBACK', 'RESTORE')),
@@ -271,9 +271,6 @@ CREATE TABLE ops.price_command_readback (
         FOREIGN KEY (command_id) REFERENCES ops.price_command (id),
     CONSTRAINT price_command_readback_attempt_fk
         FOREIGN KEY (attempt_id) REFERENCES ops.price_command_attempt (id),
-    CONSTRAINT price_command_readback_raw_fk
-        FOREIGN KEY (raw_observation_id)
-        REFERENCES raw.raw_acquisition_observation (id),
     CONSTRAINT price_command_readback_match_ck
         CHECK (match_state IN ('MATCHES_TARGET', 'MATCHES_PRIOR', 'DIFFERENT', 'UNREADABLE')),
     -- An unreadable readback carries no price. Any other outcome must carry the
@@ -289,6 +286,34 @@ CREATE TABLE ops.price_command_readback (
 
 CREATE INDEX price_command_readback_command_ix
     ON ops.price_command_readback (command_id, observed_at DESC);
+ALTER TABLE ops.price_command_readback ALTER COLUMN raw_observation_id SET NOT NULL;
+ALTER TABLE ops.price_command_readback ADD CONSTRAINT price_readback_attempt_uq UNIQUE (attempt_id);
+
+-- Exact response custody shares raw.raw_content and the single RawCustody port.
+-- It is not an acquisition run: a write cannot fabricate an ingestion identity.
+CREATE TABLE raw.price_response_observation (
+    id uuid PRIMARY KEY,
+    command_id uuid NOT NULL REFERENCES ops.price_command (id),
+    attempt_id uuid NOT NULL UNIQUE REFERENCES ops.price_command_attempt (id) ON DELETE CASCADE,
+    raw_content_id uuid NOT NULL REFERENCES raw.raw_content (id),
+    request_digest text NOT NULL CHECK (request_digest ~ '^[0-9a-f]{64}$'),
+    http_status integer NOT NULL CHECK (http_status BETWEEN 100 AND 599),
+    response_headers jsonb NOT NULL CHECK (jsonb_typeof(response_headers) = 'object'),
+    evidence_class text NOT NULL CHECK (evidence_class IN ('PROTOCOL_FIXTURE', 'PROVIDER_RESPONSE')),
+    response_complete boolean NOT NULL,
+    operation_id uuid,
+    operation_version bigint,
+    observed_price numeric(18, 4),
+    observed_currency text,
+    version_token text,
+    observed_at timestamptz NOT NULL,
+    correlation_id text NOT NULL
+);
+ALTER TABLE ops.price_command_attempt ADD CONSTRAINT price_command_attempt_raw_fk
+    FOREIGN KEY (raw_observation_id) REFERENCES raw.price_response_observation (id);
+ALTER TABLE ops.price_command_readback ADD CONSTRAINT price_command_readback_raw_fk
+    FOREIGN KEY (raw_observation_id) REFERENCES raw.price_response_observation (id);
+GRANT SELECT ON raw.price_response_observation TO marketops_app;
 
 -- Every operator action on a write capability switch. The switch state itself
 -- lives in the platform feature-flag registry; this journal records who moved
@@ -321,6 +346,281 @@ CREATE TABLE ops.kill_switch_event (
 
 CREATE INDEX kill_switch_event_occurred_ix
     ON ops.kill_switch_event (organization_id, occurred_at DESC);
+
+-- The approval and execution verdict bind the same immutable proposal, current
+-- canonical values, mapping, prior observation and effective policy. Capturing
+-- a digest of metrics alone does not bind a target or a platform identity.
+ALTER TABLE ops.approval_decision ADD COLUMN authority_snapshot jsonb NOT NULL;
+ALTER TABLE ops.guardrail_evaluation ADD COLUMN authority_snapshot jsonb NOT NULL;
+
+CREATE FUNCTION ops.price_authority_snapshot(p_recommendation_id uuid)
+RETURNS jsonb
+LANGUAGE sql STABLE
+SET search_path = pg_catalog, pg_temp
+AS $$
+    SELECT jsonb_build_object(
+        'proposal', jsonb_build_object(
+            'id', r.id, 'organizationId', r.organization_id, 'storeId', r.store_id,
+            'subjectKind', r.subject_kind, 'subjectId', r.subject_id,
+            'actionKind', r.action_kind, 'parameters', r.proposed_parameters,
+            'risk', r.risk_label, 'window', r.window_code,
+            'validUntil', r.valid_until, 'entityDigest', r.entity_version_digest),
+        'platformCode', l.platform_code, 'accountId', l.marketplace_account_id,
+        'nativeListingKey', l.native_listing_key, 'nativeVariantKey', v.native_variant_key,
+        'metrics', coalesce(metrics.items, '[]'::jsonb),
+        'currentEntityDigest', metrics.entity_digest,
+        'prior', prior.item, 'mapping', mapping.item, 'policy', policy.item,
+        'policyLimits', coalesce(limits.items, '[]'::jsonb))
+      FROM ops.recommendation r
+      LEFT JOIN core.platform_listing_variant v
+        ON v.id = r.subject_id AND v.organization_id = r.organization_id
+       AND r.subject_kind = 'PLATFORM_LISTING_VARIANT'
+      LEFT JOIN core.platform_listing l
+        ON l.id = v.platform_listing_id AND l.organization_id = r.organization_id
+       AND l.store_id = r.store_id
+      LEFT JOIN LATERAL (
+          SELECT jsonb_agg(to_jsonb(m) ORDER BY m.metric_code COLLATE "C") AS items,
+                 encode(sha256(convert_to(string_agg(
+                     m.metric_code || chr(31) || m.value_state || chr(31)
+                     || m.input_digest || chr(31), '' ORDER BY m.metric_code COLLATE "C"),
+                     'UTF8')), 'hex') AS entity_digest
+            FROM (
+                SELECT DISTINCT ON (mv.metric_code) mv.*
+                  FROM mart.metric_value mv
+                 WHERE mv.organization_id = r.organization_id
+                   AND mv.subject_kind = r.subject_kind AND mv.subject_id = r.subject_id
+                   AND mv.window_code = r.window_code
+                 ORDER BY mv.metric_code, mv.computed_at DESC, mv.id DESC
+            ) m
+      ) metrics ON true
+      LEFT JOIN LATERAL (
+          SELECT jsonb_build_object('id', p.id, 'currency', p.currency_code,
+                     'price', coalesce(p.discount_price, p.selling_price, p.list_price),
+                     'observedAt', p.observed_at, 'provenanceId', p.provenance_id) AS item
+            FROM core.listing_price_observation p
+           WHERE p.organization_id = r.organization_id
+             AND p.platform_listing_variant_id = v.id
+             AND p.observed_at <= statement_timestamp()
+             AND NOT EXISTS (SELECT 1 FROM core.listing_price_observation later
+                              WHERE later.supersedes_fact_id = p.id)
+           ORDER BY p.observed_at DESC, p.id DESC LIMIT 1
+      ) prior ON true
+      LEFT JOIN LATERAL (
+          SELECT to_jsonb(m) AS item, m.product_variant_id
+            FROM core.listing_mapping m
+           WHERE m.organization_id = r.organization_id
+             AND m.platform_listing_variant_id = v.id AND m.status = 'ACTIVE'
+             AND m.effective_from <= statement_timestamp()
+             AND (m.effective_to IS NULL OR m.effective_to > statement_timestamp())
+           ORDER BY m.effective_from DESC, m.id DESC LIMIT 1
+      ) mapping ON true
+      LEFT JOIN LATERAL (
+          SELECT to_jsonb(p) AS item, p.id
+            FROM ops.commercial_policy p
+           WHERE p.organization_id = r.organization_id AND p.status = 'ACTIVE'
+             AND p.effective_from <= statement_timestamp()
+             AND (p.effective_to IS NULL OR p.effective_to > statement_timestamp())
+             AND (p.scope_kind = 'ORGANIZATION'
+                  OR (p.scope_kind = 'PLATFORM' AND p.platform_code = l.platform_code)
+                  OR (p.scope_kind = 'STORE' AND p.store_ref_id = r.store_id)
+                  OR (p.scope_kind = 'PRODUCT_VARIANT'
+                      AND p.product_variant_ref_id = mapping.product_variant_id))
+           ORDER BY CASE p.scope_kind WHEN 'PRODUCT_VARIANT' THEN 1 WHEN 'STORE' THEN 2
+                        WHEN 'PLATFORM' THEN 3 ELSE 4 END,
+                    p.effective_from DESC, p.id DESC LIMIT 1
+      ) policy ON true
+      LEFT JOIN LATERAL (
+          SELECT jsonb_agg(to_jsonb(lim) ORDER BY lim.limit_code) AS items
+            FROM ops.commercial_policy_limit lim WHERE lim.policy_id = policy.id
+      ) limits ON true
+     WHERE r.id = p_recommendation_id
+$$;
+REVOKE ALL ON FUNCTION ops.price_authority_snapshot(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION ops.price_authority_snapshot(uuid) TO marketops_app;
+
+CREATE FUNCTION ops.bind_price_authority_snapshot()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE snapshot jsonb;
+BEGIN
+    SELECT ops.price_authority_snapshot(NEW.recommendation_id) INTO snapshot;
+    IF snapshot IS NULL OR snapshot #>> '{proposal,organizationId}'
+            IS DISTINCT FROM NEW.organization_id::text THEN
+        RAISE EXCEPTION 'recommendation ownership does not match' USING ERRCODE = 'MO032';
+    END IF;
+    IF TG_TABLE_NAME = 'guardrail_evaluation' THEN
+        -- The caller captures this before gathering its deterministic inputs.
+        -- Refuse a race between that read, evaluation and the durable verdict.
+        IF NEW.authority_snapshot IS DISTINCT FROM snapshot THEN
+            RAISE EXCEPTION 'guardrail inputs changed' USING ERRCODE = 'MO032';
+        END IF;
+    ELSIF TG_TABLE_NAME = 'approval_decision' THEN
+        IF NEW.decision IN ('APPROVED', 'POLICY_AUTHORIZED') THEN
+            IF NEW.entity_version_digest IS DISTINCT FROM snapshot ->> 'currentEntityDigest'
+               OR NEW.entity_version_digest IS DISTINCT FROM snapshot #>> '{proposal,entityDigest}'
+               OR NOT EXISTS (
+                   SELECT 1 FROM ops.guardrail_evaluation g
+                    WHERE g.recommendation_id = NEW.recommendation_id
+                      AND g.organization_id = NEW.organization_id
+                      AND g.purpose = 'APPROVAL' AND g.outcome = 'PASS'
+                      AND g.authority_snapshot = snapshot) THEN
+                RAISE EXCEPTION 'approval has no matching current guardrail'
+                    USING ERRCODE = 'MO032';
+            END IF;
+        END IF;
+        NEW.authority_snapshot := snapshot;
+    ELSE
+        NEW.authority_snapshot := snapshot;
+    END IF;
+    RETURN NEW;
+END;
+$$;
+REVOKE ALL ON FUNCTION ops.bind_price_authority_snapshot() FROM PUBLIC;
+CREATE TRIGGER approval_bind_snapshot BEFORE INSERT ON ops.approval_decision
+    FOR EACH ROW EXECUTE FUNCTION ops.bind_price_authority_snapshot();
+CREATE TRIGGER guardrail_bind_snapshot BEFORE INSERT ON ops.guardrail_evaluation
+    FOR EACH ROW EXECUTE FUNCTION ops.bind_price_authority_snapshot();
+CREATE TRIGGER command_bind_snapshot BEFORE INSERT ON ops.price_command
+    FOR EACH ROW EXECUTE FUNCTION ops.bind_price_authority_snapshot();
+
+CREATE FUNCTION ops.price_command_authority_matches(p_command_id uuid)
+RETURNS boolean LANGUAGE sql STABLE
+SET search_path = pg_catalog, pg_temp
+AS $$
+    SELECT coalesce(bool_and(
+        c.authority_snapshot = ops.price_authority_snapshot(r.id)
+        AND a.authority_snapshot = c.authority_snapshot
+        AND a.recommendation_id = r.id AND a.organization_id = c.organization_id
+        AND r.organization_id = c.organization_id AND r.store_id = c.store_id
+        AND r.subject_kind = 'PLATFORM_LISTING_VARIANT'
+        AND r.subject_id = c.platform_listing_variant_id AND r.action_kind = 'PRICE_CHANGE'
+        AND c.entity_version_digest = r.entity_version_digest
+        AND c.entity_version_digest = c.authority_snapshot ->> 'currentEntityDigest'
+        AND c.authority_snapshot #>> '{mapping,id}' IS NOT NULL
+        AND c.authority_snapshot #>> '{policy,id}' IS NOT NULL
+        AND (r.proposed_parameters - 'targetPrice') = '{}'::jsonb
+        AND c.idempotency_key = 'pc-' || r.id::text
+        AND c.target_price = CASE WHEN (r.proposed_parameters ->> 'targetPrice')
+            ~ '^[0-9]{1,14}([.][0-9]{1,4})?$'
+            THEN (r.proposed_parameters ->> 'targetPrice')::numeric END
+        AND c.prior_price = (c.authority_snapshot #>> '{prior,price}')::numeric
+        AND c.prior_price > 0 AND c.target_price <> c.prior_price
+        AND c.currency_code = c.authority_snapshot #>> '{prior,currency}'
+        AND c.prior_price_observation_id::text = c.authority_snapshot #>> '{prior,id}'
+        AND c.platform_code = c.authority_snapshot ->> 'platformCode'
+        AND cap.capability_code = 'price-change' AND cap.read_write_class = 'WRITE'
+        AND cap.platform_code = c.platform_code
+        AND EXISTS (SELECT 1 FROM core.organization org
+                    JOIN core.store store ON store.organization_id=org.id
+                    JOIN core.marketplace_account account ON account.id=store.marketplace_account_id
+                    JOIN core.legal_entity legal ON legal.id=account.legal_entity_id
+                    JOIN core.platform_listing listing ON listing.store_id=store.id
+                    JOIN core.platform_listing_variant variant ON variant.platform_listing_id=listing.id
+                    JOIN core.product_variant sku ON sku.id=(c.authority_snapshot #>> '{mapping,product_variant_id}')::uuid
+                    JOIN core.product product ON product.id=sku.product_id
+                    WHERE org.id=c.organization_id AND store.id=c.store_id AND variant.id=c.platform_listing_variant_id
+                      AND org.status='ACTIVE' AND store.status='ACTIVE' AND account.status='ACTIVE'
+                      AND legal.status='ACTIVE' AND listing.status='OBSERVED' AND variant.status='OBSERVED'
+                      AND sku.status='ACTIVE' AND product.status='ACTIVE')
+        AND EXISTS (SELECT 1 FROM ops.guardrail_evaluation g
+                     WHERE g.recommendation_id = r.id AND g.organization_id = c.organization_id
+                       AND g.purpose = 'EXECUTION' AND g.outcome = 'PASS'
+                       AND g.authority_snapshot = c.authority_snapshot
+                       AND g.policy_id::text = c.authority_snapshot #>> '{policy,id}'
+                       AND g.policy_version::text = c.authority_snapshot #>> '{policy,policy_version}')
+    ), false)
+      FROM ops.price_command c
+      JOIN ops.recommendation r ON r.id = c.recommendation_id
+      JOIN ops.approval_decision a ON a.id = c.approval_decision_id
+      JOIN platform.platform_capability cap ON cap.id = c.capability_id
+     WHERE c.id = p_command_id
+$$;
+REVOKE ALL ON FUNCTION ops.price_command_authority_matches(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION ops.price_command_authority_matches(uuid) TO marketops_app;
+
+CREATE FUNCTION ops.create_price_command(p_recommendation_id uuid, p_expected_version bigint,
+                                        p_actor_id uuid, p_correlation_id text)
+RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE
+    r ops.recommendation%ROWTYPE;
+    a ops.approval_decision%ROWTYPE;
+    snapshot jsonb;
+    capability uuid;
+    command_id uuid;
+    target numeric;
+BEGIN
+    SELECT * INTO r FROM ops.recommendation WHERE id = p_recommendation_id FOR UPDATE;
+    IF r.id IS NULL OR r.version IS DISTINCT FROM p_expected_version
+       OR p_correlation_id IS NULL OR length(btrim(p_correlation_id)) NOT BETWEEN 1 AND 128
+       OR NOT EXISTS (
+           SELECT 1 FROM iam.user_account u
+           JOIN iam.user_role_assignment role ON role.user_id = u.id AND role.status = 'ACTIVE'
+           JOIN iam.business_role_action_scope action ON action.role_code = role.role_code
+           JOIN iam.user_scope_grant grant_row ON grant_row.user_id = u.id
+           JOIN core.store s ON s.id = r.store_id AND s.organization_id = u.organization_id
+           JOIN core.marketplace_account account ON account.id = s.marketplace_account_id
+            WHERE u.id = p_actor_id AND u.status = 'ACTIVE' AND u.organization_id = r.organization_id
+              AND action.action_code = 'PRICE_CHANGE_APPROVE'
+              AND role.effective_from <= clock_timestamp()
+              AND (role.effective_to IS NULL OR role.effective_to > clock_timestamp())
+              AND grant_row.action_code = action.action_code AND grant_row.status = 'ACTIVE'
+              AND grant_row.effective_from <= clock_timestamp()
+              AND (grant_row.effective_to IS NULL OR grant_row.effective_to > clock_timestamp())
+              AND (grant_row.organization_ref_id = r.organization_id
+                   OR grant_row.store_ref_id = r.store_id
+                   OR grant_row.marketplace_account_ref_id = account.id
+                   OR grant_row.legal_entity_ref_id = account.legal_entity_id)) THEN
+        RAISE EXCEPTION 'command actor, scope or version invalid' USING ERRCODE = 'MO032';
+    END IF;
+    SELECT id INTO command_id FROM ops.price_command WHERE recommendation_id = r.id;
+    IF command_id IS NOT NULL THEN RETURN command_id; END IF;
+    IF r.state NOT IN ('APPROVED', 'POLICY_AUTHORIZED') OR r.action_kind <> 'PRICE_CHANGE'
+       OR r.subject_kind <> 'PLATFORM_LISTING_VARIANT' OR r.valid_until <= clock_timestamp()
+       OR (r.proposed_parameters - 'targetPrice') <> '{}'::jsonb
+       OR (r.proposed_parameters ->> 'targetPrice') IS NULL
+       OR (r.proposed_parameters ->> 'targetPrice') !~ '^[0-9]{1,14}(\.[0-9]{1,4})?$' THEN
+        RAISE EXCEPTION 'proposal is not an executable price change' USING ERRCODE = 'MO032';
+    END IF;
+    snapshot := ops.price_authority_snapshot(r.id);
+    SELECT * INTO a FROM ops.approval_decision
+     WHERE recommendation_id = r.id AND decision IN ('APPROVED', 'POLICY_AUTHORIZED')
+       AND scope_expires_at > clock_timestamp() AND authority_snapshot = snapshot;
+    SELECT id INTO capability FROM platform.platform_capability
+     WHERE platform_code = snapshot ->> 'platformCode' AND capability_code = 'price-change'
+       AND read_write_class = 'WRITE' AND verification_state = 'VERIFIED'
+       AND status = 'ACTIVE' AND deprecated_at IS NULL;
+    IF a.id IS NULL OR capability IS NULL OR snapshot #>> '{prior,id}' IS NULL
+       OR snapshot #>> '{mapping,id}' IS NULL OR snapshot #>> '{policy,id}' IS NULL
+       OR snapshot ->> 'currentEntityDigest' IS DISTINCT FROM r.entity_version_digest THEN
+        RAISE EXCEPTION 'current authorization or canonical facts missing' USING ERRCODE = 'MO032';
+    END IF;
+    target := (r.proposed_parameters ->> 'targetPrice')::numeric;
+    command_id := gen_random_uuid();
+    INSERT INTO ops.price_command (id, organization_id, recommendation_id, approval_decision_id,
+        store_id, platform_listing_variant_id, platform_code, capability_id, idempotency_key,
+        currency_code, prior_price, target_price, prior_price_observation_id, entity_version_digest,
+        state, retry_budget_remaining, next_attempt_at, created_at, updated_at)
+    VALUES (command_id, r.organization_id, r.id, a.id, r.store_id, r.subject_id,
+        snapshot ->> 'platformCode', capability, 'pc-' || r.id::text,
+        snapshot #>> '{prior,currency}', (snapshot #>> '{prior,price}')::numeric, target,
+        (snapshot #>> '{prior,id}')::uuid, r.entity_version_digest, 'PENDING', 3,
+        clock_timestamp(), clock_timestamp(), clock_timestamp());
+    IF NOT ops.price_command_authority_matches(command_id) THEN
+        RAISE EXCEPTION 'command inputs do not match approved authority' USING ERRCODE = 'MO032';
+    END IF;
+    INSERT INTO ops.metadata_audit_event (id,actor_type,actor_id,source_domain,action,
+        entity_type,entity_id,entity_code,change_summary,correlation_id)
+    VALUES (gen_random_uuid(),'OPERATOR',p_actor_id::text,'marketplaceintegration','COMMAND_TRANSITION',
+        'price-command',command_id,'pc-'||r.id::text,
+        jsonb_build_object('recommendationId',jsonb_build_object('oldValue',NULL,'newValue',r.id::text)),p_correlation_id);
+    RETURN command_id;
+END;
+$$;
+REVOKE ALL ON FUNCTION ops.create_price_command(uuid, bigint, uuid, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION ops.create_price_command(uuid, bigint, uuid, text) TO marketops_app;
 
 -- ---------------------------------------------------------------------------
 -- Write gate
@@ -358,6 +658,10 @@ BEGIN
         RETURN ARRAY['COMMAND_NOT_FOUND'];
     END IF;
 
+    IF NOT ops.price_command_authority_matches(p_command_id) THEN
+        reasons := array_append(reasons, 'COMMAND_AUTHORITY_MISMATCH');
+    END IF;
+
     -- The capability itself must be verified against recorded evidence and
     -- available for this exact store.
     PERFORM 1
@@ -368,7 +672,7 @@ BEGIN
        AND capability.verification_state = 'VERIFIED';
     IF NOT FOUND
     THEN
-        reasons := reasons || 'CAPABILITY_NOT_VERIFIED';
+        reasons := array_append(reasons, 'CAPABILITY_NOT_VERIFIED');
     END IF;
 
     PERFORM 1
@@ -378,7 +682,7 @@ BEGIN
        AND subject.availability = 'AVAILABLE';
     IF NOT FOUND
     THEN
-        reasons := reasons || 'CAPABILITY_NOT_AVAILABLE_FOR_STORE';
+        reasons := array_append(reasons, 'CAPABILITY_NOT_AVAILABLE_FOR_STORE');
     END IF;
 
     -- The capability switch must be explicitly on, and no wider scope may be
@@ -392,7 +696,7 @@ BEGIN
        AND flag.state = 'ENABLED';
     IF NOT FOUND
     THEN
-        reasons := reasons || 'CAPABILITY_SWITCH_DISABLED';
+        reasons := array_append(reasons, 'CAPABILITY_SWITCH_DISABLED');
     END IF;
 
     PERFORM 1
@@ -403,7 +707,7 @@ BEGIN
        AND flag.state = 'ENABLED';
     IF NOT FOUND
     THEN
-        reasons := reasons || 'GLOBAL_SWITCH_DISABLED';
+        reasons := array_append(reasons, 'GLOBAL_SWITCH_DISABLED');
     END IF;
 
     IF EXISTS (
@@ -419,7 +723,7 @@ BEGIN
                 OR (flag.scope_kind = 'STORE'
                     AND flag.store_id = command_row.store_id)))
     THEN
-        reasons := reasons || 'SCOPED_SWITCH_DISABLED';
+        reasons := array_append(reasons, 'SCOPED_SWITCH_DISABLED');
     END IF;
 
     -- The entity must be on the positive allowlist at this instant.
@@ -435,7 +739,7 @@ BEGIN
        AND entry.valid_until > now_instant;
     IF NOT FOUND
     THEN
-        reasons := reasons || 'ENTITY_NOT_ALLOWLISTED';
+        reasons := array_append(reasons, 'ENTITY_NOT_ALLOWLISTED');
     END IF;
 
     -- The authorization must still stand and still cover this exact proposal.
@@ -449,7 +753,7 @@ BEGIN
        AND decision.entity_version_digest = proposal.entity_version_digest;
     IF NOT FOUND
     THEN
-        reasons := reasons || 'AUTHORIZATION_INVALID_OR_EXPIRED';
+        reasons := array_append(reasons, 'AUTHORIZATION_INVALID_OR_EXPIRED');
     END IF;
 
     PERFORM 1
@@ -460,7 +764,7 @@ BEGIN
        AND proposal.valid_until > now_instant;
     IF NOT FOUND
     THEN
-        reasons := reasons || 'RECOMMENDATION_STALE';
+        reasons := array_append(reasons, 'RECOMMENDATION_STALE');
     END IF;
 
     -- The mapping the profit case rests on must still resolve.
@@ -473,7 +777,7 @@ BEGIN
        AND (mapping.effective_to IS NULL OR mapping.effective_to > now_instant);
     IF NOT FOUND
     THEN
-        reasons := reasons || 'MAPPING_UNRESOLVED';
+        reasons := array_append(reasons, 'MAPPING_UNRESOLVED');
     END IF;
 
     IF EXISTS (
@@ -483,7 +787,7 @@ BEGIN
                    = command_row.platform_listing_variant_id
            AND conflict.state = 'OPEN')
     THEN
-        reasons := reasons || 'MAPPING_CONFLICT_OPEN';
+        reasons := array_append(reasons, 'MAPPING_CONFLICT_OPEN');
     END IF;
 
     -- The deterministic guardrail must have passed for execution specifically.
@@ -494,7 +798,7 @@ BEGIN
        AND evaluation.outcome = 'PASS';
     IF NOT FOUND
     THEN
-        reasons := reasons || 'GUARDRAIL_NOT_PASSED';
+        reasons := array_append(reasons, 'GUARDRAIL_NOT_PASSED');
     END IF;
 
     RETURN reasons;
@@ -616,6 +920,7 @@ DECLARE
     command_row   record;
     rule_row      record;
     latest_match  text;
+    latest_observed_at timestamptz;
     updated_state text;
 BEGIN
     SELECT command.id, command.state, command.fence_token, command.lease_owner,
@@ -661,8 +966,15 @@ BEGIN
     IF p_to_state = 'SUCCEEDED' THEN
         PERFORM 1
           FROM ops.price_command_readback AS readback
+          JOIN raw.price_response_observation response ON response.id = readback.raw_observation_id
+          JOIN ops.price_command_attempt attempt ON attempt.id = readback.attempt_id
          WHERE readback.id = p_evidence_id
            AND readback.command_id = p_command_id
+           AND response.command_id = p_command_id AND response.attempt_id = attempt.id
+           AND attempt.command_id = p_command_id AND attempt.purpose = 'READBACK'
+           AND attempt.fence_token = command_row.fence_token
+           AND response.observed_price = readback.observed_price
+           AND response.observed_currency = readback.currency_code
            AND readback.match_state = 'MATCHES_TARGET'
            AND readback.observed_price = command_row.target_price
            AND readback.currency_code = command_row.currency_code;
@@ -680,7 +992,7 @@ BEGIN
     -- command put there. Anything else means somebody or something changed the
     -- price afterwards, and overwriting that is not compensation.
     IF p_to_state = 'COMPENSATION_PENDING' THEN
-        SELECT readback.match_state INTO latest_match
+        SELECT readback.match_state,readback.observed_at INTO latest_match,latest_observed_at
           FROM ops.price_command_readback AS readback
          WHERE readback.command_id = p_command_id
          ORDER BY readback.observed_at DESC, readback.id DESC
@@ -692,6 +1004,13 @@ BEGIN
                 p_command_id, coalesce(latest_match, 'absent')
                 USING ERRCODE = 'MO034',
                       HINT = 'read the current platform value before restoring';
+        END IF;
+        IF (SELECT count(*) = 0 FROM ops.price_command_attempt applied
+            WHERE applied.command_id=p_command_id AND applied.purpose='APPLY'
+              AND applied.outcome_class IN ('ACCEPTED','UNKNOWN_STATE')
+              AND applied.completed_at<=latest_observed_at) THEN
+            RAISE EXCEPTION 'price command % has no possibly applied write to compensate',p_command_id
+                USING ERRCODE='MO034';
         END IF;
     END IF;
 
@@ -752,6 +1071,8 @@ REVOKE ALL ON FUNCTION ops.transition_price_command(
 -- not invalidate a command that a person has already authorised.
 INSERT INTO platform.control_route_inventory
     (schema_name, table_name, route_kind, scope_kind, routing_note) VALUES
+    ('raw', 'price_response_observation', 'NO_ROUTE', NULL,
+        'immutable write response custody; bound to command and attempt'),
     ('ops', 'price_command', 'NO_ROUTE', NULL,
         'write execution state; guarded by its own gate at lease time'),
     ('ops', 'price_command_transition', 'NO_ROUTE', NULL,
@@ -772,9 +1093,9 @@ INSERT INTO platform.control_route_inventory
 -- rule and the compensation safety check cannot be bypassed by any SQL client
 -- connecting as this role.
 GRANT SELECT ON ops.price_command_transition TO marketops_app;
-GRANT SELECT, INSERT ON ops.price_command TO marketops_app;
-GRANT SELECT, INSERT ON ops.price_command_attempt TO marketops_app;
-GRANT SELECT, INSERT ON ops.price_command_readback TO marketops_app;
+GRANT SELECT ON ops.price_command TO marketops_app;
+GRANT SELECT ON ops.price_command_attempt TO marketops_app;
+GRANT SELECT ON ops.price_command_readback TO marketops_app;
 GRANT SELECT, INSERT ON ops.kill_switch_event TO marketops_app;
 GRANT EXECUTE ON FUNCTION ops.evaluate_price_write_gate(uuid) TO marketops_app;
 GRANT EXECUTE ON FUNCTION ops.lease_price_command(uuid, text, integer) TO marketops_app;

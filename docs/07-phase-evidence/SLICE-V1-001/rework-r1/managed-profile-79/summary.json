@@ -1,0 +1,55 @@
+{
+  "scope": "FULL_BACKEND_WORKTREE_CHECKPOINT_NOT_FINAL_COMMIT",
+  "command": "make backend-check",
+  "result": "PASS",
+  "inputManifestSha256": "eaadec948312a3173fc2ef30f240cc7cac8230b0a7a8351b48e42244a1b333c0",
+  "boundInputsUnchanged": true,
+  "tests": {
+    "surefire-reports": {
+      "tests": 836,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "failsafe-reports": {
+      "tests": 355,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "coverage": [
+    {
+      "type": "INSTRUCTION",
+      "missed": "12269",
+      "covered": "58575"
+    },
+    {
+      "type": "BRANCH",
+      "missed": "1239",
+      "covered": "3135"
+    },
+    {
+      "type": "LINE",
+      "missed": "2441",
+      "covered": "11758"
+    },
+    {
+      "type": "COMPLEXITY",
+      "missed": "1592",
+      "covered": "3277"
+    },
+    {
+      "type": "METHOD",
+      "missed": "523",
+      "covered": "2104"
+    },
+    {
+      "type": "CLASS",
+      "missed": "66",
+      "covered": "502"
+    }
+  ],
+  "logSha256": "3a53dafedbae8e650eef72178fc20455b36796efe6e380a36a2314ba867b9041",
+  "fixtureWarning": "Synthetic repository/provider identities; not real Yandex evidence."
+}

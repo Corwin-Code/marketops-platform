@@ -21,6 +21,8 @@ marketops:
     credential-reference: ${MARKETOPS_OBJECT_STORAGE_CREDENTIAL_REFERENCE}
   secrets:
     mount-directory: ${MARKETOPS_SECRET_MOUNT_DIRECTORY}
+  diagnostic-export:
+    worker-enabled: ${MARKETOPS_DIAGNOSTIC_EXPORT_WORKER_ENABLED:true}
   acquisition:
     # Staging exercises the acquisition path against real sandbox accounts, so
     # this environment is one that runs a worker.

@@ -82,7 +82,7 @@ public class WebConfig {
         consolePolicy.setAllowedOrigins(properties.getAllowedOrigins());
         consolePolicy.setAllowedMethods(List.of("GET", "POST", "PUT", "OPTIONS"));
         consolePolicy.setAllowedHeaders(List.of(
-                "Accept", "Content-Type", HttpHeaders.AUTHORIZATION, CorrelationId.HEADER_NAME));
+                "Accept", "Content-Type", HttpHeaders.AUTHORIZATION, CorrelationId.HEADER_NAME, "Idempotency-Key"));
         consolePolicy.setExposedHeaders(List.of(CorrelationId.HEADER_NAME));
         // The token travels in the authorization header, never in a cookie, so
         // credentialed requests stay off and a browser cannot be induced to

@@ -4,7 +4,7 @@ import com.mimococo.marketops.aicopilot.adapter.http.HttpModelGateway;
 import com.mimococo.marketops.aicopilot.internal.infrastructure.jdbc.AiRepository;
 import com.mimococo.marketops.aicopilot.port.ModelGatewayPort;
 import com.mimococo.marketops.shared.port.SecretResolverPort;
-import java.net.http.HttpClient;
+import com.mimococo.marketops.shared.port.OutboundHttp;
 import java.time.Clock;
 import java.time.Duration;
 import org.springframework.context.annotation.Bean;
@@ -25,18 +25,10 @@ public class ModelGatewayConfiguration {
     /** How long the client waits to establish a connection to a provider. */
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
 
-    /** The client model calls use; never follows a redirect. */
-    @Bean
-    public HttpClient modelGatewayHttpClient() {
-        return HttpClient.newBuilder()
-                .connectTimeout(CONNECT_TIMEOUT)
-                .followRedirects(HttpClient.Redirect.NEVER)
-                .build();
-    }
 
     /** The single outbound model gateway. */
     @Bean
-    public ModelGatewayPort modelGatewayPort(HttpClient modelGatewayHttpClient,
+    public ModelGatewayPort modelGatewayPort(OutboundHttp modelGatewayHttpClient,
                                              AiRepository aiRepository,
                                              SecretResolverPort secretResolverPort,
                                              ObjectMapper objectMapper,

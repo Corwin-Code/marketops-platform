@@ -184,6 +184,13 @@ public class RecommendationService {
         return recommendations.queue(storeId, states, limit);
     }
 
+    /** Bounded proposals for the exact subject opened in the diagnosis view. */
+    @Transactional(readOnly = true, timeout = 5)
+    public List<RecommendationView> queueForSubject(UUID storeId, UUID subjectId,
+                                                    List<RecommendationState> states, int limit) {
+        return recommendations.queue(storeId, subjectId, states, limit);
+    }
+
     /** How many proposals of one store stand in each state. */
     @Transactional(readOnly = true)
     public Map<RecommendationState, Integer> stateCounts(UUID storeId) {

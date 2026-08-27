@@ -3,10 +3,10 @@ package com.mimococo.marketops.identityaccess.internal.web;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.internal.application.TokenIdentityResolver;
 import com.mimococo.marketops.identityaccess.internal.application.TokenResolution;
+import com.mimococo.marketops.shared.ErrorCode;
+import java.math.BigDecimal;
+import java.time.DateTimeException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -22,9 +22,10 @@ import org.springframework.stereotype.Component;
  * authorities, because a role read from a token would be an authorization
  * decision made by the identity provider rather than by this product.
  *
- * <p>{@code auth_time} falls back to the issue time when the provider omits it.
- * That is the conservative reading: a token that does not state when its subject
- * authenticated cannot be treated as older or newer than its own issuance.
+ * <p>Missing {@code auth_time} is represented as EPOCH, so token renewal cannot
+ * fabricate a fresh human authentication. Malformed supplied times are refused.
+ * The resolver reads the exact provider-configured MFA claim, not a union of
+ * similarly named claims.
  */
 @Component
 public class MarketOpsJwtAuthenticationConverter
@@ -44,14 +45,14 @@ public class MarketOpsJwtAuthenticationConverter
 
     @Override
     public AbstractAuthenticationToken convert(Jwt token) {
-        String issuer = Objects.toString(token.getIssuer(), "");
-        String subject = Objects.toString(token.getSubject(), "");
-        Instant issuedAt = token.getIssuedAt() == null ? Instant.EPOCH : token.getIssuedAt();
-        Instant authenticatedAt = authenticationTime(token, issuedAt);
+        String issuer = requiredString(token.getClaim("iss"));
+        String subject = requiredString(token.getClaim("sub"));
+        Instant issuedAt = numericDate(token.getClaim("iat"), false);
+        Instant authenticatedAt = numericDate(token.getClaim(AUTH_TIME_CLAIM), true);
 
         TokenResolution resolution = resolver.resolve(
                 issuer, subject, sessionIdentifier(token), issuedAt, authenticatedAt,
-                authenticationMethods(token));
+                token.getClaims());
 
         if (resolution instanceof TokenResolution.Refused refused) {
             throw new IdentityRefusedException(refused.code());
@@ -61,43 +62,29 @@ public class MarketOpsJwtAuthenticationConverter
     }
 
     private static String sessionIdentifier(Jwt token) {
-        String session = token.getClaimAsString(SESSION_CLAIM);
-        return session != null ? session : token.getId();
+        Object session = token.getClaim(SESSION_CLAIM);
+        if (session != null) return requiredString(session);
+        Object identifier = token.getClaim("jti");
+        return identifier == null ? null : requiredString(identifier);
     }
 
-    private static Instant authenticationTime(Jwt token, Instant issuedAt) {
-        Object claim = token.getClaim(AUTH_TIME_CLAIM);
+    private static String requiredString(Object claim) {
+        if (claim instanceof String value && !value.isBlank()) return value;
+        throw new IdentityRefusedException(ErrorCode.AUTHENTICATION_REQUIRED);
+    }
+
+    private static Instant numericDate(Object claim, boolean optional) {
+        if (claim == null && optional) return Instant.EPOCH;
         if (claim instanceof Instant instant) {
             return instant;
         }
         if (claim instanceof Number seconds) {
-            return Instant.ofEpochSecond(seconds.longValue());
-        }
-        return issuedAt;
-    }
-
-    /**
-     * The authentication methods the provider reported, in whichever shape it
-     * reported them.
-     *
-     * <p>Providers publish this as a list or as a single value depending on the
-     * claim. Both are read; an unrecognised shape yields an empty list, which
-     * fails the mandatory second-factor check rather than passing it.
-     */
-    private static List<String> authenticationMethods(Jwt token) {
-        List<String> values = new ArrayList<>();
-        for (String claimName : List.of("amr", "acr")) {
-            Object claim = token.getClaim(claimName);
-            if (claim instanceof String single) {
-                values.add(single);
-            } else if (claim instanceof List<?> many) {
-                for (Object element : many) {
-                    if (element instanceof String value) {
-                        values.add(value);
-                    }
-                }
+            try {
+                return Instant.ofEpochSecond(new BigDecimal(seconds.toString()).longValueExact());
+            } catch (ArithmeticException | NumberFormatException | DateTimeException malformed) {
+                throw new IdentityRefusedException(ErrorCode.AUTHENTICATION_REQUIRED);
             }
         }
-        return values;
+        throw new IdentityRefusedException(ErrorCode.AUTHENTICATION_REQUIRED);
     }
 }

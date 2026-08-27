@@ -52,10 +52,12 @@ public class AcquisitionRunner {
     /** Queue a run for a job, or refuse because one is already live. */
     @Transactional
     public UUID enqueue(UUID jobId, String runKind, Instant windowFrom, Instant windowTo) {
-        return runs.enqueue(idGenerator.newId(), jobId, runKind, windowFrom, windowTo);
+        return runs.enqueue(idGenerator.newId(), jobId, runKind, windowFrom, windowTo,
+                properties.getRetryBudget() + 1);
     }
 
     /** Claim and execute one run. */
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)
     public RunOutcome execute(UUID runId, String workerName) {
         long fence;
         try {
@@ -63,6 +65,7 @@ public class AcquisitionRunner {
         } catch (RuntimeException notClaimable) {
             return new RunOutcome(runId, 0, "NOT_CLAIMABLE");
         }
+        if (fence == 0) return new RunOutcome(runId, 0, "RETRY_BUDGET_EXHAUSTED");
 
         Optional<IngestionRunRepository.RunState> claimed = runs.findRun(runId);
         if (claimed.isEmpty()) {
@@ -107,17 +110,20 @@ public class AcquisitionRunner {
                 return rest(runId, fence, workerName, pagesStored, "PAGE_FAILED");
             }
 
-            pagesStored++;
+            if (outcome.observationId() != null) pagesStored++;
             switch (outcome.kind()) {
-                case UNKNOWN_RESULT -> {
+                case UNKNOWN_RESULT, SCHEMA_DRIFT, UNREADABLE, CONFIG_INVALID -> {
                     runs.transition(runId, fence, workerName, "BLOCKED", null, null);
-                    return new RunOutcome(runId, pagesStored, "UNKNOWN_RESULT");
+                    return new RunOutcome(runId, pagesStored, outcome.kind().name());
                 }
-                case SOURCE_EXHAUSTED -> {
+                case RETRY_LATER -> {
+                    return rest(runId, fence, workerName, pagesStored, "READ_RETRY");
+                }
+                case END -> {
                     runs.transition(runId, fence, workerName, "SUCCEEDED", null, null);
                     return new RunOutcome(runId, pagesStored, "SUCCEEDED");
                 }
-                case PAGE_STORED -> runs.renewLease(runId, fence, workerName, leaseSeconds());
+                case NEXT -> runs.renewLease(runId, fence, workerName, leaseSeconds());
             }
         }
         return rest(runId, fence, workerName, pagesStored, "CALL_CEILING_REACHED");
@@ -137,8 +143,9 @@ public class AcquisitionRunner {
                 .map(state -> state.attemptNo() <= properties.getRetryBudget())
                 .orElse(false);
         if (budgetLeft) {
-            runs.transition(runId, fence, workerName, "RETRY_WAIT", null, null);
-            return new RunOutcome(runId, pagesStored, reason);
+            String state = runs.transition(runId, fence, workerName, "RETRY_WAIT", null, null,
+                    Math.toIntExact(properties.getRetryDelay().toSeconds()));
+            return new RunOutcome(runId, pagesStored, "FAILED_TERMINAL".equals(state) ? state : reason);
         }
         runs.transition(runId, fence, workerName, "FAILED_TERMINAL", null, reason);
         return new RunOutcome(runId, pagesStored, "FAILED_TERMINAL");

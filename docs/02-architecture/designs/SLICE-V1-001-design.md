@@ -6,7 +6,11 @@ slice: SLICE-V1-001
 slice_title: SKU Growth & Profit Diagnostic Loop
 contract: docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md
 contract_sha256: 0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5
-accepted_amendments: NONE
+accepted_amendments: SLICE-V1-001-AMENDMENT-001
+accepted_amendment_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d
+implementation_state: ROOT_CAUSE_REWORK_IN_PROGRESS
+candidate_scope: PR20_UNCOMMITTED_WORKTREE
+closure_claim: NONE
 base_commit: 89fc29be45327b592a9bcbeffbfec54c96fb66ed
 base_tree: 28029347daa05bbff40c1a0ca15c7ad0d9f1ac92
 production_write_enabled: false
@@ -15,21 +19,27 @@ real_model_provider_call_made: false
 infrastructure_applied: false
 ```
 
-## 1. What was built
+## 1. Implementation and current rework
 
-The complete diagnostic loop, from a marketplace fact arriving to a price
-changing on a marketplace and being read back — with every step of the last part
-refusing to happen until somebody has decided it should.
+The original thirteen implementation commits were published as Draft PR #20.
+Controller review froze thirteen findings against Head
+`30d16e5d7db2d2190635a06fececd5883093a876`. Codex is correcting the same branch;
+the candidate changes remain uncommitted and do not constitute closure.
 
-Twelve local checkpoints, sixteen forward migrations (V0011–V0026), the backend,
-an operating console, the Yandex topology and eight runbooks. Nothing was
-pushed, no pull request exists, and no external system was contacted.
+The code covers acquisition, canonical facts, diagnosis, recommendations,
+controlled commands and readback. Candidate migrations V0011–V0026 are being
+corrected, V0027 adds account-bound registry verification, and V0028 adds bounded
+asynchronous diagnostic export. This document is
+being reconciled with that work and is not a final verified as-built snapshot.
+The [rework checkpoint](../../07-phase-evidence/SLICE-V1-001/rework-r1/progress-checkpoint.md)
+records local performance/export/restore and browser checkpoints, plus the
+remaining final regression, infrastructure evidence, CI and acceptance work. No real provider, marketplace or production write is authorized or proven.
 
 ## 2. The five decisions everything else follows from
 
 ### 2.1 A marketplace fact is a row, never a line of code
 
-Nothing about Ozon or Wildberries is written in Java. The base URL, the HTTP
+Platform behavior is selected from verified registry data. The base URL, the HTTP
 method, the path and query templates, the request body shape, the authentication
 headers, the pagination model, the rate limit, the write result model, where an
 asynchronous task handle lives inside a response, where an observed price sits,
@@ -134,7 +144,7 @@ keeps one writer per table and one place a marketplace fact can live, at the
 cost of a dependency direction some readers will find surprising: workflow
 depends on integration rather than the reverse.
 
-## 4. Schema, V0011 through V0026
+## 4. Schema, V0011 through V0028
 
 | Migration | What it establishes |
 | --- | --- |
@@ -153,7 +163,9 @@ depends on integration rather than the reverse.
 | V0023 | Declared normalization: canonical fields, mappings, per-field pointers, checkpoints, drift observations |
 | V0024 | Capability write-operation shape: which endpoint performs each operation and where its answer lives |
 | V0025 | Attempt completion permitted exactly once, expired-lease recovery, compensation leasing, the rule that a restore is not complete until the prior value is observed |
-| V0026 | `capability_code` renamed to `action_kind` in the two operational tables; the write gate rebuilt |
+| V0026 | `capability_code` renamed to `action_kind` in the two operational tables; dependent functions rebuilt |
+| V0027 | Account-bound verification submissions/reviews, audit and promotion/revocation functions |
+| V0028 | Bounded export jobs, immutable snapshot rows/parts, fenced worker and live authorization |
 
 Every table in the eight foundation schemas appears in
 `platform.control_route_inventory` exactly once — a hundred and three tables,
@@ -226,6 +238,10 @@ columns and refuses to let the collision return.
   client secret. A token in local storage survives the tab and is readable by
   anything that can run script on the origin — the most useful thing an attacker
   could take from a console that changes real prices.
+  The candidate servlet boundary requires an expiry and validates the exact
+  configured MFA claim. Missing `auth_time` cannot satisfy step-up; token renewal
+  never substitutes `iat` for the original authentication time. Cookie, form,
+  query and servlet-session authentication are not accepted.
 - **Authorization** is role plus action scope plus resource scope, evaluated per
   request against a live profile. Four actions require a recent authentication
   as well as the grant: price approval, policy management, command resolution
@@ -233,6 +249,10 @@ columns and refuses to let the collision return.
 - **Secrets** are opaque references resolved at the moment of use and cleared
   immediately after. No credential appears in a business table, a request, a log
   record, an audit row, the browser bundle or this repository.
+  Candidate file resolution requires descriptor-based traversal without symlinks,
+  strict UTF-8 and a 16,384-byte bound. Unsupported filesystems refuse resolution;
+  the Linux runtime contract and macOS refusal are documented in the
+  [identity/secret runbook](../../06-runbooks/identity-and-mounted-secrets.md).
 - **The AI projection** is an allowlist of declared field paths enforced on the
   assembled projection. What leaves is a list of path-and-value pairs, not an
   object graph, so a field nobody declared has no way to travel.
@@ -242,7 +262,34 @@ columns and refuses to let the collision return.
   instruction-shaped text is rejected so a marketplace's own listing content
   cannot come back out as something a reader might act on.
 
-## 7. What is not proven
+## 7. Export, browser recovery and operational signals
+
+Large diagnostic output uses an authorized asynchronous job, not an unbounded
+HTTP body. V0028 materializes one MVCC snapshot with versioned metric/finding
+references, bounds row/byte/part counts, and fences every worker transition.
+Parts and the completion manifest use immutable Raw custody. Downloads recheck
+live requester/store access before and after object I/O. The browser verifies
+manifest and part hashes/lengths before creating a download; expiry denies
+access but is not a claim of physical retention cleanup.
+
+The subject view exposes typed metric inputs and metadata-only source
+provenance. Recommendations are filtered by the authorized subject/store on
+the server. An approved decision survives a failed command submission, and a
+new session can read the existing command without another approval or write.
+The timeline separates pending, unknown, mismatched and confirmed outcomes.
+
+`GET /actuator/operations` is a bounded read-only aggregate snapshot available
+only to an actual loopback peer. Forwarded headers are disabled and do not
+create local authority. A two-second database read failure returns only the
+unavailability signal; business metrics are absent rather than false zeros.
+The host telemetry timer validates shape/freshness and sends six integer gauges
+using an ephemeral instance token to the fixed Yandex endpoint. It runs under
+a dynamic unprivileged user with no DB/Marketplace secret. The required alert
+configuration treats No Data as an alarm.
+Real alert provisioning, metric receipt and notification delivery remain
+pending; see the operational monitoring runbook.
+
+## 8. What is not proven
 
 Stated plainly, because the difference between built and proven is the whole
 point of the Assurance Matrix.
@@ -252,13 +299,13 @@ point of the Assurance Matrix.
 | Any Ozon or Wildberries capability | No marketplace was contacted. Every capability row is `UNVERIFIED`, which is why no call is reachable. |
 | Any model provider | No provider was contacted. Every provider row is `UNVERIFIED`. |
 | The Yandex topology | Never applied. No account contacted, no state file, no credential present. |
-| Point-in-time recovery | The controls are configured in code; the drill has never run because there is nothing to restore. |
+| Provider point-in-time recovery | Real Yandex PITR remains pending. Local PG17 dump/restore and exact object recovery have executed with validation; see the restore runbook. |
 | Any real platform write | Requires a Gate-EV envelope. Not authorized, not attempted. |
-| Terraform validity | No `terraform` binary was available and no provider could be downloaded. The configuration is reviewed, not machine-checked. |
-| Performance under representative load | No environment exists to load. |
-| The backend coverage gate | It ran and failed: 68.67% lines against a required 80%. Every test passes; the ratio is short because the slice added a large volume of adapter and repository code that the flow tests reach only along their own paths. Recorded rather than worked around, and the threshold was deliberately not changed. |
+| Complete deployable Terraform/runtime path | Local fmt/init-without-backend/provider-schema validate/mock-plan checks pass. Actual account/state/runtime operation is unproven. The Owner accepted Amendment-001: PG17, provider-managed extensions and a public Flyway external-attestation V0002 executor, preserving standard-profile SQL and V0001–V0010 bytes. |
+| Performance under representative load | PG17/MockMvc measurements, five-second read-budget lock/recovery, a 488,000-record asynchronous export and local database/object restore pass at checkpoint 131. Actual Owner cohort and production capacity are unproven; final source-bound regression remains required. |
+| Final exact-commit backend/CI quality | Local full rework checkpoint 131 passes 845 unit and 371 integration tests plus the unchanged 80%/70% coverage gate. This is a source-manifest-bound worktree checkpoint, not final published Head/CI evidence. Earlier failures remain preserved in the rework logs. |
 
-## 8. Local checkpoints
+## 9. Original implementation checkpoints
 
 ```text
 65e5166  Forward schema V0011-V0020, human identity boundary and listing identity

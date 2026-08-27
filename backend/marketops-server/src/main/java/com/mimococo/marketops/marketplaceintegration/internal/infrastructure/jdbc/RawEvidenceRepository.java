@@ -22,9 +22,11 @@ import org.springframework.stereotype.Repository;
 public class RawEvidenceRepository {
 
     private final JdbcClient jdbc;
+    private final tools.jackson.databind.ObjectMapper mapper;
 
-    RawEvidenceRepository(JdbcClient jdbc) {
+    RawEvidenceRepository(JdbcClient jdbc, tools.jackson.databind.ObjectMapper mapper) {
         this.jdbc = jdbc;
+        this.mapper = mapper;
     }
 
     /**
@@ -66,12 +68,24 @@ public class RawEvidenceRepository {
     /** Record one acquisition answer exactly as it arrived. */
     public void recordObservation(UUID id, UUID runId, UUID logicalUnitId, UUID contentId,
                                   int callSeq, String nativeStatus, String outcomeClass) {
+        recordObservation(id, runId, logicalUnitId, contentId, callSeq, nativeStatus, outcomeClass, true, null, null);
+    }
+
+    public void recordObservation(UUID id, UUID runId, UUID logicalUnitId, UUID contentId,
+                                  int callSeq, String nativeStatus, String outcomeClass,
+                                  boolean complete, String failure, UUID decision) {
+        recordObservation(id,runId,logicalUnitId,contentId,callSeq,nativeStatus,outcomeClass,complete,failure,decision,java.util.Map.of(),"UNASSESSED");
+    }
+
+    public void recordObservation(UUID id, UUID runId, UUID logicalUnitId, UUID contentId,
+                                  int callSeq, String nativeStatus, String outcomeClass,
+                                  boolean complete, String failure, UUID decision, java.util.Map<String,String> headers, String paginationOutcome) {
         jdbc.sql("""
                         INSERT INTO raw.raw_acquisition_observation (
                             id, run_id, logical_unit_id, content_id, call_seq,
-                            native_status, outcome_class)
+                            native_status, outcome_class, response_complete, transport_failure_code, authority_decision_id,response_headers,pagination_outcome)
                         VALUES (:id, :runId, :unitId, :contentId, :callSeq,
-                            :nativeStatus, :outcomeClass)
+                            :nativeStatus, :outcomeClass, :complete, :failure, :decision,CAST(:headers AS jsonb),:pagination)
                         """)
                 .param("id", id)
                 .param("runId", runId)
@@ -80,6 +94,9 @@ public class RawEvidenceRepository {
                 .param("callSeq", callSeq)
                 .param("nativeStatus", nativeStatus)
                 .param("outcomeClass", outcomeClass)
+                .param("complete", complete).param("failure", failure).param("decision", decision)
+                .param("headers",mapper.writeValueAsString(headers))
+                .param("pagination",paginationOutcome)
                 .update();
     }
 

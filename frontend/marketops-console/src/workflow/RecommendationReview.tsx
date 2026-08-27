@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { createCommand, decide, requestImpactPreview } from '../api/console';
+import {
+  createCommand,
+  decide,
+  requestImpactPreview,
+  fetchRecommendationCommand,
+} from '../api/console';
 import type { ConsoleFailure, ConsoleRequest, ImpactPreview, Recommendation } from '../api/console';
 import { formatAmount } from '../state/confidence';
 
@@ -40,6 +45,32 @@ export function RecommendationReview({
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
+  const [decisionState, setDecisionState] = useState(recommendation.state);
+  const [version, setVersion] = useState(recommendation.version);
+  const authorized = decisionState === 'APPROVED' || decisionState === 'POLICY_AUTHORIZED';
+  const commandExists = ['COMMAND_CREATED', 'EXECUTION_TRACKING', 'OUTCOME_OBSERVATION'].includes(
+    decisionState,
+  );
+
+  const openCommand = async (): Promise<void> => {
+    setBusy(true);
+    const result = await fetchRecommendationCommand(context, recommendation.id);
+    setBusy(false);
+    if (result.ok && result.value.recommendationId === recommendation.id)
+      onDecided(decisionState, result.value.id);
+    else
+      setFailure(
+        result.ok ? { kind: 'malformed', detail: 'command identity mismatch' } : result.failure,
+      );
+  };
+
+  const finishCommand = async (state: string, currentVersion: number): Promise<void> => {
+    setBusy(true);
+    const created = await createCommand(context, recommendation.id, currentVersion);
+    setBusy(false);
+    if (created.ok) onDecided(state, created.value.commandId);
+    else setFailure(created.failure);
+  };
 
   const runPreview = async (): Promise<void> => {
     setBusy(true);
@@ -56,7 +87,7 @@ export function RecommendationReview({
 
   const record = async (kind: 'approval' | 'rejection' | 'policy-authorization'): Promise<void> => {
     setBusy(true);
-    const outcome = await decide(context, recommendation.id, kind, reason, recommendation.version);
+    const outcome = await decide(context, recommendation.id, kind, reason, version);
     if (!outcome.ok) {
       setBusy(false);
       setFailure(outcome.failure);
@@ -67,21 +98,16 @@ export function RecommendationReview({
       onDecided(outcome.value.state);
       return;
     }
-    // An authorized proposal still needs its command, and creating it runs the
-    // guardrail again for execution specifically. Doing it here rather than
-    // leaving it to a later screen keeps the person who decided in front of the
-    // answer.
-    const created = await createCommand(context, recommendation.id, recommendation.version + 1);
-    setBusy(false);
-    if (created.ok) {
-      onDecided(outcome.value.state, created.value.commandId);
-    } else {
-      setFailure(created.failure);
-      onDecided(outcome.value.state);
-    }
+    setDecisionState(outcome.value.state);
+    setVersion(version + 1);
+    await finishCommand(outcome.value.state, version + 1);
   };
 
-  const canDecide = preview?.verdict.passed === true && reason.trim().length > 0 && !busy;
+  const canDecide =
+    decisionState === 'READY_FOR_REVIEW' &&
+    preview?.verdict.passed === true &&
+    reason.trim().length > 0 &&
+    !busy;
 
   return (
     <section aria-label="Recommendation review" data-recommendation={recommendation.id}>
@@ -90,7 +116,7 @@ export function RecommendationReview({
         <dt>Subject</dt>
         <dd>{recommendation.subjectId}</dd>
         <dt>State</dt>
-        <dd data-testid="recommendation-state">{recommendation.state}</dd>
+        <dd data-testid="recommendation-state">{decisionState}</dd>
         <dt>Origin</dt>
         <dd>{recommendation.origin}</dd>
         <dt>Risk</dt>
@@ -165,6 +191,20 @@ export function RecommendationReview({
       />
 
       <div className="decision-actions">
+        {commandExists && (
+          <button type="button" disabled={busy} onClick={() => void openCommand()}>
+            Open existing command
+          </button>
+        )}
+        {authorized && (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void finishCommand(decisionState, version)}
+          >
+            Create authorized command
+          </button>
+        )}
         <button type="button" onClick={() => void record('approval')} disabled={!canDecide}>
           Approve this change
         </button>
@@ -178,7 +218,7 @@ export function RecommendationReview({
         <button
           type="button"
           onClick={() => void record('rejection')}
-          disabled={busy || reason.trim().length === 0}
+          disabled={busy || reason.trim().length === 0 || authorized || commandExists}
         >
           Reject
         </button>
@@ -197,7 +237,7 @@ export function describeFailure(failure: ConsoleFailure): string {
     case 'forbidden':
       return 'Your profile does not hold the approval action for this store.';
     case 'unreachable':
-      return 'The platform did not answer. Nothing was changed.';
+      return 'The platform did not answer. Its state may have changed; reload before deciding again.';
     case 'malformed':
       return 'The platform answered with something this console cannot read.';
     case 'refused':

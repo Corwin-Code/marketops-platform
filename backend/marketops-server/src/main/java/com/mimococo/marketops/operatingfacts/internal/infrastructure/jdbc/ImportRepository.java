@@ -146,7 +146,7 @@ public class ImportRepository {
     public boolean recordApplied(UUID batchId, Instant appliedAt, long expectedVersion) {
         return jdbc.sql("""
                         UPDATE staging.import_batch
-                        SET state = 'APPLIED', applied_at = :appliedAt,
+                        SET state = 'APPLIED', applied_at = :appliedAt, applied_row_count = accepted_row_count,
                             updated_at = :appliedAt, version = :newVersion
                         WHERE id = :batchId AND version = :expectedVersion
                           AND state = 'APPROVED'
@@ -239,17 +239,24 @@ public class ImportRepository {
 
     /** One batch's rows, in file order. */
     public List<ImportRow> listRows(UUID batchId, String validationState, int limit) {
+        return rowsAfter(batchId, validationState, 0, limit);
+    }
+
+    /** Keyset pagination reads every validated row without a fixed total-row cap. */
+    public List<ImportRow> rowsAfter(UUID batchId, String validationState, int afterRow, int limit) {
         return jdbc.sql("""
                         SELECT id, row_number, CAST(parsed_values AS text) AS parsed_values,
                                validation_state, rejection_code, rejection_detail, target_key
                           FROM staging.import_row
                          WHERE batch_id = :batchId
+                           AND row_number > :afterRow
                            AND (CAST(:validationState AS text) IS NULL
                                 OR validation_state = CAST(:validationState AS text))
                          ORDER BY row_number
                          LIMIT :pageLimit
                         """)
                 .param("batchId", batchId)
+                .param("afterRow", afterRow)
                 .param("validationState", validationState)
                 .param("pageLimit", limit)
                 .query((rows, rowNumber) -> new ImportRow(

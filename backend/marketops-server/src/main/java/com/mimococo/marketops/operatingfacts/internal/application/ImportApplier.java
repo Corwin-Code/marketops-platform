@@ -7,6 +7,11 @@ import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.Intern
 import com.mimococo.marketops.shared.Digest;
 import com.mimococo.marketops.shared.IdGenerator;
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import com.mimococo.marketops.operatingfacts.internal.domain.IntakeDataset;
+import com.mimococo.marketops.shared.ErrorCode;
+import com.mimococo.marketops.shared.OperationRejectedException;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
@@ -46,43 +51,67 @@ public class ImportApplier {
     private final ObjectMapper objectMapper;
     private final IdGenerator idGenerator;
     private final Clock clock;
+    private final ImportRowValidator validator;
 
     ImportApplier(ImportRepository imports,
                   InternalReferenceRepository references,
                   FactWriteRepository facts,
                   ObjectMapper objectMapper,
                   IdGenerator idGenerator,
-                  Clock clock) {
+                  Clock clock, ImportRowValidator validator) {
         this.imports = imports;
         this.references = references;
         this.facts = facts;
         this.objectMapper = objectMapper;
         this.idGenerator = idGenerator;
         this.clock = clock;
+        this.validator = validator;
     }
 
     /** Apply every accepted row of one batch, returning how many were written. */
     public int apply(AuthenticatedActor actor,
                      ImportRepository.ImportBatch batch,
                      Instant effectiveFrom) {
-        List<ImportRepository.ImportRow> rows =
-                imports.listRows(batch.id(), "ACCEPTED", ROW_PAGE);
+        if (!batch.organizationId().equals(actor.organizationId())) {
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
+        IntakeDataset dataset = IntakeDataset.valueOf(batch.datasetKind());
         Instant now = clock.instant();
         int applied = 0;
-        for (ImportRepository.ImportRow row : rows) {
-            JsonNode values = objectMapper.readTree(row.parsedValues());
-            UUID provenanceId = facts.recordProvenance(idGenerator.newId(),
-                    batch.organizationId(), "INTERNAL_IMPORT", null, batch.id(),
-                    actor.userId(), effectiveFrom, now,
-                    "row " + row.rowNumber() + " of " + batch.declaredFileName());
-            applied += switch (batch.datasetKind()) {
-                case "PURCHASE_COST" -> applyCost(batch, row, values, provenanceId,
-                        effectiveFrom, now);
-                case "INTERNAL_STOCK" -> applyStock(batch, row, values, provenanceId, now);
-                case "FINANCE_INPUT" -> applyFinanceInput(batch, row, values, provenanceId,
-                        effectiveFrom, now);
-                default -> 0;
-            };
+        int cursor = 0;
+        while (true) {
+            List<ImportRepository.ImportRow> rows = imports.rowsAfter(batch.id(), "ACCEPTED", cursor, ROW_PAGE);
+            if (rows.isEmpty()) break;
+            for (ImportRepository.ImportRow row : rows) {
+                JsonNode stored = com.mimococo.marketops.shared.JsonValues.read(objectMapper,row.parsedValues());
+                Map<String, String> columns = new LinkedHashMap<>();
+                Map<String, String> mapping = new LinkedHashMap<>();
+                stored.properties().forEach(entry -> {
+                    if (dataset.field(entry.getKey()).isEmpty() || !entry.getValue().isValueNode()) {
+                        throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+                    }
+                    mapping.put(entry.getKey(), entry.getKey());
+                    columns.put(entry.getKey(), entry.getValue().asString());
+                });
+                ImportRowValidator.Outcome validated = validator.validate(batch.organizationId(), dataset, mapping, columns);
+                if (!validated.accepted() || !validated.targetKey().equals(row.targetKey())) {
+                    throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+                }
+                JsonNode values = objectMapper.valueToTree(validated.values());
+                UUID provenanceId = facts.recordProvenance(idGenerator.newId(),
+                        batch.organizationId(), "INTERNAL_IMPORT", null, batch.id(),
+                        actor.userId(), effectiveFrom, now,
+                        "row " + row.rowNumber() + " of " + batch.declaredFileName());
+                applied += switch (dataset) {
+                    case PURCHASE_COST -> applyCost(batch, row, values, provenanceId, effectiveFrom, now);
+                    case INTERNAL_STOCK -> applyStock(batch, row, values, provenanceId, now);
+                    case FINANCE_INPUT -> applyFinanceInput(batch, row, values, provenanceId, effectiveFrom, now);
+                };
+            }
+            cursor = rows.getLast().rowNumber();
+        }
+        if (batch.acceptedRowCount() == null || applied != batch.acceptedRowCount()) {
+            throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
         }
         return applied;
     }
@@ -118,9 +147,9 @@ public class ImportApplier {
                 Digest.ofComponents(List.of(batch.id().toString(),
                         Integer.toString(row.rowNumber()))),
                 observedAt,
-                Math.toIntExact(integer(values, "quantityOnHand")),
+                integer(values, "quantityOnHand"),
                 values.has("quantityReserved")
-                        ? Math.toIntExact(integer(values, "quantityReserved")) : null);
+                        ? integer(values, "quantityReserved") : null);
         return 1;
     }
 
@@ -157,12 +186,19 @@ public class ImportApplier {
 
     private static BigDecimal decimal(JsonNode values, String field) {
         JsonNode node = values.get(field);
-        return node == null || node.isNull() ? null : new BigDecimal(node.asString());
+        if (node == null || node.isNull()) return null;
+        if (!node.isNumber()) {
+            throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+        }
+        return node.decimalValue();
     }
 
-    private static long integer(JsonNode values, String field) {
+    private static int integer(JsonNode values, String field) {
         JsonNode node = values.get(field);
-        return node == null || node.isNull() ? 0L : Long.parseLong(node.asString());
+        if (node == null || !node.isIntegralNumber() || !node.canConvertToInt()) {
+            throw OperationRejectedException.of(ErrorCode.IMPORT_VALIDATION_FAILED);
+        }
+        return node.intValue();
     }
 
     private static Instant instant(JsonNode values, String field, Instant fallback) {
@@ -170,10 +206,6 @@ public class ImportApplier {
         if (node == null || node.isNull()) {
             return fallback;
         }
-        try {
-            return Instant.parse(node.asString());
-        } catch (java.time.format.DateTimeParseException notAnInstant) {
-            return fallback;
-        }
+        return Instant.parse(node.asString());
     }
 }

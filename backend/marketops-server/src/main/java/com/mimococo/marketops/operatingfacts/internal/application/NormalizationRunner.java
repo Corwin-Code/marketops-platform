@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Turns stored acquisition evidence into canonical operating facts.
@@ -50,6 +52,7 @@ public class NormalizationRunner {
     private final FactRecorder factRecorder;
     private final IdGenerator idGenerator;
     private final Clock clock;
+    private final TransactionTemplate transactions;
 
     NormalizationRunner(IngestionJobDirectory jobs,
                         RawEvidenceQuery evidence,
@@ -57,7 +60,7 @@ public class NormalizationRunner {
                         PayloadReader payloadReader,
                         FactRecorder factRecorder,
                         IdGenerator idGenerator,
-                        Clock clock) {
+                        Clock clock, PlatformTransactionManager transactionManager) {
         this.jobs = jobs;
         this.evidence = evidence;
         this.declarations = declarations;
@@ -65,6 +68,7 @@ public class NormalizationRunner {
         this.factRecorder = factRecorder;
         this.idGenerator = idGenerator;
         this.clock = clock;
+        this.transactions = new TransactionTemplate(transactionManager);
     }
 
     /**
@@ -75,7 +79,7 @@ public class NormalizationRunner {
      * behind would stall the job forever on evidence that will never produce a
      * fact.
      */
-    @Transactional
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)
     public PassOutcome runOnce(UUID jobId) {
         Optional<IngestionJobView> found = jobs.job(jobId);
         if (found.isEmpty()) {
@@ -123,8 +127,8 @@ public class NormalizationRunner {
                         .addKeyValue("observationId", observation.observationId().toString())
                         .addKeyValue("correlationId", CorrelationId.current())
                         .log("Stored evidence could not be verified for normalization");
-                recordsRejected++;
-                continue;
+                return new PassOutcome(jobId, observations.size(), factsRecorded,
+                        recordsRejected + 1, "RAW_UNVERIFIABLE");
             }
 
             PayloadReader.ReadResult read;
@@ -132,21 +136,39 @@ public class NormalizationRunner {
                 read = payloadReader.read(body.get(), declaration.get().recordPointer(),
                         fieldPointers, valueKinds);
             } catch (PayloadReader.PayloadUnreadableException unreadable) {
-                recordsRejected++;
-                continue;
+                log.atWarn().addKeyValue("event","normalization_payload_unreadable")
+                        .addKeyValue("observationId",observation.observationId())
+                        .log("Normalization stopped without advancing its cursor");
+                return new PassOutcome(jobId,observations.size(),factsRecorded,recordsRejected+1,"PAYLOAD_UNREADABLE");
             }
 
-            for (String pointer : read.unmappedPointers()) {
-                declarations.recordDrift(idGenerator.newId(), jobId, declaration.get().id(),
-                        pointer, observation.observationId(), clock.instant());
-            }
-            for (CanonicalRecord record : read.records()) {
-                if (!carriesRequiredFields(record, requiredFields)) {
-                    recordsRejected++;
-                    continue;
+            int[] counts;
+            try {
+                counts = transactions.execute(status -> {
+                for (String pointer : read.unmappedPointers()) {
+                    declarations.recordDrift(idGenerator.newId(), jobId, declaration.get().id(),
+                            pointer, observation.observationId(), clock.instant());
                 }
-                factsRecorded += factRecorder.record(job, observation, record);
+                int accepted = 0;
+                int rejected = 0;
+                for (CanonicalRecord record : read.records()) {
+                    if (!carriesRequiredFields(record, requiredFields)) {
+                        rejected++;
+                    }
+                }
+                if (rejected>0) return new int[]{0,rejected};
+                for (CanonicalRecord record : read.records()) accepted += factRecorder.record(job, observation, record);
+                return new int[]{accepted, rejected};
+                });
+            } catch (ArithmeticException outOfRange) {
+                log.atWarn().addKeyValue("event","normalization_record_out_of_range")
+                        .addKeyValue("observationId",observation.observationId())
+                        .log("Normalization refused an unrepresentable source value");
+                return new PassOutcome(jobId,observations.size(),factsRecorded,recordsRejected+read.records().size(),"RECORD_OUT_OF_RANGE");
             }
+            factsRecorded += counts[0];
+            recordsRejected += counts[1];
+            if (counts[1]>0) return new PassOutcome(jobId,observations.size(),factsRecorded,recordsRejected,"REQUIRED_FIELD_MISSING");
         }
 
         boolean advanced = declarations.advanceProgress(jobId, last.ingestionTime(),

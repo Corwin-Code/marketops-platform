@@ -4,6 +4,7 @@ import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
+import com.mimococo.marketops.identityaccess.OwnedResource;
 import com.mimococo.marketops.operatingfacts.internal.application.ImportIntakeService;
 import com.mimococo.marketops.operatingfacts.internal.application.ManualFactEntryService;
 import com.mimococo.marketops.operatingfacts.internal.domain.IntakeDataset;
@@ -40,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
  * one thing and whose bytes say another is rejected rather than guessed at.
  */
 @RestController
+@com.mimococo.marketops.shared.ConsoleApi
 @RequestMapping("/api/v1/console/intake")
 class IntakeConsoleController {
 
@@ -89,7 +91,8 @@ class IntakeConsoleController {
     /** One submission. */
     @GetMapping(value = "/imports/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ImportRepository.ImportBatch get(AuthenticatedActor actor, @PathVariable UUID id) {
-        requireIntake(actor);
+        authorization.requireOwned(actor, ActionScopeCode.INTERNAL_FACT_INTAKE,
+                new OwnedResource(OwnedResource.Kind.IMPORT_BATCH, id));
         return imports.require(id);
     }
 
@@ -107,7 +110,8 @@ class IntakeConsoleController {
                                           boolean rejectedOnly,
                                           @RequestParam(required = false, defaultValue = "100")
                                           int limit) {
-        requireIntake(actor);
+        authorization.requireOwned(actor, ActionScopeCode.INTERNAL_FACT_INTAKE,
+                new OwnedResource(OwnedResource.Kind.IMPORT_BATCH, id));
         return imports.rows(id, rejectedOnly, limit);
     }
 
@@ -116,7 +120,8 @@ class IntakeConsoleController {
     ImportRepository.ImportBatch approve(AuthenticatedActor actor,
                                          @PathVariable UUID id,
                                          @Valid @RequestBody ApprovalRequest request) {
-        requireIntake(actor);
+        authorization.requireOwned(actor, ActionScopeCode.INTERNAL_FACT_INTAKE,
+                new OwnedResource(OwnedResource.Kind.IMPORT_BATCH, id));
         return imports.approveAndApply(actor, id, request.effectiveFrom(),
                 request.expectedVersion());
     }
@@ -126,7 +131,8 @@ class IntakeConsoleController {
     ImportRepository.ImportBatch reject(AuthenticatedActor actor,
                                         @PathVariable UUID id,
                                         @Valid @RequestBody RejectionRequest request) {
-        requireIntake(actor);
+        authorization.requireOwned(actor, ActionScopeCode.INTERNAL_FACT_INTAKE,
+                new OwnedResource(OwnedResource.Kind.IMPORT_BATCH, id));
         return imports.reject(actor, id, request.reason(), request.expectedVersion());
     }
 

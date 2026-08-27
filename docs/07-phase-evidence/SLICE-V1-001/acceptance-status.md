@@ -4,137 +4,144 @@
 document_type: acceptance_criteria_status
 slice: SLICE-V1-001
 contract_sha256: 0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5
-accepted_amendments: NONE
-assessed_at: 2026-08-27
-assessed_against: LOCAL_CHECKPOINT_ONLY
-remote_publication: NONE
+accepted_amendments: SLICE-V1-001-AMENDMENT-001
+amendment_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d
+assessed_at: 2026-08-28
+assessed_against: PR20_REWORK_IN_PROGRESS
+remote_publication: CANDIDATE_PUBLICATION_AND_CI_PENDING
+frozen_findings_sha256: 8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8
 production_write_enabled: false
 ```
 
-## How to read this
+## Interpretation
 
-Three verdicts, and the difference between them is the reason this file exists.
+The Human Owner accepted exact [Amendment-001](../../03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md),
+with [acceptance provenance](../../08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md).
+The S1-F010 compatibility decision is no longer pending. Local PG17 bootstrap,
+negative/equivalence/upgrade/restore and packaged runtime checks now pass;
+the full rework and exact final-commit verification remain incomplete. No criterion
+status changes merely because the decision is accepted. Real Yandex staging
+verification remains required for S1-AC-005/006.
 
-**`MET`** — implemented and demonstrated by executable evidence that ran. The
-evidence column names what ran.
+This is the candidate branch assessment, not a Controller verdict. An open
+frozen finding takes precedence over a partial local pass. Criteria without an
+open finding remain unproven until the final regression and traceability audit.
+External evidence is tracked independently; fixing a local defect cannot clear
+its external or Owner boundary. The initial Maker assessment is preserved at
+reviewed commit `30d16e5d7db2d2190635a06fececd5883093a876` and is superseded as
+current state by this matrix.
 
-**`IMPLEMENTED_UNPROVEN`** — the mechanism exists and is tested against the parts
-that can be tested locally, but the criterion's own evidence class requires
-something this authorization cannot produce: a real marketplace, a real model
-provider, a real cloud account, or a Gate-EV envelope. What is missing is named.
+Allowed states are `EXECUTABLY_VERIFIED`, `IMPLEMENTED_UNPROVEN`,
+`IMPLEMENTATION_DEFECT`, `EXTERNAL_EVIDENCE_PENDING`, `GATE_EV_PENDING`,
+`OWNER_PENDING`, and `NOT_APPLICABLE`. `EXECUTABLY_VERIFIED` requires the complete
+criterion's applicable evidence, not merely a fixture or public documentation.
+No criterion is claimed complete in this in-progress matrix.
 
-**`NOT_MET`** — not delivered by this work.
+## All 41 criteria
 
-Nothing here is rounded up. A criterion whose second half is open is not `MET`
-because its first half is.
+| ID | Status | Contract requirement | Open finding / verification | Remaining external boundary |
+| --- | --- | --- | --- | --- |
+| `S1-AC-001` | `IMPLEMENTATION_DEFECT` | public OIDC login and mandatory MFA work in the approved environment; unauthenticated access is denied. | S1-F010 | EXT-001: EXTERNAL_EVIDENCE_PENDING |
+| `S1-AC-002` | `IMPLEMENTATION_DEFECT` | MarketOps backend enforces Role + Store + Platform + Action Scope; horizontal/vertical privilege escalation tests fail closed. | S1-F001, S1-F004 | No additional external boundary identified in the frozen set |
+| `S1-AC-003` | `IMPLEMENTATION_DEFECT` | user disable/revoke and sensitive-action reauthentication/session behavior are verified and audited. | S1-F004 | EXT-001: EXTERNAL_EVIDENCE_PENDING |
+| `S1-AC-004` | `IMPLEMENTATION_DEFECT` | no Secret, Buyer PII, signed object URL or unsafe Raw content appears in Git, browser bundle, log, trace, error or AI invocation. | S1-F002, S1-F003, S1-F004 | No additional external boundary identified in the frozen set |
+| `S1-AC-005` | `IMPLEMENTATION_DEFECT` | Yandex production topology is reproducible from reviewed IaC and uses least-privilege workload identities/roles. | S1-F010 | Amendment-001: real Yandex staging verification remains EXTERNAL_EVIDENCE_PENDING |
+| `S1-AC-006` | `IMPLEMENTATION_DEFECT` | PostgreSQL PITR/backup and object-storage retention/integrity controls are configured and an actual restore drill meets the accepted target. | S1-F010 | EXT-002: EXTERNAL_EVIDENCE_PENDING |
+| `S1-AC-007` | `IMPLEMENTATION_DEFECT` | monitoring, alerting and runbooks cover the critical Slice paths; failure injection proves operator-visible degradation rather than silent loss. | S1-F005, S1-F010, S1-F012 | No additional external boundary identified in the frozen set |
+| `S1-AC-008` | `IMPLEMENTATION_DEFECT` | current official-source and real-account evidence proves required Ozon read capabilities and `PRICE_CHANGE` write/readback behavior. | S1-F003, S1-F007 | EXT-003: EXTERNAL_EVIDENCE_PENDING |
+| `S1-AC-009` | `IMPLEMENTATION_DEFECT` | equivalent evidence exists for Wildberries without pretending its task/status/error model is identical to Ozon. | S1-F003, S1-F007 | EXT-003: EXTERNAL_EVIDENCE_PENDING |
+| `S1-AC-010` | `IMPLEMENTATION_DEFECT` | quotas, pagination, freshness, error/timeout/unknown-result and Credential scope are recorded with last-verified date and contract tests. | S1-F003, S1-F006, S1-F007 | EXT-003: EXTERNAL_EVIDENCE_PENDING |
+| `S1-AC-011` | `IMPLEMENTATION_DEFECT` | scheduled/manual Slice acquisition is restartable, rate-limited, retry-budgeted and fenced on a real PostgreSQL path. | S1-F005, S1-F006 | No additional external boundary identified in the frozen set |
+| `S1-AC-012` | `IMPLEMENTATION_DEFECT` | success and business-meaningful failure bytes are immutable in the approved object store with exact hash/length/provenance and read verification. | S1-F002 | No additional external boundary identified in the frozen set |
+| `S1-AC-013` | `IMPLEMENTATION_DEFECT` | cursor cannot outrun committed verified Raw under crash/failure injection. | S1-F006 | No additional external boundary identified in the frozen set |
+| `S1-AC-014` | `IMPLEMENTED_UNPROVEN` | duplicate/replay/backfill processing creates no duplicate logical effects; replay makes zero Marketplace acquisition calls. | Final regression and criterion-specific evidence pending | No additional external boundary identified in the frozen set |
+| `S1-AC-015` | `IMPLEMENTATION_DEFECT` | schema drift, unknown field/state and missing/orphan object paths are observable and recoverable. | S1-F006 | No additional external boundary identified in the frozen set |
+| `S1-AC-016` | `IMPLEMENTATION_DEFECT` | pilot listings/variants map to Internal SKU or an explicit conflict queue with effective-time version history; unresolved mapping blocks write. | S1-F004 | No additional external boundary identified in the frozen set |
+| `S1-AC-017` | `IMPLEMENTATION_DEFECT` | COGS, physical stock and finance facts can be entered manually and imported through the productized Excel/CSV path with preview, hash, validation, rejection, audit and replay. | S1-F004, S1-F008 | No additional external boundary identified in the frozen set |
+| `S1-AC-018` | `IMPLEMENTATION_DEFECT` | duplicate, malformed, stale and conflicting imports are handled deterministically; no silent overwrite occurs. | S1-F008 | No additional external boundary identified in the frozen set |
+| `S1-AC-019` | `IMPLEMENTATION_DEFECT` | key funnel, stock, return, ad and profit facts are traceable to source Raw and show Source Time/Freshness/Confidence. | S1-F008 | No additional external boundary identified in the frozen set |
+| `S1-AC-020` | `IMPLEMENTED_UNPROVEN` | Contribution Profit/Minimum Price and canonical/estimated states reproduce against versioned golden examples; missing inputs do not produce fake precision. | Final regression and criterion-specific evidence pending | No additional external boundary identified in the frozen set |
+| `S1-AC-021` | `IMPLEMENTED_UNPROVEN` | Completed/Retained/Settled Sale and late-return/adjustment behavior are tested without rewriting historical source facts. | Final regression and criterion-specific evidence pending | No additional external boundary identified in the frozen set |
+| `S1-AC-022` | `IMPLEMENTED_UNPROVEN` | deterministic diagnosis and rule order correctly identify or decline Low Impression/CTR/Conversion, High Return, Stockout Risk, Negative Margin and Data Blocked cases. | Final regression and criterion-specific evidence pending | No additional external boundary identified in the frozen set |
+| `S1-AC-023` | `IMPLEMENTATION_DEFECT` | AI projection allowlist and PII/Secret negative tests pass. | S1-F003, S1-F009 | EXT-007: EXTERNAL_EVIDENCE_PENDING |
+| `S1-AC-024` | `IMPLEMENTATION_DEFECT` | structured AI output distinguishes Fact/Inference/Recommendation/ Unknown and rejects nonexistent Metric/Evidence references. | S1-F009 | No additional external boundary identified in the frozen set |
+| `S1-AC-025` | `IMPLEMENTATION_DEFECT` | model failure, timeout, malformed output and provider unavailability degrade safely; no deterministic Gate is bypassed. | S1-F003, S1-F005, S1-F009 | EXT-007: EXTERNAL_EVIDENCE_PENDING |
+| `S1-AC-026` | `IMPLEMENTATION_DEFECT` | approved golden diagnostic cases demonstrate useful cross-domain reasoning while preserving explicit uncertainty and competing explanations. | S1-F009 | EXT-004: OWNER_EVIDENCE_PENDING |
+| `S1-AC-027` | `IMPLEMENTATION_DEFECT` | Recommendation → Task → Approval/Policy Authorization is complete, scoped, expiring, attributable and immutable in audit. | S1-F001, S1-F004 | No additional external boundary identified in the frozen set |
+| `S1-AC-028` | `IMPLEMENTED_UNPROVEN` | Commercial Policy versions and overrides apply deterministically; missing/invalid/expired policy denies execution. | Final regression and criterion-specific evidence pending | No additional external boundary identified in the frozen set |
+| `S1-AC-029` | `IMPLEMENTATION_DEFECT` | price Dry Run/Impact Preview uses current canonical facts, entity version and prior platform value; stale previews cannot execute. | S1-F001 | No additional external boundary identified in the frozen set |
+| `S1-AC-030` | `IMPLEMENTATION_DEFECT` | command idempotency, lease/fence, retry and state transitions pass unit, property and real-database tests. | S1-F001, S1-F002, S1-F005 | No additional external boundary identified in the frozen set |
+| `S1-AC-031` | `IMPLEMENTATION_DEFECT` | low-risk real Ozon bounded verification write reaches the intended final value, Readback and complete Audit; unknown result is safely resolvable. The operation is performed only inside an exact unexpired Gate-EV authorization envelope. | S1-F002, S1-F007 | EXT-005: GATE_EV_PENDING |
+| `S1-AC-032` | `IMPLEMENTATION_DEFECT` | equivalent real WB bounded verification evidence exists, including native asynchronous/partial/quarantine semantics where applicable, and is generated only under its own exact Gate-EV authorization. | S1-F002, S1-F007 | EXT-005: GATE_EV_PENDING |
+| `S1-AC-033` | `IMPLEMENTATION_DEFECT` | Restore/Compensate is actually verified on both platforms without overwriting a later change; its delta/exposure, pre-state, operator, abort, Readback and evidence retention are bounded by Gate EV. | S1-F002, S1-F005 | EXT-005: GATE_EV_PENDING |
+| `S1-AC-034` | `IMPLEMENTED_UNPROVEN` | global and scoped Kill Switches prevent new writes; disabled flags are fail-closed under restart/concurrency. | Final regression and criterion-specific evidence pending | No additional external boundary identified in the frozen set |
+| `S1-AC-035` | `IMPLEMENTED_UNPROVEN` | browser E2E proves login → priority queue → SKU diagnosis → evidence → recommendation → approval/policy → price command → readback timeline. | Final regression and criterion-specific evidence pending | No additional external boundary identified in the frozen set |
+| `S1-AC-036` | `IMPLEMENTED_UNPROVEN` | UI never labels stale/estimated/unknown/readback-mismatch state as confirmed success. | Final regression and criterion-specific evidence pending | No additional external boundary identified in the frozen set |
+| `S1-AC-037` | `IMPLEMENTATION_DEFECT` | common priority/SKU queries meet accepted performance targets on representative data; async export is used for large output. | S1-F012 | No additional external boundary identified in the frozen set |
+| `S1-AC-038` | `IMPLEMENTATION_DEFECT` | support personnel can recover representative API outage, backlog, replay, AI failure, unknown write and database/object restore scenarios using committed runbooks. | S1-F005, S1-F006, S1-F010, S1-F012 | No additional external boundary identified in the frozen set |
+| `S1-AC-039` | `IMPLEMENTATION_DEFECT` | all required CI/security/contract/integration/browser checks pass on the exact release Head; no unresolved BLOCKER/MAJOR finding remains. | S1-F008, S1-F011, S1-F013 | No additional external boundary identified in the frozen set |
+| `S1-AC-040` | `OWNER_PENDING` | the Pilot Cohort, approved users, Stores, Capabilities, Policy limits, monitoring window and rollback/kill criteria are explicitly recorded. | Final regression and criterion-specific evidence pending | EXT-006: OWNER_PENDING |
+| `S1-AC-041` | `IMPLEMENTATION_DEFECT` | merge, deployment and production enablement are distinct authorizations; the code ships with production writes disabled. | S1-F001, S1-F013 | No additional external boundary identified in the frozen set |
 
-## A. Identity, security and scope
+## Criterion-specific verification sources
 
-| ID | Verdict | Evidence and what is missing |
-| --- | --- | --- |
-| `S1-AC-001` | `IMPLEMENTED_UNPROVEN` | Authorization-code with proof key for code exchange, `acr_values=mfa` requested, identity-provider registry requiring a recorded MFA claim before a provider can be `ACTIVE` (V0011). Browser suite proves the console's own flow end to end against a routed provider (`TC-BROWSER-011`). **Missing:** no real identity provider was contacted, so the approved environment's MFA behaviour is unproven. |
-| `S1-AC-002` | `MET` | Role plus action scope plus resource scope evaluated per request against a live profile; ten action scopes with a reviewed role matrix seeded and asserted (`TC-DB-118`); `anyRequest().denyAll()`; unauthenticated and forged-token requests refused by the running backend (`TC-BROWSER-010`). |
-| `S1-AC-003` | `MET` | `credentials_valid_from` refuses a token issued before it; four actions require a recent authentication proven against the provider's recorded maximum age; every decision lands in the append-only `iam.identity_decision_event` with subject and session digests only. |
-| `S1-AC-004` | `MET` | Bundle isolation check; browser assertion that the built bundle carries no secret reference, private key or client secret; repository secret scan in `validate_governance.py`; no credential in any business table, request, log record or audit row. |
+The [machine-readable mapping](rework-r1/criterion-evidence-map.json) binds all
+41 exact criterion IDs to existing test/control paths and keeps their external
+and Owner boundaries explicit. These are verification sources, not claims that
+fixtures satisfy real-provider acceptance. Final commit/CI evidence is still due.
 
-## B. Infrastructure and recovery
-
-| ID | Verdict | Evidence and what is missing |
-| --- | --- | --- |
-| `S1-AC-005` | `IMPLEMENTED_UNPROVEN` | Complete `ru-central1` topology in `infra/yandex`: network with no public route to the database, three workload identities with narrow role bindings, managed PostgreSQL, evidence bucket, observability. **Missing:** never applied, no state exists, and no `terraform validate` ran — no binary was available and no provider could be downloaded. Reviewed, not machine-checked, not built. |
-| `S1-AC-006` | `IMPLEMENTED_UNPROVEN` | Backup window, retention with a floor of seven days enforced by a variable validation, performance diagnostics, object-lock compliance mode with a one-year floor, versioning, encryption. **Missing:** the restore drill has never run, because there is nothing to restore. `docs/06-runbooks/database-restore-drill.md` says so in its first lines. |
-| `S1-AC-007` | `IMPLEMENTED_UNPROVEN` | Six alerts, each naming a runbook and a plain-language meaning; five new runbooks covering unknown write outcome, kill switch, backlog, evidence custody and restore. **Missing:** no failure injection has been performed against a real environment, so operator-visible degradation is designed rather than demonstrated. |
-
-## C. Marketplace capability evidence
-
-| ID | Verdict | Evidence and what is missing |
-| --- | --- | --- |
-| `S1-AC-008` | `NOT_MET` | No Ozon account was contacted. Every capability row is `UNVERIFIED`, which is why no call is reachable. Producing this evidence is an Owner-authorized act against a real account. |
-| `S1-AC-009` | `NOT_MET` | No Wildberries account was contacted. The asynchronous write-result model is represented in the schema (`write_result_model`, task pointers, status vocabulary) so its semantics need not be assumed to match Ozon's — but nothing has been verified. |
-| `S1-AC-010` | `IMPLEMENTED_UNPROVEN` | Every field the criterion names is a recorded column with a verification state and an evidence reference: rate limit, pagination model, freshness expectation, idempotency support, late-data behaviour, timeout and unknown-result strategy, readback path, credential scope. **Missing:** every row is `UNVERIFIED`. The register exists; the facts do not. |
-
-## D. Ingestion and Raw
-
-| ID | Verdict | Evidence and what is missing |
-| --- | --- | --- |
-| `S1-AC-011` | `IMPLEMENTED_UNPROVEN` | Run lifecycle, leasing and fencing on a real PostgreSQL path (`AuthorizedAcquisitionFlowIT`, `IngestionAuthorityAndEvidenceIT`); rate limiter refusing rather than exceeding a recorded limit; bounded retry budget. **Missing:** no real marketplace was called, so restartability against a real source is untested. |
-| `S1-AC-012` | `IMPLEMENTED_UNPROVEN` | Hash, length and provenance recorded per object; read-back verification refusing a mismatch; filesystem and S3-compatible custody adapters; the bucket's compliance lock enforces immutability independently. **Missing:** no approved object store was contacted. |
-| `S1-AC-013` | `MET` | The cursor advances only inside the transaction that committed the evidence (`AcquisitionPageWorker`), asserted against a real database in `IngestionAuthorityAndEvidenceIT`. |
-| `S1-AC-014` | `MET` | Idempotent fact keys on `(organization_id, source_fact_key)`; metric values keyed by input digest; `ops.replay_run_makes_no_call()` refuses a marketplace call during replay (MO042), asserted against a real database. |
-| `S1-AC-015` | `IMPLEMENTED_UNPROVEN` | `staging.schema_drift_observation` records a pointer no declaration names; unknown states are preserved verbatim; missing object paths surface as custody failures with their own alert. **Missing:** no real drift has been observed, so recovery from it is designed rather than exercised. |
-
-## E. Product identity and internal intake
-
-| ID | Verdict | Evidence and what is missing |
-| --- | --- | --- |
-| `S1-AC-016` | `MET` | Effective-dated mapping with a gist exclusion admitting one internal variant per listing variant at any instant; explicit conflict queue; the write gate refuses on `MAPPING_UNRESOLVED` and `MAPPING_CONFLICT_OPEN`, asserted against a real database (`TC-WRITE-101`). |
-| `S1-AC-017` | `IMPLEMENTED_UNPROVEN` | CSV and XLSX intake with content hashing, preview, per-row validation, rejection, audit and replay; manual entry; versioned cost with a gist exclusion. **Missing:** no actual internal file sample from the business has been processed, so the registered schema profiles are provisional. |
-| `S1-AC-018` | `MET` | Duplicate content refused on the content hash; malformed rows rejected per row with a reason; superseding rather than overwriting; asserted in the intake tests. |
-
-## F. Facts, metrics and diagnosis
-
-| ID | Verdict | Evidence and what is missing |
-| --- | --- | --- |
-| `S1-AC-019` | `MET` | Every fact carries a provenance row; `EvidenceQuery` resolves a canonical value back to the source it came from; source time, freshness and confidence travel with every value to the screen. |
-| `S1-AC-020` | `MET` | Contribution profit and break-even minimum price computed by a pure function over declared inputs; twenty-eight guardrail cases including every way a missing input blocks rather than distorts (`TC-GUARD-001` through `TC-GUARD-007`); decimal money with explicit currency throughout. |
-| `S1-AC-021` | `MET` | Completed, retained and settled sales are separate rows with a retention window; a late return writes a new fact rather than rewriting a historical one; metric values are keyed by input digest so a correction appears beside the figure somebody acted on. |
-| `S1-AC-022` | `MET` | Nine rules in fixed ordinal order with `DATA_BLOCKED` first and guarding the rest; a rule that cannot answer records a decline with its reason rather than staying silent; rule order asserted as a seed fact (`TC-DB-118`). |
-
-## G. AI
-
-| ID | Verdict | Evidence and what is missing |
-| --- | --- | --- |
-| `S1-AC-023` | `MET` | Twenty-two allowlisted field paths enforced on the assembled projection; the projection is path-and-value pairs rather than an object graph, so an undeclared field has no way to travel; the request digest identifies what was sent without retaining it. |
-| `S1-AC-024` | `MET` | Sixteen output-validation cases (`TC-AI-001` through `TC-AI-005`): fact, inference, recommendation and unknown are distinct kinds; a factual claim must cite something the model was shown; a recommendation may only name an action with a gate. |
-| `S1-AC-025` | `MET` | Every path ends in a recorded invocation and none of them raises: no eligible provider records a refusal, a provider that does not answer records a failure, an answer that does not validate records the rejected claims. The deterministic layer is untouched in all three. |
-| `S1-AC-026` | `NOT_MET` | No golden diagnostic cases have been approved by the Owner, and none could be produced without real operating data. The mechanism that would run them exists. |
-
-## H. Workflow, policy and price execution
-
-| ID | Verdict | Evidence and what is missing |
-| --- | --- | --- |
-| `S1-AC-027` | `MET` | Recommendation state machine asserted as whole-machine properties (`TC-WF-001` through `TC-WF-004`): nothing reaches an authorized state without review, a task-only proposal can never become one, and a terminal proposal cannot be revived. Decisions are append-only with one standing authorization per recommendation enforced by a partial unique index; every decision carries a bounded scope expiry. |
-| `S1-AC-028` | `MET` | Most-specific-wins policy resolution in one statement; publishing refuses a version leaving a required limit unconfigured; an absent or expired policy produces `NO_POLICY_IN_FORCE` and blocks, asserted in `TC-GUARD-001`. |
-| `S1-AC-029` | `MET` | The preview runs the same engine, over the same gathered values, as the gate; the recorded input digest makes the verdict re-derivable; a stale entity version blocks with `ENTITY_VERSION_CHANGED`, and the write gate independently refuses on `AUTHORIZATION_INVALID_OR_EXPIRED` when the digest has moved (`TC-WRITE-101`). |
-| `S1-AC-030` | `MET` | Forty-five real-database cases (`TC-WRITE-101` through `TC-WRITE-108`) covering the gate as a conjunction, fence and lease refusal, success requiring a matching readback, no path from unknown back to executing, compensation safety, crash recovery, attempt immutability and every bound on a policy authorization. Derived idempotency key asserted in unit tests. |
-| `S1-AC-031` | `NOT_MET` | Requires an exact unexpired Gate-EV envelope. Not authorized and not attempted. |
-| `S1-AC-032` | `NOT_MET` | Requires its own Gate-EV envelope. Not authorized and not attempted. |
-| `S1-AC-033` | `IMPLEMENTED_UNPROVEN` | The refusal that matters is proven against a real database: a restore is refused once anything else has moved the price, and a compensation is not complete until a readback observes the prior value (`TC-WRITE-105`). **Missing:** no real platform restore, which is Gate-EV work. |
-| `S1-AC-034` | `MET` | Global, platform, account, store and capability scopes; a missing flag is off, so an unconfigured scope blocks; the gate is evaluated inside the transaction that claims a command, so a switch thrown while a worker is deciding is seen. Disable is ungated, enable requires a recent authentication. Asserted in `TC-WRITE-101`. |
-
-## I. UI and operations
-
-| ID | Verdict | Evidence and what is missing |
-| --- | --- | --- |
-| `S1-AC-035` | `IMPLEMENTED_UNPROVEN` | The browser suite proves sign-in through to subject diagnosis against the real backend and a routed identity provider, and proves that nothing operational reaches an unauthenticated visitor. Approval, command creation and the readback timeline are proven by component tests over the same code. **Missing:** the full chain in one browser run needs seeded operating data and a real provider; neither exists. |
-| `S1-AC-036` | `MET` | One module decides presentation, asserted over the whole confidence vocabulary rather than case by case; an unavailable value is absent whatever its confidence says; an unresolved command says so in plain words and no readback means the screen says nothing about what the marketplace holds. Asserted in unit, component and browser tests. |
-| `S1-AC-037` | `NOT_MET` | No representative data set and no environment to measure against. Indexes for the queue and subject queries exist but their targets are unmeasured. |
-| `S1-AC-038` | `IMPLEMENTED_UNPROVEN` | Runbooks committed for unknown write outcome, readback mismatch, closed gate, kill switch, backlog, evidence custody, restore drill and environment bootstrap. **Missing:** none has been executed by support personnel, which is what this criterion asks for. |
-
-## J. Release
-
-| ID | Verdict | Evidence and what is missing |
-| --- | --- | --- |
-| `S1-AC-039` | `NOT_MET` | 380 unit and architecture tests, 225 integration tests, 124 frontend tests and 8 browser tests all pass on the final tree, as do both repository validators, lint, type check, format check and bundle isolation. **The backend coverage gate does not pass:** 68.67% lines against a required 80% and 52.39% branches against a required 70%. Every test passes; the ratio is short, because the slice quadrupled the codebase with adapter and repository code that the flow tests reach only along their own paths. Closing it needs tests written for the ratio rather than for a guarantee. No CI run exists either, because nothing was pushed. |
-| `S1-AC-040` | `NOT_MET` | The mechanisms are complete — pilot allowlist, policy limits, bounded authorizations, monitoring window, kill criteria — and every one of them is empty. Recording the actual cohort is an Owner decision. |
-| `S1-AC-041` | `MET` | Production writes are disabled in every profile; the worker switch is off by default; enabling a write needs a verified capability, verified operations, both flag scopes on, an allowlisted entity, a live authorization and a passing guardrail — six separate decisions, none implied by a merge. |
+| Criterion | Test/control sources |
+| --- | --- |
+| `S1-AC-001` | `SignedBearerIdentityIT.java`; `business-journey.spec.ts` |
+| `S1-AC-002` | `OperatingFlowIT.java`; `PriceWritePathIT.java`; `SignedBearerIdentityIT.java` |
+| `S1-AC-003` | `SignedBearerIdentityIT.java` |
+| `S1-AC-004` | `BoundedOutboundHttpTest.java`; `MountedSecretFilesystemIT.java`; `OutputValidatorTest.java`; `LoggingContractTest.java`; `DiagnosticExportIT.java`; `verify_coverage_thresholds.sh`; `operating-console.spec.ts` |
+| `S1-AC-005` | `verify_terraform.py`; `validate_terraform_plan.py`; `test_validate_terraform_plan.py`; `test_yandex_runtime.py` |
+| `S1-AC-006` | `RepresentativePerformanceIT.java`; `ManagedProfileMigrationIT.java` |
+| `S1-AC-007` | `OperatingFlowIT.java`; `PriceCommandWorkerIT.java`; `test_yandex_telemetry.py`; `health-shell.spec.ts` |
+| `S1-AC-008` | `RegistryVerificationFlowIT.java`; `PlatformHttpAdaptersTest.java` |
+| `S1-AC-009` | `RegistryVerificationFlowIT.java`; `PlatformHttpAdaptersTest.java` |
+| `S1-AC-010` | `PlatformHttpAdaptersTest.java`; `AcquisitionPageWorkerTest.java`; `IngestionAuthorityAndEvidenceIT.java` |
+| `S1-AC-011` | `AcquisitionRunnerTest.java`; `IngestionAuthorityAndEvidenceIT.java`; `AuthorizedAcquisitionFlowIT.java` |
+| `S1-AC-012` | `RawCustodyLocatorTest.java`; `FilesystemObjectStorageTest.java`; `S3CompatibleObjectStorageTest.java`; `DiagnosticExportIT.java` |
+| `S1-AC-013` | `AuthorizedAcquisitionFlowIT.java`; `IngestionAuthorityAndEvidenceIT.java` |
+| `S1-AC-014` | `StoredRawReplayIT.java`; `FactRecorderTest.java`; `DiagnosticExportIT.java` |
+| `S1-AC-015` | `StoredRawReplayIT.java`; `NormalizationRunnerTest.java`; `AcquisitionPageWorkerTest.java` |
+| `S1-AC-016` | `OperatingFlowIT.java`; `PriceWritePathIT.java` |
+| `S1-AC-017` | `FileIntakeFlowIT.java`; `SpreadsheetReaderTest.java`; `ImportRowValidatorTest.java` |
+| `S1-AC-018` | `FileIntakeFlowIT.java`; `ImportRowValidatorTest.java` |
+| `S1-AC-019` | `OperatingFlowIT.java`; `StoredRawReplayIT.java` |
+| `S1-AC-020` | `OperatingFlowIT.java` |
+| `S1-AC-021` | `OperatingFlowIT.java` |
+| `S1-AC-022` | `DiagnosisEngineTest.java`; `OperatingFlowIT.java` |
+| `S1-AC-023` | `OperatingFlowIT.java`; `OutputValidatorTest.java`; `HttpModelGatewayTest.java` |
+| `S1-AC-024` | `OutputValidatorTest.java` |
+| `S1-AC-025` | `OperatingFlowIT.java`; `HttpModelGatewayTest.java` |
+| `S1-AC-026` | `OutputValidatorTest.java` |
+| `S1-AC-027` | `OperatingFlowIT.java`; `PriceWritePathIT.java`; `RegistryVerificationFlowIT.java` |
+| `S1-AC-028` | `GuardrailEngineTest.java`; `OperatingFlowIT.java` |
+| `S1-AC-029` | `OperatingFlowIT.java`; `PriceWritePathIT.java` |
+| `S1-AC-030` | `PriceWritePathIT.java`; `PriceCommandWorkerIT.java` |
+| `S1-AC-031` | `PriceCommandWorkerIT.java`; `RegistryVerificationFlowIT.java` |
+| `S1-AC-032` | `PriceCommandWorkerIT.java`; `PlatformHttpAdaptersTest.java` |
+| `S1-AC-033` | `PriceCommandWorkerIT.java`; `PriceWritePathIT.java` |
+| `S1-AC-034` | `PriceWritePathIT.java`; `PriceCommandWorkerIT.java`; `ApplicationEnvironmentFailClosedTest.java` |
+| `S1-AC-035` | `business-journey.spec.ts` |
+| `S1-AC-036` | `ConsoleJourney.test.tsx`; `operating-console.spec.ts` |
+| `S1-AC-037` | `RepresentativePerformanceIT.java`; `DiagnosticExportIT.java`; `operating-console.spec.ts` |
+| `S1-AC-038` | `StoredRawReplayIT.java`; `OperatingFlowIT.java`; `PriceCommandWorkerIT.java`; `RepresentativePerformanceIT.java`; `business-journey.spec.ts`; `health-shell.spec.ts` |
+| `S1-AC-039` | `validate_governance.py`; `validate_production_readiness.py`; `verify_coverage_thresholds.sh`; `backend.yml`; `infrastructure.yml` |
+| `S1-AC-040` | `OPEN_QUESTIONS.md` |
+| `S1-AC-041` | `ApplicationEnvironmentFailClosedTest.java`; `ApplicationConfigurationTest.java`; `PriceWritePathIT.java`; `validate_governance.py`; `test_validate_governance.py` |
 
 ## Summary
 
-| Verdict | Count | Criteria |
-| --- | --- | --- |
-| `MET` | 21 | 002, 003, 004, 013, 014, 016, 018, 019, 020, 021, 022, 023, 024, 025, 027, 028, 029, 030, 034, 036, 041 |
-| `IMPLEMENTED_UNPROVEN` | 12 | 001, 005, 006, 007, 010, 011, 012, 015, 017, 033, 035, 038 |
-| `NOT_MET` | 8 | 008, 009, 026, 031, 032, 037, 039, 040 |
+| Status | Count |
+| --- | --- |
+| `IMPLEMENTATION_DEFECT` | 32 |
+| `IMPLEMENTED_UNPROVEN` | 8 |
+| `OWNER_PENDING` | 1 |
 
-Seven of the eight `NOT_MET` criteria need something outside this
-authorization: a real marketplace account, an Owner-approved golden case set, a
-Gate-EV envelope, a running environment, or an Owner decision about who the
-pilot is.
-
-The eighth is different and should be read as a gap in this work.
-`S1-AC-039` fails on the backend coverage gate — 68.67% against 80% — and that
-is a threshold this repository already set for itself. Every test passes and
-the guarantees that carry risk are covered; the ratio is short because the
-slice added a large volume of adapter and repository code. Closing it is
-ordinary further work, not a blocked dependency.
+The 13 frozen findings remain open. The worktree is not yet a verified final
+artifact. No production provider, deploy, Gate EV, Gate E, Pilot, Slice closure
+or V1 completion is claimed.

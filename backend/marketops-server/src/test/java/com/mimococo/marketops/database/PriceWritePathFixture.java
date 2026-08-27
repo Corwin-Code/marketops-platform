@@ -56,8 +56,8 @@ final class PriceWritePathFixture {
     static final UUID COMMAND = UUID.fromString("00000000-0000-0000-0000-000000000d01");
 
     /** A digest that is well-formed and belongs to this fixture's facts. */
-    static final String ENTITY_DIGEST =
-            "1111111111111111111111111111111111111111111111111111111111111111";
+    static final String ENTITY_DIGEST = com.mimococo.marketops.shared.Digest.ofComponents(
+            List.of("OBSERVED_SELLING_PRICE", "AVAILABLE", "1".repeat(64)));
 
     /** SQLSTATEs the write path raises, from the V0020 and V0025 headers. */
     static final String AUTHORITY_LOST = "MO030";
@@ -85,6 +85,10 @@ final class PriceWritePathFixture {
         identity(connection);
         catalogue(connection);
         registry(connection);
+        com.mimococo.marketops.PriceCommandFixture.seedOperations(
+                org.springframework.jdbc.core.simple.JdbcClient.create(
+                    new org.springframework.jdbc.datasource.SingleConnectionDataSource(connection, true)),
+                CAPABILITY, false);
         facts(connection);
         workflow(connection);
         command(connection);
@@ -254,6 +258,15 @@ final class PriceWritePathFixture {
                         '4444444444444444444444444444444444444444444444444444444444444444',
                         'SUCCEEDED', 1, 6, '%s', now(), now(), 'fixture')
                 """.formatted(CALCULATION_RUN, ORGANIZATION, STORE, USER));
+        execute(connection, """
+                INSERT INTO mart.metric_value (id, organization_id, calculation_run_id,
+                    metric_code, definition_version, subject_kind, subject_id, window_code,
+                    period_start, period_end, value_state, numeric_value, currency_code,
+                    confidence_state, estimated, input_digest, computed_at)
+                VALUES (gen_random_uuid(), '%s', '%s', 'OBSERVED_SELLING_PRICE', 1,
+                    'PLATFORM_LISTING_VARIANT', '%s', 'D30', now() - interval '30 days', now(),
+                    'AVAILABLE', 100, 'RUB', 'CANONICAL_CONFIRMED', false, '%s', now())
+                """.formatted(ORGANIZATION, CALCULATION_RUN, LISTING_VARIANT, "1".repeat(64)));
     }
 
     private static void workflow(Connection connection) throws SQLException {
@@ -289,6 +302,14 @@ final class PriceWritePathFixture {
                 """.formatted(RECOMMENDATION, ORGANIZATION, STORE, LISTING_VARIANT,
                         CALCULATION_RUN, ENTITY_DIGEST));
         execute(connection, """
+                INSERT INTO ops.guardrail_evaluation
+                    (id, organization_id, recommendation_id, policy_id, policy_version,
+                     purpose, outcome, reason_codes, detail, input_digest, evaluated_at,
+                     correlation_id, authority_snapshot)
+                VALUES ('%s', '%s', '%s', '%s', 1, 'APPROVAL', 'PASS', ARRAY[]::text[],
+                        '{"changeRate": "0.050000"}'::jsonb, '%s', now(), 'fixture', ops.price_authority_snapshot('%s'))
+                """.formatted(UUID.randomUUID(), ORGANIZATION, RECOMMENDATION, POLICY, ENTITY_DIGEST, RECOMMENDATION));
+        execute(connection, """
                 INSERT INTO ops.approval_decision
                     (id, organization_id, recommendation_id, decision, decided_by_user_id,
                      authenticated_at, step_up_satisfied, entity_version_digest,
@@ -301,10 +322,10 @@ final class PriceWritePathFixture {
                 INSERT INTO ops.guardrail_evaluation
                     (id, organization_id, recommendation_id, policy_id, policy_version,
                      purpose, outcome, reason_codes, detail, input_digest, evaluated_at,
-                     correlation_id)
+                     correlation_id, authority_snapshot)
                 VALUES ('%s', '%s', '%s', '%s', 1, 'EXECUTION', 'PASS', ARRAY[]::text[],
-                        '{"changeRate": "0.050000"}'::jsonb, '%s', now(), 'fixture')
-                """.formatted(GUARDRAIL, ORGANIZATION, RECOMMENDATION, POLICY, ENTITY_DIGEST));
+                        '{"changeRate": "0.050000"}'::jsonb, '%s', now(), 'fixture', ops.price_authority_snapshot('%s'))
+                """.formatted(GUARDRAIL, ORGANIZATION, RECOMMENDATION, POLICY, ENTITY_DIGEST, RECOMMENDATION));
         execute(connection, """
                 INSERT INTO ops.pilot_allowlist_entry
                     (id, organization_id, action_kind, platform_code, store_id,
@@ -326,7 +347,7 @@ final class PriceWritePathFixture {
                      retry_budget_remaining, fence_token, next_attempt_at, created_at,
                      updated_at)
                 VALUES ('%s', '%s', '%s', '%s', '%s', '%s', 'OZON', '%s',
-                        'pc-fixture-price-command-000001', 'RUB', 100.0000, 105.0000, '%s',
+                        'pc-00000000-0000-0000-0000-000000000c01', 'RUB', 100.0000, 105.0000, '%s',
                         '%s', 'PENDING', 0, 3, 1, now(), now(), now())
                 """.formatted(COMMAND, ORGANIZATION, RECOMMENDATION, APPROVAL, STORE,
                         LISTING_VARIANT, CAPABILITY, PRICE_OBSERVATION, ENTITY_DIGEST));
@@ -341,7 +362,6 @@ final class PriceWritePathFixture {
                 "ops.authorization_decision_evidence",
                 "raw.raw_acquisition_observation",
                 "raw.raw_logical_unit",
-                "raw.raw_content",
                 "ops.ingestion_checkpoint",
                 "ops.ingestion_run",
                 "platform.ingestion_job",
@@ -351,6 +371,7 @@ final class PriceWritePathFixture {
                 "ops.price_command_readback",
                 "ops.price_command_attempt",
                 "ops.price_command",
+                "raw.raw_content",
                 "ops.kill_switch_event",
                 "ops.pilot_allowlist_entry",
                 "ops.guardrail_evaluation",
@@ -470,13 +491,9 @@ final class PriceWritePathFixture {
                               String purpose, long fence, String owner, String outcomeClass)
             throws SQLException {
         UUID attemptId = UUID.randomUUID();
-        execute(connection, """
-                INSERT INTO ops.price_command_attempt
-                    (id, command_id, attempt_no, purpose, fence_token, lease_owner,
-                     started_at, completed_at, outcome_class, correlation_id)
-                VALUES ('%s', '%s', %d, '%s', %d, '%s', now(), now(), '%s', 'fixture')
-                """.formatted(attemptId, commandId, attemptNo, purpose, fence, owner,
-                        outcomeClass));
+        execute(connection, "SELECT ops.open_price_command_attempt('" + attemptId + "', '"
+                + commandId + "', '" + purpose + "', " + fence + ", '" + owner
+                + "', '" + "3".repeat(64) + "', 'fixture')");
         return attemptId;
     }
 
@@ -484,16 +501,48 @@ final class PriceWritePathFixture {
     static UUID recordReadback(Connection connection, UUID commandId, UUID attemptId,
                                String price, String matchState) throws SQLException {
         UUID readbackId = UUID.randomUUID();
-        String priceValue = price == null ? "NULL" : price;
-        String currency = price == null ? "NULL" : "'RUB'";
-        execute(connection, """
-                INSERT INTO ops.price_command_readback
-                    (id, command_id, attempt_id, observed_at, observed_price, currency_code,
-                     match_state, correlation_id)
-                VALUES ('%s', '%s', '%s', now(), %s, %s, '%s', 'fixture')
-                """.formatted(readbackId, commandId, attemptId, priceValue, currency,
-                        matchState));
+        String body = price == null ? "{}" : "{\"price\":\"" + price + "\",\"currency\":\"RUB\"}";
+        completeResponse(connection, attemptId, body);
+        String fence = PostgresContainerSupport.single(connection,
+                "SELECT fence_token FROM ops.price_command_attempt WHERE id = '" + attemptId + "'");
+        String owner = PostgresContainerSupport.single(connection,
+                "SELECT lease_owner FROM ops.price_command_attempt WHERE id = '" + attemptId + "'");
+        String derived = PostgresContainerSupport.single(connection,
+                "SELECT ops.record_price_command_readback('" + readbackId + "', '" + commandId
+                + "', '" + attemptId + "', " + fence + ", '" + owner + "', 'fixture')");
+        org.assertj.core.api.Assertions.assertThat(derived).isEqualTo(matchState);
         return readbackId;
+    }
+
+    static void completeResponse(Connection connection, UUID attemptId, String body) throws SQLException {
+        completeResponse(connection,attemptId,body,200);
+    }
+
+    static void completeResponse(Connection connection, UUID attemptId, String body,int httpStatus) throws SQLException {
+        byte[] bytes = body.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        String digest = com.mimococo.marketops.shared.Digest.ofBytes(bytes);
+        UUID content = UUID.randomUUID();
+        execute(connection, """
+                INSERT INTO raw.raw_content (id, hash_algorithm, hash_value, byte_length, object_ref)
+                VALUES ('%s', 'SHA256', '%s', %d, 'object-ref://test-custody/response/%s')
+                ON CONFLICT (hash_algorithm, hash_value) DO NOTHING
+                """.formatted(content, digest, bytes.length, content));
+        String contentId = PostgresContainerSupport.single(connection,
+                "SELECT id FROM raw.raw_content WHERE hash_value = '" + digest + "'");
+        String fence = PostgresContainerSupport.single(connection,
+                "SELECT fence_token FROM ops.price_command_attempt WHERE id = '" + attemptId + "'");
+        String owner = PostgresContainerSupport.single(connection,
+                "SELECT lease_owner FROM ops.price_command_attempt WHERE id = '" + attemptId + "'");
+        try (PreparedStatement statement = connection.prepareStatement("""
+                SELECT ops.complete_price_command_attempt(?::uuid, ?::bigint, ?, 'ACCEPTED',
+                    'HTTP fixture', NULL, NULL, ?::uuid, ?, ?, '{"etag":"fixture-v1"}'::jsonb,
+                    'PROTOCOL_FIXTURE', ?)
+                """)) {
+            statement.setObject(1, attemptId); statement.setLong(2, Long.parseLong(fence));
+            statement.setString(3, owner); statement.setObject(4, UUID.fromString(contentId));
+            statement.setBytes(5, bytes); statement.setInt(6,httpStatus); statement.setString(7, "3".repeat(64));
+            statement.execute();
+        }
     }
 
     /** Spend one use of a bounded authorization, returning the uses remaining. */

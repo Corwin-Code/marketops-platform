@@ -88,6 +88,10 @@ public class IdentitySecurityConfig {
                         .authenticationEntryPoint(problemEntryPoint)
                         .accessDeniedHandler(problemEntryPoint))
                 .authorizeHttpRequests(requests -> requests
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/actuator/operations")
+                        .access((authentication, context) -> new org.springframework.security.authorization.AuthorizationDecision(
+                                List.of("127.0.0.1", "::1", "0:0:0:0:0:0:0:1")
+                                        .contains(context.getRequest().getRemoteAddr())))
                         .requestMatchers(HEALTH_PATTERN, INFO_PATTERN, METADATA_PATTERN)
                         .permitAll()
                         .requestMatchers(MAINTENANCE_PATTERN).permitAll()
@@ -109,6 +113,8 @@ public class IdentitySecurityConfig {
      * must be the exact one configured, and the audience must match when one is
      * recorded. Both are checked before any claim is used, so a correctly signed
      * token minted for a different application is refused rather than resolved.
+     * Expiry is mandatory; the library's timestamp validator only validates an
+     * expiry when present and would otherwise accept an unbounded bearer token.
      */
     @Bean
     JwtDecoder jwtDecoder(IdentityProperties properties) {
@@ -121,11 +127,21 @@ public class IdentitySecurityConfig {
         NimbusJwtDecoder decoder = properties.getJwkSetUri() == null
                 ? NimbusJwtDecoder.withIssuerLocation(properties.getIssuerUri()).build()
                 : NimbusJwtDecoder.withJwkSetUri(properties.getJwkSetUri()).build();
-        decoder.setJwtValidator(new org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator<>(
+        decoder.setJwtValidator(tokenValidator(properties));
+        return decoder;
+    }
+
+    /** Shared with the signed local-key servlet integration contract. */
+    static OAuth2TokenValidator<Jwt> tokenValidator(IdentityProperties properties) {
+        return new org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator<>(
                 JwtValidators.createDefaultWithIssuer(properties.getIssuerUri()),
                 new JwtTimestampSkew(),
-                audienceValidator(properties.getAudience())));
-        return decoder;
+                token -> token.getExpiresAt() == null
+                        ? OAuth2TokenValidatorResult.failure(
+                                new org.springframework.security.oauth2.core.OAuth2Error(
+                                        "invalid_token", "the token has no expiry", null))
+                        : OAuth2TokenValidatorResult.success(),
+                audienceValidator(properties.getAudience()));
     }
 
     private static OAuth2TokenValidator<Jwt> audienceValidator(String audience) {

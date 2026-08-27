@@ -1,18 +1,32 @@
 # Database restore drill
 
 ```yaml
-document_type: recovery_drill_procedure
-executed: NEVER
-executed_against: NONE
+document_type: recovery_drill_procedure_and_local_evidence
+local_ephemeral_restore: EXECUTED_PG17_SYNTHETIC
+provider_pitr_drill: NOT_EXECUTED
+production_restore: NOT_AUTHORIZED
 ```
 
 ## Status
 
-**This drill has never been executed.** No Yandex Cloud environment exists yet,
-so there has been nothing to restore. The acceptance criterion this serves
-(`S1-AC-006`) asks for configured controls *and* an actual restore that meets
-the accepted target; the first half is in `infra/yandex/modules/database`, the
-second half is open and is recorded as open in the Production Assurance Matrix.
+**Local ephemeral restore passed; provider PITR has not run.**
+[Checkpoint 114](../07-phase-evidence/SLICE-V1-001/rework-r1/async-export-114/summary.json)
+records standard PG17 backup/restore of the synthetic 5,000-SKU, 360,000-order
+profile and an immutable 488,000-record export. `pg_dump -Fc` and
+`pg_restore --exit-on-error` ran only inside the disposable test cluster, using
+its generated administrator identity. Restore into a separate database preserved
+row counts, the exact export manifest, application write denials and Flyway
+history; the migration runner validated and applied zero migrations. All 44
+export custody objects were verified in a separate backup directory. Losing one
+primary object caused the actual download service to refuse it; restoring its
+exact bytes restored access. This backup/restore and object exercise took
+61,530 ms locally. It is not a provider PITR, live VM failover or production RTO
+claim. The managed-profile fixture separately verifies restored extension
+ownership, provider-DDL denial, history and schema equivalence.
+
+`S1-AC-006` still requires real environment evidence against its accepted target.
+Controls are described in `infra/yandex/modules/database`; real restore remains
+open in the acceptance and assurance records.
 
 What follows is the procedure to execute once an environment exists. Executing
 it is an Owner-authorized act against a real account.

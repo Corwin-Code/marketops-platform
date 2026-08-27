@@ -33,7 +33,42 @@ public record PriceWriteResult(
         String observedCurrency,
         byte[] body,
         Instant completedAt,
-        String errorCode) {
+        String errorCode,
+        Response response) {
+
+    public PriceWriteResult(Outcome outcome, String nativeStatus, String nativeTaskKey,
+                            BigDecimal observedPrice, String observedCurrency, byte[] body,
+                            Instant completedAt, String errorCode) {
+        this(outcome, nativeStatus, nativeTaskKey, observedPrice, observedCurrency, body,
+                completedAt, errorCode, null);
+    }
+
+    /** Attach exact transport bytes even when parsing or classification failed. */
+    public PriceWriteResult withResponse(byte[] exactBody, Response transport) {
+        return new PriceWriteResult(outcome, nativeStatus, nativeTaskKey, observedPrice,
+                observedCurrency, exactBody, completedAt, errorCode, transport);
+    }
+
+    /** Only allowlisted non-secret response metadata may leave the adapter. */
+    public record Response(int httpStatus, java.util.Map<String, String> headers,
+                           String requestDigest, String evidenceClass, boolean complete) {
+        public Response(int httpStatus, java.util.Map<String, String> headers, String requestDigest, String evidenceClass) {
+            this(httpStatus, headers, requestDigest, evidenceClass, true);
+        }
+        public Response {
+            headers = java.util.Map.copyOf(headers);
+            if (httpStatus < 100 || httpStatus > 599
+                    || requestDigest == null || !requestDigest.matches("[0-9a-f]{64}")
+                    || !java.util.Set.of("PROTOCOL_FIXTURE", "PROVIDER_RESPONSE").contains(evidenceClass)
+                    || headers.entrySet().stream().anyMatch(entry ->
+                        !java.util.Set.of("content-type", "retry-after", "x-request-id", "etag", "x-version-id")
+                                .contains(entry.getKey())
+                        || entry.getValue().length() > 256
+                        || entry.getValue().chars().anyMatch(Character::isISOControl))) {
+                throw new IllegalArgumentException("invalid provider response metadata");
+            }
+        }
+    }
 
     public PriceWriteResult {
         Objects.requireNonNull(outcome, "outcome");

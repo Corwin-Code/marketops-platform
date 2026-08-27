@@ -1,0 +1,16 @@
+{
+  "summary.json": "bd5d4f31e7465d229e9203e6003a6de1e99d225231dbafbd7353052d44986bfa",
+  "version.json": "e6f53c613e59bd8bec48e54c4131c347fa0a87012d041efc8ecd22fa615300eb",
+  "bootstrap-plan.jsonl": "6b62e9ba69a2eed1323da03649102afbc0cb453307da5c989deb4173e9cb9620",
+  "verification.tfrc": "8a8431df308a7d2ebfb37c6740478a1ba1d6a8998cc4aa15c6c4fa8596884022",
+  "production-plan.jsonl": "0f70990b21c6eb905ce5c3400a2bc5c9da5f2e46489b2a8f4842530d97615e8e",
+  "staging-plan.jsonl": "5610c2c5e139b995e8e38c3efb435e03aa61f2b81a2f85e68512661c6e125794",
+  "bootstrap-validate.log.gz": "b69e7f9631468143d2e9e0e8d68883be07e4d6d070b44dcc6b03c0506ed09e63",
+  "staging-validate.log.gz": "b69e7f9631468143d2e9e0e8d68883be07e4d6d070b44dcc6b03c0506ed09e63",
+  "fmt.log.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+  "bootstrap-init.log.gz": "ecf2a78b9933b4e451e24944908a04aaaf0e25e8a65049770e53f71ea45f7304",
+  "production-validate.log.gz": "b69e7f9631468143d2e9e0e8d68883be07e4d6d070b44dcc6b03c0506ed09e63",
+  "staging-init.log.gz": "d632f6dc64e3b5795e8dd8a457328918f51b5d5f46de7a1ef7b402e1fe2a71c8",
+  "production-init.log.gz": "d632f6dc64e3b5795e8dd8a457328918f51b5d5f46de7a1ef7b402e1fe2a71c8",
+  "ARTIFACT-HASHES.before-log-packaging.json": "0a43f0b65d4d48793229ddf1f3520fbb05f1c54223bcc978b3e289819e0e8245"
+}

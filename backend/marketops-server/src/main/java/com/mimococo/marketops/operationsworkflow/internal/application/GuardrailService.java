@@ -107,6 +107,7 @@ public class GuardrailService {
     public ImpactPreview preview(RecommendationView proposal, BigDecimal authorizationBound,
                                  GuardrailPurpose purpose) {
         Instant now = clock.instant();
+        String authoritySnapshot = evaluations.authoritySnapshot(proposal.id());
         GuardrailInput input = gather(proposal, authorizationBound, now);
         GuardrailOutcome outcome = GuardrailEngine.evaluate(input);
         String inputDigest = digestOf(proposal, input, outcome);
@@ -117,7 +118,7 @@ public class GuardrailService {
                 policy == null ? null : policy.policyId(),
                 policy == null ? null : policy.policyVersion(),
                 purpose, outcome.passed(), outcome.reasons(), outcome.detail(), inputDigest,
-                now, CorrelationId.current());
+                authoritySnapshot, now, CorrelationId.current());
 
         GuardrailVerdict verdict = new GuardrailVerdict(evaluationId, purpose, outcome.passed(),
                 outcome.reasons(), policy == null ? null : policy.policyId(),

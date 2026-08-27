@@ -45,18 +45,15 @@ public class PriceCommandResolutionService {
     static final String ENTITY_TYPE = "price-command";
 
     private final PriceCommandRepository commands;
-    private final PriceCommandWorker worker;
     private final BusinessAuthorization authorization;
     private final MetadataAuditRecorder auditRecorder;
     private final Clock clock;
 
     PriceCommandResolutionService(PriceCommandRepository commands,
-                                  PriceCommandWorker worker,
                                   BusinessAuthorization authorization,
                                   MetadataAuditRecorder auditRecorder,
                                   Clock clock) {
         this.commands = commands;
-        this.worker = worker;
         this.authorization = authorization;
         this.auditRecorder = auditRecorder;
         this.clock = clock;
@@ -87,11 +84,9 @@ public class PriceCommandResolutionService {
         if (command.state() != PriceCommandState.UNKNOWN_REQUIRES_READBACK) {
             throw OperationRejectedException.of(ErrorCode.COMMAND_STATE_INVALID);
         }
-        commands.transition(commandId, command.fenceToken(), command.leaseOwner(),
-                PriceCommandState.READBACK_PENDING.name(), null, null, null);
+        commands.requestReadback(commandId, command.fenceToken());
         record(actor, commandId, command.state(), PriceCommandState.READBACK_PENDING,
                 validReason);
-        worker.advance(commandId);
         return commands.find(commandId).orElseThrow();
     }
 
@@ -112,7 +107,6 @@ public class PriceCommandResolutionService {
                 PriceCommandState.COMPENSATION_PENDING.name(), null, null, null);
         record(actor, commandId, command.state(), PriceCommandState.COMPENSATION_PENDING,
                 validReason);
-        worker.compensate(commandId);
         return commands.find(commandId).orElseThrow();
     }
 

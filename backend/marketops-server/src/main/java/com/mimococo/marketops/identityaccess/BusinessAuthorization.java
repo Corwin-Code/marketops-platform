@@ -38,6 +38,9 @@ public interface BusinessAuthorization {
      */
     void require(AuthenticatedActor actor, ActionScopeCode action, ResourceScope resource);
 
+    /** Resolve the target's real owner and require permission on that scope. */
+    void requireOwned(AuthenticatedActor actor, ActionScopeCode action, OwnedResource resource);
+
     /**
      * The stores this person may currently perform this action on.
      *

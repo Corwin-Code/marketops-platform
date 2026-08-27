@@ -1,0 +1,7 @@
+disable_checkpoint = true
+provider_installation {
+  filesystem_mirror {
+    path = "/Users/chzhengx/Code/personal/marketops-platform/infra/yandex/bootstrap/.terraform/providers"
+    include = ["registry.terraform.io/yandex-cloud/yandex"]
+  }
+}

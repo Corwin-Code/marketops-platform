@@ -1,0 +1,16 @@
+{
+  "scope": "WORKTREE_PREPUBLICATION_CHECKPOINT",
+  "focused_command": "JAVA_HOME=<JDK21> ./mvnw -B -ntp -Dtest=PriceWriteClassificationTest -Dit.test=FileIntakeFlowIT,PriceCommandWorkerIT integration-test failsafe:verify",
+  "focused_result": {
+    "unit": 38,
+    "integration": 29,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "governance_command": "make governance",
+  "governance_tests": 372,
+  "governance_result": "PASS",
+  "final_exact_commit_verified": false,
+  "notes": "Full backend 134 is a separate run; these focused counts are not full-regression proof."
+}

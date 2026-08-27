@@ -44,6 +44,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /**
@@ -116,6 +118,100 @@ class PriceWritePathIT extends PostgresContainerSupport {
     @Nested
     @DisplayName("TC-WRITE-101 the gate is a conjunction and every part is real")
     class WriteGate {
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "target_price = 106", "prior_price = 99", "currency_code = 'USD'",
+                "entity_version_digest = repeat('2', 64)",
+                "idempotency_key = 'pc-a-different-authorization'"
+        })
+        void aCommandCannotSubstituteAnyApprovedInput(String change) throws SQLException {
+            execute(arranger, "UPDATE ops.price_command SET " + change
+                    + " WHERE id = '" + COMMAND + "'");
+            assertThat(gateReasons(connection, COMMAND)).contains("COMMAND_AUTHORITY_MISMATCH");
+            assertThatThrownBy(() -> lease(connection, COMMAND, WORKER, LEASE_SECONDS))
+                    .satisfies(error -> assertThat(carriesSqlState(error, WRITE_GATE_CLOSED)).isTrue());
+        }
+
+        @Test
+        void changingTheApprovedProposalDoesNotChangeTheAuthorizedPrice() throws SQLException {
+            execute(arranger, "UPDATE ops.recommendation SET proposed_parameters = "
+                    + "'{\"targetPrice\":\"106\"}'::jsonb WHERE id = '"
+                    + PriceWritePathFixture.RECOMMENDATION + "'");
+            assertThat(gateReasons(connection, COMMAND)).contains("COMMAND_AUTHORITY_MISMATCH");
+        }
+
+        @Test
+        void aPolicyChangeInvalidatesThePreviouslyEvaluatedSnapshot() throws SQLException {
+            execute(arranger, "UPDATE ops.commercial_policy SET policy_version = 2 WHERE id = '"
+                    + PriceWritePathFixture.POLICY + "'");
+            assertThat(gateReasons(connection, COMMAND)).contains("COMMAND_AUTHORITY_MISMATCH");
+        }
+
+        @Test
+        void aNewCanonicalValueInvalidatesTheApprovedEntityDigest() throws SQLException {
+            execute(arranger, "UPDATE mart.metric_value SET input_digest = repeat('2', 64)");
+            assertThat(gateReasons(connection, COMMAND)).contains("COMMAND_AUTHORITY_MISMATCH");
+        }
+
+        @Test
+        void creationDerivesThePriceAndIsIdempotentForTheSameAuthorization() throws SQLException {
+            allowCreator();
+            execute(arranger, "DELETE FROM ops.price_command WHERE id = '" + COMMAND + "'");
+            String sql = "SELECT ops.create_price_command('" + PriceWritePathFixture.RECOMMENDATION
+                    + "', 0, '" + PriceWritePathFixture.USER + "', 'fixture-create')";
+            String first = single(connection, sql);
+            assertThat(single(connection, sql)).isEqualTo(first);
+            assertThat(single(connection, "SELECT target_price::text || ':' || prior_price::text"
+                    + " || ':' || currency_code FROM ops.price_command WHERE id = '" + first + "'"))
+                    .isEqualTo("105.0000:100.0000:RUB");
+            assertThat(count(connection, "SELECT count(*) FROM ops.price_command")).isEqualTo(1);
+            assertThat(count(connection,"SELECT count(*) FROM ops.metadata_audit_event WHERE entity_id='"+first+"'"))
+                    .isEqualTo(1);
+            assertThat(single(connection,"SELECT actor_id||':'||correlation_id FROM ops.metadata_audit_event WHERE entity_id='"+first+"'"))
+                    .isEqualTo(PriceWritePathFixture.USER+":fixture-create");
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings={"core.product","core.product_variant","core.organization","core.store"})
+        void retiringAnOwnedEntityClosesTheExistingCommand(String table) throws SQLException {
+            execute(arranger,"UPDATE "+table+" SET status='RETIRED'");
+            assertThat(gateReasons(connection,COMMAND)).contains("COMMAND_AUTHORITY_MISMATCH");
+            assertThatThrownBy(() -> lease(connection,COMMAND,WORKER,LEASE_SECONDS))
+                    .satisfies(error -> assertThat(carriesSqlState(error,WRITE_GATE_CLOSED)).isTrue());
+        }
+
+        @Test
+        void creationRefusesAnActorWithoutTheResourcesGrantEvenOnAnExistingCommand() {
+            assertThatThrownBy(() -> single(connection, "SELECT ops.create_price_command('"
+                    + PriceWritePathFixture.RECOMMENDATION + "', 0, '" + PriceWritePathFixture.USER
+                    + "', 'fixture-create')"))
+                    .satisfies(error -> assertThat(carriesSqlState(error, WRITE_GATE_CLOSED)).isTrue());
+        }
+
+        @Test
+        void creationRefusesAStaleRecommendationVersion() throws SQLException {
+            allowCreator();
+            assertThatThrownBy(() -> single(connection, "SELECT ops.create_price_command('"
+                    + PriceWritePathFixture.RECOMMENDATION + "', 100, '" + PriceWritePathFixture.USER
+                    + "', 'fixture-create')"))
+                    .satisfies(error -> assertThat(carriesSqlState(error, WRITE_GATE_CLOSED)).isTrue());
+        }
+
+        private void allowCreator() throws SQLException {
+            execute(arranger, """
+                    INSERT INTO iam.user_role_assignment (id, organization_id, user_id, role_code,
+                        effective_from, status, created_at, updated_at)
+                    VALUES (gen_random_uuid(), '%s', '%s', 'OWNER', now() - interval '1 hour',
+                        'ACTIVE', now(), now())
+                    """.formatted(PriceWritePathFixture.ORGANIZATION, PriceWritePathFixture.USER));
+            execute(arranger, """
+                    INSERT INTO iam.user_scope_grant (id, organization_id, user_id, action_code,
+                        store_ref_id, effective_from, status, created_at, updated_at)
+                    VALUES (gen_random_uuid(), '%s', '%s', 'PRICE_CHANGE_APPROVE', '%s',
+                        now() - interval '1 hour', 'ACTIVE', now(), now())
+                    """.formatted(PriceWritePathFixture.ORGANIZATION, PriceWritePathFixture.USER, STORE));
+        }
 
         @Test
         void aFullyConfiguredCommandIsPermitted() throws SQLException {
@@ -413,6 +509,26 @@ class PriceWritePathIT extends PostgresContainerSupport {
     @DisplayName("TC-WRITE-105 a restore may not overwrite a later change")
     class Compensation {
 
+        @ParameterizedTest
+        @ValueSource(strings={"ABSENT","REJECTED"})
+        void matchingTargetWithoutAPossiblyAppliedWriteCannotAuthorizeCompensation(String applyState) throws SQLException {
+            long fence = lease(connection,COMMAND,WORKER,LEASE_SECONDS);
+            transition(connection,COMMAND,fence,WORKER,"EXECUTING",null,null,null);
+            if (applyState.equals("REJECTED")) {
+                UUID apply = recordAttempt(connection,COMMAND,1,"APPLY",fence,WORKER,"ACCEPTED");
+                PriceWritePathFixture.completeResponse(connection,apply,"{\"error\":\"synthetic rejection\"}",400);
+                assertThat(single(connection,"SELECT outcome_class FROM ops.price_command_attempt WHERE id='"+apply+"'"))
+                        .isEqualTo("REJECTED");
+            }
+            transition(connection,COMMAND,fence,WORKER,"READBACK_PENDING",null,null,null);
+            UUID readback = recordAttempt(connection,COMMAND,1,"READBACK",fence,WORKER,"ACCEPTED");
+            recordReadback(connection,COMMAND,readback,"105.0000","MATCHES_TARGET");
+            transition(connection,COMMAND,fence,WORKER,"READBACK_MISMATCH",null,null,null);
+            assertThatThrownBy(() -> transition(connection,COMMAND,fence,WORKER,"COMPENSATION_PENDING",null,null,null))
+                    .isInstanceOf(SQLException.class)
+                    .extracting(failure -> ((SQLException)failure).getSQLState()).isEqualTo(COMPENSATION_UNSAFE);
+        }
+
         @Test
         void aRestoreIsRefusedWhenSomethingElseMovedThePrice() throws SQLException {
             long fence = reachReadbackMismatch("140.0000", "DIFFERENT");
@@ -424,10 +540,11 @@ class PriceWritePathIT extends PostgresContainerSupport {
                     .isEqualTo(COMPENSATION_UNSAFE);
         }
 
-        @Test
-        void aRestoreIsAuthorisedWhileThePlatformStillHoldsWhatThisCommandWrote()
+        @ParameterizedTest
+        @ValueSource(ints={200,503})
+        void aRestoreIsAuthorisedWhileThePlatformStillHoldsWhatThisCommandWrote(int applyStatus)
                 throws SQLException {
-            long fence = reachReadbackMismatch("105.0000", "MATCHES_TARGET");
+            long fence = reachReadbackMismatch("105.0000", "MATCHES_TARGET",applyStatus);
 
             String state = transition(connection, COMMAND, fence, WORKER,
                     "COMPENSATION_PENDING", null, null, null);
@@ -455,8 +572,11 @@ class PriceWritePathIT extends PostgresContainerSupport {
             transition(connection, COMMAND, fence, WORKER, "COMPENSATION_PENDING", null, null,
                     null);
             long restoreFence = leaseCompensation();
-            UUID attempt = recordAttempt(connection, COMMAND, 3, "RESTORE", restoreFence,
-                    WORKER, "ACCEPTED");
+            UUID fresh = recordAttempt(connection, COMMAND, 2, "READBACK", restoreFence, WORKER, "ACCEPTED");
+            recordReadback(connection, COMMAND, fresh, "105.0000", "MATCHES_TARGET");
+            UUID restore = recordAttempt(connection, COMMAND, 3, "RESTORE", restoreFence, WORKER, "ACCEPTED");
+            PriceWritePathFixture.completeResponse(connection, restore, "{\"accepted\":true}");
+            UUID attempt = recordAttempt(connection, COMMAND, 4, "READBACK", restoreFence, WORKER, "ACCEPTED");
             recordReadback(connection, COMMAND, attempt, "100.0000", "MATCHES_PRIOR");
 
             String state = transition(connection, COMMAND, restoreFence, WORKER, "COMPENSATED",
@@ -536,25 +656,87 @@ class PriceWritePathIT extends PostgresContainerSupport {
     @DisplayName("TC-WRITE-107 an attempt records the call that was started")
     class AttemptImmutability {
 
+        @ParameterizedTest
+        @ValueSource(strings={"{}","{\"accepted\":false}","{\"accepted\":\"true\"}",
+                "{\"accepted\":true,\"accepted\":false}","{\"accepted\":true} {}","null"})
+        void aCallerCannotLabelAmbiguousBytesAccepted(String body) throws SQLException {
+            long fence=lease(connection,COMMAND,WORKER,LEASE_SECONDS);
+            transition(connection,COMMAND,fence,WORKER,"EXECUTING",null,null,null);
+            UUID attempt=recordAttempt(connection,COMMAND,1,"APPLY",fence,WORKER,"IN_FLIGHT");
+            PriceWritePathFixture.completeResponse(connection,attempt,body);
+            assertThat(single(connection,"SELECT outcome_class FROM ops.price_command_attempt WHERE id='"+attempt+"'"))
+                    .isEqualTo("UNKNOWN_STATE");
+            assertThat(single(connection,"SELECT count(*) FROM raw.price_response_observation WHERE attempt_id='"+attempt+"'"))
+                    .isEqualTo("1");
+        }
+
+        @Test
+        void responseInterpretationUsesThePreparedVersionEvenAfterMaintenance() throws SQLException {
+            long fence=reachReadbackPending();
+            UUID attempt=recordAttempt(connection,COMMAND,1,"READBACK",fence,WORKER,"IN_FLIGHT");
+            String pinnedVersion=single(connection,"SELECT operation_snapshot->'operation'->>'version' FROM ops.price_command_attempt WHERE id='"+attempt+"'");
+            execute(arranger,"UPDATE platform.capability_operation SET observed_price_pointer='/unexpected', version=version+1 WHERE capability_id='"
+                    +CAPABILITY+"' AND operation='READBACK'");
+            PriceWritePathFixture.completeResponse(connection,attempt,"{\"price\":\"105.0000\",\"currency\":\"RUB\",\"unexpected\":\"100.0000\"}");
+            assertThat(single(connection,"SELECT observed_price FROM raw.price_response_observation WHERE attempt_id='"+attempt+"'"))
+                    .isEqualTo("105.0000");
+            assertThat(single(connection,"SELECT operation_version FROM raw.price_response_observation WHERE attempt_id='"+attempt+"'"))
+                    .isEqualTo(pinnedVersion);
+            assertThat(single(connection,"SELECT operation_snapshot=platform.price_operation_snapshot('"+CAPABILITY+"','READBACK') FROM ops.price_command_attempt WHERE id='"+attempt+"'"))
+                    .isEqualTo("f");
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings={"accepted_value=NULL", "accepted_value='{}'::jsonb",
+                "request_template='{\"price\":\"{targetPrice}\"}'",
+                "endpoint_id=(SELECT endpoint_id FROM platform.capability_operation WHERE capability_id='00000000-0000-0000-0000-000000000000')"})
+        void incompleteVerifiedMutationDefinitionsAreRejected(String mutation) {
+            assertThatThrownBy(() -> execute(arranger,"UPDATE platform.capability_operation SET "+mutation
+                    +" WHERE capability_id='"+CAPABILITY+"' AND operation='APPLY'"))
+                    .isInstanceOf(SQLException.class);
+        }
+
+        @Test
+        void anApplyCannotUseAReadbackEndpoint() {
+            assertThatThrownBy(() -> execute(arranger,"UPDATE platform.capability_operation SET endpoint_id="
+                    +"(SELECT endpoint_id FROM platform.capability_operation WHERE capability_id='"+CAPABILITY+"' AND operation='READBACK')"
+                    +" WHERE capability_id='"+CAPABILITY+"' AND operation='APPLY'"))
+                    .isInstanceOf(SQLException.class).extracting(f -> ((SQLException)f).getSQLState()).isEqualTo("MO036");
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings={"operation_function='READ_DATA'", "http_method='DELETE'", "read_write_class='READ'"})
+        void endpointSemanticDriftClosesTheNextDispatch(String mutation) throws SQLException {
+            long fence=lease(connection,COMMAND,WORKER,LEASE_SECONDS);
+            transition(connection,COMMAND,fence,WORKER,"EXECUTING",null,null,null);
+            execute(arranger,"UPDATE platform.platform_endpoint SET "+mutation+" WHERE id="
+                    +"(SELECT endpoint_id FROM platform.capability_operation WHERE capability_id='"+CAPABILITY+"' AND operation='APPLY')");
+            assertThatThrownBy(() -> recordAttempt(connection,COMMAND,1,"APPLY",fence,WORKER,"IN_FLIGHT"))
+                    .isInstanceOf(SQLException.class).extracting(f -> ((SQLException)f).getSQLState()).isEqualTo("MO033");
+        }
+
         @Test
         void anAttemptIsCompletedExactlyOnce() throws SQLException {
             long fence = lease(connection, COMMAND, WORKER, LEASE_SECONDS);
-            UUID attempt = UUID.randomUUID();
-            execute(connection, """
-                    INSERT INTO ops.price_command_attempt
-                        (id, command_id, attempt_no, purpose, fence_token, lease_owner,
-                         started_at, outcome_class, correlation_id)
-                    VALUES ('%s', '%s', 1, 'APPLY', %d, '%s', now(), 'IN_FLIGHT', 'test')
-                    """.formatted(attempt, COMMAND, fence, WORKER));
-            execute(connection, "UPDATE ops.price_command_attempt"
-                    + " SET completed_at = now(), outcome_class = 'ACCEPTED'"
-                    + " WHERE id = '" + attempt + "'");
-
-            assertThatThrownBy(() -> execute(connection, "UPDATE ops.price_command_attempt"
-                    + " SET outcome_class = 'REJECTED' WHERE id = '" + attempt + "'"))
+            transition(connection, COMMAND, fence, WORKER, "EXECUTING", null, null, null);
+            UUID attempt = recordAttempt(connection, COMMAND, 1, "APPLY", fence, WORKER, "IN_FLIGHT");
+            PriceWritePathFixture.completeResponse(connection, attempt, "{\"accepted\":true}");
+            assertThatThrownBy(() -> PriceWritePathFixture.completeResponse(connection, attempt,
+                    "{\"accepted\":false}"))
                     .isInstanceOf(SQLException.class)
                     .extracting(failure -> ((SQLException) failure).getSQLState())
                     .isEqualTo(PriceWritePathFixture.ATTEMPT_ALREADY_COMPLETED);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings={"{\"accepted\":true}","{\"accepted\":false}","{}"})
+        void aSecondApplyIsRefusedEvenIfSqlKeepsTheCommandExecuting(String body) throws SQLException {
+            long fence=lease(connection,COMMAND,WORKER,LEASE_SECONDS);
+            transition(connection,COMMAND,fence,WORKER,"EXECUTING",null,null,null);
+            UUID attempt=recordAttempt(connection,COMMAND,1,"APPLY",fence,WORKER,"IN_FLIGHT");
+            PriceWritePathFixture.completeResponse(connection,attempt,body);
+            assertThatThrownBy(() -> recordAttempt(connection,COMMAND,2,"APPLY",fence,WORKER,"IN_FLIGHT"))
+                    .isInstanceOf(SQLException.class).extracting(f -> ((SQLException)f).getSQLState()).isEqualTo("MO030");
         }
 
         @Test
@@ -693,7 +875,17 @@ class PriceWritePathIT extends PostgresContainerSupport {
 
     private long reachReadbackMismatch(String observedPrice, String matchState)
             throws SQLException {
-        long fence = reachReadbackPending();
+        return reachReadbackMismatch(observedPrice,matchState,200);
+    }
+
+    private long reachReadbackMismatch(String observedPrice,String matchState,int applyStatus) throws SQLException {
+        long fence = lease(connection,COMMAND,WORKER,LEASE_SECONDS);
+        transition(connection,COMMAND,fence,WORKER,"EXECUTING",null,null,null);
+        UUID apply = recordAttempt(connection,COMMAND,1,"APPLY",fence,WORKER,"ACCEPTED");
+        PriceWritePathFixture.completeResponse(connection,apply,"{\"accepted\":true}",applyStatus);
+        assertThat(single(connection,"SELECT outcome_class FROM ops.price_command_attempt WHERE id='"+apply+"'"))
+                .isEqualTo(applyStatus==200 ? "ACCEPTED" : "UNKNOWN_STATE");
+        transition(connection,COMMAND,fence,WORKER,"READBACK_PENDING",null,null,null);
         UUID attempt = recordAttempt(connection, COMMAND, 1, "READBACK", fence, WORKER,
                 "ACCEPTED");
         recordReadback(connection, COMMAND, attempt, observedPrice, matchState);

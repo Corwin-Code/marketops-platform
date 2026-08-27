@@ -27,6 +27,7 @@ import java.util.UUID;
 public record AiDiagnosis(
         UUID invocationId,
         UUID subjectId,
+        int outputSchemaVersion,
         String state,
         String failureCode,
         boolean degraded,

@@ -31,15 +31,21 @@ public class IngestionRunRepository {
     /** Create a run for a job, or refuse because one is already live. */
     public UUID enqueue(UUID runId, UUID jobId, String runKind,
                         Instant windowFrom, Instant windowTo) {
+        return enqueue(runId, jobId, runKind, windowFrom, windowTo, 4);
+    }
+
+    public UUID enqueue(UUID runId, UUID jobId, String runKind,
+                        Instant windowFrom, Instant windowTo, int maxClaims) {
         return jdbc.sql("""
                         SELECT ops.enqueue_ingestion_run(
-                            :runId, :jobId, :runKind, :windowFrom, :windowTo)
+                            :runId, :jobId, :runKind, :windowFrom, :windowTo, :maxClaims)
                         """)
                 .param("runId", runId)
                 .param("jobId", jobId)
                 .param("runKind", runKind)
                 .param("windowFrom", windowFrom == null ? null : Timestamp.from(windowFrom))
                 .param("windowTo", windowTo == null ? null : Timestamp.from(windowTo))
+                .param("maxClaims", maxClaims)
                 .query(UUID.class)
                 .single();
     }
@@ -51,16 +57,21 @@ public class IngestionRunRepository {
                 .param("leaseOwner", leaseOwner)
                 .param("leaseSeconds", leaseSeconds)
                 .query(Long.class)
-                .single();
+                .optional().orElse(0L);
     }
 
     /** Move a claimed run between its working states. */
     public String transition(UUID runId, long fenceToken, String leaseOwner,
                              String toState, Integer leaseSeconds, String failureCode) {
+        return transition(runId, fenceToken, leaseOwner, toState, leaseSeconds, failureCode, 120);
+    }
+
+    public String transition(UUID runId, long fenceToken, String leaseOwner,
+                             String toState, Integer leaseSeconds, String failureCode, int retryDelaySeconds) {
         return jdbc.sql("""
                         SELECT ops.transition_ingestion_run(
                             :runId, :fenceToken, :leaseOwner, :toState,
-                            :leaseSeconds, :failureCode)
+                            :leaseSeconds, :failureCode, :retryDelaySeconds)
                         """)
                 .param("runId", runId)
                 .param("fenceToken", fenceToken)
@@ -68,6 +79,7 @@ public class IngestionRunRepository {
                 .param("toState", toState)
                 .param("leaseSeconds", leaseSeconds)
                 .param("failureCode", failureCode)
+                .param("retryDelaySeconds", retryDelaySeconds)
                 .query(String.class)
                 .single();
     }
@@ -137,7 +149,7 @@ public class IngestionRunRepository {
                                lease_expires_at, attempt_no, last_call_seq, run_kind,
                                window_from, window_to, failure_code
                           FROM ops.ingestion_run
-                         WHERE state IN ('QUEUED', 'RETRY_WAIT')
+                         WHERE state = 'QUEUED' OR (state='RETRY_WAIT' AND next_attempt_at <= clock_timestamp())
                             OR (state IN ('LEASED', 'RUNNING')
                                 AND lease_expires_at <= clock_timestamp())
                          ORDER BY updated_at

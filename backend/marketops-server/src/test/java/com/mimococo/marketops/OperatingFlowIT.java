@@ -88,6 +88,7 @@ import org.springframework.test.context.DynamicPropertySource;
  * left un-executed: the write gate is what stops it, and that is the point.
  */
 @SpringBootTest
+@org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 @ActiveProfiles("ci")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class OperatingFlowIT {
@@ -109,6 +110,8 @@ class OperatingFlowIT {
 
     @Autowired
     private JdbcClient jdbc;
+    @Autowired private org.springframework.test.web.servlet.MockMvc mvc;
+    @Autowired private com.mimococo.marketops.operatingfacts.internal.application.ImportIntakeService intake;
 
     @Autowired
     private IdentityProviderService identityProviders;
@@ -175,6 +178,10 @@ class OperatingFlowIT {
 
     @Autowired
     private AiCopilot copilot;
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private com.mimococo.marketops.aicopilot.port.ModelGatewayPort modelGateway;
+    @Autowired private com.mimococo.marketops.aicopilot.internal.infrastructure.jdbc.AiRepository aiRepository;
+    @Autowired private com.mimococo.marketops.aicopilot.internal.application.AiDiagnosisService aiService;
 
     @DynamicPropertySource
     static void databaseProperties(DynamicPropertyRegistry registry) {
@@ -617,9 +624,327 @@ class OperatingFlowIT {
         assertThat(recommendations.expireElapsed()).isZero();
     }
 
+    @Test
+    @Order(14)
+    void aiPartialOutputIsDurablyBoundedAuditedAndRetainsNestedDecimalValues() throws Exception {
+        UUID provider = seedSyntheticModel();
+        try {
+            UUID metric = metrics.currentValues(SubjectKind.PLATFORM_LISTING_VARIANT, listingVariantId, MetricWindow.D30)
+                    .values().iterator().next().metricValueId();
+            UUID finding = diagnosis.currentFindings(SubjectKind.PLATFORM_LISTING_VARIANT, listingVariantId, MetricWindow.D30)
+                    .getFirst().findingId();
+            String golden;
+            try (var stream = getClass().getResourceAsStream("/ai/diagnosis-v2-golden.json")) {
+                golden = new String(java.util.Objects.requireNonNull(stream).readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            }
+            String body = golden.replace("11111111-1111-4111-8111-111111111111", metric.toString())
+                    .replace("22222222-2222-4222-8222-222222222222", finding.toString())
+                    .replace("\"unknowns\": [", "\"unknowns\": [{\"statement\":\"Missing required fields\"},");
+            long commandCount = jdbc.sql("SELECT count(*) FROM ops.price_command").query(Long.class).single();
+            org.mockito.Mockito.when(modelGateway.invoke(org.mockito.ArgumentMatchers.any())).thenAnswer(call -> {
+                assertDurableAiDispatch();
+                com.mimococo.marketops.aicopilot.port.ModelRequest request = call.getArgument(0);
+                assertThat(request.userPrompt()).contains(metric.toString(), finding.toString());
+                return com.mimococo.marketops.aicopilot.port.ModelResponse.answered(body, 12);
+            });
+            AiDiagnosis output = copilot.explain(userId, organizationId, listingVariantId, MetricWindow.D30, "GROWTH");
+            assertThat(output.state()).isEqualTo("PARTIAL_OUTPUT_REJECTED");
+            assertThat(output.degraded()).isTrue();
+            assertThat(output.acceptedClaims()).hasSize(4);
+            assertThat(output.rejectedClaims()).hasSize(1);
+            assertThat(copilot.invocation(output.invocationId()).orElseThrow()).isEqualTo(output);
+            var proposal = output.acceptedClaims().stream()
+                    .filter(claim -> claim.kind()==com.mimococo.marketops.aicopilot.AiClaimKind.RECOMMENDATION).findFirst().orElseThrow();
+            assertThat(((Map<?, ?>) proposal.payload().get("proposedParameters")).get("targetPrice"))
+                    .isEqualTo(new BigDecimal("99999999999999.9999"));
+            assertThat(((Map<?, ?>) proposal.payload().get("risk")).get("level")).isEqualTo("HIGH");
+            var wire = mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                    .get("/api/v1/console/explanations/"+output.invocationId())
+                    .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication(
+                            new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(actor,null,List.of()))))
+                    .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk())
+                    .andReturn().getResponse().getContentAsString();
+            assertThat(wire).contains("\"targetPrice\":\"99999999999999.9999\"", "\"outputSchemaVersion\":2",
+                    "\"state\":\"PARTIAL_OUTPUT_REJECTED\"");
+            assertThat(jdbc.sql("SELECT output_schema_version FROM ops.ai_invocation WHERE id=:id")
+                    .param("id",output.invocationId()).query(Integer.class).single()).isEqualTo(2);
+            assertThat(jdbc.sql("SELECT count(*) FROM ops.metadata_audit_event WHERE entity_id=:id")
+                    .param("id", output.invocationId()).query(Long.class).single()).isEqualTo(2);
+            assertThat(jdbc.sql("SELECT count(*) FROM ops.price_command").query(Long.class).single()).isEqualTo(commandCount);
+        } finally { retireSyntheticModel(provider); }
+    }
+
+    @Test
+    @Order(15)
+    void providerFailureClosesThePreparedInvocationWithoutPersistingClaims() {
+        UUID provider = seedSyntheticModel();
+        try {
+            org.mockito.Mockito.when(modelGateway.invoke(org.mockito.ArgumentMatchers.any())).thenAnswer(call -> {
+                assertDurableAiDispatch();
+                throw new IllegalStateException("synthetic connection interruption");
+            });
+            AiDiagnosis output = copilot.explain(userId, organizationId, listingVariantId, MetricWindow.D30, "GROWTH");
+            assertThat(output.state()).isEqualTo("PROVIDER_FAILED");
+            assertThat(output.failureCode()).isEqualTo("PROVIDER_CALL_FAILED");
+            assertThat(output.claims()).isEmpty();
+            assertThat(output.completedAt()).isNotNull();
+            assertThat(jdbc.sql("SELECT count(*) FROM ops.metadata_audit_event WHERE entity_id=:id")
+                    .param("id",output.invocationId()).query(Long.class).single()).isEqualTo(2);
+        } finally { retireSyntheticModel(provider); }
+    }
+
+    @Test
+    @Order(16)
+    void stoppedAiWorkerLeavesDurableIntentAndExpiredRecoveryNeverRedispatches() {
+        UUID provider = seedSyntheticModel();
+        try {
+            var preparedId = new java.util.concurrent.atomic.AtomicReference<UUID>();
+            org.mockito.Mockito.when(modelGateway.invoke(org.mockito.ArgumentMatchers.any())).thenAnswer(call -> {
+                preparedId.set(assertDurableAiDispatch());
+                throw new AssertionError("synthetic process stop after durable dispatch");
+            });
+            assertThatThrownBy(() -> copilot.explain(userId, organizationId, listingVariantId, MetricWindow.D30, "GROWTH"))
+                    .isInstanceOf(AssertionError.class);
+            assertThat(jdbc.sql("SELECT state FROM ops.ai_invocation WHERE id=:id").param("id",preparedId.get())
+                    .query(String.class).single()).isEqualTo("DISPATCHED");
+            // A previous process's persisted intent, with time already elapsed. No clock sleeps.
+            UUID expiredId = UUID.randomUUID();
+            fixtureJdbc().sql("""
+                    INSERT INTO ops.ai_invocation(id,organization_id,projection_code,projection_version,
+                        prompt_template_code,prompt_version,model_id,subject_kind,subject_id,window_code,
+                        request_digest,state,degraded,requested_by_user_id,started_at,execution_deadline_at,correlation_id)
+                    SELECT :expired,organization_id,projection_code,projection_version,prompt_template_code,prompt_version,
+                        model_id,subject_kind,subject_id,window_code,request_digest,'DISPATCHED',false,
+                        requested_by_user_id,now()-interval '5 minutes',now()-interval '3 minutes','fixture-expired'
+                    FROM ops.ai_invocation WHERE id=:source
+                    """).param("expired",expiredId).param("source",preparedId.get()).update();
+            assertThat(aiService.recoverAbandonedInvocations()).isEqualTo(1);
+            assertThat(aiService.recoverAbandonedInvocations()).isZero();
+            var recovered = copilot.invocation(expiredId).orElseThrow();
+            assertThat(recovered.state()).isEqualTo("PROVIDER_OUTCOME_UNKNOWN");
+            assertThat(recovered.claims()).isEmpty();
+            assertThatThrownBy(() -> aiRepository.closeInvocation(expiredId,"SUCCEEDED",null,false,1,Instant.now()))
+                    .isInstanceOf(OperationRejectedException.class);
+            org.mockito.Mockito.verify(modelGateway,org.mockito.Mockito.times(1)).invoke(org.mockito.ArgumentMatchers.any());
+        } finally { retireSyntheticModel(provider); }
+    }
+
+    private UUID assertDurableAiDispatch() {
+        assertThat(org.springframework.transaction.support.TransactionSynchronizationManager.isActualTransactionActive()).isFalse();
+        return fixtureJdbc().sql("SELECT id FROM ops.ai_invocation WHERE subject_id=:subject AND state='DISPATCHED'"
+                +" ORDER BY started_at DESC LIMIT 1").param("subject",listingVariantId).query(UUID.class).single();
+    }
+
+    @Test
+    @Order(17)
+    @org.junit.jupiter.api.Timeout(20)
+    @DisplayName("TC-PERF-002 diagnostic and evidence reads time out under a real database lock and then recover")
+    void diagnosticReadBudgetsBoundDatabaseLockWaits() throws Exception {
+        UUID provenance = jdbc.sql("SELECT id FROM core.fact_provenance WHERE organization_id=:org LIMIT 1")
+                .param("org",organizationId).query(UUID.class).single();
+        for (String table : List.of("mart.metric_value","core.fact_provenance")) {
+            Runnable query = table.startsWith("mart.")
+                    ? () -> metrics.currentValues(SubjectKind.PLATFORM_LISTING_VARIANT,listingVariantId,MetricWindow.D30)
+                    : () -> evidence.trail(provenance);
+            try (var connection = new org.springframework.jdbc.datasource.DriverManagerDataSource(
+                    TestDatabase.container().getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword()).getConnection()) {
+                connection.setAutoCommit(false);
+                try {
+                    try (var statement = connection.createStatement()) {
+                        statement.execute("LOCK TABLE "+table+" IN ACCESS EXCLUSIVE MODE");
+                    }
+                    long start = System.nanoTime();
+                    assertThatThrownBy(query::run).isInstanceOf(org.springframework.dao.QueryTimeoutException.class);
+                    assertThat((System.nanoTime()-start)/1_000_000.0).as("bounded wait for %s",table).isBetween(4000.0,8000.0);
+                } finally {
+                    connection.rollback();
+                }
+            }
+            query.run();
+        }
+    }
+
+    @Test
+    @Order(19)
+    @org.junit.jupiter.api.Timeout(10)
+    void operationalSnapshotBecomesUnknownDuringDatabaseLockAndRecoversWithoutWrites() throws Exception {
+        var request = org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/actuator/operations");
+        mvc.perform(request).andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.signals.database_readiness_failed").value(0));
+        try (var connection = new org.springframework.jdbc.datasource.DriverManagerDataSource(
+                TestDatabase.container().getJdbcUrl(), TestDatabase.migrationRole(), TestDatabase.migrationPassword()).getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                try (var statement = connection.createStatement()) {
+                    statement.execute("LOCK TABLE ops.price_command IN ACCESS EXCLUSIVE MODE");
+                }
+                long start = System.nanoTime();
+                mvc.perform(request).andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk())
+                        .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.signals.database_readiness_failed").value(1))
+                        .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.signals.*").value(org.hamcrest.Matchers.hasSize(1)));
+                assertThat((System.nanoTime() - start) / 1_000_000.0).isBetween(1000.0, 4000.0);
+            } finally {
+                connection.rollback();
+            }
+        }
+        mvc.perform(request).andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.signals.database_readiness_failed").value(0))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.signals.*").value(org.hamcrest.Matchers.hasSize(6)));
+    }
+
+    private UUID seedSyntheticModel() {
+        UUID provider = UUID.randomUUID();
+        JdbcClient fixture = fixtureJdbc();
+        fixture.sql("""
+                INSERT INTO ops.ai_provider(id,provider_code,display_name,invocation_url,request_template,
+                    response_pointer,auth_header_name,auth_value_template,eligibility_state,last_verified_at,
+                    evidence_ref,verified_source_title,owner_label,status,created_at,updated_at)
+                VALUES(:id,:code,'Synthetic isolated protocol model','https://fixture.invalid/model','{}',
+                    '/answer','Authorization','Bearer {value}','VERIFIED',now(),'fixture://isolated-ai',
+                    'Synthetic protocol only','test-fixture','ACTIVE',now(),now())
+                """).param("id",provider).param("code","fixture-"+provider).update();
+        fixture.sql("""
+                INSERT INTO ops.ai_model(id,provider_id,model_code,display_name,secret_reference,max_context_tokens,
+                    status,created_at,updated_at)
+                VALUES(:id,:provider,'fixture-model','Synthetic model','secret-ref://fixture/model',16000,'ACTIVE',now(),now())
+                """).param("id",UUID.randomUUID()).param("provider",provider).update();
+        return provider;
+    }
+
+    private static JdbcClient fixtureJdbc() {
+        return JdbcClient.create(new org.springframework.jdbc.datasource.DriverManagerDataSource(
+                TestDatabase.container().getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword()));
+    }
+
+    private void retireSyntheticModel(UUID provider) {
+        fixtureJdbc().sql("UPDATE ops.ai_provider SET status='RETIRED',updated_at=now(),version=version+1 WHERE id=:id")
+                .param("id",provider).update();
+    }
+
     // -----------------------------------------------------------------
     // Helpers
     // -----------------------------------------------------------------
+
+    @Test
+    @Order(13)
+    @DisplayName("TC-FLOW-013 UUID routes resolve actual organization and store before reading or mutating")
+    void resourceBoundConsoleAuthorization() throws Exception {
+        UUID otherStore = UUID.randomUUID();
+        jdbc.sql("INSERT INTO core.store (id,organization_id,marketplace_account_id,code,display_name,status,created_at,updated_at)"
+                + " SELECT :id,organization_id,marketplace_account_id,'flow-other-store','Other Store','ACTIVE',now(),now()"
+                + " FROM core.store WHERE id=:existing")
+                .param("id", otherStore).param("existing", storeId).update();
+        UUID foreignOrg = UUID.randomUUID();
+        jdbc.sql("INSERT INTO core.organization (id,code,display_name,status,created_at,updated_at)"
+                + " VALUES (:id,'flow-foreign','Foreign Fixture','ACTIVE',now(),now())")
+                .param("id", foreignOrg).update();
+        AuthenticatedActor otherStoreActor = scopedActor(organizationId, otherStore);
+        AuthenticatedActor foreignActor = scopedActor(foreignOrg, null);
+        UUID invocation = jdbc.sql("SELECT id FROM ops.ai_invocation WHERE organization_id=:org ORDER BY started_at DESC LIMIT 1")
+                .param("org", organizationId).query(UUID.class).single();
+        UUID provenance = jdbc.sql("SELECT id FROM core.fact_provenance WHERE organization_id=:org LIMIT 1")
+                .param("org", organizationId).query(UUID.class).single();
+        UUID task = UUID.randomUUID();
+        jdbc.sql("INSERT INTO ops.work_task (id,organization_id,recommendation_id,title,state,created_at,updated_at)"
+                + " VALUES (:id,:org,:rec,'Scope fixture','OPEN',now(),now())")
+                .param("id", task).param("org", organizationId).param("rec", recommendationId).update();
+        intake.registerProfile(OPERATOR, organizationId, com.mimococo.marketops.operatingfacts.internal.domain.IntakeDataset.PURCHASE_COST,
+                "flow-scope-cost", 1, "Scope cost fixture", List.of(Map.of("column","sku","field","skuCode"),
+                    Map.of("column","cost","field","unitCost"), Map.of("column","currency","field","currencyCode"),
+                    Map.of("column","from","field","effectiveFrom")), "fixture");
+        var batch = intake.submit(actor, com.mimococo.marketops.operatingfacts.internal.domain.IntakeDataset.PURCHASE_COST,
+                "scope-cost.csv", "text/csv", ("sku,cost,currency,from\nflow-widget-m,2.0000,RUB,2026-09-01\n")
+                .getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        for (AuthenticatedActor denied : List.of(otherStoreActor, foreignActor)) {
+            var authentication = org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication(
+                    new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(denied, null, List.of()));
+            for (String path : List.of(
+                    "/api/v1/console/diagnosis/listing-variants/" + listingVariantId + "?storeId=" + otherStore,
+                    "/api/v1/console/diagnosis/listing-variants/" + listingVariantId + "/metrics/CONVERSION_RATE/history?storeId=" + otherStore,
+                    "/api/v1/console/diagnosis/listing-variants/" + listingVariantId + "/metrics/" + UUID.randomUUID() + "/inputs?storeId=" + otherStore,
+                    "/api/v1/console/workflow/stores/" + otherStore + "/recommendations?subjectId=" + listingVariantId,
+                    "/api/v1/console/commands/recommendations/" + recommendationId,
+                    "/api/v1/console/explanations/" + invocation,
+                    "/api/v1/console/evidence/" + provenance,
+                    "/api/v1/console/evidence/" + provenance + "/content",
+                    "/api/v1/console/evidence?provenanceId=" + provenance,
+                    "/api/v1/console/intake/imports/" + batch.id(),
+                    "/api/v1/console/intake/imports/" + batch.id() + "/rows")) {
+                mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(path).with(authentication))
+                        .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isForbidden());
+            }
+            mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post(
+                    "/api/v1/console/explanations/listing-variants/" + listingVariantId + "?storeId=" + otherStore)
+                    .with(authentication)).andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isForbidden());
+            mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post(
+                    "/api/v1/console/intake/imports/" + batch.id() + "/rejection").with(authentication)
+                    .contentType("application/json").content("{\"reason\":\"scope fixture\",\"expectedVersion\":" + batch.version() + "}"))
+                    .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isForbidden());
+            for (String operation : List.of("assignment", "start", "closure")) {
+                String body = switch (operation) {
+                    case "assignment" -> "{\"assigneeUserId\":\"" + userId + "\",\"expectedVersion\":0}";
+                    case "start" -> "{\"expectedVersion\":0}";
+                    default -> "{\"expectedVersion\":0,\"done\":true,\"closureReason\":\"scope fixture\"}";
+                };
+                mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post(
+                        "/api/v1/console/workflow/tasks/" + task + "/" + operation).with(authentication)
+                        .contentType("application/json").content(body))
+                        .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isForbidden());
+            }
+        }
+        assertThat(intake.require(batch.id()).state()).isEqualTo("VALIDATED");
+        assertThat(tasks.find(task).orElseThrow().state()).isEqualTo("OPEN");
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(
+                "/api/v1/console/diagnosis/listing-variants/" + listingVariantId + "?storeId=" + storeId)
+                .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication(
+                    new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(actor, null, List.of()))))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @Order(18)
+    void evidenceEdgesAreTypedScopedAndExplicitlyTruncatedAndSubjectRecommendationsAreReachable() throws Exception {
+        var authenticated = org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication(
+                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(actor, null, List.of()));
+        UUID metric = metrics.current(MetricCode.OBSERVED_SELLING_PRICE, SubjectKind.PLATFORM_LISTING_VARIANT,
+                listingVariantId, MetricWindow.D30).orElseThrow().metricValueId();
+        String prefix = "/api/v1/console/diagnosis/listing-variants/" + listingVariantId + "/metrics/";
+        var get = org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(prefix + metric + "/inputs?storeId=" + storeId);
+        mvc.perform(get.with(authenticated)).andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.metricValueId").value(metric.toString()))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.references[0].kind").value("FACT_PROVENANCE"))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.truncated").value(false));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(prefix + UUID.randomUUID()
+                + "/inputs?storeId=" + storeId).with(authenticated))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isNotFound());
+        fixtureJdbc().sql("""
+                INSERT INTO mart.metric_input_reference(id,metric_value_id,reference_kind,reference_id)
+                SELECT gen_random_uuid(),:id,'FACT_PROVENANCE',gen_random_uuid() FROM generate_series(1,201)
+                """).param("id",metric).update();
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(prefix + metric
+                + "/inputs?storeId=" + storeId).with(authenticated))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.references.length()").value(200))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.truncated").value(true));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(
+                "/api/v1/console/workflow/stores/" + storeId + "/recommendations?subjectId=" + listingVariantId).with(authenticated))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$[0].id").value(recommendationId.toString()));
+    }
+
+    private AuthenticatedActor scopedActor(UUID org, UUID permittedStore) {
+        var profile = users.provision(OPERATOR, org, identityProviderId, "scope-" + UUID.randomUUID(), null, "Scope Fixture", null);
+        users.assignRole(OPERATOR, profile.id(), BusinessRoleCode.OWNER, null);
+        for (ActionScopeCode action : List.of(ActionScopeCode.DIAGNOSTIC_VIEW, ActionScopeCode.EVIDENCE_VIEW,
+                ActionScopeCode.INTERNAL_FACT_INTAKE, ActionScopeCode.TASK_ASSIGN)) {
+            users.grantScope(OPERATOR, profile.id(), action,
+                    permittedStore == null ? ResourceScopeType.ORGANIZATION : ResourceScopeType.STORE,
+                    permittedStore == null ? org : permittedStore, null);
+        }
+        Instant now = Instant.now();
+        return new AuthenticatedActor(profile.id(), org, identityProviderId, ISSUER, "Scope Fixture",
+                "a".repeat(64), "b".repeat(64), now, now.plusSeconds(600), true, Set.of(BusinessRoleCode.OWNER));
+    }
 
     private UUID latestCalculationRunId() {
         return jdbc.sql("""

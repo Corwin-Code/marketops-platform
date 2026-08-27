@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
  * approval does.
  */
 @RestController
+@com.mimococo.marketops.shared.ConsoleApi
 @RequestMapping("/api/v1/console/commands")
 class PriceCommandConsoleController {
 
@@ -65,6 +66,16 @@ class PriceCommandConsoleController {
         authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
                 ResourceScope.store(command.storeId()));
         return command;
+    }
+
+    /** Recover the existing command after reloading a recommendation; this never creates one. */
+    @GetMapping(value = "/recommendations/{recommendationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    PriceCommandView forRecommendation(AuthenticatedActor actor, @PathVariable UUID recommendationId) {
+        authorization.requireOwned(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
+                new com.mimococo.marketops.identityaccess.OwnedResource(
+                        com.mimococo.marketops.identityaccess.OwnedResource.Kind.RECOMMENDATION, recommendationId));
+        return commands.forRecommendation(recommendationId)
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
     /** Why the write gate is currently closed for a command, if it is. */

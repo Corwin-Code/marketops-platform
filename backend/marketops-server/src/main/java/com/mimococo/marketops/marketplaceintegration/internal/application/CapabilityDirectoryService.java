@@ -49,16 +49,18 @@ class CapabilityDirectoryService implements CapabilityDirectory {
                                                    UUID marketplaceAccountId) {
         return evaluate(capabilityId, capability ->
                 subjectStatuses.findByCapabilityAndAccount(
-                        capability.id(), marketplaceAccountId));
+                        capability.id(), marketplaceAccountId),
+                () -> capabilities.hasCurrentAccountEvidence(capabilityId,marketplaceAccountId));
     }
 
     @Override
     public CapabilityUsability usabilityForStore(UUID capabilityId, UUID storeId) {
         return evaluate(capabilityId, capability ->
-                subjectStatuses.findByCapabilityAndStore(capability.id(), storeId));
+                subjectStatuses.findByCapabilityAndStore(capability.id(), storeId),
+                () -> capabilities.hasCurrentStoreEvidence(capabilityId,storeId));
     }
 
-    private CapabilityUsability evaluate(UUID capabilityId, SubjectLookup subjectLookup) {
+    private CapabilityUsability evaluate(UUID capabilityId, SubjectLookup subjectLookup, java.util.function.BooleanSupplier currentEvidence) {
         Optional<PlatformCapability> found = capabilityId == null
                 ? Optional.empty()
                 : capabilities.findById(capabilityId);
@@ -82,6 +84,9 @@ class CapabilityDirectoryService implements CapabilityDirectory {
         if (!subjectAvailable) {
             return observeRefusal(
                     capabilityId, capability, CapabilityUsability.SUBJECT_NOT_AVAILABLE);
+        }
+        if (!currentEvidence.getAsBoolean()) {
+            return observeRefusal(capabilityId,capability,CapabilityUsability.NOT_VERIFIED);
         }
         return CapabilityUsability.USABLE;
     }

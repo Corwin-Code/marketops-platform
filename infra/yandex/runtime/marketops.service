@@ -1,0 +1,29 @@
+[Unit]
+Description=MarketOps immutable runtime with ephemeral secret delivery
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+ConditionPathExists=/etc/marketops/runtime.json
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=10
+RuntimeDirectory=marketops
+RuntimeDirectoryMode=0700
+ExecStart=/usr/bin/python3 /usr/local/lib/marketops-bootstrap.py /etc/marketops/runtime.json
+ExecStop=/usr/bin/python3 /usr/local/lib/marketops-bootstrap.py /etc/marketops/runtime.json --stop
+TimeoutStartSec=300
+TimeoutStopSec=60
+UMask=0077
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/run/marketops /run/docker.sock
+NoNewPrivileges=yes
+Environment=DOCKER_CONFIG=/run/marketops/docker-config
+
+[Install]
+WantedBy=multi-user.target

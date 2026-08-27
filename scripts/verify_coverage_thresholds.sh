@@ -12,10 +12,12 @@ verify_backend() {
   local output="${LOG_DIR}/backend.log"
   if (
     cd "${ROOT}/backend/marketops-server"
-    ./mvnw -B -ntp -DskipITs \
+    # Check the existing full-run execution data. Re-running package/verify here
+    # would overwrite the approved JAR build identity and test-report artifacts.
+    ./mvnw -B -ntp \
       -Djacoco.line.coverage=1.00 \
       -Djacoco.branch.coverage=1.00 \
-      verify
+      jacoco:check@verify-coverage
   ) >"${output}" 2>&1; then
     printf 'coverage-negative: backend unexpectedly passed at 100%%\n' >&2
     return 1

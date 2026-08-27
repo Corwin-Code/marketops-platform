@@ -55,8 +55,23 @@ public class AnalyticsQueryService implements MetricQuery, DiagnosisQuery {
         this.diagnoses = diagnoses;
     }
 
+    /** Explicitly bounded evidence edges for an authorized subject and exact value version. */
+    @Transactional(readOnly = true, timeout = 5)
+    public InputPage inputs(UUID subjectId, UUID metricValueId) {
+        if (!metrics.valueBelongsTo(metricValueId, subjectId)) {
+            throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                    com.mimococo.marketops.shared.ErrorCode.RESOURCE_NOT_FOUND);
+        }
+        var rows = metrics.typedInputsOf(metricValueId);
+        return new InputPage(metricValueId, rows.stream().limit(200).toList(), rows.size() > 200);
+    }
+
+    /** Truncation is visible; complete large graphs use the asynchronous export. */
+    public record InputPage(UUID metricValueId, List<MetricRepository.InputReference> references,
+                            boolean truncated) { }
+
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, timeout = 5)
     public Optional<MetricValueView> current(MetricCode metricCode, SubjectKind subjectKind,
                                              UUID subjectId, MetricWindow window) {
         return metrics.currentValue(metricCode, subjectKind, subjectId, window)
@@ -64,7 +79,7 @@ public class AnalyticsQueryService implements MetricQuery, DiagnosisQuery {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, timeout = 5)
     public Map<MetricCode, MetricValueView> currentValues(SubjectKind subjectKind,
                                                           UUID subjectId,
                                                           MetricWindow window) {
@@ -77,7 +92,7 @@ public class AnalyticsQueryService implements MetricQuery, DiagnosisQuery {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, timeout = 5)
     public List<MetricValueView> history(MetricCode metricCode, SubjectKind subjectKind,
                                          UUID subjectId, MetricWindow window, int limit) {
         return metrics.history(metricCode, subjectKind, subjectId, window,
@@ -88,7 +103,7 @@ public class AnalyticsQueryService implements MetricQuery, DiagnosisQuery {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, timeout = 5)
     public List<DiagnosisFindingView> currentFindings(SubjectKind subjectKind, UUID subjectId,
                                                       MetricWindow window) {
         return diagnoses.currentFindings(subjectKind, subjectId, window).stream()
@@ -97,7 +112,7 @@ public class AnalyticsQueryService implements MetricQuery, DiagnosisQuery {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, timeout = 5)
     public List<PrioritySubjectView> priorityQueue(UUID storeId, MetricWindow window,
                                                    int limit) {
         List<PrioritySubjectView> queue = new ArrayList<>();

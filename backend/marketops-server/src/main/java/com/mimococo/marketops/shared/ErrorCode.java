@@ -120,6 +120,15 @@ public enum ErrorCode {
     /** The submitted file is larger than the intake boundary accepts. */
     IMPORT_TOO_LARGE("The file is larger than this intake accepts."),
 
+    /** The bounded asynchronous export queue has no capacity for another job. */
+    EXPORT_QUEUE_FULL("The export queue is full. Try again later."),
+
+    /** The export is unfinished, failed or expired and cannot be downloaded. */
+    EXPORT_UNAVAILABLE("This export is not available for download."),
+
+    /** The export bytes no longer match the immutable snapshot manifest. */
+    EXPORT_INTEGRITY_FAILED("The export failed its integrity check."),
+
     /** A required canonical metric input could not be resolved. */
     METRIC_INPUT_UNAVAILABLE("A required input for this metric is unavailable."),
 

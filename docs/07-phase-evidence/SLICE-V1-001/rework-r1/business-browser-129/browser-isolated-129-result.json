@@ -1,0 +1,45 @@
+{
+  "commands": [
+    {
+      "command": [
+        "make",
+        "up"
+      ],
+      "log": "browser-database-up-129.log",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "make",
+        "frontend-browser"
+      ],
+      "log": "browser-suite-129.log",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "marketops-s1-r1-browser-5de8c67477",
+        "--env-file",
+        ".env.local",
+        "-f",
+        "infra/compose/docker-compose.yml",
+        "down",
+        "--volumes",
+        "--remove-orphans"
+      ],
+      "log": "browser-database-cleanup-129.log",
+      "exit_code": 0
+    }
+  ],
+  "project": "marketops-s1-r1-browser-5de8c67477",
+  "loopback_database_port": 49849,
+  "elapsed_seconds": 43.768,
+  "root_local_configuration_unchanged": true,
+  "synthetic_credentials_generated_in_memory": true,
+  "provider_calls": "NONE; browser routes supply synthetic identity responses",
+  "source_input_manifest": "verification-inputs-export-129.json",
+  "result": "PASS"
+}

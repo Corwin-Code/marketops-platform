@@ -22,6 +22,17 @@ class DatabasePrivilegeIT extends PostgresContainerSupport {
 
     private static PostgreSQLContainer container;
 
+    @Test
+    @DisplayName("S1-F001 application SQL cannot fabricate commands or provider evidence")
+    void commandAuthorityTablesRejectDirectInsert() throws SQLException {
+        try (Connection connection = asApplicationRole(container)) {
+            for (String table : java.util.List.of("ops.price_command",
+                    "ops.price_command_attempt", "ops.price_command_readback")) {
+                assertRefused(connection, "INSERT INTO " + table + " DEFAULT VALUES");
+            }
+        }
+    }
+
     @BeforeAll
     static void migrate() {
         container = shared();

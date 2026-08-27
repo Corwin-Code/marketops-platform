@@ -2,7 +2,7 @@ package com.mimococo.marketops.marketplaceintegration.adapter.objectstorage;
 
 import com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort;
 import com.mimococo.marketops.shared.port.SecretResolverPort;
-import java.net.http.HttpClient;
+import com.mimococo.marketops.shared.port.OutboundHttp;
 import java.time.Clock;
 import java.time.Duration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,20 +27,12 @@ public class ObjectStorageConfiguration {
     /** How long the client waits to establish a connection to the store. */
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
 
-    /** The client the object-store adapter uses; never follows a redirect. */
-    @Bean
-    public HttpClient objectStorageHttpClient() {
-        return HttpClient.newBuilder()
-                .connectTimeout(CONNECT_TIMEOUT)
-                .followRedirects(HttpClient.Redirect.NEVER)
-                .build();
-    }
 
     /** The active custody provider. */
     @Bean
     public ObjectStoragePort objectStoragePort(ObjectStorageProperties properties,
                                                SecretResolverPort secretResolverPort,
-                                               HttpClient objectStorageHttpClient,
+                                               OutboundHttp objectStorageHttpClient,
                                                Clock clock) {
         return switch (properties.getProvider()) {
             case FILESYSTEM -> new FilesystemObjectStorage(requireRoot(properties));

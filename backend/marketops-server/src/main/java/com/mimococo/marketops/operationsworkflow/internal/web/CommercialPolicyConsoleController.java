@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
  * something must not be delayed.
  */
 @RestController
+@com.mimococo.marketops.shared.ConsoleApi
 @RequestMapping("/api/v1/console/policy")
 class CommercialPolicyConsoleController {
 

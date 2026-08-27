@@ -1,0 +1,17 @@
+{
+  "bootstrap-plan.jsonl": {
+    "sha256": "7f4fc602a279dd47ed1b818dbccc36a7a60b0b6755d0bda2855bd8590f83785a",
+    "bytes": 3054893,
+    "compression": "gzip lossless; no real state/account values"
+  },
+  "production-plan.jsonl": {
+    "sha256": "a4684839f0d7cc731bb7595764ad7a3f76014bd88ee778559d193b55dee61dcf",
+    "bytes": 9466348,
+    "compression": "gzip lossless; no real state/account values"
+  },
+  "staging-plan.jsonl": {
+    "sha256": "d40286e60e89391ae3d952e0845de12948f8c17b5d056fc15da1aea4d337f321",
+    "bytes": 9465918,
+    "compression": "gzip lossless; no real state/account values"
+  }
+}

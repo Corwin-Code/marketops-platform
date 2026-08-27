@@ -46,6 +46,7 @@ public class CredentialLookupRepository {
                             ON capability.platform_code = account.platform_code
                          WHERE store.id = :storeId
                            AND capability.id = :capabilityId
+                           AND credential.purpose_code = 'PRICE_WRITE'
                            AND credential.status = 'ACTIVE'
                            AND credential.effective_from <= :at
                            AND credential.expires_at > :at
@@ -56,7 +57,7 @@ public class CredentialLookupRepository {
                                      WHERE scope.credential_id = credential.id
                                        AND scope.store_id = store.id
                                        AND scope.status = 'ACTIVE'))
-                         ORDER BY credential.created_at
+                         ORDER BY credential.created_at, credential.id
                          LIMIT 1
                         """)
                 .param("storeId", storeId)
