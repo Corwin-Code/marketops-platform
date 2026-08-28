@@ -59,6 +59,8 @@ spring:
       fail-on-unknown-properties: true
 
 server:
+  # Internal telemetry trusts the socket peer only, never Forwarded/X-Forwarded-For.
+  forward-headers-strategy: none
   # Loopback only. The process has no authentication, so neither the metadata
   # resource nor the maintenance surface may be reachable from another host.
   address: 127.0.0.1
@@ -73,6 +75,70 @@ server:
 
 marketops:
   product: MarketOps Russia
+  object-storage:
+    # Immutable Raw custody. The workstation and continuous integration keep
+    # evidence in a local content-addressed directory; a managed environment
+    # selects the object store and names its bucket, region and credential
+    # reference. Both providers are write-once and read-back verified.
+    provider: FILESYSTEM
+    root-directory: ${MARKETOPS_RAW_CUSTODY_DIRECTORY:./local-data/raw-custody}
+  diagnostic-export:
+    # Local/CI opt in explicitly; a timer never starts provider I/O by default.
+    worker-enabled: ${MARKETOPS_DIAGNOSTIC_EXPORT_WORKER_ENABLED:false}
+  acquisition:
+    # Off. A worker that started itself wherever the application happened to run
+    # would reach marketplaces from a workstation and from a test container, so
+    # an environment that wants acquisition has to say so.
+    scheduler-enabled: false
+    lease-duration: 5m
+    maximum-calls-per-run: 20
+    retry-budget: 3
+    retry-delay: 2m
+    runs-per-scheduler-pass: 5
+
+  price-write:
+    # Off, and for a stronger reason than acquisition: a worker that started
+    # itself would change real marketplace prices from a workstation and from a
+    # test container. Turning it on does not enable writes — every command still
+    # passes the write gate — it only decides whether this process is one of the
+    # ones that tries.
+    worker-enabled: false
+    commands-per-pass: 5
+    retry-budget: 3
+  # The directory the platform's secret manager delivers values into. Absent by
+  # default: with no mount, every secret reference is unresolvable and every
+  # operation that would need one refuses.
+  secrets: {}
+  identity:
+    oidc:
+      # Absent by default. Without an issuer no token can be validated, so the
+      # console API denies every request; a serving environment is required to
+      # configure one and fails startup otherwise.
+      session-recording-interval: 5m
+  analytics:
+    # Domain-specific freshness targets. A metric whose freshest contributing
+    # fact is older than its domain allows is downgraded to STALE, which the
+    # write gate reads and refuses.
+    funnel-freshness: 48h
+    sales-freshness: 24h
+    returns-freshness: 48h
+    inventory-freshness: 6h
+    advertising-freshness: 24h
+    cost-freshness: 7d
+    thresholds:
+      # Operating configuration the deterministic rules compare against. Every
+      # triggered finding records the value and the threshold it compared, so a
+      # number somebody disputes can be argued about with both in view.
+      minimum-data-completeness: 0.80
+      low-impression-floor: 100
+      low-click-through-rate: 0.0100
+      low-click-through-minimum-impressions: 500
+      low-conversion-rate: 0.0100
+      low-conversion-minimum-reach: 200
+      high-return-rate: 0.2000
+      high-return-minimum-units: 10
+      stock-cover-days-floor: 7
+      advertising-cost-of-sale-ceiling: 0.3000
   metadata-maintenance:
     # Fail closed: an environment accepts maintenance writes only when its
     # profile explicitly turns them on. Queries are not gated.

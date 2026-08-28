@@ -56,6 +56,16 @@ DEFAULT_DB_PORT = "5432"
 FRONTEND_VARIABLES = (
     ("VITE_MARKETOPS_API_BASE_URL", "http://127.0.0.1:8080"),
     ("VITE_MARKETOPS_ENVIRONMENT", "local"),
+    # The operating console signs operators in against the organization's own
+    # identity provider. A workstation has no such provider, so these are left
+    # empty on purpose: the console then shows the platform-state panel and
+    # says the operating surface is not configured here, rather than offering a
+    # sign-in button that cannot work.
+    ("VITE_MARKETOPS_OIDC_AUTHORIZATION_ENDPOINT", ""),
+    ("VITE_MARKETOPS_OIDC_TOKEN_ENDPOINT", ""),
+    ("VITE_MARKETOPS_OIDC_CLIENT_ID", ""),
+    ("VITE_MARKETOPS_OIDC_AUDIENCE", ""),
+    ("VITE_MARKETOPS_STORE_ID", ""),
 )
 
 BACKEND_HEADER = """# Generated local development values. Never commit this file.

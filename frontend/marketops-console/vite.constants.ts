@@ -62,3 +62,48 @@ export function buildTimeConstants(
     [BUILD_COMMIT_KEY]: JSON.stringify(COMMIT_PATTERN.test(commit) ? commit : UNKNOWN_COMMIT),
   };
 }
+
+/** Placeholder the built page carries until the policy is resolved. */
+export const CONNECT_SOURCE_PLACEHOLDER = '%MARKETOPS_CONNECT_SRC%';
+
+/**
+ * The exact origins this deployment's console is allowed to reach.
+ *
+ * The policy was previously a fixed origin written into the page, which was
+ * true only on a workstation: a console pointed at another backend would have
+ * every request blocked, and a console with an identity provider could never
+ * complete a sign-in. Deriving it from the same settings the console reads
+ * keeps the policy as tight as before while making it correct wherever it runs.
+ *
+ * Only the origin of each setting is used. Permitting a whole host is what a
+ * connect-source is for; permitting a path would be a policy the browser
+ * ignores and a reader misreads.
+ */
+export function connectSources(environment: Record<string, string | undefined>): readonly string[] {
+  const configured = [
+    environment.VITE_MARKETOPS_API_BASE_URL,
+    environment.VITE_MARKETOPS_OIDC_TOKEN_ENDPOINT,
+    environment.VITE_MARKETOPS_OIDC_AUTHORIZATION_ENDPOINT,
+  ];
+  const origins = new Set<string>();
+  for (const value of configured) {
+    const trimmed = value?.trim() ?? '';
+    if (trimmed === '') {
+      continue;
+    }
+    try {
+      origins.add(new URL(trimmed).origin);
+    } catch {
+      // A setting that is not a URL cannot name an origin. It is left out
+      // rather than pasted into a security policy verbatim.
+      continue;
+    }
+  }
+  return [...origins].sort();
+}
+
+/** Render the connect-source list for the page's policy. */
+export function connectSourceDirective(environment: Record<string, string | undefined>): string {
+  const origins = connectSources(environment);
+  return origins.length === 0 ? "'self'" : `'self' ${origins.join(' ')}`;
+}

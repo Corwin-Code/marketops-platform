@@ -87,6 +87,6 @@ public final class JdbcAuthorizedAcquisitionGateway {
         } catch (SQLException failure) {
             throw new IllegalStateException("the call authority database operation failed", failure);
         }
-        return executor.execute(grant);
+        return executor.execute(grant).withAuthority(grant.decisionId(), grant.callSeq());
     }
 }

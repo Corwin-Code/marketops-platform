@@ -84,6 +84,16 @@
       <artifactId>spring-boot-starter-flyway</artifactId>
     </dependency>
 
+    <!-- Human authentication happens at an external OpenID Connect provider and
+         reaches this application only as a signed token. The resource-server
+         starter validates that token; it neither stores nor issues a
+         credential, and it introduces no deployment boundary the product
+         contract has not already fixed. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
+
     <!-- PostgreSQL support for Flyway ships as a database-specific module. The
          version comes from the Spring Boot BOM so it matches the Flyway core the
          starter resolves. -->
@@ -96,6 +106,10 @@
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
     </dependency>
 
     <dependency>
@@ -111,6 +125,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webmvc-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -141,7 +160,17 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <!-- The one-shot migration CLI is a second main, not the server entrypoint. -->
+          <mainClass>com.mimococo.marketops.MarketOpsServerApplication</mainClass>
+        </configuration>
         <executions>
+          <execution>
+            <id>browser-fixture</id>
+            <configuration>
+              <mainClass>com.mimococo.marketops.BrowserFixtureApplication</mainClass>
+            </configuration>
+          </execution>
           <execution>
             <id>build-info</id>
             <goals>

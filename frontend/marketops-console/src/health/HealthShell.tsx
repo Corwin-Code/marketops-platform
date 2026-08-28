@@ -30,6 +30,15 @@ export interface HealthShellProps {
   readonly refreshIntervalMs?: number;
   /** Backoff override used only for deterministic component tests. */
   readonly retryDelaysMs?: readonly number[];
+  /**
+   * Content rendered inside the page's single landmark.
+   *
+   * The platform-state panel owns the page's {@code main} and its heading, so
+   * anything shown alongside it belongs inside rather than beside: two
+   * landmarks and two level-one headings on one page leave a screen reader
+   * with no single answer to "where am I".
+   */
+  readonly children?: React.ReactNode;
 }
 
 /** Render the console. */
@@ -38,6 +47,7 @@ export function HealthShell({
   fetchImpl,
   refreshIntervalMs = HEALTH_REFRESH_INTERVAL_MS,
   retryDelaysMs = HEALTH_RETRY_DELAYS_MS,
+  children,
 }: HealthShellProps): React.JSX.Element {
   const [state, setState] = useState<HealthState>(INITIALISING);
   const [checking, setChecking] = useState(false);
@@ -121,6 +131,8 @@ export function HealthShell({
     <>
       <main aria-labelledby="console-heading">
         <h1 id="console-heading">MarketOps Russia</h1>
+
+        {children}
 
         <section aria-label="Platform state" data-state={state.name}>
           <h2>Platform state</h2>

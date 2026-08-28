@@ -118,6 +118,19 @@ public class CapabilityRepository {
                 .optional();
     }
 
+    /** Recorded availability alone cannot substitute for current account evidence. */
+    public boolean hasCurrentAccountEvidence(UUID capability, UUID account) {
+        return Boolean.TRUE.equals(jdbc.sql("SELECT platform.capability_evidence_current(:account,:capability,NULL)")
+                .param("account",account).param("capability",capability).query(Boolean.class).single());
+    }
+
+    public boolean hasCurrentStoreEvidence(UUID capability, UUID store) {
+        return jdbc.sql("""
+                SELECT platform.capability_evidence_current(marketplace_account_id,:capability,NULL)
+                  FROM core.store WHERE id=:store AND status='ACTIVE'
+                """).param("store",store).param("capability",capability).query(Boolean.class).optional().orElse(false);
+    }
+
     /** Load one capability by platform and registry code. */
     public Optional<PlatformCapability> findByCode(String platformCode, String capabilityCode) {
         return jdbc.sql("""

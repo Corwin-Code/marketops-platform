@@ -54,3 +54,12 @@ frontend/marketops-console/.env.local
 **/test-results/
 **/.eslintcache
 sbom/
+
+# Terraform caches, plans and state are never repository evidence.
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+!*.tfvars.example
+crash.log

@@ -46,7 +46,7 @@ import org.springframework.web.servlet.HandlerMapping;
  * vocabulary regardless of which layer refused first.
  */
 @RestControllerAdvice
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class AdminMetadataProblemAdvice {
 
     private static final Logger log = LoggerFactory.getLogger(AdminMetadataProblemAdvice.class);
