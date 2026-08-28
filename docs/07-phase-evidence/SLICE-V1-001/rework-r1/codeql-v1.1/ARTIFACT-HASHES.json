@@ -1,0 +1,36 @@
+{
+  "package": "MarketOps_PR20_CodeQL_False_Positive_Disposition_Authorization_v1.1",
+  "version": "1.1",
+  "files": [
+    {
+      "path": "CODEQL-FALSE-POSITIVE-DISPOSITION-MATRIX-v1.1.json",
+      "sha256": "b0a09962ebb37d257cb9f79a6e3d8f5543b0d3a7a69bc5bc99f578dc37bf4e8a",
+      "bytes": 9297
+    },
+    {
+      "path": "CODEX-PR20-CODEQL-FALSE-POSITIVE-DISPOSITION-v1.1.md",
+      "sha256": "f45209b5c5e4e9a19d9dc4ab84bb539c1bdecfb4bd1e022bbda9aa922ea847bc",
+      "bytes": 2961
+    },
+    {
+      "path": "CONTROLLER-PR20-CODEQL-DISPOSITION-MATRIX-CORRECTION-R1.md",
+      "sha256": "6a013dabfb9f48d94e63b07768f021cdba0c73b0fb418d3f23a4d2a30f2c0ac4",
+      "bytes": 3294
+    },
+    {
+      "path": "DISMISSED-COMMENT-LENGTH-VALIDATION.json",
+      "sha256": "9eae2a6d8548ae9291de7f856de63b7fe4bd0588d75faa07e4c32c2826fc5310",
+      "bytes": 2578
+    },
+    {
+      "path": "OWNER-AUTHORIZATION-PR20-CODEQL-FALSE-POSITIVE-DISPOSITIONS-v1.1.md",
+      "sha256": "fad94d33980a3c74c1aaab1e97c91a11320bd379452bc09f145bd8b3d3ed19af",
+      "bytes": 1645
+    },
+    {
+      "path": "README.md",
+      "sha256": "f80559226d27da228f439c1b1c3aee55b17778ebd7467bd0bedf25185192fb43",
+      "bytes": 570
+    }
+  ]
+}

@@ -5,22 +5,45 @@ document_type: executable_evidence_record
 slice: SLICE-V1-001
 executed_at: 2026-08-28
 executed_on: LOCAL_ISOLATED_FIXTURES
-assessment: REWORK_IN_PROGRESS
-final_exact_commit_verified: false
-remote_rework_ci: FINAL_VERIFICATION_AND_ALERT_DISPOSITION_PENDING
+assessment: REWORK_CANDIDATE_FOR_CLOSURE
+final_exact_commit_verification: REQUIRED_IN_DELIVERY_PACKET
+remote_rework_ci: C3_ALL_CHECKS_SUCCESS_AFTER_V1_1_DISPOSITION
 external_business_systems_contacted: NONE
 ```
 
 ## Evidence boundary
 
-These are successive source-bound worktree checkpoints, not a single final
-commit or a Controller verdict. The accepted original Slice Contract and
+These are successive source-bound checkpoints, not a Controller verdict.
+The [final handoff index](rework-r1/final-handoff.md) identifies the final delivery
+requirements and separates historical snapshots from current evidence. The accepted original Slice Contract and
 Amendment-001 are identified in [Current State](../../00-governance/CURRENT_STATE.md).
 All thirteen Frozen Findings remain open for final independent verification.
 The [41-criterion matrix](acceptance-status.md) keeps local implementation,
 external evidence and Owner/Gate conditions separate.
 
-## Executed checkpoints
+## Verified C3 checkpoint and CodeQL v1.1
+
+C3 Head `d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0`, tree
+`db3b2c4df0b46a94575e42989904e4fe80e41444`, is fully verified by
+[the preserved C3 packet](rework-r1/checkpoint-c3/REPORT.md): independent full
+backend runs 150/151 each pass 846 unit/architecture and 374 integration tests;
+372 Python, 196 frontend and 11 browser tests pass. Local backend line/branch
+coverage is 84.13%/72.14%; Linux CI is 84.22%/72.23%. The packaged migration
+artifact and all three Terraform roots pass. All gates remain unchanged.
+
+The C3 report predates dismissal and remains byte-for-byte historical evidence.
+Its security blocker is superseded by the [v1.1 execution record](rework-r1/codeql-v1.1/EXECUTION-RECORD.md):
+Owner-authorized alerts 66, 73, 74, 75 and 76 were individually dismissed with
+exact comments; their five threads were resolved after readback. Other 26
+PR alert records and six unrelated thread records were unchanged. All 11
+threads are resolved; all 13 checks, including aggregate CodeQL, are SUCCESS.
+The original empty default-branch inventory is not an all-ref inventory.
+
+The final canonical commit must receive fresh full local verification and CI;
+its exact Head/tree, tested merge/parents and results belong in the final
+delivery packet, not a self-referential claim inside that same commit.
+
+## Preserved earlier checkpoints
 
 | Command / checkpoint | Observed result | Scope and artifact |
 | --- | --- | --- |
@@ -86,16 +109,11 @@ Its report remains in Git at `30d16e5d7db2d2190635a06fececd5883093a876`, and
 records those failures. They were not waived. Subsequent failed worktree attempts
 remain in checkpoint logs; successful later runs are not retroactive passes.
 
-Final exact commit/merge identities and full remote CI remain outstanding.
-On C1, CodeQL reports six original source alerts fixed and their machine threads
-resolved; individual correction evidence replies are recorded. C2 fixes the
-remaining 20 source alerts. C2's Linux infrastructure validation then exposed
-a missing platform-specific unpacked hash; the cross-platform lock correction
-passes local validation and still requires remote confirmation.
-Five narrow false-positive assessments are documented in
-[CodeQL disposition](rework-r1/codeql-disposition.md); remote dismissal has not
-been performed and requires explicit additional authorization. No security
-success or Controller handoff is claimed while that boundary remains open.
+C1 and C2 failures above remain historical evidence. C3 closes the Linux
+provider-lock validation failure. Matrix v1.1 supersedes v1.0 and its API-length
+blocker; the five exact dispositions have executed. Current canonical sources
+are the handoff index, C3 receipts and v1.1 before/after evidence. Final delivery
+requires fresh complete local and remote verification on its exact Head.
 Real Yandex bootstrap/state secrecy/PITR/alert delivery, real OIDC/Marketplace/AI
 provider interoperability, Gate EV/E and Owner cohort evidence remain separate
 unauthorized boundaries. Local mocks, public documentation and test counts

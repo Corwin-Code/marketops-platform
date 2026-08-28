@@ -1,0 +1,45 @@
+{
+  "workflow_run": 33122375344,
+  "head": "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0",
+  "tested_merge": "fecc8c7b2e0dde4e565f59e5432de72477444948",
+  "result": "PASS",
+  "test_counts": {
+    "backend-integration-reports": {
+      "failsafe-reports": {
+        "tests": 374,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "backend-test-reports": {
+      "surefire-reports": {
+        "tests": 846,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "failsafe-reports": {
+        "tests": 374,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "coverage": [
+    {
+      "type": "BRANCH",
+      "missed": "1239",
+      "covered": "3222"
+    },
+    {
+      "type": "LINE",
+      "missed": "2286",
+      "covered": "12199"
+    }
+  ],
+  "raw_log_sha256": "c0ca0f961c11050dfe50fd0c1427ad8e97be8ab02c10223cff95c67d30948497",
+  "ci_artifact_sha256": "8e549efb7a48b3efa407db2e9f90ead464bc7065f9b4e99133b4279a9852b35a",
+  "artifact_identity_note": "CI explicitly supplies marketops.build.gitCommit with source Head; local and CI JAR hashes are separate identities."
+}

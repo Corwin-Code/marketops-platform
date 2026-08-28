@@ -1,0 +1,35 @@
+{
+  "reviewed_head": "30d16e5d7db2d2190635a06fececd5883093a876",
+  "thresholds": {
+    "jacoco.line.coverage": {
+      "reviewed": "0.80",
+      "candidate": "0.80"
+    },
+    "jacoco.branch.coverage": {
+      "reviewed": "0.70",
+      "candidate": "0.70"
+    }
+  },
+  "jacoco_exclusions_unchanged": [
+    [
+      "com/mimococo/marketops/MarketOpsServerApplication.class"
+    ]
+  ],
+  "unchanged_files": {
+    "frontend/marketops-console/vite.config.ts": true,
+    ".github/workflows/security.yml": true
+  },
+  "negative_gate_proof": "checks-132/coverage-negative-132.log",
+  "notes": [
+    "Surefire keeps its original IT exclusion because Failsafe now executes all ITs in both full backend jobs.",
+    "No source/package JaCoCo exclusion was added.",
+    "Ruleset checks unchanged: remote snapshot will bind the final Head.",
+    "Governance gains mutation-sensitive phase/finding/contract checks; no original normative Gate is removed."
+  ],
+  "assurance_normative_bytes_preserved": {
+    "base": "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+    "only_changed_section": "2a. SLICE-V1-001 candidate evidence state",
+    "original_normative_sha256": "78e087d5a3458a3b77a656aa54608ec6c87e3f26b3a17535f5a62ed1aa1cfcf9",
+    "candidate_without_implementation_fact_section_sha256": "78e087d5a3458a3b77a656aa54608ec6c87e3f26b3a17535f5a62ed1aa1cfcf9"
+  }
+}

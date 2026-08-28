@@ -8,8 +8,8 @@ contract: docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md
 contract_sha256: 0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5
 accepted_amendments: SLICE-V1-001-AMENDMENT-001
 accepted_amendment_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d
-implementation_state: ROOT_CAUSE_REWORK_IN_PROGRESS
-candidate_scope: PR20_UNCOMMITTED_WORKTREE
+implementation_state: ROOT_CAUSE_REWORK_CANDIDATE
+candidate_scope: PR20_PUBLISHED_CANDIDATE
 closure_claim: NONE
 base_commit: 89fc29be45327b592a9bcbeffbfec54c96fb66ed
 base_tree: 28029347daa05bbff40c1a0ca15c7ad0d9f1ac92
@@ -23,17 +23,18 @@ infrastructure_applied: false
 
 The original thirteen implementation commits were published as Draft PR #20.
 Controller review froze thirteen findings against Head
-`30d16e5d7db2d2190635a06fececd5883093a876`. Codex is correcting the same branch;
-the candidate changes remain uncommitted and do not constitute closure.
+`30d16e5d7db2d2190635a06fececd5883093a876`. Codex's corrections are published on
+the same branch. They remain a candidate, not a Controller closure verdict.
 
 The code covers acquisition, canonical facts, diagnosis, recommendations,
-controlled commands and readback. Candidate migrations V0011–V0026 are being
-corrected, V0027 adds account-bound registry verification, and V0028 adds bounded
-asynchronous diagnostic export. This document is
-being reconciled with that work and is not a final verified as-built snapshot.
-The [rework checkpoint](../../07-phase-evidence/SLICE-V1-001/rework-r1/progress-checkpoint.md)
-records local performance/export/restore and browser checkpoints, plus the
-remaining final regression, infrastructure evidence, CI and acceptance work. No real provider, marketplace or production write is authorized or proven.
+controlled commands and readback. Candidate migrations V0011–V0026 contain the
+in-scope corrections, V0027 adds account-bound registry verification, and V0028
+adds bounded asynchronous diagnostic export. The
+[final handoff index](../../07-phase-evidence/SLICE-V1-001/rework-r1/final-handoff.md)
+records C3 full regression, performance/export/restore, browser, infrastructure
+and CI evidence, plus the completed v1.1 CodeQL dispositions. Its final delivery
+packet must bind fresh verification to the exact final published Head. No real
+provider, Marketplace or production write is authorized or proven.
 
 ## 2. The five decisions everything else follows from
 

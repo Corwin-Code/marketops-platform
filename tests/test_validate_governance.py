@@ -38,6 +38,7 @@ from scripts.validate_governance import (
     validate_approved_design_state_text,
     validate_authorization_state_text,
     validate_completion_state_text,
+    validate_codeql_disposition_artifacts,
     validate_controller_review_standard_text,
     validate_decision_log_v1_text,
     validate_dr0003_controller_review_text,
@@ -3000,8 +3001,8 @@ class V1CurrentStateContractTests(unittest.TestCase):
 
     def test_rework_identity_phase_and_actor_cannot_drift(self) -> None:
         mutations = (
-            ("next_authorized_actor: CODEX", "next_authorized_actor: CLAUDE_FABLE_5"),
-            ("slice_v1_001_rework_phase: IN_PROGRESS", "slice_v1_001_rework_phase: CLOSED"),
+            ("next_authorized_actor: GPT-5.6 Sol Pro Controller", "next_authorized_actor: CLAUDE_FABLE_5"),
+            ("slice_v1_001_rework_phase: FINAL_CLOSURE_VERIFICATION", "slice_v1_001_rework_phase: CLOSED"),
             ("slice_v1_001_pr_state: OPEN_DRAFT_UNMERGED", "slice_v1_001_pr_state: MERGED"),
             ("slice_v1_001_finding_count: 13", "slice_v1_001_finding_count: 12"),
             ("slice_v1_001_closure_claim: NONE", "slice_v1_001_closure_claim: APPROVED"),
@@ -3012,6 +3013,24 @@ class V1CurrentStateContractTests(unittest.TestCase):
             with self.subTest(field=old):
                 self.assertIn(old, self.current())
                 self.assertTrue(self.validate(current=self.current().replace(old, new, 1)))
+
+    def test_codeql_authority_and_persisted_dispositions_cannot_drift(self) -> None:
+        root = Path(__file__).resolve().parents[1] / "docs/07-phase-evidence/SLICE-V1-001/rework-r1/codeql-v1.1"
+        artifacts = {path.name: path.read_bytes() for path in root.glob("*") if path.is_file()}
+        errors: list[str] = []
+        validate_codeql_disposition_artifacts(errors, artifacts)
+        self.assertEqual([], errors)
+        for name in artifacts:
+            with self.subTest(artifact=name):
+                changed = dict(artifacts)
+                changed[name] += b"\n"
+                errors = []
+                validate_codeql_disposition_artifacts(errors, changed)
+                self.assertTrue(errors)
+        for changed in ({}, {**artifacts, "unapproved-alert.json": b"{}"}):
+            errors = []
+            validate_codeql_disposition_artifacts(errors, changed)
+            self.assertTrue(errors)
 
     def test_review_artifacts_and_acceptance_matrix_are_mutation_sensitive(self) -> None:
         root = Path(__file__).resolve().parents[1] / "docs/07-phase-evidence/SLICE-V1-001"

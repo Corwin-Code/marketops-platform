@@ -1,0 +1,5 @@
+{
+  "state": "dismissed",
+  "dismissed_reason": "false positive",
+  "dismissed_comment": "False positive. Length/hash mismatch returns no bytes. Success requires pre-I/O DB authorization, exact custody integrity checks, and post-I/O DB reauthorization; mid-read revocation is refused. Reassess if integrity or authorization order changes."
+}

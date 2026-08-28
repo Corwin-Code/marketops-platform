@@ -1,0 +1,62 @@
+{
+  "commands": [
+    {
+      "command": [
+        "make",
+        "up"
+      ],
+      "log": "browser-database-up-152.log",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "make",
+        "frontend-browser"
+      ],
+      "log": "browser-suite-152.log",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "marketops-s1-r1-browser-7e89df8b51",
+        "--env-file",
+        ".env.local",
+        "-f",
+        "infra/compose/docker-compose.yml",
+        "down",
+        "--volumes",
+        "--remove-orphans"
+      ],
+      "log": "browser-database-cleanup-152.log",
+      "exit_code": 0
+    }
+  ],
+  "project": "marketops-s1-r1-browser-7e89df8b51",
+  "loopback_database_port": 49421,
+  "elapsed_seconds": 44.104,
+  "root_local_configuration_unchanged": true,
+  "synthetic_credentials_generated_in_memory": true,
+  "provider_calls": "NONE; browser routes supply synthetic identity responses",
+  "source_input_manifest": "verification-inputs-export-152.json",
+  "result": "PASS",
+  "identity": {
+    "head": "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0",
+    "tree": "db3b2c4df0b46a94575e42989904e4fe80e41444",
+    "started_clean": true,
+    "started_at": "2026-08-27T22:41:53.842615+00:00",
+    "input_files": 690
+  },
+  "completed_head": "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0",
+  "completed_tree": "db3b2c4df0b46a94575e42989904e4fe80e41444",
+  "completed_clean": true,
+  "inputs_unchanged": true,
+  "browser_tests": 11,
+  "raw_log_sha256": {
+    "browser-database-up-152.log": "b4ff759332cd0855da659f541d48375bfc243e23d92f75033b7785ebaf56febd",
+    "browser-suite-152.log": "93f4019ba171755438b5eeb5c4da87d6ddb906d765f2705c8a23d4e39d6b355f",
+    "browser-database-cleanup-152.log": "ce7c8b2cbdf698cb9dfa52c5c5a688f9cc974e8838c213df9433e14745d262a7"
+  }
+}

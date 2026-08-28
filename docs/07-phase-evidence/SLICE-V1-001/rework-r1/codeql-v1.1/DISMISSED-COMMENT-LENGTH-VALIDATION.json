@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "matrix_sha256": "b0a09962ebb37d257cb9f79a6e3d8f5543b0d3a7a69bc5bc99f578dc37bf4e8a",
+  "github_api_max_length": 280,
+  "measurement": "ASCII characters; UTF-8 bytes equal character count",
+  "all_valid": true,
+  "alerts": [
+    {
+      "alert": 66,
+      "length": 247,
+      "remaining": 33,
+      "ascii": true,
+      "sha256": "ec98ef7246259d54e45e07828b67658b0ef582db678c736e97b7d1129ced209b",
+      "dismissed_comment": "False positive. This API is bearer-only and STATELESS: cookies, query/form tokens and servlet sessions cannot authenticate; no auth cookie/session is issued; hostile-Origin mutation is refused. Reassess if ambient auth or CORS/Origin rules change."
+    },
+    {
+      "alert": 73,
+      "length": 253,
+      "remaining": 27,
+      "ascii": true,
+      "sha256": "ed27b3ed6131c24d23e3e7c30e87da029bcc2e889422b5acea96b5ea9d7ef056",
+      "dismissed_comment": "False positive. Production disables in-app Flyway; this empty value only clears the inherited migration-secret placeholder. The server gets only the app-role secret; a separate migration runner uses its own credential. Reassess if that boundary changes."
+    },
+    {
+      "alert": 74,
+      "length": 261,
+      "remaining": 19,
+      "ascii": true,
+      "sha256": "c522440e7aac6f0470e9e7dc34d2950191faff862ac886e177e67b6d167aec68",
+      "dismissed_comment": "False positive. The sink is Apache HttpUriRequestBase.setEntity for an outbound provider request, not browser output. Exact bytes are required; HTTPS, destination, DNS, redirect, header and size controls remain enforced. Reassess if bytes are rendered to users."
+    },
+    {
+      "alert": 75,
+      "length": 254,
+      "remaining": 26,
+      "ascii": true,
+      "sha256": "60c28a9ffabdab3d92304dcd146148e3c7127b63cfe628b12dfb10e956a3ea03",
+      "dismissed_comment": "False positive. The part-number branch denies invalid input and returns no data. Successful reads require stored ownership/live scope, DB authorization before I/O, and DB reauthorization after I/O. Reassess if the guard or authorization sequence changes."
+    },
+    {
+      "alert": 76,
+      "length": 248,
+      "remaining": 32,
+      "ascii": true,
+      "sha256": "f138f8166bac890a10591549bf58e6985da7b1203e3ab29edd7d0461a8aa5019",
+      "dismissed_comment": "False positive. Length/hash mismatch returns no bytes. Success requires pre-I/O DB authorization, exact custody integrity checks, and post-I/O DB reauthorization; mid-read revocation is refused. Reassess if integrity or authorization order changes."
+    }
+  ]
+}

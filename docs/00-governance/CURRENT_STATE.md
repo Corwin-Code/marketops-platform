@@ -44,8 +44,8 @@ execution_envelope_state: ACTIVE_UNDER_DR_0004
 closure_snapshot_standard_state: ACTIVE_UNDER_DR_0004
 conditional_design_gate: ENABLED
 mandatory_design_gate_for_every_slice: DISABLED
-slice_v1_001_implementation_state: ROOT_CAUSE_REWORK_IN_PROGRESS
-slice_v1_001_rework_phase: IN_PROGRESS
+slice_v1_001_implementation_state: ROOT_CAUSE_REWORK_CANDIDATE
+slice_v1_001_rework_phase: FINAL_CLOSURE_VERIFICATION
 slice_v1_001_pr: 20
 slice_v1_001_pr_state: OPEN_DRAFT_UNMERGED
 slice_v1_001_branch: feat/SLICE-V1-001-sku-growth-profit-loop
@@ -54,7 +54,7 @@ slice_v1_001_reviewed_base: 89fc29be45327b592a9bcbeffbfec54c96fb66ed
 slice_v1_001_reviewed_head: 30d16e5d7db2d2190635a06fececd5883093a876
 slice_v1_001_reviewed_tree: 13b1b789cd4cff292d0d6ab24daca976afbba6da
 slice_v1_001_frozen_findings_sha256: 8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8
-slice_v1_001_rework_commit_state: CANDIDATE_PUBLICATION_AND_CI_PENDING
+slice_v1_001_rework_commit_state: PUBLISHED_DRAFT_CANDIDATE
 slice_v1_001_finding_count: 13
 slice_v1_001_closure_claim: NONE
 slice_v1_001_execution_condition: AMENDMENT_001_ACCEPTED_FULL_REWORK_CONTINUES
@@ -67,9 +67,9 @@ gate_e: NOT_AUTHORIZED
 slice_v1_001_as_built_design: docs/02-architecture/designs/SLICE-V1-001-design.md
 slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
-next_authorized_actor: CODEX
-next_action: SLICE_V1_001_FULL_PRODUCTION_ROOT_CAUSE_REWORK_R1
-slice_v1_001_handoff_pending: CODEX_REWORK_THEN_INDEPENDENT_CONTROLLER_CLOSURE_VERIFICATION
+next_authorized_actor: GPT-5.6 Sol Pro Controller
+next_action: CONTROLLER_SLICE_V1_001_FINAL_CLOSURE_VERIFICATION
+slice_v1_001_handoff_pending: INDEPENDENT_CONTROLLER_FINAL_CLOSURE_VERIFICATION
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
 bounded_real_write_verification_authorization: NONE
@@ -89,7 +89,8 @@ owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 
 ## Active authority
 
-The continuous rework is incomplete. The Human Owner accepted exact
+This branch presents the continuous rework candidate for independent final
+closure verification. The Human Owner accepted exact
 [Amendment-001](../03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md)
 at SHA-256 `8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d`.
 [Acceptance provenance](../08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md)
@@ -97,11 +98,16 @@ authorizes PG17 managed bootstrap implementation in this same Draft PR.
 The earlier [Decision Request](../07-phase-evidence/SLICE-V1-001/rework-r1/DECISION-REQUEST-S1-F010-MANAGED-PG-BOOTSTRAP.md)
 and failed compatibility evidence remain historical records. The compatibility
 decision is no longer pending; implementation, negative tests, equivalence,
-local restore evidence now exist; final exact-commit/CI and real staging verification remain incomplete.
+local restore evidence now exist. The C3 checkpoint has full local and remote
+verification; real staging verification remains external and unauthorized.
 The original Contract and V0001–V0010 remain byte-immutable, and standard V0002
-continues exact SQL execution. The overall rework phase remains `IN_PROGRESS`, all thirteen Frozen
-Findings remain open, and the candidate is undergoing publication and exact-commit CI verification.
-This constraint is not a Controller closure verdict or a change to protected main.
+continues exact SQL execution. All thirteen Frozen Findings remain open for the
+Controller's independent verdict. The [final handoff index](../07-phase-evidence/SLICE-V1-001/rework-r1/final-handoff.md)
+binds the correction and acceptance maps to the verified C3 checkpoint and the
+executed, Owner-authorized CodeQL v1.1 dispositions. Delivery also requires the
+complete local and remote verification packet for the exact final published
+Head; C3 results cannot substitute for it. This is not a closure verdict or a
+change to protected main.
 
 The active product and Slice authority remains DR-0003,
 `OWNER_DECISIONS_V1.md`, `V1_PRODUCT_CONTRACT.md`, ADR-0005 through ADR-0008 and
@@ -251,17 +257,18 @@ reviewed identities are recorded above and in
 starting identities, not the final rework commit or tree.
 
 Controller Deep Review is complete. All thirteen frozen findings remain open
-for the continuous rework and final independent closure verification. No finding
+for final independent closure verification. No finding
 is self-approved. Local targeted test results do not establish overall PR
 quality, Slice completion, or V1 completion. The current acceptance matrix uses
 separate defect and external-evidence states rather than the superseded Maker
 self-assessment. The original assessment remains in Git at the reviewed Head.
 
-V0011–V0026 are candidate migrations being corrected in scope. V0027 adds the
+V0011–V0026 contain the in-scope candidate corrections. V0027 adds the
 account-bound verification workflow and V0028 bounded diagnostic exports. V0001–V0010 and the accepted original Slice
-Contract are unchanged. Publication and exact-commit CI are in progress. Final
-identities, verification commands, coverage and CI must be recorded before the
-Controller handoff; the reviewed Head above remains historical provenance.
+Contract are unchanged. C3 is published and all 13 checks pass following the five
+exact v1.1 dispositions; all 11 review threads are resolved. Final identities,
+verification commands, coverage and CI are supplied in the final delivery
+packet. The reviewed Head above remains historical provenance.
 
 ## Not completed and not claimed
 
@@ -282,9 +289,10 @@ Controller handoff; the reviewed Head above remains historical provenance.
 - Local PG17 dump/restore, migration/privilege revalidation, object-loss refusal
   and exact-byte recovery have executed. Real Yandex PITR and environment
   bootstrap have not; local evidence is not provider recovery evidence.
-- The original PR has CI evidence, including failed required checks, in the
-  frozen Controller package. Rework publication and CI remain in progress; no successful final Head is
-  claimed by this checkpoint.
+- The original PR's failed checks remain in the frozen Controller package.
+  C3's successful checks and v1.1 disposition evidence are separate later
+  records. The final delivery packet must verify the exact final Head, including
+  this canonical handoff commit, before Controller consumption.
 - V1 and SLICE-V1-001 are not production-ready until their future Gates pass.
 - Business sales/profit uplift is not claimed.
 
@@ -297,13 +305,10 @@ Cohort block only their named integration or production-enablement boundary.
 
 ## Next authorized action
 
-Codex continues `SLICE_V1_001_FULL_PRODUCTION_ROOT_CAUSE_REWORK_R1` across the
-complete Frozen Finding Set. It may correct in-scope implementation, tests,
-V0011+ migrations, infrastructure code and canonical documents, then publish
-coherent commits only to the existing branch and Draft PR #20. It may not
-rewrite the original thirteen commits, push main, mark Ready, merge, self-approve,
-deploy, apply Terraform, access real credentials or contact business providers.
-
-After complete verification and publication, the next handoff is to
-GPT-5.6 Sol Pro Controller for
-`CONTROLLER_SLICE_V1_001_FINAL_CLOSURE_VERIFICATION`. That handoff has not occurred.
+The next review actor is GPT-5.6 Sol Pro Controller for
+`CONTROLLER_SLICE_V1_001_FINAL_CLOSURE_VERIFICATION` over the complete Frozen
+Finding Set. Codex must finish exact-final-Head local verification, publication,
+all required/security CI and the standalone delivery report before returning
+that handoff. It cannot issue the Controller verdict itself. The PR remains
+OPEN / DRAFT / UNMERGED; Ready, merge, deployment, real credentials/provider
+business calls, Gate EV, Gate E and production writes remain unauthorized.

@@ -1,6 +1,5 @@
 {
-  "assessment": "PR20_REWORK_IN_PROGRESS",
-  "final_exact_commit_verified": false,
+  "assessment": "PR20_REWORK_SUBMITTED_FOR_CLOSURE",
   "frozen_findings_sha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8",
   "criteria": [
     {
@@ -13,7 +12,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/identityaccess/internal/web/SignedBearerIdentityIT.java",
         "frontend/marketops-console/tests/browser/business-journey.spec.ts"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-002",
@@ -26,7 +25,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/PriceWritePathIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/identityaccess/internal/web/SignedBearerIdentityIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-003",
@@ -37,7 +36,7 @@
       "verification_sources": [
         "backend/marketops-server/src/test/java/com/mimococo/marketops/identityaccess/internal/web/SignedBearerIdentityIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-004",
@@ -54,7 +53,7 @@
         "scripts/verify_coverage_thresholds.sh",
         "frontend/marketops-console/tests/browser/operating-console.spec.ts"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-005",
@@ -68,7 +67,7 @@
         "tests/test_validate_terraform_plan.py",
         "tests/test_yandex_runtime.py"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-006",
@@ -80,7 +79,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/RepresentativePerformanceIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/internal/migration/ManagedProfileMigrationIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-007",
@@ -94,7 +93,7 @@
         "tests/test_yandex_telemetry.py",
         "frontend/marketops-console/tests/browser/health-shell.spec.ts"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-008",
@@ -106,7 +105,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/RegistryVerificationFlowIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdaptersTest.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-009",
@@ -118,7 +117,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/RegistryVerificationFlowIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdaptersTest.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-010",
@@ -131,7 +130,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AcquisitionPageWorkerTest.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/IngestionAuthorityAndEvidenceIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-011",
@@ -144,7 +143,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/IngestionAuthorityAndEvidenceIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AuthorizedAcquisitionFlowIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-012",
@@ -158,7 +157,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/objectstorage/S3CompatibleObjectStorageTest.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/DiagnosticExportIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-013",
@@ -170,20 +169,20 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AuthorizedAcquisitionFlowIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/IngestionAuthorityAndEvidenceIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-014",
       "candidate_status": "IMPLEMENTED_UNPROVEN",
       "requirement": "duplicate/replay/backfill processing creates no duplicate logical effects; replay makes zero Marketplace acquisition calls.",
-      "open_finding_or_verification": "Final regression and criterion-specific evidence pending",
+      "open_finding_or_verification": "Independent verification of mapped evidence pending",
       "external_boundary": "No additional external boundary identified in the frozen set",
       "verification_sources": [
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/StoredRawReplayIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/operatingfacts/internal/application/FactRecorderTest.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/DiagnosticExportIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-015",
@@ -196,7 +195,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/operatingfacts/internal/application/NormalizationRunnerTest.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AcquisitionPageWorkerTest.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-016",
@@ -208,7 +207,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/OperatingFlowIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/PriceWritePathIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-017",
@@ -221,7 +220,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/operatingfacts/internal/application/SpreadsheetReaderTest.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/operatingfacts/internal/application/ImportRowValidatorTest.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-018",
@@ -233,7 +232,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/FileIntakeFlowIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/operatingfacts/internal/application/ImportRowValidatorTest.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-019",
@@ -245,41 +244,41 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/OperatingFlowIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/StoredRawReplayIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-020",
       "candidate_status": "IMPLEMENTED_UNPROVEN",
       "requirement": "Contribution Profit/Minimum Price and canonical/estimated states reproduce against versioned golden examples; missing inputs do not produce fake precision.",
-      "open_finding_or_verification": "Final regression and criterion-specific evidence pending",
+      "open_finding_or_verification": "Independent verification of mapped evidence pending",
       "external_boundary": "No additional external boundary identified in the frozen set",
       "verification_sources": [
         "backend/marketops-server/src/test/java/com/mimococo/marketops/OperatingFlowIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Existing integrated calculations are not a claim that the complete acceptance criterion has been independently verified."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Existing integrated calculations are not a claim that the complete acceptance criterion has been independently verified."
     },
     {
       "id": "S1-AC-021",
       "candidate_status": "IMPLEMENTED_UNPROVEN",
       "requirement": "Completed/Retained/Settled Sale and late-return/adjustment behavior are tested without rewriting historical source facts.",
-      "open_finding_or_verification": "Final regression and criterion-specific evidence pending",
+      "open_finding_or_verification": "Independent verification of mapped evidence pending",
       "external_boundary": "No additional external boundary identified in the frozen set",
       "verification_sources": [
         "backend/marketops-server/src/test/java/com/mimococo/marketops/OperatingFlowIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Existing integrated calculations are not a claim that the complete acceptance criterion has been independently verified."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Existing integrated calculations are not a claim that the complete acceptance criterion has been independently verified."
     },
     {
       "id": "S1-AC-022",
       "candidate_status": "IMPLEMENTED_UNPROVEN",
       "requirement": "deterministic diagnosis and rule order correctly identify or decline Low Impression/CTR/Conversion, High Return, Stockout Risk, Negative Margin and Data Blocked cases.",
-      "open_finding_or_verification": "Final regression and criterion-specific evidence pending",
+      "open_finding_or_verification": "Independent verification of mapped evidence pending",
       "external_boundary": "No additional external boundary identified in the frozen set",
       "verification_sources": [
         "backend/marketops-server/src/test/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosisEngineTest.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/OperatingFlowIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-023",
@@ -292,7 +291,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidatorTest.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/adapter/http/HttpModelGatewayTest.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-024",
@@ -303,7 +302,7 @@
       "verification_sources": [
         "backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidatorTest.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-025",
@@ -315,7 +314,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/OperatingFlowIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/adapter/http/HttpModelGatewayTest.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-026",
@@ -326,12 +325,12 @@
       "verification_sources": [
         "backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidatorTest.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests. Structural output validation does not establish useful model reasoning or Owner-approved golden cases."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests. Structural output validation does not establish useful model reasoning or Owner-approved golden cases."
     },
     {
       "id": "S1-AC-027",
       "candidate_status": "IMPLEMENTATION_DEFECT",
-      "requirement": "Recommendation \u2192 Task \u2192 Approval/Policy Authorization is complete, scoped, expiring, attributable and immutable in audit.",
+      "requirement": "Recommendation → Task → Approval/Policy Authorization is complete, scoped, expiring, attributable and immutable in audit.",
       "open_finding_or_verification": "S1-F001, S1-F004",
       "external_boundary": "No additional external boundary identified in the frozen set",
       "verification_sources": [
@@ -339,19 +338,19 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/PriceWritePathIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/RegistryVerificationFlowIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-028",
       "candidate_status": "IMPLEMENTED_UNPROVEN",
       "requirement": "Commercial Policy versions and overrides apply deterministically; missing/invalid/expired policy denies execution.",
-      "open_finding_or_verification": "Final regression and criterion-specific evidence pending",
+      "open_finding_or_verification": "Independent verification of mapped evidence pending",
       "external_boundary": "No additional external boundary identified in the frozen set",
       "verification_sources": [
         "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailEngineTest.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/OperatingFlowIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-029",
@@ -363,7 +362,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/OperatingFlowIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/PriceWritePathIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-030",
@@ -375,7 +374,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/PriceWritePathIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-031",
@@ -387,7 +386,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/RegistryVerificationFlowIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-032",
@@ -399,7 +398,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdaptersTest.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-033",
@@ -411,43 +410,43 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/PriceWritePathIT.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-034",
       "candidate_status": "IMPLEMENTED_UNPROVEN",
       "requirement": "global and scoped Kill Switches prevent new writes; disabled flags are fail-closed under restart/concurrency.",
-      "open_finding_or_verification": "Final regression and criterion-specific evidence pending",
+      "open_finding_or_verification": "Independent verification of mapped evidence pending",
       "external_boundary": "No additional external boundary identified in the frozen set",
       "verification_sources": [
         "backend/marketops-server/src/test/java/com/mimococo/marketops/database/PriceWritePathIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/ApplicationEnvironmentFailClosedTest.java"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-035",
       "candidate_status": "IMPLEMENTED_UNPROVEN",
-      "requirement": "browser E2E proves login \u2192 priority queue \u2192 SKU diagnosis \u2192 evidence \u2192 recommendation \u2192 approval/policy \u2192 price command \u2192 readback timeline.",
-      "open_finding_or_verification": "Final regression and criterion-specific evidence pending",
+      "requirement": "browser E2E proves login → priority queue → SKU diagnosis → evidence → recommendation → approval/policy → price command → readback timeline.",
+      "open_finding_or_verification": "Independent verification of mapped evidence pending",
       "external_boundary": "No additional external boundary identified in the frozen set",
       "verification_sources": [
         "frontend/marketops-console/tests/browser/business-journey.spec.ts"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-036",
       "candidate_status": "IMPLEMENTED_UNPROVEN",
       "requirement": "UI never labels stale/estimated/unknown/readback-mismatch state as confirmed success.",
-      "open_finding_or_verification": "Final regression and criterion-specific evidence pending",
+      "open_finding_or_verification": "Independent verification of mapped evidence pending",
       "external_boundary": "No additional external boundary identified in the frozen set",
       "verification_sources": [
         "frontend/marketops-console/src/__tests__/ConsoleJourney.test.tsx",
         "frontend/marketops-console/tests/browser/operating-console.spec.ts"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-037",
@@ -460,7 +459,7 @@
         "backend/marketops-server/src/test/java/com/mimococo/marketops/DiagnosticExportIT.java",
         "frontend/marketops-console/tests/browser/operating-console.spec.ts"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-038",
@@ -476,7 +475,7 @@
         "frontend/marketops-console/tests/browser/business-journey.spec.ts",
         "frontend/marketops-console/tests/browser/health-shell.spec.ts"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-039",
@@ -491,18 +490,18 @@
         ".github/workflows/backend.yml",
         ".github/workflows/infrastructure.yml"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     },
     {
       "id": "S1-AC-040",
       "candidate_status": "OWNER_PENDING",
       "requirement": "the Pilot Cohort, approved users, Stores, Capabilities, Policy limits, monitoring window and rollback/kill criteria are explicitly recorded.",
-      "open_finding_or_verification": "Final regression and criterion-specific evidence pending",
+      "open_finding_or_verification": "Independent verification of mapped evidence pending",
       "external_boundary": "EXT-006: OWNER_PENDING",
       "verification_sources": [
         "docs/00-governance/OPEN_QUESTIONS.md"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required. Real provider/environment or Owner/Gate evidence is not established by these tests."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet. Real provider/environment or Owner/Gate evidence is not established by these tests."
     },
     {
       "id": "S1-AC-041",
@@ -517,7 +516,10 @@
         "scripts/validate_governance.py",
         "tests/test_validate_governance.py"
       ],
-      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. Full final-commit regression remains required."
+      "assessment_limit": "Candidate support only; no criterion completion or Controller finding closure. C3 full regression is recorded; exact-final-Head regression and CI are bound by the delivery packet."
     }
-  ]
+  ],
+  "final_exact_commit_verification": "REQUIRED_IN_DELIVERY_PACKET",
+  "handoff_index": "docs/07-phase-evidence/SLICE-V1-001/rework-r1/final-handoff.md",
+  "status_semantics": "Frozen review dispositions retained pending independent Controller closure; correction and verification receipts are separate."
 }

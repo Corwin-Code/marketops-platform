@@ -1,0 +1,37 @@
+[
+  {
+    "artifact": "acceptance-status.md",
+    "source_path": "docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md",
+    "source_sha256": "6654c5532e3c5826ba13388f493393f89b628f532454a7abe2a657766cd168a1",
+    "artifact_sha256": "5f52fd683b95b46e55066e8fd4cfe0c4417cbe9260f422ee9a21f7ede207ad6f",
+    "transformation": "Only unavailable relative links resolved to the immutable C3 GitHub source; authority-input originals are untouched"
+  },
+  {
+    "artifact": "finding-rework-matrix.md",
+    "source_path": "docs/07-phase-evidence/SLICE-V1-001/rework-r1/finding-rework-matrix.md",
+    "source_sha256": "473780db1662512652a71666b59bd3699d972773ce31265abbcbf77fdc2b0d33",
+    "artifact_sha256": "473780db1662512652a71666b59bd3699d972773ce31265abbcbf77fdc2b0d33",
+    "transformation": "Only unavailable relative links resolved to the immutable C3 GitHub source; authority-input originals are untouched"
+  },
+  {
+    "artifact": "migration-compatibility-and-recovery.md",
+    "source_path": "docs/07-phase-evidence/SLICE-V1-001/rework-r1/migration-compatibility-and-recovery.md",
+    "source_sha256": "bb1b4a9409d9d86d34cd22163c3cae9bcdd37e713ec70e2aaf87aca7b1db3e3b",
+    "artifact_sha256": "d9dc95ee4bb6cba852d843025a41bd89cc5895a308134b26d6064f61aa31a6e0",
+    "transformation": "Only unavailable relative links resolved to the immutable C3 GitHub source; authority-input originals are untouched"
+  },
+  {
+    "artifact": "failure-drill-index.md",
+    "source_path": "docs/07-phase-evidence/SLICE-V1-001/rework-r1/failure-drill-index.md",
+    "source_sha256": "42894887d93ef2e5c914504fdc0ca4b288047ca39df6fe6f4194526f29b5f899",
+    "artifact_sha256": "36fe8200d14ad5bf11d95ca2661b660019d6b240ab55fd4204f3023118f752b9",
+    "transformation": "Only unavailable relative links resolved to the immutable C3 GitHub source; authority-input originals are untouched"
+  },
+  {
+    "artifact": "codeql-disposition.md",
+    "source_path": "docs/07-phase-evidence/SLICE-V1-001/rework-r1/codeql-disposition.md",
+    "source_sha256": "6c7c62a4b0e29bf137edb8103285d6b51e3064afe2c115b6f8efb38d98217166",
+    "artifact_sha256": "13a75a5fb75063e9bdfeeae3dd74ff2421062bfd7f321995e0cfd154a74b2484",
+    "transformation": "Only unavailable relative links resolved to the immutable C3 GitHub source; authority-input originals are untouched"
+  }
+]

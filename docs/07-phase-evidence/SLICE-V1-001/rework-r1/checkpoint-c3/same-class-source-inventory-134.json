@@ -1,0 +1,2301 @@
+{
+  "outbound_factories": [
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/http/BoundedOutboundHttp.java",
+      "sha256": "d1479f7dd667434ee7ed7b8a6a929f9d978bb42feb7af7776e54c9beb1de09f9",
+      "matches": [
+        {
+          "line": 173,
+          "text": "try (var client = HttpClients.custom().setConnectionManager(manager)"
+        }
+      ]
+    }
+  ],
+  "outbound_port_users": [
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/adapter/http/HttpModelGateway.java",
+      "sha256": "58fc71395986f689ce1df79f00e071429709c625f277f6f4a7dec7f719bbcee3",
+      "matches": [
+        {
+          "line": 7,
+          "text": "import com.mimococo.marketops.shared.port.SecretResolverPort;"
+        },
+        {
+          "line": 11,
+          "text": "import com.mimococo.marketops.shared.port.OutboundHttp;"
+        },
+        {
+          "line": 48,
+          "text": "private final OutboundHttp httpClient;"
+        },
+        {
+          "line": 50,
+          "text": "private final SecretResolverPort secrets;"
+        },
+        {
+          "line": 54,
+          "text": "public HttpModelGateway(OutboundHttp httpClient,"
+        },
+        {
+          "line": 56,
+          "text": "SecretResolverPort secrets,"
+        },
+        {
+          "line": 76,
+          "text": "OutboundHttp.Plan plan;"
+        },
+        {
+          "line": 81,
+          "text": "OutboundHttp.requireHeaderTemplate(spec.authValueTemplate());"
+        },
+        {
+          "line": 82,
+          "text": "plan = httpClient.prepare(new OutboundHttp.Destination(\"ai:\" + spec.providerCode(),"
+        },
+        {
+          "line": 103,
+          "text": "OutboundHttp.Response response = httpClient.exchange(plan, Map.of(\"Content-Type\", \"application/json\","
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/config/ModelGatewayConfiguration.java",
+      "sha256": "9ff15308871e2192937b6d6e2596ac222dc486e74722448ca352f9ae8e6bc63e",
+      "matches": [
+        {
+          "line": 6,
+          "text": "import com.mimococo.marketops.shared.port.SecretResolverPort;"
+        },
+        {
+          "line": 7,
+          "text": "import com.mimococo.marketops.shared.port.OutboundHttp;"
+        },
+        {
+          "line": 31,
+          "text": "public ModelGatewayPort modelGatewayPort(OutboundHttp modelGatewayHttpClient,"
+        },
+        {
+          "line": 33,
+          "text": "SecretResolverPort secretResolverPort,"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/AcquisitionConfiguration.java",
+      "sha256": "3af4fd4f5e5816ee8003f013c2dab29e5830c2da87d85737cc1ed373e1099dec",
+      "matches": [
+        {
+          "line": 5,
+          "text": "import com.mimococo.marketops.shared.port.SecretResolverPort;"
+        },
+        {
+          "line": 6,
+          "text": "import com.mimococo.marketops.shared.port.OutboundHttp;"
+        },
+        {
+          "line": 29,
+          "text": "public AcquisitionPort acquisitionPort(OutboundHttp acquisitionHttpClient,"
+        },
+        {
+          "line": 31,
+          "text": "SecretResolverPort secretResolverPort,"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAcquisitionAdapter.java",
+      "sha256": "172a1f670042d6e428687301b277ee9064d327906e92ea479e5040964efe2d63",
+      "matches": [
+        {
+          "line": 9,
+          "text": "import com.mimococo.marketops.shared.port.SecretResolverPort;"
+        },
+        {
+          "line": 13,
+          "text": "import com.mimococo.marketops.shared.port.OutboundHttp;"
+        },
+        {
+          "line": 69,
+          "text": "private final OutboundHttp httpClient;"
+        },
+        {
+          "line": 71,
+          "text": "private final SecretResolverPort secrets;"
+        },
+        {
+          "line": 74,
+          "text": "public PlatformHttpAcquisitionAdapter(OutboundHttp httpClient,"
+        },
+        {
+          "line": 76,
+          "text": "SecretResolverPort secrets,"
+        },
+        {
+          "line": 109,
+          "text": "OutboundHttp.Request builder;"
+        },
+        {
+          "line": 125,
+          "text": "OutboundHttp.Response response ="
+        },
+        {
+          "line": 141,
+          "text": "private OutboundHttp.Request buildRequest(EndpointCallSpec spec,"
+        },
+        {
+          "line": 157,
+          "text": "authHeaders.forEach(header -> { names.add(header.headerName()); OutboundHttp.requireHeaderTemplate(header.valueTemplate()); });"
+        },
+        {
+          "line": 158,
+          "text": "headers.values().forEach(OutboundHttp::requireHeaderTemplate);"
+        },
+        {
+          "line": 159,
+          "text": "OutboundHttp.Plan plan = httpClient.prepare(new OutboundHttp.Destination("
+        },
+        {
+          "line": 176,
+          "text": "return new OutboundHttp.Request(plan, headers);"
+        },
+        {
+          "line": 225,
+          "text": "private AcquisitionResult classify(OutboundHttp.Response response,"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpPriceWriteAdapter.java",
+      "sha256": "ac99d83d29e03a10531ec8492a3880c88d9ca0d14d38eae09146c0559b6d151a",
+      "matches": [
+        {
+          "line": 12,
+          "text": "import com.mimococo.marketops.shared.port.SecretResolverPort;"
+        },
+        {
+          "line": 16,
+          "text": "import com.mimococo.marketops.shared.port.OutboundHttp;"
+        },
+        {
+          "line": 61,
+          "text": "private final OutboundHttp httpClient;"
+        },
+        {
+          "line": 64,
+          "text": "private final SecretResolverPort secrets;"
+        },
+        {
+          "line": 70,
+          "text": "public PlatformHttpPriceWriteAdapter(OutboundHttp httpClient,"
+        },
+        {
+          "line": 73,
+          "text": "SecretResolverPort secrets,"
+        },
+        {
+          "line": 105,
+          "text": "OutboundHttp.Request httpRequest;"
+        },
+        {
+          "line": 119,
+          "text": "OutboundHttp.Response response ="
+        },
+        {
+          "line": 147,
+          "text": "private OutboundHttp.Request build(WriteOperationSpec spec,"
+        },
+        {
+          "line": 174,
+          "text": "authHeaders.forEach(header -> { names.add(header.headerName()); OutboundHttp.requireHeaderTemplate(header.valueTemplate()); });"
+        },
+        {
+          "line": 175,
+          "text": "headers.values().forEach(OutboundHttp::requireHeaderTemplate);"
+        },
+        {
+          "line": 176,
+          "text": "OutboundHttp.Plan plan = httpClient.prepare(new OutboundHttp.Destination("
+        },
+        {
+          "line": 191,
+          "text": "return new OutboundHttp.Request(plan, headers);"
+        },
+        {
+          "line": 250,
+          "text": "private PriceWriteResult classify(OutboundHttp.Response response,"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/objectstorage/FilesystemObjectStorage.java",
+      "sha256": "43bb704d2d1645fc0d06d59762c648abd0006a8ca95810de9944729babcf6371",
+      "matches": [
+        {
+          "line": 3,
+          "text": "import com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort;"
+        },
+        {
+          "line": 33,
+          "text": "public final class FilesystemObjectStorage implements ObjectStoragePort {"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/objectstorage/ObjectStorageConfiguration.java",
+      "sha256": "61790726f4d04bbb0a76fbe7bb56ddbd181abd5845208f3aaab67dd63c4bc646",
+      "matches": [
+        {
+          "line": 3,
+          "text": "import com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort;"
+        },
+        {
+          "line": 4,
+          "text": "import com.mimococo.marketops.shared.port.SecretResolverPort;"
+        },
+        {
+          "line": 5,
+          "text": "import com.mimococo.marketops.shared.port.OutboundHttp;"
+        },
+        {
+          "line": 33,
+          "text": "public ObjectStoragePort objectStoragePort(ObjectStorageProperties properties,"
+        },
+        {
+          "line": 34,
+          "text": "SecretResolverPort secretResolverPort,"
+        },
+        {
+          "line": 35,
+          "text": "OutboundHttp objectStorageHttpClient,"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/objectstorage/S3CompatibleObjectStorage.java",
+      "sha256": "8bf695839aa1605d0dc15a36f2bd6150bc115e403091cdc379c0ed17f0b2b539",
+      "matches": [
+        {
+          "line": 3,
+          "text": "import com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort;"
+        },
+        {
+          "line": 4,
+          "text": "import com.mimococo.marketops.shared.port.SecretResolverPort;"
+        },
+        {
+          "line": 11,
+          "text": "import com.mimococo.marketops.shared.port.OutboundHttp;"
+        },
+        {
+          "line": 45,
+          "text": "public final class S3CompatibleObjectStorage implements ObjectStoragePort {"
+        },
+        {
+          "line": 66,
+          "text": "private final OutboundHttp httpClient;"
+        },
+        {
+          "line": 68,
+          "text": "private final SecretResolverPort secrets;"
+        },
+        {
+          "line": 71,
+          "text": "public S3CompatibleObjectStorage(OutboundHttp httpClient,"
+        },
+        {
+          "line": 73,
+          "text": "SecretResolverPort secrets,"
+        },
+        {
+          "line": 84,
+          "text": "OutboundHttp.Response response = send("
+        },
+        {
+          "line": 101,
+          "text": "OutboundHttp.Response response = send("
+        },
+        {
+          "line": 120,
+          "text": "private OutboundHttp.Response send(String method,"
+        },
+        {
+          "line": 136,
+          "text": "OutboundHttp.Plan plan;"
+        },
+        {
+          "line": 140,
+          "text": "plan = httpClient.prepare(new OutboundHttp.Destination(\"object-storage:raw\","
+        },
+        {
+          "line": 161,
+          "text": "OutboundHttp.Response response = httpClient.exchange(plan, requestHeaders);"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/RawCustodyService.java",
+      "sha256": "3322f8374cda8dee667e7a8ebd6ae0695f4255c88b8d323d125cd0ef39ad0838",
+      "matches": [
+        {
+          "line": 7,
+          "text": "import com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort;"
+        },
+        {
+          "line": 61,
+          "text": "private final ObjectStoragePort objectStorage;"
+        },
+        {
+          "line": 66,
+          "text": "RawCustodyService(ObjectStoragePort objectStorage,"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/config/PriceWriteRuntimeConfiguration.java",
+      "sha256": "424ccfbc1cf28a138b4b4fa9af515d865b8d701bda4607dc94e8b038950130dd",
+      "matches": [
+        {
+          "line": 7,
+          "text": "import com.mimococo.marketops.shared.port.SecretResolverPort;"
+        },
+        {
+          "line": 8,
+          "text": "import com.mimococo.marketops.shared.port.OutboundHttp;"
+        },
+        {
+          "line": 39,
+          "text": "public PriceWritePort priceWritePort(OutboundHttp priceWriteHttpClient,"
+        },
+        {
+          "line": 42,
+          "text": "SecretResolverPort secretResolverPort,"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/ObjectStoragePort.java",
+      "sha256": "b828ae77a294c2437bfce7e110d2663b8d3c45edb596b2eab3a2046a3b875464",
+      "matches": [
+        {
+          "line": 23,
+          "text": "public interface ObjectStoragePort {"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/http/BoundedOutboundHttp.java",
+      "sha256": "d1479f7dd667434ee7ed7b8a6a929f9d978bb42feb7af7776e54c9beb1de09f9",
+      "matches": [
+        {
+          "line": 3,
+          "text": "import com.mimococo.marketops.shared.port.OutboundHttp;"
+        },
+        {
+          "line": 40,
+          "text": "public class BoundedOutboundHttp implements OutboundHttp {"
+        },
+        {
+          "line": 57,
+          "text": "public BoundedOutboundHttp(OutboundDestinationProperties properties, java.time.Clock clock) { this(properties, InetAddress::getAllByName,clock); }"
+        },
+        {
+          "line": 59,
+          "text": "BoundedOutboundHttp(OutboundDestinationProperties properties, DnsLookup lookup, java.time.Clock clock) {"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/secret/MountedSecretResolver.java",
+      "sha256": "b846ec5f219bfe6c2daff3bb8fb3814ff254c24563c38f77c89d20bbbd4ef24a",
+      "matches": [
+        {
+          "line": 3,
+          "text": "import com.mimococo.marketops.shared.port.SecretResolverPort;"
+        },
+        {
+          "line": 37,
+          "text": "public final class MountedSecretResolver implements SecretResolverPort {"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/secret/SecretResolutionConfiguration.java",
+      "sha256": "a06db0e8ea2aed0c63b08ba7d08d98b03361aa4e33f80f893547e7de2a1a1ed1",
+      "matches": [
+        {
+          "line": 3,
+          "text": "import com.mimococo.marketops.shared.port.SecretResolverPort;"
+        },
+        {
+          "line": 27,
+          "text": "public SecretResolverPort secretResolverPort(SecretMountProperties properties) {"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/port/OutboundHttp.java",
+      "sha256": "06aca501bf4cee5ded430268dab7b08eaefde4358a57f193fe8ab5f36e049624",
+      "matches": [
+        {
+          "line": 11,
+          "text": "public interface OutboundHttp {"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/port/SecretResolverPort.java",
+      "sha256": "0e0323a486762d2a6cd5fee4965f867967f8af868135c08acdd57e236497e3e6",
+      "matches": [
+        {
+          "line": 18,
+          "text": "public interface SecretResolverPort {"
+        }
+      ]
+    }
+  ],
+  "io_transaction_boundaries": [
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/application/AiDiagnosisService.java",
+      "sha256": "bceb194d24d4f4d51984192cb4432f56acb9ad655cae7e3be88ca7be9b13739c",
+      "matches": [
+        {
+          "line": 128,
+          "text": "@Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosticExportService.java",
+      "sha256": "993140f00c2cf3ec61f9798d420c1375d462cb0b072ea15f566d9a5fd82232cf",
+      "matches": [
+        {
+          "line": 23,
+          "text": "@Transactional(propagation = Propagation.NEVER)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosticExportWorker.java",
+      "sha256": "166d4be4e6c6e790b24a091f4a6f8838c50f104d6f7e34d84a664462c6b2e85b",
+      "matches": [
+        {
+          "line": 19,
+          "text": "@Transactional(propagation = Propagation.NEVER)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AcquisitionPageWorker.java",
+      "sha256": "7c6042f14ef43a2376cf91b775f8a82bd0f7357521925337cb8ffc617818a752",
+      "matches": [
+        {
+          "line": 81,
+          "text": "@Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AcquisitionRunner.java",
+      "sha256": "fcaf5ff42c96730b0cf93192659321dc3b48f3fb1f76696dbbf7b2a950b23d67",
+      "matches": [
+        {
+          "line": 60,
+          "text": "@Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/PriceCommandWorker.java",
+      "sha256": "e9c2047d085e815fd7d44b81fa8c49d180ad4ab35fe043b11c5ccfbf87249125",
+      "matches": [
+        {
+          "line": 44,
+          "text": "@org.springframework.transaction.annotation.Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/RawCustodyService.java",
+      "sha256": "3322f8374cda8dee667e7a8ebd6ae0695f4255c88b8d323d125cd0ef39ad0838",
+      "matches": [
+        {
+          "line": 76,
+          "text": "@Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)"
+        },
+        {
+          "line": 115,
+          "text": "@Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)"
+        },
+        {
+          "line": 121,
+          "text": "@Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)"
+        },
+        {
+          "line": 129,
+          "text": "@Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/RawEvidenceService.java",
+      "sha256": "7687c1b374d2d090b6bb8130789952fccea3ed75014b3ddf9eb37d9201c0f450",
+      "matches": [
+        {
+          "line": 61,
+          "text": "@Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/EvidenceService.java",
+      "sha256": "86f90e5d2e03ba5f1f5a6e97483e5cf01876e2f90003cb9fe8e70b1f1ac5e004",
+      "matches": [
+        {
+          "line": 59,
+          "text": "@Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/ImportIntakeService.java",
+      "sha256": "63e6658d96207b78130bf3421b32e177abb7778e44a781b3f52c378cf73694ad",
+      "matches": [
+        {
+          "line": 99,
+          "text": "@Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)"
+        },
+        {
+          "line": 280,
+          "text": "@Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/NormalizationRunner.java",
+      "sha256": "3efd032843a89a62695ca3ac5befe81d76f296203f1744cdcddd57ac9010d69b",
+      "matches": [
+        {
+          "line": 82,
+          "text": "@Transactional(propagation = org.springframework.transaction.annotation.Propagation.NEVER)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/http/BoundedOutboundHttp.java",
+      "sha256": "d1479f7dd667434ee7ed7b8a6a929f9d978bb42feb7af7776e54c9beb1de09f9",
+      "matches": [
+        {
+          "line": 39,
+          "text": "@Transactional(propagation = Propagation.NEVER)"
+        }
+      ]
+    }
+  ],
+  "controller_routes": [
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/adminobservability/MetaStatusController.java",
+      "sha256": "8d3e6c5e573cd7594f3937625741a0e05a049fe92848819c2c052a26f8985d48",
+      "matches": [
+        {
+          "line": 19,
+          "text": "@RequestMapping(\"/api/v1/meta\")"
+        },
+        {
+          "line": 29,
+          "text": "@GetMapping(value = \"/status\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/adminobservability/internal/web/AuditEventQueryController.java",
+      "sha256": "c656e8b4dfea903c3c90d6fbf249e532ce57c0294f34b927596983dd76aaf556",
+      "matches": [
+        {
+          "line": 25,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata/audit-events\")"
+        },
+        {
+          "line": 37,
+          "text": "@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/adminobservability/internal/web/OperationalTelemetryController.java",
+      "sha256": "d1ef828d3a21cd6e52c46a897fa70fc74acd4b684397b2be555706c34cf1df4c",
+      "matches": [
+        {
+          "line": 31,
+          "text": "@GetMapping(value = \"/actuator/operations\", produces = \"application/json\")"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/web/AiConsoleController.java",
+      "sha256": "c199da10f0f87b27f0b91ecf5669036187c7374789dcc26b925bb1490fdd5fd0",
+      "matches": [
+        {
+          "line": 32,
+          "text": "@RequestMapping(\"/api/v1/console/explanations\")"
+        },
+        {
+          "line": 44,
+          "text": "@PostMapping(value = \"/listing-variants/{listingVariantId}\","
+        },
+        {
+          "line": 59,
+          "text": "@GetMapping(value = \"/{invocationId}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/web/AiProviderAdminController.java",
+      "sha256": "c44bf8b75ca2d8c533c42b6636cb8da4f052079691b3cbbd8587f39177d071a9",
+      "matches": [
+        {
+          "line": 32,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata\")"
+        },
+        {
+          "line": 42,
+          "text": "@PostMapping(value = \"/ai-providers\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 52,
+          "text": "@PostMapping(value = \"/ai-providers/{id}/verification\","
+        },
+        {
+          "line": 66,
+          "text": "@PostMapping(value = \"/ai-providers/{id}/retirement\","
+        },
+        {
+          "line": 76,
+          "text": "@PostMapping(value = \"/ai-providers/{id}/models\","
+        },
+        {
+          "line": 89,
+          "text": "@GetMapping(value = \"/ai-providers\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/web/DiagnosisConsoleController.java",
+      "sha256": "4a2a3a4622352e5daba3d09249aacc6a0acfbdd5e8189df5b503d1624d5a7d53",
+      "matches": [
+        {
+          "line": 44,
+          "text": "@RequestMapping(\"/api/v1/console/diagnosis\")"
+        },
+        {
+          "line": 66,
+          "text": "@GetMapping(value = \"/listing-variants/{subjectId}/metrics/{metricValueId}/inputs\","
+        },
+        {
+          "line": 77,
+          "text": "@GetMapping(value = \"/stores/{storeId}/queue\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 90,
+          "text": "@GetMapping(value = \"/listing-variants/{subjectId}\","
+        },
+        {
+          "line": 110,
+          "text": "@GetMapping(value = \"/listing-variants/{subjectId}/metrics/{metricCode}/history\","
+        },
+        {
+          "line": 127,
+          "text": "@PostMapping(value = \"/stores/{storeId}/recalculation\","
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/web/DiagnosticExportController.java",
+      "sha256": "9a5e6c33db212fdf81479cb5302e170f7d08ee1cfd15f5e679cc70e1dd15df19",
+      "matches": [
+        {
+          "line": 25,
+          "text": "@RequestMapping(\"/api/v1/console/diagnosis\")"
+        },
+        {
+          "line": 34,
+          "text": "@PostMapping(\"/stores/{storeId}/exports\")"
+        },
+        {
+          "line": 44,
+          "text": "@GetMapping(\"/exports/{id}\")"
+        },
+        {
+          "line": 50,
+          "text": "@GetMapping(\"/exports/{id}/manifest\")"
+        },
+        {
+          "line": 56,
+          "text": "@GetMapping(\"/exports/{id}/parts/{part}\")"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/web/HumanIdentityAdminController.java",
+      "sha256": "c2e376bafbdc92aa63fe5940731b0c18717925bf318b8889eacc300ac6ea8d24",
+      "matches": [
+        {
+          "line": 43,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata\")"
+        },
+        {
+          "line": 56,
+          "text": "@PostMapping(value = \"/identity-providers\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 66,
+          "text": "@PostMapping(value = \"/identity-providers/{id}/verification\","
+        },
+        {
+          "line": 78,
+          "text": "@PostMapping(value = \"/identity-providers/{id}/retirement\","
+        },
+        {
+          "line": 88,
+          "text": "@GetMapping(value = \"/identity-providers\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 94,
+          "text": "@PostMapping(value = \"/users\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 105,
+          "text": "@PutMapping(value = \"/users/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 115,
+          "text": "@PostMapping(value = \"/users/{id}/disablement\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 124,
+          "text": "@GetMapping(value = \"/users/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 130,
+          "text": "@GetMapping(value = \"/users\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 137,
+          "text": "@PostMapping(value = \"/users/{id}/roles\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 147,
+          "text": "@PostMapping(value = \"/user-roles/{assignmentId}/revocation\","
+        },
+        {
+          "line": 158,
+          "text": "@GetMapping(value = \"/users/{id}/roles\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 164,
+          "text": "@PostMapping(value = \"/users/{id}/scope-grants\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 175,
+          "text": "@PostMapping(value = \"/user-scope-grants/{grantId}/revocation\","
+        },
+        {
+          "line": 185,
+          "text": "@GetMapping(value = \"/users/{id}/scope-grants\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/web/ScopeGrantAdminController.java",
+      "sha256": "1bebb2b2550acb501fc7de194e192203682bcc29ee072fac444dda8e74976705",
+      "matches": [
+        {
+          "line": 27,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata/scope-grants\")"
+        },
+        {
+          "line": 37,
+          "text": "@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 47,
+          "text": "@PostMapping(value = \"/{id}/revoke\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 55,
+          "text": "@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/web/ServiceAccountAdminController.java",
+      "sha256": "8f1e840fe25582a7e8998e3ebde99d89e20c0adca4b107b52d49af63248661b0",
+      "matches": [
+        {
+          "line": 37,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata/service-accounts\")"
+        },
+        {
+          "line": 47,
+          "text": "@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 58,
+          "text": "@PutMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 68,
+          "text": "@PostMapping(value = \"/{id}/status\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 78,
+          "text": "@PostMapping(value = \"/{id}/allowed-sources\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 88,
+          "text": "@PostMapping(value = \"/{id}/allowed-sources/{sourceId}/status\","
+        },
+        {
+          "line": 100,
+          "text": "@GetMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 106,
+          "text": "@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 116,
+          "text": "@GetMapping(value = \"/{id}/allowed-sources\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/web/CredentialAdminController.java",
+      "sha256": "c2a9f37588b94c3fd793123a2e5153b14f74c1c11606334ef36d8415a1cdabdc",
+      "matches": [
+        {
+          "line": 36,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata/credentials\")"
+        },
+        {
+          "line": 46,
+          "text": "@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 58,
+          "text": "@PutMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 67,
+          "text": "@PostMapping(value = \"/{id}/status\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 76,
+          "text": "@PostMapping(value = \"/{id}/scope-mode\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 85,
+          "text": "@PostMapping(value = \"/{id}/store-scopes\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 96,
+          "text": "@PostMapping(value = \"/{id}/store-scopes/{scopeId}/status\","
+        },
+        {
+          "line": 108,
+          "text": "@GetMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 114,
+          "text": "@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/web/FeatureFlagAdminController.java",
+      "sha256": "8ca693ce6f86c5e5d8b1b7cb8e645d10d6ab250034649727c881102cb173b4ce",
+      "matches": [
+        {
+          "line": 28,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata/feature-flags\")"
+        },
+        {
+          "line": 38,
+          "text": "@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 48,
+          "text": "@PostMapping(value = \"/{id}/state\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 57,
+          "text": "@PostMapping(value = \"/{id}/status\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 66,
+          "text": "@GetMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 72,
+          "text": "@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/web/PriceCommandConsoleController.java",
+      "sha256": "4f85c5d70a92c67cf08242774801d7d08227bb784b4c1b3e2096f9a593aacedb",
+      "matches": [
+        {
+          "line": 44,
+          "text": "@RequestMapping(\"/api/v1/console/commands\")"
+        },
+        {
+          "line": 63,
+          "text": "@GetMapping(value = \"/{commandId}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 72,
+          "text": "@GetMapping(value = \"/recommendations/{recommendationId}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 82,
+          "text": "@GetMapping(value = \"/{commandId}/gate\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 92,
+          "text": "@GetMapping(value = \"/stores/{storeId}/needing-attention\","
+        },
+        {
+          "line": 104,
+          "text": "@PostMapping(value = \"/{commandId}/manual-resolution\","
+        },
+        {
+          "line": 113,
+          "text": "@PostMapping(value = \"/{commandId}/readback\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 120,
+          "text": "@PostMapping(value = \"/{commandId}/compensation\","
+        },
+        {
+          "line": 128,
+          "text": "@PostMapping(value = \"/{commandId}/closure\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 136,
+          "text": "@PostMapping(value = \"/kill-switch/disable\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 145,
+          "text": "@PostMapping(value = \"/kill-switch/enable\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 154,
+          "text": "@GetMapping(value = \"/kill-switch\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 162,
+          "text": "@GetMapping(value = \"/kill-switch/history\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/web/RegistryAdminController.java",
+      "sha256": "bb72a257f901fa6f1d8d5ec53ced6dc0422ab0a771f6f6362f0e3162504b0bd2",
+      "matches": [
+        {
+          "line": 47,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata\")"
+        },
+        {
+          "line": 60,
+          "text": "@PostMapping(value = \"/capabilities\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 69,
+          "text": "@PutMapping(value = \"/capabilities/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 80,
+          "text": "@PostMapping(value = \"/capabilities/{id}/status\","
+        },
+        {
+          "line": 91,
+          "text": "@PostMapping(value = \"/capabilities/{id}/verification\","
+        },
+        {
+          "line": 103,
+          "text": "@GetMapping(value = \"/capabilities/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 109,
+          "text": "@GetMapping(value = \"/capabilities\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 118,
+          "text": "@GetMapping(value = \"/capabilities/{id}/verification-events\","
+        },
+        {
+          "line": 127,
+          "text": "@PostMapping(value = \"/endpoints\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 136,
+          "text": "@PutMapping(value = \"/endpoints/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 147,
+          "text": "@PostMapping(value = \"/endpoints/{id}/status\","
+        },
+        {
+          "line": 158,
+          "text": "@PostMapping(value = \"/endpoints/{id}/verification\","
+        },
+        {
+          "line": 170,
+          "text": "@GetMapping(value = \"/endpoints/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 176,
+          "text": "@GetMapping(value = \"/endpoints\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 186,
+          "text": "@GetMapping(value = \"/endpoints/{id}/verification-events\","
+        },
+        {
+          "line": 195,
+          "text": "@PostMapping(value = \"/capability-subject-statuses\","
+        },
+        {
+          "line": 206,
+          "text": "@GetMapping(value = \"/capability-subject-statuses\","
+        },
+        {
+          "line": 217,
+          "text": "@PostMapping(value = \"/platform-permission-requirements\","
+        },
+        {
+          "line": 230,
+          "text": "@GetMapping(value = \"/platform-permission-requirements\","
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/web/RegistryVerificationController.java",
+      "sha256": "e8a86b422ec0fc0b98a4bb5615633526f03e030a7669f5aeb15dfec34082ea06",
+      "matches": [
+        {
+          "line": 19,
+          "text": "@RequestMapping(\"/api/v1/console/registry-verification\")"
+        },
+        {
+          "line": 25,
+          "text": "@GetMapping(\"/accounts/{account}/capabilities/{capability}\")"
+        },
+        {
+          "line": 31,
+          "text": "@PostMapping(\"/accounts/{account}/capabilities/{capability}/draft\")"
+        },
+        {
+          "line": 41,
+          "text": "@PostMapping(\"/accounts/{account}/capabilities/{capability}/revision\")"
+        },
+        {
+          "line": 49,
+          "text": "@PostMapping(\"/accounts/{account}/capabilities/{capability}/cases\")"
+        },
+        {
+          "line": 58,
+          "text": "@GetMapping(\"/cases/{id}\")"
+        },
+        {
+          "line": 63,
+          "text": "@PostMapping(\"/cases/{id}/review\")"
+        },
+        {
+          "line": 71,
+          "text": "@PostMapping(\"/cases/{id}/revoke\")"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/web/EvidenceConsoleController.java",
+      "sha256": "bad596caf517c86e587a415225b0352fba325cde5729180e03ae127bb6dadeab",
+      "matches": [
+        {
+          "line": 39,
+          "text": "@RequestMapping(\"/api/v1/console/evidence\")"
+        },
+        {
+          "line": 60,
+          "text": "@GetMapping(value = \"/{provenanceId}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 68,
+          "text": "@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 85,
+          "text": "@GetMapping(value = \"/{provenanceId}/content\","
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/web/IntakeConsoleController.java",
+      "sha256": "06342a1a534be633533ca5c5b17bc11043c6d73197bd4c6f8734c5ff386d9c3d",
+      "matches": [
+        {
+          "line": 45,
+          "text": "@RequestMapping(\"/api/v1/console/intake\")"
+        },
+        {
+          "line": 61,
+          "text": "@PostMapping(value = \"/imports\", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,"
+        },
+        {
+          "line": 81,
+          "text": "@GetMapping(value = \"/imports\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 92,
+          "text": "@GetMapping(value = \"/imports/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 106,
+          "text": "@GetMapping(value = \"/imports/{id}/rows\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 119,
+          "text": "@PostMapping(value = \"/imports/{id}/approval\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 130,
+          "text": "@PostMapping(value = \"/imports/{id}/rejection\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 140,
+          "text": "@PostMapping(value = \"/costs\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 151,
+          "text": "@PostMapping(value = \"/internal-stock\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/web/OperatingFactsAdminController.java",
+      "sha256": "41a27fc76a2528d812f1276f20277968398239e8bed9d705b25b3c2043e893be",
+      "matches": [
+        {
+          "line": 36,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata\")"
+        },
+        {
+          "line": 49,
+          "text": "@PostMapping(value = \"/normalization-mappings\","
+        },
+        {
+          "line": 61,
+          "text": "@PostMapping(value = \"/normalization-mappings/{id}/verification\","
+        },
+        {
+          "line": 72,
+          "text": "@PostMapping(value = \"/normalization-mappings/{id}/retirement\","
+        },
+        {
+          "line": 82,
+          "text": "@GetMapping(value = \"/normalization-mappings\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 88,
+          "text": "@PostMapping(value = \"/import-schema-profiles\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/web/ApprovalConsoleController.java",
+      "sha256": "48905b6dfc51897f080ac7e61c753d8815501f1b122a71aaab474a4137806619",
+      "matches": [
+        {
+          "line": 44,
+          "text": "@RequestMapping(\"/api/v1/console/workflow\")"
+        },
+        {
+          "line": 71,
+          "text": "@PostMapping(value = \"/recommendations/{recommendationId}/impact-preview\","
+        },
+        {
+          "line": 81,
+          "text": "@PostMapping(value = \"/recommendations/{recommendationId}/approval\","
+        },
+        {
+          "line": 91,
+          "text": "@PostMapping(value = \"/recommendations/{recommendationId}/rejection\","
+        },
+        {
+          "line": 101,
+          "text": "@PostMapping(value = \"/recommendations/{recommendationId}/policy-authorization\","
+        },
+        {
+          "line": 111,
+          "text": "@PostMapping(value = \"/recommendations/{recommendationId}/command\","
+        },
+        {
+          "line": 120,
+          "text": "@GetMapping(value = \"/recommendations/{recommendationId}/decisions\","
+        },
+        {
+          "line": 131,
+          "text": "@GetMapping(value = \"/recommendations/{recommendationId}/guardrail-evaluations\","
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/web/CommercialPolicyConsoleController.java",
+      "sha256": "10b30e8f8fab27d8786c7020e659fa959d56d4a6dd96a920739c2f4f8fe76787",
+      "matches": [
+        {
+          "line": 41,
+          "text": "@RequestMapping(\"/api/v1/console/policy\")"
+        },
+        {
+          "line": 57,
+          "text": "@GetMapping(value = \"/limit-kinds\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 65,
+          "text": "@GetMapping(value = \"/policies\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 73,
+          "text": "@PostMapping(value = \"/policies\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 89,
+          "text": "@GetMapping(value = \"/authorizations\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 97,
+          "text": "@PostMapping(value = \"/authorizations\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 109,
+          "text": "@PostMapping(value = \"/authorizations/{id}/revocation\","
+        },
+        {
+          "line": 118,
+          "text": "@GetMapping(value = \"/pilot-allowlist\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 126,
+          "text": "@PostMapping(value = \"/pilot-allowlist\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 136,
+          "text": "@PostMapping(value = \"/pilot-allowlist/{id}/revocation\","
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/web/WorkQueueConsoleController.java",
+      "sha256": "447539c2b0ada7aab84a9be821169dbe3d7277bfb3ef6aa1110ddfc600fdf400",
+      "matches": [
+        {
+          "line": 40,
+          "text": "@RequestMapping(\"/api/v1/console/workflow\")"
+        },
+        {
+          "line": 64,
+          "text": "@GetMapping(value = \"/stores/{storeId}/recommendations\","
+        },
+        {
+          "line": 82,
+          "text": "@GetMapping(value = \"/stores/{storeId}/recommendation-counts\","
+        },
+        {
+          "line": 92,
+          "text": "@GetMapping(value = \"/recommendations/{recommendationId}\","
+        },
+        {
+          "line": 103,
+          "text": "@PostMapping(value = \"/recommendations/{recommendationId}/state\","
+        },
+        {
+          "line": 117,
+          "text": "@GetMapping(value = \"/tasks\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 128,
+          "text": "@GetMapping(value = \"/recommendations/{recommendationId}/tasks\","
+        },
+        {
+          "line": 139,
+          "text": "@PostMapping(value = \"/tasks/{taskId}/assignment\","
+        },
+        {
+          "line": 152,
+          "text": "@PostMapping(value = \"/tasks/{taskId}/start\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 163,
+          "text": "@PostMapping(value = \"/tasks/{taskId}/closure\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/organizationaccount/internal/web/FulfillmentAssociationAdminController.java",
+      "sha256": "d9e78f69830931d73719dd81e565e784c6aa3a988e0b7e18d7d61c800e49867a",
+      "matches": [
+        {
+          "line": 32,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata\")"
+        },
+        {
+          "line": 42,
+          "text": "@PostMapping(value = \"/store-warehouse-links\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 53,
+          "text": "@PutMapping(value = \"/store-warehouse-links/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 63,
+          "text": "@PostMapping(value = \"/store-warehouse-links/{id}/status\","
+        },
+        {
+          "line": 74,
+          "text": "@GetMapping(value = \"/store-warehouse-links\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 82,
+          "text": "@PostMapping(value = \"/store-fulfillment-declarations\","
+        },
+        {
+          "line": 93,
+          "text": "@PostMapping(value = \"/store-fulfillment-declarations/{id}/status\","
+        },
+        {
+          "line": 104,
+          "text": "@GetMapping(value = \"/store-fulfillment-declarations\","
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/organizationaccount/internal/web/LegalEntityAdminController.java",
+      "sha256": "eb4b6d0d2ce8e021f0b4bf0a4c6a5a075d8c8e58ba8f0228c687393e88695434",
+      "matches": [
+        {
+          "line": 27,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata/legal-entities\")"
+        },
+        {
+          "line": 37,
+          "text": "@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 46,
+          "text": "@PutMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 55,
+          "text": "@PostMapping(value = \"/{id}/status\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 64,
+          "text": "@GetMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 70,
+          "text": "@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/organizationaccount/internal/web/MarketplaceAccountAdminController.java",
+      "sha256": "b969f6b1cb08a597009c0daf4315d676f836328e68be3ffa354956d881590df6",
+      "matches": [
+        {
+          "line": 27,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata/marketplace-accounts\")"
+        },
+        {
+          "line": 37,
+          "text": "@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 46,
+          "text": "@PutMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 55,
+          "text": "@PostMapping(value = \"/{id}/status\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 64,
+          "text": "@GetMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 70,
+          "text": "@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/organizationaccount/internal/web/OrganizationAdminController.java",
+      "sha256": "0643e2c1bbc47013dc4e70ec79479a6261a49e330e5681b48e24b47600be2cbc",
+      "matches": [
+        {
+          "line": 33,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata/organizations\")"
+        },
+        {
+          "line": 43,
+          "text": "@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 52,
+          "text": "@PutMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 62,
+          "text": "@PostMapping(value = \"/{id}/status\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 71,
+          "text": "@GetMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 77,
+          "text": "@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/organizationaccount/internal/web/StoreAdminController.java",
+      "sha256": "3d257c85d17c1ed688b499c8bda6f9c009ffe88f94632bac55423a03cc04e526",
+      "matches": [
+        {
+          "line": 27,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata/stores\")"
+        },
+        {
+          "line": 37,
+          "text": "@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 47,
+          "text": "@PutMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 57,
+          "text": "@PostMapping(value = \"/{id}/status\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 66,
+          "text": "@GetMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 72,
+          "text": "@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/organizationaccount/internal/web/WarehouseAdminController.java",
+      "sha256": "5d94b1326404428bc8c027af14ee9bd8a5adf771d5945c800a695ff2aae26831",
+      "matches": [
+        {
+          "line": 27,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata/warehouses\")"
+        },
+        {
+          "line": 37,
+          "text": "@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 46,
+          "text": "@PutMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 55,
+          "text": "@PostMapping(value = \"/{id}/status\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 64,
+          "text": "@GetMapping(value = \"/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 70,
+          "text": "@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/productlisting/internal/web/MappingConsoleController.java",
+      "sha256": "da583af91637c7eec7d9788023d830cd640b0135308a6fbe7dd6e3b14144b49c",
+      "matches": [
+        {
+          "line": 40,
+          "text": "@RequestMapping(\"/api/v1/console/mapping\")"
+        },
+        {
+          "line": 53,
+          "text": "@GetMapping(value = \"/candidates\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 63,
+          "text": "@GetMapping(value = \"/conflicts\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 73,
+          "text": "@PostMapping(value = \"/stores/{storeId}/proposals\","
+        },
+        {
+          "line": 84,
+          "text": "@PostMapping(value = \"/candidates\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 95,
+          "text": "@PostMapping(value = \"/candidates/{id}/confirmation\","
+        },
+        {
+          "line": 106,
+          "text": "@PostMapping(value = \"/candidates/{id}/rejection\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 117,
+          "text": "@PostMapping(value = \"/conflicts/{id}/resolution\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 129,
+          "text": "@GetMapping(value = \"/listing-variants/{id}/history\","
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/productlisting/internal/web/ProductCatalogAdminController.java",
+      "sha256": "b00c4c35128ce06986734d08c8857cca01b965caab4dc3a467cded81c46d8814",
+      "matches": [
+        {
+          "line": 34,
+          "text": "@RequestMapping(\"/api/v1/admin/metadata\")"
+        },
+        {
+          "line": 44,
+          "text": "@PostMapping(value = \"/products\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 54,
+          "text": "@GetMapping(value = \"/products/{id}\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 60,
+          "text": "@PostMapping(value = \"/products/{id}/variants\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 71,
+          "text": "@GetMapping(value = \"/products/{id}/variants\", produces = MediaType.APPLICATION_JSON_VALUE)"
+        },
+        {
+          "line": 77,
+          "text": "@PostMapping(value = \"/product-variants/{id}/barcodes\","
+        },
+        {
+          "line": 88,
+          "text": "@GetMapping(value = \"/product-variants/{id}/barcodes\","
+        },
+        {
+          "line": 95,
+          "text": "@PostMapping(value = \"/product-barcodes/{id}/retirement\","
+        }
+      ]
+    }
+  ],
+  "bounded_reads": [
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/adminobservability/internal/audit/JdbcMetadataAuditStore.java",
+      "sha256": "e4f7032625ac042bc9e2c211c2eb6aa065d6838e5c2cee30abd139fba5f825e8",
+      "matches": [
+        {
+          "line": 232,
+          "text": "sql.append(\" ORDER BY occurred_at DESC, id DESC LIMIT :pageLimit\");"
+        },
+        {
+          "line": 233,
+          "text": "params.put(\"pageLimit\", Math.clamp(filter.limit(), 1, MAX_PAGE));"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/application/AiDiagnosisService.java",
+      "sha256": "bceb194d24d4f4d51984192cb4432f56acb9ad655cae7e3be88ca7be9b13739c",
+      "matches": [
+        {
+          "line": 60,
+          "text": "private static final int MAXIMUM_OUTPUT_TOKENS = 2_000;"
+        },
+        {
+          "line": 165,
+          "text": "\"BEGIN SUBJECT DATA\\n\" + projection.render(), MAXIMUM_OUTPUT_TOKENS));"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidator.java",
+      "sha256": "5c9471a3ee371cae94af3d94e389c892c36d80e6aa68e09b07c31a840b868b82",
+      "matches": [
+        {
+          "line": 48,
+          "text": "private static final int MAXIMUM_STATEMENT_LENGTH = 2000;"
+        },
+        {
+          "line": 56,
+          "text": "static final int MAXIMUM_OUTPUT_BYTES = 65_536;"
+        },
+        {
+          "line": 57,
+          "text": "static final int MAXIMUM_CLAIMS_PER_KIND = 20;"
+        },
+        {
+          "line": 99,
+          "text": "if (answer == null || answer.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > MAXIMUM_OUTPUT_BYTES) {"
+        },
+        {
+          "line": 141,
+          "text": "if (!array.isArray() || array.size() > MAXIMUM_CLAIMS_PER_KIND) {"
+        },
+        {
+          "line": 183,
+          "text": "if (statement.length() > MAXIMUM_STATEMENT_LENGTH) {"
+        },
+        {
+          "line": 185,
+          "text": "statement.substring(0, MAXIMUM_STATEMENT_LENGTH), STATEMENT_TOO_LONG);"
+        },
+        {
+          "line": 318,
+          "text": "&& node.asString().length() <= MAXIMUM_STATEMENT_LENGTH;"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/infrastructure/jdbc/AiRepository.java",
+      "sha256": "2a914ba965e6155b4830e2b8661356a056ed030e90e785a6ea807fa7d33d46ec",
+      "matches": [
+        {
+          "line": 74,
+          "text": "LIMIT 1"
+        },
+        {
+          "line": 103,
+          "text": "LIMIT 1"
+        },
+        {
+          "line": 181,
+          "text": "ORDER BY execution_deadline_at LIMIT 100 FOR UPDATE SKIP LOCKED)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/AnalyticsQueryService.java",
+      "sha256": "da6a03cb436d5691cb1b3d336f44fc8531a2e31f4b900ff24d1e69821390f925",
+      "matches": [
+        {
+          "line": 66,
+          "text": "return new InputPage(metricValueId, rows.stream().limit(200).toList(), rows.size() > 200);"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/infrastructure/jdbc/DiagnosisRepository.java",
+      "sha256": "4d09896545a3482d8f6e3057cb765c04f7375e5323f4b1af893c252905023310",
+      "matches": [
+        {
+          "line": 186,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/infrastructure/jdbc/DiagnosticExportRepository.java",
+      "sha256": "b41ce5f1ef379d3bfc920c552cb8b80a860604acbde58800a055933733f4ba95",
+      "matches": [
+        {
+          "line": 79,
+          "text": "ORDER BY ordinal LIMIT 16384"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/infrastructure/jdbc/MetricRepository.java",
+      "sha256": "e9b2a103e0c0a018a37df991ccf5edebf5b3a73e179b3e9e4af494ff6bc94a5b",
+      "matches": [
+        {
+          "line": 189,
+          "text": "+ \" ORDER BY value.computed_at DESC, value.id DESC LIMIT 1\")"
+        },
+        {
+          "line": 238,
+          "text": "+ \" ORDER BY value.computed_at DESC, value.id DESC LIMIT :pageLimit\")"
+        },
+        {
+          "line": 264,
+          "text": "WHERE metric_value_id=:id ORDER BY reference_kind,reference_id LIMIT 201"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/infrastructure/jdbc/ScopeGrantRepository.java",
+      "sha256": "d61f3d8bb3e3d1b6844392684fde7b4b9c7d4133e0290ac9981a8d276b3541c7",
+      "matches": [
+        {
+          "line": 121,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/infrastructure/jdbc/ServiceAccountRepository.java",
+      "sha256": "6b3af4f07d2ef30e8e13c8b12077d36f59f7238c1512f7be7aeff9baf19393b8",
+      "matches": [
+        {
+          "line": 108,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/infrastructure/jdbc/UserProfileRepository.java",
+      "sha256": "fa26b6e1cd50e2c584e2ff615ea59f99d090d0684362925256efc885249265c4",
+      "matches": [
+        {
+          "line": 119,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/objectstorage/FilesystemObjectStorage.java",
+      "sha256": "43bb704d2d1645fc0d06d59762c648abd0006a8ca95810de9944729babcf6371",
+      "matches": [
+        {
+          "line": 41,
+          "text": "private static final int MAXIMUM_BYTES = 8 * 1024 * 1024;"
+        },
+        {
+          "line": 51,
+          "text": "if (body == null || body.length > MAXIMUM_BYTES) {"
+        },
+        {
+          "line": 87,
+          "text": "byte[] bytes = input.readNBytes(MAXIMUM_BYTES + 1);"
+        },
+        {
+          "line": 88,
+          "text": "if (bytes.length > MAXIMUM_BYTES) {"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/WorkerIdentity.java",
+      "sha256": "5bc1e6b53d01fa03f362706eb4f05295eb3edd5acc35b410df5a0f023c079496",
+      "matches": [
+        {
+          "line": 20,
+          "text": "private static final int MAXIMUM_LENGTH = 100;"
+        },
+        {
+          "line": 42,
+          "text": "return name.length() > MAXIMUM_LENGTH ? name.substring(0, MAXIMUM_LENGTH) : name;"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/CapabilityRepository.java",
+      "sha256": "812864ea5e5bed8089a8c387384c04df9b049f2f9c56b7987b46ed6e41b9f72f",
+      "matches": [
+        {
+          "line": 154,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/CredentialLookupRepository.java",
+      "sha256": "ab43ee8883dcb6b3e713a62ff68859cf248034723dcc45c09ffe4670d5ede512",
+      "matches": [
+        {
+          "line": 61,
+          "text": "LIMIT 1"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/CredentialRepository.java",
+      "sha256": "00e7f75d26e034e2b342e559a41784e9645997a8b6da0bede08be0b1d9958927",
+      "matches": [
+        {
+          "line": 115,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/EndpointRepository.java",
+      "sha256": "a5071e663e870adcd968b157776ebaaa96cac98ea6fb9034d5c6a206f02e801d",
+      "matches": [
+        {
+          "line": 172,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/FeatureFlagRepository.java",
+      "sha256": "37f221c75c88ac07758495a98747b731694cc56d1013e1fa5c696f0fdd496522",
+      "matches": [
+        {
+          "line": 120,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/IngestionRunRepository.java",
+      "sha256": "ef259d3072169fc620e1d224f016dadc66b76db6254849645b2014beb3b49ccd",
+      "matches": [
+        {
+          "line": 156,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/KillSwitchRepository.java",
+      "sha256": "5aaf164c3f549098bb9830c6f5c899a5eaa634b6a6946a22f30d550d7c7f3c8f",
+      "matches": [
+        {
+          "line": 132,
+          "text": "LIMIT :limit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/PermissionRequirementRepository.java",
+      "sha256": "8f781b2a410b328086d59400213445fbf614bfb9aa80602867677015befe7baf",
+      "matches": [
+        {
+          "line": 95,
+          "text": "LIMIT :pageLimit"
+        },
+        {
+          "line": 109,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/PlatformCallSpecRepository.java",
+      "sha256": "48f44f88bb09f8418cdec5e34ec65360652bf04946665f4e6008f78f2053b792",
+      "matches": [
+        {
+          "line": 184,
+          "text": "ORDER BY prior.started_at DESC,prior.attempt_no DESC LIMIT 1)"
+        },
+        {
+          "line": 199,
+          "text": "WHERE latest.command_id=c.id ORDER BY latest.observed_at DESC,latest.id DESC LIMIT 1)"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/PriceCommandRepository.java",
+      "sha256": "c3a41d5c6f24d308e23974d94260e41820a7d2f5bc7c141961fae47f59e260ed",
+      "matches": [
+        {
+          "line": 161,
+          "text": "LIMIT 1"
+        },
+        {
+          "line": 194,
+          "text": "LIMIT :limit"
+        },
+        {
+          "line": 258,
+          "text": "ORDER BY r.observed_at DESC LIMIT 1"
+        },
+        {
+          "line": 277,
+          "text": "LIMIT 1"
+        },
+        {
+          "line": 324,
+          "text": "LIMIT :limit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/RawEvidenceRepository.java",
+      "sha256": "7e7bd34387154d727f8e56c619b3abc212e52e01fb48520074b322b722e4b3c3",
+      "matches": [
+        {
+          "line": 132,
+          "text": "LIMIT :pageLimit"
+        },
+        {
+          "line": 170,
+          "text": "LIMIT :pageLimit OFFSET :pageOffset"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/SubjectStatusRepository.java",
+      "sha256": "3632971b4758f4a1af3974bdda39a8fb62350d4b7635085cc9d73f424affca2b",
+      "matches": [
+        {
+          "line": 95,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/VerificationEventRepository.java",
+      "sha256": "aac920db051bb4dea633bd0e7c5f68c45b654ed6b07c969e29c6a1bbc883125a",
+      "matches": [
+        {
+          "line": 66,
+          "text": "LIMIT :pageLimit"
+        },
+        {
+          "line": 80,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/ImportApplier.java",
+      "sha256": "c7db4554da88f8877cc8f50dc5bccc225fe7184eb6686032c10c4cc82c60f893",
+      "matches": [
+        {
+          "line": 46,
+          "text": "private static final int ROW_PAGE = 5_000;"
+        },
+        {
+          "line": 83,
+          "text": "List<ImportRepository.ImportRow> rows = imports.rowsAfter(batch.id(), \"ACCEPTED\", cursor, ROW_PAGE);"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/ImportIntakeService.java",
+      "sha256": "63e6658d96207b78130bf3421b32e177abb7778e44a781b3f52c378cf73694ad",
+      "matches": [
+        {
+          "line": 58,
+          "text": "private static final int MAXIMUM_PREVIEW_ROWS = 200;"
+        },
+        {
+          "line": 269,
+          "text": "Math.clamp(limit, 1, MAXIMUM_PREVIEW_ROWS));"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/PayloadReader.java",
+      "sha256": "d382bf9fe497ecdce24a268bfe51bba8d6b7c50a71f7952177fc8379144ced12",
+      "matches": [
+        {
+          "line": 41,
+          "text": "static final int MAXIMUM_RECORDS = 50000;"
+        },
+        {
+          "line": 42,
+          "text": "static final int MAXIMUM_DRIFT_POINTERS = 256;"
+        },
+        {
+          "line": 81,
+          "text": "if (located.size()>MAXIMUM_RECORDS) throw new PayloadUnreadableException(\"record limit exceeded\");"
+        },
+        {
+          "line": 200,
+          "text": "if (unmapped.size()>MAXIMUM_DRIFT_POINTERS) {"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/SpreadsheetReader.java",
+      "sha256": "dea02b12d5622d77fd9150b45af522223474bcd8c7ecffb1b2080102e7b9cf6a",
+      "matches": [
+        {
+          "line": 47,
+          "text": "public static final int MAXIMUM_FILE_BYTES = 8 * 1024 * 1024;"
+        },
+        {
+          "line": 50,
+          "text": "public static final int MAXIMUM_ROWS = 50_000;"
+        },
+        {
+          "line": 53,
+          "text": "private static final int MAXIMUM_COLUMNS = 128;"
+        },
+        {
+          "line": 56,
+          "text": "private static final long MAXIMUM_ENTRY_BYTES = 64L * 1024 * 1024;"
+        },
+        {
+          "line": 71,
+          "text": "if (content == null || content.length == 0 || content.length > MAXIMUM_FILE_BYTES) {"
+        },
+        {
+          "line": 147,
+          "text": "if (row.size() >= MAXIMUM_COLUMNS) throw OperationRejectedException.of(ErrorCode.IMPORT_TOO_LARGE);"
+        },
+        {
+          "line": 155,
+          "text": "if (rows.size() > MAXIMUM_ROWS + 1) {"
+        },
+        {
+          "line": 167,
+          "text": "if (rows.size() > MAXIMUM_ROWS + 1) throw OperationRejectedException.of(ErrorCode.IMPORT_TOO_LARGE);"
+        },
+        {
+          "line": 249,
+          "text": "byte[] part = archive.readNBytes(Math.toIntExact(MAXIMUM_ENTRY_BYTES - expanded + 1));"
+        },
+        {
+          "line": 251,
+          "text": "if (expanded > MAXIMUM_ENTRY_BYTES) {"
+        },
+        {
+          "line": 422,
+          "text": "if (rows.size() > MAXIMUM_ROWS + 1) {"
+        },
+        {
+          "line": 474,
+          "text": "if (column < 0 || column >= MAXIMUM_COLUMNS) {"
+        },
+        {
+          "line": 528,
+          "text": "if (header.size() > MAXIMUM_COLUMNS) {"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/infrastructure/jdbc/FactQueryRepository.java",
+      "sha256": "e539c7c7bfdb5862011be8dc6fb4d658844133e4348da03085543942fe50781d",
+      "matches": [
+        {
+          "line": 69,
+          "text": "LIMIT 1"
+        },
+        {
+          "line": 392,
+          "text": "LIMIT 1"
+        },
+        {
+          "line": 486,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/infrastructure/jdbc/ImportRepository.java",
+      "sha256": "a0bac7c5a58a0ca3e7b9958bc937f33df535dd49f5501388e298cb19705e8167",
+      "matches": [
+        {
+          "line": 231,
+          "text": "LIMIT :pageLimit"
+        },
+        {
+          "line": 256,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/infrastructure/jdbc/NormalizationDeclarationRepository.java",
+      "sha256": "de2e1269aebe02a3ab8eaaf51919a61a97e0e9cbe6134b765f551bbf86abcd0f",
+      "matches": [
+        {
+          "line": 205,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AllowlistRepository.java",
+      "sha256": "407554fde410382facef61038747009429acc7797f25b38db9bd5b3012642606",
+      "matches": [
+        {
+          "line": 84,
+          "text": "LIMIT 1"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/GuardrailRepository.java",
+      "sha256": "016802f40768c9b40d5d7f55dde88a4c0e2485035d34ce4dbc44706bf35378ee",
+      "matches": [
+        {
+          "line": 80,
+          "text": "LIMIT :limit"
+        },
+        {
+          "line": 94,
+          "text": "LIMIT 1"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/PolicyRepository.java",
+      "sha256": "d53078452e3b927bf727664fd90bd259cd25e28e37c2a13264237224e9f1aa24",
+      "matches": [
+        {
+          "line": 73,
+          "text": "LIMIT 1"
+        },
+        {
+          "line": 299,
+          "text": "LIMIT 1"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/RecommendationRepository.java",
+      "sha256": "782fe4af5285a8a1ba65adea9c03d0aba847fd79c305f5db6296c0648d933061",
+      "matches": [
+        {
+          "line": 180,
+          "text": "LIMIT :limit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/WorkTaskRepository.java",
+      "sha256": "38d981a372d12df8cc394c55d3dbbf3ab6c1cc4190b732c2f96b4f182de94364",
+      "matches": [
+        {
+          "line": 118,
+          "text": "LIMIT :limit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/organizationaccount/internal/infrastructure/jdbc/LegalEntityRepository.java",
+      "sha256": "c3f976bbc91944162c834bf7fe8adca7625e1e4ce1256c9005bcbc8f4646f2be",
+      "matches": [
+        {
+          "line": 94,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/organizationaccount/internal/infrastructure/jdbc/MarketplaceAccountRepository.java",
+      "sha256": "a7cec4430163d7876eab88a8e051cbf3ba2a3b707e9295e5198239bc236fea6c",
+      "matches": [
+        {
+          "line": 107,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/organizationaccount/internal/infrastructure/jdbc/OrganizationRepository.java",
+      "sha256": "a97035aa1cfb48c5e945a6dd4e31675d646ecea93bddb4efcc48567993ce9afb",
+      "matches": [
+        {
+          "line": 88,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/organizationaccount/internal/infrastructure/jdbc/StoreFulfillmentDeclarationRepository.java",
+      "sha256": "b902215cbc0a82e92c09b8279b5c32c614a7b28c517a4937866fbb466c247773",
+      "matches": [
+        {
+          "line": 108,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/organizationaccount/internal/infrastructure/jdbc/StoreRepository.java",
+      "sha256": "a51baa54dec2888bcb78b6490a1b74409f1fd8b9201e4a105ea58260c217a3ee",
+      "matches": [
+        {
+          "line": 113,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/organizationaccount/internal/infrastructure/jdbc/StoreWarehouseLinkRepository.java",
+      "sha256": "036fd56dae767e9e9c2604882cbb5cb4f14a7d19c86eb727cb94a78f7be778d7",
+      "matches": [
+        {
+          "line": 115,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/organizationaccount/internal/infrastructure/jdbc/WarehouseRepository.java",
+      "sha256": "e18694470917fde847addc34722061627174b6f96a76c8c9fc0fb15e1c62cb39",
+      "matches": [
+        {
+          "line": 92,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/productlisting/internal/infrastructure/jdbc/MappingRepository.java",
+      "sha256": "be1883e01d4f0131f5fadcf1ae6dbb63d768c2b46b3e2e191ede2093483decc8",
+      "matches": [
+        {
+          "line": 120,
+          "text": "LIMIT :pageLimit"
+        },
+        {
+          "line": 377,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/productlisting/internal/infrastructure/jdbc/PlatformListingRepository.java",
+      "sha256": "4a5f740a42c0d451249011cb621e22c0e41a86f566e1244d3d6e1337e5a198f0",
+      "matches": [
+        {
+          "line": 188,
+          "text": "LIMIT :pageLimit"
+        }
+      ]
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/secret/MountedSecretResolver.java",
+      "sha256": "b846ec5f219bfe6c2daff3bb8fb3814ff254c24563c38f77c89d20bbbd4ef24a",
+      "matches": [
+        {
+          "line": 48,
+          "text": "private static final int MAXIMUM_VALUE_BYTES = 16 * 1024;"
+        },
+        {
+          "line": 92,
+          "text": "if (attributes.size() > MAXIMUM_VALUE_BYTES) {"
+        },
+        {
+          "line": 103,
+          "text": "byte[] raw = new byte[MAXIMUM_VALUE_BYTES + 1];"
+        },
+        {
+          "line": 110,
+          "text": "if (buffer.position() > MAXIMUM_VALUE_BYTES) {"
+        }
+      ]
+    }
+  ],
+  "scope": "Bounded source inventory supporting the manual same-class rework in finding-rework-matrix.md; pattern matches alone are not a behavioral/security proof."
+}

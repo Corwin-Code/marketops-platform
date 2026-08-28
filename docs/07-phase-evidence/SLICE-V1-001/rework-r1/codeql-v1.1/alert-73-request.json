@@ -1,0 +1,5 @@
+{
+  "state": "dismissed",
+  "dismissed_reason": "false positive",
+  "dismissed_comment": "False positive. Production disables in-app Flyway; this empty value only clears the inherited migration-secret placeholder. The server gets only the app-role secret; a separate migration runner uses its own credential. Reassess if that boundary changes."
+}

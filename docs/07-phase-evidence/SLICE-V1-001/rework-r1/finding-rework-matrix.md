@@ -6,8 +6,10 @@ reviewed Head `30d16e5d7db2d2190635a06fececd5883093a876`.
 The original Contract plus exact Owner-accepted Amendment-001 remain normative.
 
 This is a rework map, not a Controller closure verdict. All thirteen findings
-remain open. Local executable checks exist; final exact-commit regression,
-publication, required CI/security and thread disposition are still pending.
+remain open for independent closure. [C3 full verification](checkpoint-c3/REPORT.md)
+and [v1.1 disposition](codeql-v1.1/EXECUTION-RECORD.md) have completed. The
+[final handoff](final-handoff.md) requires fresh exact-final-Head verification
+and CI; no checkpoint substitutes for that final delivery packet.
 
 | Finding | Root correction and same-class scope | Main verification sources | Remaining closure evidence |
 | --- | --- | --- | --- |
@@ -21,8 +23,8 @@ publication, required CI/security and thread disposition are still pending.
 | S1-F008 | Typed CSV/XLSX import processes complete bounded input beyond 5,000 rows, validates money/quantity/time/header/formula semantics, records row outcomes and applies under atomic status/audit rules. | `FileIntakeFlowIT`, `SpreadsheetReaderTest`, `ImportRowValidatorTest`, fact/normalization tests | Final Head/CI; real redacted customer file schemas remain external |
 | S1-F009 | Versioned per-kind AI JSON schemas constrain structure, fields and reference kinds. Fact/inference/recommendation/unknown are distinct; provider failure and expired invocation recover without invented claims or command authority. | `OutputValidatorTest`, `HttpModelGatewayTest`, `OperatingFlowIT`, frontend AI tests | Final Head/CI; useful real-model golden cases require Owner/provider evidence |
 | S1-F010 | Full private Yandex workload/ALB/DNS/NAT/SG/state/identity topology; ephemeral write-only DB passwords; PG17/provider extensions; strict standard V0002 and explicit managed external attestation. Hash-bound migration→runtime sequencing, packaged artifact guards and private telemetry. | Terraform schema/mock plans and mutation tests; managed migration/restore suites; runtime transport tests; packaged JAR/images | Exact-Head infrastructure CI; real apply/state/PITR/alert delivery remains external |
-| S1-F011 | Risk-bearing parser, outbound, authority, repository, signed servlet, crash and browser tests increased coverage above unchanged gates. Migration inventory/privilege/governance checks cover the complete candidate schema. No blanket exclusions or skip flags were introduced. | Full backend 143 and independent 136, frontend/governance 144, negative coverage-gate checks; C1's 11 required CI contexts pass; six original alerts fixed with per-thread evidence | Final exact Head and all CI/CodeQL; five narrow false-positive dispositions require explicit remote authorization |
-| S1-F012 | Reproducible PG17 representative dataset/query plans; bounded asynchronous snapshot exports with live authorization and immutable download manifest; real local DB/object restore and fault drills including stored-Raw replay. | `RepresentativePerformanceIT`, `DiagnosticExportIT`, `StoredRawReplayIT`, [failure index](failure-drill-index.md), browser 129 | Final full-suite/Head binding; production capacity and provider recovery are not claimed |
+| S1-F011 | Risk-bearing parser, outbound, authority, repository, signed servlet, crash and browser tests increased coverage above unchanged gates. Migration inventory/privilege/governance checks cover the complete candidate schema. No blanket exclusions or skip flags were introduced. | C3 full backend 150/151, 372 Python, 196 frontend, 11 browser; 13 checks SUCCESS; 26 source alerts fixed and five exact v1.1 dispositions verified; zero unresolved threads | Final exact Head and fresh full CI/CodeQL; independent Controller closure |
+| S1-F012 | Reproducible PG17 representative dataset/query plans; bounded asynchronous snapshot exports with live authorization and immutable download manifest; real local DB/object restore and fault drills including stored-Raw replay. | `RepresentativePerformanceIT`, `DiagnosticExportIT`, `StoredRawReplayIT`, [failure index](failure-drill-index.md), browser 152 | Final full-suite/Head binding; production capacity and provider recovery are not claimed |
 | S1-F013 | Current State, as-built design, 41 criteria, assurance implementation-facts, traceability and runbooks distinguish local evidence from external/Owner/Gate conditions. Frozen inputs and original history are preserved. | Governance/readiness mutation tests; [41-source map](criterion-evidence-map.json); protected byte inventory | Final publication identities/CI and Controller handoff synchronization |
 
 ## Scan boundaries and limitations
@@ -36,7 +38,9 @@ scan against the frozen classes, not a new open-ended Controller discovery pass.
 The [same-class source inventory](same-class-source-inventory-134.json) records
 HTTP factories, outbound port users, I/O transaction boundaries, controller
 routes and bounded read paths. The [CodeQL disposition](codeql-disposition.md)
-records the seven exact reviewed alerts and their behavioral evidence.
+preserves the original alert analysis. The executed five-alert disposition
+and reassessment triggers are in the Owner-accepted v1.1 package; no other
+alert dismissal is authorized.
 Primary source logs/reports remain under the recorded checkpoint artifacts.
 The final report must name which exact commit/tree and merge parents each CI
 run tested. Source-level corrections, local tests and a green PR do not grant

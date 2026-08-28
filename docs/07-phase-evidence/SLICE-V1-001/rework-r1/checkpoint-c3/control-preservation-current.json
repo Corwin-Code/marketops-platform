@@ -1,0 +1,23 @@
+{
+  "jacoco.line.coverage": {
+    "reviewed": "0.80",
+    "current": "0.80"
+  },
+  "jacoco.branch.coverage": {
+    "reviewed": "0.70",
+    "current": "0.70"
+  },
+  "jacoco_exclusions_unchanged": [
+    [
+      "com/mimococo/marketops/MarketOpsServerApplication.class"
+    ]
+  ],
+  "byte_unchanged": {
+    "frontend/marketops-console/vite.config.ts": "fb7a23ab68c7c0fbc5ed0f285d4c9e19710c993d34d2cf0cc42090800f7701a8",
+    ".github/workflows/security.yml": "654540b595c8257c9e625dcb8728dec94445386f647ee4a8d82b45e80dd5ad28",
+    ".gitattributes": "f94387c8d3ad7ecd7a87630e21209f3e4021a4d1583b10abfe00ee837d895133"
+  },
+  "head": "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0",
+  "required_contexts": "11, active strict ruleset; see remote-ci/c3-required-ruleset.json",
+  "remaining_security_boundary": "Five individual CodeQL alerts remain OPEN; no dismissal or rule exclusion performed"
+}

@@ -1,0 +1,5 @@
+{
+  "state": "dismissed",
+  "dismissed_reason": "false positive",
+  "dismissed_comment": "False positive. This API is bearer-only and STATELESS: cookies, query/form tokens and servlet sessions cannot authenticate; no auth cookie/session is issued; hostile-Origin mutation is refused. Reassess if ambient auth or CORS/Origin rules change."
+}

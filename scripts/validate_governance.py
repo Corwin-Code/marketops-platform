@@ -246,10 +246,10 @@ V1_ACTIVE_STATE = {
     "active_slice_contract_authorization_condition": V1_SLICE_AUTHORIZATION_CONDITION,
     "active_gate": "SLICE_CONTRACT_APPROVED",
     "authorization": "FULL_SCOPE_IMPLEMENTATION",
-    "next_authorized_actor": "CODEX",
-    "next_action": "SLICE_V1_001_FULL_PRODUCTION_ROOT_CAUSE_REWORK_R1",
-    "slice_v1_001_implementation_state": "ROOT_CAUSE_REWORK_IN_PROGRESS",
-    "slice_v1_001_rework_phase": "IN_PROGRESS",
+    "next_authorized_actor": "GPT-5.6 Sol Pro Controller",
+    "next_action": "CONTROLLER_SLICE_V1_001_FINAL_CLOSURE_VERIFICATION",
+    "slice_v1_001_implementation_state": "ROOT_CAUSE_REWORK_CANDIDATE",
+    "slice_v1_001_rework_phase": "FINAL_CLOSURE_VERIFICATION",
     "slice_v1_001_pr": "20",
     "slice_v1_001_pr_state": "OPEN_DRAFT_UNMERGED",
     "slice_v1_001_branch": "feat/SLICE-V1-001-sku-growth-profit-loop",
@@ -3838,6 +3838,25 @@ def validate_gate_ev_contract_texts(
             )
 
 
+def validate_codeql_disposition_artifacts(
+    errors: list[str], artifacts: dict[str, bytes]
+) -> None:
+    """Preserve exact Owner authority and observed security-state evidence."""
+    manifest_name = "EXECUTION-HASHES.json"
+    expected = "6b7c331995ccd2c8ed593a82ef0a7aef0b1264fbd2051f2c9f5c124693aaf5dc"
+    manifest = artifacts.get(manifest_name, b"")
+    if hashlib.sha256(manifest).hexdigest() != expected:
+        errors.append("SLICE-V1-001 CodeQL v1.1 execution manifest hash mismatch")
+        return
+    entries = json.loads(manifest)["files"]
+    if set(artifacts) != set(entries) | {manifest_name}:
+        errors.append("SLICE-V1-001 CodeQL v1.1 evidence inventory changed")
+    for name, entry in entries.items():
+        content = artifacts.get(name, b"")
+        if len(content) != entry["bytes"] or hashlib.sha256(content).hexdigest() != entry["sha256"]:
+            errors.append(f"SLICE-V1-001 CodeQL v1.1 evidence hash mismatch: {name}")
+
+
 def validate_slice_rework_evidence_text(
     errors: list[str], acceptance: str, artifacts: dict[str, bytes]
 ) -> None:
@@ -3848,8 +3867,8 @@ def validate_slice_rework_evidence_text(
 
     metadata = leading_yaml_body(acceptance, "# SLICE-V1-001 acceptance status") or ""
     required = {
-        "assessed_against": "PR20_REWORK_IN_PROGRESS",
-        "remote_publication": "CANDIDATE_PUBLICATION_AND_CI_PENDING",
+        "assessed_against": "PR20_REWORK_SUBMITTED_FOR_CLOSURE",
+        "remote_publication": "PUBLISHED_DRAFT_CANDIDATE",
         "contract_sha256": V1_ACTIVE_SLICE_CONTRACT_SHA256,
         "frozen_findings_sha256": V1_ACTIVE_STATE["slice_v1_001_frozen_findings_sha256"],
         "production_write_enabled": "false",
@@ -3867,7 +3886,7 @@ def validate_slice_rework_evidence_text(
     if any(row[1] not in allowed for row in rows):
         errors.append("SLICE-V1-001 acceptance uses an unsupported status (MET is not a current evidence state)")
     if any(row[1] in {"EXECUTABLY_VERIFIED", "NOT_APPLICABLE"} for row in rows):
-        errors.append("SLICE-V1-001 in-progress acceptance cannot claim criterion closure")
+        errors.append("SLICE-V1-001 candidate acceptance cannot self-claim criterion closure")
     counts = Counter(row[1] for row in rows)
     summaries = re.findall(r"(?m)^\|\s*`([A-Z_]+)`\s*\|\s*(\d+)\s*\|\s*$", acceptance)
     if len(summaries) != len(counts) or dict((state, int(count)) for state, count in summaries) != counts:
@@ -3909,6 +3928,10 @@ def validate_v1_current_state_text(
                  if (path := evidence_root / "rework-r1/frozen" / name).is_file()}
     acceptance = evidence_root / "acceptance-status.md"
     validate_slice_rework_evidence_text(errors, acceptance.read_text() if acceptance.is_file() else "", artifacts)
+    disposition_root = evidence_root / "rework-r1/codeql-v1.1"
+    validate_codeql_disposition_artifacts(
+        errors, {path.name: path.read_bytes() for path in disposition_root.glob("*") if path.is_file()}
+    )
     for stale in ("No pull request exists", "Nothing was pushed", "LOCAL_CHECKPOINT_COMPLETE_UNPUBLISHED"):
         if stale in current_state_text:
             errors.append(f"CURRENT_STATE retains stale unpublished state: {stale}")

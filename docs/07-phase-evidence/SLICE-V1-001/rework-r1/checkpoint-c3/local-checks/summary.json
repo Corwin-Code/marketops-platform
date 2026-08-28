@@ -1,0 +1,19 @@
+{
+  "head": "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0",
+  "tree": "db3b2c4df0b46a94575e42989904e4fe80e41444",
+  "commands": {
+    "python3 scripts/validate_governance.py": "PASS",
+    "python3 scripts/validate_production_readiness.py": "PASS",
+    "python3 -m unittest discover -s tests -p 'test_*.py'": "PASS; 372 tests",
+    "make governance": "PASS; 372 tests",
+    "make frontend-check": "PASS; 196 tests, lint/format/types/coverage/build/bundle",
+    "git diff --check origin/main...HEAD": "PASS"
+  },
+  "raw_log_sha256": {
+    "exact-governance-150.log": "d16ddd0173e27cf60e9e5642df238396e067ba7c8770d890d56d4ae4b005805d",
+    "exact-readiness-150.log": "9ece49a6a1e7fecad8226a76802e2fcb1737bcea0abdac389a8e0f417effdc5c",
+    "exact-python-tests-150.log": "e199b20ef6fb94b7c94b8c4dd06a1e4d1dcf8a144b5d931ed9a41d0a9dc50edb",
+    "governance-150.log": "3a9ba00ba928c28b2c65f997c3da6096518cb28d54fd926d129c93947e260198",
+    "frontend-check-150.log": "dc4c53989fe227a09c991cc8ca45c6c2cc1ba7f150c444c06a9e28432a66f2d7"
+  }
+}
