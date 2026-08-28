@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "provisioning": "EXTERNAL_ENVIRONMENT_EVIDENCE_REQUIRED",
+  "controls": [
+    {
+      "name": "commands-awaiting-a-person",
+      "metric": "price_command_awaiting_operator",
+      "comparison": "GT",
+      "threshold": 0,
+      "evaluation_window_seconds": 300,
+      "severity": "ALARM",
+      "no_data": "ALARM",
+      "runbook": "docs/06-runbooks/price-command-resolution.md"
+    },
+    {
+      "name": "readback-mismatch",
+      "metric": "price_command_readback_mismatch",
+      "comparison": "GT",
+      "threshold": 0,
+      "evaluation_window_seconds": 300,
+      "severity": "ALARM",
+      "no_data": "ALARM",
+      "runbook": "docs/06-runbooks/price-command-resolution.md"
+    },
+    {
+      "name": "acquisition-backlog",
+      "metric": "ingestion_run_backlog_age_seconds",
+      "comparison": "GT",
+      "threshold": 900,
+      "evaluation_window_seconds": 900,
+      "severity": "WARN",
+      "no_data": "ALARM",
+      "runbook": "docs/06-runbooks/acquisition-backlog.md"
+    },
+    {
+      "name": "write-gate-closed",
+      "metric": "price_command_gate_closed",
+      "comparison": "GT",
+      "threshold": 0,
+      "evaluation_window_seconds": 900,
+      "severity": "WARN",
+      "no_data": "ALARM",
+      "runbook": "docs/06-runbooks/price-command-resolution.md"
+    },
+    {
+      "name": "evidence-write-failed",
+      "metric": "raw_custody_write_failed",
+      "comparison": "GT",
+      "threshold": 0,
+      "evaluation_window_seconds": 300,
+      "severity": "ALARM",
+      "no_data": "ALARM",
+      "runbook": "docs/06-runbooks/evidence-custody.md"
+    },
+    {
+      "name": "database-unreachable",
+      "metric": "database_readiness_failed",
+      "comparison": "GT",
+      "threshold": 0,
+      "evaluation_window_seconds": 180,
+      "severity": "ALARM",
+      "no_data": "ALARM",
+      "runbook": "docs/06-runbooks/troubleshooting.md"
+    }
+  ]
+}

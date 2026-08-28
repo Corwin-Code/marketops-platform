@@ -1,0 +1,78 @@
+{
+  "verified_at": "2026-08-28T03:07:35.661588+00:00",
+  "matrix_sha256": "b0a09962ebb37d257cb9f79a6e3d8f5543b0d3a7a69bc5bc99f578dc37bf4e8a",
+  "checkpoint_head": "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0",
+  "checkpoint_tree": "db3b2c4df0b46a94575e42989904e4fe80e41444",
+  "tested_merge": "fecc8c7b2e0dde4e565f59e5432de72477444948",
+  "alerts": [
+    {
+      "alert": 66,
+      "reason": "false positive",
+      "comment": "False positive. This API is bearer-only and STATELESS: cookies, query/form tokens and servlet sessions cannot authenticate; no auth cookie/session is issued; hostile-Origin mutation is refused. Reassess if ambient auth or CORS/Origin rules change.",
+      "comment_length": 247,
+      "actor": "Corwin-Code",
+      "dismissed_at": "2026-08-28T02:58:13Z"
+    },
+    {
+      "alert": 73,
+      "reason": "false positive",
+      "comment": "False positive. Production disables in-app Flyway; this empty value only clears the inherited migration-secret placeholder. The server gets only the app-role secret; a separate migration runner uses its own credential. Reassess if that boundary changes.",
+      "comment_length": 253,
+      "actor": "Corwin-Code",
+      "dismissed_at": "2026-08-28T03:00:13Z"
+    },
+    {
+      "alert": 74,
+      "reason": "false positive",
+      "comment": "False positive. The sink is Apache HttpUriRequestBase.setEntity for an outbound provider request, not browser output. Exact bytes are required; HTTPS, destination, DNS, redirect, header and size controls remain enforced. Reassess if bytes are rendered to users.",
+      "comment_length": 261,
+      "actor": "Corwin-Code",
+      "dismissed_at": "2026-08-28T03:00:47Z"
+    },
+    {
+      "alert": 75,
+      "reason": "false positive",
+      "comment": "False positive. The part-number branch denies invalid input and returns no data. Successful reads require stored ownership/live scope, DB authorization before I/O, and DB reauthorization after I/O. Reassess if the guard or authorization sequence changes.",
+      "comment_length": 254,
+      "actor": "Corwin-Code",
+      "dismissed_at": "2026-08-28T03:02:16Z"
+    },
+    {
+      "alert": 76,
+      "reason": "false positive",
+      "comment": "False positive. Length/hash mismatch returns no bytes. Success requires pre-I/O DB authorization, exact custody integrity checks, and post-I/O DB reauthorization; mid-read revocation is refused. Reassess if integrity or authorization order changes.",
+      "comment_length": 248,
+      "actor": "Corwin-Code",
+      "dismissed_at": "2026-08-28T03:02:48Z"
+    }
+  ],
+  "alert_comparison": {
+    "pr": {
+      "observed_alerts": 31,
+      "changed_alerts": [
+        66,
+        73,
+        74,
+        75,
+        76
+      ]
+    },
+    "repository": {
+      "observed_alerts": 0,
+      "changed_alerts": []
+    }
+  },
+  "resolved_named_threads": [
+    "PRRT_kwDOTwsbvM6c_2ye",
+    "PRRT_kwDOTwsbvM6c_2yq",
+    "PRRT_kwDOTwsbvM6c_2yy",
+    "PRRT_kwDOTwsbvM6c_e2P",
+    "PRRT_kwDOTwsbvM6cuJGi"
+  ],
+  "unresolved_threads": 0,
+  "aggregate_codeql": "SUCCESS",
+  "all_required_and_infrastructure_checks": "SUCCESS",
+  "codeql_reruns": 0,
+  "source_changes_during_disposition": false,
+  "pr_state": "OPEN_DRAFT_UNMERGED"
+}

@@ -1,0 +1,2332 @@
+{
+  "resource_changes": [
+    {
+      "address": "module.database.yandex_mdb_postgresql_cluster.this",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "config": [
+            {
+              "access": [
+                {
+                  "data_lens": false,
+                  "data_transfer": false,
+                  "serverless": false,
+                  "web_sql": false,
+                  "yandex_query": null
+                }
+              ],
+              "backup_retain_period_days": 7,
+              "backup_window_start": [
+                {
+                  "hours": 22,
+                  "minutes": 0
+                }
+              ],
+              "connection_manager": [],
+              "disk_size_autoscaling": [],
+              "managed_repack": [],
+              "performance_diagnostics": [
+                {
+                  "enabled": true,
+                  "sessions_sampling_interval": 60,
+                  "statements_sampling_interval": 600
+                }
+              ],
+              "pooler_config": [],
+              "postgresql_config": {
+                "idle_in_transaction_session_timeout": "60000",
+                "log_connections": "true",
+                "log_disconnections": "true",
+                "log_min_duration_statement": "500",
+                "max_connections": "200"
+              },
+              "resources": [
+                {
+                  "disk_size": 186,
+                  "disk_type_id": "network-ssd-nonreplicated",
+                  "resource_preset_id": "s3-c2-m8"
+                }
+              ],
+              "version": "17"
+            }
+          ],
+          "created_at": "6e72yrmg",
+          "database": [],
+          "deletion_protection": false,
+          "description": "MarketOps staging operating database",
+          "disk_encryption_key_id": "w7zhru42",
+          "environment": "PRESTABLE",
+          "folder_id": "ffffffffffffffffffff",
+          "health": "da8b1scw",
+          "host": [
+            {
+              "assign_public_ip": false,
+              "fqdn": "s2y62cf7",
+              "name": null,
+              "priority": 0,
+              "replication_source": "3paqw097",
+              "replication_source_name": null,
+              "role": "tcdg1or6",
+              "subnet_id": "xxxxxxxxxxxxxxxxxxxg",
+              "zone": "ru-central1-a"
+            },
+            {
+              "assign_public_ip": false,
+              "fqdn": "33az9gc2",
+              "name": null,
+              "priority": 0,
+              "replication_source": "2whe8puv",
+              "replication_source_name": null,
+              "role": "efdz8eab",
+              "subnet_id": "yyyyyyyyyyyyyyyyyyyg",
+              "zone": "ru-central1-b"
+            },
+            {
+              "assign_public_ip": false,
+              "fqdn": "49106rkt",
+              "name": null,
+              "priority": 0,
+              "replication_source": "yvj3gdbp",
+              "replication_source_name": null,
+              "role": "3ulxnccs",
+              "subnet_id": "zzzzzzzzzzzzzzzzzzzg",
+              "zone": "ru-central1-d"
+            }
+          ],
+          "host_group_ids": [],
+          "host_master_name": "z7igr2r1",
+          "id": "dddddddddddddddddddd",
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "maintenance_window": [
+            {
+              "day": "SUN",
+              "hour": 23,
+              "type": "WEEKLY"
+            }
+          ],
+          "name": "staging-marketops",
+          "network_id": "nnnnnnnnnnnnnnnnnnng",
+          "restore": [],
+          "security_group_ids": [
+            "dddddddddddddddddddg"
+          ],
+          "status": "7knk5j75",
+          "timeouts": null,
+          "user": []
+        }
+      }
+    },
+    {
+      "address": "module.database.yandex_mdb_postgresql_database.this",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "cluster_id": "dddddddddddddddddddd",
+          "deletion_protection": null,
+          "extension": [
+            {
+              "name": "btree_gist"
+            },
+            {
+              "name": "pgcrypto"
+            }
+          ],
+          "lc_collate": "C",
+          "lc_type": "C",
+          "name": "marketops",
+          "owner": "marketops_migration",
+          "template_db": null,
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.database.yandex_mdb_postgresql_user.application",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "auth_method": null,
+          "cluster_id": "dddddddddddddddddddd",
+          "conn_limit": 180,
+          "deletion_protection": null,
+          "generate_password": null,
+          "grants": null,
+          "login": null,
+          "name": "marketops_app",
+          "password": null,
+          "password_wo": null,
+          "password_wo_version": 1,
+          "permission": [
+            {
+              "database_name": "marketops"
+            }
+          ],
+          "settings": {
+            "default_transaction_isolation": "read committed",
+            "lock_timeout": "5000",
+            "statement_timeout": "30000"
+          },
+          "timeouts": null,
+          "user_connection_manager": []
+        }
+      }
+    },
+    {
+      "address": "module.database.yandex_mdb_postgresql_user.migration",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "auth_method": null,
+          "cluster_id": "dddddddddddddddddddd",
+          "conn_limit": 10,
+          "deletion_protection": null,
+          "generate_password": null,
+          "grants": null,
+          "login": null,
+          "name": "marketops_migration",
+          "password": null,
+          "password_wo": null,
+          "password_wo_version": 1,
+          "permission": [],
+          "settings": {
+            "default_transaction_isolation": "read committed",
+            "lock_timeout": "10000"
+          },
+          "timeouts": null,
+          "user_connection_manager": []
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_gateway.egress",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "description": null,
+          "folder_id": "ffffffffffffffffffff",
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops-egress",
+          "shared_egress_gateway": [
+            {}
+          ],
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_network.this",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "i8u6s9rl",
+          "default_security_group_id": "17tc1hjs",
+          "description": null,
+          "folder_id": "ffffffffffffffffffff",
+          "id": "nnnnnnnnnnnnnnnnnnng",
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops",
+          "subnet_ids": [],
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_route_table.private",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "v1kjqufb",
+          "description": null,
+          "folder_id": "ffffffffffffffffffff",
+          "id": "rrrrrrrrrrrrrrrrrrrg",
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops-private",
+          "network_id": "nnnnnnnnnnnnnnnnnnng",
+          "static_route": [
+            {
+              "destination_prefix": "0.0.0.0/0",
+              "next_hop_address": null
+            }
+          ],
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group.groups[\"application\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "o3329axz",
+          "description": null,
+          "egress": [],
+          "folder_id": "ffffffffffffffffffff",
+          "id": "aaaaaaaaaaaaaaaaaaag",
+          "ingress": [],
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops-application",
+          "network_id": "nnnnnnnnnnnnnnnnnnng",
+          "status": "ss8bqyct",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group.groups[\"database\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "hropa7ep",
+          "description": null,
+          "egress": [],
+          "folder_id": "ffffffffffffffffffff",
+          "id": "dddddddddddddddddddg",
+          "ingress": [],
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops-database",
+          "network_id": "nnnnnnnnnnnnnnnnnnng",
+          "status": "oj6w367e",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group.groups[\"load-balancer\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "5g4xmshk",
+          "description": null,
+          "egress": [],
+          "folder_id": "ffffffffffffffffffff",
+          "id": "lllllllllllllllllllg",
+          "ingress": [],
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops-load-balancer",
+          "network_id": "nnnnnnnnnnnnnnnnnnng",
+          "status": "5qkcxv75",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group.groups[\"migration\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "3fi2w9my",
+          "description": null,
+          "egress": [],
+          "folder_id": "ffffffffffffffffffff",
+          "id": "mmmmmmmmmmmmmmmmmmmg",
+          "ingress": [],
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops-migration",
+          "network_id": "nnnnnnnnnnnnnnnnnnng",
+          "status": "j1mwbn1p",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group.groups[\"worker\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "pyvxgnu1",
+          "description": null,
+          "egress": [],
+          "folder_id": "ffffffffffffffffffff",
+          "id": "wwwwwwwwwwwwwwwwwwwg",
+          "ingress": [],
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops-worker",
+          "network_id": "nnnnnnnnnnnnnnnnnnng",
+          "status": "4ruk6xai",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.alb_health",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "ingress",
+          "port": 30080,
+          "protocol": "TCP",
+          "security_group_binding": "lllllllllllllllllllg",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "198.18.235.0/24",
+            "198.18.248.0/24"
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.alb_to_application[\"8080\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 8080,
+          "protocol": "TCP",
+          "security_group_binding": "lllllllllllllllllllg",
+          "security_group_id": "aaaaaaaaaaaaaaaaaaag",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.alb_to_application[\"8088\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 8088,
+          "protocol": "TCP",
+          "security_group_binding": "lllllllllllllllllllg",
+          "security_group_id": "aaaaaaaaaaaaaaaaaaag",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.application_from_alb[\"8080\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "ingress",
+          "port": 8080,
+          "protocol": "TCP",
+          "security_group_binding": "aaaaaaaaaaaaaaaaaaag",
+          "security_group_id": "lllllllllllllllllllg",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.application_from_alb[\"8088\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "ingress",
+          "port": 8088,
+          "protocol": "TCP",
+          "security_group_binding": "aaaaaaaaaaaaaaaaaaag",
+          "security_group_id": "lllllllllllllllllllg",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.database_cluster[\"egress\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "predefined_target": "self_security_group",
+          "protocol": "ANY",
+          "security_group_binding": "dddddddddddddddddddg",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.database_cluster[\"ingress\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "ingress",
+          "predefined_target": "self_security_group",
+          "protocol": "ANY",
+          "security_group_binding": "dddddddddddddddddddg",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.database_egress[\"application\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 6432,
+          "protocol": "TCP",
+          "security_group_binding": "aaaaaaaaaaaaaaaaaaag",
+          "security_group_id": "dddddddddddddddddddg",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.database_egress[\"migration\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 6432,
+          "protocol": "TCP",
+          "security_group_binding": "mmmmmmmmmmmmmmmmmmmg",
+          "security_group_id": "dddddddddddddddddddg",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.database_egress[\"worker\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 6432,
+          "protocol": "TCP",
+          "security_group_binding": "wwwwwwwwwwwwwwwwwwwg",
+          "security_group_id": "dddddddddddddddddddg",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.database_ingress[\"application\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "ingress",
+          "port": 6432,
+          "protocol": "TCP",
+          "security_group_binding": "dddddddddddddddddddg",
+          "security_group_id": "aaaaaaaaaaaaaaaaaaag",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.database_ingress[\"migration\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "ingress",
+          "port": 6432,
+          "protocol": "TCP",
+          "security_group_binding": "dddddddddddddddddddg",
+          "security_group_id": "mmmmmmmmmmmmmmmmmmmg",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.database_ingress[\"worker\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "ingress",
+          "port": 6432,
+          "protocol": "TCP",
+          "security_group_binding": "dddddddddddddddddddg",
+          "security_group_id": "wwwwwwwwwwwwwwwwwwwg",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.dns[\"application-TCP\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 53,
+          "protocol": "TCP",
+          "security_group_binding": "aaaaaaaaaaaaaaaaaaag",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "10.90.1.0/24",
+            "10.90.2.0/24",
+            "10.90.3.0/24"
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.dns[\"application-UDP\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 53,
+          "protocol": "UDP",
+          "security_group_binding": "aaaaaaaaaaaaaaaaaaag",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "10.90.1.0/24",
+            "10.90.2.0/24",
+            "10.90.3.0/24"
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.dns[\"migration-TCP\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 53,
+          "protocol": "TCP",
+          "security_group_binding": "mmmmmmmmmmmmmmmmmmmg",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "10.90.1.0/24",
+            "10.90.2.0/24",
+            "10.90.3.0/24"
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.dns[\"migration-UDP\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 53,
+          "protocol": "UDP",
+          "security_group_binding": "mmmmmmmmmmmmmmmmmmmg",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "10.90.1.0/24",
+            "10.90.2.0/24",
+            "10.90.3.0/24"
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.dns[\"worker-TCP\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 53,
+          "protocol": "TCP",
+          "security_group_binding": "wwwwwwwwwwwwwwwwwwwg",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "10.90.1.0/24",
+            "10.90.2.0/24",
+            "10.90.3.0/24"
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.dns[\"worker-UDP\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 53,
+          "protocol": "UDP",
+          "security_group_binding": "wwwwwwwwwwwwwwwwwwwg",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "10.90.1.0/24",
+            "10.90.2.0/24",
+            "10.90.3.0/24"
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.group_health[\"application\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "ingress",
+          "port": 8080,
+          "protocol": "TCP",
+          "security_group_binding": "aaaaaaaaaaaaaaaaaaag",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "198.18.235.0/24",
+            "198.18.248.0/24"
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.group_health[\"worker\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "ingress",
+          "port": 8080,
+          "protocol": "TCP",
+          "security_group_binding": "wwwwwwwwwwwwwwwwwwwg",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "198.18.235.0/24",
+            "198.18.248.0/24"
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.https_egress[\"application\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 443,
+          "protocol": "TCP",
+          "security_group_binding": "aaaaaaaaaaaaaaaaaaag",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "0.0.0.0/0"
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.https_egress[\"migration\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 443,
+          "protocol": "TCP",
+          "security_group_binding": "mmmmmmmmmmmmmmmmmmmg",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "0.0.0.0/0"
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.https_egress[\"worker\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "egress",
+          "port": 443,
+          "protocol": "TCP",
+          "security_group_binding": "wwwwwwwwwwwwwwwwwwwg",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "0.0.0.0/0"
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_security_group_rule.public_https",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "direction": "ingress",
+          "port": 443,
+          "protocol": "TCP",
+          "security_group_binding": "lllllllllllllllllllg",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "0.0.0.0/0"
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_subnet.private[\"ru-central1-a\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "h4z97o7h",
+          "description": null,
+          "dhcp_options": [],
+          "folder_id": "ffffffffffffffffffff",
+          "id": "xxxxxxxxxxxxxxxxxxxg",
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops-private-ru-central1-a",
+          "network_id": "nnnnnnnnnnnnnnnnnnng",
+          "route_table_id": "rrrrrrrrrrrrrrrrrrrg",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "10.90.1.0/24"
+          ],
+          "v6_cidr_blocks": [],
+          "zone": "ru-central1-a"
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_subnet.private[\"ru-central1-b\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "p726lc2w",
+          "description": null,
+          "dhcp_options": [],
+          "folder_id": "ffffffffffffffffffff",
+          "id": "yyyyyyyyyyyyyyyyyyyg",
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops-private-ru-central1-b",
+          "network_id": "nnnnnnnnnnnnnnnnnnng",
+          "route_table_id": "rrrrrrrrrrrrrrrrrrrg",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "10.90.2.0/24"
+          ],
+          "v6_cidr_blocks": [],
+          "zone": "ru-central1-b"
+        }
+      }
+    },
+    {
+      "address": "module.network.yandex_vpc_subnet.private[\"ru-central1-d\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "xnxeh0dl",
+          "description": null,
+          "dhcp_options": [],
+          "folder_id": "ffffffffffffffffffff",
+          "id": "zzzzzzzzzzzzzzzzzzzg",
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops-private-ru-central1-d",
+          "network_id": "nnnnnnnnnnnnnnnnnnng",
+          "route_table_id": "rrrrrrrrrrrrrrrrrrrg",
+          "timeouts": null,
+          "v4_cidr_blocks": [
+            "10.90.3.0/24"
+          ],
+          "v6_cidr_blocks": [],
+          "zone": "ru-central1-d"
+        }
+      }
+    },
+    {
+      "address": "module.object_storage.yandex_kms_symmetric_key_iam_binding.evidence",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "members": [
+            "serviceAccount:aaaaaaaaaaaaaaaaaaaa",
+            "serviceAccount:wwwwwwwwwwwwwwwwwwww"
+          ],
+          "role": "kms.keys.encrypterDecrypter",
+          "sleep_after": null,
+          "symmetric_key_id": "kkkkkkkkkkkkkkkkkkkk"
+        }
+      }
+    },
+    {
+      "address": "module.object_storage.yandex_storage_bucket.evidence",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "access_key": null,
+          "anonymous_access_flags": [
+            {
+              "config_read": false,
+              "list": false,
+              "read": false
+            }
+          ],
+          "bucket": "marketops-offline-plan-evidence",
+          "bucket_prefix": null,
+          "cors_rule": [],
+          "disabled_statickey_auth": null,
+          "folder_id": "ffffffffffffffffffff",
+          "force_destroy": false,
+          "grant": [],
+          "https": [
+            {
+              "certificate_id": "tttttttttttttttttttt"
+            }
+          ],
+          "lifecycle_rule": [
+            {
+              "abort_incomplete_multipart_upload_days": null,
+              "enabled": true,
+              "expiration": [],
+              "filter": [],
+              "id": "cool-after-ninety-days",
+              "noncurrent_version_expiration": [],
+              "noncurrent_version_transition": [],
+              "prefix": null,
+              "transition": [
+                {
+                  "date": null,
+                  "days": 90,
+                  "storage_class": "COLD"
+                }
+              ]
+            },
+            {
+              "abort_incomplete_multipart_upload_days": 7,
+              "enabled": true,
+              "expiration": [],
+              "filter": [],
+              "id": "abandon-incomplete-uploads",
+              "noncurrent_version_expiration": [],
+              "noncurrent_version_transition": [],
+              "prefix": null,
+              "transition": []
+            }
+          ],
+          "logging": [],
+          "max_size": null,
+          "object_lock_configuration": [
+            {
+              "object_lock_enabled": "Enabled",
+              "rule": [
+                {
+                  "default_retention": [
+                    {
+                      "days": 365,
+                      "mode": "COMPLIANCE",
+                      "years": null
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "secret_key": null,
+          "server_side_encryption_configuration": [
+            {
+              "rule": [
+                {
+                  "apply_server_side_encryption_by_default": [
+                    {
+                      "kms_master_key_id": "kkkkkkkkkkkkkkkkkkkk",
+                      "sse_algorithm": "aws:kms"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "tags": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "versioning": [
+            {
+              "enabled": true
+            }
+          ],
+          "website": []
+        }
+      }
+    },
+    {
+      "address": "module.object_storage.yandex_storage_bucket_iam_binding.readers",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "bucket": "marketops-offline-plan-evidence",
+          "members": [
+            "serviceAccount:aaaaaaaaaaaaaaaaaaaa",
+            "serviceAccount:wwwwwwwwwwwwwwwwwwww"
+          ],
+          "role": "storage.viewer"
+        }
+      }
+    },
+    {
+      "address": "module.object_storage.yandex_storage_bucket_iam_binding.writers",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "bucket": "marketops-offline-plan-evidence",
+          "members": [
+            "serviceAccount:aaaaaaaaaaaaaaaaaaaa",
+            "serviceAccount:wwwwwwwwwwwwwwwwwwww"
+          ],
+          "role": "storage.uploader"
+        }
+      }
+    },
+    {
+      "address": "module.object_storage.yandex_storage_bucket_policy.evidence",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "access_key": null,
+          "policy": "{\"Statement\":[{\"Action\":[\"s3:DeleteObject\",\"s3:DeleteObjectVersion\",\"s3:PutObjectRetention\",\"s3:PutBucketPolicy\",\"s3:DeleteBucketPolicy\"],\"Condition\":{\"StringEquals\":{\"aws:userid\":[\"aaaaaaaaaaaaaaaaaaaa\",\"wwwwwwwwwwwwwwwwwwww\"]}},\"Effect\":\"Deny\",\"Principal\":\"*\",\"Resource\":[\"arn:aws:s3:::marketops-offline-plan-evidence\",\"arn:aws:s3:::marketops-offline-plan-evidence/*\"],\"Sid\":\"WorkloadsCannotDeleteOrRelaxCustody\"},{\"Action\":\"s3:*\",\"Condition\":{\"Bool\":{\"aws:SecureTransport\":\"false\"}},\"Effect\":\"Deny\",\"Principal\":\"*\",\"Resource\":[\"arn:aws:s3:::marketops-offline-plan-evidence\",\"arn:aws:s3:::marketops-offline-plan-evidence/*\"],\"Sid\":\"RefuseUnencryptedTransport\"},{\"Action\":\"s3:*\",\"Condition\":{\"StringNotEquals\":{\"aws:userid\":[\"aaaaaaaaaaaaaaaaaaaa\",\"wwwwwwwwwwwwwwwwwwww\",\"iiiiiiiiiiiiiiiiiiii\"]}},\"Effect\":\"Deny\",\"Principal\":\"*\",\"Resource\":[\"arn:aws:s3:::marketops-offline-plan-evidence\",\"arn:aws:s3:::marketops-offline-plan-evidence/*\"],\"Sid\":\"RefuseEveryoneExceptTheEvidenceWorkloads\"}],\"Version\":\"2012-10-17\"}",
+          "secret_key": null
+        }
+      }
+    },
+    {
+      "address": "module.observability.yandex_audit_trails_trail.this",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "data_stream_destination": [],
+          "description": null,
+          "filter": [],
+          "filtering_policy": [
+            {
+              "data_events_filter": [
+                {
+                  "dns_filter": [],
+                  "excluded_events": null,
+                  "included_events": null,
+                  "resource_scope": [
+                    {
+                      "resource_id": "ffffffffffffffffffff",
+                      "resource_type": "resource-manager.folder"
+                    }
+                  ],
+                  "service": "storage"
+                },
+                {
+                  "dns_filter": [],
+                  "excluded_events": null,
+                  "included_events": null,
+                  "resource_scope": [
+                    {
+                      "resource_id": "ffffffffffffffffffff",
+                      "resource_type": "resource-manager.folder"
+                    }
+                  ],
+                  "service": "lockbox"
+                }
+              ],
+              "management_events_filter": [
+                {
+                  "resource_scope": [
+                    {
+                      "resource_id": "ffffffffffffffffffff",
+                      "resource_type": "resource-manager.folder"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "folder_id": "ffffffffffffffffffff",
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "logging_destination": [
+            {}
+          ],
+          "name": "staging-marketops",
+          "service_account_id": "uuuuuuuuuuuuuuuuuuuu",
+          "storage_destination": [],
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.observability.yandex_logging_group.this",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "description": "MarketOps staging application logs",
+          "folder_id": "ffffffffffffffffffff",
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops",
+          "retention_period": "720h",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.observability.yandex_monitoring_dashboard.operations",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "description": "The state an operator checks first",
+          "folder_id": "ffffffffffffffffffff",
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops-operations",
+          "parametrization": [
+            {
+              "parameters": [
+                {
+                  "custom": [],
+                  "description": null,
+                  "hidden": false,
+                  "id": "store",
+                  "label_values": [
+                    {
+                      "default_values": [
+                        "*"
+                      ],
+                      "folder_id": null,
+                      "label_key": "store_id",
+                      "multiselectable": true,
+                      "selectors": "service=\"marketops\""
+                    }
+                  ],
+                  "text": [],
+                  "title": "Store"
+                }
+              ],
+              "selectors": null
+            }
+          ],
+          "timeouts": null,
+          "title": "MarketOps staging",
+          "widgets": [
+            {
+              "chart": [],
+              "position": [
+                {
+                  "h": 2,
+                  "w": 12,
+                  "x": 0,
+                  "y": 0
+                }
+              ],
+              "text": [
+                {
+                  "text": "A command in UNKNOWN_REQUIRES_READBACK may already have changed a real\nprice. It is never retried automatically; a person resolves it.\n"
+                }
+              ],
+              "title": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "address": "module.workload[0].yandex_alb_backend_group.runtime[\"api\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "description": null,
+          "folder_id": "ffffffffffffffffffff",
+          "grpc_backend": [],
+          "http_backend": [
+            {
+              "healthcheck": [
+                {
+                  "grpc_healthcheck": [],
+                  "healthcheck_port": 8080,
+                  "healthy_threshold": 2,
+                  "http_healthcheck": [
+                    {
+                      "expected_statuses": null,
+                      "host": null,
+                      "http2": null,
+                      "path": "/actuator/health/readiness"
+                    }
+                  ],
+                  "interval": "15s",
+                  "interval_jitter_percent": null,
+                  "stream_healthcheck": [],
+                  "timeout": "5s",
+                  "unhealthy_threshold": 3
+                }
+              ],
+              "http2": null,
+              "load_balancing_config": [],
+              "name": "api",
+              "port": 8080,
+              "storage_bucket": null,
+              "target_group_ids": [
+                null
+              ],
+              "tls": [],
+              "weight": 1
+            }
+          ],
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops-api",
+          "session_affinity": [],
+          "stream_backend": [],
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.workload[0].yandex_alb_backend_group.runtime[\"console\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "description": null,
+          "folder_id": "ffffffffffffffffffff",
+          "grpc_backend": [],
+          "http_backend": [
+            {
+              "healthcheck": [
+                {
+                  "grpc_healthcheck": [],
+                  "healthcheck_port": 8080,
+                  "healthy_threshold": 2,
+                  "http_healthcheck": [
+                    {
+                      "expected_statuses": null,
+                      "host": null,
+                      "http2": null,
+                      "path": "/actuator/health/readiness"
+                    }
+                  ],
+                  "interval": "15s",
+                  "interval_jitter_percent": null,
+                  "stream_healthcheck": [],
+                  "timeout": "5s",
+                  "unhealthy_threshold": 3
+                }
+              ],
+              "http2": null,
+              "load_balancing_config": [],
+              "name": "console",
+              "port": 8088,
+              "storage_bucket": null,
+              "target_group_ids": [
+                null
+              ],
+              "tls": [],
+              "weight": 1
+            }
+          ],
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops-console",
+          "session_affinity": [],
+          "stream_backend": [],
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.workload[0].yandex_alb_http_router.this",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "description": null,
+          "folder_id": "ffffffffffffffffffff",
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "name": "staging-marketops",
+          "route_options": [],
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.workload[0].yandex_alb_load_balancer.this",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "allocation_policy": [
+            {
+              "location": [
+                {
+                  "disable_traffic": null,
+                  "subnet_id": "xxxxxxxxxxxxxxxxxxxg",
+                  "zone_id": "ru-central1-a"
+                },
+                {
+                  "disable_traffic": null,
+                  "subnet_id": "yyyyyyyyyyyyyyyyyyyg",
+                  "zone_id": "ru-central1-b"
+                },
+                {
+                  "disable_traffic": null,
+                  "subnet_id": "zzzzzzzzzzzzzzzzzzzg",
+                  "zone_id": "ru-central1-d"
+                }
+              ]
+            }
+          ],
+          "allow_zonal_shift": null,
+          "auto_scale_policy": [],
+          "description": null,
+          "folder_id": "ffffffffffffffffffff",
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "listener": [
+            {
+              "endpoint": [
+                {
+                  "address": [
+                    {
+                      "external_ipv4_address": [
+                        {}
+                      ],
+                      "external_ipv6_address": [],
+                      "internal_ipv4_address": []
+                    }
+                  ],
+                  "ports": [
+                    443
+                  ]
+                }
+              ],
+              "http": [],
+              "name": "https",
+              "stream": [],
+              "tls": [
+                {
+                  "default_handler": [
+                    {
+                      "certificate_ids": [
+                        "tttttttttttttttttttt"
+                      ],
+                      "client_certificates_verification": [],
+                      "http_handler": [
+                        {
+                          "allow_http10": null,
+                          "http2_options": [],
+                          "preserve_http1_header_casing": null,
+                          "rewrite_request_id": null
+                        }
+                      ],
+                      "stream_handler": []
+                    }
+                  ],
+                  "sni_handler": []
+                }
+              ]
+            }
+          ],
+          "log_options": [
+            {
+              "disable": false,
+              "discard_rule": []
+            }
+          ],
+          "name": "staging-marketops",
+          "network_id": "nnnnnnnnnnnnnnnnnnng",
+          "region_id": null,
+          "security_group_ids": [
+            "lllllllllllllllllllg"
+          ],
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.workload[0].yandex_alb_virtual_host.this",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "authority": [
+            "console.example.invalid"
+          ],
+          "modify_request_headers": [],
+          "modify_response_headers": [
+            {
+              "append": null,
+              "name": "Strict-Transport-Security",
+              "remove": null,
+              "replace": "max-age=31536000"
+            }
+          ],
+          "name": "marketops",
+          "rate_limit": [],
+          "route": [
+            {
+              "client_certificate_forward": [],
+              "disable_security_profile": null,
+              "grpc_route": [],
+              "http_route": [
+                {
+                  "direct_response_action": [],
+                  "http_match": [
+                    {
+                      "http_method": null,
+                      "path": [
+                        {
+                          "exact": null,
+                          "prefix": "/api/v1/console/",
+                          "regex": null
+                        }
+                      ]
+                    }
+                  ],
+                  "http_route_action": [
+                    {
+                      "auto_host_rewrite": null,
+                      "host_rewrite": null,
+                      "idle_timeout": null,
+                      "prefix_rewrite": null,
+                      "rate_limit": [],
+                      "regex_rewrite": [],
+                      "timeout": "35s",
+                      "upgrade_types": null
+                    }
+                  ],
+                  "redirect_action": []
+                }
+              ],
+              "name": "console-api",
+              "route_options": []
+            },
+            {
+              "client_certificate_forward": [],
+              "disable_security_profile": null,
+              "grpc_route": [],
+              "http_route": [
+                {
+                  "direct_response_action": [],
+                  "http_match": [
+                    {
+                      "http_method": [
+                        "GET"
+                      ],
+                      "path": [
+                        {
+                          "exact": "/api/v1/meta/status",
+                          "prefix": null,
+                          "regex": null
+                        }
+                      ]
+                    }
+                  ],
+                  "http_route_action": [
+                    {
+                      "auto_host_rewrite": null,
+                      "host_rewrite": null,
+                      "idle_timeout": null,
+                      "prefix_rewrite": null,
+                      "rate_limit": [],
+                      "regex_rewrite": [],
+                      "timeout": "5s",
+                      "upgrade_types": null
+                    }
+                  ],
+                  "redirect_action": []
+                }
+              ],
+              "name": "public-metadata",
+              "route_options": []
+            },
+            {
+              "client_certificate_forward": [],
+              "disable_security_profile": null,
+              "grpc_route": [],
+              "http_route": [
+                {
+                  "direct_response_action": [
+                    {
+                      "body": null,
+                      "status": 404
+                    }
+                  ],
+                  "http_match": [
+                    {
+                      "http_method": null,
+                      "path": [
+                        {
+                          "exact": null,
+                          "prefix": "/actuator/",
+                          "regex": null
+                        }
+                      ]
+                    }
+                  ],
+                  "http_route_action": [],
+                  "redirect_action": []
+                }
+              ],
+              "name": "deny-actuator",
+              "route_options": []
+            },
+            {
+              "client_certificate_forward": [],
+              "disable_security_profile": null,
+              "grpc_route": [],
+              "http_route": [
+                {
+                  "direct_response_action": [
+                    {
+                      "body": null,
+                      "status": 404
+                    }
+                  ],
+                  "http_match": [
+                    {
+                      "http_method": null,
+                      "path": [
+                        {
+                          "exact": null,
+                          "prefix": "/api/",
+                          "regex": null
+                        }
+                      ]
+                    }
+                  ],
+                  "http_route_action": [],
+                  "redirect_action": []
+                }
+              ],
+              "name": "deny-other-apis",
+              "route_options": []
+            },
+            {
+              "client_certificate_forward": [],
+              "disable_security_profile": null,
+              "grpc_route": [],
+              "http_route": [
+                {
+                  "direct_response_action": [],
+                  "http_match": [
+                    {
+                      "http_method": null,
+                      "path": [
+                        {
+                          "exact": null,
+                          "prefix": "/",
+                          "regex": null
+                        }
+                      ]
+                    }
+                  ],
+                  "http_route_action": [
+                    {
+                      "auto_host_rewrite": null,
+                      "host_rewrite": null,
+                      "idle_timeout": null,
+                      "prefix_rewrite": null,
+                      "rate_limit": [],
+                      "regex_rewrite": [],
+                      "timeout": "5s",
+                      "upgrade_types": null
+                    }
+                  ],
+                  "redirect_action": []
+                }
+              ],
+              "name": "console",
+              "route_options": []
+            }
+          ],
+          "route_options": [],
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.workload[0].yandex_compute_instance_group.runtime[\"application\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "allocation_policy": [
+            {
+              "instance_tags_pool": [],
+              "zones": [
+                "ru-central1-a",
+                "ru-central1-b",
+                "ru-central1-d"
+              ]
+            }
+          ],
+          "application_load_balancer": [
+            {
+              "ignore_health_checks": false,
+              "max_opening_traffic_duration": null,
+              "target_group_description": null,
+              "target_group_labels": null,
+              "target_group_name": "staging-marketops-application"
+            }
+          ],
+          "deletion_protection": false,
+          "deploy_policy": [
+            {
+              "max_creating": 1,
+              "max_deleting": 1,
+              "max_expansion": 1,
+              "max_unavailable": 0,
+              "startup_duration": 300
+            }
+          ],
+          "description": null,
+          "folder_id": "ffffffffffffffffffff",
+          "health_check": [
+            {
+              "healthy_threshold": 2,
+              "http_options": [
+                {
+                  "path": "/actuator/health/readiness",
+                  "port": 8080
+                }
+              ],
+              "interval": 15,
+              "tcp_options": [],
+              "timeout": 5,
+              "unhealthy_threshold": 3
+            }
+          ],
+          "instance_template": [
+            {
+              "boot_disk": [
+                {
+                  "disk_id": null,
+                  "initialize_params": [
+                    {
+                      "description": null,
+                      "image_id": "hhhhhhhhhhhhhhhhhhhh",
+                      "size": 30,
+                      "type": "network-ssd"
+                    }
+                  ],
+                  "mode": "READ_WRITE",
+                  "name": null
+                }
+              ],
+              "description": null,
+              "filesystem": [],
+              "hostname": null,
+              "labels": {
+                "environment": "staging",
+                "managed_by": "terraform",
+                "product": "marketops",
+                "role": "application"
+              },
+              "metadata": {
+                "user-data": "#cloud-config\n{\"runcmd\":[[\"systemctl\",\"daemon-reload\"],[\"systemctl\",\"enable\",\"--now\",\"marketops.service\"],[\"systemctl\",\"enable\",\"--now\",\"marketops-telemetry.timer\"]],\"write_files\":[{\"content\":\"IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJWTS1vbmx5IGJvb3RzdHJhcC4gVGVycmFmb3JtIGNvbnRhaW5zIHJlZmVyZW5jZSBtZXRhZGF0YSwgbmV2ZXIgc2VjcmV0IHBheWxvYWRzLgoKTmV0d29yayBkZXN0aW5hdGlvbnMgYXJlIGNvbnN0YW50czsgcmVkaXJlY3RzIGFuZCBlbnZpcm9ubWVudCBwcm94aWVzIGFyZSBkaXNhYmxlZC4KVGVzdHMgaW5qZWN0IHRyYW5zcG9ydC9wcm9jZXNzIGJvdW5kYXJpZXMgYW5kIG5ldmVyIGNvbnRhY3QgYSByZWFsIGFjY291bnQuCiIiIgppbXBvcnQganNvbgppbXBvcnQgaGFzaGxpYgppbXBvcnQgb3MKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmltcG9ydCByZQppbXBvcnQgc3VicHJvY2VzcwppbXBvcnQgc3lzCmltcG9ydCB0aW1lCmltcG9ydCB1cmxsaWIucGFyc2UKaW1wb3J0IHVybGxpYi5yZXF1ZXN0CgpNQVhfUkVTUE9OU0UgPSAxMDI0ICogMTAyNApJTUFHRSA9IHJlLmNvbXBpbGUociJjclsuXXlhbmRleC9bYS16MC05L18uLV0rQHNoYTI1NjpbMC05YS1mXXs2NH1cWiIpCklERU5USUZJRVIgPSByZS5jb21waWxlKHIiW2EtejAtOV17MjB9XFoiKQpDT05GSUdfRklMRVMgPSBmcm96ZW5zZXQoeyJjb25maWcvc3ByaW5nLmRhdGFzb3VyY2UucGFzc3dvcmQiLCAiY29uZmlnL21hcmtldG9wcy5vYmplY3Qtc3RvcmFnZS5hY2Nlc3Mta2V5LWlkIn0pClJFUVVJUkVEX0ZJTEVTID0gQ09ORklHX0ZJTEVTIHwgeyJjcmVkZW50aWFscy9vYmplY3Qtc3RvcmFnZS9zaWduaW5nLWtleSJ9CkVOVklST05NRU5UX0tFWVMgPSBmcm96ZW5zZXQoewogICAgIlNQUklOR19QUk9GSUxFU19BQ1RJVkUiLCAiU1BSSU5HX0RBVEFTT1VSQ0VfVVJMIiwgIlNQUklOR19GTFlXQVlfRU5BQkxFRCIsICJTUFJJTkdfQ09ORklHX0lNUE9SVCIsCiAgICAiTUFSS0VUT1BTX1NFQ1JFVF9NT1VOVF9ESVJFQ1RPUlkiLCAiTUFSS0VUT1BTX0VOVklST05NRU5UIiwgIk1BUktFVE9QU19PQkpFQ1RfU1RPUkFHRV9FTkRQT0lOVCIsCiAgICAiTUFSS0VUT1BTX09CSkVDVF9TVE9SQUdFX1JFR0lPTiIsICJNQVJLRVRPUFNfT0JKRUNUX1NUT1JBR0VfQlVDS0VUIiwgIk1BUktFVE9QU19PQkpFQ1RfU1RPUkFHRV9DUkVERU5USUFMX1JFRkVSRU5DRSIsCiAgICAiTUFSS0VUT1BTX09JRENfSVNTVUVSX1VSSSIsICJNQVJLRVRPUFNfT0lEQ19KV0tfU0VUX1VSSSIsICJNQVJLRVRPUFNfT0lEQ19BVURJRU5DRSIsCiAgICAiTUFSS0VUT1BTX0FDUVVJU0lUSU9OX1NDSEVEVUxFUl9FTkFCTEVEIiwgIk1BUktFVE9QU19QUklDRV9XUklURV9XT1JLRVJfRU5BQkxFRCIKfSkKUk9MRV9BU1NFUlRJT05TID0gZnJvemVuc2V0KHsic2VydmVyTWFqb3JJczE3IiwgImN1cnJlbnRVc2VySXNNaWdyYXRpb24iLCAicnVudGltZVJvbGVzQXJlTm9uUHJpdmlsZWdlZCIsCiAgICAiYXBwbGljYXRpb25DYW5ub3RDcmVhdGVEYXRhYmFzZU9iamVjdHMiLCAiYXBwbGljYXRpb25Jc05vdE1pZ3JhdGlvbk1lbWJlciIsICJtYW5hZ2VkRXh0ZW5zaW9uc05vdE93bmVkQnlSdW50aW1lUm9sZXMiLAogICAgInByb3ZpZGVyU3FsRXh0ZW5zaW9uRGRsRGVuaWVkIiwgImV4dGVuc2lvbk1lbWJlcnNJblNlY3VyZVNjaGVtYSIsICJydW50aW1lQ2Fubm90QXNzdW1lRXh0ZW5zaW9uT3duZXIifSkKCmRlZiB1bmlxdWVfb2JqZWN0KHBhaXJzKToKICAgIHJlc3VsdCA9IHt9CiAgICBmb3Iga2V5LCB2YWx1ZSBpbiBwYWlyczoKICAgICAgICBpZiBrZXkgaW4gcmVzdWx0OgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJkdXBsaWNhdGUgSlNPTiBmaWVsZCIpCiAgICAgICAgcmVzdWx0W2tleV0gPSB2YWx1ZQogICAgcmV0dXJuIHJlc3VsdAoKZGVmIHZhbGlkYXRlX21pZ3JhdGlvbihtYW5pZmVzdCk6CiAgICBlbnZlbG9wZSA9IG1hbmlmZXN0WyJtaWdyYXRpb25fZXZpZGVuY2UiXQogICAgaWYgbm90IGlzaW5zdGFuY2UoZW52ZWxvcGUsIGRpY3QpIG9yIHNldChlbnZlbG9wZSkgIT0geyJkb2N1bWVudCIsICJzaGEyNTYifToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJjbG9zZWQgbWlncmF0aW9uIGV2aWRlbmNlIGVudmVsb3BlIHJlcXVpcmVkIikKICAgIGRvY3VtZW50ID0gZW52ZWxvcGVbImRvY3VtZW50Il0KICAgIGlmIG5vdCBpc2luc3RhbmNlKGRvY3VtZW50LCBzdHIpIG9yIGxlbihkb2N1bWVudC5lbmNvZGUoInV0Zi04IikpID4gMTMxMDcyOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImJvdW5kZWQgbWlncmF0aW9uIGV2aWRlbmNlIHJlcXVpcmVkIikKICAgIGlmIGhhc2hsaWIuc2hhMjU2KGRvY3VtZW50LmVuY29kZSgidXRmLTgiKSkuaGV4ZGlnZXN0KCkgIT0gZW52ZWxvcGVbInNoYTI1NiJdOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoIm1pZ3JhdGlvbiBldmlkZW5jZSBkaWdlc3QgbWlzbWF0Y2giKQogICAgZXZpZGVuY2UgPSBqc29uLmxvYWRzKGRvY3VtZW50LCBvYmplY3RfcGFpcnNfaG9vaz11bmlxdWVfb2JqZWN0KQogICAgZXhwZWN0ZWQgPSB7InNjaGVtYVZlcnNpb24iOiAiMi4wIiwgImFydGlmYWN0S2luZCI6ICJNSUdSQVRJT05fQVRURU1QVCIsICJzZXJ2aWNlUHJvZmlsZSI6ICJZQU5ERVhfTUFOQUdFRCIsCiAgICAgICAgICAgICAgICAibWlncmF0aW9uUmVzdWx0IjogIlNVQ0NFU1MiLCAiZmFpbHVyZVN0YWdlIjogIk5PTkUiLCAiYXR0ZXN0YXRpb25TdGF0ZSI6ICJBVFRFU1RFRCIsCiAgICAgICAgICAgICAgICAiZXhwZWN0ZWRQb3N0Z3Jlc3FsTWFqb3IiOiAxNywgInBvc3RncmVzcWxNYWpvciI6IDE3LAogICAgICAgICAgICAgICAgImNhbm9uaWNhbFYwMDAyUGF0aCI6ICJkYi9taWdyYXRpb24vVjAwMDJfX2VuYWJsZV9idHJlZV9naXN0X2V4dGVuc2lvbi5zcWwiLAogICAgICAgICAgICAgICAgImNhbm9uaWNhbFYwMDAyR2l0QmxvYiI6ICJiZDNlNTVlYTczN2ZmZGE5ZDUxOWE5MzFlZWExZjNjYzU4YjhjNTIyIiwKICAgICAgICAgICAgICAgICJjYW5vbmljYWxWMDAwMlNoYTI1NiI6ICI0MzhmNjdjY2YzYzJmNjQwYTFlN2E0ZTMyNWUyNGZiNjBkMWViNGYzNjNhYjU0NWUxZTY5YmFiYmEyMDJkYjE2IiwKICAgICAgICAgICAgICAgICJjYW5vbmljYWxWMDAwMkZseXdheUNoZWNrc3VtIjogMTI5MTMyNjIzNiwgInJlc29sdmVkVmVyc2lvbiI6ICIwMDAyIiwKICAgICAgICAgICAgICAgICJyZXNvbHZlZERlc2NyaXB0aW9uIjogImVuYWJsZSBidHJlZSBnaXN0IGV4dGVuc2lvbiIsCiAgICAgICAgICAgICAgICAicHJvdmlkZXJEb2N1bWVudFNoYTI1NiI6ICIzNGUxZjkyYzg3ZjIyZWIxMjU2ZjQ5YjJhMzFjNDk5MTFjZDYyYmI3YzE4Y2U0Zjc5NjBlNDNmNTg1NTg0Yzk2IiwKICAgICAgICAgICAgICAgICJleGVjdXRvck1vZGUiOiAiRVhURVJOQUxMWV9TQVRJU0ZJRURfUFJPVklERVJfRVhURU5TSU9OIiwKICAgICAgICAgICAgICAgICJleHRlbnNpb25zIjogeyJidHJlZV9naXN0IjogIjEuNyIsICJwZ2NyeXB0byI6ICIxLjMifSwKICAgICAgICAgICAgICAgICJlbnZpcm9ubWVudFJlZmVyZW5jZSI6IG1hbmlmZXN0WyJlbnZpcm9ubWVudCJdWyJNQVJLRVRPUFNfRU5WSVJPTk1FTlQiXX0KICAgIGlmIG5vdCBpc2luc3RhbmNlKGV2aWRlbmNlLCBkaWN0KSBvciBhbnkoZXZpZGVuY2UuZ2V0KGspICE9IHYgZm9yIGssIHYgaW4gZXhwZWN0ZWQuaXRlbXMoKSk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiY29tcGxldGVkIG1hbmFnZWQgbWlncmF0aW9uIGV2aWRlbmNlIHJlcXVpcmVkIikKICAgIGlmIGV2aWRlbmNlLmdldCgicHJvdmlkZXJDb250cm9sUGxhbmVBcHBsaWVkIikgaXMgbm90IFRydWU6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigicmVhbCBhcHBsaWVkLXJlc291cmNlIGV2aWRlbmNlIHJlcXVpcmVkIGZvciBydW50aW1lIikKICAgIGZhY3RzID0gZXZpZGVuY2UuZ2V0KCJleHRlbnNpb25GYWN0cyIsIHt9KQogICAgaWYgc2V0KGZhY3RzKSAhPSB7ImJ0cmVlX2dpc3QiLCAicGdjcnlwdG8ifSBvciBhbnkoCiAgICAgICAgICAgIGZhY3RzW25hbWVdLmdldCgic2NoZW1hIikgIT0gInB1YmxpYyIgb3IgZmFjdHNbbmFtZV0uZ2V0KCJ2ZXJzaW9uIikgIT0gdmVyc2lvbgogICAgICAgICAgICBvciBmYWN0c1tuYW1lXS5nZXQoIm93bmVyIikgaW4ge05vbmUsICJtYXJrZXRvcHNfYXBwIiwgIm1hcmtldG9wc19taWdyYXRpb24ifQogICAgICAgICAgICBmb3IgbmFtZSwgdmVyc2lvbiBpbiBleHBlY3RlZFsiZXh0ZW5zaW9ucyJdLml0ZW1zKCkpOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoIm1pZ3JhdGlvbiBleHRlbnNpb24gZmFjdHMgaW5jb25zaXN0ZW50IikKICAgIGFzc2VydGlvbnMgPSBldmlkZW5jZS5nZXQoInJvbGVBc3NlcnRpb25zIikKICAgIGlmIG5vdCBpc2luc3RhbmNlKGFzc2VydGlvbnMsIGRpY3QpIG9yIHNldChhc3NlcnRpb25zKSAhPSBST0xFX0FTU0VSVElPTlMgb3IgYW55KHYgaXMgbm90IFRydWUgZm9yIHYgaW4gYXNzZXJ0aW9ucy52YWx1ZXMoKSk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigibWlncmF0aW9uIHByaXZpbGVnZSBhc3NlcnRpb25zIGluY29tcGxldGUiKQogICAgZm9yIGtleSBpbiBbImFydGlmYWN0U2hhMjU2IiwgImRhdGFiYXNlVXJsU2hhMjU2IiwgImJvb3RzdHJhcEV2aWRlbmNlU2hhMjU2IiwgInByb3ZpZGVyRXZpZGVuY2VTaGEyNTYiLAogICAgICAgICAgICAgICAgInByb3ZpZGVyRG9jdW1lbnRTaGEyNTYiLCAic3RhcnRlZEV2aWRlbmNlU2hhMjU2IiwgImF0dGVzdGVkRXZpZGVuY2VTaGEyNTYiXToKICAgICAgICBpZiBub3QgaXNpbnN0YW5jZShldmlkZW5jZS5nZXQoa2V5KSwgc3RyKSBvciBub3QgcmUuZnVsbG1hdGNoKHIiWzAtOWEtZl17NjR9IiwgZXZpZGVuY2Vba2V5XSk6CiAgICAgICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoIm1pZ3JhdGlvbiBjdXN0b2R5IGlkZW50aXR5IG1pc3NpbmciKQogICAgaWYgZXZpZGVuY2VbImRhdGFiYXNlVXJsU2hhMjU2Il0gIT0gaGFzaGxpYi5zaGEyNTYobWFuaWZlc3RbImVudmlyb25tZW50Il1bIlNQUklOR19EQVRBU09VUkNFX1VSTCJdLmVuY29kZSgidXRmLTgiKSkuaGV4ZGlnZXN0KCk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigibWlncmF0aW9uIGV2aWRlbmNlIGJlbG9uZ3MgdG8gYSBkaWZmZXJlbnQgZGF0YWJhc2UiKQogICAgZm9yIGtleSBpbiBbInJlcG9zaXRvcnlDb21taXQiLCAicmVwb3NpdG9yeVRyZWUiXToKICAgICAgICBpZiBub3QgaXNpbnN0YW5jZShldmlkZW5jZS5nZXQoa2V5KSwgc3RyKSBvciBub3QgcmUuZnVsbG1hdGNoKHIiKD86WzAtOWEtZl17NDB9fFswLTlhLWZdezY0fSkiLCBldmlkZW5jZVtrZXldKToKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigibWlncmF0aW9uIHJlbGVhc2UgaWRlbnRpdHkgbWlzc2luZyIpCiAgICBhZnRlciA9IGV2aWRlbmNlLmdldCgiZmx5d2F5SGlzdG9yeUFmdGVyIiwge30pCiAgICBtaWdyYXRpb25zID0gYWZ0ZXIuZ2V0KCJtaWdyYXRpb25zIiwgW10pCiAgICBpZiBhZnRlci5nZXQoInN0YXRlIikgIT0gIlBSRVNFTlQiIG9yIGFmdGVyLmdldCgidjAwMDIiKSAhPSAiQ0FOT05JQ0FMIiBvciBub3QgbWlncmF0aW9ucyBcCiAgICAgICAgICAgIG9yIG1pZ3JhdGlvbnNbLTFdLmdldCgidmVyc2lvbiIpICE9IGV2aWRlbmNlLmdldCgic2NoZW1hVmVyc2lvbkFmdGVyIikgXAogICAgICAgICAgICBvciBhbnkocm93LmdldCgic3VjY2VzcyIpIGlzIG5vdCBUcnVlIGZvciByb3cgaW4gbWlncmF0aW9ucyk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigibWlncmF0aW9uIGhpc3RvcnkgaXMgbm90IGNvbXBsZXRlIikKICAgIHJldHVybiBldmlkZW5jZQoKY2xhc3MgTm9SZWRpcmVjdCh1cmxsaWIucmVxdWVzdC5IVFRQUmVkaXJlY3RIYW5kbGVyKToKICAgIGRlZiByZWRpcmVjdF9yZXF1ZXN0KHNlbGYsIHJlcSwgZnAsIGNvZGUsIG1zZywgaGVhZGVycywgbmV3dXJsKToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJib290c3RyYXAgcmVkaXJlY3RzIGFyZSBmb3JiaWRkZW4iKQoKZGVmIHJlYWRfanNvbih1cmwsIGhlYWRlcnMpOgogICAgb3BlbmVyID0gdXJsbGliLnJlcXVlc3QuYnVpbGRfb3BlbmVyKE5vUmVkaXJlY3QoKSwgdXJsbGliLnJlcXVlc3QuUHJveHlIYW5kbGVyKHt9KSkKICAgIHJlcXVlc3QgPSB1cmxsaWIucmVxdWVzdC5SZXF1ZXN0KHVybCwgaGVhZGVycz1oZWFkZXJzKQogICAgd2l0aCBvcGVuZXIub3BlbihyZXF1ZXN0LCB0aW1lb3V0PTE1KSBhcyByZXNwb25zZToKICAgICAgICBwYXlsb2FkID0gcmVzcG9uc2UucmVhZChNQVhfUkVTUE9OU0UgKyAxKQogICAgaWYgbGVuKHBheWxvYWQpID4gTUFYX1JFU1BPTlNFOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImJvb3RzdHJhcCByZXNwb25zZSBleGNlZWRzIGJvdW5kIikKICAgIHJldHVybiBqc29uLmxvYWRzKHBheWxvYWQpCgpkZWYgdmFsaWRhdGUobWFuaWZlc3QpOgogICAgaWYgc2V0KG1hbmlmZXN0KSAhPSB7InJvbGUiLCAiYmFja2VuZF9pbWFnZSIsICJjb25zb2xlX2ltYWdlIiwgImVudmlyb25tZW50IiwgInNlY3JldHMiLCAibWlncmF0aW9uX2V2aWRlbmNlIn06CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiY2xvc2VkIHJ1bnRpbWUgbWFuaWZlc3QgcmVxdWlyZWQiKQogICAgaWYgbWFuaWZlc3RbInJvbGUiXSBub3QgaW4geyJhcHBsaWNhdGlvbiIsICJ3b3JrZXIifToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ1bmtub3duIHJ1bnRpbWUgcm9sZSIpCiAgICBmb3Iga2V5IGluIFsiYmFja2VuZF9pbWFnZSIsICJjb25zb2xlX2ltYWdlIl06CiAgICAgICAgaWYgbm90IGlzaW5zdGFuY2UobWFuaWZlc3Rba2V5XSwgc3RyKSBvciBub3QgSU1BR0UuZnVsbG1hdGNoKG1hbmlmZXN0W2tleV0pOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJkaWdlc3QtcGlubmVkIFlhbmRleCBpbWFnZSByZXF1aXJlZCIpCiAgICBlbnZpcm9ubWVudCA9IG1hbmlmZXN0WyJlbnZpcm9ubWVudCJdCiAgICBpZiBzZXQoZW52aXJvbm1lbnQpICE9IEVOVklST05NRU5UX0tFWVMgb3IgYW55KG5vdCBpc2luc3RhbmNlKHYsIHN0cikgb3IgIlxuIiBpbiB2IG9yICJcciIgaW4gdiBmb3IgdiBpbiBlbnZpcm9ubWVudC52YWx1ZXMoKSk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiY2xvc2VkIG5vbi1zZWNyZXQgZW52aXJvbm1lbnQgcmVxdWlyZWQiKQogICAgZm9yIGtleSBpbiBbIk1BUktFVE9QU19BQ1FVSVNJVElPTl9TQ0hFRFVMRVJfRU5BQkxFRCIsICJNQVJLRVRPUFNfUFJJQ0VfV1JJVEVfV09SS0VSX0VOQUJMRUQiLCAiU1BSSU5HX0ZMWVdBWV9FTkFCTEVEIl06CiAgICAgICAgaWYgZW52aXJvbm1lbnRba2V5XSAhPSAiZmFsc2UiOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJib290c3RyYXAgZG9lcyBub3QgYXV0aG9yaXplIGV4ZWN1dGlvbiBvciBtaWdyYXRpb25zIikKICAgIGlmIGVudmlyb25tZW50WyJTUFJJTkdfUFJPRklMRVNfQUNUSVZFIl0gIT0gInByb2R1Y3Rpb24iIG9yIGVudmlyb25tZW50WyJTUFJJTkdfQ09ORklHX0lNUE9SVCJdICE9ICJjb25maWd0cmVlOi9ydW4vbWFya2V0b3BzL2NvbmZpZy8iOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInByb2R1Y3Rpb24gY29uZmlndXJhdGlvbiBib3VuZGFyeSByZXF1aXJlZCIpCiAgICBpZiBlbnZpcm9ubWVudFsiTUFSS0VUT1BTX1NFQ1JFVF9NT1VOVF9ESVJFQ1RPUlkiXSAhPSAiL3J1bi9tYXJrZXRvcHMvY3JlZGVudGlhbHMiOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImVwaGVtZXJhbCBjcmVkZW50aWFsIG1vdW50IHJlcXVpcmVkIikKICAgIGlmIG5vdCByZS5mdWxsbWF0Y2gociJqZGJjOnBvc3RncmVzcWw6Ly9jLVthLXowLTldezIwfVsuXXJ3Wy5dbWRiWy5deWFuZGV4Y2xvdWRbLl1uZXQ6NjQzMi9tYXJrZXRvcHNbP10iCiAgICAgICAgICAgICAgICAgICAgICAgIHIic3NsbW9kZT12ZXJpZnktZnVsbCZzc2xyb290Y2VydD0vb3B0L21hcmtldG9wcy9jZXJ0cy95YW5kZXgtcm9vdFsuXWNydCZ0YXJnZXRTZXJ2ZXJUeXBlPXByaW1hcnkiLAogICAgICAgICAgICAgICAgICAgICAgICBlbnZpcm9ubWVudFsiU1BSSU5HX0RBVEFTT1VSQ0VfVVJMIl0pOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInZlcmlmaWVkIHByaXZhdGUgZGF0YWJhc2UgZGVzdGluYXRpb24gcmVxdWlyZWQiKQogICAgdmFsaWRhdGVfbWlncmF0aW9uKG1hbmlmZXN0KQogICAgaWYgbm90IFJFUVVJUkVEX0ZJTEVTLmlzc3Vic2V0KG1hbmlmZXN0WyJzZWNyZXRzIl0pOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInJlcXVpcmVkIHNlY3JldCByZWZlcmVuY2VzIG1pc3NpbmciKQogICAgZm9yIGRlc3RpbmF0aW9uLCBiaW5kaW5nIGluIG1hbmlmZXN0WyJzZWNyZXRzIl0uaXRlbXMoKToKICAgICAgICBpZiBkZXN0aW5hdGlvbiBub3QgaW4gQ09ORklHX0ZJTEVTIGFuZCBub3QgcmUuZnVsbG1hdGNoKHIiY3JlZGVudGlhbHMvW2EtejAtOV1bYS16MC05LV17MCw2Mn0oPzovW2EtejAtOV1bYS16MC05Ll8tXXswLDYyfSl7MSw0fSIsIGRlc3RpbmF0aW9uKToKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiaW52YWxpZCBzZWNyZXQgZGVzdGluYXRpb24iKQogICAgICAgIGlmIGFueShwYXJ0IGluIHsiLiIsICIuLiJ9IGZvciBwYXJ0IGluIGRlc3RpbmF0aW9uLnNwbGl0KCIvIikpOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJpbnZhbGlkIHNlY3JldCBkZXN0aW5hdGlvbiIpCiAgICAgICAgaWYgc2V0KGJpbmRpbmcpICE9IHsic2VjcmV0X2lkIiwgInZlcnNpb25faWQiLCAia2V5In0gb3IgYW55KG5vdCBJREVOVElGSUVSLmZ1bGxtYXRjaChiaW5kaW5nW25dKSBmb3IgbiBpbiBbInNlY3JldF9pZCIsICJ2ZXJzaW9uX2lkIl0pOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJwaW5uZWQgTG9ja2JveCByZWZlcmVuY2UgcmVxdWlyZWQiKQogICAgICAgIGlmIG5vdCBpc2luc3RhbmNlKGJpbmRpbmdbImtleSJdLCBzdHIpIG9yIG5vdCByZS5mdWxsbWF0Y2gociJbQS1aYS16MC05Ll8tXXsxLDY0fSIsIGJpbmRpbmdbImtleSJdKToKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiaW52YWxpZCBMb2NrYm94IGVudHJ5IGtleSIpCgpkZWYgZGVsaXZlcihtYW5pZmVzdCwgcm9vdCwgdHJhbnNwb3J0PXJlYWRfanNvbik6CiAgICB2YWxpZGF0ZShtYW5pZmVzdCkKICAgIHRva2VuID0gdHJhbnNwb3J0KCJodHRwOi8vMTY5LjI1NC4xNjkuMjU0L2NvbXB1dGVNZXRhZGF0YS92MS9pbnN0YW5jZS9zZXJ2aWNlLWFjY291bnRzL2RlZmF1bHQvdG9rZW4iLCB7Ik1ldGFkYXRhLUZsYXZvciI6ICJHb29nbGUifSkuZ2V0KCJhY2Nlc3NfdG9rZW4iKQogICAgaWYgbm90IGlzaW5zdGFuY2UodG9rZW4sIHN0cikgb3Igbm90IHRva2VuIG9yICJcbiIgaW4gdG9rZW4gb3IgIlxyIiBpbiB0b2tlbjoKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJpbnN0YW5jZSBpZGVudGl0eSB1bmF2YWlsYWJsZSIpCiAgICBwYXlsb2FkcyA9IHt9CiAgICBzdGFnZWQgPSBbXQogICAgZm9yIGRlc3RpbmF0aW9uLCBiaW5kaW5nIGluIG1hbmlmZXN0WyJzZWNyZXRzIl0uaXRlbXMoKToKICAgICAgICBpZGVudGl0eSA9IChiaW5kaW5nWyJzZWNyZXRfaWQiXSwgYmluZGluZ1sidmVyc2lvbl9pZCJdKQogICAgICAgIGlmIGlkZW50aXR5IG5vdCBpbiBwYXlsb2FkczoKICAgICAgICAgICAgdXJsID0gImh0dHBzOi8vcGF5bG9hZC5sb2NrYm94LmFwaS5jbG91ZC55YW5kZXgubmV0L2xvY2tib3gvdjEvc2VjcmV0cy8iICsgaWRlbnRpdHlbMF0gKyAiL3BheWxvYWQ/dmVyc2lvbklkPSIgKyBpZGVudGl0eVsxXQogICAgICAgICAgICByZXN1bHQgPSB0cmFuc3BvcnQodXJsLCB7IkF1dGhvcml6YXRpb24iOiAiQmVhcmVyICIgKyB0b2tlbn0pCiAgICAgICAgICAgIGlmIHJlc3VsdC5nZXQoInZlcnNpb25JZCIpICE9IGlkZW50aXR5WzFdIG9yIG5vdCBpc2luc3RhbmNlKHJlc3VsdC5nZXQoImVudHJpZXMiKSwgbGlzdCk6CiAgICAgICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJMb2NrYm94IHZlcnNpb24gbWlzbWF0Y2giKQogICAgICAgICAgICBlbnRyaWVzID0gcmVzdWx0WyJlbnRyaWVzIl0KICAgICAgICAgICAgaWYgbGVuKHtlbnRyeS5nZXQoImtleSIpIGZvciBlbnRyeSBpbiBlbnRyaWVzfSkgIT0gbGVuKGVudHJpZXMpOgogICAgICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiZHVwbGljYXRlIExvY2tib3ggZW50cnkiKQogICAgICAgICAgICBwYXlsb2Fkc1tpZGVudGl0eV0gPSB7ZW50cnlbImtleSJdOiBlbnRyeS5nZXQoInRleHRWYWx1ZSIpIGZvciBlbnRyeSBpbiBlbnRyaWVzfQogICAgICAgIHZhbHVlID0gcGF5bG9hZHNbaWRlbnRpdHldLmdldChiaW5kaW5nWyJrZXkiXSkKICAgICAgICBpZiBub3QgaXNpbnN0YW5jZSh2YWx1ZSwgc3RyKSBvciBub3QgdmFsdWUgb3IgbGVuKHZhbHVlLmVuY29kZSgidXRmLTgiKSkgPiAxNjM4NDoKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigibWlzc2luZyBvciBvdmVyc2l6ZWQgc2VjcmV0IHZhbHVlIikKICAgICAgICBzdGFnZWQuYXBwZW5kKChkZXN0aW5hdGlvbiwgdmFsdWUpKQogICAgIyBDb21wbGV0ZSBhbmQgdmFsaWRhdGUgYWxsIHBheWxvYWRzIGJlZm9yZSBjaGFuZ2luZyBhbnkgbW91bnRlZCBmaWxlLgogICAgZm9yIGRlc3RpbmF0aW9uLCB2YWx1ZSBpbiBzdGFnZWQ6CiAgICAgICAgdGFyZ2V0ID0gcm9vdCAvIGRlc3RpbmF0aW9uCiAgICAgICAgdGFyZ2V0LnBhcmVudC5ta2RpcihwYXJlbnRzPVRydWUsIGV4aXN0X29rPVRydWUsIG1vZGU9MG83MDApCiAgICAgICAgaWYgdGFyZ2V0LmlzX3N5bWxpbmsoKSBvciBhbnkocGFyZW50LmlzX3N5bWxpbmsoKSBmb3IgcGFyZW50IGluIHRhcmdldC5wYXJlbnRzKToKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigic2VjcmV0IG1vdW50IGNvbnRhaW5zIGEgc3ltbGluayIpCiAgICAgICAgZGVzY3JpcHRvciA9IG9zLm9wZW4odGFyZ2V0LCBvcy5PX1dST05MWSB8IG9zLk9fQ1JFQVQgfCBvcy5PX1RSVU5DIHwgb3MuT19OT0ZPTExPVywgMG82MDApCiAgICAgICAgd2l0aCBvcy5mZG9wZW4oZGVzY3JpcHRvciwgIndiIikgYXMgb3V0cHV0OgogICAgICAgICAgICBvdXRwdXQud3JpdGUodmFsdWUuZW5jb2RlKCJ1dGYtOCIpKQogICAgcmV0dXJuIHRva2VuCgpkZWYgcnVuKGNvbW1hbmQsICoqa3dhcmdzKToKICAgIHJldHVybiBzdWJwcm9jZXNzLnJ1bihjb21tYW5kLCBjaGVjaz1UcnVlLCBzdGRvdXQ9a3dhcmdzLnBvcCgic3Rkb3V0Iiwgc3VicHJvY2Vzcy5ERVZOVUxMKSwgc3RkZXJyPXN1YnByb2Nlc3MuREVWTlVMTCwgdGltZW91dD0xMjAsICoqa3dhcmdzKQoKZGVmIHN0YXJ0KG1hbmlmZXN0LCByb290LCB0b2tlbiwgZXhlY3V0ZT1ydW4pOgogICAgdmFsaWRhdGUobWFuaWZlc3QpCiAgICBleGVjdXRlKFsiZG9ja2VyIiwgImxvZ2luIiwgIi0tdXNlcm5hbWUiLCAiaWFtIiwgIi0tcGFzc3dvcmQtc3RkaW4iLCAiY3IueWFuZGV4Il0sIGlucHV0PXRva2VuLmVuY29kZSgpKQogICAgdHJ5OgogICAgICAgIGV4ZWN1dGUoWyJkb2NrZXIiLCAicHVsbCIsIG1hbmlmZXN0WyJiYWNrZW5kX2ltYWdlIl1dKQogICAgICAgIGlmIG1hbmlmZXN0WyJyb2xlIl0gPT0gImFwcGxpY2F0aW9uIjoKICAgICAgICAgICAgZXhlY3V0ZShbImRvY2tlciIsICJwdWxsIiwgbWFuaWZlc3RbImNvbnNvbGVfaW1hZ2UiXV0pCiAgICBmaW5hbGx5OgogICAgICAgICMgRG9ja2VyJ3MgdG9rZW4gY2FjaGUgbGl2ZXMgaW4gdG1wZnMgYW5kIGlzIHJlbW92ZWQgYmVmb3JlIHN0YXJ0aW5nIHdvcmtsb2Fkcy4KICAgICAgICBjb25maWcgPSByb290IC8gImRvY2tlci1jb25maWciIC8gImNvbmZpZy5qc29uIgogICAgICAgIGNvbmZpZy51bmxpbmsobWlzc2luZ19vaz1UcnVlKQogICAgIyBUaGUgaW1hZ2UgYnVpbGQgdmVyaWZpZXMgdGhpcyBsYWJlbCBhZ2FpbnN0IHRoZSBhY3R1YWwgSkFSIGJ5dGVzLiBBIHJ1bnRpbWUKICAgICMgaW1hZ2UgZnJvbSBhIGRpZmZlcmVudCBhcnRpZmFjdCBtdXN0IG5vdCBzdGFydCBhZ2FpbnN0IHRoaXMgbWlncmF0aW9uIHByb29mLgogICAgbWV0YWRhdGEgPSBleGVjdXRlKFsiZG9ja2VyIiwgImltYWdlIiwgImluc3BlY3QiLCAiLS1mb3JtYXQiLAogICAgICAgICAgICAgICAgICAgICAgICAne3sgaW5kZXggLkNvbmZpZy5MYWJlbHMgIm9yZy5tYXJrZXRvcHMuYXJ0aWZhY3Qtc2hhMjU2IiB9fScsIG1hbmlmZXN0WyJiYWNrZW5kX2ltYWdlIl1dLAogICAgICAgICAgICAgICAgICAgICAgIHN0ZG91dD1zdWJwcm9jZXNzLlBJUEUpLnN0ZG91dAogICAgaWYgbm90IGlzaW5zdGFuY2UobWV0YWRhdGEsIGJ5dGVzKSBvciBsZW4obWV0YWRhdGEpID4gMTI4IFwKICAgICAgICAgICAgb3IgbWV0YWRhdGEuc3RyaXAoKS5kZWNvZGUoImFzY2lpIikgIT0gdmFsaWRhdGVfbWlncmF0aW9uKG1hbmlmZXN0KVsiYXJ0aWZhY3RTaGEyNTYiXToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJydW50aW1lIGltYWdlIGRpZmZlcnMgZnJvbSB0aGUgbWlncmF0ZWQgYXJ0aWZhY3QiKQogICAgZm9yIHBhdGggaW4gW3Jvb3RdICsgbGlzdChyb290LnJnbG9iKCIqIikpOgogICAgICAgIGlmIHBhdGgubmFtZSAhPSAiZG9ja2VyLWNvbmZpZyI6CiAgICAgICAgICAgIG9zLmNob3duKHBhdGgsIDEwMDAxLCAxMDAwMSkKICAgIGJhc2UgPSBbImRvY2tlciIsICJydW4iLCAiLS1kZXRhY2giLCAiLS1yZXN0YXJ0IiwgIm5vIiwgIi0tbGFiZWwiLCAib3JnLm1hcmtldG9wcy5tYW5hZ2VkPXRydWUiLCAiLS1uZXR3b3JrIiwgImhvc3QiLCAiLS1yZWFkLW9ubHkiLAogICAgICAgICAgICAiLS1jYXAtZHJvcCIsICJBTEwiLCAiLS1zZWN1cml0eS1vcHQiLCAibm8tbmV3LXByaXZpbGVnZXMiLCAiLS11c2VyIiwgIjEwMDAxOjEwMDAxIiwgIi0tdG1wZnMiLCAiL3RtcDpydyxub2V4ZWMsbm9zdWlkLHNpemU9MTI4bSJdCiAgICBjb21tYW5kID0gYmFzZSArIFsiLS1uYW1lIiwgIm1hcmtldG9wcy1hcGkiLCAiLS1tb3VudCIsICJ0eXBlPWJpbmQsc3JjPSIrc3RyKHJvb3QpKyIsZHN0PS9ydW4vbWFya2V0b3BzLHJlYWRvbmx5Il0KICAgIGZvciBrZXksIHZhbHVlIGluIHNvcnRlZChtYW5pZmVzdFsiZW52aXJvbm1lbnQiXS5pdGVtcygpKToKICAgICAgICBjb21tYW5kICs9IFsiLS1lbnYiLCBrZXkrIj0iK3ZhbHVlXQogICAgZXhlY3V0ZShjb21tYW5kICsgW21hbmlmZXN0WyJiYWNrZW5kX2ltYWdlIl1dKQogICAgaWYgbWFuaWZlc3RbInJvbGUiXSA9PSAiYXBwbGljYXRpb24iOgogICAgICAgIGV4ZWN1dGUoYmFzZSArIFsiLS1uYW1lIiwgIm1hcmtldG9wcy1jb25zb2xlIiwgbWFuaWZlc3RbImNvbnNvbGVfaW1hZ2UiXV0pCgpkZWYgb3duZWRfc3RhdGVzKG1hbmlmZXN0LCBleGVjdXRlPXJ1bik6CiAgICB2YWxpZGF0ZShtYW5pZmVzdCkKICAgIG5hbWVzID0gWyJtYXJrZXRvcHMtYXBpIl0gKyAoWyJtYXJrZXRvcHMtY29uc29sZSJdIGlmIG1hbmlmZXN0WyJyb2xlIl0gPT0gImFwcGxpY2F0aW9uIiBlbHNlIFtdKQogICAgcGF5bG9hZCA9IGV4ZWN1dGUoWyJkb2NrZXIiLCAicHMiLCAiLS1hbGwiLCAiLS1maWx0ZXIiLCAibGFiZWw9b3JnLm1hcmtldG9wcy5tYW5hZ2VkPXRydWUiLAogICAgICAgICAgICAgICAgICAgICAgICItLWZvcm1hdCIsICJ7ey5OYW1lc319fHt7LlN0YXRlfX0iXSwgc3Rkb3V0PXN1YnByb2Nlc3MuUElQRSkuc3Rkb3V0CiAgICBpZiBub3QgaXNpbnN0YW5jZShwYXlsb2FkLCBieXRlcykgb3IgbGVuKHBheWxvYWQpID4gNjU1MzY6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiYm91bmRlZCBvd25lZC1jb250YWluZXIgc3RhdHVzIHJlcXVpcmVkIikKICAgIHN0YXRlcyA9IHt9CiAgICBmb3IgbGluZSBpbiBwYXlsb2FkLmRlY29kZSgiYXNjaWkiKS5zcGxpdGxpbmVzKCk6CiAgICAgICAgbmFtZSwgc3RhdGUgPSBsaW5lLnNwbGl0KCJ8IikKICAgICAgICBpZiBuYW1lIGluIG5hbWVzOgogICAgICAgICAgICBpZiBuYW1lIGluIHN0YXRlcyBvciBzdGF0ZSBub3QgaW4geyJydW5uaW5nIiwgImNyZWF0ZWQiLCAiZXhpdGVkIiwgInBhdXNlZCIsICJkZWFkIiwgInJlc3RhcnRpbmciLCAicmVtb3ZpbmcifToKICAgICAgICAgICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImFtYmlndW91cyBvd25lZC1jb250YWluZXIgc3RhdHVzIikKICAgICAgICAgICAgc3RhdGVzW25hbWVdID0gc3RhdGUKICAgIHJldHVybiBzdGF0ZXMKCmRlZiBzdG9wKG1hbmlmZXN0LCBleGVjdXRlPXJ1bik6CiAgICAjIE9ubHkgY29udGFpbmVycyBjYXJyeWluZyBvdXIgb3duZXJzaGlwIGxhYmVsIGFyZSBlbGlnaWJsZSBmb3IgcmVtb3ZhbC4KICAgICMgTWlzc2luZyBjb250YWluZXJzIGFyZSBub3JtYWwgb24gdGhlIGZpcnN0IGJvb3Q7IG5hbWUgY29sbGlzaW9ucyBhcmUgbm90IGZvcmNlLXJlbW92ZWQuCiAgICBmb3IgbmFtZSwgc3RhdGUgaW4gb3duZWRfc3RhdGVzKG1hbmlmZXN0LCBleGVjdXRlKS5pdGVtcygpOgogICAgICAgIGlmIHN0YXRlIGluIHsicnVubmluZyIsICJwYXVzZWQiLCAicmVzdGFydGluZyJ9OgogICAgICAgICAgICBleGVjdXRlKFsiZG9ja2VyIiwgInN0b3AiLCAiLS10aW1lIiwgIjMwIiwgbmFtZV0pCiAgICAgICAgZXhlY3V0ZShbImRvY2tlciIsICJybSIsIG5hbWVdKQoKZGVmIHN1cGVydmlzZShtYW5pZmVzdCwgZXhlY3V0ZT1ydW4sIHBhdXNlPXRpbWUuc2xlZXApOgogICAgbmFtZXMgPSB7Im1hcmtldG9wcy1hcGkifSB8ICh7Im1hcmtldG9wcy1jb25zb2xlIn0gaWYgbWFuaWZlc3RbInJvbGUiXSA9PSAiYXBwbGljYXRpb24iIGVsc2Ugc2V0KCkpCiAgICB3aGlsZSBUcnVlOgogICAgICAgIGlmIG93bmVkX3N0YXRlcyhtYW5pZmVzdCwgZXhlY3V0ZSkgIT0ge25hbWU6ICJydW5uaW5nIiBmb3IgbmFtZSBpbiBuYW1lc306CiAgICAgICAgICAgIHJhaXNlIFJ1bnRpbWVFcnJvcigib3duZWQgcnVudGltZSBjb250YWluZXIgZXhpdGVkIikKICAgICAgICBwYXVzZSg1KQoKZGVmIG1haW4oKToKICAgIG1hbmlmZXN0ID0ganNvbi5sb2FkcyhQYXRoKHN5cy5hcmd2WzFdKS5yZWFkX3RleHQoKSkKICAgIHJvb3QgPSBQYXRoKCIvcnVuL21hcmtldG9wcyIpCiAgICAjIFRoZSBzeXN0ZW1kIFJ1bnRpbWVEaXJlY3RvcnkgaXMgdW5kZXIgTGludXggL3J1biAodG1wZnMpOyByZWZ1c2UgYW4gYWx0ZXJuYXRlIGRpc2sgbW91bnQuCiAgICBtb3VudGluZm8gPSBQYXRoKCIvcHJvYy9zZWxmL21vdW50aW5mbyIpLnJlYWRfdGV4dCgpLnNwbGl0bGluZXMoKQogICAgaWYgbm90IGFueSgiIC9ydW4gIiBpbiBsaW5lIGFuZCAiIC0gdG1wZnMgIiBpbiBsaW5lIGZvciBsaW5lIGluIG1vdW50aW5mbyk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiZXBoZW1lcmFsIC9ydW4gbW91bnQgcmVxdWlyZWQiKQogICAgaWYgc3lzLmFyZ3ZbMjpdID09IFsiLS1zdG9wIl06CiAgICAgICAgc3RvcChtYW5pZmVzdCkKICAgIGVsaWYgbGVuKHN5cy5hcmd2KSA9PSAyOgogICAgICAgICMgRG9ja2VyIG5ldmVyIGF1dG8tc3RhcnRzIGEgc3RhbGUgY29udGFpbmVyIGFnYWluc3QgYW4gZW1wdHkvcmVwbGFjZWQgdG1wZnMuCiAgICAgICAgIyBFYWNoIHN5c3RlbWQgcmVzdGFydCB2YWxpZGF0ZXMgbWlncmF0aW9uIGV2aWRlbmNlLCByZXRpcmVzIG93bmVkIGxlZnRvdmVycywKICAgICAgICAjIHJlZGVsaXZlcnMgYWxsIHBpbm5lZCBzZWNyZXRzIGFuZCBzdGFydHMgdGhlIGNoZWNrZWQgYXJ0aWZhY3QgYWdhaW4uCiAgICAgICAgc3RvcChtYW5pZmVzdCkKICAgICAgICBzdGFydChtYW5pZmVzdCwgcm9vdCwgZGVsaXZlcihtYW5pZmVzdCwgcm9vdCkpCiAgICAgICAgc3VwZXJ2aXNlKG1hbmlmZXN0KQogICAgZWxzZToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ1bnN1cHBvcnRlZCBib290c3RyYXAgYWN0aW9uIikKCmlmIF9fbmFtZV9fID09ICJfX21haW5fXyI6CiAgICB0cnk6CiAgICAgICAgbWFpbigpCiAgICAgICAgcHJpbnQoIm1hcmtldG9wc19ib290c3RyYXBfY29tcGxldGVkIikKICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgIyBOZXZlciBwcmludCBwcm92aWRlciBlcnJvcnMsIHByb2Nlc3Mgb3V0cHV0LCBwYXlsb2FkcywgVVJMcyBvciBlbnZpcm9ubWVudCB2YWx1ZXMuCiAgICAgICAgcHJpbnQoIm1hcmtldG9wc19ib290c3RyYXBfZmFpbGVkIiwgZmlsZT1zeXMuc3RkZXJyKQogICAgICAgIHJhaXNlIFN5c3RlbUV4aXQoMSkK\",\"encoding\":\"b64\",\"owner\":\"root:root\",\"path\":\"/usr/local/lib/marketops-bootstrap.py\",\"permissions\":\"0700\"},{\"content\":\"IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJCb3VuZGVkIGhvc3QgdGVsZW1ldHJ5IGRlbGl2ZXJ5LiBJdCBuZXZlciByZWFkcyBkYXRhYmFzZSBvciBNYXJrZXRwbGFjZSBzZWNyZXRzLiIiIgpmcm9tIGRhdGV0aW1lIGltcG9ydCBkYXRldGltZSwgdGltZXpvbmUKaW1wb3J0IGpzb24KZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmltcG9ydCByZQppbXBvcnQgc29ja2V0CmltcG9ydCBzeXMKaW1wb3J0IHVybGxpYi5wYXJzZQppbXBvcnQgdXJsbGliLnJlcXVlc3QKClNOQVBTSE9UX1VSTCA9ICJodHRwOi8vMTI3LjAuMC4xOjgwODAvYWN0dWF0b3Ivb3BlcmF0aW9ucyIKVE9LRU5fVVJMID0gImh0dHA6Ly8xNjkuMjU0LjE2OS4yNTQvY29tcHV0ZU1ldGFkYXRhL3YxL2luc3RhbmNlL3NlcnZpY2UtYWNjb3VudHMvZGVmYXVsdC90b2tlbiIKV1JJVEVfVVJMID0gImh0dHBzOi8vbW9uaXRvcmluZy5hcGkuY2xvdWQueWFuZGV4Lm5ldC9tb25pdG9yaW5nL3YyL2RhdGEvd3JpdGUiClNJR05BTFMgPSBmcm96ZW5zZXQoeyJwcmljZV9jb21tYW5kX2F3YWl0aW5nX29wZXJhdG9yIiwgInByaWNlX2NvbW1hbmRfcmVhZGJhY2tfbWlzbWF0Y2giLAogICAgICAgICAgICAgICAgICAgICAiaW5nZXN0aW9uX3J1bl9iYWNrbG9nX2FnZV9zZWNvbmRzIiwgInByaWNlX2NvbW1hbmRfZ2F0ZV9jbG9zZWQiLAogICAgICAgICAgICAgICAgICAgICAicmF3X2N1c3RvZHlfd3JpdGVfZmFpbGVkIiwgImRhdGFiYXNlX3JlYWRpbmVzc19mYWlsZWQifSkKTUFYX0JZVEVTID0gMTYzODQKCgpjbGFzcyBOb1JlZGlyZWN0KHVybGxpYi5yZXF1ZXN0LkhUVFBSZWRpcmVjdEhhbmRsZXIpOgogICAgZGVmIHJlZGlyZWN0X3JlcXVlc3Qoc2VsZiwgcmVxLCBmcCwgY29kZSwgbXNnLCBoZWFkZXJzLCBuZXd1cmwpOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInRlbGVtZXRyeSByZWRpcmVjdCByZWZ1c2VkIikKCgpkZWYgdW5pcXVlX29iamVjdChwYWlycyk6CiAgICByZXN1bHQgPSB7fQogICAgZm9yIGtleSwgdmFsdWUgaW4gcGFpcnM6CiAgICAgICAgaWYga2V5IGluIHJlc3VsdDoKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiZHVwbGljYXRlIHRlbGVtZXRyeSBmaWVsZCIpCiAgICAgICAgcmVzdWx0W2tleV0gPSB2YWx1ZQogICAgcmV0dXJuIHJlc3VsdAoKCmRlZiBzZW5kKHVybCwgaGVhZGVycywgYm9keT1Ob25lKToKICAgIGFsbG93ZWQgPSB1cmwgaW4ge1NOQVBTSE9UX1VSTCwgVE9LRU5fVVJMfSBvciB1cmwuc3RhcnRzd2l0aChXUklURV9VUkwgKyAiP2ZvbGRlcklkPSIpCiAgICBpZiBub3QgYWxsb3dlZDoKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ0ZWxlbWV0cnkgZGVzdGluYXRpb24gcmVmdXNlZCIpCiAgICByZXF1ZXN0ID0gdXJsbGliLnJlcXVlc3QuUmVxdWVzdCh1cmwsIGhlYWRlcnM9aGVhZGVycywgZGF0YT1ib2R5KQogICAgb3BlbmVyID0gdXJsbGliLnJlcXVlc3QuYnVpbGRfb3BlbmVyKE5vUmVkaXJlY3QoKSwgdXJsbGliLnJlcXVlc3QuUHJveHlIYW5kbGVyKHt9KSkKICAgIHdpdGggb3BlbmVyLm9wZW4ocmVxdWVzdCwgdGltZW91dD01KSBhcyByZXNwb25zZToKICAgICAgICBpZiByZXNwb25zZS5zdGF0dXMgIT0gMjAwOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ0ZWxlbWV0cnkgcmVzcG9uc2UgcmVmdXNlZCIpCiAgICAgICAgcGF5bG9hZCA9IHJlc3BvbnNlLnJlYWQoTUFYX0JZVEVTICsgMSkKICAgICAgICBpZiBsZW4ocGF5bG9hZCkgPiBNQVhfQllURVM6CiAgICAgICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInRlbGVtZXRyeSByZXNwb25zZSB0b28gbGFyZ2UiKQogICAgcmV0dXJuIGpzb24ubG9hZHMocGF5bG9hZCwgb2JqZWN0X3BhaXJzX2hvb2s9dW5pcXVlX29iamVjdCkKCgpkZWYgZGVsaXZlcihjb25maWcsIHRyYW5zcG9ydD1zZW5kLCBub3c9Tm9uZSwgaW5zdGFuY2U9Tm9uZSk6CiAgICBpZiBub3QgaXNpbnN0YW5jZShjb25maWcsIGRpY3QpIG9yIHNldChjb25maWcpICE9IHsiZm9sZGVyX2lkIiwgImVudmlyb25tZW50IiwgInJvbGUifToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJjbG9zZWQgdGVsZW1ldHJ5IGNvbmZpZ3VyYXRpb24gcmVxdWlyZWQiKQogICAgaWYgbm90IGlzaW5zdGFuY2UoY29uZmlnWyJmb2xkZXJfaWQiXSwgc3RyKSBvciBub3QgcmUuZnVsbG1hdGNoKHIiW2EtejAtOV17MjB9IiwgY29uZmlnWyJmb2xkZXJfaWQiXSkgXAogICAgICAgICAgICBvciBjb25maWdbImVudmlyb25tZW50Il0gbm90IGluIHsic3RhZ2luZyIsICJwcm9kdWN0aW9uIn0gb3IgY29uZmlnWyJyb2xlIl0gbm90IGluIHsiYXBwbGljYXRpb24iLCAid29ya2VyIn06CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigidGVsZW1ldHJ5IGlkZW50aXR5IHJlZnVzZWQiKQogICAgaW5zdGFuY2UgPSBzb2NrZXQuZ2V0aG9zdG5hbWUoKSBpZiBpbnN0YW5jZSBpcyBOb25lIGVsc2UgaW5zdGFuY2UKICAgIGlmIG5vdCByZS5mdWxsbWF0Y2gociJbYS16QS1aMC05Xy4tXXsxLDYzfSIsIGluc3RhbmNlKToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ0ZWxlbWV0cnkgaW5zdGFuY2UgbGFiZWwgcmVmdXNlZCIpCiAgICBzbmFwc2hvdCA9IHRyYW5zcG9ydChTTkFQU0hPVF9VUkwsIHt9KQogICAgaWYgbm90IGlzaW5zdGFuY2Uoc25hcHNob3QsIGRpY3QpIG9yIHNldChzbmFwc2hvdCkgIT0geyJzY2hlbWFWZXJzaW9uIiwgIm9ic2VydmVkQXQiLCAic2lnbmFscyJ9IFwKICAgICAgICAgICAgb3IgdHlwZShzbmFwc2hvdFsic2NoZW1hVmVyc2lvbiJdKSBpcyBub3QgaW50IG9yIHNuYXBzaG90WyJzY2hlbWFWZXJzaW9uIl0gIT0gMSBcCiAgICAgICAgICAgIG9yIG5vdCBpc2luc3RhbmNlKHNuYXBzaG90WyJvYnNlcnZlZEF0Il0sIHN0cik6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigidGVsZW1ldHJ5IHNuYXBzaG90IHJlZnVzZWQiKQogICAgb2JzZXJ2ZWQgPSBkYXRldGltZS5mcm9taXNvZm9ybWF0KHNuYXBzaG90WyJvYnNlcnZlZEF0Il0ucmVwbGFjZSgiWiIsICIrMDA6MDAiKSkKICAgIG5vdyA9IGRhdGV0aW1lLm5vdyh0aW1lem9uZS51dGMpIGlmIG5vdyBpcyBOb25lIGVsc2Ugbm93CiAgICBpZiBvYnNlcnZlZC50emluZm8gaXMgTm9uZSBvciBub3QgLTE1IDw9IChub3cgLSBvYnNlcnZlZCkudG90YWxfc2Vjb25kcygpIDw9IDkwOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInRlbGVtZXRyeSBzbmFwc2hvdCBzdGFsZSIpCiAgICBzaWduYWxzID0gc25hcHNob3RbInNpZ25hbHMiXQogICAgaWYgbm90IGlzaW5zdGFuY2Uoc2lnbmFscywgZGljdCkgb3Igbm90IHNldChzaWduYWxzKSA8PSBTSUdOQUxTIFwKICAgICAgICAgICAgb3Igc2lnbmFscy5nZXQoImRhdGFiYXNlX3JlYWRpbmVzc19mYWlsZWQiKSBub3QgaW4gezAsIDF9IFwKICAgICAgICAgICAgb3IgYW55KHR5cGUodmFsdWUpIGlzIG5vdCBpbnQgb3Igbm90IDAgPD0gdmFsdWUgPD0gMTAqKjEyIGZvciB2YWx1ZSBpbiBzaWduYWxzLnZhbHVlcygpKToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ0ZWxlbWV0cnkgdmFsdWVzIHJlZnVzZWQiKQogICAgaWYgc2lnbmFsc1siZGF0YWJhc2VfcmVhZGluZXNzX2ZhaWxlZCJdID09IDAgYW5kIHNldChzaWduYWxzKSAhPSBTSUdOQUxTOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImhlYWx0aHkgdGVsZW1ldHJ5IG11c3QgaW5jbHVkZSBldmVyeSBzaWduYWwiKQogICAgaWYgc2lnbmFsc1siZGF0YWJhc2VfcmVhZGluZXNzX2ZhaWxlZCJdID09IDEgYW5kIHNldChzaWduYWxzKSAhPSB7ImRhdGFiYXNlX3JlYWRpbmVzc19mYWlsZWQifToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ1bmF2YWlsYWJsZSBkYXRhYmFzZSBjYW5ub3QgY2xhaW0gaGVhbHRoeSBidXNpbmVzcyBzaWduYWxzIikKICAgIGlkZW50aXR5ID0gdHJhbnNwb3J0KFRPS0VOX1VSTCwgeyJNZXRhZGF0YS1GbGF2b3IiOiAiR29vZ2xlIn0pCiAgICB0b2tlbiA9IGlkZW50aXR5LmdldCgiYWNjZXNzX3Rva2VuIikgaWYgaXNpbnN0YW5jZShpZGVudGl0eSwgZGljdCkgZWxzZSBOb25lCiAgICBpZiBub3QgaXNpbnN0YW5jZSh0b2tlbiwgc3RyKSBvciBub3QgMSA8PSBsZW4odG9rZW4pIDw9IDgxOTIgb3Igbm90IHJlLmZ1bGxtYXRjaChyIltBLVphLXowLTkuX34tXSsiLCB0b2tlbik6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigidGVsZW1ldHJ5IGlkZW50aXR5IHVuYXZhaWxhYmxlIikKICAgIG1ldHJpY3MgPSBbeyJuYW1lIjogbmFtZSwgInR5cGUiOiAiSUdBVUdFIiwgInZhbHVlIjogdmFsdWV9IGZvciBuYW1lLCB2YWx1ZSBpbiBzb3J0ZWQoc2lnbmFscy5pdGVtcygpKV0KICAgIGJvZHkgPSBqc29uLmR1bXBzKHsidHMiOiBzbmFwc2hvdFsib2JzZXJ2ZWRBdCJdLCAibGFiZWxzIjogeyJhcHBsaWNhdGlvbiI6ICJtYXJrZXRvcHMiLAogICAgICAgICJlbnZpcm9ubWVudCI6IGNvbmZpZ1siZW52aXJvbm1lbnQiXSwgInJvbGUiOiBjb25maWdbInJvbGUiXSwgImluc3RhbmNlIjogaW5zdGFuY2V9LCAibWV0cmljcyI6IG1ldHJpY3N9LCBzZXBhcmF0b3JzPSgiLCIsICI6IikpLmVuY29kZSgpCiAgICByZXN1bHQgPSB0cmFuc3BvcnQoV1JJVEVfVVJMICsgIj8iICsgdXJsbGliLnBhcnNlLnVybGVuY29kZSh7ImZvbGRlcklkIjogY29uZmlnWyJmb2xkZXJfaWQiXSwgInNlcnZpY2UiOiAiY3VzdG9tIn0pLAogICAgICAgICAgICAgICAgICAgICAgIHsiQXV0aG9yaXphdGlvbiI6ICJCZWFyZXIgIiArIHRva2VuLCAiQ29udGVudC1UeXBlIjogImFwcGxpY2F0aW9uL2pzb24ifSwgYm9keSkKICAgIGlmIG5vdCBpc2luc3RhbmNlKHJlc3VsdCwgZGljdCkgb3Igc3RyKHJlc3VsdC5nZXQoIndyaXR0ZW5NZXRyaWNzQ291bnQiKSkgIT0gc3RyKGxlbihtZXRyaWNzKSkgXAogICAgICAgICAgICBvciByZXN1bHQuZ2V0KCJlcnJvck1lc3NhZ2UiKSBub3QgaW4ge05vbmUsICIifToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ0ZWxlbWV0cnkgd3JpdGUgaW5jb21wbGV0ZSIpCiAgICByZXR1cm4geyJtZXRyaWNfY291bnQiOiBsZW4obWV0cmljcyksICJkYXRhYmFzZV9hdmFpbGFibGUiOiBzaWduYWxzWyJkYXRhYmFzZV9yZWFkaW5lc3NfZmFpbGVkIl0gPT0gMH0KCgpkZWYgbWFpbigpOgogICAgdHJ5OgogICAgICAgIGlmIGxlbihzeXMuYXJndikgIT0gMjoKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigidGVsZW1ldHJ5IGNvbmZpZ3VyYXRpb24gcmVxdWlyZWQiKQogICAgICAgIHBheWxvYWQgPSBQYXRoKHN5cy5hcmd2WzFdKS5yZWFkX2J5dGVzKCkKICAgICAgICBpZiBsZW4ocGF5bG9hZCkgPiAxMDI0OgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ0ZWxlbWV0cnkgY29uZmlndXJhdGlvbiB0b28gbGFyZ2UiKQogICAgICAgIHJlc3VsdCA9IGRlbGl2ZXIoanNvbi5sb2FkcyhwYXlsb2FkLCBvYmplY3RfcGFpcnNfaG9vaz11bmlxdWVfb2JqZWN0KSkKICAgICAgICBwcmludChqc29uLmR1bXBzKHsiZXZlbnQiOiAib3BlcmF0aW9uYWxfdGVsZW1ldHJ5X2RlbGl2ZXJlZCIsICoqcmVzdWx0fSkpCiAgICAgICAgcmV0dXJuIDAKICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgIyBIVFRQIGVycm9yIGJvZGllcywgSUFNIHRva2VucyBhbmQgaW50ZXJuYWwgYWRkcmVzc2VzIG5ldmVyIGVudGVyIGxvZ3MuCiAgICAgICAgcHJpbnQoJ3siZXZlbnQiOiJvcGVyYXRpb25hbF90ZWxlbWV0cnlfZmFpbGVkIn0nLCBmaWxlPXN5cy5zdGRlcnIpCiAgICAgICAgcmV0dXJuIDEKCgppZiBfX25hbWVfXyA9PSAiX19tYWluX18iOgogICAgcmFpc2UgU3lzdGVtRXhpdChtYWluKCkpCg==\",\"encoding\":\"b64\",\"owner\":\"root:root\",\"path\":\"/usr/local/lib/marketops-telemetry.py\",\"permissions\":\"0755\"},{\"content\":\"{\\\"environment\\\":\\\"staging\\\",\\\"folder_id\\\":\\\"ffffffffffffffffffff\\\",\\\"role\\\":\\\"application\\\"}\",\"owner\":\"root:root\",\"path\":\"/etc/marketops/telemetry.json\",\"permissions\":\"0644\"},{\"content\":\"[Unit]\\nDescription=MarketOps bounded operational telemetry\\nAfter=network-online.target marketops.service\\nWants=network-online.target\\nConditionPathExists=/etc/marketops/telemetry.json\\n\\n[Service]\\nType=oneshot\\nDynamicUser=yes\\nExecStart=/usr/bin/python3 /usr/local/lib/marketops-telemetry.py /etc/marketops/telemetry.json\\nTimeoutStartSec=20\\nUMask=0077\\nNoNewPrivileges=yes\\nPrivateTmp=yes\\nProtectSystem=strict\\nProtectHome=yes\\nRestrictAddressFamilies=AF_INET AF_INET6\\nCapabilityBoundingSet=\\nProtectKernelTunables=yes\\nProtectControlGroups=yes\\nRestrictSUIDSGID=yes\\n\",\"owner\":\"root:root\",\"path\":\"/etc/systemd/system/marketops-telemetry.service\",\"permissions\":\"0644\"},{\"content\":\"[Unit]\\nDescription=Sample MarketOps operational signals every thirty seconds\\n\\n[Timer]\\nOnBootSec=60\\nOnUnitInactiveSec=30\\nAccuracySec=1\\nUnit=marketops-telemetry.service\\n\\n[Install]\\nWantedBy=timers.target\\n\",\"owner\":\"root:root\",\"path\":\"/etc/systemd/system/marketops-telemetry.timer\",\"permissions\":\"0644\"},{\"content\":\"{\\\"backend_image\\\":\\\"cr.yandex/rrrrrrrrrrrrrrrrrrrr/marketops-api@sha256:1111111111111111111111111111111111111111111111111111111111111111\\\",\\\"console_image\\\":\\\"cr.yandex/rrrrrrrrrrrrrrrrrrrr/marketops-console@sha256:2222222222222222222222222222222222222222222222222222222222222222\\\",\\\"environment\\\":{\\\"MARKETOPS_ACQUISITION_SCHEDULER_ENABLED\\\":\\\"false\\\",\\\"MARKETOPS_ENVIRONMENT\\\":\\\"staging\\\",\\\"MARKETOPS_OBJECT_STORAGE_BUCKET\\\":\\\"marketops-offline-plan-evidence\\\",\\\"MARKETOPS_OBJECT_STORAGE_CREDENTIAL_REFERENCE\\\":\\\"secret-ref://object-storage/signing-key\\\",\\\"MARKETOPS_OBJECT_STORAGE_ENDPOINT\\\":\\\"https://storage.yandexcloud.net\\\",\\\"MARKETOPS_OBJECT_STORAGE_REGION\\\":\\\"ru-central1\\\",\\\"MARKETOPS_OIDC_AUDIENCE\\\":\\\"marketops-offline-plan\\\",\\\"MARKETOPS_OIDC_ISSUER_URI\\\":\\\"https://identity.example.invalid\\\",\\\"MARKETOPS_OIDC_JWK_SET_URI\\\":\\\"https://identity.example.invalid/jwks\\\",\\\"MARKETOPS_PRICE_WRITE_WORKER_ENABLED\\\":\\\"false\\\",\\\"MARKETOPS_SECRET_MOUNT_DIRECTORY\\\":\\\"/run/marketops/credentials\\\",\\\"SPRING_CONFIG_IMPORT\\\":\\\"configtree:/run/marketops/config/\\\",\\\"SPRING_DATASOURCE_URL\\\":\\\"jdbc:postgresql://c-dddddddddddddddddddd.rw.mdb.yandexcloud.net:6432/marketops?sslmode=verify-full\\\\u0026sslrootcert=/opt/marketops/certs/yandex-root.crt\\\\u0026targetServerType=primary\\\",\\\"SPRING_FLYWAY_ENABLED\\\":\\\"false\\\",\\\"SPRING_PROFILES_ACTIVE\\\":\\\"production\\\"},\\\"migration_evidence\\\":{\\\"document\\\":\\\"{\\\\n  \\\\\\\"schemaVersion\\\\\\\": \\\\\\\"2.0\\\\\\\",\\\\n  \\\\\\\"serviceProfile\\\\\\\": \\\\\\\"YANDEX_MANAGED\\\\\\\",\\\\n  \\\\\\\"environmentReference\\\\\\\": \\\\\\\"staging\\\\\\\",\\\\n  \\\\\\\"repositoryCommit\\\\\\\": \\\\\\\"4444444444444444444444444444444444444444\\\\\\\",\\\\n  \\\\\\\"repositoryTree\\\\\\\": \\\\\\\"5555555555555555555555555555555555555555\\\\\\\",\\\\n  \\\\\\\"expectedPostgresqlMajor\\\\\\\": 17,\\\\n  \\\\\\\"postgresqlMajor\\\\\\\": 17,\\\\n  \\\\\\\"attestationState\\\\\\\": \\\\\\\"ATTESTED\\\\\\\",\\\\n  \\\\\\\"canonicalV0002Path\\\\\\\": \\\\\\\"db/migration/V0002__enable_btree_gist_extension.sql\\\\\\\",\\\\n  \\\\\\\"canonicalV0002GitBlob\\\\\\\": \\\\\\\"bd3e55ea737ffda9d519a931eea1f3cc58b8c522\\\\\\\",\\\\n  \\\\\\\"canonicalV0002Sha256\\\\\\\": \\\\\\\"438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16\\\\\\\",\\\\n  \\\\\\\"canonicalV0002FlywayChecksum\\\\\\\": 1291326236,\\\\n  \\\\\\\"resolvedVersion\\\\\\\": \\\\\\\"0002\\\\\\\",\\\\n  \\\\\\\"resolvedDescription\\\\\\\": \\\\\\\"enable btree gist extension\\\\\\\",\\\\n  \\\\\\\"executorMode\\\\\\\": \\\\\\\"EXTERNALLY_SATISFIED_PROVIDER_EXTENSION\\\\\\\",\\\\n  \\\\\\\"requiredExtensions\\\\\\\": {\\\\n    \\\\\\\"pgcrypto\\\\\\\": \\\\\\\"1.3\\\\\\\",\\\\n    \\\\\\\"btree_gist\\\\\\\": \\\\\\\"1.7\\\\\\\"\\\\n  },\\\\n  \\\\\\\"extensions\\\\\\\": {\\\\n    \\\\\\\"pgcrypto\\\\\\\": \\\\\\\"1.3\\\\\\\",\\\\n    \\\\\\\"btree_gist\\\\\\\": \\\\\\\"1.7\\\\\\\"\\\\n  },\\\\n  \\\\\\\"providerEvidenceSha256\\\\\\\": \\\\\\\"6666666666666666666666666666666666666666666666666666666666666666\\\\\\\",\\\\n  \\\\\\\"providerDocumentSha256\\\\\\\": \\\\\\\"34e1f92c87f22eb1256f49b2a31c49911cd62bb7c18ce4f7960e43f585584c96\\\\\\\",\\\\n  \\\\\\\"providerControlPlaneApplied\\\\\\\": true,\\\\n  \\\\\\\"artifactKind\\\\\\\": \\\\\\\"MIGRATION_ATTEMPT\\\\\\\",\\\\n  \\\\\\\"expectedBootstrapSha256\\\\\\\": \\\\\\\"fe906f464dcdd66cccfd226f1646b5aeab57a75a48211d7d5bdafe494b186478\\\\\\\",\\\\n  \\\\\\\"timestamp\\\\\\\": \\\\\\\"2026-08-28T00:00:03Z\\\\\\\",\\\\n  \\\\\\\"correlation\\\\\\\": \\\\\\\"managed-next-release\\\\\\\",\\\\n  \\\\\\\"failureStage\\\\\\\": \\\\\\\"NONE\\\\\\\",\\\\n  \\\\\\\"migrationResult\\\\\\\": \\\\\\\"SUCCESS\\\\\\\",\\\\n  \\\\\\\"flywayHistoryBefore\\\\\\\": {\\\\n    \\\\\\\"v0002\\\\\\\": \\\\\\\"CANONICAL\\\\\\\",\\\\n    \\\\\\\"state\\\\\\\": \\\\\\\"PRESENT\\\\\\\",\\\\n    \\\\\\\"migrations\\\\\\\": [\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0001\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create foundation schemas\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0001__create_foundation_schemas.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -216558555,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0002\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"enable btree gist extension\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"V0002__enable_btree_gist_extension.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1291326236,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0003\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create metadata audit event\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0003__create_metadata_audit_event.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1538154543,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0004\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create core organization metadata\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0004__create_core_organization_metadata.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 2027689260,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0005\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create iam access metadata\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0005__create_iam_access_metadata.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -989145577,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0006\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create platform registry metadata\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0006__create_platform_registry_metadata.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 326972708,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0007\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ingestion control plane authority\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0007__create_ingestion_control_plane_authority.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 510276987,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0008\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"attach control epoch triggers\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0008__attach_control_epoch_triggers.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 804811341,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0009\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create control boundary kinds and decision evidence\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0009__create_control_boundary_kinds_and_decision_evidence.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1135080635,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0010\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ingestion run checkpoint and raw evidence\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -110000428,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0011\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create human identity and business authorization\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0011__create_human_identity_and_business_authorization.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 513325678,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0012\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create product listing identity and mapping\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0012__create_product_listing_identity_and_mapping.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1610558496,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0013\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create cross domain operating facts\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0013__create_cross_domain_operating_facts.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 182788145,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0014\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create internal fact intake and file import\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0014__create_internal_fact_intake_and_file_import.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -231269046,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0015\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create canonical metric definitions and values\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0015__create_canonical_metric_definitions_and_values.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1886333913,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0016\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create deterministic diagnosis rules and findings\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0016__create_deterministic_diagnosis_rules_and_findings.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1173612683,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0017\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ai projection invocation and output\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0017__create_ai_projection_invocation_and_output.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -210332737,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0018\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create recommendation task and approval workflow\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0018__create_recommendation_task_and_approval_workflow.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1551978384,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0019\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create commercial policy and guardrails\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0019__create_commercial_policy_and_guardrails.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 872993619,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0020\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create price command outbox readback and write gate\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0020__create_price_command_outbox_readback_and_write_gate.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -501764210,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0021\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create platform api profile and request shape\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0021__create_platform_api_profile_and_request_shape.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1878771448,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0022\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ingestion run lifecycle and replay guard\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0022__create_ingestion_run_lifecycle_and_replay_guard.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -281710905,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0023\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create declared normalization and drift observation\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0023__create_declared_normalization_and_drift_observation.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 782483817,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0024\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create capability write operation shape\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0024__create_capability_write_operation_shape.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1138859957,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0025\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create price command attempt completion and lease recovery\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0025__create_price_command_attempt_completion_and_lease_recovery.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -547418792,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0026\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"rename operational capability column to action kind\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0026__rename_operational_capability_column_to_action_kind.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 404882275,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0027\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create account bound registry verification\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0027__create_account_bound_registry_verification.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1708288601,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      }\\\\n    ]\\\\n  },\\\\n  \\\\\\\"flywayHistoryAfter\\\\\\\": {\\\\n    \\\\\\\"v0002\\\\\\\": \\\\\\\"CANONICAL\\\\\\\",\\\\n    \\\\\\\"state\\\\\\\": \\\\\\\"PRESENT\\\\\\\",\\\\n    \\\\\\\"migrations\\\\\\\": [\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0001\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create foundation schemas\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0001__create_foundation_schemas.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -216558555,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0002\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"enable btree gist extension\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"V0002__enable_btree_gist_extension.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1291326236,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0003\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create metadata audit event\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0003__create_metadata_audit_event.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1538154543,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0004\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create core organization metadata\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0004__create_core_organization_metadata.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 2027689260,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0005\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create iam access metadata\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0005__create_iam_access_metadata.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -989145577,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0006\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create platform registry metadata\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0006__create_platform_registry_metadata.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 326972708,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0007\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ingestion control plane authority\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0007__create_ingestion_control_plane_authority.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 510276987,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0008\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"attach control epoch triggers\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0008__attach_control_epoch_triggers.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 804811341,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0009\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create control boundary kinds and decision evidence\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0009__create_control_boundary_kinds_and_decision_evidence.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1135080635,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0010\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ingestion run checkpoint and raw evidence\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -110000428,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0011\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create human identity and business authorization\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0011__create_human_identity_and_business_authorization.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 513325678,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0012\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create product listing identity and mapping\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0012__create_product_listing_identity_and_mapping.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1610558496,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0013\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create cross domain operating facts\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0013__create_cross_domain_operating_facts.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 182788145,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0014\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create internal fact intake and file import\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0014__create_internal_fact_intake_and_file_import.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -231269046,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0015\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create canonical metric definitions and values\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0015__create_canonical_metric_definitions_and_values.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1886333913,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0016\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create deterministic diagnosis rules and findings\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0016__create_deterministic_diagnosis_rules_and_findings.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1173612683,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0017\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ai projection invocation and output\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0017__create_ai_projection_invocation_and_output.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -210332737,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0018\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create recommendation task and approval workflow\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0018__create_recommendation_task_and_approval_workflow.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1551978384,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0019\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create commercial policy and guardrails\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0019__create_commercial_policy_and_guardrails.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 872993619,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0020\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create price command outbox readback and write gate\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0020__create_price_command_outbox_readback_and_write_gate.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -501764210,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0021\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create platform api profile and request shape\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0021__create_platform_api_profile_and_request_shape.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1878771448,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0022\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ingestion run lifecycle and replay guard\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0022__create_ingestion_run_lifecycle_and_replay_guard.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -281710905,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0023\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create declared normalization and drift observation\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0023__create_declared_normalization_and_drift_observation.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 782483817,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0024\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create capability write operation shape\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0024__create_capability_write_operation_shape.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1138859957,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0025\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create price command attempt completion and lease recovery\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0025__create_price_command_attempt_completion_and_lease_recovery.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -547418792,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0026\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"rename operational capability column to action kind\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0026__rename_operational_capability_column_to_action_kind.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 404882275,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0027\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create account bound registry verification\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0027__create_account_bound_registry_verification.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1708288601,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      }\\\\n    ]\\\\n  },\\\\n  \\\\\\\"extensionFacts\\\\\\\": {\\\\n    \\\\\\\"pgcrypto\\\\\\\": {\\\\n      \\\\\\\"version\\\\\\\": \\\\\\\"1.3\\\\\\\",\\\\n      \\\\\\\"owner\\\\\\\": \\\\\\\"bootstrap_admin\\\\\\\",\\\\n      \\\\\\\"schema\\\\\\\": \\\\\\\"public\\\\\\\"\\\\n    },\\\\n    \\\\\\\"btree_gist\\\\\\\": {\\\\n      \\\\\\\"version\\\\\\\": \\\\\\\"1.7\\\\\\\",\\\\n      \\\\\\\"owner\\\\\\\": \\\\\\\"bootstrap_admin\\\\\\\",\\\\n      \\\\\\\"schema\\\\\\\": \\\\\\\"public\\\\\\\"\\\\n    }\\\\n  },\\\\n  \\\\\\\"roleAssertions\\\\\\\": {\\\\n    \\\\\\\"currentUserIsMigration\\\\\\\": true,\\\\n    \\\\\\\"providerSqlExtensionDdlDenied\\\\\\\": true,\\\\n    \\\\\\\"applicationCannotCreateDatabaseObjects\\\\\\\": true,\\\\n    \\\\\\\"runtimeCannotAssumeExtensionOwner\\\\\\\": true,\\\\n    \\\\\\\"managedExtensionsNotOwnedByRuntimeRoles\\\\\\\": true,\\\\n    \\\\\\\"runtimeRolesAreNonPrivileged\\\\\\\": true,\\\\n    \\\\\\\"serverMajorIs17\\\\\\\": true,\\\\n    \\\\\\\"applicationIsNotMigrationMember\\\\\\\": true,\\\\n    \\\\\\\"extensionMembersInSecureSchema\\\\\\\": true\\\\n  },\\\\n  \\\\\\\"startedEvidenceSha256\\\\\\\": \\\\\\\"a6dc21b99c9fde5bf43d331dd204d0bbb88b0b5ee745439d7f6ee883b861ea4e\\\\\\\",\\\\n  \\\\\\\"bootstrapEvidenceSha256\\\\\\\": \\\\\\\"fe906f464dcdd66cccfd226f1646b5aeab57a75a48211d7d5bdafe494b186478\\\\\\\",\\\\n  \\\\\\\"databaseIdentity\\\\\\\": \\\\\\\"staging\\\\\\\",\\\\n  \\\\\\\"attestedEvidenceSha256\\\\\\\": \\\\\\\"2f3cc31582825bf69257738affd96baa752672fdb5fed7f1af06c7be8f40e14b\\\\\\\",\\\\n  \\\\\\\"migrationsApplied\\\\\\\": 0,\\\\n  \\\\\\\"schemaVersionAfter\\\\\\\": \\\\\\\"0027\\\\\\\",\\\\n  \\\\\\\"artifactSha256\\\\\\\": \\\\\\\"7777777777777777777777777777777777777777777777777777777777777777\\\\\\\",\\\\n  \\\\\\\"databaseUrlSha256\\\\\\\": \\\\\\\"e40b866c93490aba44431226b45d370761b268110aed9702768eb34034d42345\\\\\\\"\\\\n}\\\\n\\\",\\\"sha256\\\":\\\"04d4a1df73941c3479cf298268817c1b36d92c22b1c878e5c56bbfb32ab3bf45\\\"},\\\"role\\\":\\\"application\\\",\\\"secrets\\\":{\\\"config/marketops.object-storage.access-key-id\\\":{\\\"key\\\":\\\"access-id\\\",\\\"secret_id\\\":\\\"ssssssssssssssssssss\\\",\\\"version_id\\\":\\\"vvvvvvvvvvvvvvvvvvvv\\\"},\\\"config/spring.datasource.password\\\":{\\\"key\\\":\\\"database\\\",\\\"secret_id\\\":\\\"ssssssssssssssssssss\\\",\\\"version_id\\\":\\\"vvvvvvvvvvvvvvvvvvvv\\\"},\\\"credentials/object-storage/signing-key\\\":{\\\"key\\\":\\\"signing-key\\\",\\\"secret_id\\\":\\\"ssssssssssssssssssss\\\",\\\"version_id\\\":\\\"vvvvvvvvvvvvvvvvvvvv\\\"}}}\",\"owner\":\"root:root\",\"path\":\"/etc/marketops/runtime.json\",\"permissions\":\"0600\"},{\"content\":\"[Unit]\\nDescription=MarketOps immutable runtime with ephemeral secret delivery\\nAfter=docker.service network-online.target\\nRequires=docker.service\\nWants=network-online.target\\nConditionPathExists=/etc/marketops/runtime.json\\nStartLimitIntervalSec=300\\nStartLimitBurst=5\\n\\n[Service]\\nType=simple\\nRestart=on-failure\\nRestartSec=10\\nRuntimeDirectory=marketops\\nRuntimeDirectoryMode=0700\\nExecStart=/usr/bin/python3 /usr/local/lib/marketops-bootstrap.py /etc/marketops/runtime.json\\nExecStop=/usr/bin/python3 /usr/local/lib/marketops-bootstrap.py /etc/marketops/runtime.json --stop\\nTimeoutStartSec=300\\nTimeoutStopSec=60\\nUMask=0077\\nPrivateTmp=yes\\nProtectSystem=strict\\nProtectHome=yes\\nReadWritePaths=/run/marketops /run/docker.sock\\nNoNewPrivileges=yes\\nEnvironment=DOCKER_CONFIG=/run/marketops/docker-config\\n\\n[Install]\\nWantedBy=multi-user.target\\n\",\"owner\":\"root:root\",\"path\":\"/etc/systemd/system/marketops.service\",\"permissions\":\"0644\"}]}"
+              },
+              "metadata_options": [
+                {
+                  "aws_v1_http_endpoint": 2,
+                  "aws_v1_http_token": 2,
+                  "gce_http_endpoint": 1,
+                  "gce_http_token": 1
+                }
+              ],
+              "name": null,
+              "network_interface": [
+                {
+                  "dns_record": [],
+                  "ipv4": null,
+                  "ipv6_dns_record": [],
+                  "nat": false,
+                  "nat_dns_record": [],
+                  "nat_ip_address": null,
+                  "network_id": "nnnnnnnnnnnnnnnnnnng",
+                  "security_group_ids": [
+                    "aaaaaaaaaaaaaaaaaaag"
+                  ],
+                  "subnet_ids": [
+                    "xxxxxxxxxxxxxxxxxxxg",
+                    "yyyyyyyyyyyyyyyyyyyg",
+                    "zzzzzzzzzzzzzzzzzzzg"
+                  ]
+                }
+              ],
+              "network_settings": [],
+              "placement_policy": [],
+              "platform_id": "standard-v3",
+              "reserved_instance_pool_id": null,
+              "resources": [
+                {
+                  "core_fraction": null,
+                  "cores": 2,
+                  "gpus": null,
+                  "memory": 4
+                }
+              ],
+              "scheduling_policy": [],
+              "secondary_disk": [],
+              "service_account_id": "aaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "load_balancer": [],
+          "max_checking_health_duration": 900,
+          "name": "staging-marketops-application",
+          "scale_policy": [
+            {
+              "auto_scale": [],
+              "fixed_scale": [
+                {
+                  "size": 3
+                }
+              ],
+              "test_auto_scale": []
+            }
+          ],
+          "service_account_id": "gggggggggggggggggggg",
+          "timeouts": null,
+          "variables": null
+        }
+      }
+    },
+    {
+      "address": "module.workload[0].yandex_compute_instance_group.runtime[\"worker\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "allocation_policy": [
+            {
+              "instance_tags_pool": [],
+              "zones": [
+                "ru-central1-a",
+                "ru-central1-b",
+                "ru-central1-d"
+              ]
+            }
+          ],
+          "application_load_balancer": [],
+          "deletion_protection": false,
+          "deploy_policy": [
+            {
+              "max_creating": 1,
+              "max_deleting": 1,
+              "max_expansion": 1,
+              "max_unavailable": 0,
+              "startup_duration": 300
+            }
+          ],
+          "description": null,
+          "folder_id": "ffffffffffffffffffff",
+          "health_check": [
+            {
+              "healthy_threshold": 2,
+              "http_options": [
+                {
+                  "path": "/actuator/health/readiness",
+                  "port": 8080
+                }
+              ],
+              "interval": 15,
+              "tcp_options": [],
+              "timeout": 5,
+              "unhealthy_threshold": 3
+            }
+          ],
+          "instance_template": [
+            {
+              "boot_disk": [
+                {
+                  "disk_id": null,
+                  "initialize_params": [
+                    {
+                      "description": null,
+                      "image_id": "hhhhhhhhhhhhhhhhhhhh",
+                      "size": 30,
+                      "type": "network-ssd"
+                    }
+                  ],
+                  "mode": "READ_WRITE",
+                  "name": null
+                }
+              ],
+              "description": null,
+              "filesystem": [],
+              "hostname": null,
+              "labels": {
+                "environment": "staging",
+                "managed_by": "terraform",
+                "product": "marketops",
+                "role": "worker"
+              },
+              "metadata": {
+                "user-data": "#cloud-config\n{\"runcmd\":[[\"systemctl\",\"daemon-reload\"],[\"systemctl\",\"enable\",\"--now\",\"marketops.service\"],[\"systemctl\",\"enable\",\"--now\",\"marketops-telemetry.timer\"]],\"write_files\":[{\"content\":\"IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJWTS1vbmx5IGJvb3RzdHJhcC4gVGVycmFmb3JtIGNvbnRhaW5zIHJlZmVyZW5jZSBtZXRhZGF0YSwgbmV2ZXIgc2VjcmV0IHBheWxvYWRzLgoKTmV0d29yayBkZXN0aW5hdGlvbnMgYXJlIGNvbnN0YW50czsgcmVkaXJlY3RzIGFuZCBlbnZpcm9ubWVudCBwcm94aWVzIGFyZSBkaXNhYmxlZC4KVGVzdHMgaW5qZWN0IHRyYW5zcG9ydC9wcm9jZXNzIGJvdW5kYXJpZXMgYW5kIG5ldmVyIGNvbnRhY3QgYSByZWFsIGFjY291bnQuCiIiIgppbXBvcnQganNvbgppbXBvcnQgaGFzaGxpYgppbXBvcnQgb3MKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmltcG9ydCByZQppbXBvcnQgc3VicHJvY2VzcwppbXBvcnQgc3lzCmltcG9ydCB0aW1lCmltcG9ydCB1cmxsaWIucGFyc2UKaW1wb3J0IHVybGxpYi5yZXF1ZXN0CgpNQVhfUkVTUE9OU0UgPSAxMDI0ICogMTAyNApJTUFHRSA9IHJlLmNvbXBpbGUociJjclsuXXlhbmRleC9bYS16MC05L18uLV0rQHNoYTI1NjpbMC05YS1mXXs2NH1cWiIpCklERU5USUZJRVIgPSByZS5jb21waWxlKHIiW2EtejAtOV17MjB9XFoiKQpDT05GSUdfRklMRVMgPSBmcm96ZW5zZXQoeyJjb25maWcvc3ByaW5nLmRhdGFzb3VyY2UucGFzc3dvcmQiLCAiY29uZmlnL21hcmtldG9wcy5vYmplY3Qtc3RvcmFnZS5hY2Nlc3Mta2V5LWlkIn0pClJFUVVJUkVEX0ZJTEVTID0gQ09ORklHX0ZJTEVTIHwgeyJjcmVkZW50aWFscy9vYmplY3Qtc3RvcmFnZS9zaWduaW5nLWtleSJ9CkVOVklST05NRU5UX0tFWVMgPSBmcm96ZW5zZXQoewogICAgIlNQUklOR19QUk9GSUxFU19BQ1RJVkUiLCAiU1BSSU5HX0RBVEFTT1VSQ0VfVVJMIiwgIlNQUklOR19GTFlXQVlfRU5BQkxFRCIsICJTUFJJTkdfQ09ORklHX0lNUE9SVCIsCiAgICAiTUFSS0VUT1BTX1NFQ1JFVF9NT1VOVF9ESVJFQ1RPUlkiLCAiTUFSS0VUT1BTX0VOVklST05NRU5UIiwgIk1BUktFVE9QU19PQkpFQ1RfU1RPUkFHRV9FTkRQT0lOVCIsCiAgICAiTUFSS0VUT1BTX09CSkVDVF9TVE9SQUdFX1JFR0lPTiIsICJNQVJLRVRPUFNfT0JKRUNUX1NUT1JBR0VfQlVDS0VUIiwgIk1BUktFVE9QU19PQkpFQ1RfU1RPUkFHRV9DUkVERU5USUFMX1JFRkVSRU5DRSIsCiAgICAiTUFSS0VUT1BTX09JRENfSVNTVUVSX1VSSSIsICJNQVJLRVRPUFNfT0lEQ19KV0tfU0VUX1VSSSIsICJNQVJLRVRPUFNfT0lEQ19BVURJRU5DRSIsCiAgICAiTUFSS0VUT1BTX0FDUVVJU0lUSU9OX1NDSEVEVUxFUl9FTkFCTEVEIiwgIk1BUktFVE9QU19QUklDRV9XUklURV9XT1JLRVJfRU5BQkxFRCIKfSkKUk9MRV9BU1NFUlRJT05TID0gZnJvemVuc2V0KHsic2VydmVyTWFqb3JJczE3IiwgImN1cnJlbnRVc2VySXNNaWdyYXRpb24iLCAicnVudGltZVJvbGVzQXJlTm9uUHJpdmlsZWdlZCIsCiAgICAiYXBwbGljYXRpb25DYW5ub3RDcmVhdGVEYXRhYmFzZU9iamVjdHMiLCAiYXBwbGljYXRpb25Jc05vdE1pZ3JhdGlvbk1lbWJlciIsICJtYW5hZ2VkRXh0ZW5zaW9uc05vdE93bmVkQnlSdW50aW1lUm9sZXMiLAogICAgInByb3ZpZGVyU3FsRXh0ZW5zaW9uRGRsRGVuaWVkIiwgImV4dGVuc2lvbk1lbWJlcnNJblNlY3VyZVNjaGVtYSIsICJydW50aW1lQ2Fubm90QXNzdW1lRXh0ZW5zaW9uT3duZXIifSkKCmRlZiB1bmlxdWVfb2JqZWN0KHBhaXJzKToKICAgIHJlc3VsdCA9IHt9CiAgICBmb3Iga2V5LCB2YWx1ZSBpbiBwYWlyczoKICAgICAgICBpZiBrZXkgaW4gcmVzdWx0OgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJkdXBsaWNhdGUgSlNPTiBmaWVsZCIpCiAgICAgICAgcmVzdWx0W2tleV0gPSB2YWx1ZQogICAgcmV0dXJuIHJlc3VsdAoKZGVmIHZhbGlkYXRlX21pZ3JhdGlvbihtYW5pZmVzdCk6CiAgICBlbnZlbG9wZSA9IG1hbmlmZXN0WyJtaWdyYXRpb25fZXZpZGVuY2UiXQogICAgaWYgbm90IGlzaW5zdGFuY2UoZW52ZWxvcGUsIGRpY3QpIG9yIHNldChlbnZlbG9wZSkgIT0geyJkb2N1bWVudCIsICJzaGEyNTYifToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJjbG9zZWQgbWlncmF0aW9uIGV2aWRlbmNlIGVudmVsb3BlIHJlcXVpcmVkIikKICAgIGRvY3VtZW50ID0gZW52ZWxvcGVbImRvY3VtZW50Il0KICAgIGlmIG5vdCBpc2luc3RhbmNlKGRvY3VtZW50LCBzdHIpIG9yIGxlbihkb2N1bWVudC5lbmNvZGUoInV0Zi04IikpID4gMTMxMDcyOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImJvdW5kZWQgbWlncmF0aW9uIGV2aWRlbmNlIHJlcXVpcmVkIikKICAgIGlmIGhhc2hsaWIuc2hhMjU2KGRvY3VtZW50LmVuY29kZSgidXRmLTgiKSkuaGV4ZGlnZXN0KCkgIT0gZW52ZWxvcGVbInNoYTI1NiJdOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoIm1pZ3JhdGlvbiBldmlkZW5jZSBkaWdlc3QgbWlzbWF0Y2giKQogICAgZXZpZGVuY2UgPSBqc29uLmxvYWRzKGRvY3VtZW50LCBvYmplY3RfcGFpcnNfaG9vaz11bmlxdWVfb2JqZWN0KQogICAgZXhwZWN0ZWQgPSB7InNjaGVtYVZlcnNpb24iOiAiMi4wIiwgImFydGlmYWN0S2luZCI6ICJNSUdSQVRJT05fQVRURU1QVCIsICJzZXJ2aWNlUHJvZmlsZSI6ICJZQU5ERVhfTUFOQUdFRCIsCiAgICAgICAgICAgICAgICAibWlncmF0aW9uUmVzdWx0IjogIlNVQ0NFU1MiLCAiZmFpbHVyZVN0YWdlIjogIk5PTkUiLCAiYXR0ZXN0YXRpb25TdGF0ZSI6ICJBVFRFU1RFRCIsCiAgICAgICAgICAgICAgICAiZXhwZWN0ZWRQb3N0Z3Jlc3FsTWFqb3IiOiAxNywgInBvc3RncmVzcWxNYWpvciI6IDE3LAogICAgICAgICAgICAgICAgImNhbm9uaWNhbFYwMDAyUGF0aCI6ICJkYi9taWdyYXRpb24vVjAwMDJfX2VuYWJsZV9idHJlZV9naXN0X2V4dGVuc2lvbi5zcWwiLAogICAgICAgICAgICAgICAgImNhbm9uaWNhbFYwMDAyR2l0QmxvYiI6ICJiZDNlNTVlYTczN2ZmZGE5ZDUxOWE5MzFlZWExZjNjYzU4YjhjNTIyIiwKICAgICAgICAgICAgICAgICJjYW5vbmljYWxWMDAwMlNoYTI1NiI6ICI0MzhmNjdjY2YzYzJmNjQwYTFlN2E0ZTMyNWUyNGZiNjBkMWViNGYzNjNhYjU0NWUxZTY5YmFiYmEyMDJkYjE2IiwKICAgICAgICAgICAgICAgICJjYW5vbmljYWxWMDAwMkZseXdheUNoZWNrc3VtIjogMTI5MTMyNjIzNiwgInJlc29sdmVkVmVyc2lvbiI6ICIwMDAyIiwKICAgICAgICAgICAgICAgICJyZXNvbHZlZERlc2NyaXB0aW9uIjogImVuYWJsZSBidHJlZSBnaXN0IGV4dGVuc2lvbiIsCiAgICAgICAgICAgICAgICAicHJvdmlkZXJEb2N1bWVudFNoYTI1NiI6ICIzNGUxZjkyYzg3ZjIyZWIxMjU2ZjQ5YjJhMzFjNDk5MTFjZDYyYmI3YzE4Y2U0Zjc5NjBlNDNmNTg1NTg0Yzk2IiwKICAgICAgICAgICAgICAgICJleGVjdXRvck1vZGUiOiAiRVhURVJOQUxMWV9TQVRJU0ZJRURfUFJPVklERVJfRVhURU5TSU9OIiwKICAgICAgICAgICAgICAgICJleHRlbnNpb25zIjogeyJidHJlZV9naXN0IjogIjEuNyIsICJwZ2NyeXB0byI6ICIxLjMifSwKICAgICAgICAgICAgICAgICJlbnZpcm9ubWVudFJlZmVyZW5jZSI6IG1hbmlmZXN0WyJlbnZpcm9ubWVudCJdWyJNQVJLRVRPUFNfRU5WSVJPTk1FTlQiXX0KICAgIGlmIG5vdCBpc2luc3RhbmNlKGV2aWRlbmNlLCBkaWN0KSBvciBhbnkoZXZpZGVuY2UuZ2V0KGspICE9IHYgZm9yIGssIHYgaW4gZXhwZWN0ZWQuaXRlbXMoKSk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiY29tcGxldGVkIG1hbmFnZWQgbWlncmF0aW9uIGV2aWRlbmNlIHJlcXVpcmVkIikKICAgIGlmIGV2aWRlbmNlLmdldCgicHJvdmlkZXJDb250cm9sUGxhbmVBcHBsaWVkIikgaXMgbm90IFRydWU6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigicmVhbCBhcHBsaWVkLXJlc291cmNlIGV2aWRlbmNlIHJlcXVpcmVkIGZvciBydW50aW1lIikKICAgIGZhY3RzID0gZXZpZGVuY2UuZ2V0KCJleHRlbnNpb25GYWN0cyIsIHt9KQogICAgaWYgc2V0KGZhY3RzKSAhPSB7ImJ0cmVlX2dpc3QiLCAicGdjcnlwdG8ifSBvciBhbnkoCiAgICAgICAgICAgIGZhY3RzW25hbWVdLmdldCgic2NoZW1hIikgIT0gInB1YmxpYyIgb3IgZmFjdHNbbmFtZV0uZ2V0KCJ2ZXJzaW9uIikgIT0gdmVyc2lvbgogICAgICAgICAgICBvciBmYWN0c1tuYW1lXS5nZXQoIm93bmVyIikgaW4ge05vbmUsICJtYXJrZXRvcHNfYXBwIiwgIm1hcmtldG9wc19taWdyYXRpb24ifQogICAgICAgICAgICBmb3IgbmFtZSwgdmVyc2lvbiBpbiBleHBlY3RlZFsiZXh0ZW5zaW9ucyJdLml0ZW1zKCkpOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoIm1pZ3JhdGlvbiBleHRlbnNpb24gZmFjdHMgaW5jb25zaXN0ZW50IikKICAgIGFzc2VydGlvbnMgPSBldmlkZW5jZS5nZXQoInJvbGVBc3NlcnRpb25zIikKICAgIGlmIG5vdCBpc2luc3RhbmNlKGFzc2VydGlvbnMsIGRpY3QpIG9yIHNldChhc3NlcnRpb25zKSAhPSBST0xFX0FTU0VSVElPTlMgb3IgYW55KHYgaXMgbm90IFRydWUgZm9yIHYgaW4gYXNzZXJ0aW9ucy52YWx1ZXMoKSk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigibWlncmF0aW9uIHByaXZpbGVnZSBhc3NlcnRpb25zIGluY29tcGxldGUiKQogICAgZm9yIGtleSBpbiBbImFydGlmYWN0U2hhMjU2IiwgImRhdGFiYXNlVXJsU2hhMjU2IiwgImJvb3RzdHJhcEV2aWRlbmNlU2hhMjU2IiwgInByb3ZpZGVyRXZpZGVuY2VTaGEyNTYiLAogICAgICAgICAgICAgICAgInByb3ZpZGVyRG9jdW1lbnRTaGEyNTYiLCAic3RhcnRlZEV2aWRlbmNlU2hhMjU2IiwgImF0dGVzdGVkRXZpZGVuY2VTaGEyNTYiXToKICAgICAgICBpZiBub3QgaXNpbnN0YW5jZShldmlkZW5jZS5nZXQoa2V5KSwgc3RyKSBvciBub3QgcmUuZnVsbG1hdGNoKHIiWzAtOWEtZl17NjR9IiwgZXZpZGVuY2Vba2V5XSk6CiAgICAgICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoIm1pZ3JhdGlvbiBjdXN0b2R5IGlkZW50aXR5IG1pc3NpbmciKQogICAgaWYgZXZpZGVuY2VbImRhdGFiYXNlVXJsU2hhMjU2Il0gIT0gaGFzaGxpYi5zaGEyNTYobWFuaWZlc3RbImVudmlyb25tZW50Il1bIlNQUklOR19EQVRBU09VUkNFX1VSTCJdLmVuY29kZSgidXRmLTgiKSkuaGV4ZGlnZXN0KCk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigibWlncmF0aW9uIGV2aWRlbmNlIGJlbG9uZ3MgdG8gYSBkaWZmZXJlbnQgZGF0YWJhc2UiKQogICAgZm9yIGtleSBpbiBbInJlcG9zaXRvcnlDb21taXQiLCAicmVwb3NpdG9yeVRyZWUiXToKICAgICAgICBpZiBub3QgaXNpbnN0YW5jZShldmlkZW5jZS5nZXQoa2V5KSwgc3RyKSBvciBub3QgcmUuZnVsbG1hdGNoKHIiKD86WzAtOWEtZl17NDB9fFswLTlhLWZdezY0fSkiLCBldmlkZW5jZVtrZXldKToKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigibWlncmF0aW9uIHJlbGVhc2UgaWRlbnRpdHkgbWlzc2luZyIpCiAgICBhZnRlciA9IGV2aWRlbmNlLmdldCgiZmx5d2F5SGlzdG9yeUFmdGVyIiwge30pCiAgICBtaWdyYXRpb25zID0gYWZ0ZXIuZ2V0KCJtaWdyYXRpb25zIiwgW10pCiAgICBpZiBhZnRlci5nZXQoInN0YXRlIikgIT0gIlBSRVNFTlQiIG9yIGFmdGVyLmdldCgidjAwMDIiKSAhPSAiQ0FOT05JQ0FMIiBvciBub3QgbWlncmF0aW9ucyBcCiAgICAgICAgICAgIG9yIG1pZ3JhdGlvbnNbLTFdLmdldCgidmVyc2lvbiIpICE9IGV2aWRlbmNlLmdldCgic2NoZW1hVmVyc2lvbkFmdGVyIikgXAogICAgICAgICAgICBvciBhbnkocm93LmdldCgic3VjY2VzcyIpIGlzIG5vdCBUcnVlIGZvciByb3cgaW4gbWlncmF0aW9ucyk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigibWlncmF0aW9uIGhpc3RvcnkgaXMgbm90IGNvbXBsZXRlIikKICAgIHJldHVybiBldmlkZW5jZQoKY2xhc3MgTm9SZWRpcmVjdCh1cmxsaWIucmVxdWVzdC5IVFRQUmVkaXJlY3RIYW5kbGVyKToKICAgIGRlZiByZWRpcmVjdF9yZXF1ZXN0KHNlbGYsIHJlcSwgZnAsIGNvZGUsIG1zZywgaGVhZGVycywgbmV3dXJsKToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJib290c3RyYXAgcmVkaXJlY3RzIGFyZSBmb3JiaWRkZW4iKQoKZGVmIHJlYWRfanNvbih1cmwsIGhlYWRlcnMpOgogICAgb3BlbmVyID0gdXJsbGliLnJlcXVlc3QuYnVpbGRfb3BlbmVyKE5vUmVkaXJlY3QoKSwgdXJsbGliLnJlcXVlc3QuUHJveHlIYW5kbGVyKHt9KSkKICAgIHJlcXVlc3QgPSB1cmxsaWIucmVxdWVzdC5SZXF1ZXN0KHVybCwgaGVhZGVycz1oZWFkZXJzKQogICAgd2l0aCBvcGVuZXIub3BlbihyZXF1ZXN0LCB0aW1lb3V0PTE1KSBhcyByZXNwb25zZToKICAgICAgICBwYXlsb2FkID0gcmVzcG9uc2UucmVhZChNQVhfUkVTUE9OU0UgKyAxKQogICAgaWYgbGVuKHBheWxvYWQpID4gTUFYX1JFU1BPTlNFOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImJvb3RzdHJhcCByZXNwb25zZSBleGNlZWRzIGJvdW5kIikKICAgIHJldHVybiBqc29uLmxvYWRzKHBheWxvYWQpCgpkZWYgdmFsaWRhdGUobWFuaWZlc3QpOgogICAgaWYgc2V0KG1hbmlmZXN0KSAhPSB7InJvbGUiLCAiYmFja2VuZF9pbWFnZSIsICJjb25zb2xlX2ltYWdlIiwgImVudmlyb25tZW50IiwgInNlY3JldHMiLCAibWlncmF0aW9uX2V2aWRlbmNlIn06CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiY2xvc2VkIHJ1bnRpbWUgbWFuaWZlc3QgcmVxdWlyZWQiKQogICAgaWYgbWFuaWZlc3RbInJvbGUiXSBub3QgaW4geyJhcHBsaWNhdGlvbiIsICJ3b3JrZXIifToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ1bmtub3duIHJ1bnRpbWUgcm9sZSIpCiAgICBmb3Iga2V5IGluIFsiYmFja2VuZF9pbWFnZSIsICJjb25zb2xlX2ltYWdlIl06CiAgICAgICAgaWYgbm90IGlzaW5zdGFuY2UobWFuaWZlc3Rba2V5XSwgc3RyKSBvciBub3QgSU1BR0UuZnVsbG1hdGNoKG1hbmlmZXN0W2tleV0pOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJkaWdlc3QtcGlubmVkIFlhbmRleCBpbWFnZSByZXF1aXJlZCIpCiAgICBlbnZpcm9ubWVudCA9IG1hbmlmZXN0WyJlbnZpcm9ubWVudCJdCiAgICBpZiBzZXQoZW52aXJvbm1lbnQpICE9IEVOVklST05NRU5UX0tFWVMgb3IgYW55KG5vdCBpc2luc3RhbmNlKHYsIHN0cikgb3IgIlxuIiBpbiB2IG9yICJcciIgaW4gdiBmb3IgdiBpbiBlbnZpcm9ubWVudC52YWx1ZXMoKSk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiY2xvc2VkIG5vbi1zZWNyZXQgZW52aXJvbm1lbnQgcmVxdWlyZWQiKQogICAgZm9yIGtleSBpbiBbIk1BUktFVE9QU19BQ1FVSVNJVElPTl9TQ0hFRFVMRVJfRU5BQkxFRCIsICJNQVJLRVRPUFNfUFJJQ0VfV1JJVEVfV09SS0VSX0VOQUJMRUQiLCAiU1BSSU5HX0ZMWVdBWV9FTkFCTEVEIl06CiAgICAgICAgaWYgZW52aXJvbm1lbnRba2V5XSAhPSAiZmFsc2UiOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJib290c3RyYXAgZG9lcyBub3QgYXV0aG9yaXplIGV4ZWN1dGlvbiBvciBtaWdyYXRpb25zIikKICAgIGlmIGVudmlyb25tZW50WyJTUFJJTkdfUFJPRklMRVNfQUNUSVZFIl0gIT0gInByb2R1Y3Rpb24iIG9yIGVudmlyb25tZW50WyJTUFJJTkdfQ09ORklHX0lNUE9SVCJdICE9ICJjb25maWd0cmVlOi9ydW4vbWFya2V0b3BzL2NvbmZpZy8iOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInByb2R1Y3Rpb24gY29uZmlndXJhdGlvbiBib3VuZGFyeSByZXF1aXJlZCIpCiAgICBpZiBlbnZpcm9ubWVudFsiTUFSS0VUT1BTX1NFQ1JFVF9NT1VOVF9ESVJFQ1RPUlkiXSAhPSAiL3J1bi9tYXJrZXRvcHMvY3JlZGVudGlhbHMiOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImVwaGVtZXJhbCBjcmVkZW50aWFsIG1vdW50IHJlcXVpcmVkIikKICAgIGlmIG5vdCByZS5mdWxsbWF0Y2gociJqZGJjOnBvc3RncmVzcWw6Ly9jLVthLXowLTldezIwfVsuXXJ3Wy5dbWRiWy5deWFuZGV4Y2xvdWRbLl1uZXQ6NjQzMi9tYXJrZXRvcHNbP10iCiAgICAgICAgICAgICAgICAgICAgICAgIHIic3NsbW9kZT12ZXJpZnktZnVsbCZzc2xyb290Y2VydD0vb3B0L21hcmtldG9wcy9jZXJ0cy95YW5kZXgtcm9vdFsuXWNydCZ0YXJnZXRTZXJ2ZXJUeXBlPXByaW1hcnkiLAogICAgICAgICAgICAgICAgICAgICAgICBlbnZpcm9ubWVudFsiU1BSSU5HX0RBVEFTT1VSQ0VfVVJMIl0pOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInZlcmlmaWVkIHByaXZhdGUgZGF0YWJhc2UgZGVzdGluYXRpb24gcmVxdWlyZWQiKQogICAgdmFsaWRhdGVfbWlncmF0aW9uKG1hbmlmZXN0KQogICAgaWYgbm90IFJFUVVJUkVEX0ZJTEVTLmlzc3Vic2V0KG1hbmlmZXN0WyJzZWNyZXRzIl0pOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInJlcXVpcmVkIHNlY3JldCByZWZlcmVuY2VzIG1pc3NpbmciKQogICAgZm9yIGRlc3RpbmF0aW9uLCBiaW5kaW5nIGluIG1hbmlmZXN0WyJzZWNyZXRzIl0uaXRlbXMoKToKICAgICAgICBpZiBkZXN0aW5hdGlvbiBub3QgaW4gQ09ORklHX0ZJTEVTIGFuZCBub3QgcmUuZnVsbG1hdGNoKHIiY3JlZGVudGlhbHMvW2EtejAtOV1bYS16MC05LV17MCw2Mn0oPzovW2EtejAtOV1bYS16MC05Ll8tXXswLDYyfSl7MSw0fSIsIGRlc3RpbmF0aW9uKToKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiaW52YWxpZCBzZWNyZXQgZGVzdGluYXRpb24iKQogICAgICAgIGlmIGFueShwYXJ0IGluIHsiLiIsICIuLiJ9IGZvciBwYXJ0IGluIGRlc3RpbmF0aW9uLnNwbGl0KCIvIikpOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJpbnZhbGlkIHNlY3JldCBkZXN0aW5hdGlvbiIpCiAgICAgICAgaWYgc2V0KGJpbmRpbmcpICE9IHsic2VjcmV0X2lkIiwgInZlcnNpb25faWQiLCAia2V5In0gb3IgYW55KG5vdCBJREVOVElGSUVSLmZ1bGxtYXRjaChiaW5kaW5nW25dKSBmb3IgbiBpbiBbInNlY3JldF9pZCIsICJ2ZXJzaW9uX2lkIl0pOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJwaW5uZWQgTG9ja2JveCByZWZlcmVuY2UgcmVxdWlyZWQiKQogICAgICAgIGlmIG5vdCBpc2luc3RhbmNlKGJpbmRpbmdbImtleSJdLCBzdHIpIG9yIG5vdCByZS5mdWxsbWF0Y2gociJbQS1aYS16MC05Ll8tXXsxLDY0fSIsIGJpbmRpbmdbImtleSJdKToKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiaW52YWxpZCBMb2NrYm94IGVudHJ5IGtleSIpCgpkZWYgZGVsaXZlcihtYW5pZmVzdCwgcm9vdCwgdHJhbnNwb3J0PXJlYWRfanNvbik6CiAgICB2YWxpZGF0ZShtYW5pZmVzdCkKICAgIHRva2VuID0gdHJhbnNwb3J0KCJodHRwOi8vMTY5LjI1NC4xNjkuMjU0L2NvbXB1dGVNZXRhZGF0YS92MS9pbnN0YW5jZS9zZXJ2aWNlLWFjY291bnRzL2RlZmF1bHQvdG9rZW4iLCB7Ik1ldGFkYXRhLUZsYXZvciI6ICJHb29nbGUifSkuZ2V0KCJhY2Nlc3NfdG9rZW4iKQogICAgaWYgbm90IGlzaW5zdGFuY2UodG9rZW4sIHN0cikgb3Igbm90IHRva2VuIG9yICJcbiIgaW4gdG9rZW4gb3IgIlxyIiBpbiB0b2tlbjoKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJpbnN0YW5jZSBpZGVudGl0eSB1bmF2YWlsYWJsZSIpCiAgICBwYXlsb2FkcyA9IHt9CiAgICBzdGFnZWQgPSBbXQogICAgZm9yIGRlc3RpbmF0aW9uLCBiaW5kaW5nIGluIG1hbmlmZXN0WyJzZWNyZXRzIl0uaXRlbXMoKToKICAgICAgICBpZGVudGl0eSA9IChiaW5kaW5nWyJzZWNyZXRfaWQiXSwgYmluZGluZ1sidmVyc2lvbl9pZCJdKQogICAgICAgIGlmIGlkZW50aXR5IG5vdCBpbiBwYXlsb2FkczoKICAgICAgICAgICAgdXJsID0gImh0dHBzOi8vcGF5bG9hZC5sb2NrYm94LmFwaS5jbG91ZC55YW5kZXgubmV0L2xvY2tib3gvdjEvc2VjcmV0cy8iICsgaWRlbnRpdHlbMF0gKyAiL3BheWxvYWQ/dmVyc2lvbklkPSIgKyBpZGVudGl0eVsxXQogICAgICAgICAgICByZXN1bHQgPSB0cmFuc3BvcnQodXJsLCB7IkF1dGhvcml6YXRpb24iOiAiQmVhcmVyICIgKyB0b2tlbn0pCiAgICAgICAgICAgIGlmIHJlc3VsdC5nZXQoInZlcnNpb25JZCIpICE9IGlkZW50aXR5WzFdIG9yIG5vdCBpc2luc3RhbmNlKHJlc3VsdC5nZXQoImVudHJpZXMiKSwgbGlzdCk6CiAgICAgICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJMb2NrYm94IHZlcnNpb24gbWlzbWF0Y2giKQogICAgICAgICAgICBlbnRyaWVzID0gcmVzdWx0WyJlbnRyaWVzIl0KICAgICAgICAgICAgaWYgbGVuKHtlbnRyeS5nZXQoImtleSIpIGZvciBlbnRyeSBpbiBlbnRyaWVzfSkgIT0gbGVuKGVudHJpZXMpOgogICAgICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiZHVwbGljYXRlIExvY2tib3ggZW50cnkiKQogICAgICAgICAgICBwYXlsb2Fkc1tpZGVudGl0eV0gPSB7ZW50cnlbImtleSJdOiBlbnRyeS5nZXQoInRleHRWYWx1ZSIpIGZvciBlbnRyeSBpbiBlbnRyaWVzfQogICAgICAgIHZhbHVlID0gcGF5bG9hZHNbaWRlbnRpdHldLmdldChiaW5kaW5nWyJrZXkiXSkKICAgICAgICBpZiBub3QgaXNpbnN0YW5jZSh2YWx1ZSwgc3RyKSBvciBub3QgdmFsdWUgb3IgbGVuKHZhbHVlLmVuY29kZSgidXRmLTgiKSkgPiAxNjM4NDoKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigibWlzc2luZyBvciBvdmVyc2l6ZWQgc2VjcmV0IHZhbHVlIikKICAgICAgICBzdGFnZWQuYXBwZW5kKChkZXN0aW5hdGlvbiwgdmFsdWUpKQogICAgIyBDb21wbGV0ZSBhbmQgdmFsaWRhdGUgYWxsIHBheWxvYWRzIGJlZm9yZSBjaGFuZ2luZyBhbnkgbW91bnRlZCBmaWxlLgogICAgZm9yIGRlc3RpbmF0aW9uLCB2YWx1ZSBpbiBzdGFnZWQ6CiAgICAgICAgdGFyZ2V0ID0gcm9vdCAvIGRlc3RpbmF0aW9uCiAgICAgICAgdGFyZ2V0LnBhcmVudC5ta2RpcihwYXJlbnRzPVRydWUsIGV4aXN0X29rPVRydWUsIG1vZGU9MG83MDApCiAgICAgICAgaWYgdGFyZ2V0LmlzX3N5bWxpbmsoKSBvciBhbnkocGFyZW50LmlzX3N5bWxpbmsoKSBmb3IgcGFyZW50IGluIHRhcmdldC5wYXJlbnRzKToKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigic2VjcmV0IG1vdW50IGNvbnRhaW5zIGEgc3ltbGluayIpCiAgICAgICAgZGVzY3JpcHRvciA9IG9zLm9wZW4odGFyZ2V0LCBvcy5PX1dST05MWSB8IG9zLk9fQ1JFQVQgfCBvcy5PX1RSVU5DIHwgb3MuT19OT0ZPTExPVywgMG82MDApCiAgICAgICAgd2l0aCBvcy5mZG9wZW4oZGVzY3JpcHRvciwgIndiIikgYXMgb3V0cHV0OgogICAgICAgICAgICBvdXRwdXQud3JpdGUodmFsdWUuZW5jb2RlKCJ1dGYtOCIpKQogICAgcmV0dXJuIHRva2VuCgpkZWYgcnVuKGNvbW1hbmQsICoqa3dhcmdzKToKICAgIHJldHVybiBzdWJwcm9jZXNzLnJ1bihjb21tYW5kLCBjaGVjaz1UcnVlLCBzdGRvdXQ9a3dhcmdzLnBvcCgic3Rkb3V0Iiwgc3VicHJvY2Vzcy5ERVZOVUxMKSwgc3RkZXJyPXN1YnByb2Nlc3MuREVWTlVMTCwgdGltZW91dD0xMjAsICoqa3dhcmdzKQoKZGVmIHN0YXJ0KG1hbmlmZXN0LCByb290LCB0b2tlbiwgZXhlY3V0ZT1ydW4pOgogICAgdmFsaWRhdGUobWFuaWZlc3QpCiAgICBleGVjdXRlKFsiZG9ja2VyIiwgImxvZ2luIiwgIi0tdXNlcm5hbWUiLCAiaWFtIiwgIi0tcGFzc3dvcmQtc3RkaW4iLCAiY3IueWFuZGV4Il0sIGlucHV0PXRva2VuLmVuY29kZSgpKQogICAgdHJ5OgogICAgICAgIGV4ZWN1dGUoWyJkb2NrZXIiLCAicHVsbCIsIG1hbmlmZXN0WyJiYWNrZW5kX2ltYWdlIl1dKQogICAgICAgIGlmIG1hbmlmZXN0WyJyb2xlIl0gPT0gImFwcGxpY2F0aW9uIjoKICAgICAgICAgICAgZXhlY3V0ZShbImRvY2tlciIsICJwdWxsIiwgbWFuaWZlc3RbImNvbnNvbGVfaW1hZ2UiXV0pCiAgICBmaW5hbGx5OgogICAgICAgICMgRG9ja2VyJ3MgdG9rZW4gY2FjaGUgbGl2ZXMgaW4gdG1wZnMgYW5kIGlzIHJlbW92ZWQgYmVmb3JlIHN0YXJ0aW5nIHdvcmtsb2Fkcy4KICAgICAgICBjb25maWcgPSByb290IC8gImRvY2tlci1jb25maWciIC8gImNvbmZpZy5qc29uIgogICAgICAgIGNvbmZpZy51bmxpbmsobWlzc2luZ19vaz1UcnVlKQogICAgIyBUaGUgaW1hZ2UgYnVpbGQgdmVyaWZpZXMgdGhpcyBsYWJlbCBhZ2FpbnN0IHRoZSBhY3R1YWwgSkFSIGJ5dGVzLiBBIHJ1bnRpbWUKICAgICMgaW1hZ2UgZnJvbSBhIGRpZmZlcmVudCBhcnRpZmFjdCBtdXN0IG5vdCBzdGFydCBhZ2FpbnN0IHRoaXMgbWlncmF0aW9uIHByb29mLgogICAgbWV0YWRhdGEgPSBleGVjdXRlKFsiZG9ja2VyIiwgImltYWdlIiwgImluc3BlY3QiLCAiLS1mb3JtYXQiLAogICAgICAgICAgICAgICAgICAgICAgICAne3sgaW5kZXggLkNvbmZpZy5MYWJlbHMgIm9yZy5tYXJrZXRvcHMuYXJ0aWZhY3Qtc2hhMjU2IiB9fScsIG1hbmlmZXN0WyJiYWNrZW5kX2ltYWdlIl1dLAogICAgICAgICAgICAgICAgICAgICAgIHN0ZG91dD1zdWJwcm9jZXNzLlBJUEUpLnN0ZG91dAogICAgaWYgbm90IGlzaW5zdGFuY2UobWV0YWRhdGEsIGJ5dGVzKSBvciBsZW4obWV0YWRhdGEpID4gMTI4IFwKICAgICAgICAgICAgb3IgbWV0YWRhdGEuc3RyaXAoKS5kZWNvZGUoImFzY2lpIikgIT0gdmFsaWRhdGVfbWlncmF0aW9uKG1hbmlmZXN0KVsiYXJ0aWZhY3RTaGEyNTYiXToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJydW50aW1lIGltYWdlIGRpZmZlcnMgZnJvbSB0aGUgbWlncmF0ZWQgYXJ0aWZhY3QiKQogICAgZm9yIHBhdGggaW4gW3Jvb3RdICsgbGlzdChyb290LnJnbG9iKCIqIikpOgogICAgICAgIGlmIHBhdGgubmFtZSAhPSAiZG9ja2VyLWNvbmZpZyI6CiAgICAgICAgICAgIG9zLmNob3duKHBhdGgsIDEwMDAxLCAxMDAwMSkKICAgIGJhc2UgPSBbImRvY2tlciIsICJydW4iLCAiLS1kZXRhY2giLCAiLS1yZXN0YXJ0IiwgIm5vIiwgIi0tbGFiZWwiLCAib3JnLm1hcmtldG9wcy5tYW5hZ2VkPXRydWUiLCAiLS1uZXR3b3JrIiwgImhvc3QiLCAiLS1yZWFkLW9ubHkiLAogICAgICAgICAgICAiLS1jYXAtZHJvcCIsICJBTEwiLCAiLS1zZWN1cml0eS1vcHQiLCAibm8tbmV3LXByaXZpbGVnZXMiLCAiLS11c2VyIiwgIjEwMDAxOjEwMDAxIiwgIi0tdG1wZnMiLCAiL3RtcDpydyxub2V4ZWMsbm9zdWlkLHNpemU9MTI4bSJdCiAgICBjb21tYW5kID0gYmFzZSArIFsiLS1uYW1lIiwgIm1hcmtldG9wcy1hcGkiLCAiLS1tb3VudCIsICJ0eXBlPWJpbmQsc3JjPSIrc3RyKHJvb3QpKyIsZHN0PS9ydW4vbWFya2V0b3BzLHJlYWRvbmx5Il0KICAgIGZvciBrZXksIHZhbHVlIGluIHNvcnRlZChtYW5pZmVzdFsiZW52aXJvbm1lbnQiXS5pdGVtcygpKToKICAgICAgICBjb21tYW5kICs9IFsiLS1lbnYiLCBrZXkrIj0iK3ZhbHVlXQogICAgZXhlY3V0ZShjb21tYW5kICsgW21hbmlmZXN0WyJiYWNrZW5kX2ltYWdlIl1dKQogICAgaWYgbWFuaWZlc3RbInJvbGUiXSA9PSAiYXBwbGljYXRpb24iOgogICAgICAgIGV4ZWN1dGUoYmFzZSArIFsiLS1uYW1lIiwgIm1hcmtldG9wcy1jb25zb2xlIiwgbWFuaWZlc3RbImNvbnNvbGVfaW1hZ2UiXV0pCgpkZWYgb3duZWRfc3RhdGVzKG1hbmlmZXN0LCBleGVjdXRlPXJ1bik6CiAgICB2YWxpZGF0ZShtYW5pZmVzdCkKICAgIG5hbWVzID0gWyJtYXJrZXRvcHMtYXBpIl0gKyAoWyJtYXJrZXRvcHMtY29uc29sZSJdIGlmIG1hbmlmZXN0WyJyb2xlIl0gPT0gImFwcGxpY2F0aW9uIiBlbHNlIFtdKQogICAgcGF5bG9hZCA9IGV4ZWN1dGUoWyJkb2NrZXIiLCAicHMiLCAiLS1hbGwiLCAiLS1maWx0ZXIiLCAibGFiZWw9b3JnLm1hcmtldG9wcy5tYW5hZ2VkPXRydWUiLAogICAgICAgICAgICAgICAgICAgICAgICItLWZvcm1hdCIsICJ7ey5OYW1lc319fHt7LlN0YXRlfX0iXSwgc3Rkb3V0PXN1YnByb2Nlc3MuUElQRSkuc3Rkb3V0CiAgICBpZiBub3QgaXNpbnN0YW5jZShwYXlsb2FkLCBieXRlcykgb3IgbGVuKHBheWxvYWQpID4gNjU1MzY6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiYm91bmRlZCBvd25lZC1jb250YWluZXIgc3RhdHVzIHJlcXVpcmVkIikKICAgIHN0YXRlcyA9IHt9CiAgICBmb3IgbGluZSBpbiBwYXlsb2FkLmRlY29kZSgiYXNjaWkiKS5zcGxpdGxpbmVzKCk6CiAgICAgICAgbmFtZSwgc3RhdGUgPSBsaW5lLnNwbGl0KCJ8IikKICAgICAgICBpZiBuYW1lIGluIG5hbWVzOgogICAgICAgICAgICBpZiBuYW1lIGluIHN0YXRlcyBvciBzdGF0ZSBub3QgaW4geyJydW5uaW5nIiwgImNyZWF0ZWQiLCAiZXhpdGVkIiwgInBhdXNlZCIsICJkZWFkIiwgInJlc3RhcnRpbmciLCAicmVtb3ZpbmcifToKICAgICAgICAgICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImFtYmlndW91cyBvd25lZC1jb250YWluZXIgc3RhdHVzIikKICAgICAgICAgICAgc3RhdGVzW25hbWVdID0gc3RhdGUKICAgIHJldHVybiBzdGF0ZXMKCmRlZiBzdG9wKG1hbmlmZXN0LCBleGVjdXRlPXJ1bik6CiAgICAjIE9ubHkgY29udGFpbmVycyBjYXJyeWluZyBvdXIgb3duZXJzaGlwIGxhYmVsIGFyZSBlbGlnaWJsZSBmb3IgcmVtb3ZhbC4KICAgICMgTWlzc2luZyBjb250YWluZXJzIGFyZSBub3JtYWwgb24gdGhlIGZpcnN0IGJvb3Q7IG5hbWUgY29sbGlzaW9ucyBhcmUgbm90IGZvcmNlLXJlbW92ZWQuCiAgICBmb3IgbmFtZSwgc3RhdGUgaW4gb3duZWRfc3RhdGVzKG1hbmlmZXN0LCBleGVjdXRlKS5pdGVtcygpOgogICAgICAgIGlmIHN0YXRlIGluIHsicnVubmluZyIsICJwYXVzZWQiLCAicmVzdGFydGluZyJ9OgogICAgICAgICAgICBleGVjdXRlKFsiZG9ja2VyIiwgInN0b3AiLCAiLS10aW1lIiwgIjMwIiwgbmFtZV0pCiAgICAgICAgZXhlY3V0ZShbImRvY2tlciIsICJybSIsIG5hbWVdKQoKZGVmIHN1cGVydmlzZShtYW5pZmVzdCwgZXhlY3V0ZT1ydW4sIHBhdXNlPXRpbWUuc2xlZXApOgogICAgbmFtZXMgPSB7Im1hcmtldG9wcy1hcGkifSB8ICh7Im1hcmtldG9wcy1jb25zb2xlIn0gaWYgbWFuaWZlc3RbInJvbGUiXSA9PSAiYXBwbGljYXRpb24iIGVsc2Ugc2V0KCkpCiAgICB3aGlsZSBUcnVlOgogICAgICAgIGlmIG93bmVkX3N0YXRlcyhtYW5pZmVzdCwgZXhlY3V0ZSkgIT0ge25hbWU6ICJydW5uaW5nIiBmb3IgbmFtZSBpbiBuYW1lc306CiAgICAgICAgICAgIHJhaXNlIFJ1bnRpbWVFcnJvcigib3duZWQgcnVudGltZSBjb250YWluZXIgZXhpdGVkIikKICAgICAgICBwYXVzZSg1KQoKZGVmIG1haW4oKToKICAgIG1hbmlmZXN0ID0ganNvbi5sb2FkcyhQYXRoKHN5cy5hcmd2WzFdKS5yZWFkX3RleHQoKSkKICAgIHJvb3QgPSBQYXRoKCIvcnVuL21hcmtldG9wcyIpCiAgICAjIFRoZSBzeXN0ZW1kIFJ1bnRpbWVEaXJlY3RvcnkgaXMgdW5kZXIgTGludXggL3J1biAodG1wZnMpOyByZWZ1c2UgYW4gYWx0ZXJuYXRlIGRpc2sgbW91bnQuCiAgICBtb3VudGluZm8gPSBQYXRoKCIvcHJvYy9zZWxmL21vdW50aW5mbyIpLnJlYWRfdGV4dCgpLnNwbGl0bGluZXMoKQogICAgaWYgbm90IGFueSgiIC9ydW4gIiBpbiBsaW5lIGFuZCAiIC0gdG1wZnMgIiBpbiBsaW5lIGZvciBsaW5lIGluIG1vdW50aW5mbyk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiZXBoZW1lcmFsIC9ydW4gbW91bnQgcmVxdWlyZWQiKQogICAgaWYgc3lzLmFyZ3ZbMjpdID09IFsiLS1zdG9wIl06CiAgICAgICAgc3RvcChtYW5pZmVzdCkKICAgIGVsaWYgbGVuKHN5cy5hcmd2KSA9PSAyOgogICAgICAgICMgRG9ja2VyIG5ldmVyIGF1dG8tc3RhcnRzIGEgc3RhbGUgY29udGFpbmVyIGFnYWluc3QgYW4gZW1wdHkvcmVwbGFjZWQgdG1wZnMuCiAgICAgICAgIyBFYWNoIHN5c3RlbWQgcmVzdGFydCB2YWxpZGF0ZXMgbWlncmF0aW9uIGV2aWRlbmNlLCByZXRpcmVzIG93bmVkIGxlZnRvdmVycywKICAgICAgICAjIHJlZGVsaXZlcnMgYWxsIHBpbm5lZCBzZWNyZXRzIGFuZCBzdGFydHMgdGhlIGNoZWNrZWQgYXJ0aWZhY3QgYWdhaW4uCiAgICAgICAgc3RvcChtYW5pZmVzdCkKICAgICAgICBzdGFydChtYW5pZmVzdCwgcm9vdCwgZGVsaXZlcihtYW5pZmVzdCwgcm9vdCkpCiAgICAgICAgc3VwZXJ2aXNlKG1hbmlmZXN0KQogICAgZWxzZToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ1bnN1cHBvcnRlZCBib290c3RyYXAgYWN0aW9uIikKCmlmIF9fbmFtZV9fID09ICJfX21haW5fXyI6CiAgICB0cnk6CiAgICAgICAgbWFpbigpCiAgICAgICAgcHJpbnQoIm1hcmtldG9wc19ib290c3RyYXBfY29tcGxldGVkIikKICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgIyBOZXZlciBwcmludCBwcm92aWRlciBlcnJvcnMsIHByb2Nlc3Mgb3V0cHV0LCBwYXlsb2FkcywgVVJMcyBvciBlbnZpcm9ubWVudCB2YWx1ZXMuCiAgICAgICAgcHJpbnQoIm1hcmtldG9wc19ib290c3RyYXBfZmFpbGVkIiwgZmlsZT1zeXMuc3RkZXJyKQogICAgICAgIHJhaXNlIFN5c3RlbUV4aXQoMSkK\",\"encoding\":\"b64\",\"owner\":\"root:root\",\"path\":\"/usr/local/lib/marketops-bootstrap.py\",\"permissions\":\"0700\"},{\"content\":\"IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJCb3VuZGVkIGhvc3QgdGVsZW1ldHJ5IGRlbGl2ZXJ5LiBJdCBuZXZlciByZWFkcyBkYXRhYmFzZSBvciBNYXJrZXRwbGFjZSBzZWNyZXRzLiIiIgpmcm9tIGRhdGV0aW1lIGltcG9ydCBkYXRldGltZSwgdGltZXpvbmUKaW1wb3J0IGpzb24KZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmltcG9ydCByZQppbXBvcnQgc29ja2V0CmltcG9ydCBzeXMKaW1wb3J0IHVybGxpYi5wYXJzZQppbXBvcnQgdXJsbGliLnJlcXVlc3QKClNOQVBTSE9UX1VSTCA9ICJodHRwOi8vMTI3LjAuMC4xOjgwODAvYWN0dWF0b3Ivb3BlcmF0aW9ucyIKVE9LRU5fVVJMID0gImh0dHA6Ly8xNjkuMjU0LjE2OS4yNTQvY29tcHV0ZU1ldGFkYXRhL3YxL2luc3RhbmNlL3NlcnZpY2UtYWNjb3VudHMvZGVmYXVsdC90b2tlbiIKV1JJVEVfVVJMID0gImh0dHBzOi8vbW9uaXRvcmluZy5hcGkuY2xvdWQueWFuZGV4Lm5ldC9tb25pdG9yaW5nL3YyL2RhdGEvd3JpdGUiClNJR05BTFMgPSBmcm96ZW5zZXQoeyJwcmljZV9jb21tYW5kX2F3YWl0aW5nX29wZXJhdG9yIiwgInByaWNlX2NvbW1hbmRfcmVhZGJhY2tfbWlzbWF0Y2giLAogICAgICAgICAgICAgICAgICAgICAiaW5nZXN0aW9uX3J1bl9iYWNrbG9nX2FnZV9zZWNvbmRzIiwgInByaWNlX2NvbW1hbmRfZ2F0ZV9jbG9zZWQiLAogICAgICAgICAgICAgICAgICAgICAicmF3X2N1c3RvZHlfd3JpdGVfZmFpbGVkIiwgImRhdGFiYXNlX3JlYWRpbmVzc19mYWlsZWQifSkKTUFYX0JZVEVTID0gMTYzODQKCgpjbGFzcyBOb1JlZGlyZWN0KHVybGxpYi5yZXF1ZXN0LkhUVFBSZWRpcmVjdEhhbmRsZXIpOgogICAgZGVmIHJlZGlyZWN0X3JlcXVlc3Qoc2VsZiwgcmVxLCBmcCwgY29kZSwgbXNnLCBoZWFkZXJzLCBuZXd1cmwpOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInRlbGVtZXRyeSByZWRpcmVjdCByZWZ1c2VkIikKCgpkZWYgdW5pcXVlX29iamVjdChwYWlycyk6CiAgICByZXN1bHQgPSB7fQogICAgZm9yIGtleSwgdmFsdWUgaW4gcGFpcnM6CiAgICAgICAgaWYga2V5IGluIHJlc3VsdDoKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiZHVwbGljYXRlIHRlbGVtZXRyeSBmaWVsZCIpCiAgICAgICAgcmVzdWx0W2tleV0gPSB2YWx1ZQogICAgcmV0dXJuIHJlc3VsdAoKCmRlZiBzZW5kKHVybCwgaGVhZGVycywgYm9keT1Ob25lKToKICAgIGFsbG93ZWQgPSB1cmwgaW4ge1NOQVBTSE9UX1VSTCwgVE9LRU5fVVJMfSBvciB1cmwuc3RhcnRzd2l0aChXUklURV9VUkwgKyAiP2ZvbGRlcklkPSIpCiAgICBpZiBub3QgYWxsb3dlZDoKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ0ZWxlbWV0cnkgZGVzdGluYXRpb24gcmVmdXNlZCIpCiAgICByZXF1ZXN0ID0gdXJsbGliLnJlcXVlc3QuUmVxdWVzdCh1cmwsIGhlYWRlcnM9aGVhZGVycywgZGF0YT1ib2R5KQogICAgb3BlbmVyID0gdXJsbGliLnJlcXVlc3QuYnVpbGRfb3BlbmVyKE5vUmVkaXJlY3QoKSwgdXJsbGliLnJlcXVlc3QuUHJveHlIYW5kbGVyKHt9KSkKICAgIHdpdGggb3BlbmVyLm9wZW4ocmVxdWVzdCwgdGltZW91dD01KSBhcyByZXNwb25zZToKICAgICAgICBpZiByZXNwb25zZS5zdGF0dXMgIT0gMjAwOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ0ZWxlbWV0cnkgcmVzcG9uc2UgcmVmdXNlZCIpCiAgICAgICAgcGF5bG9hZCA9IHJlc3BvbnNlLnJlYWQoTUFYX0JZVEVTICsgMSkKICAgICAgICBpZiBsZW4ocGF5bG9hZCkgPiBNQVhfQllURVM6CiAgICAgICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInRlbGVtZXRyeSByZXNwb25zZSB0b28gbGFyZ2UiKQogICAgcmV0dXJuIGpzb24ubG9hZHMocGF5bG9hZCwgb2JqZWN0X3BhaXJzX2hvb2s9dW5pcXVlX29iamVjdCkKCgpkZWYgZGVsaXZlcihjb25maWcsIHRyYW5zcG9ydD1zZW5kLCBub3c9Tm9uZSwgaW5zdGFuY2U9Tm9uZSk6CiAgICBpZiBub3QgaXNpbnN0YW5jZShjb25maWcsIGRpY3QpIG9yIHNldChjb25maWcpICE9IHsiZm9sZGVyX2lkIiwgImVudmlyb25tZW50IiwgInJvbGUifToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJjbG9zZWQgdGVsZW1ldHJ5IGNvbmZpZ3VyYXRpb24gcmVxdWlyZWQiKQogICAgaWYgbm90IGlzaW5zdGFuY2UoY29uZmlnWyJmb2xkZXJfaWQiXSwgc3RyKSBvciBub3QgcmUuZnVsbG1hdGNoKHIiW2EtejAtOV17MjB9IiwgY29uZmlnWyJmb2xkZXJfaWQiXSkgXAogICAgICAgICAgICBvciBjb25maWdbImVudmlyb25tZW50Il0gbm90IGluIHsic3RhZ2luZyIsICJwcm9kdWN0aW9uIn0gb3IgY29uZmlnWyJyb2xlIl0gbm90IGluIHsiYXBwbGljYXRpb24iLCAid29ya2VyIn06CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigidGVsZW1ldHJ5IGlkZW50aXR5IHJlZnVzZWQiKQogICAgaW5zdGFuY2UgPSBzb2NrZXQuZ2V0aG9zdG5hbWUoKSBpZiBpbnN0YW5jZSBpcyBOb25lIGVsc2UgaW5zdGFuY2UKICAgIGlmIG5vdCByZS5mdWxsbWF0Y2gociJbYS16QS1aMC05Xy4tXXsxLDYzfSIsIGluc3RhbmNlKToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ0ZWxlbWV0cnkgaW5zdGFuY2UgbGFiZWwgcmVmdXNlZCIpCiAgICBzbmFwc2hvdCA9IHRyYW5zcG9ydChTTkFQU0hPVF9VUkwsIHt9KQogICAgaWYgbm90IGlzaW5zdGFuY2Uoc25hcHNob3QsIGRpY3QpIG9yIHNldChzbmFwc2hvdCkgIT0geyJzY2hlbWFWZXJzaW9uIiwgIm9ic2VydmVkQXQiLCAic2lnbmFscyJ9IFwKICAgICAgICAgICAgb3IgdHlwZShzbmFwc2hvdFsic2NoZW1hVmVyc2lvbiJdKSBpcyBub3QgaW50IG9yIHNuYXBzaG90WyJzY2hlbWFWZXJzaW9uIl0gIT0gMSBcCiAgICAgICAgICAgIG9yIG5vdCBpc2luc3RhbmNlKHNuYXBzaG90WyJvYnNlcnZlZEF0Il0sIHN0cik6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigidGVsZW1ldHJ5IHNuYXBzaG90IHJlZnVzZWQiKQogICAgb2JzZXJ2ZWQgPSBkYXRldGltZS5mcm9taXNvZm9ybWF0KHNuYXBzaG90WyJvYnNlcnZlZEF0Il0ucmVwbGFjZSgiWiIsICIrMDA6MDAiKSkKICAgIG5vdyA9IGRhdGV0aW1lLm5vdyh0aW1lem9uZS51dGMpIGlmIG5vdyBpcyBOb25lIGVsc2Ugbm93CiAgICBpZiBvYnNlcnZlZC50emluZm8gaXMgTm9uZSBvciBub3QgLTE1IDw9IChub3cgLSBvYnNlcnZlZCkudG90YWxfc2Vjb25kcygpIDw9IDkwOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInRlbGVtZXRyeSBzbmFwc2hvdCBzdGFsZSIpCiAgICBzaWduYWxzID0gc25hcHNob3RbInNpZ25hbHMiXQogICAgaWYgbm90IGlzaW5zdGFuY2Uoc2lnbmFscywgZGljdCkgb3Igbm90IHNldChzaWduYWxzKSA8PSBTSUdOQUxTIFwKICAgICAgICAgICAgb3Igc2lnbmFscy5nZXQoImRhdGFiYXNlX3JlYWRpbmVzc19mYWlsZWQiKSBub3QgaW4gezAsIDF9IFwKICAgICAgICAgICAgb3IgYW55KHR5cGUodmFsdWUpIGlzIG5vdCBpbnQgb3Igbm90IDAgPD0gdmFsdWUgPD0gMTAqKjEyIGZvciB2YWx1ZSBpbiBzaWduYWxzLnZhbHVlcygpKToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ0ZWxlbWV0cnkgdmFsdWVzIHJlZnVzZWQiKQogICAgaWYgc2lnbmFsc1siZGF0YWJhc2VfcmVhZGluZXNzX2ZhaWxlZCJdID09IDAgYW5kIHNldChzaWduYWxzKSAhPSBTSUdOQUxTOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImhlYWx0aHkgdGVsZW1ldHJ5IG11c3QgaW5jbHVkZSBldmVyeSBzaWduYWwiKQogICAgaWYgc2lnbmFsc1siZGF0YWJhc2VfcmVhZGluZXNzX2ZhaWxlZCJdID09IDEgYW5kIHNldChzaWduYWxzKSAhPSB7ImRhdGFiYXNlX3JlYWRpbmVzc19mYWlsZWQifToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ1bmF2YWlsYWJsZSBkYXRhYmFzZSBjYW5ub3QgY2xhaW0gaGVhbHRoeSBidXNpbmVzcyBzaWduYWxzIikKICAgIGlkZW50aXR5ID0gdHJhbnNwb3J0KFRPS0VOX1VSTCwgeyJNZXRhZGF0YS1GbGF2b3IiOiAiR29vZ2xlIn0pCiAgICB0b2tlbiA9IGlkZW50aXR5LmdldCgiYWNjZXNzX3Rva2VuIikgaWYgaXNpbnN0YW5jZShpZGVudGl0eSwgZGljdCkgZWxzZSBOb25lCiAgICBpZiBub3QgaXNpbnN0YW5jZSh0b2tlbiwgc3RyKSBvciBub3QgMSA8PSBsZW4odG9rZW4pIDw9IDgxOTIgb3Igbm90IHJlLmZ1bGxtYXRjaChyIltBLVphLXowLTkuX34tXSsiLCB0b2tlbik6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigidGVsZW1ldHJ5IGlkZW50aXR5IHVuYXZhaWxhYmxlIikKICAgIG1ldHJpY3MgPSBbeyJuYW1lIjogbmFtZSwgInR5cGUiOiAiSUdBVUdFIiwgInZhbHVlIjogdmFsdWV9IGZvciBuYW1lLCB2YWx1ZSBpbiBzb3J0ZWQoc2lnbmFscy5pdGVtcygpKV0KICAgIGJvZHkgPSBqc29uLmR1bXBzKHsidHMiOiBzbmFwc2hvdFsib2JzZXJ2ZWRBdCJdLCAibGFiZWxzIjogeyJhcHBsaWNhdGlvbiI6ICJtYXJrZXRvcHMiLAogICAgICAgICJlbnZpcm9ubWVudCI6IGNvbmZpZ1siZW52aXJvbm1lbnQiXSwgInJvbGUiOiBjb25maWdbInJvbGUiXSwgImluc3RhbmNlIjogaW5zdGFuY2V9LCAibWV0cmljcyI6IG1ldHJpY3N9LCBzZXBhcmF0b3JzPSgiLCIsICI6IikpLmVuY29kZSgpCiAgICByZXN1bHQgPSB0cmFuc3BvcnQoV1JJVEVfVVJMICsgIj8iICsgdXJsbGliLnBhcnNlLnVybGVuY29kZSh7ImZvbGRlcklkIjogY29uZmlnWyJmb2xkZXJfaWQiXSwgInNlcnZpY2UiOiAiY3VzdG9tIn0pLAogICAgICAgICAgICAgICAgICAgICAgIHsiQXV0aG9yaXphdGlvbiI6ICJCZWFyZXIgIiArIHRva2VuLCAiQ29udGVudC1UeXBlIjogImFwcGxpY2F0aW9uL2pzb24ifSwgYm9keSkKICAgIGlmIG5vdCBpc2luc3RhbmNlKHJlc3VsdCwgZGljdCkgb3Igc3RyKHJlc3VsdC5nZXQoIndyaXR0ZW5NZXRyaWNzQ291bnQiKSkgIT0gc3RyKGxlbihtZXRyaWNzKSkgXAogICAgICAgICAgICBvciByZXN1bHQuZ2V0KCJlcnJvck1lc3NhZ2UiKSBub3QgaW4ge05vbmUsICIifToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ0ZWxlbWV0cnkgd3JpdGUgaW5jb21wbGV0ZSIpCiAgICByZXR1cm4geyJtZXRyaWNfY291bnQiOiBsZW4obWV0cmljcyksICJkYXRhYmFzZV9hdmFpbGFibGUiOiBzaWduYWxzWyJkYXRhYmFzZV9yZWFkaW5lc3NfZmFpbGVkIl0gPT0gMH0KCgpkZWYgbWFpbigpOgogICAgdHJ5OgogICAgICAgIGlmIGxlbihzeXMuYXJndikgIT0gMjoKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigidGVsZW1ldHJ5IGNvbmZpZ3VyYXRpb24gcmVxdWlyZWQiKQogICAgICAgIHBheWxvYWQgPSBQYXRoKHN5cy5hcmd2WzFdKS5yZWFkX2J5dGVzKCkKICAgICAgICBpZiBsZW4ocGF5bG9hZCkgPiAxMDI0OgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ0ZWxlbWV0cnkgY29uZmlndXJhdGlvbiB0b28gbGFyZ2UiKQogICAgICAgIHJlc3VsdCA9IGRlbGl2ZXIoanNvbi5sb2FkcyhwYXlsb2FkLCBvYmplY3RfcGFpcnNfaG9vaz11bmlxdWVfb2JqZWN0KSkKICAgICAgICBwcmludChqc29uLmR1bXBzKHsiZXZlbnQiOiAib3BlcmF0aW9uYWxfdGVsZW1ldHJ5X2RlbGl2ZXJlZCIsICoqcmVzdWx0fSkpCiAgICAgICAgcmV0dXJuIDAKICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgIyBIVFRQIGVycm9yIGJvZGllcywgSUFNIHRva2VucyBhbmQgaW50ZXJuYWwgYWRkcmVzc2VzIG5ldmVyIGVudGVyIGxvZ3MuCiAgICAgICAgcHJpbnQoJ3siZXZlbnQiOiJvcGVyYXRpb25hbF90ZWxlbWV0cnlfZmFpbGVkIn0nLCBmaWxlPXN5cy5zdGRlcnIpCiAgICAgICAgcmV0dXJuIDEKCgppZiBfX25hbWVfXyA9PSAiX19tYWluX18iOgogICAgcmFpc2UgU3lzdGVtRXhpdChtYWluKCkpCg==\",\"encoding\":\"b64\",\"owner\":\"root:root\",\"path\":\"/usr/local/lib/marketops-telemetry.py\",\"permissions\":\"0755\"},{\"content\":\"{\\\"environment\\\":\\\"staging\\\",\\\"folder_id\\\":\\\"ffffffffffffffffffff\\\",\\\"role\\\":\\\"worker\\\"}\",\"owner\":\"root:root\",\"path\":\"/etc/marketops/telemetry.json\",\"permissions\":\"0644\"},{\"content\":\"[Unit]\\nDescription=MarketOps bounded operational telemetry\\nAfter=network-online.target marketops.service\\nWants=network-online.target\\nConditionPathExists=/etc/marketops/telemetry.json\\n\\n[Service]\\nType=oneshot\\nDynamicUser=yes\\nExecStart=/usr/bin/python3 /usr/local/lib/marketops-telemetry.py /etc/marketops/telemetry.json\\nTimeoutStartSec=20\\nUMask=0077\\nNoNewPrivileges=yes\\nPrivateTmp=yes\\nProtectSystem=strict\\nProtectHome=yes\\nRestrictAddressFamilies=AF_INET AF_INET6\\nCapabilityBoundingSet=\\nProtectKernelTunables=yes\\nProtectControlGroups=yes\\nRestrictSUIDSGID=yes\\n\",\"owner\":\"root:root\",\"path\":\"/etc/systemd/system/marketops-telemetry.service\",\"permissions\":\"0644\"},{\"content\":\"[Unit]\\nDescription=Sample MarketOps operational signals every thirty seconds\\n\\n[Timer]\\nOnBootSec=60\\nOnUnitInactiveSec=30\\nAccuracySec=1\\nUnit=marketops-telemetry.service\\n\\n[Install]\\nWantedBy=timers.target\\n\",\"owner\":\"root:root\",\"path\":\"/etc/systemd/system/marketops-telemetry.timer\",\"permissions\":\"0644\"},{\"content\":\"{\\\"backend_image\\\":\\\"cr.yandex/rrrrrrrrrrrrrrrrrrrr/marketops-api@sha256:1111111111111111111111111111111111111111111111111111111111111111\\\",\\\"console_image\\\":\\\"cr.yandex/rrrrrrrrrrrrrrrrrrrr/marketops-console@sha256:2222222222222222222222222222222222222222222222222222222222222222\\\",\\\"environment\\\":{\\\"MARKETOPS_ACQUISITION_SCHEDULER_ENABLED\\\":\\\"false\\\",\\\"MARKETOPS_ENVIRONMENT\\\":\\\"staging\\\",\\\"MARKETOPS_OBJECT_STORAGE_BUCKET\\\":\\\"marketops-offline-plan-evidence\\\",\\\"MARKETOPS_OBJECT_STORAGE_CREDENTIAL_REFERENCE\\\":\\\"secret-ref://object-storage/signing-key\\\",\\\"MARKETOPS_OBJECT_STORAGE_ENDPOINT\\\":\\\"https://storage.yandexcloud.net\\\",\\\"MARKETOPS_OBJECT_STORAGE_REGION\\\":\\\"ru-central1\\\",\\\"MARKETOPS_OIDC_AUDIENCE\\\":\\\"marketops-offline-plan\\\",\\\"MARKETOPS_OIDC_ISSUER_URI\\\":\\\"https://identity.example.invalid\\\",\\\"MARKETOPS_OIDC_JWK_SET_URI\\\":\\\"https://identity.example.invalid/jwks\\\",\\\"MARKETOPS_PRICE_WRITE_WORKER_ENABLED\\\":\\\"false\\\",\\\"MARKETOPS_SECRET_MOUNT_DIRECTORY\\\":\\\"/run/marketops/credentials\\\",\\\"SPRING_CONFIG_IMPORT\\\":\\\"configtree:/run/marketops/config/\\\",\\\"SPRING_DATASOURCE_URL\\\":\\\"jdbc:postgresql://c-dddddddddddddddddddd.rw.mdb.yandexcloud.net:6432/marketops?sslmode=verify-full\\\\u0026sslrootcert=/opt/marketops/certs/yandex-root.crt\\\\u0026targetServerType=primary\\\",\\\"SPRING_FLYWAY_ENABLED\\\":\\\"false\\\",\\\"SPRING_PROFILES_ACTIVE\\\":\\\"production\\\"},\\\"migration_evidence\\\":{\\\"document\\\":\\\"{\\\\n  \\\\\\\"schemaVersion\\\\\\\": \\\\\\\"2.0\\\\\\\",\\\\n  \\\\\\\"serviceProfile\\\\\\\": \\\\\\\"YANDEX_MANAGED\\\\\\\",\\\\n  \\\\\\\"environmentReference\\\\\\\": \\\\\\\"staging\\\\\\\",\\\\n  \\\\\\\"repositoryCommit\\\\\\\": \\\\\\\"4444444444444444444444444444444444444444\\\\\\\",\\\\n  \\\\\\\"repositoryTree\\\\\\\": \\\\\\\"5555555555555555555555555555555555555555\\\\\\\",\\\\n  \\\\\\\"expectedPostgresqlMajor\\\\\\\": 17,\\\\n  \\\\\\\"postgresqlMajor\\\\\\\": 17,\\\\n  \\\\\\\"attestationState\\\\\\\": \\\\\\\"ATTESTED\\\\\\\",\\\\n  \\\\\\\"canonicalV0002Path\\\\\\\": \\\\\\\"db/migration/V0002__enable_btree_gist_extension.sql\\\\\\\",\\\\n  \\\\\\\"canonicalV0002GitBlob\\\\\\\": \\\\\\\"bd3e55ea737ffda9d519a931eea1f3cc58b8c522\\\\\\\",\\\\n  \\\\\\\"canonicalV0002Sha256\\\\\\\": \\\\\\\"438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16\\\\\\\",\\\\n  \\\\\\\"canonicalV0002FlywayChecksum\\\\\\\": 1291326236,\\\\n  \\\\\\\"resolvedVersion\\\\\\\": \\\\\\\"0002\\\\\\\",\\\\n  \\\\\\\"resolvedDescription\\\\\\\": \\\\\\\"enable btree gist extension\\\\\\\",\\\\n  \\\\\\\"executorMode\\\\\\\": \\\\\\\"EXTERNALLY_SATISFIED_PROVIDER_EXTENSION\\\\\\\",\\\\n  \\\\\\\"requiredExtensions\\\\\\\": {\\\\n    \\\\\\\"pgcrypto\\\\\\\": \\\\\\\"1.3\\\\\\\",\\\\n    \\\\\\\"btree_gist\\\\\\\": \\\\\\\"1.7\\\\\\\"\\\\n  },\\\\n  \\\\\\\"extensions\\\\\\\": {\\\\n    \\\\\\\"pgcrypto\\\\\\\": \\\\\\\"1.3\\\\\\\",\\\\n    \\\\\\\"btree_gist\\\\\\\": \\\\\\\"1.7\\\\\\\"\\\\n  },\\\\n  \\\\\\\"providerEvidenceSha256\\\\\\\": \\\\\\\"6666666666666666666666666666666666666666666666666666666666666666\\\\\\\",\\\\n  \\\\\\\"providerDocumentSha256\\\\\\\": \\\\\\\"34e1f92c87f22eb1256f49b2a31c49911cd62bb7c18ce4f7960e43f585584c96\\\\\\\",\\\\n  \\\\\\\"providerControlPlaneApplied\\\\\\\": true,\\\\n  \\\\\\\"artifactKind\\\\\\\": \\\\\\\"MIGRATION_ATTEMPT\\\\\\\",\\\\n  \\\\\\\"expectedBootstrapSha256\\\\\\\": \\\\\\\"fe906f464dcdd66cccfd226f1646b5aeab57a75a48211d7d5bdafe494b186478\\\\\\\",\\\\n  \\\\\\\"timestamp\\\\\\\": \\\\\\\"2026-08-28T00:00:03Z\\\\\\\",\\\\n  \\\\\\\"correlation\\\\\\\": \\\\\\\"managed-next-release\\\\\\\",\\\\n  \\\\\\\"failureStage\\\\\\\": \\\\\\\"NONE\\\\\\\",\\\\n  \\\\\\\"migrationResult\\\\\\\": \\\\\\\"SUCCESS\\\\\\\",\\\\n  \\\\\\\"flywayHistoryBefore\\\\\\\": {\\\\n    \\\\\\\"v0002\\\\\\\": \\\\\\\"CANONICAL\\\\\\\",\\\\n    \\\\\\\"state\\\\\\\": \\\\\\\"PRESENT\\\\\\\",\\\\n    \\\\\\\"migrations\\\\\\\": [\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0001\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create foundation schemas\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0001__create_foundation_schemas.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -216558555,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0002\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"enable btree gist extension\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"V0002__enable_btree_gist_extension.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1291326236,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0003\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create metadata audit event\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0003__create_metadata_audit_event.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1538154543,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0004\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create core organization metadata\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0004__create_core_organization_metadata.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 2027689260,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0005\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create iam access metadata\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0005__create_iam_access_metadata.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -989145577,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0006\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create platform registry metadata\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0006__create_platform_registry_metadata.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 326972708,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0007\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ingestion control plane authority\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0007__create_ingestion_control_plane_authority.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 510276987,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0008\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"attach control epoch triggers\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0008__attach_control_epoch_triggers.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 804811341,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0009\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create control boundary kinds and decision evidence\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0009__create_control_boundary_kinds_and_decision_evidence.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1135080635,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0010\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ingestion run checkpoint and raw evidence\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -110000428,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0011\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create human identity and business authorization\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0011__create_human_identity_and_business_authorization.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 513325678,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0012\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create product listing identity and mapping\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0012__create_product_listing_identity_and_mapping.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1610558496,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0013\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create cross domain operating facts\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0013__create_cross_domain_operating_facts.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 182788145,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0014\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create internal fact intake and file import\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0014__create_internal_fact_intake_and_file_import.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -231269046,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0015\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create canonical metric definitions and values\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0015__create_canonical_metric_definitions_and_values.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1886333913,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0016\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create deterministic diagnosis rules and findings\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0016__create_deterministic_diagnosis_rules_and_findings.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1173612683,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0017\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ai projection invocation and output\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0017__create_ai_projection_invocation_and_output.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -210332737,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0018\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create recommendation task and approval workflow\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0018__create_recommendation_task_and_approval_workflow.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1551978384,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0019\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create commercial policy and guardrails\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0019__create_commercial_policy_and_guardrails.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 872993619,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0020\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create price command outbox readback and write gate\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0020__create_price_command_outbox_readback_and_write_gate.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -501764210,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0021\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create platform api profile and request shape\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0021__create_platform_api_profile_and_request_shape.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1878771448,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0022\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ingestion run lifecycle and replay guard\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0022__create_ingestion_run_lifecycle_and_replay_guard.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -281710905,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0023\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create declared normalization and drift observation\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0023__create_declared_normalization_and_drift_observation.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 782483817,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0024\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create capability write operation shape\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0024__create_capability_write_operation_shape.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1138859957,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0025\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create price command attempt completion and lease recovery\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0025__create_price_command_attempt_completion_and_lease_recovery.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -547418792,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0026\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"rename operational capability column to action kind\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0026__rename_operational_capability_column_to_action_kind.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 404882275,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0027\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create account bound registry verification\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0027__create_account_bound_registry_verification.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1708288601,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      }\\\\n    ]\\\\n  },\\\\n  \\\\\\\"flywayHistoryAfter\\\\\\\": {\\\\n    \\\\\\\"v0002\\\\\\\": \\\\\\\"CANONICAL\\\\\\\",\\\\n    \\\\\\\"state\\\\\\\": \\\\\\\"PRESENT\\\\\\\",\\\\n    \\\\\\\"migrations\\\\\\\": [\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0001\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create foundation schemas\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0001__create_foundation_schemas.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -216558555,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0002\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"enable btree gist extension\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"V0002__enable_btree_gist_extension.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1291326236,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0003\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create metadata audit event\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0003__create_metadata_audit_event.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1538154543,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0004\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create core organization metadata\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0004__create_core_organization_metadata.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 2027689260,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0005\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create iam access metadata\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0005__create_iam_access_metadata.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -989145577,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0006\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create platform registry metadata\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0006__create_platform_registry_metadata.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 326972708,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0007\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ingestion control plane authority\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0007__create_ingestion_control_plane_authority.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 510276987,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0008\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"attach control epoch triggers\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0008__attach_control_epoch_triggers.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 804811341,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0009\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create control boundary kinds and decision evidence\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0009__create_control_boundary_kinds_and_decision_evidence.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1135080635,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0010\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ingestion run checkpoint and raw evidence\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -110000428,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0011\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create human identity and business authorization\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0011__create_human_identity_and_business_authorization.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 513325678,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0012\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create product listing identity and mapping\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0012__create_product_listing_identity_and_mapping.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1610558496,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0013\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create cross domain operating facts\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0013__create_cross_domain_operating_facts.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 182788145,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0014\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create internal fact intake and file import\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0014__create_internal_fact_intake_and_file_import.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -231269046,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0015\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create canonical metric definitions and values\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0015__create_canonical_metric_definitions_and_values.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1886333913,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0016\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create deterministic diagnosis rules and findings\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0016__create_deterministic_diagnosis_rules_and_findings.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1173612683,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0017\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ai projection invocation and output\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0017__create_ai_projection_invocation_and_output.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -210332737,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0018\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create recommendation task and approval workflow\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0018__create_recommendation_task_and_approval_workflow.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1551978384,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0019\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create commercial policy and guardrails\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0019__create_commercial_policy_and_guardrails.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 872993619,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0020\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create price command outbox readback and write gate\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0020__create_price_command_outbox_readback_and_write_gate.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -501764210,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0021\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create platform api profile and request shape\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0021__create_platform_api_profile_and_request_shape.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1878771448,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0022\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create ingestion run lifecycle and replay guard\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0022__create_ingestion_run_lifecycle_and_replay_guard.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -281710905,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0023\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create declared normalization and drift observation\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0023__create_declared_normalization_and_drift_observation.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 782483817,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0024\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create capability write operation shape\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0024__create_capability_write_operation_shape.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -1138859957,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0025\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create price command attempt completion and lease recovery\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0025__create_price_command_attempt_completion_and_lease_recovery.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": -547418792,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0026\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"rename operational capability column to action kind\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0026__rename_operational_capability_column_to_action_kind.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 404882275,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      },\\\\n      {\\\\n        \\\\\\\"version\\\\\\\": \\\\\\\"0027\\\\\\\",\\\\n        \\\\\\\"description\\\\\\\": \\\\\\\"create account bound registry verification\\\\\\\",\\\\n        \\\\\\\"type\\\\\\\": \\\\\\\"SQL\\\\\\\",\\\\n        \\\\\\\"script\\\\\\\": \\\\\\\"db/migration/V0027__create_account_bound_registry_verification.sql\\\\\\\",\\\\n        \\\\\\\"checksum\\\\\\\": 1708288601,\\\\n        \\\\\\\"success\\\\\\\": true\\\\n      }\\\\n    ]\\\\n  },\\\\n  \\\\\\\"extensionFacts\\\\\\\": {\\\\n    \\\\\\\"pgcrypto\\\\\\\": {\\\\n      \\\\\\\"version\\\\\\\": \\\\\\\"1.3\\\\\\\",\\\\n      \\\\\\\"owner\\\\\\\": \\\\\\\"bootstrap_admin\\\\\\\",\\\\n      \\\\\\\"schema\\\\\\\": \\\\\\\"public\\\\\\\"\\\\n    },\\\\n    \\\\\\\"btree_gist\\\\\\\": {\\\\n      \\\\\\\"version\\\\\\\": \\\\\\\"1.7\\\\\\\",\\\\n      \\\\\\\"owner\\\\\\\": \\\\\\\"bootstrap_admin\\\\\\\",\\\\n      \\\\\\\"schema\\\\\\\": \\\\\\\"public\\\\\\\"\\\\n    }\\\\n  },\\\\n  \\\\\\\"roleAssertions\\\\\\\": {\\\\n    \\\\\\\"currentUserIsMigration\\\\\\\": true,\\\\n    \\\\\\\"providerSqlExtensionDdlDenied\\\\\\\": true,\\\\n    \\\\\\\"applicationCannotCreateDatabaseObjects\\\\\\\": true,\\\\n    \\\\\\\"runtimeCannotAssumeExtensionOwner\\\\\\\": true,\\\\n    \\\\\\\"managedExtensionsNotOwnedByRuntimeRoles\\\\\\\": true,\\\\n    \\\\\\\"runtimeRolesAreNonPrivileged\\\\\\\": true,\\\\n    \\\\\\\"serverMajorIs17\\\\\\\": true,\\\\n    \\\\\\\"applicationIsNotMigrationMember\\\\\\\": true,\\\\n    \\\\\\\"extensionMembersInSecureSchema\\\\\\\": true\\\\n  },\\\\n  \\\\\\\"startedEvidenceSha256\\\\\\\": \\\\\\\"a6dc21b99c9fde5bf43d331dd204d0bbb88b0b5ee745439d7f6ee883b861ea4e\\\\\\\",\\\\n  \\\\\\\"bootstrapEvidenceSha256\\\\\\\": \\\\\\\"fe906f464dcdd66cccfd226f1646b5aeab57a75a48211d7d5bdafe494b186478\\\\\\\",\\\\n  \\\\\\\"databaseIdentity\\\\\\\": \\\\\\\"staging\\\\\\\",\\\\n  \\\\\\\"attestedEvidenceSha256\\\\\\\": \\\\\\\"2f3cc31582825bf69257738affd96baa752672fdb5fed7f1af06c7be8f40e14b\\\\\\\",\\\\n  \\\\\\\"migrationsApplied\\\\\\\": 0,\\\\n  \\\\\\\"schemaVersionAfter\\\\\\\": \\\\\\\"0027\\\\\\\",\\\\n  \\\\\\\"artifactSha256\\\\\\\": \\\\\\\"7777777777777777777777777777777777777777777777777777777777777777\\\\\\\",\\\\n  \\\\\\\"databaseUrlSha256\\\\\\\": \\\\\\\"e40b866c93490aba44431226b45d370761b268110aed9702768eb34034d42345\\\\\\\"\\\\n}\\\\n\\\",\\\"sha256\\\":\\\"04d4a1df73941c3479cf298268817c1b36d92c22b1c878e5c56bbfb32ab3bf45\\\"},\\\"role\\\":\\\"worker\\\",\\\"secrets\\\":{\\\"config/marketops.object-storage.access-key-id\\\":{\\\"key\\\":\\\"access-id\\\",\\\"secret_id\\\":\\\"ssssssssssssssssssss\\\",\\\"version_id\\\":\\\"vvvvvvvvvvvvvvvvvvvv\\\"},\\\"config/spring.datasource.password\\\":{\\\"key\\\":\\\"database\\\",\\\"secret_id\\\":\\\"ssssssssssssssssssss\\\",\\\"version_id\\\":\\\"vvvvvvvvvvvvvvvvvvvv\\\"},\\\"credentials/object-storage/signing-key\\\":{\\\"key\\\":\\\"signing-key\\\",\\\"secret_id\\\":\\\"ssssssssssssssssssss\\\",\\\"version_id\\\":\\\"vvvvvvvvvvvvvvvvvvvv\\\"}}}\",\"owner\":\"root:root\",\"path\":\"/etc/marketops/runtime.json\",\"permissions\":\"0600\"},{\"content\":\"[Unit]\\nDescription=MarketOps immutable runtime with ephemeral secret delivery\\nAfter=docker.service network-online.target\\nRequires=docker.service\\nWants=network-online.target\\nConditionPathExists=/etc/marketops/runtime.json\\nStartLimitIntervalSec=300\\nStartLimitBurst=5\\n\\n[Service]\\nType=simple\\nRestart=on-failure\\nRestartSec=10\\nRuntimeDirectory=marketops\\nRuntimeDirectoryMode=0700\\nExecStart=/usr/bin/python3 /usr/local/lib/marketops-bootstrap.py /etc/marketops/runtime.json\\nExecStop=/usr/bin/python3 /usr/local/lib/marketops-bootstrap.py /etc/marketops/runtime.json --stop\\nTimeoutStartSec=300\\nTimeoutStopSec=60\\nUMask=0077\\nPrivateTmp=yes\\nProtectSystem=strict\\nProtectHome=yes\\nReadWritePaths=/run/marketops /run/docker.sock\\nNoNewPrivileges=yes\\nEnvironment=DOCKER_CONFIG=/run/marketops/docker-config\\n\\n[Install]\\nWantedBy=multi-user.target\\n\",\"owner\":\"root:root\",\"path\":\"/etc/systemd/system/marketops.service\",\"permissions\":\"0644\"}]}"
+              },
+              "metadata_options": [
+                {
+                  "aws_v1_http_endpoint": 2,
+                  "aws_v1_http_token": 2,
+                  "gce_http_endpoint": 1,
+                  "gce_http_token": 1
+                }
+              ],
+              "name": null,
+              "network_interface": [
+                {
+                  "dns_record": [],
+                  "ipv4": null,
+                  "ipv6_dns_record": [],
+                  "nat": false,
+                  "nat_dns_record": [],
+                  "nat_ip_address": null,
+                  "network_id": "nnnnnnnnnnnnnnnnnnng",
+                  "security_group_ids": [
+                    "wwwwwwwwwwwwwwwwwwwg"
+                  ],
+                  "subnet_ids": [
+                    "xxxxxxxxxxxxxxxxxxxg",
+                    "yyyyyyyyyyyyyyyyyyyg",
+                    "zzzzzzzzzzzzzzzzzzzg"
+                  ]
+                }
+              ],
+              "network_settings": [],
+              "placement_policy": [],
+              "platform_id": "standard-v3",
+              "reserved_instance_pool_id": null,
+              "resources": [
+                {
+                  "core_fraction": null,
+                  "cores": 2,
+                  "gpus": null,
+                  "memory": 4
+                }
+              ],
+              "scheduling_policy": [],
+              "secondary_disk": [],
+              "service_account_id": "wwwwwwwwwwwwwwwwwwww"
+            }
+          ],
+          "labels": {
+            "environment": "staging",
+            "managed_by": "terraform",
+            "product": "marketops"
+          },
+          "load_balancer": [],
+          "max_checking_health_duration": 900,
+          "name": "staging-marketops-worker",
+          "scale_policy": [
+            {
+              "auto_scale": [],
+              "fixed_scale": [
+                {
+                  "size": 1
+                }
+              ],
+              "test_auto_scale": []
+            }
+          ],
+          "service_account_id": "gggggggggggggggggggg",
+          "timeouts": null,
+          "variables": null
+        }
+      }
+    },
+    {
+      "address": "module.workload[0].yandex_dns_recordset.console",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "data": [
+            null
+          ],
+          "description": null,
+          "name": "console.example.invalid.",
+          "timeouts": null,
+          "ttl": 300,
+          "type": "A",
+          "zone_id": "zzzzzzzzzzzzzzzzzzzz"
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_container_registry_iam_binding.image_readers",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "members": [
+            "serviceAccount:aaaaaaaaaaaaaaaaaaaa",
+            "serviceAccount:mmmmmmmmmmmmmmmmmmmm",
+            "serviceAccount:wwwwwwwwwwwwwwwwwwww"
+          ],
+          "registry_id": "rrrrrrrrrrrrrrrrrrrr",
+          "role": "container-registry.images.puller",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_iam_service_account.roles[\"acquisition\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "bcksbdjg",
+          "description": "nn79kcnc",
+          "expires_at": "a8ii8auc",
+          "folder_id": "ffffffffffffffffffff",
+          "id": "wwwwwwwwwwwwwwwwwwww",
+          "labels": {},
+          "name": "staging-marketops-acquisition",
+          "service_account_id": "etfe3qim",
+          "status": "zxf8hmp7",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_iam_service_account.roles[\"application\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "bqv0b4dk",
+          "description": "k9jo86p7",
+          "expires_at": "sxr0jnkz",
+          "folder_id": "ffffffffffffffffffff",
+          "id": "aaaaaaaaaaaaaaaaaaaa",
+          "labels": {},
+          "name": "staging-marketops-application",
+          "service_account_id": "46g6xu7z",
+          "status": "h7i4prz0",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_iam_service_account.roles[\"audit\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "p19v4ini",
+          "description": "5w45hr05",
+          "expires_at": "hbtkjoxy",
+          "folder_id": "ffffffffffffffffffff",
+          "id": "uuuuuuuuuuuuuuuuuuuu",
+          "labels": {},
+          "name": "staging-marketops-audit",
+          "service_account_id": "yg4qlgdj",
+          "status": "wkiger2r",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_iam_service_account.roles[\"group-manager\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "xroxwxm6",
+          "description": "et1wukkg",
+          "expires_at": "t52n84mp",
+          "folder_id": "ffffffffffffffffffff",
+          "id": "gggggggggggggggggggg",
+          "labels": {},
+          "name": "staging-marketops-group-manager",
+          "service_account_id": "xgizl101",
+          "status": "gciblz3g",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_iam_service_account.roles[\"migration\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "created_at": "vwhzzx3a",
+          "description": "nz3gt5dq",
+          "expires_at": "q2fv2w1a",
+          "folder_id": "ffffffffffffffffffff",
+          "id": "mmmmmmmmmmmmmmmmmmmm",
+          "labels": {},
+          "name": "staging-marketops-migration",
+          "service_account_id": "dl3kvjgb",
+          "status": "jiavxk5m",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_iam_service_account_iam_binding.group_manager_act_as[\"acquisition\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "members": [
+            "serviceAccount:gggggggggggggggggggg"
+          ],
+          "role": "iam.serviceAccounts.user",
+          "service_account_id": "wwwwwwwwwwwwwwwwwwww",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_iam_service_account_iam_binding.group_manager_act_as[\"application\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "members": [
+            "serviceAccount:gggggggggggggggggggg"
+          ],
+          "role": "iam.serviceAccounts.user",
+          "service_account_id": "aaaaaaaaaaaaaaaaaaaa",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_lockbox_secret_iam_binding.payloads[\"mmmmmmmmmmmmmmmmmmmm\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "members": [
+            "serviceAccount:mmmmmmmmmmmmmmmmmmmm"
+          ],
+          "role": "lockbox.payloadViewer",
+          "secret_id": "mmmmmmmmmmmmmmmmmmmm",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_lockbox_secret_iam_binding.payloads[\"ssssssssssssssssssss\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "members": [
+            "serviceAccount:aaaaaaaaaaaaaaaaaaaa",
+            "serviceAccount:wwwwwwwwwwwwwwwwwwww"
+          ],
+          "role": "lockbox.payloadViewer",
+          "secret_id": "ssssssssssssssssssss",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_resourcemanager_folder_iam_member.audit",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "folder_id": "ffffffffffffffffffff",
+          "member": "serviceAccount:uuuuuuuuuuuuuuuuuuuu",
+          "role": "audit-trails.viewer",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_resourcemanager_folder_iam_member.group_manager[\"compute.editor\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "folder_id": "ffffffffffffffffffff",
+          "member": "serviceAccount:gggggggggggggggggggg",
+          "role": "compute.editor",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_resourcemanager_folder_iam_member.group_manager[\"vpc.user\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "folder_id": "ffffffffffffffffffff",
+          "member": "serviceAccount:gggggggggggggggggggg",
+          "role": "vpc.user",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_resourcemanager_folder_iam_member.logs[\"acquisition\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "folder_id": "ffffffffffffffffffff",
+          "member": "serviceAccount:wwwwwwwwwwwwwwwwwwww",
+          "role": "logging.writer",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_resourcemanager_folder_iam_member.logs[\"application\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "folder_id": "ffffffffffffffffffff",
+          "member": "serviceAccount:aaaaaaaaaaaaaaaaaaaa",
+          "role": "logging.writer",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_resourcemanager_folder_iam_member.logs[\"audit\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "folder_id": "ffffffffffffffffffff",
+          "member": "serviceAccount:uuuuuuuuuuuuuuuuuuuu",
+          "role": "logging.writer",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_resourcemanager_folder_iam_member.logs[\"migration\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "folder_id": "ffffffffffffffffffff",
+          "member": "serviceAccount:mmmmmmmmmmmmmmmmmmmm",
+          "role": "logging.writer",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_resourcemanager_folder_iam_member.telemetry[\"acquisition\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "folder_id": "ffffffffffffffffffff",
+          "member": "serviceAccount:wwwwwwwwwwwwwwwwwwww",
+          "role": "monitoring.editor",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "module.workload_identity.yandex_resourcemanager_folder_iam_member.telemetry[\"application\"]",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "folder_id": "ffffffffffffffffffff",
+          "member": "serviceAccount:aaaaaaaaaaaaaaaaaaaa",
+          "role": "monitoring.editor",
+          "sleep_after": null
+        }
+      }
+    }
+  ],
+  "provider_schemas": {
+    "registry.terraform.io/yandex-cloud/yandex": {
+      "resource_schemas": {
+        "yandex_mdb_postgresql_user": {
+          "block": {
+            "attributes": {
+              "password_wo": {
+                "type": "string",
+                "description": "The password of the user. This attribute is write-only and is not stored in state. Requires `password_wo_version` to trigger updates. Write-only arguments are only supported in Terraform v1.11 or higher",
+                "description_kind": "plain",
+                "optional": true,
+                "sensitive": true,
+                "write_only": true
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

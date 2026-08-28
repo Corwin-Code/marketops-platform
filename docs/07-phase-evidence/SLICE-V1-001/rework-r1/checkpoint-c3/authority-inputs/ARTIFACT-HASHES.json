@@ -1,0 +1,32 @@
+[
+  {
+    "source_path": "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+    "file": "SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+    "sha256": "0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5"
+  },
+  {
+    "source_path": "docs/03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md",
+    "file": "SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md",
+    "sha256": "8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d"
+  },
+  {
+    "source_path": "docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md",
+    "file": "OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md",
+    "sha256": "e8fc208a4fcd9270b9187b65aa1618ecf6179166a3a44b4a37213bf067a91ee8"
+  },
+  {
+    "source_path": "docs/07-phase-evidence/SLICE-V1-001/rework-r1/frozen/FROZEN-FINDING-SET-SLICE-V1-001-PR20-R1.json",
+    "file": "FROZEN-FINDING-SET-SLICE-V1-001-PR20-R1.json",
+    "sha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8"
+  },
+  {
+    "source_path": "docs/07-phase-evidence/SLICE-V1-001/rework-r1/frozen/CONTROLLER-SLICE-V1-001-COMPREHENSIVE-DEEP-REVIEW-R1.md",
+    "file": "CONTROLLER-SLICE-V1-001-COMPREHENSIVE-DEEP-REVIEW-R1.md",
+    "sha256": "df8a3cca26d1b4d0efd9f7f883764971cad8adb43ca698c6de545d52d46b6754"
+  },
+  {
+    "source_path": "docs/07-phase-evidence/SLICE-V1-001/rework-r1/frozen/CONTROLLER-REVIEW-EVIDENCE-SLICE-V1-001-PR20-R1.json",
+    "file": "CONTROLLER-REVIEW-EVIDENCE-SLICE-V1-001-PR20-R1.json",
+    "sha256": "a4b0e22c64a89272dfec3b90d91c6181d1a65b7b36c1ba32cec1023fb15ce6bb"
+  }
+]

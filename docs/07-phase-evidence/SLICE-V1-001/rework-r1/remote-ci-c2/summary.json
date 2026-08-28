@@ -1,0 +1,27 @@
+{
+  "head": "cb799390f69f85982aa41a530a764c07dc7684f3",
+  "tree": "131e4ee0c534ad4280971cbd77f4be63a1f4fb34",
+  "tested_merge": "89ac1a82ee6bbe87f7e32f1360d038c83092b96e",
+  "parents": [
+    "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+    "cb799390f69f85982aa41a530a764c07dc7684f3"
+  ],
+  "ci_snapshot": "Backend jobs still running; not final approval",
+  "infrastructure_run": 33121918476,
+  "infrastructure_result": "FAILURE: Linux unpacked provider checksum absent; readonly init did not update lock; validate correctly refused",
+  "codeql_source_findings_fixed": 26,
+  "remaining_open_alerts": [
+    66,
+    73,
+    74,
+    75,
+    76
+  ],
+  "dismissals_performed": false,
+  "remote_dismissal_authorization": "EXPLICIT_ADDITIONAL_USER_AUTHORIZATION_REQUESTED",
+  "raw_log_sha256": {
+    "infrastructure-failed.log": "311b0dac4388933651fa2a9a560b00bc73fc76547fa28f2a021736608b3ca714",
+    "bootstrap-init.log": "b9cc5f948bf90b471909269174ac4720e03fae359fdd779b287a5ef3d8d7db5e",
+    "bootstrap-validate.log": "3728e486da8e9cb67f52ef37186be3402b197ad42693fc19047e237539809d00"
+  }
+}

@@ -1,0 +1,77 @@
+# Example values for the staging environment.
+#
+# Staging runs the same wiring as production against a separate account, at a
+# smaller size and with a shorter recovery reach, because it holds no real
+# commercial history.
+
+cloud_id  = "REPLACE_WITH_CLOUD_ID"
+folder_id = "REPLACE_WITH_FOLDER_ID"
+
+availability_zones = {
+  "ru-central1-a" = "10.30.1.0/24"
+  "ru-central1-b" = "10.30.2.0/24"
+  "ru-central1-d" = "10.30.3.0/24"
+}
+
+database_resource_preset_id    = "s3-c2-m8"
+database_disk_size_gib         = 64
+database_backup_retention_days = 7
+
+evidence_bucket_name    = "REPLACE-WITH-BUCKET-NAME"
+evidence_retention_days = 365
+evidence_kms_key_id     = "REPLACE_WITH_KMS_KEY_ID"
+evidence_certificate_id = "REPLACE_WITH_CERTIFICATE_ID"
+
+migration_secret_id    = "REPLACE_WITH_SECRET_ID"
+
+notification_channel_id = "REPLACE_WITH_CHANNEL_ID"
+
+# Public identifiers/digests only. Verify the host image includes cloud-init,
+# Python 3, Docker and the systemd prerequisites in the environment runbook.
+infrastructure_service_account_id = "REPLACE_WITH_INFRASTRUCTURE_SERVICE_ACCOUNT_ID"
+container_registry_id             = "REPLACE_WITH_CONTAINER_REGISTRY_ID"
+host_image_id                     = "REPLACE_WITH_VERIFIED_HOST_IMAGE_ID"
+backend_image                     = "REPLACE_WITH_APPROVED_cr.yandex_IMAGE_AT_SHA256_DIGEST"
+console_image                     = "REPLACE_WITH_APPROVED_cr.yandex_IMAGE_AT_SHA256_DIGEST"
+public_hostname                   = "REPLACE_WITH_CONSOLE_HOSTNAME"
+console_certificate_id            = "REPLACE_WITH_CONSOLE_CERTIFICATE_ID"
+dns_zone_id                       = "REPLACE_WITH_DNS_ZONE_ID"
+oidc_issuer_uri                   = "REPLACE_WITH_APPROVED_HTTPS_OIDC_ISSUER"
+oidc_jwk_set_uri                  = "REPLACE_WITH_APPROVED_HTTPS_JWKS_ENDPOINT"
+oidc_audience                     = "REPLACE_WITH_APPROVED_AUDIENCE"
+migration_password_version        = 1
+application_password_version      = 1
+
+runtime_secrets = {
+  application = {
+    "config/spring.datasource.password" = {
+      secret_id = "REPLACE_APP_DB_SECRET_ID", version_id = "REPLACE_PINNED_VERSION_ID", key = "database"
+    }
+    "config/marketops.object-storage.access-key-id" = {
+      secret_id = "REPLACE_APP_STORAGE_SECRET_ID", version_id = "REPLACE_PINNED_VERSION_ID", key = "access-id"
+    }
+    "credentials/object-storage/signing-key" = {
+      secret_id = "REPLACE_APP_STORAGE_SECRET_ID", version_id = "REPLACE_PINNED_VERSION_ID", key = "signing-key"
+    }
+  }
+  worker = {
+    "config/spring.datasource.password" = {
+      secret_id = "REPLACE_WORKER_DB_SECRET_ID", version_id = "REPLACE_PINNED_VERSION_ID", key = "database"
+    }
+    "config/marketops.object-storage.access-key-id" = {
+      secret_id = "REPLACE_WORKER_STORAGE_SECRET_ID", version_id = "REPLACE_PINNED_VERSION_ID", key = "access-id"
+    }
+    "credentials/object-storage/signing-key" = {
+      secret_id = "REPLACE_WORKER_STORAGE_SECRET_ID", version_id = "REPLACE_PINNED_VERSION_ID", key = "signing-key"
+    }
+  }
+}
+
+# First authorized plan/apply is foundation-only. A later separately reviewed
+# runtime plan must provide the exact successful migration result JSON plus its
+# release-pinned SHA-256. Never substitute the synthetic test fixture.
+runtime_enabled    = false
+migration_evidence = null
+
+# migration_role_password and application_role_password are deliberately absent:
+# supply them only as authorized ephemeral inputs, never in a tfvars file.

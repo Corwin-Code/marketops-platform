@@ -1,0 +1,21 @@
+{
+  "workflow_run": 33122375374,
+  "result": "PASS",
+  "head": "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0",
+  "tested_merge": "fecc8c7b2e0dde4e565f59e5432de72477444948",
+  "runner": "ubuntu-24.04 / linux_amd64",
+  "raw_log_sha256": {
+    "bootstrap-validate.log": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+    "staging-validate.log": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+    "fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bootstrap-plan.jsonl": "e7100d9eef0299a18f66c1441a15b54fab0bbded10d42ef5df02f8e495bc59b2",
+    "bootstrap-init.log": "d3160ee0ce719ff5d362e0a4a32e758287172fbcd1b05f2c56d1bf6e3ea1a46f",
+    "production-validate.log": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+    "production-plan.jsonl": "f9dd0707e66e01fef87790c35e64852ba3f1c1c219bf62608872b7928685ce16",
+    "staging-init.log": "aa9d712e0689b611a5e84c80bb0594c7dc2d6b95acb8ba7f3a802b0dd19dde57",
+    "staging-plan.jsonl": "3b7510d5c7b0d0344da9291794f17d173bb289c1d31352332b14019fd6423d2b",
+    "production-init.log": "aa9d712e0689b611a5e84c80bb0594c7dc2d6b95acb8ba7f3a802b0dd19dde57"
+  },
+  "provider_calls": "NONE_MOCK_PROVIDER",
+  "apply": "NOT_EXECUTED"
+}

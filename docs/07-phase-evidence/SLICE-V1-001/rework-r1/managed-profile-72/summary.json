@@ -1,0 +1,67 @@
+{
+  "scope": "LOCAL_UNCOMMITTED_WORKTREE_CHECKPOINT_NOT_FINAL_COMMIT",
+  "commands": [
+    "make backend-check",
+    "make governance"
+  ],
+  "results": "PASS",
+  "inputManifestSha256": "cb9fb42a30a4a0c31d6144f6209c2c3e4679bf96aedc3865c1b233c3d25dc961",
+  "boundInputsUnchanged": true,
+  "tests": {
+    "surefire-reports": {
+      "tests": 832,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "failsafe-reports": {
+      "tests": 355,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "coverage": [
+    {
+      "path": "backend/marketops-server/target/site/jacoco/jacoco.xml",
+      "counters": [
+        {
+          "type": "INSTRUCTION",
+          "missed": "12206",
+          "covered": "57733"
+        },
+        {
+          "type": "BRANCH",
+          "missed": "1210",
+          "covered": "3060"
+        },
+        {
+          "type": "LINE",
+          "missed": "2433",
+          "covered": "11622"
+        },
+        {
+          "type": "COMPLEXITY",
+          "missed": "1562",
+          "covered": "3234"
+        },
+        {
+          "type": "METHOD",
+          "missed": "523",
+          "covered": "2083"
+        },
+        {
+          "type": "CLASS",
+          "missed": "66",
+          "covered": "500"
+        }
+      ]
+    }
+  ],
+  "logs": {
+    "backend-managed-full-72.log": "e425861e48a4dc5465956829cad670e45a07ba3e19c53cd002f7b1f959273846",
+    "governance-managed-73.log": "c0e9e2e01e15e4c9964ed65e0de06bf854c30558fc4848931053399a06f70394"
+  },
+  "bootstrapFixture": "bootstrap-fixture.json",
+  "fixtureProvenance": "YANDEX_MANAGED_EMULATION; synthetic repository and provider IDs; not real provider evidence"
+}

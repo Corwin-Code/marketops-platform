@@ -1,0 +1,9 @@
+{
+  "jacoco.xml": "2a3212b65523672956a8890185ae4a844a28b59cbd0543fa10ee364afff4977e",
+  "representative-v1.json": "5431971e97c81848721294451775b6f51f847872fd3df5dcebf8ed7e0e601045",
+  "summary.json": "091276d4d8244bccc9437f3d0303581b513a6d0baeb999178bfd400e7235a70d",
+  "test-methods.json": "fdb2ecec68beb2262d5470ec00b5b69399449f0b3442e3eea8166d599387ddc9",
+  "verification-inputs.json": "658191f0e6ef2c803b3509c681f7dd960c6a060ec154802cafeb7b5a917ee695",
+  "backend-check.log.gz": "4f7a92ab089139c8fca0907a53efe51b7e9f61d5de6db1033ef49af7707549cb",
+  "ARTIFACT-HASHES.before-log-packaging.json": "a45636f5638aa89296a8461b345bc42b01926688473977fdb9661abc96581281"
+}

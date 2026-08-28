@@ -33,6 +33,39 @@ Evidence strength is classified independently from a model or reviewer opinion.
 | `OPS` | Operator runbook drill | executed runbook with observable result | runbook file existence |
 | `AUDIT` | Audit trace | end-to-end actor/evidence/command/readback chain | log line only |
 
+## 2a. SLICE-V1-001 candidate evidence state
+
+```yaml
+assessed_at: 2026-08-28
+assessed_against: PR20_REWORK_SUBMITTED_FOR_CLOSURE
+controller_verdict: NOT_CLAIMED
+detail: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
+executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
+```
+
+This implementation-fact section does not amend the evidence classes or
+requirements below. Counts are checkpoint results, not a final release verdict.
+
+| Class | Candidate evidence | Remaining boundary |
+| --- | --- | --- |
+| `SRC` | Immutable original Contract, accepted Amendment-001, preserved ADRs and source-bound worktree manifests. | Final commit/merge/tree binding. |
+| `UNIT` | C3 full backend 150/151: 846 unit/architecture tests each; frontend 150: 196 tests; unchanged coverage gates pass. | Final full regression and remote CI. |
+| `RDB` | C3 full 150/151: 374 real database integration tests each; PG17 application/managed/representative paths plus standard PG18 compatibility. | Exact-final-Head verification and independent closure. |
+| `OBJ` | Actual filesystem and local HTTP adapter tests, exact hash/length verification, immutable DB custody and retention IaC. | Approved Yandex store, real retention/IAM operation and provider recovery remain unverified. |
+| `REAL_EXT` | No real business provider or cloud account used. Synthetic verification fixtures are explicitly scoped. | OIDC, Marketplace, Yandex and model provider evidence remains pending; production registry defaults stay UNVERIFIED. |
+| `SEC_NEG` | Signed-token/live-scope refusal, cross-store access denial, bounded outbound requests, symlink/redirect/response bounds, AI grounding and browser export integrity. | C3: 13 checks pass, 26 alerts fixed, five exact v1.1 dispositions; fresh final-Head Security CI required. |
+| `REPLAY` | Real PG17 stored-Raw replay in full runs 150/151: parser/missing-object refusal, crash after fact commit, repeat with no duplicate logical fact or source call. | Fresh final-Head suite; real source coverage remains external. |
+| `BROWSER` | 11 Chromium scenarios at 152, including real signed JWT/SQL evidence→approval→command→readback, export, new-login command recovery and actual local database outage. | Real identity/Marketplace interoperability and final exact-commit execution. |
+| `PERF` | PG17 representative 5,000-SKU/360,000-order profile, query plans, 488,000-record asynchronous export, explicit thresholds and settings. | Owner cohort and deployed capacity are unproven; no production throughput claim. |
+| `DR` | Executed isolated PG17 dump/restore, migration/privilege validation, missing-object refusal and exact-byte recovery. | Real Yandex PITR, deployment rollback and environment restore remain pending. |
+| `OPS` | Failure-drill index maps runbooks to executed local faults. Private signals and bounded telemetry transport/No Data are tested. | Actual alert creation, channel delivery, support acknowledgement and staging drill. |
+| `AUDIT` | DB authority, immutable attempt/readback/approval/import/verification evidence, and actor-bound browser/service paths. | Controller closure, real Gate-EV evidence and final exact identity. |
+
+The original Maker evidence assessment is preserved at the reviewed PR Head.
+Local evidence does not replace REAL_EXT, Owner approval, Gate EV or Gate E.
+See the [final handoff index](../07-phase-evidence/SLICE-V1-001/rework-r1/final-handoff.md)
+for C3 receipts, executed v1.1 dispositions and exact-final-Head delivery requirements.
+
 ## 3. Risk dimensions
 
 Every Deep Review and Final Gate explicitly assesses applicable dimensions:

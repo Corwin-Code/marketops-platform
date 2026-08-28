@@ -1,0 +1,24 @@
+{
+  "local": {
+    "counts": {
+      "LF": 944,
+      "LH": 847,
+      "FNF": 224,
+      "FNH": 207,
+      "BRF": 924,
+      "BRH": 781
+    },
+    "sha256": "a438b5c062dab9a6975271ad534d74a0bf37f7d2e541ab243cb5620e0981bd0d"
+  },
+  "remote": {
+    "counts": {
+      "LF": 944,
+      "LH": 847,
+      "FNF": 224,
+      "FNH": 207,
+      "BRF": 924,
+      "BRH": 781
+    },
+    "sha256": "a438b5c062dab9a6975271ad534d74a0bf37f7d2e541ab243cb5620e0981bd0d"
+  }
+}

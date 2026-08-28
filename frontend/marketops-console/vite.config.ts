@@ -1,8 +1,14 @@
 /// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react';
 import { readFileSync } from 'node:fs';
-import { defineConfig } from 'vite';
-import { buildTimeConstants, ENV_PREFIX, frontendPackageVersion } from './vite.constants.ts';
+import { defineConfig, loadEnv } from 'vite';
+import {
+  buildTimeConstants,
+  CONNECT_SOURCE_PLACEHOLDER,
+  connectSourceDirective,
+  ENV_PREFIX,
+  frontendPackageVersion,
+} from './vite.constants.ts';
 
 const packageManifest: unknown = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
@@ -15,8 +21,27 @@ const packageManifest: unknown = JSON.parse(
  * the environment prefix, which decides what may reach a public artefact, and
  * the set of replaced identifiers, which is exactly two.
  */
-export default defineConfig({
-  plugins: [react()],
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    react(),
+    {
+      name: 'marketops-connect-source-policy',
+      /**
+       * Resolve the page's connect-source list from this build's settings.
+       *
+       * Done here rather than in the page because the origins differ per
+       * deployment, and a policy that is wrong is a policy somebody widens
+       * until it stops protecting anything.
+       */
+      transformIndexHtml: {
+        order: 'pre' as const,
+        handler(html: string) {
+          const environment = { ...loadEnv(mode, process.cwd(), ENV_PREFIX), ...process.env };
+          return html.replaceAll(CONNECT_SOURCE_PLACEHOLDER, connectSourceDirective(environment));
+        },
+      },
+    },
+  ],
 
   // Only variables named for this console reach the bundle.
   envPrefix: ENV_PREFIX,
@@ -68,4 +93,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

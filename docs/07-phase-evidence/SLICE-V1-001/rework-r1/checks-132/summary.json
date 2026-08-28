@@ -1,0 +1,27 @@
+{
+  "final_exact_commit_verified": false,
+  "frontend": {
+    "command": "make frontend-check",
+    "tests": 196,
+    "files": 13,
+    "result": "PASS",
+    "coverage": {
+      "statements": "879/992 (88.60%)",
+      "branches": "781/924 (84.52%)",
+      "functions": "207/224 (92.41%)",
+      "lines": "847/944 (89.72%)"
+    }
+  },
+  "governance": {
+    "command": "make governance",
+    "tests": 372,
+    "result": "PASS",
+    "scope": "checkpoint 131; subsequent documentation changes require a fresh check"
+  },
+  "negative_coverage": {
+    "command": "JAVA_HOME=<JDK21> bash scripts/verify_coverage_thresholds.sh all",
+    "result": "PASS",
+    "backend_jar_matches_full131": true,
+    "jacoco_xml_matches_full131": true
+  }
+}

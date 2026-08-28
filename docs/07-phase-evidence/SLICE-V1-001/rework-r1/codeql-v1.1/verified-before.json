@@ -1,0 +1,41 @@
+{
+  "head": "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0",
+  "tree": "db3b2c4df0b46a94575e42989904e4fe80e41444",
+  "alerts": [
+    {
+      "alert": 66,
+      "rule_id": "java/spring-disabled-csrf-protection",
+      "thread_id": "PRRT_kwDOTwsbvM6cuJGi",
+      "comment_length": 247,
+      "source_sha256": "ce76b10bba3206d066078c94490f0d5d8572e6ffca331bff771da90517aa8ae6"
+    },
+    {
+      "alert": 73,
+      "rule_id": "js/empty-password-in-configuration-file",
+      "thread_id": "PRRT_kwDOTwsbvM6c_e2P",
+      "comment_length": 253,
+      "source_sha256": "31e1072fd67dce7f10681dd7f4e0b442b1443d74f7f0d0e0ea0a4905a9c137ff"
+    },
+    {
+      "alert": 74,
+      "rule_id": "java/xss",
+      "thread_id": "PRRT_kwDOTwsbvM6c_2yy",
+      "comment_length": 261,
+      "source_sha256": "d1479f7dd667434ee7ed7b8a6a929f9d978bb42feb7af7776e54c9beb1de09f9"
+    },
+    {
+      "alert": 75,
+      "rule_id": "java/user-controlled-bypass",
+      "thread_id": "PRRT_kwDOTwsbvM6c_2ye",
+      "comment_length": 254,
+      "source_sha256": "993140f00c2cf3ec61f9798d420c1375d462cb0b072ea15f566d9a5fd82232cf"
+    },
+    {
+      "alert": 76,
+      "rule_id": "java/user-controlled-bypass",
+      "thread_id": "PRRT_kwDOTwsbvM6c_2yq",
+      "comment_length": 248,
+      "source_sha256": "993140f00c2cf3ec61f9798d420c1375d462cb0b072ea15f566d9a5fd82232cf"
+    }
+  ]
+}

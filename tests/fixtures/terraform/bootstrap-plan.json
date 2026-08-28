@@ -1,0 +1,314 @@
+{
+  "fixture_source": "Trimmed synthetic Terraform 1.14.9 / yandex 0.220.0 plan; unit-test input, not deployment evidence",
+  "resource_changes": [
+    {
+      "address": "yandex_audit_trails_trail.state",
+      "mode": "managed",
+      "type": "yandex_audit_trails_trail",
+      "name": "state",
+      "provider_name": "registry.terraform.io/yandex-cloud/yandex",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "data_stream_destination": [],
+          "description": null,
+          "filter": [],
+          "filtering_policy": [
+            {
+              "data_events_filter": [
+                {
+                  "dns_filter": [],
+                  "excluded_events": null,
+                  "included_events": null,
+                  "resource_scope": [
+                    {
+                      "resource_id": "ffffffffffffffffffff",
+                      "resource_type": "resource-manager.folder"
+                    }
+                  ],
+                  "service": "storage"
+                }
+              ],
+              "management_events_filter": [
+                {
+                  "resource_scope": [
+                    {
+                      "resource_id": "ffffffffffffffffffff",
+                      "resource_type": "resource-manager.folder"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "folder_id": "ffffffffffffffffffff",
+          "labels": null,
+          "logging_destination": [
+            {}
+          ],
+          "name": "marketops-terraform-state",
+          "storage_destination": [],
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "yandex_iam_service_account.audit",
+      "mode": "managed",
+      "type": "yandex_iam_service_account",
+      "name": "audit",
+      "provider_name": "registry.terraform.io/yandex-cloud/yandex",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "folder_id": "ffffffffffffffffffff",
+          "name": "marketops-state-audit",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "yandex_kms_symmetric_key.state",
+      "mode": "managed",
+      "type": "yandex_kms_symmetric_key",
+      "name": "state",
+      "provider_name": "registry.terraform.io/yandex-cloud/yandex",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "default_algorithm": "AES_256",
+          "deletion_protection": true,
+          "folder_id": "ffffffffffffffffffff",
+          "name": "marketops-terraform-state",
+          "rotation_period": "2160h",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "yandex_kms_symmetric_key_iam_binding.state",
+      "mode": "managed",
+      "type": "yandex_kms_symmetric_key_iam_binding",
+      "name": "state",
+      "provider_name": "registry.terraform.io/yandex-cloud/yandex",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "members": [
+            "serviceAccount:iiiiiiiiiiiiiiiiiiii"
+          ],
+          "role": "kms.keys.encrypterDecrypter",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "yandex_logging_group.audit",
+      "mode": "managed",
+      "type": "yandex_logging_group",
+      "name": "audit",
+      "provider_name": "registry.terraform.io/yandex-cloud/yandex",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "folder_id": "ffffffffffffffffffff",
+          "name": "marketops-state-access",
+          "retention_period": "720h",
+          "timeouts": null
+        }
+      }
+    },
+    {
+      "address": "yandex_resourcemanager_folder_iam_member.audit[\"audit-trails.viewer\"]",
+      "mode": "managed",
+      "type": "yandex_resourcemanager_folder_iam_member",
+      "name": "audit",
+      "index": "audit-trails.viewer",
+      "provider_name": "registry.terraform.io/yandex-cloud/yandex",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "folder_id": "ffffffffffffffffffff",
+          "role": "audit-trails.viewer",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "yandex_resourcemanager_folder_iam_member.audit[\"logging.writer\"]",
+      "mode": "managed",
+      "type": "yandex_resourcemanager_folder_iam_member",
+      "name": "audit",
+      "index": "logging.writer",
+      "provider_name": "registry.terraform.io/yandex-cloud/yandex",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "folder_id": "ffffffffffffffffffff",
+          "role": "logging.writer",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "yandex_storage_bucket.state",
+      "mode": "managed",
+      "type": "yandex_storage_bucket",
+      "name": "state",
+      "provider_name": "registry.terraform.io/yandex-cloud/yandex",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "access_key": null,
+          "anonymous_access_flags": [
+            {
+              "config_read": false,
+              "list": false,
+              "read": false
+            }
+          ],
+          "bucket": "marketops-offline-plan-state",
+          "bucket_prefix": null,
+          "cors_rule": [],
+          "disabled_statickey_auth": null,
+          "folder_id": "ffffffffffffffffffff",
+          "force_destroy": false,
+          "grant": [],
+          "https": [],
+          "lifecycle_rule": [],
+          "logging": [],
+          "max_size": null,
+          "object_lock_configuration": [],
+          "secret_key": null,
+          "server_side_encryption_configuration": [
+            {
+              "rule": [
+                {
+                  "apply_server_side_encryption_by_default": [
+                    {
+                      "sse_algorithm": "aws:kms"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "tags": null,
+          "versioning": [
+            {
+              "enabled": true
+            }
+          ],
+          "website": []
+        }
+      }
+    },
+    {
+      "address": "yandex_storage_bucket_policy.state",
+      "mode": "managed",
+      "type": "yandex_storage_bucket_policy",
+      "name": "state",
+      "provider_name": "registry.terraform.io/yandex-cloud/yandex",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "access_key": null,
+          "policy": "{\"Statement\":[{\"Action\":\"s3:*\",\"Condition\":{\"Bool\":{\"aws:SecureTransport\":\"false\"}},\"Effect\":\"Deny\",\"Principal\":\"*\",\"Resource\":[\"arn:aws:s3:::marketops-offline-plan-state\",\"arn:aws:s3:::marketops-offline-plan-state/*\"]},{\"Action\":\"s3:*\",\"Condition\":{\"StringNotEquals\":{\"aws:userid\":\"iiiiiiiiiiiiiiiiiiii\"}},\"Effect\":\"Deny\",\"Principal\":\"*\",\"Resource\":[\"arn:aws:s3:::marketops-offline-plan-state\",\"arn:aws:s3:::marketops-offline-plan-state/*\"]},{\"Action\":[\"s3:ListBucket\"],\"Effect\":\"Allow\",\"Principal\":{\"CanonicalUser\":\"iiiiiiiiiiiiiiiiiiii\"},\"Resource\":[\"arn:aws:s3:::marketops-offline-plan-state\"]},{\"Action\":[\"s3:GetObject\",\"s3:PutObject\"],\"Effect\":\"Allow\",\"Principal\":{\"CanonicalUser\":\"iiiiiiiiiiiiiiiiiiii\"},\"Resource\":[\"arn:aws:s3:::marketops-offline-plan-state/*\"]}],\"Version\":\"2012-10-17\"}",
+          "secret_key": null
+        }
+      }
+    },
+    {
+      "address": "yandex_ydb_database_iam_binding.locks",
+      "mode": "managed",
+      "type": "yandex_ydb_database_iam_binding",
+      "name": "locks",
+      "provider_name": "registry.terraform.io/yandex-cloud/yandex",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "members": [
+            "serviceAccount:iiiiiiiiiiiiiiiiiiii"
+          ],
+          "role": "ydb.editor",
+          "sleep_after": null
+        }
+      }
+    },
+    {
+      "address": "yandex_ydb_database_serverless.locks",
+      "mode": "managed",
+      "type": "yandex_ydb_database_serverless",
+      "name": "locks",
+      "provider_name": "registry.terraform.io/yandex-cloud/yandex",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "deletion_protection": true,
+          "description": null,
+          "folder_id": "ffffffffffffffffffff",
+          "labels": null,
+          "location_id": "ru-central1",
+          "name": "marketops-terraform-locks",
+          "serverless_database": [
+            {
+              "enable_throttling_rcu_limit": true,
+              "storage_size_limit": 1,
+              "throttling_rcu_limit": 10
+            }
+          ],
+          "sleep_after": null,
+          "timeouts": null
+        }
+      }
+    }
+  ],
+  "provider_schemas": {
+    "registry.terraform.io/yandex-cloud/yandex": {
+      "resource_schemas": {
+        "yandex_mdb_postgresql_user": {
+          "block": {
+            "attributes": {
+              "password_wo": {
+                "write_only": true
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

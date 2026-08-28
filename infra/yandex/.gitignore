@@ -1,0 +1,12 @@
+# State and its backups describe a real account, including resource identifiers
+# and any value a provider chose to record. None of it belongs in a public
+# repository.
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Provider dependency lockfiles are reviewed build inputs and must be committed.
+
+# Real values for a real environment. Only the example stays.
+terraform.tfvars
+*.auto.tfvars

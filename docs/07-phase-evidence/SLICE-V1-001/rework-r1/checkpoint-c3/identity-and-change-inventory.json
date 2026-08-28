@@ -1,0 +1,4659 @@
+{
+  "scope": "VERIFICATION_CHECKPOINT_NOT_CONTROLLER_HANDOFF",
+  "repository": "Corwin-Code/marketops-platform",
+  "pr": 20,
+  "base": "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+  "starting_head": "30d16e5d7db2d2190635a06fececd5883093a876",
+  "starting_tree": "13b1b789cd4cff292d0d6ab24daca976afbba6da",
+  "head": "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0",
+  "tree": "db3b2c4df0b46a94575e42989904e4fe80e41444",
+  "tested_merge": {
+    "parents": [
+      "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+      "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0"
+    ],
+    "sha": "fecc8c7b2e0dde4e565f59e5432de72477444948",
+    "tree": "db3b2c4df0b46a94575e42989904e4fe80e41444"
+  },
+  "rework_commits": [
+    {
+      "commit": "6e44ed49de90e55b4558f1c0b76229d257729511",
+      "tree": "15174f58a107be793d8176f460693454e931443f",
+      "parents": [
+        "30d16e5d7db2d2190635a06fececd5883093a876"
+      ],
+      "subject": "[SLICE-V1-001] Rework frozen findings and accepted PG17 bootstrap"
+    },
+    {
+      "commit": "cb799390f69f85982aa41a530a764c07dc7684f3",
+      "tree": "131e4ee0c534ad4280971cbd77f4be63a1f4fb34",
+      "parents": [
+        "6e44ed49de90e55b4558f1c0b76229d257729511"
+      ],
+      "subject": "fix(slice-v1-001): close CI source findings and pin provider locks"
+    },
+    {
+      "commit": "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0",
+      "tree": "db3b2c4df0b46a94575e42989904e4fe80e41444",
+      "parents": [
+        "cb799390f69f85982aa41a530a764c07dc7684f3"
+      ],
+      "subject": "fix(infra): retain verified Linux provider package checksum"
+    }
+  ],
+  "changed_paths_from_reviewed_head": [
+    {
+      "status": "A",
+      "paths": [
+        ".dockerignore"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        ".github/workflows/backend.yml"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        ".github/workflows/frontend.yml"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        ".github/workflows/infrastructure.yml"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        ".gitignore"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "Makefile"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/pom.xml"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/adminobservability/OperationalFaultSignals.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/adminobservability/internal/infrastructure/jdbc/OperationalTelemetryRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/adminobservability/internal/web/AdminMetadataProblemAdvice.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/adminobservability/internal/web/OperationalTelemetryController.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/AiClaim.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/AiDiagnosis.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/adapter/http/HttpModelGateway.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/application/AiDiagnosisService.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidator.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/application/ProjectionBuilder.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/config/ModelGatewayConfiguration.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/infrastructure/jdbc/AiRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/web/AiConsoleController.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/DiagnosticExportView.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/AnalyticsQueryService.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosticExportScheduling.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosticExportService.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosticExportWorker.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/infrastructure/jdbc/DiagnosticExportRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/infrastructure/jdbc/MetricRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/web/DiagnosisConsoleController.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/web/DiagnosticExportController.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/BusinessAuthorization.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/OwnedResource.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/application/JdbcBusinessAuthorization.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/application/TokenIdentityResolver.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/domain/IdentityProviderRecord.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/infrastructure/jdbc/UserAuthorizationRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/web/IdentitySecurityConfig.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/web/MarketOpsJwtAuthenticationConverter.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/PriceCommandRequest.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/AcquisitionConfiguration.java"
+      ]
+    },
+    {
+      "status": "D",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/EndpointRateLimiter.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAcquisitionAdapter.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpPriceWriteAdapter.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PriceWriteAnswers.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/RequestTemplate.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/objectstorage/FilesystemObjectStorage.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/objectstorage/ObjectStorageConfiguration.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/objectstorage/S3CompatibleObjectStorage.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/objectstorage/SignatureV4.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AcquisitionPageWorker.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AcquisitionRunner.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/CapabilityDirectoryService.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/PriceCommandResolutionService.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/PriceCommandService.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/PriceCommandWorker.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/RawCustodyService.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/RawEvidenceService.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/RegistryVerificationService.java"
+      ]
+    },
+    {
+      "status": "D",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/WriteOperationService.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/config/PriceWriteRuntimeConfiguration.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/domain/WriteOperationSpec.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/CapabilityRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/CredentialLookupRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/IngestionRunRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/JdbcAuthorizedAcquisitionGateway.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/PlatformCallSpecRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/PriceCommandRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/RawEvidenceRepository.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/RegistryVerificationRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/WriteOperationRepository.java"
+      ]
+    },
+    {
+      "status": "D",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/web/CapabilityOperationAdminController.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/web/PriceCommandConsoleController.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/web/RegistryVerificationController.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/AcquisitionResult.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/PriceWriteRequest.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/PriceWriteResult.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/EvidenceService.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/FactRecorder.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/ImportApplier.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/ImportIntakeService.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/ImportRowValidator.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/NormalizationRunner.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/PayloadReader.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/SpreadsheetReader.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/infrastructure/jdbc/ImportRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/web/EvidenceConsoleController.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/web/IntakeConsoleController.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/ExecutionService.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/RecommendationService.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/WorkTaskService.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/GuardrailRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/RecommendationRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/WorkTaskRepository.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/web/ApprovalConsoleController.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/web/CommercialPolicyConsoleController.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/web/WorkQueueConsoleController.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/productlisting/internal/web/MappingConsoleController.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/ConsoleApi.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/ErrorCode.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/JsonValues.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/config/WebConfig.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/errors/ConsoleProblemAdvice.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/http/BoundedOutboundHttp.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/http/OutboundDestinationProperties.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationEvidence.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationResources.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunner.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedV0002Resolver.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/secret/MountedSecretResolver.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/port/OutboundHttp.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/resources/ai/diagnosis-output-v2.schema.json"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/resources/application-production.yaml"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/resources/application-staging.yaml"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/resources/application.yaml"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0014__create_internal_fact_intake_and_file_import.sql"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0017__create_ai_projection_invocation_and_output.sql"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0020__create_price_command_outbox_readback_and_write_gate.sql"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0021__create_platform_api_profile_and_request_shape.sql"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0022__create_ingestion_run_lifecycle_and_replay_guard.sql"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0024__create_capability_write_operation_shape.sql"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0025__create_price_command_attempt_completion_and_lease_recovery.sql"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0026__rename_operational_capability_column_to_action_kind.sql"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0027__create_account_bound_registry_verification.sql"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/main/resources/db/migration/V0028__create_bounded_diagnostic_export.sql"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/ApplicationConfigurationTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/BrowserFixtureApplication.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/DiagnosticExportIT.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/FileIntakeFlowIT.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/ManagedMigrationRunnerIT.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/OperatingFlowIT.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandFixture.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/RegistryVerificationFlowIT.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/RepresentativePerformanceIT.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/adapter/http/HttpModelGatewayTest.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidatorTest.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AuthorizedAcquisitionFlowIT.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/database/CallAuthorityExclusivityIT.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/database/DatabasePrivilegeIT.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/database/FlywayMigrationIT.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/database/IngestionAuthorityAndEvidenceIT.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/database/IngestionControlPlaneFixture.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/database/MetadataConstraintIT.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/database/PriceWritePathFixture.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/database/PriceWritePathIT.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/database/StoredRawReplayIT.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/identityaccess/internal/application/TokenIdentityResolverTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/identityaccess/internal/web/BrowserSigningFixture.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/identityaccess/internal/web/MarketOpsJwtAuthenticationConverterTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/identityaccess/internal/web/SignedBearerIdentityIT.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdaptersTest.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PriceWriteClassificationTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/RequestTemplateTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/objectstorage/FilesystemObjectStorageTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/objectstorage/S3CompatibleObjectStorageTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AcquisitionPageWorkerTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AcquisitionRunnerTest.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/CapabilityDirectoryServiceTest.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/RawCustodyLocatorTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/operatingfacts/internal/application/FactRecorderTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/operatingfacts/internal/application/ImportRowValidatorTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/operatingfacts/internal/application/NormalizationRunnerTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/operatingfacts/internal/application/PayloadReaderTest.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/operatingfacts/internal/application/SpreadsheetReaderTest.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/ErrorCodeTest.java"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/internal/config/CorsContractTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/internal/http/BoundedOutboundHttpTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunnerTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/internal/migration/ManagedProfileMigrationIT.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/internal/secret/MountedSecretFilesystemIT.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/internal/secret/MountedSecretFilesystemProbe.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/internal/secret/MountedSecretResolverTest.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/resources/ai/diagnosis-v2-golden.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "backend/marketops-server/src/test/resources/performance/representative-v1.sql"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/00-governance/CURRENT_STATE.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/01-requirements/SOURCE_MANIFEST.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/01-requirements/v1-traceability.csv"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/02-architecture/designs/SLICE-V1-001-design.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/06-runbooks/README.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/06-runbooks/acquisition-backlog.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/06-runbooks/browser-smoke.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/06-runbooks/capability-verification.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/06-runbooks/database-restore-drill.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/06-runbooks/diagnostic-export.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/06-runbooks/evidence-custody.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/06-runbooks/identity-and-mounted-secrets.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/06-runbooks/local-development.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/06-runbooks/operational-monitoring.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/06-runbooks/price-command-resolution.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/06-runbooks/yandex-environment-bootstrap.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/DECISION-REQUEST-S1-F010-MANAGED-PG-BOOTSTRAP.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/LOG-CUSTODY.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/LOG-CUSTODY.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-114/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-114/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-114/export-frontend-full-112.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-114/export-performance-114.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-114/export-tests-113.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-114/focused-large-export.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-114/representative-performance-export-restore.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-114/snapshot-read-plan.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-114/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-116/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-116/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-116/browser-isolated-116-result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-116/browser-suite-116.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-116/governance-116.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-116/verification-inputs-export-116.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/async-export-implementation-plan.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/backend-performance-checkpoint-49.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/business-browser-121/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/business-browser-121/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/business-browser-121/browser-isolated-121-result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/business-browser-121/browser-suite-121.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/business-browser-121/governance-121.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/business-browser-121/verification-inputs-export-121.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/business-browser-129/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/business-browser-129/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/business-browser-129/browser-database-cleanup-129.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/business-browser-129/browser-database-up-129.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/business-browser-129/browser-isolated-129-result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/business-browser-129/browser-suite-129.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/business-browser-129/verification-inputs-export-129.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-132/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-132/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-132/coverage-negative-132.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-132/frontend-check-130.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-132/governance-131.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-132/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-134/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-134/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-134/codeql-focused-133.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-134/governance-prepublication-134.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-134/governance-prepublication-docs-134.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-134/governance-staged-134-failed.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-134/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/artifact-integrity.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/bootstrap-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/bootstrap-plan.jsonl.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/bootstrap-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/fmt.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/focused-backend-140.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/focused-backend-141.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/frontend-check-144.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/governance-144.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/governance-145.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/production-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/production-plan.jsonl.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/production-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/protected-proof.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/staging-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/staging-plan.jsonl.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/staging-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/checks-142/terraform-summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/codeql-disposition.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/control-preservation-132.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/criterion-evidence-map.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/evidence-custody-scan-134.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/f010-decision/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/f010-decision/CODEX-CONTINUE-SLICE-V1-001-REWORK-AFTER-F010-DECISION.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/f010-decision/CONTROLLER-S1-F010-MANAGED-PG-BOOTSTRAP-DISPOSITION-R1.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/f010-decision/OWNER-ACCEPTANCE-SLICE-V1-001-AMENDMENT-001.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/f010-decision/README.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/f010-decision/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/f010-decision/intake-identity.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/failure-drill-index.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/finding-rework-matrix.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/frozen/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/frozen/CODEX-SLICE-V1-001-FULL-PRODUCTION-ROOT-CAUSE-REWORK-R1.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/frozen/CONTROLLER-REVIEW-EVIDENCE-SLICE-V1-001-PR20-R1.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/frozen/CONTROLLER-SLICE-V1-001-COMPREHENSIVE-DEEP-REVIEW-R1.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/frozen/FROZEN-FINDING-SET-SLICE-V1-001-PR20-R1.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/frozen/OWNER-RETURN-AFTER-CODEX-SLICE-V1-001-REWORK.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/frozen/README.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-123/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-123/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-123/backend-check-123.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-123/jacoco.xml"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-123/representative-v1.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-123/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-123/verification-inputs-backend-123.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-128/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-128/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-128/backend-check-128.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-128/jacoco.xml"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-128/representative-v1.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-128/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-128/verification-inputs-backend-128.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-131/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-131/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-131/backend-integration.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-131/jacoco.xml"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-131/representative-v1.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-131/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-131/verification-inputs.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-134/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-134/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-134/backend-check.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-134/jacoco.xml"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-134/representative-v1.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-134/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-134/test-methods.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-134/verification-inputs.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-136/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-136/backend-integration.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-136/jacoco.xml"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-136/representative-v1.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-136/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-136/test-methods.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-136/verification-inputs.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-143/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-143/backend-check.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-143/jacoco.xml"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-143/representative-v1.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-143/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-143/test-methods.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/full-backend-143/verification-inputs.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-pg-bootstrap-progress.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/bootstrap.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-331847e33b9ccb2f12cc7e4e2c60d59a40401b22d59f6e85282abad0b4fedf79.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-331847e33b9ccb2f12cc7e4e2c60d59a40401b22d59f6e85282abad0b4fedf79.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-331847e33b9ccb2f12cc7e4e2c60d59a40401b22d59f6e85282abad0b4fedf79.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-48149f4038fb4f30fc03e35602ee3afb309867a878e585603cc969f0b6f7bbd8.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-48149f4038fb4f30fc03e35602ee3afb309867a878e585603cc969f0b6f7bbd8.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-6e64e711b62fa53b39b01ede23ccb31b633e04eb9680ad67531f6676efde0cbd.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-6e64e711b62fa53b39b01ede23ccb31b633e04eb9680ad67531f6676efde0cbd.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-8c42852c2206bfdb54045b7b9da68a4ec1c8c3f68cf0167f6245ece42f8cb2c7.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-8c42852c2206bfdb54045b7b9da68a4ec1c8c3f68cf0167f6245ece42f8cb2c7.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-8c42852c2206bfdb54045b7b9da68a4ec1c8c3f68cf0167f6245ece42f8cb2c7.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-c316da835d77c7006d84b0e78b56f918de7cf474b9916cfb52f093f966793bb6.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-c316da835d77c7006d84b0e78b56f918de7cf474b9916cfb52f093f966793bb6.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-c316da835d77c7006d84b0e78b56f918de7cf474b9916cfb52f093f966793bb6.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-d8027a30d4eef5eaf92a09c06ad8f875ae60e00ab081bd56b9634c70ed05c3e1.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-d8027a30d4eef5eaf92a09c06ad8f875ae60e00ab081bd56b9634c70ed05c3e1.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-e172db0475355f61a2fc10a6584fa8f81c5730c3e73aac1c6082c7779c84f5c3.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-e172db0475355f61a2fc10a6584fa8f81c5730c3e73aac1c6082c7779c84f5c3.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-e172db0475355f61a2fc10a6584fa8f81c5730c3e73aac1c6082c7779c84f5c3.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-f43349e43f97906bd9c4fd57e49ae09e5fbf1699724821bb1f644b6b4c800463.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/attempt-f43349e43f97906bd9c4fd57e49ae09e5fbf1699724821bb1f644b6b4c800463.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/clean-replay-restore/bootstrap.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/extension-refusals/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/extension-refusals/attempt-3f74ceb8fbc13b65a9fe88a87c885ee46a8bcbed34baf338b5e1e2189a585492.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/extension-refusals/attempt-3f74ceb8fbc13b65a9fe88a87c885ee46a8bcbed34baf338b5e1e2189a585492.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/extension-refusals/attempt-59697878eb62b2ab4fb539dcb8a9deddc6e8bdc14c310e86ce84769a17142739.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/extension-refusals/attempt-59697878eb62b2ab4fb539dcb8a9deddc6e8bdc14c310e86ce84769a17142739.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/extension-refusals/attempt-67cf2ca1f1abaa35c7fd16cf8390d0001a8a134f39d6d2e135fcb3a38187f0dd.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/extension-refusals/attempt-67cf2ca1f1abaa35c7fd16cf8390d0001a8a134f39d6d2e135fcb3a38187f0dd.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/extension-refusals/attempt-68cc70819c98f1478beab2fcc3a61ff0911509e7a1c83c8007b9c718cca61fc3.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/extension-refusals/attempt-68cc70819c98f1478beab2fcc3a61ff0911509e7a1c83c8007b9c718cca61fc3.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/forward-failure-upgrade/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/forward-failure-upgrade/attempt-543653503fb060018168f6c1751dc1f97eac7bb94e4b372705cbb02c9e5034f5.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/forward-failure-upgrade/attempt-543653503fb060018168f6c1751dc1f97eac7bb94e4b372705cbb02c9e5034f5.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/forward-failure-upgrade/attempt-543653503fb060018168f6c1751dc1f97eac7bb94e4b372705cbb02c9e5034f5.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/forward-failure-upgrade/attempt-58b85847bca6f637cacebdcf74c565f06e8f57cbaa6b02922d9d6ce65d42e7a9.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/forward-failure-upgrade/attempt-58b85847bca6f637cacebdcf74c565f06e8f57cbaa6b02922d9d6ce65d42e7a9.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/forward-failure-upgrade/attempt-58b85847bca6f637cacebdcf74c565f06e8f57cbaa6b02922d9d6ce65d42e7a9.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/forward-failure-upgrade/attempt-f07cf0f162c1ab7554d5d07d885774f6d6ac76efc78cdab467bc044076ee2e08.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/forward-failure-upgrade/attempt-f07cf0f162c1ab7554d5d07d885774f6d6ac76efc78cdab467bc044076ee2e08.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/forward-failure-upgrade/attempt-f07cf0f162c1ab7554d5d07d885774f6d6ac76efc78cdab467bc044076ee2e08.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/forward-failure-upgrade/bootstrap.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/pg18-refusal/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/pg18-refusal/attempt-da533c757bd1d311d785efe7aa329ba3c79857a37e84703b41ab805ad00ad2f9.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-131/pg18-refusal/attempt-da533c757bd1d311d785efe7aa329ba3c79857a37e84703b41ab805ad00ad2f9.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-72/bootstrap-fixture.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-72/jacoco-jacoco.xml"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-72/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/artifact-index.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-331847e33b9ccb2f12cc7e4e2c60d59a40401b22d59f6e85282abad0b4fedf79.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-331847e33b9ccb2f12cc7e4e2c60d59a40401b22d59f6e85282abad0b4fedf79.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-331847e33b9ccb2f12cc7e4e2c60d59a40401b22d59f6e85282abad0b4fedf79.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-48149f4038fb4f30fc03e35602ee3afb309867a878e585603cc969f0b6f7bbd8.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-48149f4038fb4f30fc03e35602ee3afb309867a878e585603cc969f0b6f7bbd8.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-6e64e711b62fa53b39b01ede23ccb31b633e04eb9680ad67531f6676efde0cbd.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-6e64e711b62fa53b39b01ede23ccb31b633e04eb9680ad67531f6676efde0cbd.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-8c42852c2206bfdb54045b7b9da68a4ec1c8c3f68cf0167f6245ece42f8cb2c7.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-8c42852c2206bfdb54045b7b9da68a4ec1c8c3f68cf0167f6245ece42f8cb2c7.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-8c42852c2206bfdb54045b7b9da68a4ec1c8c3f68cf0167f6245ece42f8cb2c7.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-c316da835d77c7006d84b0e78b56f918de7cf474b9916cfb52f093f966793bb6.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-c316da835d77c7006d84b0e78b56f918de7cf474b9916cfb52f093f966793bb6.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-c316da835d77c7006d84b0e78b56f918de7cf474b9916cfb52f093f966793bb6.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-d8027a30d4eef5eaf92a09c06ad8f875ae60e00ab081bd56b9634c70ed05c3e1.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-d8027a30d4eef5eaf92a09c06ad8f875ae60e00ab081bd56b9634c70ed05c3e1.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-e172db0475355f61a2fc10a6584fa8f81c5730c3e73aac1c6082c7779c84f5c3.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-e172db0475355f61a2fc10a6584fa8f81c5730c3e73aac1c6082c7779c84f5c3.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-e172db0475355f61a2fc10a6584fa8f81c5730c3e73aac1c6082c7779c84f5c3.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-f43349e43f97906bd9c4fd57e49ae09e5fbf1699724821bb1f644b6b4c800463.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/attempt-f43349e43f97906bd9c4fd57e49ae09e5fbf1699724821bb1f644b6b4c800463.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/clean-replay-restore/bootstrap.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/extension-refusals/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/extension-refusals/attempt-3f74ceb8fbc13b65a9fe88a87c885ee46a8bcbed34baf338b5e1e2189a585492.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/extension-refusals/attempt-3f74ceb8fbc13b65a9fe88a87c885ee46a8bcbed34baf338b5e1e2189a585492.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/extension-refusals/attempt-67cf2ca1f1abaa35c7fd16cf8390d0001a8a134f39d6d2e135fcb3a38187f0dd.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/extension-refusals/attempt-67cf2ca1f1abaa35c7fd16cf8390d0001a8a134f39d6d2e135fcb3a38187f0dd.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/extension-refusals/attempt-68cc70819c98f1478beab2fcc3a61ff0911509e7a1c83c8007b9c718cca61fc3.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/extension-refusals/attempt-68cc70819c98f1478beab2fcc3a61ff0911509e7a1c83c8007b9c718cca61fc3.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/forward-failure-upgrade/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/forward-failure-upgrade/attempt-543653503fb060018168f6c1751dc1f97eac7bb94e4b372705cbb02c9e5034f5.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/forward-failure-upgrade/attempt-543653503fb060018168f6c1751dc1f97eac7bb94e4b372705cbb02c9e5034f5.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/forward-failure-upgrade/attempt-543653503fb060018168f6c1751dc1f97eac7bb94e4b372705cbb02c9e5034f5.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/forward-failure-upgrade/attempt-58b85847bca6f637cacebdcf74c565f06e8f57cbaa6b02922d9d6ce65d42e7a9.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/forward-failure-upgrade/attempt-58b85847bca6f637cacebdcf74c565f06e8f57cbaa6b02922d9d6ce65d42e7a9.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/forward-failure-upgrade/attempt-58b85847bca6f637cacebdcf74c565f06e8f57cbaa6b02922d9d6ce65d42e7a9.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/forward-failure-upgrade/attempt-f07cf0f162c1ab7554d5d07d885774f6d6ac76efc78cdab467bc044076ee2e08.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/forward-failure-upgrade/attempt-f07cf0f162c1ab7554d5d07d885774f6d6ac76efc78cdab467bc044076ee2e08.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/forward-failure-upgrade/attempt-f07cf0f162c1ab7554d5d07d885774f6d6ac76efc78cdab467bc044076ee2e08.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/forward-failure-upgrade/bootstrap.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/pg18-refusal/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/pg18-refusal/attempt-da533c757bd1d311d785efe7aa329ba3c79857a37e84703b41ab805ad00ad2f9.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-77/pg18-refusal/attempt-da533c757bd1d311d785efe7aa329ba3c79857a37e84703b41ab805ad00ad2f9.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/bootstrap.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-331847e33b9ccb2f12cc7e4e2c60d59a40401b22d59f6e85282abad0b4fedf79.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-331847e33b9ccb2f12cc7e4e2c60d59a40401b22d59f6e85282abad0b4fedf79.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-331847e33b9ccb2f12cc7e4e2c60d59a40401b22d59f6e85282abad0b4fedf79.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-48149f4038fb4f30fc03e35602ee3afb309867a878e585603cc969f0b6f7bbd8.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-48149f4038fb4f30fc03e35602ee3afb309867a878e585603cc969f0b6f7bbd8.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-6e64e711b62fa53b39b01ede23ccb31b633e04eb9680ad67531f6676efde0cbd.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-6e64e711b62fa53b39b01ede23ccb31b633e04eb9680ad67531f6676efde0cbd.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-8c42852c2206bfdb54045b7b9da68a4ec1c8c3f68cf0167f6245ece42f8cb2c7.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-8c42852c2206bfdb54045b7b9da68a4ec1c8c3f68cf0167f6245ece42f8cb2c7.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-8c42852c2206bfdb54045b7b9da68a4ec1c8c3f68cf0167f6245ece42f8cb2c7.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-c316da835d77c7006d84b0e78b56f918de7cf474b9916cfb52f093f966793bb6.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-c316da835d77c7006d84b0e78b56f918de7cf474b9916cfb52f093f966793bb6.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-c316da835d77c7006d84b0e78b56f918de7cf474b9916cfb52f093f966793bb6.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-d8027a30d4eef5eaf92a09c06ad8f875ae60e00ab081bd56b9634c70ed05c3e1.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-d8027a30d4eef5eaf92a09c06ad8f875ae60e00ab081bd56b9634c70ed05c3e1.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-e172db0475355f61a2fc10a6584fa8f81c5730c3e73aac1c6082c7779c84f5c3.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-e172db0475355f61a2fc10a6584fa8f81c5730c3e73aac1c6082c7779c84f5c3.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-e172db0475355f61a2fc10a6584fa8f81c5730c3e73aac1c6082c7779c84f5c3.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-f43349e43f97906bd9c4fd57e49ae09e5fbf1699724821bb1f644b6b4c800463.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/attempt-f43349e43f97906bd9c4fd57e49ae09e5fbf1699724821bb1f644b6b4c800463.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/clean-replay-restore/bootstrap.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/extension-refusals/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/extension-refusals/attempt-3f74ceb8fbc13b65a9fe88a87c885ee46a8bcbed34baf338b5e1e2189a585492.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/extension-refusals/attempt-3f74ceb8fbc13b65a9fe88a87c885ee46a8bcbed34baf338b5e1e2189a585492.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/extension-refusals/attempt-59697878eb62b2ab4fb539dcb8a9deddc6e8bdc14c310e86ce84769a17142739.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/extension-refusals/attempt-59697878eb62b2ab4fb539dcb8a9deddc6e8bdc14c310e86ce84769a17142739.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/extension-refusals/attempt-67cf2ca1f1abaa35c7fd16cf8390d0001a8a134f39d6d2e135fcb3a38187f0dd.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/extension-refusals/attempt-67cf2ca1f1abaa35c7fd16cf8390d0001a8a134f39d6d2e135fcb3a38187f0dd.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/extension-refusals/attempt-68cc70819c98f1478beab2fcc3a61ff0911509e7a1c83c8007b9c718cca61fc3.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/extension-refusals/attempt-68cc70819c98f1478beab2fcc3a61ff0911509e7a1c83c8007b9c718cca61fc3.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/forward-failure-upgrade/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/forward-failure-upgrade/attempt-543653503fb060018168f6c1751dc1f97eac7bb94e4b372705cbb02c9e5034f5.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/forward-failure-upgrade/attempt-543653503fb060018168f6c1751dc1f97eac7bb94e4b372705cbb02c9e5034f5.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/forward-failure-upgrade/attempt-543653503fb060018168f6c1751dc1f97eac7bb94e4b372705cbb02c9e5034f5.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/forward-failure-upgrade/attempt-58b85847bca6f637cacebdcf74c565f06e8f57cbaa6b02922d9d6ce65d42e7a9.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/forward-failure-upgrade/attempt-58b85847bca6f637cacebdcf74c565f06e8f57cbaa6b02922d9d6ce65d42e7a9.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/forward-failure-upgrade/attempt-58b85847bca6f637cacebdcf74c565f06e8f57cbaa6b02922d9d6ce65d42e7a9.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/forward-failure-upgrade/attempt-f07cf0f162c1ab7554d5d07d885774f6d6ac76efc78cdab467bc044076ee2e08.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/forward-failure-upgrade/attempt-f07cf0f162c1ab7554d5d07d885774f6d6ac76efc78cdab467bc044076ee2e08.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/forward-failure-upgrade/attempt-f07cf0f162c1ab7554d5d07d885774f6d6ac76efc78cdab467bc044076ee2e08.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/forward-failure-upgrade/bootstrap.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/pg18-refusal/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/pg18-refusal/attempt-da533c757bd1d311d785efe7aa329ba3c79857a37e84703b41ab805ad00ad2f9.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/fixtures/pg18-refusal/attempt-da533c757bd1d311d785efe7aa329ba3c79857a37e84703b41ab805ad00ad2f9.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/jacoco.xml"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-79/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/bootstrap.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-331847e33b9ccb2f12cc7e4e2c60d59a40401b22d59f6e85282abad0b4fedf79.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-331847e33b9ccb2f12cc7e4e2c60d59a40401b22d59f6e85282abad0b4fedf79.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-331847e33b9ccb2f12cc7e4e2c60d59a40401b22d59f6e85282abad0b4fedf79.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-48149f4038fb4f30fc03e35602ee3afb309867a878e585603cc969f0b6f7bbd8.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-48149f4038fb4f30fc03e35602ee3afb309867a878e585603cc969f0b6f7bbd8.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-6e64e711b62fa53b39b01ede23ccb31b633e04eb9680ad67531f6676efde0cbd.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-6e64e711b62fa53b39b01ede23ccb31b633e04eb9680ad67531f6676efde0cbd.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-8c42852c2206bfdb54045b7b9da68a4ec1c8c3f68cf0167f6245ece42f8cb2c7.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-8c42852c2206bfdb54045b7b9da68a4ec1c8c3f68cf0167f6245ece42f8cb2c7.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-8c42852c2206bfdb54045b7b9da68a4ec1c8c3f68cf0167f6245ece42f8cb2c7.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-c316da835d77c7006d84b0e78b56f918de7cf474b9916cfb52f093f966793bb6.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-c316da835d77c7006d84b0e78b56f918de7cf474b9916cfb52f093f966793bb6.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-c316da835d77c7006d84b0e78b56f918de7cf474b9916cfb52f093f966793bb6.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-d8027a30d4eef5eaf92a09c06ad8f875ae60e00ab081bd56b9634c70ed05c3e1.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-d8027a30d4eef5eaf92a09c06ad8f875ae60e00ab081bd56b9634c70ed05c3e1.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-e172db0475355f61a2fc10a6584fa8f81c5730c3e73aac1c6082c7779c84f5c3.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-e172db0475355f61a2fc10a6584fa8f81c5730c3e73aac1c6082c7779c84f5c3.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-e172db0475355f61a2fc10a6584fa8f81c5730c3e73aac1c6082c7779c84f5c3.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-f43349e43f97906bd9c4fd57e49ae09e5fbf1699724821bb1f644b6b4c800463.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/attempt-f43349e43f97906bd9c4fd57e49ae09e5fbf1699724821bb1f644b6b4c800463.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/clean-replay-restore/bootstrap.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/extension-refusals/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/extension-refusals/attempt-3f74ceb8fbc13b65a9fe88a87c885ee46a8bcbed34baf338b5e1e2189a585492.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/extension-refusals/attempt-3f74ceb8fbc13b65a9fe88a87c885ee46a8bcbed34baf338b5e1e2189a585492.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/extension-refusals/attempt-59697878eb62b2ab4fb539dcb8a9deddc6e8bdc14c310e86ce84769a17142739.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/extension-refusals/attempt-59697878eb62b2ab4fb539dcb8a9deddc6e8bdc14c310e86ce84769a17142739.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/extension-refusals/attempt-67cf2ca1f1abaa35c7fd16cf8390d0001a8a134f39d6d2e135fcb3a38187f0dd.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/extension-refusals/attempt-67cf2ca1f1abaa35c7fd16cf8390d0001a8a134f39d6d2e135fcb3a38187f0dd.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/extension-refusals/attempt-68cc70819c98f1478beab2fcc3a61ff0911509e7a1c83c8007b9c718cca61fc3.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/extension-refusals/attempt-68cc70819c98f1478beab2fcc3a61ff0911509e7a1c83c8007b9c718cca61fc3.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/forward-failure-upgrade/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/forward-failure-upgrade/attempt-543653503fb060018168f6c1751dc1f97eac7bb94e4b372705cbb02c9e5034f5.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/forward-failure-upgrade/attempt-543653503fb060018168f6c1751dc1f97eac7bb94e4b372705cbb02c9e5034f5.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/forward-failure-upgrade/attempt-543653503fb060018168f6c1751dc1f97eac7bb94e4b372705cbb02c9e5034f5.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/forward-failure-upgrade/attempt-58b85847bca6f637cacebdcf74c565f06e8f57cbaa6b02922d9d6ce65d42e7a9.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/forward-failure-upgrade/attempt-58b85847bca6f637cacebdcf74c565f06e8f57cbaa6b02922d9d6ce65d42e7a9.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/forward-failure-upgrade/attempt-58b85847bca6f637cacebdcf74c565f06e8f57cbaa6b02922d9d6ce65d42e7a9.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/forward-failure-upgrade/attempt-f07cf0f162c1ab7554d5d07d885774f6d6ac76efc78cdab467bc044076ee2e08.attested.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/forward-failure-upgrade/attempt-f07cf0f162c1ab7554d5d07d885774f6d6ac76efc78cdab467bc044076ee2e08.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/forward-failure-upgrade/attempt-f07cf0f162c1ab7554d5d07d885774f6d6ac76efc78cdab467bc044076ee2e08.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/forward-failure-upgrade/bootstrap.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/pg18-refusal/FIXTURE-ONLY.txt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/pg18-refusal/attempt-da533c757bd1d311d785efe7aa329ba3c79857a37e84703b41ab805ad00ad2f9.result.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/fixtures/pg18-refusal/attempt-da533c757bd1d311d785efe7aa329ba3c79857a37e84703b41ab805ad00ad2f9.started.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/jacoco.xml"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/managed-profile-87/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/migration-compatibility-and-recovery.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/migration-compatibility-evidence.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/migration-inventory-132.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/backend-artifact-label.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/backend-build.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/backend.image-id"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/checkout-identity.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/checkout-status.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/compile-probe.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/docker-endpoint.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/migration-artifact-label.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/migration-build.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/migration.image-id"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/missing-envelope-refused.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/packaged-resolver.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-130/wrong-artifact-build-refused.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/artifact-hashes.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/backend-artifact-label.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/backend-build.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/backend.image-id"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/checkout-identity.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/checkout-status.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/compile-probe.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/docker-endpoint.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/migration-artifact-label.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/migration-build.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/migration.image-id"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/missing-envelope-refused.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/packaged-resolver.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/packaged-runtime-99/wrong-artifact-build-refused.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/performance-baseline-46.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/performance-baseline-47.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/performance-baseline-48.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/performance-baseline-49.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/performance-checkpoint-48.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/performance-profile-v1.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/progress-checkpoint.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/protected-bytes-and-log-scan-131.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c1/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c1/alerts-before-disposition.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c1/backend-workflow-final.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c1/bootstrap-init-failed.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c1/codeql-c1-alerts.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c1/frontend-workflow.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c1/infrastructure-failed.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c1/pr20-checks-c1.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c1/review-threads.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c1/source-fixed-thread-evidence-replies.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c1/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c2/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c2/alerts.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c2/bootstrap-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c2/bootstrap-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c2/checks-snapshot.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c2/infrastructure-failed.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c2/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/remote-ci-c2/tested-merge.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/same-class-source-inventory-134.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/security-and-coverage-checkpoint.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/starting-identity.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/stored-raw-replay-130/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/stored-raw-replay-130/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/stored-raw-replay-130/StoredRawReplayIT.java"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/stored-raw-replay-130/stored-replay-130.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/bootstrap-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/bootstrap-plan.jsonl.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/bootstrap-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/fmt.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/governance-148.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/production-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/production-plan.jsonl.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/production-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/provider-lock-cross-platform-147.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/staging-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/staging-plan.jsonl.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/staging-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-cross-platform-148/terraform-summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/artifact-hashes.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/bootstrap-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/bootstrap-plan.jsonl"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/bootstrap-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/fmt.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/production-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/production-plan.jsonl"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/production-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/staging-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/staging-plan.jsonl"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/staging-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/verification.tfrc"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-100/version.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/artifact-hashes.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/bootstrap-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/bootstrap-plan.jsonl"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/bootstrap-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/fmt.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/production-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/production-plan.jsonl"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/production-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/staging-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/staging-plan.jsonl"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/staging-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/verification.tfrc"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-sequencing-92/version.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/ARTIFACT-HASHES.before-log-packaging.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/ARTIFACT-HASHES.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/bootstrap-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/bootstrap-plan.jsonl.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/bootstrap-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/fmt.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/production-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/production-plan.jsonl.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/production-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/raw-plan-custody.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/staging-init.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/staging-plan.jsonl.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/staging-validate.log.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/summary.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/verification.tfrc"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/terraform-telemetry-130/version.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/verification-inputs-managed-72.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/verification-inputs-managed-79.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/verification-inputs-managed-87.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/verification-inputs-performance-46.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/verification-inputs-performance-47.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/verification-inputs-performance-48.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/verification-inputs-performance-49.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/verification-inputs-security-35.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/07-phase-evidence/SLICE-V1-001/rework-r1/wire-intent-checkpoint-44.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "frontend/marketops-console/playwright.config.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "frontend/marketops-console/src/ConsoleShell.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "frontend/marketops-console/src/__tests__/ConsoleJourney.test.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "frontend/marketops-console/src/__tests__/consoleApi.test.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "frontend/marketops-console/src/api/console.ts"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "frontend/marketops-console/src/api/diagnosticExport.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "frontend/marketops-console/src/commands/CommandTimeline.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "frontend/marketops-console/src/diagnosis/AiExplanationPanel.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "frontend/marketops-console/src/diagnosis/DiagnosticExportPanel.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "frontend/marketops-console/src/diagnosis/MetricEvidencePanel.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "frontend/marketops-console/src/diagnosis/SubjectDiagnosisView.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "frontend/marketops-console/src/workflow/RecommendationReview.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "frontend/marketops-console/src/workflow/SubjectRecommendations.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "frontend/marketops-console/tests/browser/business-journey.spec.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "frontend/marketops-console/tests/browser/operating-console.spec.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/.gitignore"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/README.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/bootstrap/.terraform.lock.hcl"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/bootstrap/create-lock-table.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/bootstrap/main.tf"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/bootstrap/outputs.tf"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/bootstrap/tests/bootstrap.tftest.hcl"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/bootstrap/variables.tf"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/environments/production/.terraform.lock.hcl"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/environments/production/backend.hcl.example"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/environments/production/main.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/environments/production/outputs.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/environments/production/terraform.tfvars.example"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/environments/production/tests/environment.tftest.hcl"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/environments/production/tests/migration-result.fixture.json"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/environments/production/variables.tf"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/environments/staging/.terraform.lock.hcl"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/environments/staging/backend.hcl.example"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/environments/staging/main.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/environments/staging/outputs.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/environments/staging/terraform.tfvars.example"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/environments/staging/tests/environment.tftest.hcl"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/environments/staging/tests/migration-result.fixture.json"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/environments/staging/variables.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/modules/database/main.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/modules/database/variables.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/modules/network/main.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/modules/network/outputs.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/modules/object-storage/main.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/modules/object-storage/variables.tf"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/modules/observability/alert-requirements.json"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/modules/observability/main.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/modules/observability/outputs.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/modules/observability/variables.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/modules/workload-identity/main.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/modules/workload-identity/outputs.tf"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "infra/yandex/modules/workload-identity/variables.tf"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/modules/workload/main.tf"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/modules/workload/outputs.tf"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/modules/workload/variables.tf"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/backend.Dockerfile"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/bootstrap.py"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/certs/README.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/certs/yandex-root.crt"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/console.Dockerfile"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/managed-provider-evidence.json.example"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/marketops-telemetry.service"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/marketops-telemetry.timer"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/marketops.service"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/migration-logback.xml"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/migration-manifest.properties.example"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/migration.Dockerfile"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/nginx.conf"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/prepare-managed-database.sql"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "infra/yandex/runtime/telemetry.py"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "scripts/validate_governance.py"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "scripts/validate_production_readiness.py"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "scripts/validate_terraform_plan.py"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "scripts/verify_coverage_thresholds.sh"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "scripts/verify_migration_artifact.py"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "scripts/verify_terraform.py"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "tests/fixtures/terraform/bootstrap-plan.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "tests/fixtures/terraform/environment-plan-provenance.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "tests/fixtures/terraform/environment-plan.json"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "tests/test_validate_governance.py"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "tests/test_validate_production_readiness.py"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "tests/test_validate_terraform_plan.py"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "tests/test_yandex_runtime.py"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "tests/test_yandex_telemetry.py"
+      ]
+    }
+  ],
+  "protected_migrations": [
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0001__create_foundation_schemas.sql",
+      "sha256": "7c7f34ba3a3746883e236a5a4e6eb0efc87e58e3b33f895d7f1d71c369d0eb0d",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0002__enable_btree_gist_extension.sql",
+      "sha256": "438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0003__create_metadata_audit_event.sql",
+      "sha256": "efbe9ff5bb32fb96011f9d5b80426fb8d4134a2bd2314bb6294d8eb60be8135c",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0004__create_core_organization_metadata.sql",
+      "sha256": "39bff4689febfe3effa1e73953589976fa030c035412263e365f0d1a7be65d2c",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0005__create_iam_access_metadata.sql",
+      "sha256": "51a47d8cf735ff6378e4d0a3d201725b255e8f835e662a7d68b34d6dd51950f1",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0006__create_platform_registry_metadata.sql",
+      "sha256": "7225402b7a77cc04933e5d030772f9f6e2e98f4e552ac577e1254f998d73e902",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0007__create_ingestion_control_plane_authority.sql",
+      "sha256": "83ccccf382389ec62a401393cd85508183240eeb3d94215549a101f6ab5e8781",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0008__attach_control_epoch_triggers.sql",
+      "sha256": "8f148e213c8cd2f50c57c0d585708d59677d72663e4d45a6c62000dc663d5fea",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0009__create_control_boundary_kinds_and_decision_evidence.sql",
+      "sha256": "9b906c8e732aec72b7f069c5374cb0dc9894071e18e091281b9c28785336885d",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql",
+      "sha256": "a3b8ca08b796c1d211f17a042a8ec546cd0009d4457e2d68dcd930dfc36a13d9",
+      "matches_protected_base": true
+    }
+  ],
+  "migration_inventory": [
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0001__create_foundation_schemas.sql",
+      "sha256": "7c7f34ba3a3746883e236a5a4e6eb0efc87e58e3b33f895d7f1d71c369d0eb0d",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0002__enable_btree_gist_extension.sql",
+      "sha256": "438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0003__create_metadata_audit_event.sql",
+      "sha256": "efbe9ff5bb32fb96011f9d5b80426fb8d4134a2bd2314bb6294d8eb60be8135c",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0004__create_core_organization_metadata.sql",
+      "sha256": "39bff4689febfe3effa1e73953589976fa030c035412263e365f0d1a7be65d2c",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0005__create_iam_access_metadata.sql",
+      "sha256": "51a47d8cf735ff6378e4d0a3d201725b255e8f835e662a7d68b34d6dd51950f1",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0006__create_platform_registry_metadata.sql",
+      "sha256": "7225402b7a77cc04933e5d030772f9f6e2e98f4e552ac577e1254f998d73e902",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0007__create_ingestion_control_plane_authority.sql",
+      "sha256": "83ccccf382389ec62a401393cd85508183240eeb3d94215549a101f6ab5e8781",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0008__attach_control_epoch_triggers.sql",
+      "sha256": "8f148e213c8cd2f50c57c0d585708d59677d72663e4d45a6c62000dc663d5fea",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0009__create_control_boundary_kinds_and_decision_evidence.sql",
+      "sha256": "9b906c8e732aec72b7f069c5374cb0dc9894071e18e091281b9c28785336885d",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql",
+      "sha256": "a3b8ca08b796c1d211f17a042a8ec546cd0009d4457e2d68dcd930dfc36a13d9",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0011__create_human_identity_and_business_authorization.sql",
+      "sha256": "d5312e5c2348e8abe0fb445652567ad9a0e9ad1b7ce6eeb3a5202bb58af94555"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0012__create_product_listing_identity_and_mapping.sql",
+      "sha256": "e6ea3caa30f69e9f533a69cb1387e25396c15f3f0fce1f0bcdced00c30522bb7"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0013__create_cross_domain_operating_facts.sql",
+      "sha256": "db63fd8a4e50ceb39c78b58856a44ff4b4eed8e758a3975bc96fe9c439aad552"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0014__create_internal_fact_intake_and_file_import.sql",
+      "sha256": "f0649d939caab975ff796b2e257ea1e642f9e7bf851bd7616171ac82e0a0b42a"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0015__create_canonical_metric_definitions_and_values.sql",
+      "sha256": "cc695d22a1249b3e3520e359e75cdbfe7a90fb7519f0cc6e0b74369bdbdbed9b"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0016__create_deterministic_diagnosis_rules_and_findings.sql",
+      "sha256": "9a7b8efa5d1948d3d5ca8522b6d5dd011eb4be2e16f53145c7c7364ae831056c"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0017__create_ai_projection_invocation_and_output.sql",
+      "sha256": "b20b7138b2e177b87ec1a579cbdcdd13c60b4ed045b6721463c5496f974e74ff"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0018__create_recommendation_task_and_approval_workflow.sql",
+      "sha256": "1df2c7fd599354dce06cd8f3a4d6363a88c65fa2c02446cbe569d56b333422d1"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0019__create_commercial_policy_and_guardrails.sql",
+      "sha256": "ba6916d059cb5586bfe784e261a0243832acf97b097c112072899b5d01526e58"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0020__create_price_command_outbox_readback_and_write_gate.sql",
+      "sha256": "8437316450f3bae2e5ef532d360121ad825d25cac2cd67cb840cc31683d6721d"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0021__create_platform_api_profile_and_request_shape.sql",
+      "sha256": "b67375962b84a3f37becd968af7f2aaf97df7b75760ce69748a1f4895a9fc97a"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0022__create_ingestion_run_lifecycle_and_replay_guard.sql",
+      "sha256": "9a93dcaaafca30b9f738129974babe46509784c232854337ea023200d7c33f6e"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0023__create_declared_normalization_and_drift_observation.sql",
+      "sha256": "6fdc3d7bef0b4f0e395a73bac1a7553b134668dd8a684224a74aeaa04f0df0fb"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0024__create_capability_write_operation_shape.sql",
+      "sha256": "55db8c34247172c1746439bb41a9cd376b4ad70e5e256ef0fbf0c5ee2ff80e2b"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0025__create_price_command_attempt_completion_and_lease_recovery.sql",
+      "sha256": "5039cdbf120e4db29d642d8d22dc3f952119921f04f3568eb367f15b9f8fdfa7"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0026__rename_operational_capability_column_to_action_kind.sql",
+      "sha256": "82f42eea7990dc6502447d4832a08ca107830495f8f9d249e9d4b09c088b4df2"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0027__create_account_bound_registry_verification.sql",
+      "sha256": "fbdd185d03324d145793ec7844ebc17aa02b844f8aaffe89579b5df1f6479ba1"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0028__create_bounded_diagnostic_export.sql",
+      "sha256": "43170cf370079706ed8b39792815a5ec2bb447fae2d876afcd830cf7e30a1acf"
+    }
+  ],
+  "contract_sha256": "0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5",
+  "accepted_amendment_sha256": "8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d",
+  "created_at": "2026-08-27T22:28:36.969966+00:00"
+}

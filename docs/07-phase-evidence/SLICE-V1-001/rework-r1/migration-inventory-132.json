@@ -1,0 +1,329 @@
+{
+  "scope": "SOURCE_BOUND_WORKTREE_CHECKPOINT_FULL_BACKEND_131",
+  "protected_base": "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+  "reviewed_head": "30d16e5d7db2d2190635a06fececd5883093a876",
+  "migration_count": 28,
+  "history_manipulation": "NONE; public Flyway resolver/executor only",
+  "migrations": [
+    {
+      "version": "0001",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0001__create_foundation_schemas.sql",
+      "sha256": "7c7f34ba3a3746883e236a5a4e6eb0efc87e58e3b33f895d7f1d71c369d0eb0d",
+      "reviewed_sha256": "7c7f34ba3a3746883e236a5a4e6eb0efc87e58e3b33f895d7f1d71c369d0eb0d",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0002",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0002__enable_btree_gist_extension.sql",
+      "sha256": "438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16",
+      "reviewed_sha256": "438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0003",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0003__create_metadata_audit_event.sql",
+      "sha256": "efbe9ff5bb32fb96011f9d5b80426fb8d4134a2bd2314bb6294d8eb60be8135c",
+      "reviewed_sha256": "efbe9ff5bb32fb96011f9d5b80426fb8d4134a2bd2314bb6294d8eb60be8135c",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0004",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0004__create_core_organization_metadata.sql",
+      "sha256": "39bff4689febfe3effa1e73953589976fa030c035412263e365f0d1a7be65d2c",
+      "reviewed_sha256": "39bff4689febfe3effa1e73953589976fa030c035412263e365f0d1a7be65d2c",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0005",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0005__create_iam_access_metadata.sql",
+      "sha256": "51a47d8cf735ff6378e4d0a3d201725b255e8f835e662a7d68b34d6dd51950f1",
+      "reviewed_sha256": "51a47d8cf735ff6378e4d0a3d201725b255e8f835e662a7d68b34d6dd51950f1",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0006",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0006__create_platform_registry_metadata.sql",
+      "sha256": "7225402b7a77cc04933e5d030772f9f6e2e98f4e552ac577e1254f998d73e902",
+      "reviewed_sha256": "7225402b7a77cc04933e5d030772f9f6e2e98f4e552ac577e1254f998d73e902",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0007",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0007__create_ingestion_control_plane_authority.sql",
+      "sha256": "83ccccf382389ec62a401393cd85508183240eeb3d94215549a101f6ab5e8781",
+      "reviewed_sha256": "83ccccf382389ec62a401393cd85508183240eeb3d94215549a101f6ab5e8781",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0008",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0008__attach_control_epoch_triggers.sql",
+      "sha256": "8f148e213c8cd2f50c57c0d585708d59677d72663e4d45a6c62000dc663d5fea",
+      "reviewed_sha256": "8f148e213c8cd2f50c57c0d585708d59677d72663e4d45a6c62000dc663d5fea",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0009",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0009__create_control_boundary_kinds_and_decision_evidence.sql",
+      "sha256": "9b906c8e732aec72b7f069c5374cb0dc9894071e18e091281b9c28785336885d",
+      "reviewed_sha256": "9b906c8e732aec72b7f069c5374cb0dc9894071e18e091281b9c28785336885d",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0010",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql",
+      "sha256": "a3b8ca08b796c1d211f17a042a8ec546cd0009d4457e2d68dcd930dfc36a13d9",
+      "reviewed_sha256": "a3b8ca08b796c1d211f17a042a8ec546cd0009d4457e2d68dcd930dfc36a13d9",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0011",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0011__create_human_identity_and_business_authorization.sql",
+      "sha256": "d5312e5c2348e8abe0fb445652567ad9a0e9ad1b7ce6eeb3a5202bb58af94555",
+      "reviewed_sha256": "d5312e5c2348e8abe0fb445652567ad9a0e9ad1b7ce6eeb3a5202bb58af94555",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0012",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0012__create_product_listing_identity_and_mapping.sql",
+      "sha256": "e6ea3caa30f69e9f533a69cb1387e25396c15f3f0fce1f0bcdced00c30522bb7",
+      "reviewed_sha256": "e6ea3caa30f69e9f533a69cb1387e25396c15f3f0fce1f0bcdced00c30522bb7",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0013",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0013__create_cross_domain_operating_facts.sql",
+      "sha256": "db63fd8a4e50ceb39c78b58856a44ff4b4eed8e758a3975bc96fe9c439aad552",
+      "reviewed_sha256": "db63fd8a4e50ceb39c78b58856a44ff4b4eed8e758a3975bc96fe9c439aad552",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0014",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0014__create_internal_fact_intake_and_file_import.sql",
+      "sha256": "f0649d939caab975ff796b2e257ea1e642f9e7bf851bd7616171ac82e0a0b42a",
+      "reviewed_sha256": "01b5a68d70f4803321f9288fa513c7739c5e1904faae9eba66c4a9990e73819b",
+      "change": "MODIFIED_UNMERGED",
+      "reason": "Typed complete imports and durable row/status/audit semantics"
+    },
+    {
+      "version": "0015",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0015__create_canonical_metric_definitions_and_values.sql",
+      "sha256": "cc695d22a1249b3e3520e359e75cdbfe7a90fb7519f0cc6e0b74369bdbdbed9b",
+      "reviewed_sha256": "cc695d22a1249b3e3520e359e75cdbfe7a90fb7519f0cc6e0b74369bdbdbed9b",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0016",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0016__create_deterministic_diagnosis_rules_and_findings.sql",
+      "sha256": "9a7b8efa5d1948d3d5ca8522b6d5dd011eb4be2e16f53145c7c7364ae831056c",
+      "reviewed_sha256": "9a7b8efa5d1948d3d5ca8522b6d5dd011eb4be2e16f53145c7c7364ae831056c",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0017",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0017__create_ai_projection_invocation_and_output.sql",
+      "sha256": "b20b7138b2e177b87ec1a579cbdcdd13c60b4ed045b6721463c5496f974e74ff",
+      "reviewed_sha256": "b0dbbeecaf3c46f6c30b3b7ff69799b5846a591fbf4c9422474860811a761023",
+      "change": "MODIFIED_UNMERGED",
+      "reason": "Per-kind AI schemas, invocation state and evidence binding"
+    },
+    {
+      "version": "0018",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0018__create_recommendation_task_and_approval_workflow.sql",
+      "sha256": "1df2c7fd599354dce06cd8f3a4d6363a88c65fa2c02446cbe569d56b333422d1",
+      "reviewed_sha256": "1df2c7fd599354dce06cd8f3a4d6363a88c65fa2c02446cbe569d56b333422d1",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0019",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0019__create_commercial_policy_and_guardrails.sql",
+      "sha256": "ba6916d059cb5586bfe784e261a0243832acf97b097c112072899b5d01526e58",
+      "reviewed_sha256": "ba6916d059cb5586bfe784e261a0243832acf97b097c112072899b5d01526e58",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0020",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0020__create_price_command_outbox_readback_and_write_gate.sql",
+      "sha256": "8437316450f3bae2e5ef532d360121ad825d25cac2cd67cb840cc31683d6721d",
+      "reviewed_sha256": "481cec6cbe6029823dce391c36958ebed8af3c164c2bad71097f5191f72324d6",
+      "change": "MODIFIED_UNMERGED",
+      "reason": "DB-only command authority; exact approval/target/prior-value binding"
+    },
+    {
+      "version": "0021",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0021__create_platform_api_profile_and_request_shape.sql",
+      "sha256": "b67375962b84a3f37becd968af7f2aaf97df7b75760ce69748a1f4895a9fc97a",
+      "reviewed_sha256": "106b6fcf216f1de8e11fa0c62d9af3e0f6a715acb60809362f05d7fd09fc6335",
+      "change": "MODIFIED_UNMERGED",
+      "reason": "Fail-closed pagination and response-shape metadata"
+    },
+    {
+      "version": "0022",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0022__create_ingestion_run_lifecycle_and_replay_guard.sql",
+      "sha256": "9a93dcaaafca30b9f738129974babe46509784c232854337ea023200d7c33f6e",
+      "reviewed_sha256": "fffb61cea7bf6b60296f8533fe8d77bc86bb4b2b4bd8e695eaf9e5973eef1b04",
+      "change": "MODIFIED_UNMERGED",
+      "reason": "Durable acquisition prepare/complete, shared quota, cursor and retry semantics"
+    },
+    {
+      "version": "0023",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0023__create_declared_normalization_and_drift_observation.sql",
+      "sha256": "6fdc3d7bef0b4f0e395a73bac1a7553b134668dd8a684224a74aeaa04f0df0fb",
+      "reviewed_sha256": "6fdc3d7bef0b4f0e395a73bac1a7553b134668dd8a684224a74aeaa04f0df0fb",
+      "change": "UNCHANGED",
+      "reason": "Preserved exact bytes"
+    },
+    {
+      "version": "0024",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0024__create_capability_write_operation_shape.sql",
+      "sha256": "55db8c34247172c1746439bb41a9cd376b4ad70e5e256ef0fbf0c5ee2ff80e2b",
+      "reviewed_sha256": "a454034e897bf3664713eb155cc654171f4dbbb7a2dbddeab37ef136b39e2a73",
+      "change": "MODIFIED_UNMERGED",
+      "reason": "Write operation semantic/conditional-version constraints"
+    },
+    {
+      "version": "0025",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0025__create_price_command_attempt_completion_and_lease_recovery.sql",
+      "sha256": "5039cdbf120e4db29d642d8d22dc3f952119921f04f3568eb367f15b9f8fdfa7",
+      "reviewed_sha256": "6c2bc086f2a67d01ef5d192d9a93913c44b9f6c803acb0efc278bad71921f22f",
+      "change": "MODIFIED_UNMERGED",
+      "reason": "Immutable attempt completion, causal APPLY evidence and fresh RESTORE authority"
+    },
+    {
+      "version": "0026",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0026__rename_operational_capability_column_to_action_kind.sql",
+      "sha256": "82f42eea7990dc6502447d4832a08ca107830495f8f9d249e9d4b09c088b4df2",
+      "reviewed_sha256": "0b8c81b3a4e553794453705dc1639e687cf63d000c572fe678c801237ffa0df3",
+      "change": "MODIFIED_UNMERGED",
+      "reason": "Propagate the operational-capability rename through corrected dependent functions"
+    },
+    {
+      "version": "0027",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0027__create_account_bound_registry_verification.sql",
+      "sha256": "fbdd185d03324d145793ec7844ebc17aa02b844f8aaffe89579b5df1f6479ba1",
+      "reviewed_sha256": null,
+      "change": "NEW",
+      "reason": "Account/credential-bound audited registry verification"
+    },
+    {
+      "version": "0028",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0028__create_bounded_diagnostic_export.sql",
+      "sha256": "43170cf370079706ed8b39792815a5ec2bb447fae2d876afcd830cf7e30a1acf",
+      "reviewed_sha256": null,
+      "change": "NEW",
+      "reason": "Bounded snapshot export, ownership, lease/fence, immutable part manifest and download authority"
+    }
+  ],
+  "verification": [
+    {
+      "class": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed_methods": [
+        "pg17StandardAndManagedProfilesHaveCanonicalHistoryAndEquivalentApplicationSchemas",
+        "managedProfileRejectsRoleDriftBeforeMigration",
+        "pg18ManagedProfileFailsBeforeV0003"
+      ],
+      "report_sha256": "535182d046cbb4228a4395d3295c5191e4bdb4fcec93f2bab95857d0ade4c8f4"
+    },
+    {
+      "class": "com.mimococo.marketops.ManagedMigrationRunnerIT",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed_methods": [
+        "cleanInstallAndReplayValidateAllMigrationsWithoutGivingTheApplicationTheOwningRole",
+        "inheritedOrSchemaCreatingApplicationAuthorityPreventsMigration"
+      ],
+      "report_sha256": "c61dc3ec0fcbf4c6769369a7513fc5d282159446192a7204ce4cd5ae4acfa5ae"
+    },
+    {
+      "class": "com.mimococo.marketops.database.FlywayMigrationIT",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed_methods": [
+        "serverReleaseIsExactlyPinned",
+        "foundationSchemasExist",
+        "foundationSchemasAreOwnedByTheMigratingRole",
+        "referenceSeedsAreExact",
+        "exactlyTheMetadataTablesExist",
+        "historyHoldsTheApprovedSet",
+        "repeatedMigrationAppliesNothing",
+        "exactlyTheApprovedMigrationsAreDeclared",
+        "contaminatedDatabaseFailsAndRollsBack",
+        "cleanIsRefused",
+        "preinstalledExtensionDoesNotBecomeAnAppliedMigration"
+      ],
+      "report_sha256": "0803d32281ff0b1f506ad1ac20f0ac6e3907b93a1a12b467369d7748a0cb9f0e"
+    },
+    {
+      "class": "com.mimococo.marketops.database.DatabasePrivilegeIT",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed_methods": [
+        "applicationRoleCannotExtendTheCluster",
+        "applicationRoleCannotCreateASchema",
+        "neitherRoleIsPrivileged",
+        "applicationRoleSearchPathExcludesPublic",
+        "applicationRoleCanConnect",
+        "applicationRoleCannotCreateATable",
+        "applicationRoleHasUsageOnEverySchema",
+        "applicationRoleHasNoCreateOnAnySchema",
+        "commandAuthorityTablesRejectDirectInsert",
+        "publicSchemaGrantsNothingToEveryone",
+        "applicationRoleCannotTouchTheMigrationHistory"
+      ],
+      "report_sha256": "4dc1b32f3e4da8893907ecdf797a1064ababc6d7fe97ac4c7bd9c720c1fcb7b9"
+    },
+    {
+      "class": "com.mimococo.marketops.database.CallAuthorityExclusivityIT",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed_methods": [
+        "takeoverCommittedFirstRefusesTheOldGrant",
+        "revocationCommitWhileGrantWaitsIsReevaluated",
+        "checkpointBlockPastLeaseExpiryRefusesFinalCas",
+        "takeoverWaitsBehindAnOpenAcknowledgement",
+        "lockTimeoutRefusesTheGrantWithZeroResidue",
+        "jobMutationCommittedFirstIsObserved",
+        "jobWriterAfterGrantWaitsAndLandsAfterIt",
+        "revocationCommittedBeforeGrantRefusesIt",
+        "credentialDisableCommitWhileGrantWaitsIsReevaluated",
+        "expiredLeaseRefusesTheGrant",
+        "controlWriterWaitsBehindTheGrantLocks",
+        "wrongOwnerRefusesTheGrant",
+        "takeoverCommittedFirstRefusesTheAcknowledgement",
+        "wrongOwnerAndExpiredAcknowledgementsRefuse",
+        "takeoverWaitsBehindAnOpenGrant"
+      ],
+      "report_sha256": "e075f5f2ee7656a1e841e850d3b039885da62be57750b0974adfec330e7cfb75"
+    }
+  ],
+  "managed_evidence": "managed-profile-131/ARTIFACT-HASHES.json",
+  "runtime_limit": "Local PG17 standard and managed emulation; not a Yandex staging result"
+}

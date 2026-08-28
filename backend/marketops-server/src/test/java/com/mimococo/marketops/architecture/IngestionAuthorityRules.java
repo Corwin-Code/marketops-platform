@@ -33,13 +33,27 @@ final class IngestionAuthorityRules {
             JDBC_PACKAGE + "AuthorizedAcquisitionExecutor";
     private static final String GRANT_MAPPER = JDBC_PACKAGE + "CallAuthorityGrantMapper";
     private static final String CALL_AUTHORITY_GRANT = JDBC_PACKAGE + "CallAuthorityGrant";
+    private static final String RAW_CUSTODY_SERVICE =
+            "com.mimococo.marketops.marketplaceintegration.internal.application."
+                    + "RawCustodyService";
     private static final String PRODUCTION_ROOT = "com.mimococo.marketops";
     private static final String REST_CONTROLLER =
             "org.springframework.web.bind.annotation.RestController";
     private static final String OWNING_MODULE_SEGMENT = ".marketplaceintegration.";
+    /**
+     * The acquisition-authority chain, which no request thread may reach.
+     *
+     * <p>The object-storage port is deliberately not in this set. Its own rule
+     * below is stricter than membership here would be: exactly one production
+     * class may call it, and the Raw custody service is that class. Custody has
+     * to be reachable from the file-intake surface, because a submitted file is
+     * evidence and has to be durable before the submission is accepted, while
+     * the acquisition chain must never be reachable from a request thread at
+     * all. Conflating the two would either open the acquisition chain or make
+     * evidence-carrying intake impossible.
+     */
     private static final Set<String> CONTROLLER_FORBIDDEN_SURFACES = Set.of(
             ACQUISITION_PORT,
-            OBJECT_STORAGE_PORT,
             ACQUISITION_REQUEST,
             AUTHORIZED_GATEWAY,
             AUTHORIZED_EXECUTOR,
@@ -70,6 +84,38 @@ final class IngestionAuthorityRules {
                 })
                 .as("all acquisition-port assignable types remain inside marketplaceintegration")
                 .because("a second implementing module would be a second acquisition authority");
+    }
+
+    /**
+     * Only the Raw custody service reaches the object store.
+     *
+     * <p>One caller is what makes content addressing, write-once behaviour and
+     * read-back verification properties of the system rather than of whichever
+     * class happened to write the bytes. A second caller could store unverified
+     * content under a name that claims to describe it.
+     */
+    static ArchRule objectStorageIsReachedOnlyByRawCustody(String basePackage) {
+        return classes()
+                .that().resideInAPackage(basePackage + "..")
+                .should(new ArchCondition<>(
+                        "call ObjectStoragePort only from RawCustodyService") {
+                    @Override
+                    public void check(JavaClass item, ConditionEvents events) {
+                        if (item.getName().equals(RAW_CUSTODY_SERVICE)
+                                || item.isAssignableTo(OBJECT_STORAGE_PORT)) {
+                            return;
+                        }
+                        item.getMethodCallsFromSelf().stream()
+                                .filter(call -> call.getTargetOwner().getName()
+                                        .equals(OBJECT_STORAGE_PORT)
+                                        || call.getTargetOwner()
+                                                .isAssignableTo(OBJECT_STORAGE_PORT))
+                                .forEach(call -> events.add(SimpleConditionEvent.violated(
+                                        item, call.getDescription())));
+                    }
+                })
+                .as("only RawCustodyService calls the object-storage port")
+                .because("one caller is what makes custody verified rather than assumed");
     }
 
     /** Only the internal executor invokes the outbound acquisition method. */
@@ -245,7 +291,7 @@ final class IngestionAuthorityRules {
 
     private static boolean isControllerForbidden(JavaClass type) {
         return CONTROLLER_FORBIDDEN_SURFACES.contains(type.getName())
-                || isAuthorityPort(type);
+                || type.isAssignableTo(ACQUISITION_PORT);
     }
 
     private static void inspectControllerPath(

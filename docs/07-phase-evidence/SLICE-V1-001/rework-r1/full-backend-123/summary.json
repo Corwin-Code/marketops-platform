@@ -1,0 +1,31 @@
+{
+  "surefire-reports": {
+    "tests": 840,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "failsafe-reports": {
+    "tests": 367,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "coverage": [
+    {
+      "type": "BRANCH",
+      "missed": "1253",
+      "covered": "3193"
+    },
+    {
+      "type": "LINE",
+      "missed": "2443",
+      "covered": "11968"
+    }
+  ],
+  "command": "JAVA_HOME=<local JDK21> make backend-check",
+  "result": "PASS",
+  "input_files": 609,
+  "input_manifest_matches_after_run": true,
+  "final_commit_verification": false
+}

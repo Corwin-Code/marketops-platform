@@ -15,6 +15,8 @@
 | `../08-handoffs/CONTROLLER-CODEX-REWORK-AUTHORIZATION-PR19-R1.md` | Bounded Controller rework authority | Authorizes one root-cause rework cycle on the same Draft PR; no merge or production authority |
 | `../00-governance/OWNER_DECISIONS_V1.md` | 2026-08-26 Owner discovery | Explicit and delegated V1 product decisions |
 | `V1_PRODUCT_CONTRACT.md` | DR-0003 Controller contract | Active V1 product scope, non-goals and Product Complete conditions |
+| `../03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md` | Exact Human Owner-accepted additive Slice Amendment | Yandex PG17 managed extension/bootstrap compatibility; unchanged original Contract and V0001–V0010 |
+| `../08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md` | Explicit Human Owner message on 2026-08-28 | Authorizes Amendment implementation in Draft PR #20; no deployment, provider calls, Ready or merge |
 
 Checksums for the two imported source baselines remain in `SHA256SUMS.txt` and
 must stay byte-identical unless a future Decision Request intentionally replaces
@@ -38,6 +40,17 @@ dcc073bb8f6593bd24b4a74a96f06d0c45ece2f1c192615deb7301cbb850da9a  ../00-governan
 cea88c6b72b480ad7f39a45390e457de316b6be6511dad45a5d0f6c63716779c  ../00-governance/DR-0004-AMENDMENT-001-activation-and-owner-acceptance-provenance.md
 f83349ea537fd48575787dccfaa624ec39c5079181ccf0da6c69e996768bda88  ../08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md
 ```
+
+## SLICE-V1-001 accepted additive authority
+
+```text
+8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d  ../03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md
+e8fc208a4fcd9270b9187b65aa1618ecf6179166a3a44b4a37213bf067a91ee8  ../08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md
+```
+
+The Amendment's original proposal-status metadata remains byte-frozen. The
+separate acceptance evidence establishes current implementation authority in the
+existing rework; it does not claim protected-main activation or Slice closure.
 
 ## Dual truth and conflict order
 

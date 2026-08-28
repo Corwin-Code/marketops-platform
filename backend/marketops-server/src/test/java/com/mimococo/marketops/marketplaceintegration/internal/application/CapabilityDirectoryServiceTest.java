@@ -87,11 +87,17 @@ class CapabilityDirectoryServiceTest {
                 .thenReturn(Optional.of(subject(
                         capabilityId, accountId, null, Availability.AVAILABLE)));
         assertThat(directory.usabilityForAccount(capabilityId, accountId))
+                .isEqualTo(CapabilityUsability.NOT_VERIFIED);
+        when(capabilities.hasCurrentAccountEvidence(capabilityId, accountId)).thenReturn(true);
+        assertThat(directory.usabilityForAccount(capabilityId, accountId))
                 .isEqualTo(CapabilityUsability.USABLE);
 
         when(subjectStatuses.findByCapabilityAndStore(capabilityId, storeId))
                 .thenReturn(Optional.of(subject(
                         capabilityId, null, storeId, Availability.AVAILABLE)));
+        assertThat(directory.usabilityForStore(capabilityId, storeId))
+                .isEqualTo(CapabilityUsability.NOT_VERIFIED);
+        when(capabilities.hasCurrentStoreEvidence(capabilityId, storeId)).thenReturn(true);
         assertThat(directory.usabilityForStore(capabilityId, storeId))
                 .isEqualTo(CapabilityUsability.USABLE);
     }

@@ -23,14 +23,27 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: 'make -C ../.. backend-run',
-      url: 'http://127.0.0.1:8080/actuator/health/readiness',
+      command: 'make -C ../.. backend-browser-run',
+      url: 'http://127.0.0.1:8082/fixture',
+      stdout: 'pipe',
       reuseExistingServer: false,
       timeout: 180_000,
     },
     {
       command: 'npm run build && npm run preview -- --host 127.0.0.1 --port 4173 --strictPort',
-      env: { MARKETOPS_BUILD_COMMIT: sourceHead },
+      // The operating console only offers sign-in where an identity provider is
+      // configured, so the browser suite builds it as a deployment that has
+      // one. The provider itself is answered by the test through the browser's
+      // network layer; no external system is contacted and nothing here is
+      // evidence about one.
+      env: {
+        MARKETOPS_BUILD_COMMIT: sourceHead,
+        VITE_MARKETOPS_OIDC_AUTHORIZATION_ENDPOINT: 'https://id.example.test/authorize',
+        VITE_MARKETOPS_OIDC_TOKEN_ENDPOINT: 'https://id.example.test/token',
+        VITE_MARKETOPS_OIDC_CLIENT_ID: 'marketops-console',
+        VITE_MARKETOPS_OIDC_AUDIENCE: 'marketops',
+        VITE_MARKETOPS_STORE_ID: '00000000-0000-0000-0000-0000000000d1',
+      },
       url: 'http://127.0.0.1:4173',
       reuseExistingServer: false,
       timeout: 60_000,

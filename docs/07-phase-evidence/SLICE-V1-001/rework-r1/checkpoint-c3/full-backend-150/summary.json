@@ -1,0 +1,46 @@
+{
+  "command": "JAVA_HOME=<local JDK21> make backend-check",
+  "result": "PASS",
+  "started": {
+    "head": "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0",
+    "tree": "db3b2c4df0b46a94575e42989904e4fe80e41444",
+    "started_clean": true,
+    "command": "JAVA_HOME=<JDK21> make backend-check",
+    "started_at": "2026-08-27T22:25:53.982990+00:00"
+  },
+  "completed_head": "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0",
+  "completed_tree": "db3b2c4df0b46a94575e42989904e4fe80e41444",
+  "completed_clean": true,
+  "input_files": 610,
+  "inputs_unchanged": true,
+  "same_exact_commit_throughout": true,
+  "controller_closure": "NOT_CLAIMED",
+  "final_handoff": false,
+  "completed_at": "2026-08-27T22:34:00.924541+00:00",
+  "surefire-reports": {
+    "tests": 846,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "failsafe-reports": {
+    "tests": 374,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "coverage": [
+    {
+      "type": "BRANCH",
+      "missed": "1243",
+      "covered": "3218"
+    },
+    {
+      "type": "LINE",
+      "missed": "2299",
+      "covered": "12186"
+    }
+  ],
+  "artifact_sha256": "18e04b8d827835cb76c255494d920a309d55e46a3cfa3b3cb57b382d4ccf4cf5",
+  "raw_log_sha256": "23d360d1c4088b7d2c7c6e559b38d9a2c3489dc28d21e77f39f3a6ddc8f35ad2"
+}

@@ -1,0 +1,5 @@
+{
+  "state": "dismissed",
+  "dismissed_reason": "false positive",
+  "dismissed_comment": "False positive. The part-number branch denies invalid input and returns no data. Successful reads require stored ownership/live scope, DB authorization before I/O, and DB reauthorization after I/O. Reassess if the guard or authorization sequence changes."
+}

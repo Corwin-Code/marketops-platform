@@ -84,6 +84,13 @@ class IngestionAuthorityArchitectureTest {
     }
 
     @Test
+    @DisplayName("TC-ARCH-041 only RawCustodyService reaches the object-storage port")
+    void objectStorageIsReachedOnlyByRawCustody() {
+        IngestionAuthorityRules.objectStorageIsReachedOnlyByRawCustody(PRODUCTION_PACKAGE)
+                .check(production);
+    }
+
+    @Test
     @DisplayName("TC-ARCH-023 only CallAuthorityGrantMapper constructs grants")
     void callAuthorityGrantConstructionIsMappedFromDatabaseResults() {
         IngestionAuthorityRules
@@ -197,6 +204,15 @@ class IngestionAuthorityArchitectureTest {
                     IngestionAuthorityRules::webControllersDoNotReachAcquisition,
                     VIOLATION + ".acquisitionweb",
                     "AcquisitionTriggerController");
+        }
+
+        @Test
+        @DisplayName("F-ARCH-041 a second object-storage caller is rejected")
+        void secondObjectStorageCallerIsRejected() {
+            assertRejects(
+                    IngestionAuthorityRules::objectStorageIsReachedOnlyByRawCustody,
+                    VIOLATION + ".objectstoragecaller",
+                    "EvidenceExporter");
         }
 
         @Test

@@ -1,0 +1,13 @@
+{
+  "results": "FAIL; not counted as passing verification",
+  "causes": {
+    "138": "Compilation: org field shadowed the Mockito package name",
+    "139": "Same compile error: the attempted helper edit had not applied",
+    "140": "Wrong Maven wrapper directory; no tests executed"
+  },
+  "raw_log_sha256": {
+    "codeql-c1-focused-138.log": "aaf42ae0d6c8318fc4e7e4296038d088a74fcc327900564080b6e13e5ea4adc0",
+    "codeql-c1-focused-139.log": "128126c68e932ac4e84b1960c4df54dd8454a638449a4e7cb3eaf12195f84f65",
+    "focused-backend-140.log": "cd48f1ff07092267cc70e003b8cf073419608024db7ecfbb595bf51d443a9032"
+  }
+}

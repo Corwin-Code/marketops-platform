@@ -1,0 +1,5 @@
+{
+  "state": "dismissed",
+  "dismissed_reason": "false positive",
+  "dismissed_comment": "False positive. The sink is Apache HttpUriRequestBase.setEntity for an outbound provider request, not browser output. Exact bytes are required; HTTPS, destination, DNS, redirect, header and size controls remain enforced. Reassess if bytes are rendered to users."
+}

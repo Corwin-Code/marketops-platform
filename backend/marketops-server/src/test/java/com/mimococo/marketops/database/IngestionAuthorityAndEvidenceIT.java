@@ -78,6 +78,156 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
     }
 
     @Test
+    void missingQuotaAndUnverifiedEndpointDenyWithoutAllocatingAnUnboundedBucket() throws SQLException {
+        try (Connection application = asApplicationRole(container)) {
+            assertThat(singleBoolean(application, quotaSql())).isFalse();
+            assertThat(count(application, "SELECT count(*) FROM ops.endpoint_quota_window")).isZero();
+        }
+        verifyFixtureQuota(null);
+        try (Connection application = asApplicationRole(container)) {
+            assertThat(singleBoolean(application, quotaSql())).isFalse();
+        }
+        assertRefused("42501", "INSERT INTO ops.endpoint_quota_window(endpoint_id,window_started_at,used_calls) VALUES ('"
+                + IngestionControlPlaneFixture.ENDPOINT + "', now(), 1)");
+        assertRefused("42501", "UPDATE ops.endpoint_quota_window SET used_calls=1");
+        assertRefused("42501", "DELETE FROM ops.endpoint_quota_window");
+    }
+
+    @Test
+    void quotaIsAtomicAcrossIndependentDatabaseConnectionsAndSurvivesClientRestart() throws Exception {
+        verifyFixtureQuota(7);
+        // The bucket starts at the first call, not a calendar-minute boundary.
+        // Every client below shares this committed window after reconnecting.
+        try (Connection fixture = asMigrationRole(container)) {
+            execute(fixture, "INSERT INTO ops.endpoint_quota_window(endpoint_id,window_started_at,used_calls) VALUES ('"
+                    + IngestionControlPlaneFixture.ENDPOINT + "', now(),1)");
+        }
+        int accepted = 0;
+        try (var executor = java.util.concurrent.Executors.newFixedThreadPool(8)) {
+            var calls = new java.util.ArrayList<java.util.concurrent.Future<Boolean>>();
+            for (int i=0; i<32; i++) calls.add(executor.submit(() -> {
+                try (Connection connection = asApplicationRole(container)) {
+                    return singleBoolean(connection, quotaSql());
+                }
+            }));
+            for (var call : calls) if (call.get(10, java.util.concurrent.TimeUnit.SECONDS)) accepted++;
+        }
+        assertThat(accepted).isEqualTo(6);
+        try (Connection restarted = asApplicationRole(container)) {
+            assertThat(singleBoolean(restarted, quotaSql())).isFalse();
+            assertThat(count(restarted, "SELECT used_calls FROM ops.endpoint_quota_window")).isEqualTo(7);
+            assertThat(count(restarted, "SELECT count(*) FROM ops.endpoint_quota_window")).isEqualTo(1);
+        }
+        try (Connection fixture = asMigrationRole(container)) {
+            execute(fixture, "UPDATE ops.endpoint_quota_window SET window_started_at=now()-interval '2 minutes'");
+        }
+        try (Connection connection = asApplicationRole(container)) {
+            assertThat(singleBoolean(connection, quotaSql())).isTrue();
+            assertThat(count(connection, "SELECT used_calls FROM ops.endpoint_quota_window")).isEqualTo(1);
+        }
+    }
+
+    @Test
+    void retryWaitIsDurableAndCannotBeClaimedBeforeItsDeadline() throws SQLException {
+        try (Connection connection = asApplicationRole(container)) {
+            execute(connection, "SELECT ops.transition_ingestion_run('" + RUN
+                    + "',1,'worker-a','RUNNING',60,NULL)");
+            execute(connection, "SELECT ops.transition_ingestion_run('" + RUN
+                    + "',1,'worker-a','RETRY_WAIT',NULL,NULL,600)");
+            assertThat(singleBoolean(connection, "SELECT next_attempt_at > now()+interval '599 seconds'"
+                    + " FROM ops.ingestion_run WHERE id='"+RUN+"'")).isTrue();
+        }
+        assertRefused("MO040", "SELECT ops.claim_ingestion_run('"+RUN+"','worker-b',60)");
+        try (Connection fixture = asMigrationRole(container)) {
+            execute(fixture, "UPDATE ops.ingestion_run SET next_attempt_at=now()-interval '1 second' WHERE id='"+RUN+"'");
+        }
+        try (Connection connection = asApplicationRole(container)) {
+            assertThat(count(connection, "SELECT ops.claim_ingestion_run('"+RUN+"','worker-b',60)")).isEqualTo(2);
+        }
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"UNASSESSED","SCHEMA_DRIFT","UNREADABLE","CONFIG_INVALID","RETRY_LATER","UNKNOWN_RESULT"})
+    void aPaginationFailureNeverAdvancesTheDatabaseCheckpoint(String pagination) throws SQLException {
+        UUID content=UUID.randomUUID(), unit=UUID.randomUUID(), observation=UUID.randomUUID();
+        try (Connection connection=asApplicationRole(container)) {
+            execute(connection,grant(1,"worker-a","pagination-negative"));
+            execute(connection,rawContent(content));
+            execute(connection,rawLogicalUnit(unit));
+            execute(connection,rawObservation(observation,RUN,unit,content).replace("'NEXT'","'"+pagination+"'"));
+        }
+        assertRefused("MO009",acknowledge(observation,0,"must-not-advance"));
+        try (Connection connection=asApplicationRole(container)) {
+            assertThat(checkpointVersion(connection)).isZero();
+            assertThat(count(connection,"SELECT count(*) FROM raw.raw_acquisition_observation")).isEqualTo(1);
+        }
+    }
+
+    @Test
+    void providerBackpressureIsBoundToTheExactReceiptAndDelaysAllWorkers() throws SQLException {
+        verifyFixtureQuota(7);
+        UUID content=UUID.randomUUID(), unit=UUID.randomUUID(), observation=UUID.randomUUID();
+        UUID decision;
+        try (Connection connection=asApplicationRole(container)) {
+            assertThat(singleBoolean(connection,quotaSql())).isTrue();
+            decision=UUID.fromString(single(connection,grant(1,"worker-a","retry-after-fixture")));
+            execute(connection,rawContent(content));
+            execute(connection,rawLogicalUnit(unit));
+            execute(connection,"""
+                    INSERT INTO raw.raw_acquisition_observation(id,run_id,logical_unit_id,content_id,call_seq,
+                        native_status,outcome_class,authority_decision_id,response_headers,pagination_outcome)
+                    VALUES('%s','%s','%s','%s',1,'HTTP 429','UNKNOWN_STATE','%s',
+                        '{"retry-after":"600","x-ratelimit-remaining":"0"}','RETRY_LATER')
+                    """.formatted(observation,RUN,unit,content,decision));
+            assertThat(singleBoolean(connection,quotaSql())).isFalse();
+            execute(connection,"SELECT ops.transition_ingestion_run('"+RUN+"',1,'worker-a','RETRY_WAIT',NULL,NULL,1)");
+            assertThat(singleBoolean(connection,"SELECT next_attempt_at > now()+interval '599 seconds'"
+                    +" FROM ops.ingestion_run WHERE id='"+RUN+"'")).isTrue();
+            assertThat(checkpointVersion(connection)).isZero();
+        }
+        assertRefused("MO009","""
+                INSERT INTO raw.raw_acquisition_observation(id,run_id,logical_unit_id,content_id,call_seq,
+                    native_status,outcome_class,authority_decision_id)
+                VALUES('%s','%s','%s','%s',2,'HTTP 200','SUCCESS_BYTES','%s')
+                """.formatted(UUID.randomUUID(),RUN,unit,content,decision));
+    }
+
+    @Test
+    void repeatedWorkerCrashesExhaustThePersistedBudgetWithoutAnotherCall() throws SQLException {
+        for (int claim=2; claim<=4; claim++) {
+            try (Connection fixture = asMigrationRole(container)) {
+                execute(fixture, "UPDATE ops.ingestion_run SET lease_expires_at=now()-interval '1 second' WHERE id='"+RUN+"'");
+            }
+            try (Connection connection = asApplicationRole(container)) {
+                assertThat(count(connection, "SELECT ops.claim_ingestion_run('"+RUN+"','restarted',60)")).isEqualTo(claim);
+            }
+        }
+        try (Connection fixture = asMigrationRole(container)) {
+            execute(fixture, "UPDATE ops.ingestion_run SET lease_expires_at=now()-interval '1 second' WHERE id='"+RUN+"'");
+        }
+        try (Connection connection = asApplicationRole(container)) {
+            assertThat(single(connection, "SELECT ops.claim_ingestion_run('"+RUN+"','stopped',60)")).isNull();
+            assertThat(runState(connection)).isEqualTo("FAILED_TERMINAL");
+            assertThat(single(connection, "SELECT failure_code FROM ops.ingestion_run WHERE id='"+RUN+"'"))
+                    .isEqualTo("RETRY_BUDGET_EXHAUSTED");
+            assertThat(count(connection, "SELECT last_call_seq FROM ops.ingestion_run WHERE id='"+RUN+"'")).isZero();
+        }
+        assertRefused("MO040", "SELECT ops.claim_ingestion_run('"+RUN+"','stopped',60)");
+    }
+
+    private static String quotaSql() {
+        return "SELECT platform.reserve_endpoint_quota('"+IngestionControlPlaneFixture.ENDPOINT+"')";
+    }
+
+    private static void verifyFixtureQuota(Integer limit) throws SQLException {
+        try (Connection fixture = asMigrationRole(container)) {
+            execute(fixture, "UPDATE platform.platform_endpoint SET verification_state='VERIFIED',"
+                    + " last_verified_at=now(), evidence_ref='fixture://quota', verified_source_title='Synthetic quota',"
+                    + " rate_limit_per_minute="+limit+" WHERE id='"+IngestionControlPlaneFixture.ENDPOINT+"'");
+        }
+    }
+
+    @Test
     @DisplayName("TC-CTRL-400 a grant that consumes the current snapshot succeeds and is capped")
     void freshSnapshotGrantsCappedAuthority() throws SQLException {
         try (Connection connection = asApplicationRole(container)) {
@@ -1101,8 +1251,8 @@ class IngestionAuthorityAndEvidenceIT extends PostgresContainerSupport {
         return """
                 INSERT INTO raw.raw_acquisition_observation
                     (id, run_id, logical_unit_id, content_id, call_seq, native_status,
-                     outcome_class, ingestion_time)
-                VALUES ('%s', '%s', '%s', '%s', 1, 'OK', 'SUCCESS_BYTES', now())
+                     outcome_class, ingestion_time, pagination_outcome)
+                VALUES ('%s', '%s', '%s', '%s', 1, 'OK', 'SUCCESS_BYTES', now(), 'NEXT')
                 """.formatted(id, runId, unitId, contentId);
     }
 

@@ -1,0 +1,32 @@
+{
+  "command": "JAVA_HOME=<local JDK21> make backend-check",
+  "result": "PASS",
+  "final_commit_verification": false,
+  "input_files": 610,
+  "inputs_unchanged": true,
+  "surefire-reports": {
+    "tests": 845,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "failsafe-reports": {
+    "tests": 373,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "coverage": [
+    {
+      "type": "BRANCH",
+      "missed": "1245",
+      "covered": "3211"
+    },
+    {
+      "type": "LINE",
+      "missed": "2303",
+      "covered": "12177"
+    }
+  ],
+  "artifact_sha256": "87cf4bacba370b468e0d9c78424aa6dae511603cc89a3966b8e247d45460d73e"
+}

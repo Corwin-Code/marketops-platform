@@ -1,0 +1,55 @@
+{
+  "status": "LOCAL_CHECKPOINT_NOT_FINDING_CLOSURE",
+  "finding_ids": [
+    "S1-F001",
+    "S1-F002",
+    "S1-F007"
+  ],
+  "reviewed_head": "30d16e5d7db2d2190635a06fececd5883093a876",
+  "candidate_commit_state": "UNCOMMITTED_WORKTREE",
+  "wire_cases": 33,
+  "reproduction": "41: six poisoned wire requests authorized and older READ credential selected; seven failing assertions",
+  "correction": "Per-field database comparison to command-approved values and latest immutable task handle, plus PRICE_WRITE-only credential selection",
+  "commands": [
+    {
+      "command": "./mvnw -B -Dtest=TokenIdentityResolverTest -Dit.test=RegistryVerificationFlowIT integration-test failsafe:verify",
+      "log": "wire-intent-reproduction-41.log",
+      "result": "FAIL_EXPECTED_REPRODUCTION",
+      "log_sha256": "156a6a2ac12dd0354925e515969e9dc2ff817052f51a40882b4060145d0c7de9"
+    },
+    {
+      "command": "./mvnw -B -Dtest=PlatformHttpAdaptersTest,RequestTemplateTest -Dit.test=RegistryVerificationFlowIT integration-test failsafe:verify",
+      "log": "wire-intent-fix-43.log",
+      "result": "PASS",
+      "log_sha256": "930aaed54ed72ecbdf98eeb9d27294f7503b1c342733bbf06c2278d8773d9bd3"
+    },
+    {
+      "command": "make backend-check",
+      "log": "backend-check-full-44.log",
+      "result": "PASS",
+      "unit_tests": 821,
+      "integration_tests": 340,
+      "log_sha256": "e95f348bb2840efafa30749a86bf03e160a6ef6fb3dae98cec239c2b41e54c03"
+    }
+  ],
+  "coverage": {
+    "BRANCH": {
+      "covered": 2902,
+      "missed": 1150
+    },
+    "LINE": {
+      "covered": 11305,
+      "missed": 2479
+    }
+  },
+  "source_hashes": {
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/PlatformCallSpecRepository.java": "0c581308a0cccff2f9d3b4ead444a3f66183cd2518960ff040afb2960cd95bd1",
+    "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/CredentialLookupRepository.java": "ab43ee8883dcb6b3e713a62ff68859cf248034723dcc45c09ffe4670d5ede512",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/RegistryVerificationFlowIT.java": "1354ca9363651f2431ae40abf175ef087d8300e958b3576c98071598b58a5e6a"
+  },
+  "limitations": [
+    "No real provider or credential access; synthetic local PostgreSQL and object custody only.",
+    "This does not complete the Frozen Finding Set, F012 performance/export/DR or F010 Owner Decision.",
+    "Independent backend-integration and final rework GitHub CI must be rerun on the final candidate."
+  ]
+}

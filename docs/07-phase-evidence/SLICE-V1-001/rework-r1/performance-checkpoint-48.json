@@ -1,0 +1,37 @@
+{
+  "status": "PARTIAL_LOCAL_VERIFICATION",
+  "finding": "S1-F012",
+  "closure_claim": false,
+  "command": "./mvnw -B -Dtest=RequestTemplateTest -Dit.test=RepresentativePerformanceIT,OperatingFlowIT integration-test failsafe:verify",
+  "result": "PASS",
+  "unit_tests": 4,
+  "integration_tests": 18,
+  "api_cases": 16,
+  "latency_samples_per_case": 25,
+  "scope": "Synthetic local PostgreSQL, actual authorization, read-only transactions and JSON serialization through MockMvc; no network/browser/provider/production capacity claim",
+  "read_budget_test": {
+    "name": "OperatingFlowIT.diagnosticReadBudgetsBoundDatabaseLockWaits",
+    "duration_seconds": 10.176,
+    "checks": "Both metric and evidence reads cancel on actual table-lock waits under the production five-second transaction budget, then recover after rollback"
+  },
+  "artifacts": {
+    "performance-baseline-46.json": "d2fa0202c90985193ba69ffa4b87d83e55b936820e95ed4b8fed7c87b8342440",
+    "performance-baseline-47.json": "32659abe985b61d09a62874863c183d61ab0ceede4585a2c4f39ce8065919d5a",
+    "performance-baseline-48.json": "e2a570a015b22af3133a09e7150b06b1b2d173f20d73f67bb5685281e4f727e3",
+    "verification-inputs-performance-46.json": "9de560d3c32f4a9c1cf6ba78d35e33c98fdb5de1d0ab16782bd5eabfaaa9d55d",
+    "verification-inputs-performance-47.json": "d1a0c415093c38ffcebe64094985a128e3668d4416cd8b44dd0bb06ba47a4559",
+    "verification-inputs-performance-48.json": "92f2bfb537e7e11275a9062a065e5f89a426667c9275368fef5962c5ee1dc57e"
+  },
+  "prior_artifacts": "46 and 47 are retained historical measurements. Their tracing wrapper did not share the original datasource transaction key. 48 fixes that and asserts the actual diagnostic SQL connection is read-only; use 48 for transaction-aware performance evidence.",
+  "remaining": [
+    "Final full backend-check and backend-integration with the added harness and budgets",
+    "Asynchronous export implementation and browser/API verification",
+    "Complete ephemeral failure/restore drills",
+    "Actual Owner cohort sizing and controlled-production capacity evidence",
+    "Final CI/Controller closure"
+  ],
+  "log": {
+    "path": "/private/tmp/marketops-s1-r1/performance-and-read-budget-48.log",
+    "sha256": "6ba0749998a23d1bd8ae3ea3e877811303eb91da084a1e97c912519f1fae7de1"
+  }
+}

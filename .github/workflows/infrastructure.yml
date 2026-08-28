@@ -1,0 +1,55 @@
+name: Infrastructure
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: infrastructure-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  infrastructure-validation:
+    name: infrastructure-validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Install checksum-pinned Terraform
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --silent --location --max-time 60 \
+            https://releases.hashicorp.com/terraform/1.14.9/terraform_1.14.9_linux_amd64.zip \
+            -o "${RUNNER_TEMP}/terraform.zip"
+          printf '%s  %s\n' '2e5cffc20a0b48a67a76268723bd5a10b8666f69b2aa4f04906e206726bedd63' "${RUNNER_TEMP}/terraform.zip" | sha256sum -c -
+          unzip -o "${RUNNER_TEMP}/terraform.zip" -d "${RUNNER_TEMP}/terraform-bin"
+          echo "${RUNNER_TEMP}/terraform-bin" >> "${GITHUB_PATH}"
+      - name: Validate both environments and state bootstrap without credentials or apply
+        run: python3 scripts/verify_terraform.py
+      - name: Test network and secret-delivery refusal controls
+        run: python3 -m unittest discover -s tests -p 'test_*terraform*.py'
+      - name: Test ephemeral runtime secret delivery
+        run: python3 -m unittest discover -s tests -p 'test_yandex_runtime.py'
+      - name: Record tested identities
+        env:
+          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          echo "tested_merge_sha=${GITHUB_SHA}" >> "${GITHUB_STEP_SUMMARY}"
+          echo "source_head_sha=${SOURCE_HEAD_SHA}" >> "${GITHUB_STEP_SUMMARY}"
+          echo 'Synthetic plans only; no account calls, apply, deployment or production enablement.' >> "${GITHUB_STEP_SUMMARY}"
+      - name: Publish infrastructure verification evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: infrastructure-verification
+          path: build/terraform-evidence/
+          retention-days: 14
+          if-no-files-found: error

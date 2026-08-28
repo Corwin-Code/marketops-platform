@@ -1,0 +1,2275 @@
+[
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.ApplicationConfigurationTest",
+    "counts": {
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "localLogsAreReadableAndCarrySafeFields",
+      "serverBindsToLoopback",
+      "probesSeparateReadinessFromLiveness",
+      "infoDoesNotExposeTheEnvironment",
+      "localProfilesUseTheFiniteCorsAllowlist",
+      "ciLogsAreStructuredAndIdentified",
+      "noLiteralPasswordIsPresent",
+      "managementSurfaceIsAnAllowlist",
+      "profilesNameTheirEnvironment",
+      "databaseTimeoutFitsInsideTheConsoleRequestWindow",
+      "baseProfileHasNoCorsOrigins",
+      "databaseLibraryLogsStartAtWarningLevel",
+      "migrationSafetySwitchesAreSet",
+      "callAuthorityConnectionsDefaultToAutoCommit",
+      "logRecordsCarryTheCorrelationIdentifier",
+      "rolesAreSeparated",
+      "defaultProfileOwnsNoFile",
+      "healthComponentNamesAreVisibleButDetailIsWithheld"
+    ],
+    "report_sha256": "7fdafab1e12a0cdc6f3c02dbfeeb7654ebd9e9cad6ea07b43fecde103d67c0af"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.ApplicationEnvironmentFailClosedTest",
+    "counts": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "unprofiledStartFailsClosed"
+    ],
+    "report_sha256": "baaac3303f1075dd6f50b5b4ed88f3336d7fc90b99bbfe0dca7103140308fc18"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.LoggingContractTest",
+    "counts": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "ciEncoderUsesNoneWhenMdcIsAbsent",
+      "ciEncoderUsesTheEstablishedMdcCorrelationIdentifier",
+      "localPatternProducesReadableSafeOutput"
+    ],
+    "report_sha256": "bebe9d52c829eb54e9f8edda9d573dec170324e4b5f62b9891cb5bf8e152c144"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.adminobservability.MetaStatusControllerTest",
+    "counts": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "assembledValuesAreReturned",
+      "hostileIdentifierIsReplaced",
+      "payloadCarriesNoConnectionDetail",
+      "inboundIdentifierIsEstablishedForTheRequest",
+      "failureIsReportedWithoutDetail",
+      "loggingContextIsClearedAfterAFailure",
+      "fieldSetIsAnAllowlist",
+      "loggingContextIsClearedAfterTheRequest"
+    ],
+    "report_sha256": "4e4431be86f2be97c392614bd1e7a1e4abec0a7018ea899eda7776d7331e6c8c"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.adminobservability.internal.MetaStatusAssemblerTest",
+    "counts": {
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "noFieldIsEverNull",
+      "repeatedProbeFailureIsBoundedAndRecoveryRearmsIt",
+      "unexpectedCommitValueIsNotPublished",
+      "absentFlywayIsUnknown",
+      "invalidConnectionIsDown",
+      "unreachableDatabaseIsDown",
+      "appliedVersionIsReported",
+      "emptyHistoryIsUnknown",
+      "validConnectionIsUp",
+      "configuredNamesAreReported",
+      "absentDataSourceIsUnknown",
+      "serverTimeUsesTheInjectedClock",
+      "probeLogsContainOnlySanitizedFailureCategories",
+      "missingBuildPropertiesDegradeToUnknown",
+      "correlationIdentifierIsCarried",
+      "hexadecimalCommitIsPublished",
+      "unreadableHistoryIsUnknown"
+    ],
+    "report_sha256": "20ca0ceb1798407712655acc44ed3dd40e53632fa2c19628b49b43d1fe3e12a4"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdviceTest",
+    "counts": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "writeGateAndValidationHandlersCoverMutationAndReadBoundaries",
+      "rejectionPreservesSafeConflictContextAndOperatorAttribution",
+      "sqlStatesMapToStableSanitizedCodes"
+    ],
+    "report_sha256": "03cd4b27104a0fba0976d250802ef36ec08b22f4986268a4ff710b2dd6a1d749"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.aicopilot.adapter.http.HttpModelGatewayTest",
+    "counts": {
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "destinationPolicyAndEligibilityPrecedeSecretResolution",
+      "incompleteInvalidUtf8AndProviderFailureStayDistinct",
+      "unreadableOrAmbiguousResponsesCannotBecomeModelAnswers(String)[1]",
+      "unreadableOrAmbiguousResponsesCannotBecomeModelAnswers(String)[2]",
+      "unreadableOrAmbiguousResponsesCannotBecomeModelAnswers(String)[3]",
+      "unreadableOrAmbiguousResponsesCannotBecomeModelAnswers(String)[4]",
+      "unreadableOrAmbiguousResponsesCannotBecomeModelAnswers(String)[5]",
+      "escapedProjectionAndResponsePointerRoundTripWithoutLeakingSecretBuffers",
+      "malformedRequestTemplatesAreRefusedBeforeAnySecret(String)[1]",
+      "malformedRequestTemplatesAreRefusedBeforeAnySecret(String)[2]",
+      "malformedRequestTemplatesAreRefusedBeforeAnySecret(String)[3]",
+      "malformedRequestTemplatesAreRefusedBeforeAnySecret(String)[4]",
+      "missingSecretTransportFailureAndInterruptionAreClosedFailures"
+    ],
+    "report_sha256": "788e8f91aea320d5821ca93cc1a75d60d6350860385a91baeb660534146a2b61"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.aicopilot.internal.application.OutputValidatorTest",
+    "counts": {
+      "tests": 39,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "ambiguousAndMalformedStructuresCannotBecomeAcceptedClaims(String)[1]",
+      "ambiguousAndMalformedStructuresCannotBecomeAcceptedClaims(String)[2]",
+      "ambiguousAndMalformedStructuresCannotBecomeAcceptedClaims(String)[3]",
+      "ambiguousAndMalformedStructuresCannotBecomeAcceptedClaims(String)[4]",
+      "ambiguousAndMalformedStructuresCannotBecomeAcceptedClaims(String)[5]",
+      "ambiguousAndMalformedStructuresCannotBecomeAcceptedClaims(String)[6]",
+      "ambiguousAndMalformedStructuresCannotBecomeAcceptedClaims(String)[7]",
+      "ambiguousAndMalformedStructuresCannotBecomeAcceptedClaims(String)[8]",
+      "ambiguousAndMalformedStructuresCannotBecomeAcceptedClaims(String)[9]",
+      "ambiguousAndMalformedStructuresCannotBecomeAcceptedClaims(String)[10]",
+      "ambiguousAndMalformedStructuresCannotBecomeAcceptedClaims(String)[11]",
+      "goldenKindsRetainNestedValuesAndExactDecimalMoney",
+      "reproducibleNestedFieldMutationsAreNeverSilentlyDropped",
+      "priceParametersObeyTheSameMoneyDomainAsCommands(String)[1]",
+      "priceParametersObeyTheSameMoneyDomainAsCommands(String)[2]",
+      "priceParametersObeyTheSameMoneyDomainAsCommands(String)[3]",
+      "priceParametersObeyTheSameMoneyDomainAsCommands(String)[4]",
+      "priceParametersObeyTheSameMoneyDomainAsCommands(String)[5]",
+      "priceParametersObeyTheSameMoneyDomainAsCommands(String)[6]",
+      "priceParametersObeyTheSameMoneyDomainAsCommands(String)[7]",
+      "priceParametersObeyTheSameMoneyDomainAsCommands(String)[8]",
+      "priceParametersObeyTheSameMoneyDomainAsCommands(String)[9]",
+      "outputAndContainerBoundsAreEnforcedBeforePersistence",
+      "aClaimAskingForAnOverrideIsRejected",
+      "anOrdinaryStatementAboutTheListingIsUntouched",
+      "aClaimRepeatingAnInjectedInstructionIsRejected",
+      "aClaimMemberTheContractDoesNotDefineIsRejected",
+      "aStatementBeyondTheStoredLengthIsRejectedAndTruncatedForTheRecord",
+      "anAnswerThatIsNotJsonIsRejectedWholesale",
+      "aTopLevelMemberTheContractDoesNotDefineIsRejectedRatherThanIgnored",
+      "aRecognisedCapabilityIsAcceptedAndStillAuthorisesNothing",
+      "aCapabilityThisProductDoesNotHaveIsRejected",
+      "aFactCitingAProjectedValueIsAccepted",
+      "aFactCitingNothingIsRejected",
+      "aFactCitingAnIdentifierTheModelWasNotShownIsRejected",
+      "anInferenceNeedNotCiteButStillMayNotCiteSomethingUnseen",
+      "theDigestDoesNotCarryTheValueItself",
+      "theSameProjectionDigestsToTheSameValue",
+      "aDifferentValueDigestsDifferently"
+    ],
+    "report_sha256": "9971717a3ff9258381f09df0715e7a675e80ad205046f55b1a9abe2f5280988e"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.analyticsdecision.internal.application.DiagnosisEngineTest",
+    "counts": {
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "theRuleVersionIsStated",
+      "twoEvaluationsAgree",
+      "aDeclinedRuleReadsNoMetrics",
+      "aMissingInputForOneRuleDoesNotSilenceTheOthers",
+      "aHighReturnRateIsFound",
+      "aHealthySubjectTriggersNothing",
+      "tooLittleStockCoverIsFound",
+      "aPriceUnderBreakEvenIsFound",
+      "aUnitLosingMoneyIsCritical",
+      "aSubjectWithNothingMeasuredCannotEvenBeCalledBlocked",
+      "tooLittleOfThePictureBlocksEverythingDownstream",
+      "aCompleteSubjectIsNotBlocked",
+      "aBlockedSubjectNamesTheEarlierRuleRatherThanTheMissingField",
+      "everyTriggeredFindingCarriesASeverity",
+      "aSubjectWithNoMetricsAtAllStillProducesAnOutcomeForEveryRule",
+      "aHealthySubjectStillProducesAnOutcomeForEveryRule",
+      "everyDeclineSaysWhy",
+      "noRuleEverReturnsWithoutAnOutcome"
+    ],
+    "report_sha256": "754fbcc2a4485fd7609530b8e8872535ce4e0d6d5b7475a153258212ad5740f3"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest",
+    "counts": {
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "callAuthorityGrantConstructionIsMappedFromDatabaseResults",
+      "executorIsCalledOnlyByTheExactGateway",
+      "mapperIsCalledOnlyByTheExactGateway",
+      "portsAreImplementedOnlyByTheOwningModule",
+      "controllersAreTransitivelyExcludedFromTheAuthorityChain",
+      "callAuthorityGrantHasPackagePrivateVisibility",
+      "acquisitionIsCalledOnlyByTheAuthorizedExecutor",
+      "objectStorageIsReachedOnlyByRawCustody",
+      "controllersAreExcludedFromTheCompleteAuthorityChain",
+      "noControllerReachesAcquisition",
+      "internalAuthorityTypesDoNotEscape",
+      "requestsAreCreatedOnlyByTheAuthorizedExecutor",
+      "secondInternalExecutorCallerIsRejected",
+      "controllerHoldingThePortIsRejected",
+      "conformingArrangementPasses",
+      "mixedImplementationsAreRejectedForTheUnsafeSelectablePath",
+      "controllerViaExecutorIsRejected",
+      "syntheticResultSetMapperCallerIsRejected",
+      "insideGrantRebinderIsRejected",
+      "cyclicSafePolymorphicPathIsPermitted",
+      "inheritedAcquisitionImplementationIsRejected",
+      "transitiveControllerPathIsRejectedWithTheCompletePath",
+      "outsideCallerIsRejected",
+      "ordinaryQueryControllerPathIsPermitted",
+      "secondObjectStorageCallerIsRejected",
+      "acquisitionSubinterfaceAndImplementationAreRejected",
+      "metaAnnotatedControllerPathIsRejected",
+      "insideCallerIsRejected",
+      "objectStorageAssignableTypesAreRejectedOutsideTheOwner",
+      "safeOnlyPolymorphicPathIsPermitted",
+      "polymorphicControllerPathIsRejectedWithDispatchEvidence",
+      "secondAuthorityIsRejected",
+      "requestRebinderIsRejected",
+      "owningModuleAssignablePortTypesArePermitted"
+    ],
+    "report_sha256": "c939839419753b3f9b14dde8639c8ebb78384dbd0f6459a28404648e2198fccc"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest",
+    "counts": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "vendorSdkTypesStayInPlatformAdapters",
+      "modulesAreFreeOfCycles",
+      "moduleInternalsAreClosed",
+      "vendorSdkTypesDoNotLeakThroughSignatures",
+      "domainDoesNotDependOutward",
+      "productionClassesWereImported",
+      "applicationAndPortDoNotDependOutward",
+      "sharedIsADependencyLeaf",
+      "diagnosticsUseTheLogger",
+      "timeComesFromAnInjectedClock",
+      "dependenciesArriveThroughConstructors",
+      "webLayerDoesNotReachTheDatabase"
+    ],
+    "report_sha256": "936b2e29b5c030a47029f7fd8b38774604af3ba6fab2d20b36f215811387f0ae"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.architecture.ModulithArchitectureTest",
+    "counts": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "declaredModulesAreTheOnesDetected",
+      "moduleStructureVerifies"
+    ],
+    "report_sha256": "90a9141f018171288b77fc453686ef4231d63dbf424fb1419bb65bbc90d2bd03"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest",
+    "counts": {
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "domainRuleFails",
+      "vendorLocationRuleFails",
+      "moduleInternalAccessRuleFailsForBothCollisionShapes",
+      "conformingInwardArrangementPassesEveryApprovedRule",
+      "portHalfOfCompositeRuleFails",
+      "applicationHalfOfCompositeRuleFails",
+      "sharedRuleFails",
+      "platformOwnedNamedInterfacePasses",
+      "vendorSignatureRuleFails",
+      "cycleRuleFails",
+      "internalizationPackageIsNotTreatedAsInternal",
+      "namedInterfaceSignatureShapesAreRejected",
+      "conformingArrangementPassesQualityRules",
+      "consoleOutputRuleFails",
+      "ambientTimeRuleFails",
+      "fieldInjectionRuleFails",
+      "webLayerRuleFails"
+    ],
+    "report_sha256": "626afb979ac9cc82c9f85849de7fc8af4c60f87bf4e5045daf2e603d7249e9b3"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.identityaccess.internal.application.AccessApplicationServiceTest",
+    "counts": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "scopeGrantCommandsFailClosedForInactiveUnknownCrossOrganizationAndRanges",
+      "serviceAccountCommandsCoverLifecycleSourcesEvaluationAndGrantRevocation",
+      "accessCoreReferenceCheckMapsAllCoreResourceKindsAndOrganizationOwnership",
+      "serviceAccountCommandsFailClosedForParentExpiryDuplicatesAndSourceOwnership",
+      "scopeGrantCommandsCoverEveryResourceKindAndRevocation"
+    ],
+    "report_sha256": "cf1d0b4aadefae65b7ff30ed4e0dc6e36f0b951199c8c9626b83fb264f5342e6"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.identityaccess.internal.application.TokenIdentityResolverTest",
+    "counts": {
+      "tests": 42,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "exactRevocationBoundaryAndMissingSessionAreHandledWithoutFabricatingStepUp",
+      "unknownSubjectIsDeniedAfterMfaAndBeforeRoles",
+      "activityIsThrottledButRolesAreAlwaysLive(long)[1]",
+      "activityIsThrottledButRolesAreAlwaysLive(long)[2]",
+      "activityIsThrottledButRolesAreAlwaysLive(long)[3]",
+      "activityIsThrottledButRolesAreAlwaysLive(long)[4]",
+      "verifiedProviderVocabularyIsHonoredWithoutImportingTokenRoles(String)[1]",
+      "verifiedProviderVocabularyIsHonoredWithoutImportingTokenRoles(String)[2]",
+      "verifiedProviderVocabularyIsHonoredWithoutImportingTokenRoles(String)[3]",
+      "malformedOrFutureAuthenticationCannotReachProviderOrUserData(String, String, Instant, Instant, Map)[1]",
+      "malformedOrFutureAuthenticationCannotReachProviderOrUserData(String, String, Instant, Instant, Map)[2]",
+      "malformedOrFutureAuthenticationCannotReachProviderOrUserData(String, String, Instant, Instant, Map)[3]",
+      "malformedOrFutureAuthenticationCannotReachProviderOrUserData(String, String, Instant, Instant, Map)[4]",
+      "malformedOrFutureAuthenticationCannotReachProviderOrUserData(String, String, Instant, Instant, Map)[5]",
+      "malformedOrFutureAuthenticationCannotReachProviderOrUserData(String, String, Instant, Instant, Map)[6]",
+      "malformedOrFutureAuthenticationCannotReachProviderOrUserData(String, String, Instant, Instant, Map)[7]",
+      "malformedOrFutureAuthenticationCannotReachProviderOrUserData(String, String, Instant, Instant, Map)[8]",
+      "malformedOrFutureAuthenticationCannotReachProviderOrUserData(String, String, Instant, Instant, Map)[9]",
+      "malformedOrFutureAuthenticationCannotReachProviderOrUserData(String, String, Instant, Instant, Map)[10]",
+      "malformedOrFutureAuthenticationCannotReachProviderOrUserData(String, String, Instant, Instant, Map)[11]",
+      "unacceptedProvidersCannotReachProfilesOrRoles(String)[1]",
+      "unacceptedProvidersCannotReachProfilesOrRoles(String)[2]",
+      "unacceptedProvidersCannotReachProfilesOrRoles(String)[3]",
+      "unacceptedProvidersCannotReachProfilesOrRoles(String)[4]",
+      "unacceptedProvidersCannotReachProfilesOrRoles(String)[5]",
+      "unacceptedProvidersCannotReachProfilesOrRoles(String)[6]",
+      "unacceptedProvidersCannotReachProfilesOrRoles(String)[7]",
+      "unacceptedProvidersCannotReachProfilesOrRoles(String)[8]",
+      "unacceptedProvidersCannotReachProfilesOrRoles(String)[9]",
+      "unacceptedProvidersCannotReachProfilesOrRoles(String)[10]",
+      "disabledSuspendedAndPreRevocationTokensCannotLoadRoles(String)[1]",
+      "disabledSuspendedAndPreRevocationTokensCannotLoadRoles(String)[2]",
+      "disabledSuspendedAndPreRevocationTokensCannotLoadRoles(String)[3]",
+      "mfaMustMatchTheExactConfiguredClaimAndHaveARecognizedShape(Map)[1]",
+      "mfaMustMatchTheExactConfiguredClaimAndHaveARecognizedShape(Map)[2]",
+      "mfaMustMatchTheExactConfiguredClaimAndHaveARecognizedShape(Map)[3]",
+      "mfaMustMatchTheExactConfiguredClaimAndHaveARecognizedShape(Map)[4]",
+      "mfaMustMatchTheExactConfiguredClaimAndHaveARecognizedShape(Map)[5]",
+      "mfaMustMatchTheExactConfiguredClaimAndHaveARecognizedShape(Map)[6]",
+      "mfaMustMatchTheExactConfiguredClaimAndHaveARecognizedShape(Map)[7]",
+      "mfaMustMatchTheExactConfiguredClaimAndHaveARecognizedShape(Map)[8]",
+      "mfaMustMatchTheExactConfiguredClaimAndHaveARecognizedShape(Map)[9]"
+    ],
+    "report_sha256": "5fb81ff119546aa87ea2b6f0aab22e889772b5cc46b7b0bd2fe8f0184a97b503"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.identityaccess.internal.domain.AccessLifecycleTest",
+    "counts": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "grantMachineIsExact",
+      "serviceAccountMachineIsExact",
+      "allowedSourceMachineIsExact"
+    ],
+    "report_sha256": "e8a784ce115253fcb01f08cdbad1b3edb718b866d96e5f59e982e54cb0cb384d"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.identityaccess.internal.infrastructure.jdbc.AccessRepositoryTest",
+    "counts": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "repositoriesExposeVersionedWriteAndEmptyReadSemantics"
+    ],
+    "report_sha256": "71db20d860331381b26dc6c5fdc5379cf012688b4e2b3a45e29bd6561df11fae"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.identityaccess.internal.web.MarketOpsJwtAuthenticationConverterTest",
+    "counts": {
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "carriesOnlyTheResolvedActorWithNoTokenBasedAuthorities(String)[1]",
+      "carriesOnlyTheResolvedActorWithNoTokenBasedAuthorities(String)[2]",
+      "carriesOnlyTheResolvedActorWithNoTokenBasedAuthorities(String)[3]",
+      "numericDatesAreReadExactly(Object)[1]",
+      "numericDatesAreReadExactly(Object)[2]",
+      "numericDatesAreReadExactly(Object)[3]",
+      "numericDatesAreReadExactly(Object)[4]",
+      "resolverRefusalStaysASafeAuthenticationFailure",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[1]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[2]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[3]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[4]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[5]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[6]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[7]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[8]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[9]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[10]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[11]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[12]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[13]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[14]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[15]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[16]",
+      "malformedClaimsRefuseWithoutReadingBusinessIdentity(String, Object)[17]",
+      "absentAuthenticationTimeNeverBecomesTheRenewedTokenIssueTime"
+    ],
+    "report_sha256": "c9bde0fa2efd8d43c855f72377dc98ab9f47f9c9621b30ed82a2b1c0b8bc7952"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.PriceCommandStateTest",
+    "counts": {
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "anActivelyWorkedStateHoldsALease(PriceCommandState)[1]",
+      "anActivelyWorkedStateHoldsALease(PriceCommandState)[2]",
+      "anActivelyWorkedStateHoldsALease(PriceCommandState)[3]",
+      "anActivelyWorkedStateHoldsALease(PriceCommandState)[4]",
+      "anActivelyWorkedStateHoldsALease(PriceCommandState)[5]",
+      "aQueuedStateHoldsNoLease(PriceCommandState)[1]",
+      "aQueuedStateHoldsNoLease(PriceCommandState)[2]",
+      "everyStateNeedingAPersonIsUnfinished",
+      "aReadbackMismatchIsAFactAboutTheWorldRatherThanAFailure",
+      "anUnknownResultIsNeitherFinishedNorAutomaticallyRetried",
+      "exactlyFourStatesAreTerminal",
+      "aTerminalStateHoldsNoLeaseAndNeedsNobody(PriceCommandState)[1]",
+      "aTerminalStateHoldsNoLeaseAndNeedsNobody(PriceCommandState)[2]",
+      "aTerminalStateHoldsNoLeaseAndNeedsNobody(PriceCommandState)[3]",
+      "aTerminalStateHoldsNoLeaseAndNeedsNobody(PriceCommandState)[4]"
+    ],
+    "report_sha256": "e9dc346e049dd3553e84bab29838cf6eccaa6ae3607f73eb75c22497cf2c0c80"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAdaptersTest",
+    "counts": {
+      "tests": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "acquisitionRetainsExactBodiesAndBackpressureWithoutInventingSourceTime(int)[1]",
+      "acquisitionRetainsExactBodiesAndBackpressureWithoutInventingSourceTime(int)[2]",
+      "acquisitionRetainsExactBodiesAndBackpressureWithoutInventingSourceTime(int)[3]",
+      "acquisitionRetainsExactBodiesAndBackpressureWithoutInventingSourceTime(int)[4]",
+      "acquisitionRetainsExactBodiesAndBackpressureWithoutInventingSourceTime(int)[5]",
+      "acquisitionRetainsExactBodiesAndBackpressureWithoutInventingSourceTime(int)[6]",
+      "acquisitionRetainsExactBodiesAndBackpressureWithoutInventingSourceTime(int)[7]",
+      "changedEvidenceBeforeSecretResolutionOrBeforeDispatchCannotEscape(boolean)[1]",
+      "changedEvidenceBeforeSecretResolutionOrBeforeDispatchCannotEscape(boolean)[2]",
+      "malformedPriceResponsesCannotAuthorizeSuccess(String)[1]",
+      "malformedPriceResponsesCannotAuthorizeSuccess(String)[2]",
+      "malformedPriceResponsesCannotAuthorizeSuccess(String)[3]",
+      "malformedPriceResponsesCannotAuthorizeSuccess(String)[4]",
+      "malformedPriceResponsesCannotAuthorizeSuccess(String)[5]",
+      "expiredAuthorityAndSharedQuotaRefusalNeverReachHttpOrSecrets",
+      "unexpectedContentTypeAndPartialBytesCannotBecomeSuccess",
+      "exactReadbackMoneyIsPreservedAndSecretBuffersAreCleared",
+      "destinationRefusalHappensBeforeEitherAdapterResolvesSecrets",
+      "missingAccountEvidenceAndUnboundPriceAttemptCannotPrepareAnExternalCall",
+      "malformedHeaderTemplateAndUnverifiedEndpointsResolveNothing",
+      "transportFailureAndExpiredPlansKeepMutatingOutcomesUnknown"
+    ],
+    "report_sha256": "e39e6e3311f78db503022ea129ec863d5ab4facf22b3b31edc25ba710bc5f8c8"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteClassificationTest",
+    "counts": {
+      "tests": 38,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "anHttpSuccessWithoutTheExactAcceptancePredicateRemainsUnknown(String)[1]",
+      "anHttpSuccessWithoutTheExactAcceptancePredicateRemainsUnknown(String)[2]",
+      "anHttpSuccessWithoutTheExactAcceptancePredicateRemainsUnknown(String)[3]",
+      "anHttpSuccessWithoutTheExactAcceptancePredicateRemainsUnknown(String)[4]",
+      "anHttpSuccessWithoutTheExactAcceptancePredicateRemainsUnknown(String)[5]",
+      "anHttpSuccessWithoutTheExactAcceptancePredicateRemainsUnknown(String)[6]",
+      "invalidReadbackMoneyCannotBecomeAccepted(String)[1]",
+      "invalidReadbackMoneyCannotBecomeAccepted(String)[2]",
+      "invalidReadbackMoneyCannotBecomeAccepted(String)[3]",
+      "invalidReadbackMoneyCannotBecomeAccepted(String)[4]",
+      "invalidReadbackMoneyCannotBecomeAccepted(String)[5]",
+      "invalidReadbackMoneyCannotBecomeAccepted(String)[6]",
+      "anUnrecordedTaskStateIsNeverGuessedToBePending(String)[1]",
+      "anUnrecordedTaskStateIsNeverGuessedToBePending(String)[2]",
+      "anUnrecordedTaskStateIsNeverGuessedToBePending(String)[3]",
+      "anUnrecordedTaskStateIsNeverGuessedToBePending(String)[4]",
+      "anUnrecordedTaskStateIsNeverGuessedToBePending(String)[5]",
+      "anObjectIsNotAValue",
+      "aMissingPointerReadsNothing",
+      "anEmptyValueIsAnAbsentValue",
+      "aPointerThatReachesNothingReadsNothing",
+      "aNumberAndABooleanAreValues",
+      "anAsynchronousPlatformYieldsItsHandle",
+      "aSynchronousPlatformNeedsNoHandle",
+      "anAsynchronousAcceptWithNoHandleIsUnknown",
+      "aServerFailureOnAReadIsRetriable",
+      "aRateLimitOnAWriteDoesNotProveThatNoChangeOccurred",
+      "aClientRefusalIsARefusalForEveryOperation",
+      "aServerFailureOnAWriteIsUnknown",
+      "aServerFailureOnARestoreIsAlsoUnknown",
+      "anAnswerWithoutAStatusIsUnknown",
+      "thePlatformsWordForFinishedIsAccepted",
+      "onlyARecordedPendingValueMeansStillRunning",
+      "thePlatformsWordForRejectedIsARefusal",
+      "anAnswerThePointerDoesNotReachCarriesNoPrice",
+      "aPriceThatIsNotANumberIsRefusedRatherThanCoerced",
+      "aPriceIsReadWithItsCurrency",
+      "aPriceSentAsANumberIsStillAPrice"
+    ],
+    "report_sha256": "8d327dbd8337fcfea85fecc0ebc79e2067c29b8f37aaf38959a4941e1b3a9afc"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.adapter.http.RequestTemplateTest",
+    "counts": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "hostileJsonStringRoundTripsWithoutCreatingPropertiesOrResubstituting",
+      "onlyClosedPlaceholdersWithSuppliedValuesCanBeRendered",
+      "opaqueCursorCannotIntroduceAPathSegmentQueryArgumentOrFragment",
+      "optionalTemplatesAndApplicationProducedValuesHaveExplicitSemantics"
+    ],
+    "report_sha256": "1a61380ae33c859a790eb06bd2bfb4279353a60a834e71ba92267bb72a5018fc"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.FilesystemObjectStorageTest",
+    "counts": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "readRefusesAnOversizedReplacedFileAndDoesNotFollowALeafSymlink",
+      "exactBoundEmptyBodiesMissingObjectsAndInvalidInputsAreExplicit",
+      "concurrentWritersCannotReplaceTheFirstPublishedBytes"
+    ],
+    "report_sha256": "4baebda05188ae6593a955af48c00888ebf94079e516fe2bc4517f70acc40b4a"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorageTest",
+    "counts": {
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "destinationRefusalNeverResolvesASigningSecret",
+      "unexpectedProviderStatusesAreStableFailures(int)[1]",
+      "unexpectedProviderStatusesAreStableFailures(int)[2]",
+      "unexpectedProviderStatusesAreStableFailures(int)[3]",
+      "unexpectedProviderStatusesAreStableFailures(int)[4]",
+      "unexpectedProviderStatusesAreStableFailures(int)[5]",
+      "conditionalPutHasOnlyStoredOrAlreadyPresentOutcomes(int)[1]",
+      "conditionalPutHasOnlyStoredOrAlreadyPresentOutcomes(int)[2]",
+      "conditionalPutHasOnlyStoredOrAlreadyPresentOutcomes(int)[3]",
+      "conditionalPutHasOnlyStoredOrAlreadyPresentOutcomes(int)[4]",
+      "anIncompleteSuccessfulResponseCannotBecomeCustodiedEvidence",
+      "locatorAndEncodingAreBoundedAndBytePreserving",
+      "unresolvedSecretAndInterruptedTransportStayClosed",
+      "incompleteOrInjectedSigningConfigurationIsRefusedBeforeSecrets",
+      "getAndVerificationUseTheBytesActuallyRead",
+      "putSignsTheExactConditionalRequestOnlyAfterDestinationApproval",
+      "invalidConfigurationIsRefusedBeforeTransportOrSecrets(String)[1]",
+      "invalidConfigurationIsRefusedBeforeTransportOrSecrets(String)[2]",
+      "invalidConfigurationIsRefusedBeforeTransportOrSecrets(String)[3]",
+      "invalidConfigurationIsRefusedBeforeTransportOrSecrets(String)[4]"
+    ],
+    "report_sha256": "81a7bea2a035b02e8b0e9e8cf668d4b139b587cc2f9f9c3f40ebd4f163cd602a"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionPageWorkerTest",
+    "counts": {
+      "tests": 33,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[1]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[2]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[3]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[4]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[5]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[6]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[7]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[8]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[9]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[10]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[11]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[12]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[13]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[14]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[15]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[16]",
+      "numericAndStringContinuationTokensRemainExactAndBounded(String, String, String, String)[17]",
+      "partialOrUnexpectedResponsesNeverAdvanceTheCursor(boolean, boolean, String, AcquisitionOutcome, String)[1]",
+      "partialOrUnexpectedResponsesNeverAdvanceTheCursor(boolean, boolean, String, AcquisitionOutcome, String)[2]",
+      "partialOrUnexpectedResponsesNeverAdvanceTheCursor(boolean, boolean, String, AcquisitionOutcome, String)[3]",
+      "partialOrUnexpectedResponsesNeverAdvanceTheCursor(boolean, boolean, String, AcquisitionOutcome, String)[4]",
+      "partialOrUnexpectedResponsesNeverAdvanceTheCursor(boolean, boolean, String, AcquisitionOutcome, String)[5]",
+      "onlyAnExplicitTerminalValueCanEndAPagedSource(String, String)[1]",
+      "onlyAnExplicitTerminalValueCanEndAPagedSource(String, String)[2]",
+      "onlyAnExplicitTerminalValueCanEndAPagedSource(String, String)[3]",
+      "onlyAnExplicitTerminalValueCanEndAPagedSource(String, String)[4]",
+      "onlyAnExplicitTerminalValueCanEndAPagedSource(String, String)[5]",
+      "onlyAnExplicitTerminalValueCanEndAPagedSource(String, String)[6]",
+      "onlyAnExplicitTerminalValueCanEndAPagedSource(String, String)[7]",
+      "onlyAnExplicitTerminalValueCanEndAPagedSource(String, String)[8]",
+      "onlyAnExplicitTerminalValueCanEndAPagedSource(String, String)[9]",
+      "anUndeclaredPaginationContractCannotBecomeSinglePageSuccess",
+      "relativeContinuationPointersAreNotExecutableConfiguration"
+    ],
+    "report_sha256": "686818da013dd17a63da15d2d8fcb52d1c2ed237a19704c133959d035ba2c6e6"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionRunnerTest",
+    "counts": {
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "enqueueBindsTheConfiguredClaimBudgetAndWindow",
+      "noSourceCallCanPrecedeAClaimAndExecutableContext(String)[1]",
+      "noSourceCallCanPrecedeAClaimAndExecutableContext(String)[2]",
+      "noSourceCallCanPrecedeAClaimAndExecutableContext(String)[3]",
+      "noSourceCallCanPrecedeAClaimAndExecutableContext(String)[4]",
+      "losingTheLeaseAfterOnePagePreventsAnotherSourceCall",
+      "callCeilingYieldsWithAllCompletedPagesCounted",
+      "nextPageRenewsTheSameFenceAndOnlyAnExplicitEndCompletesTheRun",
+      "replayRecordsItsLifecycleAndMakesZeroMarketplaceCalls",
+      "retryHonorsBothTheLocalBudgetAndTheDatabaseDeadline(String)[1]",
+      "retryHonorsBothTheLocalBudgetAndTheDatabaseDeadline(String)[2]",
+      "unknownOrInvalidSourceOutcomesBlockInsteadOfRetrying(Kind)[1]",
+      "unknownOrInvalidSourceOutcomesBlockInsteadOfRetrying(Kind)[2]",
+      "unknownOrInvalidSourceOutcomesBlockInsteadOfRetrying(Kind)[3]",
+      "unknownOrInvalidSourceOutcomesBlockInsteadOfRetrying(Kind)[4]",
+      "exhaustedOrMissingRetryStateCannotAuthorizeAnotherAttempt(boolean)[1]",
+      "exhaustedOrMissingRetryStateCannotAuthorizeAnotherAttempt(boolean)[2]",
+      "pageFailureDoesNotDiscardTheEarlierDurablePageCount"
+    ],
+    "report_sha256": "6683cf7a7179025c89c65170cb811b8e9be215c5602ebb6d016b6bc8d93691dc"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryServiceTest",
+    "counts": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "verifiedCapabilityRequiresExplicitSubjectAvailability",
+      "absentRetiredDeprecatedAndUnverifiedCapabilitiesFailClosed"
+    ],
+    "report_sha256": "a34989786f2fcbf1b3612a10a841dd65c1b3f237797a9dfcbad8a80dad933a12"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.internal.application.CredentialServiceTest",
+    "counts": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "storeScopeValidationRejectsForeignInactiveAndDuplicateStores",
+      "commandsCoverAccountAndStoreSetScopeLifecycle",
+      "mutationsRejectInvalidTransitionsOwnershipDuplicatesAndVersionConflicts",
+      "creationFailsClosedForAccountPurposeWindowRotationAndScope",
+      "derivedViewsCoverExpiryStoreScopeAndRotationStanding"
+    ],
+    "report_sha256": "a55449ad5e9f398b43994f54fc96587b879f83c08994003e83a1f2e835fb5507"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.internal.application.FeatureFlagServiceTest",
+    "counts": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "writeGateAndLifecycleTransitionsFailClosed",
+      "stateRetirementQueriesAndPublishedReadsCoverBothDirections",
+      "createCoversEveryScopeShapeAndReferenceKind",
+      "creationRejectsInvalidShapesMissingReferencesInactiveTargetsAndDuplicates"
+    ],
+    "report_sha256": "52fd1e75beaec25ef042d2c07414d5559728ae5ecdbf72d21dacccbe6a420d64"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyLocatorTest",
+    "counts": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "objectFailuresRemainFailuresAndProduceOnlyAnExpiringAggregateSignal(String)[1]",
+      "objectFailuresRemainFailuresAndProduceOnlyAnExpiringAggregateSignal(String)[2]",
+      "objectFailuresRemainFailuresAndProduceOnlyAnExpiringAggregateSignal(String)[3]",
+      "objectFailuresRemainFailuresAndProduceOnlyAnExpiringAggregateSignal(String)[4]",
+      "objectFailuresRemainFailuresAndProduceOnlyAnExpiringAggregateSignal(String)[5]",
+      "aMalformedLocatorIsRefusedHere",
+      "everyNamespaceWorks",
+      "theDigestIsRecoverable",
+      "locatorMatchesTheSchema"
+    ],
+    "report_sha256": "7718e3f897e5e16152a4a54974cceebf94ebd35766bce677bb22d0e23d84aea5"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.internal.application.RegistryServiceTest",
+    "counts": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "endpointCommandsCoverCreateUpdateRetireVerificationAndQueries",
+      "subjectAndRequirementValidationRejectsBadShapesTargetsAndVerificationClaims",
+      "capabilityCommandsCoverCreateUpdateRetireVerificationAndQueries",
+      "integrationCoreReferenceCheckCoversAllCoreEntityKinds",
+      "subjectAndRequirementCommandsCoverAccountStoreCapabilityAndEndpointShapes",
+      "capabilityAndEndpointValidationRejectsUnsupportedFactsAndTransitions"
+    ],
+    "report_sha256": "d6a9c229363e378d8c2bbff5520a3d5e8d17d10836ded2df34e237c62b8d751b"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.internal.domain.IntegrationLifecycleTest",
+    "counts": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "scopeUsabilityVocabularyIsClosed",
+      "registryVocabulariesMatchTheSchema",
+      "credentialMachineIsExact",
+      "storeScopeMachineIsExact"
+    ],
+    "report_sha256": "ce66da0943999fd33af98503c3e56ca2954215cbcc3f7c9dfbacc6a9099021a3"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.CallAuthoritySingleUseTest",
+    "counts": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "sameGrantExecutesOnlyOnceConcurrently",
+      "executorCopiesTheCompleteGrant",
+      "endpointlessGrantIsRefused",
+      "executorRefusesExpiredGrant",
+      "sameGrantExecutesOnlyOnceSequentially",
+      "malformedGrantIsRefused"
+    ],
+    "report_sha256": "83dfd97e1a8fe8d5aad825006921ff66ba1e8ab53e856373bf442ea0de8f82a9"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.IntegrationRepositoryTest",
+    "counts": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "registryRepositoriesExposeVersionedWriteAndEmptyReadSemantics",
+      "credentialAndFlagRepositoriesExposeVersionedWriteAndEmptyReadSemantics"
+    ],
+    "report_sha256": "97aee60b58e80f359ce935f9ecc88517b1b68adb3131645692cfd8c4f9a56b49"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.JdbcAuthorizedAcquisitionGatewayTest",
+    "counts": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "connectionCompletionFailurePreventsThePort",
+      "nonAutoCommitConnectionIsRefusedBeforeSql",
+      "expiredAuthorityStopsAtTheGatewayDoorway"
+    ],
+    "report_sha256": "5a20b62e7f79a21325be94aa88f6253042505f111b67230317a2fa34d8747287"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.marketplaceintegration.internal.web.RegistryAdminControllerTest",
+    "counts": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "delegatesEveryRegistryCommandAndQuery"
+    ],
+    "report_sha256": "6a4f078d2956a1e987686e4967cd43efad228f02f843841fdba455cc07f1c1a5"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.operatingfacts.internal.application.FactRecorderTest",
+    "counts": {
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "representableTrailingZeroesAndZeroAreNotRejected",
+      "quantityCannotWrapWhenAStorageColumnIsAnInteger",
+      "sourceMoneyCannotBeRoundedOrOverflowTheStoredFact(String)[1]",
+      "sourceMoneyCannotBeRoundedOrOverflowTheStoredFact(String)[2]",
+      "sourceMoneyCannotBeRoundedOrOverflowTheStoredFact(String)[3]",
+      "sourceMoneyCannotBeRoundedOrOverflowTheStoredFact(String)[4]",
+      "sourceMoneyCannotBeRoundedOrOverflowTheStoredFact(String)[5]",
+      "absentNativeIdentityOrUnresolvedListingCannotCreateProvenanceOrFacts",
+      "everyDatasetRetainsSourceIdentityAndReplayUsesTheSameLogicalKey(String)[1]",
+      "everyDatasetRetainsSourceIdentityAndReplayUsesTheSameLogicalKey(String)[2]",
+      "everyDatasetRetainsSourceIdentityAndReplayUsesTheSameLogicalKey(String)[3]",
+      "everyDatasetRetainsSourceIdentityAndReplayUsesTheSameLogicalKey(String)[4]",
+      "everyDatasetRetainsSourceIdentityAndReplayUsesTheSameLogicalKey(String)[5]",
+      "everyDatasetRetainsSourceIdentityAndReplayUsesTheSameLogicalKey(String)[6]",
+      "everyDatasetRetainsSourceIdentityAndReplayUsesTheSameLogicalKey(String)[7]",
+      "everyDatasetRetainsSourceIdentityAndReplayUsesTheSameLogicalKey(String)[8]",
+      "everyDatasetRetainsSourceIdentityAndReplayUsesTheSameLogicalKey(String)[9]"
+    ],
+    "report_sha256": "416170da54fe59eff950b135dc8a017600ee3b4d9818011485d8847c581655f1"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.operatingfacts.internal.application.ImportRowValidatorTest",
+    "counts": {
+      "tests": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "financeShapeIsClosed(String, String)[1]",
+      "financeShapeIsClosed(String, String)[2]",
+      "financeShapeIsClosed(String, String)[3]",
+      "financeShapeIsClosed(String, String)[4]",
+      "financeShapeIsClosed(String, String)[5]",
+      "financeShapeIsClosed(String, String)[6]",
+      "financeShapeIsClosed(String, String)[7]",
+      "valuesHaveTheSameCanonicalTypesForPreviewAndApplication",
+      "invalidCostIsRejectedBeforeApproval(String, String)[1]",
+      "invalidCostIsRejectedBeforeApproval(String, String)[2]",
+      "invalidCostIsRejectedBeforeApproval(String, String)[3]",
+      "invalidCostIsRejectedBeforeApproval(String, String)[4]",
+      "invalidCostIsRejectedBeforeApproval(String, String)[5]",
+      "invalidCostIsRejectedBeforeApproval(String, String)[6]",
+      "invalidCostIsRejectedBeforeApproval(String, String)[7]",
+      "invalidCostIsRejectedBeforeApproval(String, String)[8]",
+      "stockMatchesDatabaseIntegerBounds(String, String)[1]",
+      "stockMatchesDatabaseIntegerBounds(String, String)[2]",
+      "stockMatchesDatabaseIntegerBounds(String, String)[3]",
+      "stockMatchesDatabaseIntegerBounds(String, String)[4]",
+      "stockMatchesDatabaseIntegerBounds(String, String)[5]"
+    ],
+    "report_sha256": "68e37fa3b656c77c681f54e1b3a36d84b209a331614fb4917033eb4f30053576"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunnerTest",
+    "counts": {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "emptyPagePreservesProgressWithoutStartingATransaction",
+      "unreadablePayloadLeavesTheCursorForRepairAndReplay(String)[1]",
+      "unreadablePayloadLeavesTheCursorForRepairAndReplay(String)[2]",
+      "unreadablePayloadLeavesTheCursorForRepairAndReplay(String)[3]",
+      "unreadablePayloadLeavesTheCursorForRepairAndReplay(String)[4]",
+      "unreadablePayloadLeavesTheCursorForRepairAndReplay(String)[5]",
+      "unrepresentableMoneyOrQuantityRollsBackAndRemainsAvailableForRepair",
+      "missingOrCorruptObjectCannotBeSkippedByTheCursor",
+      "absentJobStoreAndDeclarationCannotReadRawOrWriteAnything",
+      "factFailureRollsBackTheObservationAndDoesNotAdvance",
+      "oneIncompleteRecordRefusesTheWholeObservationButKeepsDriftEvidence",
+      "businessFailureBytesAreNotNormalizedAsFacts",
+      "losingCursorCasDoesNotClaimOwnershipOrRepeatFactWrites",
+      "verifiedBytesAreReadBeforeTheFactTransactionAndCursorMovesAfterCommit"
+    ],
+    "report_sha256": "252383a96b9ba53aacbd086262503827442e88d3d29994b5bd1919e1e023544c"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.operatingfacts.internal.application.PayloadReaderTest",
+    "counts": {
+      "tests": 39,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "supportedTextualNumbersAreExactAndNoOtherTypeIsGuessed",
+      "boundedRecordsAndDriftRefuseOversizedWorkWithoutPartialResults",
+      "declaredTypesPreserveExactMoneyTimeAndUnknownStates",
+      "malformedOrMixedRecordPayloadIsRejectedAsAWhole(String)[1]",
+      "malformedOrMixedRecordPayloadIsRejectedAsAWhole(String)[2]",
+      "malformedOrMixedRecordPayloadIsRejectedAsAWhole(String)[3]",
+      "malformedOrMixedRecordPayloadIsRejectedAsAWhole(String)[4]",
+      "malformedOrMixedRecordPayloadIsRejectedAsAWhole(String)[5]",
+      "malformedOrMixedRecordPayloadIsRejectedAsAWhole(String)[6]",
+      "malformedOrMixedRecordPayloadIsRejectedAsAWhole(String)[7]",
+      "malformedOrMixedRecordPayloadIsRejectedAsAWhole(String)[8]",
+      "malformedOrMixedRecordPayloadIsRejectedAsAWhole(String)[9]",
+      "malformedOrMixedRecordPayloadIsRejectedAsAWhole(String)[10]",
+      "missingRecordPointerAndInvalidUtf8CannotNormalize",
+      "driftUsesEscapedPointersAndIsDeduplicatedAcrossRecords",
+      "instantsRequireAnExplicitOffsetAndValidRepresentation(String)[1]",
+      "instantsRequireAnExplicitOffsetAndValidRepresentation(String)[2]",
+      "instantsRequireAnExplicitOffsetAndValidRepresentation(String)[3]",
+      "instantsRequireAnExplicitOffsetAndValidRepresentation(String)[4]",
+      "instantsRequireAnExplicitOffsetAndValidRepresentation(String)[5]",
+      "instantsRequireAnExplicitOffsetAndValidRepresentation(String)[6]",
+      "invalidDecimalIsAbsent(String)[1]",
+      "invalidDecimalIsAbsent(String)[2]",
+      "invalidDecimalIsAbsent(String)[3]",
+      "invalidDecimalIsAbsent(String)[4]",
+      "invalidDecimalIsAbsent(String)[5]",
+      "invalidDecimalIsAbsent(String)[6]",
+      "invalidDecimalIsAbsent(String)[7]",
+      "integerCannotOverflowTruncateOrBecomeAnInventedZero(String)[1]",
+      "integerCannotOverflowTruncateOrBecomeAnInventedZero(String)[2]",
+      "integerCannotOverflowTruncateOrBecomeAnInventedZero(String)[3]",
+      "integerCannotOverflowTruncateOrBecomeAnInventedZero(String)[4]",
+      "integerCannotOverflowTruncateOrBecomeAnInventedZero(String)[5]",
+      "integerCannotOverflowTruncateOrBecomeAnInventedZero(String)[6]",
+      "integerCannotOverflowTruncateOrBecomeAnInventedZero(String)[7]",
+      "integerCannotOverflowTruncateOrBecomeAnInventedZero(String)[8]",
+      "integerCannotOverflowTruncateOrBecomeAnInventedZero(String)[9]",
+      "integerCannotOverflowTruncateOrBecomeAnInventedZero(String)[10]",
+      "integerCannotOverflowTruncateOrBecomeAnInventedZero(String)[11]"
+    ],
+    "report_sha256": "0cb531005a54ea1a96d5735cda299f09f9b6c9d046aae866acc3caac78e13e34"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.operatingfacts.internal.application.SpreadsheetReaderTest",
+    "counts": {
+      "tests": 57,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "malformedSharedStringsAndExcessiveRowsEntriesOrExpansionAreRejected",
+      "sharedStringIndicesMustBeExactAndInRange(String)[1]",
+      "sharedStringIndicesMustBeExactAndInRange(String)[2]",
+      "sharedStringIndicesMustBeExactAndInRange(String)[3]",
+      "sharedStringIndicesMustBeExactAndInRange(String)[4]",
+      "sharedStringIndicesMustBeExactAndInRange(String)[5]",
+      "lineEndingsAndMissingColumnsPreserveTheRowBoundaries(String)[1]",
+      "lineEndingsAndMissingColumnsPreserveTheRowBoundaries(String)[2]",
+      "lineEndingsAndMissingColumnsPreserveTheRowBoundaries(String)[3]",
+      "twoLetterColumnsRemainInTheirDeclaredPosition",
+      "malformedUtf8NullInputsAndResourceLimitsFailClosed",
+      "externalNonWorksheetDuplicateAndMissingRelationshipsAreRefused",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[1]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[2]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[3]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[4]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[5]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[6]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[7]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[8]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[9]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[10]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[11]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[12]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[13]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[14]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[15]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[16]",
+      "malformedOrAmbiguousWorksheetCellsAreRejected(String)[17]",
+      "absoluteInternalPartAndStrictRelationshipsAreSupported",
+      "ambiguousSeparatedValuesAreRejected(String)[1]",
+      "ambiguousSeparatedValuesAreRejected(String)[2]",
+      "ambiguousSeparatedValuesAreRejected(String)[3]",
+      "ambiguousSeparatedValuesAreRejected(String)[4]",
+      "ambiguousSeparatedValuesAreRejected(String)[5]",
+      "ambiguousSeparatedValuesAreRejected(String)[6]",
+      "ambiguousSeparatedValuesAreRejected(String)[7]",
+      "ambiguousSeparatedValuesAreRejected(String)[8]",
+      "dtdEntitiesInEveryParsedXmlPartAreRejectedBeforeResolution",
+      "workbookOrderSharedRichTextSparseCellsAndRawNumbersAreReadExactly",
+      "worksheetTargetsMustResolveToAnExistingInternalPart(String)[1]",
+      "worksheetTargetsMustResolveToAnExistingInternalPart(String)[2]",
+      "worksheetTargetsMustResolveToAnExistingInternalPart(String)[3]",
+      "worksheetTargetsMustResolveToAnExistingInternalPart(String)[4]",
+      "somethingThatIsNotAnArchiveAtAllIsRefused",
+      "anArchiveThatIsNotAWorkbookIsRefused",
+      "anEmptyFileIsRefused",
+      "aFileWithNoHeaderIsRefused",
+      "aMediaTypeThisIntakeDoesNotReadIsRefused",
+      "aFileLargerThanTheIntakeAcceptsIsRefused",
+      "aQuotedFieldMayContainAQuote",
+      "trailingBlankLinesAreNotRows",
+      "aSemicolonSeparatedFileIsReadToo",
+      "aQuotedFieldMayContainTheSeparator",
+      "aFileWithOnlyAHeaderHasNoRows",
+      "aByteOrderMarkDoesNotBecomePartOfTheFirstColumnName",
+      "headerAndRowsAreRead"
+    ],
+    "report_sha256": "c40dbebaaf5481334b1ab6be3845ed6a93af0777d2688678d24c1f6c03c2939b"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.operationsworkflow.RecommendationStateTest",
+    "counts": {
+      "tests": 41,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "priceChangeIsTheOnlyWriteCapableAction",
+      "aTerminalStateHasNowhereToGo(RecommendationState)[1]",
+      "aTerminalStateHasNowhereToGo(RecommendationState)[2]",
+      "aTerminalStateHasNowhereToGo(RecommendationState)[3]",
+      "aTerminalStateHasNowhereToGo(RecommendationState)[4]",
+      "nothingCanReviveATerminalProposal(RecommendationState)[1]",
+      "nothingCanReviveATerminalProposal(RecommendationState)[2]",
+      "nothingCanReviveATerminalProposal(RecommendationState)[3]",
+      "nothingCanReviveATerminalProposal(RecommendationState)[4]",
+      "aCommandThatExistsCannotBeExpiredAway",
+      "everyStateExceptTheStartIsReachable",
+      "noStateMovesToItself(RecommendationState)[1]",
+      "noStateMovesToItself(RecommendationState)[2]",
+      "noStateMovesToItself(RecommendationState)[3]",
+      "noStateMovesToItself(RecommendationState)[4]",
+      "noStateMovesToItself(RecommendationState)[5]",
+      "noStateMovesToItself(RecommendationState)[6]",
+      "noStateMovesToItself(RecommendationState)[7]",
+      "noStateMovesToItself(RecommendationState)[8]",
+      "noStateMovesToItself(RecommendationState)[9]",
+      "noStateMovesToItself(RecommendationState)[10]",
+      "noStateMovesToItself(RecommendationState)[11]",
+      "noStateMovesToItself(RecommendationState)[12]",
+      "noStateMovesToItself(RecommendationState)[13]",
+      "everyStateIsEitherTerminalOrHasSomewhereToGo(RecommendationState)[1]",
+      "everyStateIsEitherTerminalOrHasSomewhereToGo(RecommendationState)[2]",
+      "everyStateIsEitherTerminalOrHasSomewhereToGo(RecommendationState)[3]",
+      "everyStateIsEitherTerminalOrHasSomewhereToGo(RecommendationState)[4]",
+      "everyStateIsEitherTerminalOrHasSomewhereToGo(RecommendationState)[5]",
+      "everyStateIsEitherTerminalOrHasSomewhereToGo(RecommendationState)[6]",
+      "everyStateIsEitherTerminalOrHasSomewhereToGo(RecommendationState)[7]",
+      "everyStateIsEitherTerminalOrHasSomewhereToGo(RecommendationState)[8]",
+      "everyStateIsEitherTerminalOrHasSomewhereToGo(RecommendationState)[9]",
+      "everyStateIsEitherTerminalOrHasSomewhereToGo(RecommendationState)[10]",
+      "everyStateIsEitherTerminalOrHasSomewhereToGo(RecommendationState)[11]",
+      "everyStateIsEitherTerminalOrHasSomewhereToGo(RecommendationState)[12]",
+      "everyStateIsEitherTerminalOrHasSomewhereToGo(RecommendationState)[13]",
+      "aRejectionIsNotAnAuthorization",
+      "nothingReachesAnAuthorizedStateWithoutBeingReviewed",
+      "aTaskOnlyProposalCanNeverBecomeAuthorized",
+      "onlyAnAuthorizedProposalReachesACommand"
+    ],
+    "report_sha256": "220a6a5e9ab17b26a426b4109df6b7ae8840bd2ff7b96ee44aeb5f586c821a0b"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.operationsworkflow.internal.application.GuardrailEngineTest",
+    "counts": {
+      "tests": 28,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "aSingleChangeBeyondTheLimitBlocks",
+      "aRecentChangeMustBeLeftAloneLongEnoughToObserve",
+      "anOldChangeDoesNotBlock",
+      "severalAcceptableChangesMayNotAddUpPastTheDailyBound",
+      "aCutIsMeasuredByMagnitudeJustAsARiseIs",
+      "aMetricThatIsOnlyEstimatedBlocksAWrite",
+      "lowDataCompletenessBlocks",
+      "aMissingUnitCostBlocksRatherThanCountingAsZero",
+      "staleInputsBlock",
+      "aMetricThatIsNotAvailableIsTreatedAsMissing",
+      "tooLittleStockBlocks",
+      "factsThatMovedSinceTheCaseWasBuiltBlock",
+      "aBlockingDiagnosisBlocks",
+      "anOpenMappingConflictBlocks",
+      "anUnresolvedMappingBlocks",
+      "anElapsedProposalBlocks",
+      "noPolicyInForceBlocks",
+      "aCompletePolicyOnGoodFactsPasses",
+      "aPolicyMissingARequiredLimitBlocks",
+      "aPriceLeavingTooLittleMarginBlocks",
+      "aPriceLeavingTooLittleUnitProfitBlocks",
+      "theProjectionIsComputedEvenWhenTheVerdictBlocks",
+      "aPriceUnderBreakEvenBlocks",
+      "anUnmeasurableChangeCannotSpendAnAuthorization",
+      "aChangeLargerThanTheBoundBlocks",
+      "aChangeWithinTheBoundPasses",
+      "aProposalThatFailsSeveralWaysNamesAllOfThem",
+      "theSameInputAlwaysProducesTheSameVerdict"
+    ],
+    "report_sha256": "f6cf802114bf2dc787bfae41b31ed04d138ba97f49b494acb13fc2246f9560f3"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.organizationaccount.internal.application.CoreApplicationServiceTest",
+    "counts": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "accountStoreAndWarehouseCommandsCoverIdentityAndRetirementRules",
+      "organizationCommandsFailClosedForDuplicatesReferencesAndVersions",
+      "metadataDirectoryAndChangeCollectorMapRecordedValues",
+      "legalEntityCommandsCoverLifecycleAndParentRules",
+      "fulfillmentAssociationCommandsRejectCrossOrganizationOverlapAndBadIntervals",
+      "organizationCommandsCoverHappyPathsAndRetirementChecks",
+      "accountStoreAndWarehouseCommandsFailClosed",
+      "fulfillmentAssociationCommandsCoverIntervalsStatusesAndLists"
+    ],
+    "report_sha256": "e4c98d8400bcd204eb62c8076bea5d78311950e04512867ef08f9e4b28a984a2"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.organizationaccount.internal.domain.CoreLifecycleTest",
+    "counts": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "associationMachineIsExact",
+      "entityMachineIsExact",
+      "noSelfTransitions"
+    ],
+    "report_sha256": "9f2d973cc03c88da980aef07c1ba796f043b7aeee99f27736a18cef0361fbdb2"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.organizationaccount.internal.infrastructure.jdbc.CoreRepositoryTest",
+    "counts": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "referenceAndEntityRepositoriesExposeEmptyStoreSemantics",
+      "associationRepositoriesExposeOverlapAndEmptyStoreSemantics"
+    ],
+    "report_sha256": "b86fa84a5d5a31632b61d094782b3d7c984da9c06e02621d4f13cfde7c758afc"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.shared.CorrelationIdTest",
+    "counts": {
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "generatedValueSurvivesValidation",
+      "missingValueIsReplaced",
+      "hostileValueIsReplaced(String)[1]",
+      "hostileValueIsReplaced(String)[2]",
+      "hostileValueIsReplaced(String)[3]",
+      "hostileValueIsReplaced(String)[4]",
+      "hostileValueIsReplaced(String)[5]",
+      "hostileValueIsReplaced(String)[6]",
+      "hostileValueIsReplaced(String)[7]",
+      "hostileValueIsReplaced(String)[8]",
+      "hostileValueIsReplaced(String)[9]",
+      "hostileValueIsReplaced(String)[10]",
+      "hostileValueIsReplaced(String)[11]",
+      "currentReturnsTheEstablishedValue",
+      "maximumLengthIsInclusive",
+      "rejectedValueIsNotCarried",
+      "currentGeneratesWhenNoneEstablished",
+      "oneCharacterTooLongIsRejected",
+      "generatedValuesAreDistinct",
+      "wellFormedValueIsAccepted"
+    ],
+    "report_sha256": "052f7306e03c78bddb783dada0876884791936e107bcfba4e33ae4297f803291"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.shared.ErrorCodeTest",
+    "counts": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "messagesDoNotDiscloseInternals",
+      "codeSetIsStable"
+    ],
+    "report_sha256": "65e097572e70dbcbd26526f816f3d4c7ae1d3680994b6402f6ec9a983bef7290"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.shared.MetadataFieldPolicyTest",
+    "counts": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "acceptsAndStripsOrdinaryText",
+      "refusesSecretLikeTextThroughTheGuard",
+      "rejectsBlankAndOversizedText",
+      "acceptsWellFormedReferences",
+      "longWellFormedReferencesAreNotMistakenForKeyMaterial",
+      "refusesEverythingElseIncludingRawMaterial",
+      "validatesTimezoneAgainstTheZoneRegistry",
+      "validatesCountryAgainstIso3166",
+      "validatesCurrencyAgainstIso4217",
+      "validatesCidrDeclarations",
+      "rejectsEdgeHyphenUppercaseAndNull",
+      "acceptsCanonicalCodes"
+    ],
+    "report_sha256": "ee11a500e726c069288e9ab65a58f7a54044f0de190333e01db99b664fc5ea8c"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.shared.SecretMaterialGuardTest",
+    "counts": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "refusesCredentialAssignments",
+      "refusesEncodedRuns",
+      "acceptsOperationalProse",
+      "refusesArmorHeaders",
+      "refusesBearerShapes"
+    ],
+    "report_sha256": "6c8212b27f60fb7f089d38f5909c4f16d81042b05d0bc4d24e8ccb3721f489a1"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.shared.internal.config.CorsContractTest",
+    "counts": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "emptyOriginListDisablesCors",
+      "diagnosticExportPreflightPermitsItsIdempotencyKeyWithoutAmbientCredentials",
+      "preflightContractIsFinite",
+      "localConsoleOriginsAreAllowed",
+      "unknownConfiguredOriginFailsBindingValidation",
+      "unknownOriginIsRejected"
+    ],
+    "report_sha256": "2791d3a39b5fdbdf09f465309cf77e345a222d50621a55b89a04979edf3dba52"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.shared.internal.config.WriteGateBindingTest",
+    "counts": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "missingMaintenanceSwitchFailsStartup",
+      "enabledProductionWritesFailStartup",
+      "disabledPostureBindsClosed",
+      "optedInEnvironmentOpensTheMaintenanceGateOnly"
+    ],
+    "report_sha256": "b3ea2984af89ad6dbb708745a6de14a952df4ce1e1468b941ec3513fd189c680"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandlerTest",
+    "counts": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "unexpectedFailureIsReducedToACode",
+      "logsContainOnlySanitizedFailureCategories",
+      "validationFailureIsReducedToACode",
+      "unknownResourceIsReducedToACode",
+      "correlationIdentifierIsAlwaysPresent",
+      "correlationIdentifierIsCarried"
+    ],
+    "report_sha256": "21fdb28e31439edc3fccbd5f9c81b4bde3d2018001d77c36894cfd36ef67826c"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.shared.internal.http.BoundedOutboundHttpTest",
+    "counts": {
+      "tests": 46,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "redirectsHaveNoSecondRequestAndResponsesStopAtTheBound",
+      "outgoingRequestEntityPreservesExactBytesIncludingMarkup",
+      "emptyConfigurationDeniesBeforeDnsAndMixedDnsAnswersFailClosed",
+      "nonPublicDestinationsAreNeverAdmitted(String)[1]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[2]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[3]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[4]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[5]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[6]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[7]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[8]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[9]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[10]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[11]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[12]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[13]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[14]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[15]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[16]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[17]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[18]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[19]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[20]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[21]",
+      "nonPublicDestinationsAreNeverAdmitted(String)[22]",
+      "connectionAndRoutingHeadersCannotBeDeclaredAsAuthentication(String)[1]",
+      "connectionAndRoutingHeadersCannotBeDeclaredAsAuthentication(String)[2]",
+      "connectionAndRoutingHeadersCannotBeDeclaredAsAuthentication(String)[3]",
+      "connectionAndRoutingHeadersCannotBeDeclaredAsAuthentication(String)[4]",
+      "connectionAndRoutingHeadersCannotBeDeclaredAsAuthentication(String)[5]",
+      "connectionAndRoutingHeadersCannotBeDeclaredAsAuthentication(String)[6]",
+      "connectionAndRoutingHeadersCannotBeDeclaredAsAuthentication(String)[7]",
+      "connectionAndRoutingHeadersCannotBeDeclaredAsAuthentication(String)[8]",
+      "uriAmbiguitiesAreRefusedBeforeDns(String)[1]",
+      "uriAmbiguitiesAreRefusedBeforeDns(String)[2]",
+      "uriAmbiguitiesAreRefusedBeforeDns(String)[3]",
+      "uriAmbiguitiesAreRefusedBeforeDns(String)[4]",
+      "uriAmbiguitiesAreRefusedBeforeDns(String)[5]",
+      "uriAmbiguitiesAreRefusedBeforeDns(String)[6]",
+      "uriAmbiguitiesAreRefusedBeforeDns(String)[7]",
+      "uriAmbiguitiesAreRefusedBeforeDns(String)[8]",
+      "uriAmbiguitiesAreRefusedBeforeDns(String)[9]",
+      "uriAmbiguitiesAreRefusedBeforeDns(String)[10]",
+      "uriAmbiguitiesAreRefusedBeforeDns(String)[11]",
+      "uriAmbiguitiesAreRefusedBeforeDns(String)[12]",
+      "uriAmbiguitiesAreRefusedBeforeDns(String)[13]"
+    ],
+    "report_sha256": "c9a76998a8f3c8c6a91176935e9510c17a0b4dd048a779aa106a9f8500d10714"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.shared.internal.migration.ManagedMigrationRunnerTest",
+    "counts": {
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "providerEvidenceIsBoundToTheExactManifestDatabaseAndRejectsDuplicateKeys",
+      "managedInventoryIncludesEveryPackagedMigrationExceptCanonicalSqlV0002",
+      "exactApprovedArtifactAndNonSecretManifestAreRequiredBeforeCredentialAccess",
+      "duplicateManifestFieldsAndSymlinkedArtifactsAreRefused",
+      "failedDatabaseAttemptKeepsRedactedDurableEvidenceAndNeverOverwritesTheSameCorrelation",
+      "managedAttestationRejectsWrongExtensionVersionsAndPg18Claims",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[1]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[2]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[3]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[4]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[5]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[6]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[7]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[8]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[9]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[10]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[11]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[12]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[13]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[14]",
+      "malformedAndUndeclaredManifestFieldsFailBeforeAnyConnection(String)[15]",
+      "providerEvidenceMustDescribeAnAppliedPg17ResourceWithExactExtensions",
+      "absentOversizedAndSymlinkedManifestsAreRefused"
+    ],
+    "report_sha256": "8625cb8de6c928547e0d40022043eadc8b653f50f1425063369c4fbe050f8ec1"
+  },
+  {
+    "phase": "surefire-reports",
+    "class": "com.mimococo.marketops.shared.internal.secret.MountedSecretResolverTest",
+    "counts": {
+      "tests": 36,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "malformedUtf8IsRefusedWithoutReplacementCharacters",
+      "symlinkToAValueInsideMountIsAlsoRefused",
+      "leafSymlinkCannotReadOutsideMount",
+      "malformedReferencesNeverResolve(String)[1]",
+      "malformedReferencesNeverResolve(String)[2]",
+      "malformedReferencesNeverResolve(String)[3]",
+      "malformedReferencesNeverResolve(String)[4]",
+      "malformedReferencesNeverResolve(String)[5]",
+      "malformedReferencesNeverResolve(String)[6]",
+      "malformedReferencesNeverResolve(String)[7]",
+      "malformedReferencesNeverResolve(String)[8]",
+      "malformedReferencesNeverResolve(String)[9]",
+      "malformedReferencesNeverResolve(String)[10]",
+      "malformedReferencesNeverResolve(String)[11]",
+      "malformedReferencesNeverResolve(String)[12]",
+      "malformedReferencesNeverResolve(String)[13]",
+      "malformedReferencesNeverResolve(String)[14]",
+      "malformedReferencesNeverResolve(String)[15]",
+      "malformedReferencesNeverResolve(String)[16]",
+      "malformedReferencesNeverResolve(String)[17]",
+      "emptyOrWhitespaceOnlyFilesAreRefused(String)[1]",
+      "emptyOrWhitespaceOnlyFilesAreRefused(String)[2]",
+      "emptyOrWhitespaceOnlyFilesAreRefused(String)[3]",
+      "nativeFilesystemEitherSupportsDescriptorTraversalOrRefusesTheMount",
+      "maximumAppliesToBytesNotCharacters",
+      "configuredMountAndItsAncestorsCannotBeSymlinks",
+      "unconfiguredMountIsClosed",
+      "referenceParentSymlinkCannotReadOutsideMount",
+      "growingOrUnendingReadStopsAtMaximumPlusOneAndClearsBytes",
+      "preservesExactUtf8AndWhitespace(String)[1]",
+      "preservesExactUtf8AndWhitespace(String)[2]",
+      "preservesExactUtf8AndWhitespace(String)[3]",
+      "missingFileAndDirectoryAreNotValues",
+      "diagnosticsContainNoSecretReferencePathOrException",
+      "ioFailureAlsoClearsThePartiallyReadBytes",
+      "nestedRotationReadsFreshFileContents"
+    ],
+    "report_sha256": "f1b82351d7bece96f2a226c883fe5aa2dd80afe5ca298b3509e4d08600c6174a"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.ApplicationSmokeIT",
+    "counts": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "applicationPoolUsesTheApplicationRole",
+      "healthResponseNamesComponentsButWithholdsDetails",
+      "applicationReportsItsOwnState",
+      "correlationFilterIsRegistered"
+    ],
+    "report_sha256": "32fbb0dac05f71dedd51a81f707ed09f641ff6d04e966d76fc4b94b4ec77d8e5"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.DiagnosticExportIT",
+    "counts": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "crashAfterUploadAndPartCommitResumesTheSameSnapshotWithNewFences",
+      "deadlineAndRetryExhaustionFreeSlotsWithoutClaimingSuccess",
+      "storageFailureRetriesAndCorruptOrExpiredContentNeverDownloads",
+      "revokedStoreAccessStopsWorkerAndExistingDownloadsAndForeignIdsStayPrivate",
+      "databaseSerializesSubmissionAndClaimsAndDeniesDirectWriters",
+      "revocationDuringObjectReadIsCheckedAgainBeforeResponse",
+      "partCeilingNeverUploadsA65thPartAndOnlyCompletesWhenTheSnapshotIsExhausted",
+      "oversizedSnapshotRollsBackInsteadOfPublishingTheFirstMillionRows",
+      "emptyExportAndInvalidInputsHaveExplicitSafeOutcomes",
+      "aFindingWithOutOfScopeInputIsRefusedRatherThanSilentlyTruncated",
+      "arbitraryCustodyGapsAndIncompleteCompletionCannotPublish",
+      "largeApiResultIsQueuedThenDownloadedAsVerifiedBoundedParts"
+    ],
+    "report_sha256": "24fbea3b5d8340de894f69e1e1aeac572587e6f79455700da86de935921860e7"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.FileIntakeFlowIT",
+    "counts": {
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "registerTheContract",
+      "submitAFileWithGoodAndBadRows",
+      "refuseADuplicateFile",
+      "refuseAFileNothingPassed",
+      "approveAndApply",
+      "importStock",
+      "rejectABatch",
+      "applyMoreThanOnePage",
+      "atomicFailureAndRetry",
+      "profileRegistrationIsAuditedAtomically",
+      "stockNumericBoundaryIsValidatedBeforeApplication"
+    ],
+    "report_sha256": "9ac22ee4e63509cde27b6c10cebfd73e5f95311ba158a969da2a2ab612e22a48"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.MaintenanceWriteGateApiIT",
+    "counts": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "queriesRemainAvailable",
+      "mutationIsRefusedRegardlessOfAttribution"
+    ],
+    "report_sha256": "c1638e4be99cdce842b43a75a33d1e1b6e288eefe5487dccbe53b4d83850a742"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.ManagedMigrationRunnerIT",
+    "counts": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "cleanInstallAndReplayValidateAllMigrationsWithoutGivingTheApplicationTheOwningRole",
+      "inheritedOrSchemaCreatingApplicationAuthorityPreventsMigration"
+    ],
+    "report_sha256": "b0026b7dafdc81a2b544276d70c048ed2c2006c01c0343f0a2f1624f8a598da9"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.MetadataMaintenanceApiIT",
+    "counts": {
+      "tests": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "mutationWithoutAttributionIsRefused",
+      "unknownFieldIsRefused",
+      "bindingAndReferentialRefusalsAreSafeAndJournaledOnce",
+      "operatingGraphIsCreated",
+      "duplicateCodeIsRefusedWithTheConflictingResource",
+      "staleVersionIsRefused",
+      "overlappingLinkIsRefused",
+      "grantsAreExplicitAndBounded",
+      "secretMaterialAndMalformedReferencesAreRefused",
+      "credentialScopeContractIsExplicit",
+      "emptiedStoreSetFailsClosed",
+      "rotationIsALineage",
+      "registryRecordsStructureAndRefusesVerified",
+      "subjectStatusesStayUnknownAndFailClosed",
+      "permissionRequirementsAreRecorded",
+      "flagsFailClosedInTheWriteDirection",
+      "retirementIsVetoedWhileReferencesExist",
+      "journalAttributesChangesAndDenials",
+      "queriesAreOpenAndPaged",
+      "coreMetadataSupportsCompleteMaintenancePaths",
+      "associationsSupportCompleteMaintenancePaths",
+      "identityAccessSupportsCompleteMaintenancePaths",
+      "credentialsSupportCompleteMaintenancePaths",
+      "registrySupportsCompleteMaintenancePaths",
+      "featureFlagsCoverEveryScope"
+    ],
+    "report_sha256": "b0357918b49e18bc9ce08b1266fc08267d208889c963bcce3b0967582b54c3b1"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.OperatingFlowIT",
+    "counts": {
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "seedOrganizationAndIdentity",
+      "mapTheListing",
+      "recordFacts",
+      "computeMetrics",
+      "runDiagnosis",
+      "proposeARecommendation",
+      "guardrailRefusesWithoutAPolicy",
+      "publishAPolicy",
+      "approveTheProposal",
+      "createTheCommand",
+      "aiRefusesWithoutAProvider",
+      "readTheQueues",
+      "resourceBoundConsoleAuthorization",
+      "aiPartialOutputIsDurablyBoundedAuditedAndRetainsNestedDecimalValues",
+      "providerFailureClosesThePreparedInvocationWithoutPersistingClaims",
+      "stoppedAiWorkerLeavesDurableIntentAndExpiredRecoveryNeverRedispatches",
+      "diagnosticReadBudgetsBoundDatabaseLockWaits",
+      "evidenceEdgesAreTypedScopedAndExplicitlyTruncatedAndSubjectRecommendationsAreReachable",
+      "operationalSnapshotBecomesUnknownDuringDatabaseLockAndRecoversWithoutWrites"
+    ],
+    "report_sha256": "479ba4f35ed3c6b2287240e32b4f558464bce712654015cfdd9838e1b0f5520d"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.PriceCommandWorkerIT",
+    "counts": {
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "readbackUnreadable",
+      "platformRefused",
+      "asynchronousWrite",
+      "acceptedThenReadBack",
+      "inheritedTransactionsAreRefusedBeforeIo",
+      "unknownWriteOutcome",
+      "attemptsAreRecorded",
+      "readbackObservedSomethingElse",
+      "compensationHasItsOwnWriteIdentity",
+      "compensationDoesNotOverwriteOrGuess(String)[1]",
+      "compensationDoesNotOverwriteOrGuess(String)[2]",
+      "compensationDoesNotOverwriteOrGuess(String)[3]",
+      "compensationDoesNotOverwriteOrGuess(String)[4]",
+      "compensationDoesNotOverwriteOrGuess(String)[5]",
+      "compensationDoesNotOverwriteOrGuess(String)[6]",
+      "quietPass",
+      "interruptedDispatchIsNeverReapplied",
+      "rateLimited"
+    ],
+    "report_sha256": "8875c276d3c57bc877722332819931695e17d9257f204a5bd67368d1639952cc"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.RegistryVerificationFlowIT",
+    "counts": {
+      "tests": 35,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "currentAccountEvidenceControlsTheActualAcquisitionRepositoryQueries",
+      "ordinaryApplicationDmlCannotAlterVerifiedFacts(String)[1]",
+      "ordinaryApplicationDmlCannotAlterVerifiedFacts(String)[2]",
+      "ordinaryApplicationDmlCannotAlterVerifiedFacts(String)[3]",
+      "ordinaryApplicationDmlCannotAlterVerifiedFacts(String)[4]",
+      "independentReviewPromotesTheExactSnapshotAndRevocationStopsIt",
+      "protocolFixturesCanBeReviewedButNeverPromotedAsRealAccountEvidence",
+      "concurrentReviewersCannotBothConsumeTheSubmittedVersion",
+      "submittedEvidenceCannotBeReboundOrChangedByTheApplicationRole",
+      "completeAsynchronousWriteProtocolRequiresEverySemanticAndDoesNotEnableWrites",
+      "fullDraftAndEvidenceWorkflowIsAvailableThroughAuthenticatedHttp",
+      "changedConfigurationAndExpiredEvidenceCannotRemainCurrent",
+      "changingAnyCapturedVersionBetweenSubmissionAndReviewIsRefused",
+      "incompleteReadSemanticsCannotBeApproved(String)[1]",
+      "incompleteReadSemanticsCannotBeApproved(String)[2]",
+      "incompleteReadSemanticsCannotBeApproved(String)[3]",
+      "incompleteReadSemanticsCannotBeApproved(String)[4]",
+      "incompleteReadSemanticsCannotBeApproved(String)[5]",
+      "incompleteReadSemanticsCannotBeApproved(String)[6]",
+      "incompleteReadSemanticsCannotBeApproved(String)[7]",
+      "incompleteReadSemanticsCannotBeApproved(String)[8]",
+      "anotherAccountCanAttestTheSameConfigurationWithoutInvalidatingTheFirst",
+      "malformedHttpReviewHasNoMutation(String)[1]",
+      "malformedHttpReviewHasNoMutation(String)[2]",
+      "malformedHttpReviewHasNoMutation(String)[3]",
+      "malformedHttpReviewHasNoMutation(String)[4]",
+      "malformedHttpReviewHasNoMutation(String)[5]",
+      "malformedHttpReviewHasNoMutation(String)[6]",
+      "malformedHttpReviewHasNoMutation(String)[7]",
+      "malformedHttpReviewHasNoMutation(String)[8]",
+      "httpRejectsDuplicateKeysAndNeverAcceptsAttributionAsAuthentication",
+      "httpReviewRequiresBearerIdentityLoopbackAndIndependentReviewer",
+      "staleReviewAndRevocationCannotReplayTheirAuditOrTransition",
+      "staleSnapshotAndForeignMembersAreRejectedWithoutCreatingACase",
+      "inactiveReviewerAndAnotherAccountCannotUseTheEvidence"
+    ],
+    "report_sha256": "ae27f2aceaa34ec3bdedc38f4a5c0131d0aa8b5c1bea540b88787a49dc1cd9c4"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.RepresentativePerformanceIT",
+    "counts": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "commonDiagnosticQueriesMeetTheBaselineOnTheDeclaredProfile"
+    ],
+    "report_sha256": "c56c5bc4adc3750350e7cb99342fb73c6b5dcfbe7af2fb949aeeca43bdf1d59e"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.database.AuthorizedAcquisitionFlowIT",
+    "counts": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "wholeFlowCompletesWithZeroOutbound",
+      "nonAutoCommitConnectionLeavesZeroResidueAndZeroPort",
+      "operationalBacklogTracksDurableRunAgeAndClearsAfterControlledCompletion",
+      "portObservesTheCommittedDecisionBeforeRecordingItsInvocation"
+    ],
+    "report_sha256": "d8b48f915db3a483f5a0b781fc849fa905f266cf8f4814b77d3111ec4243c8be"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.database.CallAuthorityExclusivityIT",
+    "counts": {
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "takeoverCommittedFirstRefusesTheOldGrant",
+      "revocationCommitWhileGrantWaitsIsReevaluated",
+      "checkpointBlockPastLeaseExpiryRefusesFinalCas",
+      "takeoverWaitsBehindAnOpenAcknowledgement",
+      "lockTimeoutRefusesTheGrantWithZeroResidue",
+      "jobMutationCommittedFirstIsObserved",
+      "jobWriterAfterGrantWaitsAndLandsAfterIt",
+      "revocationCommittedBeforeGrantRefusesIt",
+      "credentialDisableCommitWhileGrantWaitsIsReevaluated",
+      "expiredLeaseRefusesTheGrant",
+      "controlWriterWaitsBehindTheGrantLocks",
+      "wrongOwnerRefusesTheGrant",
+      "takeoverCommittedFirstRefusesTheAcknowledgement",
+      "wrongOwnerAndExpiredAcknowledgementsRefuse",
+      "takeoverWaitsBehindAnOpenGrant"
+    ],
+    "report_sha256": "197ab96b17926c3a80a961427d138ccbf76086fa8af793e0cb7d45a9bc4e8b17"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.database.ControlBoundaryCompletenessIT",
+    "counts": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "futureScopeGrantActivationIsABoundary",
+      "futureCredentialActivationIsABoundary",
+      "earliestBoundaryWins",
+      "unhandledDeclaredKindFailsClosed",
+      "undeclaredResolvedKindFailsClosed",
+      "leastIgnoresNullArguments",
+      "absentBoundariesResolveToInfinity",
+      "resolverCoversEveryDeclaredKindExactlyOnce",
+      "declaredBoundarySetIsExact",
+      "digestCoversTheWholeBoundarySet"
+    ],
+    "report_sha256": "778ac43341b00b3307050e68a0341dfecc05a1cbf468e8071a1d9d08a6a48315"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.database.ControlEpochTriggerIT",
+    "counts": {
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "applicationRoleCanLockButNotWrite",
+      "upsertMayAdvanceMoreThanOnce",
+      "platformFanOutReachesOnlyItsJobs",
+      "routedTablesCarryThreeStatementTriggers",
+      "movingARowAdvancesBothScopes",
+      "emptyStatementAdvancesNothing",
+      "inventoryIsTotal",
+      "transitionRelationsAreEventSpecific",
+      "inventoryAndTriggersAgree",
+      "multiEventTransitionTriggerIsRefused",
+      "ordinaryUpdateAdvancesOwningScopeOnly"
+    ],
+    "report_sha256": "3f2546fedc0b8f0fe58a382e73039f7d186a4a5a5612419332df9d25597cb256"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.database.DatabasePrivilegeIT",
+    "counts": {
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "applicationRoleCannotExtendTheCluster",
+      "applicationRoleCannotCreateASchema",
+      "neitherRoleIsPrivileged",
+      "applicationRoleSearchPathExcludesPublic",
+      "applicationRoleCanConnect",
+      "applicationRoleCannotCreateATable",
+      "applicationRoleHasUsageOnEverySchema",
+      "applicationRoleHasNoCreateOnAnySchema",
+      "commandAuthorityTablesRejectDirectInsert",
+      "publicSchemaGrantsNothingToEveryone",
+      "applicationRoleCannotTouchTheMigrationHistory"
+    ],
+    "report_sha256": "fa1b2e850f4bbe48772237c7ce8e6110afef1645182331112ba92d31d15c7377"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.database.FlywayMigrationIT",
+    "counts": {
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "serverReleaseIsExactlyPinned",
+      "foundationSchemasExist",
+      "foundationSchemasAreOwnedByTheMigratingRole",
+      "referenceSeedsAreExact",
+      "exactlyTheMetadataTablesExist",
+      "historyHoldsTheApprovedSet",
+      "repeatedMigrationAppliesNothing",
+      "exactlyTheApprovedMigrationsAreDeclared",
+      "contaminatedDatabaseFailsAndRollsBack",
+      "cleanIsRefused",
+      "preinstalledExtensionDoesNotBecomeAnAppliedMigration"
+    ],
+    "report_sha256": "8c5e7117855f3e4b0102603be173270d6d2343a4e9b58ffb34ded72636ab7ca5"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.database.IngestionAuthorityAndEvidenceIT",
+    "counts": {
+      "tests": 45,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "wrongFenceGrantChangesNoRow",
+      "sameAccountHistoricalPredecessorRemainsAllowed",
+      "unauthoritativeCredentialRefusesTheGrant",
+      "evidenceRowRejectsGrantAtItsBoundary",
+      "serverPolicyCapsAnUnboundedCallerRequest",
+      "foreignObservationCannotAcknowledge",
+      "disconnectedCredentialBranchDenies",
+      "credentialBeforeActivationUsesOneEvaluationInstant",
+      "evidenceCheckRejectsAuthorityBeyondLease",
+      "attachedLeafCredentialCycleDenies",
+      "unrelatedCredentialLeavesDeny",
+      "identicalBytesAreOneContentRow",
+      "invalidRequestedAuthorityIsDenied",
+      "grantConsumesServerDerivedEpochs",
+      "freshSnapshotGrantsCappedAuthority",
+      "credentialReplacementIsPinnedToItsAccount",
+      "jobAndEndpointMustBeCurrentActiveReadAuthority",
+      "missingEpochRowRefusesTheGrant",
+      "runAndCheckpointAcceptNoDirectWrite",
+      "missingQuotaAndUnverifiedEndpointDenyWithoutAllocatingAnUnboundedBucket",
+      "storeSetCredentialIsDeniedForAccountJob",
+      "atMostOneLiveRunPerJob",
+      "checkpointWithoutEvidenceIsRefused",
+      "rawEvidenceIsStructurallyImmutable",
+      "nearBoundaryCapsTheAuthority",
+      "expiredSubjectRefusesTheGrant",
+      "committedEvidenceAllowsTheAcknowledgement",
+      "quotaIsAtomicAcrossIndependentDatabaseConnectionsAndSurvivesClientRestart",
+      "unknownStrategyMayNotCarryAPosition",
+      "scopeGrantBoundaryUsesTheSameEvaluationInstant",
+      "repeatedWorkerCrashesExhaustThePersistedBudgetWithoutAnotherCall",
+      "retryWaitIsDurableAndCannotBeClaimedBeforeItsDeadline",
+      "staleCheckpointVersionCannotRewind",
+      "aPaginationFailureNeverAdvancesTheDatabaseCheckpoint(String)[1]",
+      "aPaginationFailureNeverAdvancesTheDatabaseCheckpoint(String)[2]",
+      "aPaginationFailureNeverAdvancesTheDatabaseCheckpoint(String)[3]",
+      "aPaginationFailureNeverAdvancesTheDatabaseCheckpoint(String)[4]",
+      "aPaginationFailureNeverAdvancesTheDatabaseCheckpoint(String)[5]",
+      "aPaginationFailureNeverAdvancesTheDatabaseCheckpoint(String)[6]",
+      "unauthoritativeScopeGrantRefusesTheGrant",
+      "runLeaseCapsTheAuthority",
+      "endpointIdentityIsRelationallyTotal",
+      "providerBackpressureIsBoundToTheExactReceiptAndDelaysAllWorkers",
+      "rotationSelectsTheUniqueLeaf",
+      "linearCredentialChainSelectsItsLeaf"
+    ],
+    "report_sha256": "83ee13c68c9addc770c1fdbd31046986e626cb69617305ddc7eb8c145d7957b6"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.database.MembershipGuardIT",
+    "counts": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "guardAcquisitionCannotBeBypassed",
+      "acquiringAMissingGuardFailsClosed",
+      "platformWithoutGuardCannotCommit",
+      "grantPathNeverLocksTheMembershipGuard",
+      "fanOutAfterJobCreationAdvancesBothJobs",
+      "platformAndGuardCreatedTogetherSucceed",
+      "acquiringAnExistingGuardAdvancesItsGeneration",
+      "everyPlatformHasExactlyOneGuard",
+      "orphanGuardIsUnrepresentable",
+      "jobPlatformIsWriteOnce",
+      "jobCreationDuringFanOutWaitsForTheGuard",
+      "removingAGuardFromALivePlatformFailsAtCommit"
+    ],
+    "report_sha256": "ed6e20e4e1cd180a501dba4fc5f85c335f25bacf166fccf714397e8889d34171"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.database.MetadataConstraintIT",
+    "counts": {
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "revocationReleasesTheSecretReference",
+      "secretReferenceShapeAndUniquenessHold",
+      "crossOrganizationStoreIsUnrepresentable",
+      "crossPlatformEndpointLinkIsUnrepresentable",
+      "flagScopeKeyIsGenerated",
+      "flagScopeMatrixIsExact",
+      "duplicateActiveGrantIsUnique",
+      "verificationChecksHold",
+      "overlappingActiveLinksAreExcluded",
+      "crossAccountCredentialScopeIsUnrepresentable",
+      "crossPlatformSubjectStatusIsUnrepresentable"
+    ],
+    "report_sha256": "afbe99bd1218a9d1bbf41321f1416a897ce851738c04b739ae70e4a496e1a5fa"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.database.MetadataPrivilegeIT",
+    "counts": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "grantedPrivilegesMatchTheDesign",
+      "verificationJournalIsAppendOnly",
+      "auditJournalIsAppendOnly",
+      "referenceTablesAreReadOnly",
+      "noMetadataTableGrantsDelete"
+    ],
+    "report_sha256": "45665810300aa180a5116d0fccd8f502263b69d3fb4032823cd7cff70dd86c8e"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.database.PriceWritePathIT",
+    "counts": {
+      "tests": 81,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "theOnlyWayOutOfUnknownIsAReadbackOrAPerson",
+      "thereIsNoTransitionFromUnknownBackToExecuting",
+      "anUnknownResultReleasesTheLeaseSoAWorkerCannotSitOnIt",
+      "endpointSemanticDriftClosesTheNextDispatch(String)[1]",
+      "endpointSemanticDriftClosesTheNextDispatch(String)[2]",
+      "endpointSemanticDriftClosesTheNextDispatch(String)[3]",
+      "incompleteVerifiedMutationDefinitionsAreRejected(String)[1]",
+      "incompleteVerifiedMutationDefinitionsAreRejected(String)[2]",
+      "incompleteVerifiedMutationDefinitionsAreRejected(String)[3]",
+      "incompleteVerifiedMutationDefinitionsAreRejected(String)[4]",
+      "theApplicationCannotChangeACommandRowDirectly",
+      "responseInterpretationUsesThePreparedVersionEvenAfterMaintenance",
+      "anAttemptIsCompletedExactlyOnce",
+      "anApplyCannotUseAReadbackEndpoint",
+      "theApplicationCannotDeleteAReadback",
+      "aCallerCannotLabelAmbiguousBytesAccepted(String)[1]",
+      "aCallerCannotLabelAmbiguousBytesAccepted(String)[2]",
+      "aCallerCannotLabelAmbiguousBytesAccepted(String)[3]",
+      "aCallerCannotLabelAmbiguousBytesAccepted(String)[4]",
+      "aCallerCannotLabelAmbiguousBytesAccepted(String)[5]",
+      "aCallerCannotLabelAmbiguousBytesAccepted(String)[6]",
+      "aSecondApplyIsRefusedEvenIfSqlKeepsTheCommandExecuting(String)[1]",
+      "aSecondApplyIsRefusedEvenIfSqlKeepsTheCommandExecuting(String)[2]",
+      "aSecondApplyIsRefusedEvenIfSqlKeepsTheCommandExecuting(String)[3]",
+      "aMatchingReadbackCompletesTheCommand",
+      "aReadbackFromAnotherCommandCannotBeBorrowed",
+      "aReadbackObservingSomethingElseCannotBeClaimedAsSuccess",
+      "aCommandCannotSucceedWithoutAReadback",
+      "aRevokedAuthorizationCannotBeSpent",
+      "aCounterThatHasReachedItsCeilingIsRefusedEvenWhileStillActive",
+      "aChangeWithinEveryBoundIsPermitted",
+      "anAuthorizationForAnotherStoreIsRefused",
+      "aChangeBeyondTheMagnitudeBoundIsRefused",
+      "spendingTheLastUseRetiresTheAuthorization",
+      "theApplicationCannotMoveTheCounterItself",
+      "anAuthorizationThatDoesNotExistIsRefused",
+      "anExpiredLeaseWritesNothing",
+      "aLeaseLongerThanTheCeilingIsRefused",
+      "aStaleFenceWritesNothing",
+      "leasingBumpsTheFenceAndClaimsTheCommand",
+      "aSecondLeaseOnAClaimedCommandIsRefused",
+      "anotherWorkerHoldingTheRightFenceStillWritesNothing",
+      "aRestoreIsRefusedWhenTheGateHasSinceClosed",
+      "aRestoreIsNotCompleteUntilThePriorValueIsObserved",
+      "aRestoreIsAuthorisedWhileThePlatformStillHoldsWhatThisCommandWrote(int)[1]",
+      "aRestoreIsAuthorisedWhileThePlatformStillHoldsWhatThisCommandWrote(int)[2]",
+      "matchingTargetWithoutAPossiblyAppliedWriteCannotAuthorizeCompensation(String)[1]",
+      "matchingTargetWithoutAPossiblyAppliedWriteCannotAuthorizeCompensation(String)[2]",
+      "anObservedRestoreCompletesTheCommand",
+      "aRestoreIsRefusedWhenSomethingElseMovedThePrice",
+      "changingTheApprovedProposalDoesNotChangeTheAuthorizedPrice",
+      "aDisabledCapabilitySwitchBlocks",
+      "creationRefusesAStaleRecommendationVersion",
+      "anApprovalGuardrailPassIsNotAnExecutionPass",
+      "creationRefusesAnActorWithoutTheResourcesGrantEvenOnAnExistingCommand",
+      "anExpiredAuthorizationBlocks",
+      "aPolicyChangeInvalidatesThePreviouslyEvaluatedSnapshot",
+      "retiringAnOwnedEntityClosesTheExistingCommand(String)[1]",
+      "retiringAnOwnedEntityClosesTheExistingCommand(String)[2]",
+      "retiringAnOwnedEntityClosesTheExistingCommand(String)[3]",
+      "retiringAnOwnedEntityClosesTheExistingCommand(String)[4]",
+      "anOpenMappingConflictBlocks",
+      "anUnresolvedMappingBlocks",
+      "factsThatMovedSinceTheDecisionBlock",
+      "aCommandCannotSubstituteAnyApprovedInput(String)[1]",
+      "aCommandCannotSubstituteAnyApprovedInput(String)[2]",
+      "aCommandCannotSubstituteAnyApprovedInput(String)[3]",
+      "aCommandCannotSubstituteAnyApprovedInput(String)[4]",
+      "aCommandCannotSubstituteAnyApprovedInput(String)[5]",
+      "creationDerivesThePriceAndIsIdempotentForTheSameAuthorization",
+      "aMissingExecutionGuardrailPassBlocks",
+      "anUnverifiedCapabilityBlocks",
+      "aScopedSwitchTurnedOffBlocksEvenWhenTheWiderOnesAreOn",
+      "aNewCanonicalValueInvalidatesTheApprovedEntityDigest",
+      "aClosedGateRefusesTheLeaseRatherThanTheCall",
+      "aFullyConfiguredCommandIsPermitted",
+      "aDisabledGlobalSwitchBlocks",
+      "anEntityOffTheAllowlistBlocks",
+      "aLiveLeaseIsLeftAlone",
+      "aCommandThatMayHaveWrittenBecomesUnknownRatherThanRetried",
+      "aClaimedButUncalledCommandReturnsToTheQueue"
+    ],
+    "report_sha256": "ba2871e2ae05efa4959969a7ea1fb344183f87c15f8c0838c94760855d885428"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.database.StoredRawReplayIT",
+    "counts": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "missingBytesAndParserFailureRetainProgressAndCrashReplayProducesNoDuplicateFactOrSourceCall"
+    ],
+    "report_sha256": "a0161a23970b0e01a33cba0d3bf4e2b8bcd645cb7732cda5f3af9a14ba20c6f0"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.identityaccess.internal.web.SignedBearerIdentityIT",
+    "counts": {
+      "tests": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "credentialBoundaryInvalidatesAnExistingTokenWithoutDisablingTheUser",
+      "tokenRenewalDoesNotRenewHumanStepUp(String)[1]",
+      "tokenRenewalDoesNotRenewHumanStepUp(String)[2]",
+      "existingServletSessionCannotSupplyAmbientAuthentication",
+      "signedBearerReachesDatabaseAndRetainsOnlyDigestsInTheSessionJournal",
+      "freshBearerAuthorizesAnAuditedMutationWithoutAnAuthCookieOrCsrfToken",
+      "scopeRevocationIsImmediateWithinTheSessionRecordingInterval",
+      "unverifiedIssuerCannotBePromotedByItsCorrectSignature",
+      "tokenRoleClaimCannotReplaceRevokedLiveDatabaseRole",
+      "operationalSnapshotTrustsOnlyTheSocketPeerAndNeverBearerOrForwardedHeaders",
+      "invalidSignedClaimsCannotAuthenticate(String)[1]",
+      "invalidSignedClaimsCannotAuthenticate(String)[2]",
+      "invalidSignedClaimsCannotAuthenticate(String)[3]",
+      "invalidSignedClaimsCannotAuthenticate(String)[4]",
+      "invalidSignedClaimsCannotAuthenticate(String)[5]",
+      "invalidSignedClaimsCannotAuthenticate(String)[6]",
+      "invalidSignedClaimsCannotAuthenticate(String)[7]",
+      "invalidSignedClaimsCannotAuthenticate(String)[8]",
+      "invalidSignedClaimsCannotAuthenticate(String)[9]",
+      "untrustedCrossOriginMutationIsRefusedEvenWithAValidBearer",
+      "signatureFromAnotherKeyIsRefused",
+      "cookiesQueryParametersAndFormBodiesDoNotAuthenticate",
+      "similarlyNamedMfaClaimIsNotTheConfiguredClaim",
+      "disabledUserIsRefusedWithTheSamePreviouslyAcceptedToken"
+    ],
+    "report_sha256": "2cb4f3d25b682c76d5c4c3e813a65d5c3ae40c95f109e4f42ebad1b8c78c5c65"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.shared.internal.migration.ManagedProfileMigrationIT",
+    "counts": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "pg17StandardAndManagedProfilesHaveCanonicalHistoryAndEquivalentApplicationSchemas",
+      "managedProfileRejectsRoleDriftBeforeMigration",
+      "pg18ManagedProfileFailsBeforeV0003"
+    ],
+    "report_sha256": "ce8a2fe93abded6d4d9077c111b69fa19225b8e0f28c4ee96a83eebd7b42273c"
+  },
+  {
+    "phase": "failsafe-reports",
+    "class": "com.mimococo.marketops.shared.internal.secret.MountedSecretFilesystemIT",
+    "counts": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "methods": [
+      "linuxRuntimeReadsExactValuesAndRefusesEverySymlinkBoundary"
+    ],
+    "report_sha256": "0471bad454a83c373cc634c7d54181e3913f877f746b823518493e5d23106057"
+  }
+]

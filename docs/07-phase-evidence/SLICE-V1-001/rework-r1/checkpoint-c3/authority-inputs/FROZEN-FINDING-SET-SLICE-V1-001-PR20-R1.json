@@ -1,0 +1,919 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "frozen_finding_set",
+  "finding_set_id": "SLICE_V1_001_PR20_FROZEN_FINDING_SET_R1",
+  "status": "FROZEN",
+  "frozen_at_utc": "2026-08-27T00:00:00Z",
+  "repository": "Corwin-Code/marketops-platform",
+  "pull_request": 20,
+  "review_identity": {
+    "base": "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+    "base_tree": "28029347daa05bbff40c1a0ca15c7ad0d9f1ac92",
+    "head": "30d16e5d7db2d2190635a06fececd5883093a876",
+    "head_tree": "13b1b789cd4cff292d0d6ab24daca976afbba6da",
+    "tested_merge": "7a030140a521ac1cf257858feff6c4894cac2c04",
+    "tested_merge_tree": "13b1b789cd4cff292d0d6ab24daca976afbba6da",
+    "tested_merge_parents": [
+      "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+      "30d16e5d7db2d2190635a06fececd5883093a876"
+    ],
+    "bundle_sha256": "2ac3599b4ec2c821f711acda4c95ad4bdfbd3484cdee8f38c672891d1d5df0e1",
+    "bundle_size_bytes": 635140,
+    "remote_branch": "feat/SLICE-V1-001-sku-growth-profit-loop",
+    "publication_tree_preserved": true
+  },
+  "normative_contract": {
+    "path": "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+    "sha256": "0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5",
+    "accepted_amendments": []
+  },
+  "review_mode": "ONE_SHOT_DISCOVERY_FALSIFICATION",
+  "contract_defects": [],
+  "owner_decision_required_before_rework": false,
+  "severity_counts": {
+    "BLOCKER": 4,
+    "MAJOR": 9
+  },
+  "findings": [
+    {
+      "id": "S1-F001",
+      "severity": "BLOCKER",
+      "classification": "IMPLEMENTATION_DEFECT",
+      "title": "价格命令的授权目标、事实版本与数据库写权限没有形成不可绕过的单一权威",
+      "gate_impact": "BLOCKS_PR_FINAL_GATE",
+      "acceptance_criteria": [
+        "S1-AC-002",
+        "S1-AC-027",
+        "S1-AC-029",
+        "S1-AC-030",
+        "S1-AC-041"
+      ],
+      "summary": "应用角色可直接 INSERT price_command/attempt/readback；创建服务接受调用方组装的目标价、先前价、实体摘要和能力 ID，而数据库 Gate 没有把这些字段逐项绑定到获批 Recommendation、Guardrail 输入、当前 canonical facts 和 prior platform observation。错误或被利用的应用路径可以创建一条“看起来已授权”的不同命令。",
+      "evidence": [
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0020__create_price_command_outbox_readback_and_write_gate.sql",
+          "lines": "336-500, 769-782",
+          "observation": "Gate 校验能力、开关、allowlist、approval 与 recommendation 状态，但没有校验 command.entity_version_digest、target/prior/currency、listing/store/capability 与获批提案/当前事实的一致性；marketops_app 获得 price_command/attempt/readback 的直接 INSERT。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/PriceCommandService.java",
+          "lines": "62-93",
+          "observation": "submit() 将 PriceCommandRequest 传入的全部敏感字段直接插入命令。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/ExecutionService.java",
+          "lines": "95-145",
+          "observation": "正常路径从 proposal 组装命令，但数据库并不强制只有该路径或强制字段等价。"
+        },
+        {
+          "type": "DESIGN",
+          "path": "docs/02-architecture/adr/ADR-0009-database-enforced-write-authority.md",
+          "observation": "ADR 声称数据库写权威对任意 SQL client 成立，实际 privileges/constraints 不支持该声明。"
+        }
+      ],
+      "root_cause": "命令创建与证据表仍依赖应用层“正确调用”，而非数据库从获批事实派生并独占写入；权限模型把 append-only 误当成 authorization-safe。",
+      "required_observable_correction": [
+        "撤销 marketops_app 对 ops.price_command、price_command_attempt、price_command_readback 的直接 INSERT；仅保留最小查询权限。",
+        "建立 SECURITY DEFINER 命令创建函数（或等价单一 DB authority），只接收 recommendation ID、expected version 和必要 actor context；由数据库派生并锁定 organization/store/listing/platform/capability/approval/target/prior/currency/entity digest/idempotency key。",
+        "创建时重新验证 latest canonical facts、prior-price observation、mapping、policy/guardrail/approval digest 和提案参数；把执行 Gate 绑定到同一不可变输入摘要。",
+        "所有命令、attempt、readback 的写入只能通过受控函数，并验证 actor/worker/fence/correlation/provenance。"
+      ],
+      "required_closure_evidence": [
+        "Real PostgreSQL adversarial tests：篡改 target price、currency、prior price、listing/store/capability/entity digest、approval/recommendation 组合均被拒绝。",
+        "DatabasePrivilegeIT 证明 marketops_app 不能直接插入/伪造上述三类表。",
+        "正常 Recommendation→Approval→Command 路径和并发幂等测试通过。"
+      ],
+      "same_class_transitive_scan": [
+        "所有 ops/platform 中“应用角色可直接 INSERT 但文档声称 DB-enforced”的 authority 表",
+        "所有 Command/Outbox/Audit/Readback writers"
+      ],
+      "prohibited_shortcuts": [
+        "只在 Java service 增加 if 校验",
+        "只增加 UI 校验",
+        "保留直接 INSERT 并依赖 code review"
+      ]
+    },
+    {
+      "id": "S1-F002",
+      "severity": "BLOCKER",
+      "classification": "IMPLEMENTATION_DEFECT",
+      "title": "平台写入、读回与补偿证据可被伪造，且补偿可能覆盖平台上的后续合法变更",
+      "gate_impact": "BLOCKS_PR_FINAL_GATE",
+      "acceptance_criteria": [
+        "S1-AC-004",
+        "S1-AC-012",
+        "S1-AC-030",
+        "S1-AC-031",
+        "S1-AC-032",
+        "S1-AC-033"
+      ],
+      "summary": "Worker 对 write/status/readback 的原生响应只做内存解析，attempt/readback 的 raw_observation_id 传 NULL；成功状态只依赖可由应用角色插入的 readback。补偿在旧 readback 后直接 RESTORE，没有紧邻写入的 fresh pre-readback 或平台条件写语义，存在覆盖第三方后续改价的窗口。",
+      "evidence": [
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/PriceCommandWorker.java",
+          "lines": "180-340",
+          "observation": "completeAttempt/insertReadback 未绑定 Raw observation；compensate() 在 RESTORE 前没有 fresh observation。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpPriceWriteAdapter.java",
+          "lines": "80-180",
+          "observation": "响应正文解析后丢弃，未进入 immutable Raw custody。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0020__create_price_command_outbox_readback_and_write_gate.sql",
+          "lines": "220-280, 600-755",
+          "observation": "raw_observation_id 可空，成功/补偿依据 readback row，但没有不可伪造 provider provenance。"
+        }
+      ],
+      "root_cause": "受控执行把“解析后的应用记录”当作平台事实；补偿安全只检查历史 observation，不检查执行瞬间的平台当前值。",
+      "required_observable_correction": [
+        "对每一次 APPLY/STATUS_ENQUIRY/READBACK/RESTORE 保存请求摘要、精确响应 bytes/status/headers allowlist、hash/length/time 到 Raw custody，并把 attempt/readback 强制绑定到该 observation。",
+        "非响应型 transport failure 也必须有 durable attempt 状态、error class 和 timing；不得用伪造 readback 进入 SUCCEEDED/COMPENSATED。",
+        "RESTORE 前执行 fresh readback 并验证仍 MATCHES_TARGET；平台支持条件写/版本 token 时强制使用。无法消除竞态的平台必须转 MANUAL_RESOLUTION，禁止自动 restore。",
+        "数据库 transition 函数验证 evidence ownership、operation kind、command/fence 及 observation digest。"
+      ],
+      "required_closure_evidence": [
+        "Real DB tests 证明无 Raw provider evidence 时 SUCCEEDED/COMPENSATED 不可达。",
+        "Crash-window tests 覆盖 response received / custody stored / readback recorded 各边界。",
+        "Compensation race tests：平台值在旧 readback 后被外部改变时绝不覆盖。",
+        "Fixture/contract responses 与真实 provider evidence 明确分级。"
+      ],
+      "same_class_transitive_scan": [
+        "全部外部 side-effect adapters 与 readback/status polling",
+        "全部 compensation/rollback 流程"
+      ],
+      "prohibited_shortcuts": [
+        "只把响应 JSON 字符串写日志",
+        "只在文档中声明 readback 可信",
+        "把 restore 失败后再观察当作“不覆盖”保证"
+      ]
+    },
+    {
+      "id": "S1-F003",
+      "severity": "BLOCKER",
+      "classification": "IMPLEMENTATION_DEFECT",
+      "title": "数据库可配置的外呼目的地可接收解析出的 Secret，缺少统一 SSRF/凭证外泄边界",
+      "gate_impact": "BLOCKS_PR_FINAL_GATE",
+      "acceptance_criteria": [
+        "S1-AC-004",
+        "S1-AC-008",
+        "S1-AC-009",
+        "S1-AC-010",
+        "S1-AC-023",
+        "S1-AC-025"
+      ],
+      "summary": "AI、Marketplace acquisition 与 price write adapters 从数据库读取 URL/base URL，再把 Secret 解析成 Authorization header 发出；验证主要是 https 字符串/正则，没有 provider-host binding、IP/port/redirect/DNS/private-network policy，也没有响应体上限。维护或数据库配置错误可把 Marketplace/模型凭证发送到攻击者控制的 HTTPS 端点。",
+      "evidence": [
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/adapter/http/HttpModelGateway.java",
+          "lines": "68-107",
+          "observation": "URI.create(spec.invocationUrl()) 后附加解析出的 auth header，BodyHandlers.ofString 无大小上限。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/application/AiProviderService.java",
+          "lines": "97-140",
+          "observation": "verifyAndActivate 只要求 https:// 前缀。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAcquisitionAdapter.java",
+          "lines": "100-165",
+          "observation": "baseUrl+path 直接构造 URI 并携带凭证，响应使用 unbounded byte array。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpPriceWriteAdapter.java",
+          "lines": "80-155",
+          "observation": "同类目的地和响应边界。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0021__create_platform_api_profile_and_request_shape.sql",
+          "lines": "20-45, 294-295",
+          "observation": "base_url 仅为宽松 HTTPS host regex，marketops_app 可 INSERT/UPDATE profile/header。"
+        }
+      ],
+      "root_cause": "外呼安全被分散在各 adapter 和可写 registry；“已验证配置”没有绑定到 provider identity 与允许网络目的地。",
+      "required_observable_correction": [
+        "建立共享 OutboundDestinationPolicy：规范化 URI、禁止 userinfo/fragment、限制 scheme/port、provider/platform→host allowlist、拒绝 literal private/loopback/link-local/metadata IP、DNS resolution/rebinding policy、redirect 禁止或每跳重验。",
+        "Provider/Platform 验证记录必须绑定官方证据、account evidence、允许 host/path/method/auth-header，并由受控 writer 激活。",
+        "所有 external clients 采用 bounded/streaming body、最大 request/response bytes、明确 connect/read timeout、Content-Type 检查与 error-body custody/redaction。",
+        "Secret 解析只在目的地 policy 通过后发生；无 verified destination 时 fail closed。"
+      ],
+      "required_closure_evidence": [
+        "Negative tests 覆盖 localhost、RFC1918、link-local/metadata、IPv6 local、userinfo、非标准端口、redirect、DNS rebinding simulation、超大 response。",
+        "AI/acquisition/write/object-storage adapters 全部经过同一 policy。",
+        "Secret resolution mock 证明 destination 拒绝时从不读取 Secret。"
+      ],
+      "same_class_transitive_scan": [
+        "所有 URI.create/HttpClient 外呼",
+        "所有 registry 中 URL/host/path/header fields",
+        "所有 SecretResolverPort consumers"
+      ],
+      "prohibited_shortcuts": [
+        "仅靠 startsWith(\"https://\")",
+        "仅依赖网络安全组",
+        "把任意 HTTPS host 视为安全"
+      ]
+    },
+    {
+      "id": "S1-F004",
+      "severity": "BLOCKER",
+      "classification": "IMPLEMENTATION_DEFECT",
+      "title": "多个按 UUID 访问的 Console/API 只校验调用者拥有某组织/Store 权限，却未校验目标资源属于该 Scope",
+      "gate_impact": "BLOCKS_PR_FINAL_GATE",
+      "acceptance_criteria": [
+        "S1-AC-002",
+        "S1-AC-003",
+        "S1-AC-004",
+        "S1-AC-016",
+        "S1-AC-017",
+        "S1-AC-027"
+      ],
+      "summary": "Evidence、AI invocation、Import batch/rows/reject、Work task mutation 以及 subject/store 查询存在“先校验 actor 的组织/Store grant，再按裸 UUID 查询或修改”的模式。攻击者只要获知其他组织/Store 的 UUID，就可能读取 Raw evidence/AI claims 或改变 import/task 状态。",
+      "evidence": [
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/web/EvidenceConsoleController.java",
+          "lines": "57-100",
+          "observation": "只要求 actor.organization evidence-view，随后按 provenanceId 取 trail/content。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/EvidenceService.java",
+          "lines": "43-71",
+          "observation": "repository lookup 仅使用 provenanceId。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/web/AiConsoleController.java",
+          "lines": "45-64",
+          "observation": "invocation GET 只校验 actor.organization，按 invocationId 读取。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/web/IntakeConsoleController.java",
+          "lines": "70-130",
+          "observation": "get/rows/reject 路径没有把 batch.organization 与 actor 绑定。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/web/WorkQueueConsoleController.java",
+          "lines": "108-163",
+          "observation": "task assign/start/close 只校验 actor.organization 的动作 grant。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/WorkTaskService.java",
+          "lines": "44-115",
+          "observation": "按 taskId 查找/更新，无 organization 参数或验证。"
+        }
+      ],
+      "root_cause": "Authorization API 验证“actor 有某类权限”，resource repositories 验证“UUID 存在”，但两者没有在同一查询/transaction 中形成 resource ownership predicate。",
+      "required_observable_correction": [
+        "所有 public Console/API 根据目标资源自身的 organization/store/platform 推导 Scope；repository 查询采用 (organization/store,id) 复合条件。",
+        "对需要先加载资源再授权的路径，加载最小 ownership row，授权后再读取敏感内容；避免 request-supplied storeId 作为信任来源。",
+        "Mutation endpoints 的 UPDATE/DELETE WHERE 同时包含 organization/store 和 expected version。",
+        "对 assignee、evidence refs、mapping candidates、recommendations、policies、commands、AI invocations、imports、tasks 做全表同类扫描。"
+      ],
+      "required_closure_evidence": [
+        "Security negative tests：同一角色跨 Store、跨 Organization、猜测 UUID 的 read/write 全部 404/deny 且无 side effect。",
+        "Raw evidence bytes、AI invocation、import reject/apply、task assign/close 均有真实 PostgreSQL negative tests。",
+        "Controller/service/repository route inventory 每条记录 ownership predicate。"
+      ],
+      "same_class_transitive_scan": [
+        "所有 @PathVariable UUID public endpoints",
+        "所有 repository find/update by id",
+        "所有 reference ID ingestion/AI/workflow links"
+      ],
+      "prohibited_shortcuts": [
+        "仅在前端隐藏 ID",
+        "只校验 actor.organization() 存在",
+        "查询后在 Java 中迟到过滤但已加载敏感 bytes"
+      ]
+    },
+    {
+      "id": "S1-F005",
+      "severity": "MAJOR",
+      "classification": "IMPLEMENTATION_DEFECT",
+      "title": "外部调用在调用者事务中执行，durable attempt 与 crash-window 语义不成立",
+      "gate_impact": "BLOCKS_PR_FINAL_GATE",
+      "acceptance_criteria": [
+        "S1-AC-007",
+        "S1-AC-011",
+        "S1-AC-025",
+        "S1-AC-030",
+        "S1-AC-033",
+        "S1-AC-038"
+      ],
+      "summary": "AiDiagnosisService、PriceCommandResolutionService 与 RawCustodyService 在 @Transactional 方法中调用外部网络/对象存储；manual readback/compensation 先在外层事务内 transition，再进入 worker。进程在外呼期间失败时，声称已持久化的 invocation/attempt/state 可能尚未 commit，并长时间占用事务/连接。",
+      "evidence": [
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/application/AiDiagnosisService.java",
+          "lines": "119-180",
+          "observation": "整个 provider invocation 位于 @Transactional explain() 中。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/PriceCommandResolutionService.java",
+          "lines": "83-117",
+          "observation": "readback/compensate 在外层事务内 transition 后直接调用 worker。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/RawCustodyService.java",
+          "lines": "59-90",
+          "observation": "对象存储 put/readback verification 在数据库事务内。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AcquisitionPageWorker.java",
+          "lines": "70-105",
+          "observation": "Page acquisition orchestration 标注 @Transactional 并包含 external gateway。"
+        }
+      ],
+      "root_cause": "状态机实现把“方法调用顺序”误认为“durable commit 顺序”，事务传播没有被作为 authority/crash 设计的一部分。",
+      "required_observable_correction": [
+        "重构为明确的短事务状态机：prepare/open-attempt commit → external call outside transaction → custody/result commit；每段使用独立 transaction boundary。",
+        "AI invocation 在 dispatch 前 durable open；timeout/crash 后有可恢复/可观测 unfinished state。",
+        "manual resolution 先 commit intent，再由 worker 独立 lease/fence 执行；Controller 不在同一事务等待网络。",
+        "Raw custody orphan/duplicate reconciliation 明确，禁止长事务包裹 object-store I/O。"
+      ],
+      "required_closure_evidence": [
+        "Crash injection tests 覆盖每个 commit/call 边界，证明 attempt/invocation 不丢失且不重复 side effect。",
+        "Transaction visibility tests 证明外呼期间无业务事务/锁保持。",
+        "Connection pool exhaustion/timeout tests 与 metrics/alerts。"
+      ],
+      "same_class_transitive_scan": [
+        "所有 HttpClient/ObjectStoragePort/ModelGatewayPort/Marketplace ports 的调用者",
+        "所有 @Transactional 方法中的 network/storage calls"
+      ],
+      "prohibited_shortcuts": [
+        "仅添加 REQUIRES_NEW 到部分 repository 而不证明顺序",
+        "扩大事务 timeout",
+        "依赖 happy-path tests"
+      ]
+    },
+    {
+      "id": "S1-F006",
+      "severity": "MAJOR",
+      "classification": "IMPLEMENTATION_DEFECT",
+      "title": "Acquisition 的分页终止、schema drift 与 rate limit 在异常时 fail-open",
+      "gate_impact": "BLOCKS_PR_FINAL_GATE",
+      "acceptance_criteria": [
+        "S1-AC-010",
+        "S1-AC-011",
+        "S1-AC-013",
+        "S1-AC-015",
+        "S1-AC-038"
+      ],
+      "summary": "Continuation pointer 缺失、JSON 不可读或类型异常被映射为 Optional.empty，随后 worker ack checkpoint 并报告 SOURCE_EXHAUSTED；schema drift 可被误判为正常完成。Rate limiter 是进程内 ConcurrentHashMap，缺少记录的 limit 返回 Duration.ZERO，重启或多实例无法守住平台配额。响应体也无 hard byte bound。",
+      "evidence": [
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AcquisitionPageWorker.java",
+          "lines": "77-174",
+          "observation": "continuationToken() 失败返回 empty，调用方仍 acknowledgeCheckpoint 并选择 SOURCE_EXHAUSTED。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/EndpointRateLimiter.java",
+          "lines": "20-60",
+          "observation": "process-local window；missing limit/available path 返回 Duration.ZERO。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAcquisitionAdapter.java",
+          "lines": "100-165",
+          "observation": "响应以 unbounded byte array 读取。"
+        }
+      ],
+      "root_cause": "“没有 continuation token”没有区分合法末页与 pointer/config/schema/parse failure；quota state 不是共享权威且缺省策略不是 deny。",
+      "required_observable_correction": [
+        "引入显式 pagination result：END_OF_SOURCE / NEXT_TOKEN / SCHEMA_DRIFT / UNREADABLE / CONFIG_INVALID；只有证据化的 END_OF_SOURCE 可推进完成。",
+        "Continuation pointer 配置、响应 Content-Type/schema、unknown field/status 全部可观察且不推进 cursor。",
+        "使用数据库/共享存储的 endpoint quota/token-bucket 或通过部署 invariant 机器强制单实例；缺 limit 必须 fail closed。",
+        "设置请求/响应 byte 上限、分页 page-size 上限、Retry-After/remaining quota 记录与 backpressure。"
+      ],
+      "required_closure_evidence": [
+        "Real DB/property tests：malformed JSON、missing pointer、wrong token type、schema change、restart/multi-worker quota、429/Retry-After、oversized body。",
+        "证明 cursor 不会在任何 parse/schema/limit failure 时前进。",
+        "Observability/alert/runbook 记录 drift 与 quota backlog。"
+      ],
+      "same_class_transitive_scan": [
+        "所有 paginated endpoint specifications",
+        "所有 per-process retry/rate/circuit state",
+        "所有 body handlers"
+      ],
+      "prohibited_shortcuts": [
+        "把 pointer missing 一律视为末页",
+        "以当前单机开发环境证明多实例安全",
+        "缺限流记录时 unlimited"
+      ]
+    },
+    {
+      "id": "S1-F007",
+      "severity": "MAJOR",
+      "classification": "IMPLEMENTATION_DEFECT",
+      "title": "Capability/API profile 的 verified promotion 与 write-operation 语义绑定不完整",
+      "gate_impact": "BLOCKS_PR_FINAL_GATE",
+      "acceptance_criteria": [
+        "S1-AC-008",
+        "S1-AC-009",
+        "S1-AC-010",
+        "S1-AC-031",
+        "S1-AC-032"
+      ],
+      "summary": "Runtime 只读取 platform_api_profile/auth headers/operation shapes；Java 中没有完整的、审计化的 profile/header verification writer，Registry 又禁止普通路径直接进入 VERIFIED。Write operation 的关系约束主要保证同平台，未证明 endpoint 的 function/method/request/response semantics 与 Capability/operation_kind 一致。",
+      "evidence": [
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0021__create_platform_api_profile_and_request_shape.sql",
+          "lines": "20-80, 294-295",
+          "observation": "profile/header 表允许应用 DML，但 repository 主要是读取；verified promotion provenance 不完整。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/RegistryService.java",
+          "observation": "普通 lifecycle 路径拒绝直接 VERIFIED，未形成端到端 evidence promotion。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0024__create_capability_write_operation_shape.sql",
+          "observation": "operation 绑定 endpoint/capability，但缺少 endpoint function/method 与 operation kind 的强语义约束。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/WriteOperationService.java",
+          "observation": "验证 template/pointer，但未完整验证 capability-action-endpoint semantic compatibility。"
+        }
+      ],
+      "root_cause": "Provider fact registry、evidence verification 和 executable operation definition 被分成可直接 DML 的相邻表，没有一个受控、可审计、版本化的单一 writer。",
+      "required_observable_correction": [
+        "实现 evidence-driven verification workflow：official source、real account evidence、last_verified_at、reviewer、endpoint/auth/profile/capability/operation version 一体化 promotion。",
+        "撤销普通应用对 verified profile/header/operation 的自由 DML，使用受控函数/maintenance authority 与审计。",
+        "DB + service 强制 operation_kind 对应 endpoint function/method、capability code、request/response/status/readback semantics。",
+        "任何 evidence/profile 过期、变更或不一致立即使 capability fail closed。"
+      ],
+      "required_closure_evidence": [
+        "Contract/DB tests：错 capability、错 method、错 endpoint function、错 platform、过期 evidence、未验证 auth header 均不可激活。",
+        "Productized maintenance/API path 有完整 audit 和 separation-of-duty test。",
+        "Ozon/WB 仍保持 UNVERIFIED，直到未来 real-account evidence；不得以 fixture 提升。"
+      ],
+      "same_class_transitive_scan": [
+        "所有 platform registry tables 和 maintenance writers",
+        "read/write/status/readback operation definitions"
+      ],
+      "prohibited_shortcuts": [
+        "用手工 SQL 作为正式产品路径",
+        "只在 Java enum 中硬编码平台事实",
+        "把 public docs 当 real-account evidence"
+      ]
+    },
+    {
+      "id": "S1-F008",
+      "severity": "MAJOR",
+      "classification": "IMPLEMENTATION_DEFECT",
+      "title": "内部文件导入可能在 5,000 行后静默截断，Validator 与 Applier 的类型契约发生漂移",
+      "gate_impact": "BLOCKS_PR_FINAL_GATE",
+      "acceptance_criteria": [
+        "S1-AC-017",
+        "S1-AC-018",
+        "S1-AC-019",
+        "S1-AC-039"
+      ],
+      "summary": "ImportApplier 固定读取最多 5,000 accepted rows，而 approveAndApply 完成后把 batch 标记 APPLIED；大文件可部分应用。Applier 对 UUID/decimal/long 再次无保护解析，CodeQL 已指出 NumberFormatException；profile registration 的 operator 参数未用于审计。",
+      "evidence": [
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/ImportApplier.java",
+          "lines": "35-175",
+          "observation": "ROW_PAGE=5000；apply 只处理一页；numeric/UUID parsing 可抛异常。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/ImportIntakeService.java",
+          "lines": "150-310",
+          "observation": "approveAndApply 后完成 batch；registerProfile(operator,...) 未记录 operator。"
+        },
+        {
+          "type": "CI_REVIEW_THREAD",
+          "id": "discussion_r3869384724",
+          "observation": "CodeQL 报告潜在未捕获 NumberFormatException。"
+        },
+        {
+          "type": "CI_REVIEW_THREAD",
+          "id": "discussion_r3869384736",
+          "observation": "operator 参数未使用。"
+        }
+      ],
+      "root_cause": "Validation 与 apply 使用不同的解析路径；批次 completeness/row-count invariant 没有进入 apply/finish state machine。",
+      "required_observable_correction": [
+        "建立共享 typed row decoder/schema version，validation 产出的 accepted typed value 或 immutable normalized payload 被 apply 复用。",
+        "处理全部 accepted rows：单事务全量或显式 chunked/resumable state，必须记录 expected/applied/rejected counts 并在全部完成前不得 APPLIED。",
+        "失败/重试幂等；部分 chunk 后 crash 可安全恢复或整体回滚。",
+        "profile 注册、审批、应用、拒绝和每个 source file 均有 actor/audit/provenance。"
+      ],
+      "required_closure_evidence": [
+        ">5,000、边界 5,000/5,001、malformed accepted payload、duplicate/retry/crash、semicolon/XLSX tests。",
+        "Real PostgreSQL 证明 batch counts 与 canonical rows 一致，绝无 silent partial apply。",
+        "CodeQL alert 67/71 正确关闭并带 regression test。"
+      ],
+      "same_class_transitive_scan": [
+        "所有 IntakeDataset decoders/appliers",
+        "所有 page-limited batch operations",
+        "所有 ignored operator/reason parameters"
+      ],
+      "prohibited_shortcuts": [
+        "提高常量到更大值",
+        "catch Exception 后跳过行",
+        "失败后仍标 APPLIED"
+      ]
+    },
+    {
+      "id": "S1-F009",
+      "severity": "MAJOR",
+      "classification": "IMPLEMENTATION_DEFECT",
+      "title": "AI 输出契约没有按 claim kind 强制 required schema，结构化字段会被静默丢弃",
+      "gate_impact": "BLOCKS_PR_FINAL_GATE",
+      "acceptance_criteria": [
+        "S1-AC-023",
+        "S1-AC-024",
+        "S1-AC-025",
+        "S1-AC-026"
+      ],
+      "summary": "SYSTEM_PROMPT 要求 inference/recommendation/unknown 各自包含特定字段，但 OutputValidator 只强制 Fact evidence 和 Recommendation capability；readPayload 仅保留 scalar value，object/array proposedParameters 等会被丢弃而 claim 仍可能 accepted。Malformed confidence、validation window、risk/effect/unknown evidence 不能稳定 fail closed。",
+      "evidence": [
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/application/AiDiagnosisService.java",
+          "lines": "60-110",
+          "observation": "Prompt 规定每类 claim 的 required fields。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidator.java",
+          "lines": "45-230",
+          "observation": "只验证通用成员、Fact evidence 与 known capability；readPayload 丢弃非 scalar。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/aicopilot/internal/application/ProjectionBuilder.java",
+          "observation": "Projection allowlist 方向正确，但 output schema 不对称。"
+        }
+      ],
+      "root_cause": "Prompt 文本被当作 schema，代码没有正式 per-kind JSON contract；“未知字段拒绝”不等于“必填字段/类型/范围正确”。",
+      "required_observable_correction": [
+        "定义版本化 JSON Schema/typed DTO：Fact/Inference/Recommendation/Unknown 各自 required/allowed fields、types、enums、bounds。",
+        "完整保留并验证 proposedParameters/expectedEffect/counterEvidence 等结构；禁止静默 drop。",
+        "验证 confidence、validationWindowDays、currency/money、capability-specific parameter schema、evidence ownership。",
+        "明确 partial output policy：单 claim rejection 与 invocation state/UI 呈现不得把部分失败表示为完全成功。"
+      ],
+      "required_closure_evidence": [
+        "Property/fuzz tests 覆盖 nested/unknown/missing/wrong-type/oversized/injection/reference/capability parameters。",
+        "Golden fixtures 分清 deterministic fact、inference、recommendation、unknown；模型输出不能产生 Command/Approval authority。",
+        "Provider failure/crash transaction closure 与 F005 联合验证。"
+      ],
+      "same_class_transitive_scan": [
+        "所有 prompt/output versions 和 provider adapters",
+        "所有 AI claim→recommendation/evidence link paths"
+      ],
+      "prohibited_shortcuts": [
+        "只修改 prompt 文案",
+        "忽略未知/复杂字段",
+        "用模型自报 confidence 代替 deterministic gate"
+      ]
+    },
+    {
+      "id": "S1-F010",
+      "severity": "MAJOR",
+      "classification": "IMPLEMENTATION_DEFECT",
+      "title": "Yandex IaC 不是可部署的完整生产拓扑，未验证且数据库密码设计会进入 Terraform state",
+      "gate_impact": "BLOCKS_PR_FINAL_GATE",
+      "acceptance_criteria": [
+        "S1-AC-001",
+        "S1-AC-005",
+        "S1-AC-006",
+        "S1-AC-007",
+        "S1-AC-038"
+      ],
+      "summary": "production main 只实例化 network/workload identity/database/object storage/observability，没有 application workload、ALB/router/backend/DNS/deployment runtime；应用 production 仍绑定 127.0.0.1。private route table 创建但未绑定 subnets。MDB user 使用 password 变量而非 write-only/generate-password，敏感值会进入 state。Terraform 从未 init/validate/plan，restore drill 未执行。",
+      "evidence": [
+        {
+          "type": "SOURCE",
+          "path": "infra/yandex/environments/production/main.tf",
+          "observation": "缺 application compute/container/serverless、ALB/router/backend、deployment module。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "infra/yandex/modules/network/main.tf",
+          "observation": "创建 private route table，但 subnet 未设置 route_table_id；load-balancer egress 使用 self_security_group，未证明可到 application group。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "infra/yandex/modules/database/main.tf",
+          "observation": "yandex_mdb_postgresql_user password 来自 variables。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "infra/yandex/environments/production/variables.tf",
+          "observation": "migration/application role password 作为 sensitive input；sensitive 只影响显示，不等于不入 state。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "backend/marketops-server/src/main/resources/application-production.yaml",
+          "observation": "server.address=127.0.0.1，当前 IaC 无反向代理/workload integration。"
+        },
+        {
+          "type": "OFFICIAL_DOC",
+          "source": "Yandex Cloud Terraform Application Load Balancer resources",
+          "verified_date": "2026-08-27",
+          "observation": "官方资源包括 backend group/http router/load balancer/target group/virtual host，且官方流程要求 terraform validate/plan。"
+        },
+        {
+          "type": "OFFICIAL_DOC",
+          "source": "Yandex yandex_mdb_postgresql_user",
+          "verified_date": "2026-08-27",
+          "observation": "password_wo 为 write-only 且不存 state（Terraform >=1.11）；当前代码使用 password。"
+        }
+      ],
+      "root_cause": "IaC 被当作架构草图而非可执行 deployment contract；Secret/state/backend/runtime/network 路径没有端到端闭合。",
+      "required_observable_correction": [
+        "实现完整可替换 workload + public HTTPS ingress + health checks + private DB/object access + egress；明确应用/worker/migration identities。",
+        "绑定 subnet route_table_id，修正 security-group source/target 关系，并使用官方 ALB resources。",
+        "使用 password_wo/generate_password/Connection Manager 或等价不在 state 暴露的方案；远端 state 加密、锁、版本、最小访问与审计。",
+        "CI 执行 terraform fmt/init -backend=false/validate 与 non-production plan/static security checks。",
+        "提交可执行 bootstrap、backup/PITR/object retention/restore drill 证据计划；不执行 production apply。"
+      ],
+      "required_closure_evidence": [
+        "Terraform validate/plan CI on exact Head；provider lock file/reproducibility。",
+        "Static tests 证明 route table、SG、ALB/workload、no public DB、least privilege。",
+        "State inspection test 证明数据库密码不以明文进入 state artifact。",
+        "Ephemeral restore/failure drill 可执行；production restore 仍作为后续环境 evidence。"
+      ],
+      "same_class_transitive_scan": [
+        "staging 与 production environments",
+        "全部 sensitive Terraform variables/resources",
+        "network routes/security groups/workload identities"
+      ],
+      "prohibited_shortcuts": [
+        "仅在变量上标 sensitive",
+        "只写 runbook 不运行 validate",
+        "以“尚未 apply”豁免不可部署 IaC"
+      ]
+    },
+    {
+      "id": "S1-F011",
+      "severity": "MAJOR",
+      "classification": "IMPLEMENTATION_DEFECT",
+      "title": "Exact Head 的必需 CI、覆盖率、治理验证和安全扫描未通过",
+      "gate_impact": "BLOCKS_PR_FINAL_GATE",
+      "acceptance_criteria": [
+        "S1-AC-039"
+      ],
+      "summary": "PR #20 当前 11 个 Ruleset required contexts 中 governance、backend-build、backend-integration 失败；额外 aggregate CodeQL 失败。Backend combined coverage 68.67% lines/52.39% branches，低于 80%/70%。Governance readiness 因两处 history/future narration comment 失败，migration contract test 仍期待 10 migrations。7 条机器 review threads 未解决。",
+      "evidence": [
+        {
+          "type": "CI",
+          "workflow": "Governance",
+          "run_id": 33047160100,
+          "observation": "governance validator PASS；production-readiness FAIL；validator tests skipped。"
+        },
+        {
+          "type": "CI",
+          "workflow": "Backend",
+          "run_id": 33047160123,
+          "observation": "380 unit + 225 PostgreSQL integration tests pass，但 backend-build/integration 均因 JaCoCo gate FAIL。"
+        },
+        {
+          "type": "CI",
+          "workflow": "Security",
+          "observation": "CodeQL 产生 7 threads：CSRF、2 missing enum case、3 unused params、NumberFormatException；aggregate check FAIL。"
+        },
+        {
+          "type": "LOCAL_EVIDENCE",
+          "observation": "MigrationContractTests expected 10 migrations but V0011–V0026 present。"
+        },
+        {
+          "type": "PR",
+          "observation": "7 review threads unresolved；PR OPEN/DRAFT/UNMERGED。"
+        }
+      ],
+      "root_cause": "巨大 Slice 增量没有同步完成质量门、migration inventory 和 scanner closure；局部测试数量多，但 risk-heavy adapters/controllers/repositories/negative paths 覆盖不足。",
+      "required_observable_correction": [
+        "保持 JaCoCo 80% line/70% branch，不降低阈值、不排除新包；补充保障行为的测试而非只追比例。",
+        "修复 production-readiness comments；升级 migration contract 为 V0001–V0026 exact inventory/hash/order/clean+upgrade validation。",
+        "逐条处理 7 个 CodeQL threads：CSRF 根据 bearer-only/stateless/no-auth-cookie threat model 用测试+窄 suppression/dismissal 或正确启用保护；UNKNOWN_STATE grouped cases 可重构使 analyzer可见；真实 NumberFormatException 修复；unused parameters 删除或用于审计。",
+        "所有 required contexts 和 aggregate security checks 通过，threads resolved。"
+      ],
+      "required_closure_evidence": [
+        "Exact rework Head 11/11 Ruleset checks SUCCESS，CodeQL aggregate SUCCESS，0 unresolved threads。",
+        "Backend coverage report 达标并列出新增关键测试类别。",
+        "Governance/readiness/validator tests 全部运行通过，非 skipped。",
+        "无测试/阈值/Ruleset削弱。"
+      ],
+      "same_class_transitive_scan": [
+        "所有低覆盖 package/class，优先外呼、授权、controllers、repositories、state machines",
+        "全部 migration/gov validators",
+        "全部 CodeQL alerts"
+      ],
+      "prohibited_shortcuts": [
+        "降低 coverage threshold",
+        "添加 blanket exclusions",
+        "关闭 CodeQL/Ruleset",
+        "仅 dismiss alert 不提供证据"
+      ]
+    },
+    {
+      "id": "S1-F012",
+      "severity": "MAJOR",
+      "classification": "IMPLEMENTATION_DEFECT",
+      "title": "代表性性能、异步导出与恢复演练没有形成可执行证据",
+      "gate_impact": "BLOCKS_PR_FINAL_GATE",
+      "acceptance_criteria": [
+        "S1-AC-007",
+        "S1-AC-037",
+        "S1-AC-038"
+      ],
+      "summary": "Maker 明确将 S1-AC-037 标为 NOT_MET；没有 representative data benchmark，也没有可审查的 async export path。Runbooks 已写，但 API outage/backlog/replay/AI failure/unknown write/database-object restore 演练未执行。",
+      "evidence": [
+        {
+          "type": "EVIDENCE",
+          "path": "docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md",
+          "observation": "S1-AC-037 NOT_MET；S1-AC-038 IMPLEMENTED_UNPROVEN。"
+        },
+        {
+          "type": "EVIDENCE",
+          "path": "docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md",
+          "observation": "本地 browser/DB tests 存在，但无 representative performance/async export/restore drill。"
+        },
+        {
+          "type": "MAKER_REPORT",
+          "observation": "Terraform/restore/environment bootstrap 未执行。"
+        }
+      ],
+      "root_cause": "非功能需求被留在 runbook/未来环境层，未被设计成当前 Slice 可执行的 test harness 和 bounded evidence。",
+      "required_observable_correction": [
+        "定义代表性 SKU/order/fact/recommendation规模、SLO/timeout/queue/export thresholds；加入 reproducible dataset generator。",
+        "对 priority queue/SKU 360/evidence/history 执行 benchmark/EXPLAIN ANALYZE/index verification。",
+        "实现大结果 async export（授权、snapshot/version、object custody、expiry/audit、download safety），避免同步大响应。",
+        "在 ephemeral environment 执行 API outage、backlog、replay、AI failure、unknown write、DB/object restore/failure injection，并记录 runbook evidence。"
+      ],
+      "required_closure_evidence": [
+        "PERFORMANCE evidence artifact with dataset/version/commands/results/query plans。",
+        "Browser/API tests 证明 large export 走异步路径。",
+        "DR/failure-injection evidence，区分 local/ephemeral 与 future controlled-production。"
+      ],
+      "same_class_transitive_scan": [
+        "所有 common list/history endpoints 与 unbounded byte responses",
+        "全部 runbooks/alerts/restore procedures"
+      ],
+      "prohibited_shortcuts": [
+        "用单元测试数量代替性能证据",
+        "只声明“以后压测”",
+        "同步返回任意大文件"
+      ]
+    },
+    {
+      "id": "S1-F013",
+      "severity": "MAJOR",
+      "classification": "DOCUMENTATION_DRIFT",
+      "title": "Canonical Current State、Acceptance 和 Evidence 与实际 PR/CI/提交身份冲突",
+      "gate_impact": "BLOCKS_PR_FINAL_GATE",
+      "acceptance_criteria": [
+        "S1-AC-039",
+        "S1-AC-041"
+      ],
+      "summary": "候选 CURRENT_STATE 仍写 LOCAL_CHECKPOINT_COMPLETE_UNPUBLISHED、next actor=Claude、no PR、9 checkpoints、21/13/7；实际为 PR #20 已发布、13 commits、21/12/8、CI 失败并进入 Frozen Finding rework。若合并会把未来 Agent 导向错误 actor/action并过度陈述状态。",
+      "evidence": [
+        {
+          "type": "SOURCE",
+          "path": "docs/00-governance/CURRENT_STATE.md",
+          "observation": "记录 unpublished/no PR/Claude next action 与旧数量。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md",
+          "observation": "Maker self-assessment 尚未反映 Controller findings 与 exact PR CI。"
+        },
+        {
+          "type": "SOURCE",
+          "path": "docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md",
+          "observation": "证据边界与发布后 CI/threads/test failures 尚未同步。"
+        },
+        {
+          "type": "GIT",
+          "observation": "实际 PR #20 Base/Head/tree、13 commits、356 files、red CI 与 7 unresolved threads 已存在。"
+        }
+      ],
+      "root_cause": "Maker 在本地 checkpoint 阶段更新 canonical docs，但 exact remote publication 后没有 publication/review-specific状态模型；自评被混同为 Controller verdict。",
+      "required_observable_correction": [
+        "更新 Current State 为 exact Draft PR/Head/tree、CONTROLLER_DEEP_REVIEW_COMPLETE、Frozen Finding Set hash、next actor=Codex、next action=ROOT_CAUSE_REWORK；明确只在该 branch 的 candidate state，protected main 仍 unchanged。",
+        "Acceptance matrix 使用统一状态：EXECUTABLY_VERIFIED / IMPLEMENTED_UNPROVEN / IMPLEMENTATION_DEFECT / EXTERNAL_EVIDENCE_PENDING / GATE_EV_PENDING / OWNER_PENDING / NOT_APPLICABLE。",
+        "重新核对 41 criteria 与本 Finding Set；不得把 external/fixture/local proof 写 MET。",
+        "同步 as-built design、ADRs、traceability、route inventory、runbooks、CI/evidence record 和 final rework identity。"
+      ],
+      "required_closure_evidence": [
+        "Governance validator 对 PR phase/current actor/finding hash/acceptance counts 做 mutation-sensitive checks。",
+        "Final rework report 与 canonical docs 数字、commit/tree、migrations、CI 完全一致。",
+        "明确区分 PR merge-readiness、Slice completion、Gate EV/E、V1 completion。"
+      ],
+      "same_class_transitive_scan": [
+        "所有 CURRENT_STATE/README/acceptance/evidence/handoff/traceability 文档",
+        "所有自评 MET 状态"
+      ],
+      "prohibited_shortcuts": [
+        "删除不利证据",
+        "把 Controller findings 降为 debt",
+        "在 proposal branch 声称 production released"
+      ]
+    }
+  ],
+  "external_evidence_boundary": [
+    {
+      "id": "EXT-001",
+      "criteria": [
+        "S1-AC-001",
+        "S1-AC-003"
+      ],
+      "state": "EXTERNAL_EVIDENCE_PENDING",
+      "description": "真实 Yandex Identity Hub OIDC/MFA、disable/revoke/session/step-up 环境证据。"
+    },
+    {
+      "id": "EXT-002",
+      "criteria": [
+        "S1-AC-006"
+      ],
+      "state": "EXTERNAL_EVIDENCE_PENDING",
+      "description": "实际 Yandex PostgreSQL PITR/object retention 与 restore drill。"
+    },
+    {
+      "id": "EXT-003",
+      "criteria": [
+        "S1-AC-008",
+        "S1-AC-009",
+        "S1-AC-010"
+      ],
+      "state": "EXTERNAL_EVIDENCE_PENDING",
+      "description": "当前官方文档 + 真实 Ozon/WB account role/quota/read/write/readback capability evidence。"
+    },
+    {
+      "id": "EXT-004",
+      "criteria": [
+        "S1-AC-026"
+      ],
+      "state": "OWNER_EVIDENCE_PENDING",
+      "description": "Owner/运营批准的 golden diagnostic cases 和 usefulness acceptance。"
+    },
+    {
+      "id": "EXT-005",
+      "criteria": [
+        "S1-AC-031",
+        "S1-AC-032",
+        "S1-AC-033"
+      ],
+      "state": "GATE_EV_PENDING",
+      "description": "精确 Gate-EV envelope 下的真实 Write→Readback→Restore/Compensate 证据。"
+    },
+    {
+      "id": "EXT-006",
+      "criteria": [
+        "S1-AC-040"
+      ],
+      "state": "OWNER_PENDING",
+      "description": "Pilot cohort、users、stores、policy limits、monitoring/rollback criteria。"
+    },
+    {
+      "id": "EXT-007",
+      "criteria": [
+        "S1-AC-023",
+        "S1-AC-025"
+      ],
+      "state": "EXTERNAL_EVIDENCE_PENDING",
+      "description": "真实 AI provider eligibility、data terms、availability 和 failure behavior。"
+    }
+  ],
+  "freeze_rule": {
+    "ordinary_findings_may_not_be_added_later": true,
+    "late_miss_from_currently_available_evidence": "CONTROLLER_REVIEW_COVERAGE_FAILURE",
+    "reopen_only_for": "MATERIALLY_NEW_PREVIOUSLY_UNAVAILABLE_SEVERE_EVIDENCE"
+  },
+  "next": {
+    "actor": "CODEX",
+    "action": "SLICE_V1_001_FULL_PRODUCTION_ROOT_CAUSE_REWORK_R1",
+    "merge_authorization": "NOT_GRANTED",
+    "deployment": "NOT_AUTHORIZED",
+    "gate_ev": "NOT_AUTHORIZED",
+    "gate_e": "NOT_AUTHORIZED",
+    "production_write": "DISABLED"
+  }
+}

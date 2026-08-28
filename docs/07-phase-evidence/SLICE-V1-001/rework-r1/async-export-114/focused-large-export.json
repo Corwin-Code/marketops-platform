@@ -1,0 +1,11 @@
+{
+  "byteLength" : 8600000,
+  "submissionMillis" : 31,
+  "parts" : 3,
+  "totalMillis" : 1224,
+  "classification" : "SYNTHETIC_PG17_ASYNC_EXPORT",
+  "manifestSha256" : "053feb408b05d415d65a2e38320d656ef1373fa5a92609cf4a2de6a59d88d7ff",
+  "providerCalls" : false,
+  "rowCount" : 20000,
+  "postgresVersion" : "17.6 (Debian 17.6-2.pgdg12+1)"
+}

@@ -1,0 +1,144 @@
+{
+  "schema_version": "1.1",
+  "artifact_type": "controller_codeql_disposition_matrix",
+  "repository": "Corwin-Code/marketops-platform",
+  "pull_request": 20,
+  "protected_base": "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+  "reviewed_checkpoint_head": "d4bc5fe51605501da4ebc18c89c5d47ec8dc5ed0",
+  "reviewed_checkpoint_tree": "db3b2c4df0b46a94575e42989904e4fe80e41444",
+  "tested_merge": "fecc8c7b2e0dde4e565f59e5432de72477444948",
+  "frozen_finding_set_sha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8",
+  "accepted_slice_amendment_sha256": "8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d",
+  "controller_verdict": "AUTHORIZE_NARROW_FALSE_POSITIVE_DISMISSALS",
+  "alerts": [
+    {
+      "alert": 66,
+      "rule": "Disabled Spring CSRF protection",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/web/IdentitySecurityConfig.java",
+      "line": 83,
+      "controller_disposition": "FALSE_POSITIVE",
+      "basis": [
+        "Spring Security is STATELESS and the console accepts only an explicit validated Authorization bearer token.",
+        "No form login, HTTP Basic, OAuth2 login, authentication cookie, servlet-session authentication, query-token or form-token path is active.",
+        "SignedBearerIdentityIT proves cookie/query/form/session inputs cannot authenticate, no Set-Cookie/session is produced, and hostile Origin mutation is refused even with a valid bearer."
+      ],
+      "reassessment_triggers": [
+        "cookie or servlet-session authentication is introduced",
+        "form login, HTTP Basic, OAuth2 login or another browser-ambient credential is introduced",
+        "bearer transport or CORS/Origin policy changes",
+        "the negative signed-bearer integration contract is removed or weakened"
+      ],
+      "dismissed_comment": "False positive. This API is bearer-only and STATELESS: cookies, query/form tokens and servlet sessions cannot authenticate; no auth cookie/session is issued; hostile-Origin mutation is refused. Reassess if ambient auth or CORS/Origin rules change.",
+      "dismissed_comment_length": 247,
+      "dismissed_comment_max_length": 280,
+      "dismissed_comment_sha256": "ec98ef7246259d54e45e07828b67658b0ef582db678c736e97b7d1129ced209b"
+    },
+    {
+      "alert": 73,
+      "rule": "Empty password in configuration file",
+      "path": "backend/marketops-server/src/main/resources/application-production.yaml",
+      "line": 21,
+      "controller_disposition": "FALSE_POSITIVE",
+      "basis": [
+        "The empty value is an inactive override under spring.flyway.enabled=false.",
+        "It clears the inherited migration-secret placeholder from the serving application process; it is not an application or migration credential.",
+        "The serving process receives only the application-role credential, while the separate managed migration executable requires its own credential and attestation envelope.",
+        "ApplicationConfigurationTest.rolesAreSeparated and packaged migration tests pin this separation."
+      ],
+      "reassessment_triggers": [
+        "in-application Flyway is enabled in staging or production",
+        "the serving application receives a migration-role credential",
+        "the separate migration executable/credential boundary changes",
+        "the configuration invariant test is removed or weakened"
+      ],
+      "dismissed_comment": "False positive. Production disables in-app Flyway; this empty value only clears the inherited migration-secret placeholder. The server gets only the app-role secret; a separate migration runner uses its own credential. Reassess if that boundary changes.",
+      "dismissed_comment_length": 253,
+      "dismissed_comment_max_length": 280,
+      "dismissed_comment_sha256": "ed27b3ed6131c24d23e3e7c30e87da029bcc2e889422b5acea96b5ea9d7ef056"
+    },
+    {
+      "alert": 74,
+      "rule": "Cross-site scripting",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/http/BoundedOutboundHttp.java",
+      "line": 167,
+      "controller_disposition": "FALSE_POSITIVE",
+      "basis": [
+        "The flagged setEntity call is Apache HttpUriRequestBase for an outgoing provider request, not a servlet/browser response sink.",
+        "HTML escaping would corrupt provider request bytes and their digest binding.",
+        "The outbound layer enforces HTTPS, allowlisted destination/method/path/headers, pinned public DNS, no redirects/cookies/retries, and body/response bounds.",
+        "BoundedOutboundHttpTest observes exact markup-containing bytes only on a local transport fixture while public preparation still rejects unsafe destinations."
+      ],
+      "reassessment_triggers": [
+        "the value is rendered into a servlet/browser response or HTML page",
+        "the outgoing request abstraction is replaced by a browser-facing sink",
+        "destination, DNS, redirect, header or size controls are weakened"
+      ],
+      "dismissed_comment": "False positive. The sink is Apache HttpUriRequestBase.setEntity for an outbound provider request, not browser output. Exact bytes are required; HTTPS, destination, DNS, redirect, header and size controls remain enforced. Reassess if bytes are rendered to users.",
+      "dismissed_comment_length": 261,
+      "dismissed_comment_max_length": 280,
+      "dismissed_comment_sha256": "c522440e7aac6f0470e9e7dc34d2950191faff862ac886e177e67b6d167aec68"
+    },
+    {
+      "alert": 75,
+      "rule": "User-controlled bypass of sensitive method",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosticExportService.java",
+      "line": 72,
+      "controller_disposition": "FALSE_POSITIVE",
+      "basis": [
+        "The user-controlled part-number condition is a denying guard that throws and returns no data.",
+        "Every successful path resolves stored requester/organization ownership and live store scope, then calls the DB authorization function before storage I/O.",
+        "The service reauthorizes after I/O before returning bytes.",
+        "DiagnosticExportIT covers invalid parts, foreign IDs, revoked access and expired jobs."
+      ],
+      "reassessment_triggers": [
+        "an invalid-part branch can continue or return data",
+        "stored requester/organization or live scope checks are removed",
+        "pre-I/O or post-I/O database authorization is removed or moved after response"
+      ],
+      "dismissed_comment": "False positive. The part-number branch denies invalid input and returns no data. Successful reads require stored ownership/live scope, DB authorization before I/O, and DB reauthorization after I/O. Reassess if the guard or authorization sequence changes.",
+      "dismissed_comment_length": 254,
+      "dismissed_comment_max_length": 280,
+      "dismissed_comment_sha256": "60c28a9ffabdab3d92304dcd146148e3c7127b63cfe628b12dfb10e956a3ea03"
+    },
+    {
+      "alert": 76,
+      "rule": "User-controlled bypass of sensitive method",
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosticExportService.java",
+      "line": 80,
+      "controller_disposition": "FALSE_POSITIVE",
+      "basis": [
+        "The integrity condition throws on length/hash mismatch and returns no bytes.",
+        "A successful response requires authorization before I/O, exact custody length/hash verification, and database reauthorization after I/O.",
+        "Revocation during object read returns forbidden and does not write a PART_VERIFIED audit event.",
+        "Corrupt/expired content is refused."
+      ],
+      "reassessment_triggers": [
+        "integrity failure can return any bytes",
+        "post-I/O authorization is removed",
+        "successful audit is moved before integrity and authorization checks",
+        "custody length/hash verification is weakened"
+      ],
+      "dismissed_comment": "False positive. Length/hash mismatch returns no bytes. Success requires pre-I/O DB authorization, exact custody integrity checks, and post-I/O DB reauthorization; mid-read revocation is refused. Reassess if integrity or authorization order changes.",
+      "dismissed_comment_length": 248,
+      "dismissed_comment_max_length": 280,
+      "dismissed_comment_sha256": "f138f8166bac890a10591549bf58e6985da7b1203e3ab29edd7d0461a8aa5019"
+    }
+  ],
+  "global_constraints": {
+    "dismissed_reason": "false positive",
+    "bulk_query_or_path_suppression": "PROHIBITED",
+    "source_change_during_disposition": "PROHIBITED",
+    "resolve_only_named_threads_after_alert_dismissal": true,
+    "capture_before_after_evidence": true,
+    "verify_aggregate_codeql": true,
+    "verify_zero_unresolved_named_threads": true,
+    "final_head_reanalysis_required": true,
+    "ready_merge_deploy_gate_ev_gate_e_production_write": "NOT_AUTHORIZED",
+    "dismissed_comment_max_length": 280,
+    "all_dismissed_comments_ascii": true,
+    "all_dismissed_comments_length_validated": true
+  },
+  "supersedes_matrix_sha256": "b966e4b475e1399cfff2ffcdf031abc2d9f3962c2c73514a44281c908a000981",
+  "correction_reason": "GITHUB_CODE_SCANNING_DISMISSED_COMMENT_MAX_LENGTH_280",
+  "substantive_disposition_change": "NONE"
+}

@@ -1,0 +1,8 @@
+{
+  "source": "terraform-telemetry-125/staging-plan.jsonl",
+  "source_sha256": "db100fe94982cf50e71f749a5b4a6028a08154b27785f2e978d1f4b0c26c466d",
+  "testrun": "full_environment_plan",
+  "selection": "Actual mock-plan address/actions/after plus password_wo provider schema; no fabricated values",
+  "fixture_sha256": "ad5cdb26eab9c2c0271787f9592e3e1d49c2ce447c9474c400345be14eec691b",
+  "external_evidence": false
+}

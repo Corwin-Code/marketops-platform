@@ -194,15 +194,29 @@ class MetadataConstraintIT extends PostgresContainerSupport {
                 credential(UUID.randomUUID(), ORG_A, ACCOUNT_A, "verified-credential",
                         "secret-ref://vault/marketops/account-a/other")
                         .replace("'UNVERIFIED'", "'VERIFIED'"));
-        assertRejected(CHECK_VIOLATION,
-                "INSERT INTO platform.platform_capability (id, platform_code,"
-                        + " capability_code, display_name, applies_to, read_write_class,"
-                        + " subscription_required, verification_state, owner_label,"
-                        + " contract_test_status, status, created_at, updated_at)"
-                        + " VALUES ('" + UUID.randomUUID() + "', 'OZON', 'orders.push',"
-                        + " 'Push orders', 'MARKETPLACE_ACCOUNT', 'WRITE', 'UNKNOWN',"
-                        + " 'VERIFIED', 'platform-team', 'NOT_IMPLEMENTED', 'ACTIVE',"
-                        + " now(), now())");
+        try (Connection connection = asApplicationRole(container)) {
+            assertCapabilityVerificationRejected(connection, "MO039");
+        }
+        // The owning role must independently enforce the provenance constraint.
+        try (Connection connection = asMigrationRole(container)) {
+            assertCapabilityVerificationRejected(connection, CHECK_VIOLATION);
+        }
+    }
+
+    private static void assertCapabilityVerificationRejected(Connection connection, String expectedState) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement("""
+                INSERT INTO platform.platform_capability (id, platform_code,
+                    capability_code, display_name, applies_to, read_write_class,
+                    subscription_required, verification_state, owner_label,
+                    contract_test_status, status, created_at, updated_at)
+                VALUES (?, 'OZON', 'orders.push', 'Push orders', 'MARKETPLACE_ACCOUNT',
+                    'WRITE', 'UNKNOWN', 'VERIFIED', 'platform-team', 'NOT_IMPLEMENTED',
+                    'ACTIVE', now(), now())
+                """)) {
+            statement.setObject(1, UUID.randomUUID());
+            Throwable failure = Assertions.catchThrowable(statement::execute);
+            assertThat(carriesSqlState(failure, expectedState)).isTrue();
+        }
     }
 
     private static void assertRejected(String sqlState, String sql) throws SQLException {

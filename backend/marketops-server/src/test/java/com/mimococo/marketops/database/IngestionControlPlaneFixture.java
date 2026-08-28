@@ -177,8 +177,9 @@ final class IngestionControlPlaneFixture {
     /** Remove everything {@link #seed} created, youngest reference first. */
     static void reset(Connection connection) throws SQLException {
         for (String table : List.of(
-                "ops.authorization_decision_evidence",
                 "raw.raw_acquisition_observation",
+                "ops.authorization_decision_evidence",
+                "ops.endpoint_quota_window",
                 "raw.raw_logical_unit",
                 "raw.raw_content",
                 "ops.ingestion_checkpoint",

@@ -1,0 +1,71 @@
+# Production profile.
+#
+# Every value that differs between environments arrives from the environment
+# rather than from this file, and no secret appears here: the database
+# passwords and the object-store credential are delivered by the platform's
+# secret manager and named by reference.
+#
+# Maintenance writes are off. The production maintenance surface is a
+# deliberate, separately enabled operation rather than a standing capability,
+# and it is reachable only from the host the process runs on.
+
+# Only the authenticated console and read-only status routes are published by
+# ALB. Maintenance remains disabled and rejects non-loopback callers. This
+# listener binds the private VM interface; no VM has a public IP.
+server:
+  address: 0.0.0.0
+
+spring:
+  flyway:
+    enabled: false
+    password: ""
+
+marketops:
+  environment: ${MARKETOPS_ENVIRONMENT:production}
+  metadata-maintenance:
+    write-enabled: false
+  object-storage:
+    provider: OBJECT_STORE
+    endpoint: ${MARKETOPS_OBJECT_STORAGE_ENDPOINT}
+    region: ${MARKETOPS_OBJECT_STORAGE_REGION}
+    bucket: ${MARKETOPS_OBJECT_STORAGE_BUCKET}
+    access-key-id: ${MARKETOPS_OBJECT_STORAGE_ACCESS_KEY_ID}
+    credential-reference: ${MARKETOPS_OBJECT_STORAGE_CREDENTIAL_REFERENCE}
+  secrets:
+    mount-directory: ${MARKETOPS_SECRET_MOUNT_DIRECTORY}
+  diagnostic-export:
+    # Internal, authorized export work only. Does not enable marketplace writes.
+    worker-enabled: ${MARKETOPS_DIAGNOSTIC_EXPORT_WORKER_ENABLED:true}
+  acquisition:
+    scheduler-enabled: ${MARKETOPS_ACQUISITION_SCHEDULER_ENABLED:false}
+  price-write:
+    # Off. Enabling the worker is one of several separate decisions a real
+    # platform write needs, and none of them is implied by deploying this
+    # profile: the capability must be verified, both switches explicitly on, the
+    # entity allowlisted, the authorization live and the guardrail passed.
+    worker-enabled: ${MARKETOPS_PRICE_WRITE_WORKER_ENABLED:false}
+  identity:
+    oidc:
+      issuer-uri: ${MARKETOPS_OIDC_ISSUER_URI}
+      jwk-set-uri: ${MARKETOPS_OIDC_JWK_SET_URI}
+      audience: ${MARKETOPS_OIDC_AUDIENCE}
+
+logging:
+  structured:
+    format:
+      console: ecs
+    json:
+      exclude: tags
+      context:
+        include: false
+      customizer: com.mimococo.marketops.shared.internal.logging.EcsCorrelationIdJsonMembersCustomizer
+      add:
+        application: ${spring.application.name}
+        environment: ${marketops.environment}
+        buildVersion: ${spring.application.version}
+    ecs:
+      service:
+        environment: ${marketops.environment}
+  level:
+    root: WARN
+    com.mimococo.marketops: INFO

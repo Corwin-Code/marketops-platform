@@ -1,0 +1,8 @@
+{
+  "backend-integration.log.gz": "c30bbe277f0d67d6280363326f2527cee1a6b5fc3a7bf98f0e4bda14cbd13114",
+  "jacoco.xml": "e4e551fe02b9697619bb9eb658a584fadc54cf511a2513e9cd6e477e0dab9752",
+  "representative-v1.json": "cd9075431a4b13c026225035881f7c172db2561d6d8470ea85f3afb6a48f7cc5",
+  "summary.json": "339aa6a2f57c2e494797abe68855d684fe73abd03d07a0c3837a4ff0d5ce0007",
+  "test-methods.json": "a7b42242cf2ceb49c0b0b802b5f61e9dde299844f44ac6145b64e354bc8b6b47",
+  "verification-inputs.json": "ef2d16943c70eca333638f1bc74aa3c6b659b8eb13214ac490c6a04cbcce0b8f"
+}

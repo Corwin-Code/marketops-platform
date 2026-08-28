@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import json
 import re
 import subprocess
 import sys
@@ -245,8 +246,25 @@ V1_ACTIVE_STATE = {
     "active_slice_contract_authorization_condition": V1_SLICE_AUTHORIZATION_CONDITION,
     "active_gate": "SLICE_CONTRACT_APPROVED",
     "authorization": "FULL_SCOPE_IMPLEMENTATION",
-    "next_authorized_actor": "CLAUDE_FABLE_5",
-    "next_action": "SLICE_V1_001_DETAILED_DESIGN_AND_INITIAL_FULL_IMPLEMENTATION",
+    "next_authorized_actor": "GPT-5.6 Sol Pro Controller",
+    "next_action": "CONTROLLER_SLICE_V1_001_FINAL_CLOSURE_VERIFICATION",
+    "slice_v1_001_implementation_state": "ROOT_CAUSE_REWORK_CANDIDATE",
+    "slice_v1_001_rework_phase": "FINAL_CLOSURE_VERIFICATION",
+    "slice_v1_001_pr": "20",
+    "slice_v1_001_pr_state": "OPEN_DRAFT_UNMERGED",
+    "slice_v1_001_branch": "feat/SLICE-V1-001-sku-growth-profit-loop",
+    "slice_v1_001_review_state": "CONTROLLER_DEEP_REVIEW_COMPLETE",
+    "slice_v1_001_reviewed_base": "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+    "slice_v1_001_reviewed_head": "30d16e5d7db2d2190635a06fececd5883093a876",
+    "slice_v1_001_reviewed_tree": "13b1b789cd4cff292d0d6ab24daca976afbba6da",
+    "slice_v1_001_frozen_findings_sha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8",
+    "slice_v1_001_finding_count": "13",
+    "slice_v1_001_closure_claim": "NONE",
+    "candidate_state_scope": "PR_BRANCH_ONLY",
+    "merge_authorization": "NOT_GRANTED",
+    "production_deployment": "NOT_AUTHORIZED",
+    "gate_ev": "NOT_AUTHORIZED",
+    "gate_e": "NOT_AUTHORIZED",
     "production_write_enabled": "false",
     "bounded_real_write_verification_authorization": "NONE",
     "bounded_real_write_verification_gate": "REQUIRED_BEFORE_FIRST_REAL_WRITE",
@@ -254,6 +272,12 @@ V1_ACTIVE_STATE = {
     "wildberries_price_write": (
         "DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE"
     ),
+}
+SLICE_REWORK_ARTIFACT_HASHES = {
+    "FROZEN-FINDING-SET-SLICE-V1-001-PR20-R1.json": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8",
+    "CONTROLLER-SLICE-V1-001-COMPREHENSIVE-DEEP-REVIEW-R1.md": "df8a3cca26d1b4d0efd9f7f883764971cad8adb43ca698c6de545d52d46b6754",
+    "CONTROLLER-REVIEW-EVIDENCE-SLICE-V1-001-PR20-R1.json": "a4b0e22c64a89272dfec3b90d91c6181d1a65b7b36c1ba32cec1023fb15ce6bb",
+    "ARTIFACT-HASHES.json": "cacb0a2be2bfe0d3de49c7a86b0f60091fa944e2354dc8e5d9ea7be4c2816e2b",
 }
 V1_AUTHORIZATION_ALLOWED_STATES = {
     "CONTRACT_ONLY",
@@ -3814,6 +3838,74 @@ def validate_gate_ev_contract_texts(
             )
 
 
+def validate_codeql_disposition_artifacts(
+    errors: list[str], artifacts: dict[str, bytes]
+) -> None:
+    """Preserve exact Owner authority and observed security-state evidence."""
+    manifest_name = "EXECUTION-HASHES.json"
+    expected = "6b7c331995ccd2c8ed593a82ef0a7aef0b1264fbd2051f2c9f5c124693aaf5dc"
+    manifest = artifacts.get(manifest_name, b"")
+    if hashlib.sha256(manifest).hexdigest() != expected:
+        errors.append("SLICE-V1-001 CodeQL v1.1 execution manifest hash mismatch")
+        return
+    entries = json.loads(manifest)["files"]
+    if set(artifacts) != set(entries) | {manifest_name}:
+        errors.append("SLICE-V1-001 CodeQL v1.1 evidence inventory changed")
+    for name, entry in entries.items():
+        content = artifacts.get(name, b"")
+        if len(content) != entry["bytes"] or hashlib.sha256(content).hexdigest() != entry["sha256"]:
+            errors.append(f"SLICE-V1-001 CodeQL v1.1 evidence hash mismatch: {name}")
+
+
+def validate_slice_rework_evidence_text(
+    errors: list[str], acceptance: str, artifacts: dict[str, bytes]
+) -> None:
+    """Bind current candidate status to the immutable review, not Maker claims."""
+    for name, expected in SLICE_REWORK_ARTIFACT_HASHES.items():
+        if name not in artifacts or hashlib.sha256(artifacts[name]).hexdigest() != expected:
+            errors.append(f"SLICE-V1-001 frozen artifact missing or hash mismatch: {name}")
+
+    metadata = leading_yaml_body(acceptance, "# SLICE-V1-001 acceptance status") or ""
+    required = {
+        "assessed_against": "PR20_REWORK_SUBMITTED_FOR_CLOSURE",
+        "remote_publication": "PUBLISHED_DRAFT_CANDIDATE",
+        "contract_sha256": V1_ACTIVE_SLICE_CONTRACT_SHA256,
+        "frozen_findings_sha256": V1_ACTIVE_STATE["slice_v1_001_frozen_findings_sha256"],
+        "production_write_enabled": "false",
+    }
+    for field, expected in required.items():
+        if unique_yaml_value(metadata, field) != expected:
+            errors.append(f"SLICE-V1-001 acceptance {field} must be exactly: {expected}")
+    rows = re.findall(r"(?m)^\|\s*`(S1-AC-\d{3})`\s*\|\s*`([A-Z_]+)`\s*\|([^\n]*)", acceptance)
+    ids = Counter(row[0] for row in rows)
+    expected_ids = {f"S1-AC-{number:03d}" for number in range(1, 42)}
+    if set(ids) != expected_ids or any(count != 1 for count in ids.values()):
+        errors.append("SLICE-V1-001 acceptance must contain exactly 41 unique contract criteria")
+    allowed = {"EXECUTABLY_VERIFIED", "IMPLEMENTED_UNPROVEN", "IMPLEMENTATION_DEFECT",
+               "EXTERNAL_EVIDENCE_PENDING", "GATE_EV_PENDING", "OWNER_PENDING", "NOT_APPLICABLE"}
+    if any(row[1] not in allowed for row in rows):
+        errors.append("SLICE-V1-001 acceptance uses an unsupported status (MET is not a current evidence state)")
+    if any(row[1] in {"EXECUTABLY_VERIFIED", "NOT_APPLICABLE"} for row in rows):
+        errors.append("SLICE-V1-001 candidate acceptance cannot self-claim criterion closure")
+    counts = Counter(row[1] for row in rows)
+    summaries = re.findall(r"(?m)^\|\s*`([A-Z_]+)`\s*\|\s*(\d+)\s*\|\s*$", acceptance)
+    if len(summaries) != len(counts) or dict((state, int(count)) for state, count in summaries) != counts:
+        errors.append("SLICE-V1-001 acceptance summary counts do not match its 41 rows")
+    name = "FROZEN-FINDING-SET-SLICE-V1-001-PR20-R1.json"
+    try:
+        findings = json.loads(artifacts.get(name, b"{}"))["findings"]
+        if {finding["id"] for finding in findings} != {f"S1-F{number:03d}" for number in range(1, 14)}:
+            errors.append("SLICE-V1-001 must retain all 13 frozen findings")
+        by_id = {row[0]: row for row in rows}
+        for finding in findings:
+            for criterion in finding["acceptance_criteria"]:
+                row = by_id.get(criterion)
+                if row is None or row[1] != "IMPLEMENTATION_DEFECT" or finding["id"] not in row[2]:
+                    errors.append(f"SLICE-V1-001 {criterion} omits its open frozen finding {finding['id']}")
+    except (KeyError, TypeError, ValueError):
+        errors.append("SLICE-V1-001 frozen finding set is not readable")
+
+
 def validate_v1_current_state_text(
     errors: list[str],
     current_state_text: str,
@@ -3830,6 +3922,19 @@ def validate_v1_current_state_text(
         actual = unique_yaml_value(metadata, field)
         if actual != expected:
             errors.append(f"CURRENT_STATE {field} must be exactly: {expected}")
+
+    evidence_root = ROOT / "docs/07-phase-evidence/SLICE-V1-001"
+    artifacts = {name: path.read_bytes() for name in SLICE_REWORK_ARTIFACT_HASHES
+                 if (path := evidence_root / "rework-r1/frozen" / name).is_file()}
+    acceptance = evidence_root / "acceptance-status.md"
+    validate_slice_rework_evidence_text(errors, acceptance.read_text() if acceptance.is_file() else "", artifacts)
+    disposition_root = evidence_root / "rework-r1/codeql-v1.1"
+    validate_codeql_disposition_artifacts(
+        errors, {path.name: path.read_bytes() for path in disposition_root.glob("*") if path.is_file()}
+    )
+    for stale in ("No pull request exists", "Nothing was pushed", "LOCAL_CHECKPOINT_COMPLETE_UNPUBLISHED"):
+        if stale in current_state_text:
+            errors.append(f"CURRENT_STATE retains stale unpublished state: {stale}")
 
     authorization = unique_yaml_value(metadata, "authorization")
     if authorization is not None and authorization not in V1_AUTHORIZATION_ALLOWED_STATES:

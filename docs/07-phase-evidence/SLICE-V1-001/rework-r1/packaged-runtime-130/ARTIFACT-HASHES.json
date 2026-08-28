@@ -1,0 +1,17 @@
+{
+  "backend.image-id": "47f1ffdc3259a5d079374cf1617aeb6f8dacad92bdc85960a0a7fefb3d8e8738",
+  "migration.image-id": "52e5823ee44e8399f7e461eaabedebf11bc86b6c0155d25971cc54a7cca70c19",
+  "summary.json": "d9c636fe91c85195e0be2a365c60d6cd0bcf54edadce20f786e5fc022e20bb2a",
+  "backend-artifact-label.log.gz": "010b7dd0e294cd40f81bdc3b84b33ca00cf9b53969e7c6127b98f0b91af018f0",
+  "backend-build.log.gz": "e9079d80b4d3e2c0d14980fd8a68927ba785fd743c472ad0beee2cd006a38bb0",
+  "checkout-identity.log.gz": "3abffd60af989464406907eafb2b58f8d6e551964bfa25ac5204811979da48d9",
+  "checkout-status.log.gz": "45d0ee6ff73f9a50b3a5f8ca89709df528b086b8b8f4d321dd85869ab5f8bdd0",
+  "compile-probe.log.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+  "docker-endpoint.log.gz": "ad1affa0240784f8507926223a3e48826941a223f878b38b100c440ec9bf697d",
+  "migration-artifact-label.log.gz": "010b7dd0e294cd40f81bdc3b84b33ca00cf9b53969e7c6127b98f0b91af018f0",
+  "migration-build.log.gz": "272e4a17cb48eb8e253c791c4bffcb59d59cd644a70c5b64499f0041a50e8673",
+  "missing-envelope-refused.log.gz": "fabcd35a30b18d6d083ba30143df385e32b34c23b8df3b6e653e85287c4df21a",
+  "packaged-resolver.log.gz": "6062ac843fd4b52a937ecee03fc16c3b7b45332345bba92f620d10b1b6ab9610",
+  "wrong-artifact-build-refused.log.gz": "44b25ab32a41f1d3ffa2390712cc320e3d5e03220c1362cda0042030e66aa503",
+  "ARTIFACT-HASHES.before-log-packaging.json": "c3bc6a82ec1715be28f41caeb3f4dc99d19d4939654d7258db732cc7abfa5e4a"
+}

@@ -1,0 +1,8 @@
+{
+  "source_workflow_run": 33122375344,
+  "files": 1438,
+  "text_files_scanned": 1415,
+  "high_specificity_secret_pattern_hits": [],
+  "archive_sha256": "0a954cc7de9b4b177665e9ebe9db18bef9a7774f65a5c62ffb111dd5a5dcf843",
+  "scan_limit": "Heuristic, not universal PII proof"
+}

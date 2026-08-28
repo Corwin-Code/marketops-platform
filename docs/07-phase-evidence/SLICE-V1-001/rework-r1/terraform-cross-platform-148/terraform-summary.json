@@ -1,0 +1,61 @@
+{
+  "terraform": "1.14.9",
+  "provider": "yandex-cloud/yandex 0.220.0",
+  "plans": [
+    {
+      "environment": "bootstrap",
+      "resource_count": 11,
+      "state_custody": "PASS",
+      "external_verification": "NOT_PERFORMED",
+      "plan_sha256": "9598b9e3bc6f6a6a8002cc86374327c7eebdd0a7e1ca4e86c97112bdcc07fa52",
+      "apply": "NOT_EXECUTED"
+    },
+    {
+      "environment": "staging",
+      "resource_count": 75,
+      "network": "PASS",
+      "runtime": "PASS",
+      "secret_plan_persistence": "ABSENT",
+      "external_verification": "NOT_PERFORMED",
+      "foundation": {
+        "environment": "staging",
+        "resource_count": 67,
+        "network": "PASS",
+        "runtime": "NOT_CREATED_BEFORE_MIGRATION",
+        "secret_plan_persistence": "ABSENT",
+        "external_verification": "NOT_PERFORMED"
+      },
+      "unproven_runtime": "REFUSED_EXPECTED_MISSING_MIGRATION_EVIDENCE",
+      "plan_sha256": "9b1c0bf640488e9b0378386aa72ca6232552458be820ffa0af446d9b6c55f0e6",
+      "apply": "NOT_EXECUTED"
+    },
+    {
+      "environment": "production",
+      "resource_count": 75,
+      "network": "PASS",
+      "runtime": "PASS",
+      "secret_plan_persistence": "ABSENT",
+      "external_verification": "NOT_PERFORMED",
+      "foundation": {
+        "environment": "production",
+        "resource_count": 67,
+        "network": "PASS",
+        "runtime": "NOT_CREATED_BEFORE_MIGRATION",
+        "secret_plan_persistence": "ABSENT",
+        "external_verification": "NOT_PERFORMED"
+      },
+      "unproven_runtime": "REFUSED_EXPECTED_MISSING_MIGRATION_EVIDENCE",
+      "plan_sha256": "03055c2f587efef89ae4c14328c6e82db03165445e27d5d465b46e556038004b",
+      "apply": "NOT_EXECUTED"
+    }
+  ],
+  "provider_installation": "LOCKFILE_VERIFIED_LOCAL_MIRROR",
+  "lockfiles": {
+    "infra/yandex/bootstrap/.terraform.lock.hcl": "ad2cbf55acc008b0c54953b67a073a7ba494624cdfcb2c8d0d0af6a518669a37",
+    "infra/yandex/environments/staging/.terraform.lock.hcl": "ad2cbf55acc008b0c54953b67a073a7ba494624cdfcb2c8d0d0af6a518669a37",
+    "infra/yandex/environments/production/.terraform.lock.hcl": "ad2cbf55acc008b0c54953b67a073a7ba494624cdfcb2c8d0d0af6a518669a37"
+  },
+  "real_provider_api_calls": "NONE_MOCK_PROVIDER",
+  "deployment": "NOT_AUTHORIZED",
+  "state_inspection_scope": "WRITE_ONLY_SCHEMA_AND_SYNTHETIC_PLAN_VALUES_NO_REAL_STATE"
+}

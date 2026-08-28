@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-08-27
+as_of: 2026-08-28
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -13,6 +13,11 @@ active_delivery_slice: SLICE-V1-001
 active_slice_title: SKU Growth & Profit Diagnostic Loop
 active_slice_contract: docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md
 active_slice_contract_sha256: 0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5
+active_slice_amendment: docs/03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md
+active_slice_amendment_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d
+active_slice_amendment_acceptance: HUMAN_OWNER_ACCEPTED_FOR_PR20_REWORK
+active_slice_amendment_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md
+active_slice_amendment_acceptance_evidence_sha256: e8fc208a4fcd9270b9187b65aa1618ecf6179166a3a44b4a37213bf067a91ee8
 active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
 active_gate: SLICE_CONTRACT_APPROVED
 authorization: FULL_SCOPE_IMPLEMENTATION
@@ -39,8 +44,32 @@ execution_envelope_state: ACTIVE_UNDER_DR_0004
 closure_snapshot_standard_state: ACTIVE_UNDER_DR_0004
 conditional_design_gate: ENABLED
 mandatory_design_gate_for_every_slice: DISABLED
-next_authorized_actor: CLAUDE_FABLE_5
-next_action: SLICE_V1_001_DETAILED_DESIGN_AND_INITIAL_FULL_IMPLEMENTATION
+slice_v1_001_implementation_state: ROOT_CAUSE_REWORK_CANDIDATE
+slice_v1_001_rework_phase: FINAL_CLOSURE_VERIFICATION
+slice_v1_001_pr: 20
+slice_v1_001_pr_state: OPEN_DRAFT_UNMERGED
+slice_v1_001_branch: feat/SLICE-V1-001-sku-growth-profit-loop
+slice_v1_001_review_state: CONTROLLER_DEEP_REVIEW_COMPLETE
+slice_v1_001_reviewed_base: 89fc29be45327b592a9bcbeffbfec54c96fb66ed
+slice_v1_001_reviewed_head: 30d16e5d7db2d2190635a06fececd5883093a876
+slice_v1_001_reviewed_tree: 13b1b789cd4cff292d0d6ab24daca976afbba6da
+slice_v1_001_frozen_findings_sha256: 8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8
+slice_v1_001_rework_commit_state: PUBLISHED_DRAFT_CANDIDATE
+slice_v1_001_finding_count: 13
+slice_v1_001_closure_claim: NONE
+slice_v1_001_execution_condition: AMENDMENT_001_ACCEPTED_FULL_REWORK_CONTINUES
+slice_v1_001_decision_request: docs/07-phase-evidence/SLICE-V1-001/rework-r1/DECISION-REQUEST-S1-F010-MANAGED-PG-BOOTSTRAP.md
+candidate_state_scope: PR_BRANCH_ONLY
+merge_authorization: NOT_GRANTED
+production_deployment: NOT_AUTHORIZED
+gate_ev: NOT_AUTHORIZED
+gate_e: NOT_AUTHORIZED
+slice_v1_001_as_built_design: docs/02-architecture/designs/SLICE-V1-001-design.md
+slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
+slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
+next_authorized_actor: GPT-5.6 Sol Pro Controller
+next_action: CONTROLLER_SLICE_V1_001_FINAL_CLOSURE_VERIFICATION
+slice_v1_001_handoff_pending: INDEPENDENT_CONTROLLER_FINAL_CLOSURE_VERIFICATION
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
 bounded_real_write_verification_authorization: NONE
@@ -48,6 +77,7 @@ bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE
 ozon_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
 wildberries_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
 production_infrastructure: YANDEX_CLOUD_RU_CENTRAL1
+managed_postgresql_major: "17"
 human_authentication: EXTERNAL_OIDC_MFA_DEFAULT_YANDEX_IDENTITY_HUB
 owner_git_workflow_guidance: REQUIRED
 owner_git_workflow_guidance_exit: HUMAN_OWNER_EXPLICIT_CONFIRMATION
@@ -59,6 +89,26 @@ owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 
 ## Active authority
 
+This branch presents the continuous rework candidate for independent final
+closure verification. The Human Owner accepted exact
+[Amendment-001](../03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md)
+at SHA-256 `8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d`.
+[Acceptance provenance](../08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md)
+authorizes PG17 managed bootstrap implementation in this same Draft PR.
+The earlier [Decision Request](../07-phase-evidence/SLICE-V1-001/rework-r1/DECISION-REQUEST-S1-F010-MANAGED-PG-BOOTSTRAP.md)
+and failed compatibility evidence remain historical records. The compatibility
+decision is no longer pending; implementation, negative tests, equivalence,
+local restore evidence now exist. The C3 checkpoint has full local and remote
+verification; real staging verification remains external and unauthorized.
+The original Contract and V0001–V0010 remain byte-immutable, and standard V0002
+continues exact SQL execution. All thirteen Frozen Findings remain open for the
+Controller's independent verdict. The [final handoff index](../07-phase-evidence/SLICE-V1-001/rework-r1/final-handoff.md)
+binds the correction and acceptance maps to the verified C3 checkpoint and the
+executed, Owner-authorized CodeQL v1.1 dispositions. Delivery also requires the
+complete local and remote verification packet for the exact final published
+Head; C3 results cannot substitute for it. This is not a closure verdict or a
+change to protected main.
+
 The active product and Slice authority remains DR-0003,
 `OWNER_DECISIONS_V1.md`, `V1_PRODUCT_CONTRACT.md`, ADR-0005 through ADR-0008 and
 the Slice Contract named above. DR-0004, `EXECUTION_ENVELOPE_POLICY.md` and
@@ -66,10 +116,11 @@ the Slice Contract named above. DR-0004, `EXECUTION_ENVELOPE_POLICY.md` and
 changing that product outcome or the active Slice Contract bytes. Their authority
 is the immutable original DR-0004 plus exact Owner-accepted
 `DR-0004-AMENDMENT-001`, with durable acceptance provenance in
-`docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md`. Claude is authorized to
-perform local Detailed Design and Initial Full Implementation continuously inside
-that exact Contract. A separate Design Approval is not required unless a
-Conditional Design Gate trigger occurs.
+`docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md`. Claude completed the initial implementation and its exact checkpoint was
+published as Draft PR #20. The Human Owner supplied the exact Frozen Finding Set
+R1 and authorized Codex to perform the continuous in-scope root-cause rework on
+the same branch/PR. This candidate branch state does not update protected main.
+It does not grant Ready, merge, deployment, Gate EV, Gate E or real provider I/O.
 
 The frozen originals' `status: PROPOSED_PENDING_EXACT_OWNER_ACCEPTANCE` and
 `status: PROPOSED_BY_DR_0004` fields are proposal-time provenance only, not live
@@ -197,14 +248,51 @@ V0011. DR-0003 itself contains no migration.
 - Owner-level decisions required to start Slice 1 are closed or assigned to a
   precise external evidence/production enablement Gate.
 
+## SLICE-V1-001 candidate PR and rework
+
+PR #20 is OPEN / DRAFT / UNMERGED on the branch named above. Its published,
+reviewed checkpoint contains thirteen original implementation commits. The
+reviewed identities are recorded above and in
+`docs/07-phase-evidence/SLICE-V1-001/rework-r1/starting-identity.json`; these are
+starting identities, not the final rework commit or tree.
+
+Controller Deep Review is complete. All thirteen frozen findings remain open
+for final independent closure verification. No finding
+is self-approved. Local targeted test results do not establish overall PR
+quality, Slice completion, or V1 completion. The current acceptance matrix uses
+separate defect and external-evidence states rather than the superseded Maker
+self-assessment. The original assessment remains in Git at the reviewed Head.
+
+V0011–V0026 contain the in-scope candidate corrections. V0027 adds the
+account-bound verification workflow and V0028 bounded diagnostic exports. V0001–V0010 and the accepted original Slice
+Contract are unchanged. C3 is published and all 13 checks pass following the five
+exact v1.1 dispositions; all 11 review threads are resolved. Final identities,
+verification commands, coverage and CI are supplied in the final delivery
+packet. The reviewed Head above remains historical provenance.
+
 ## Not completed and not claimed
 
 - No real Ozon/WB client, credential retrieval, platform call or production write
-  is enabled by the reset.
-- Human OIDC authentication is not yet implemented.
-- Yandex infrastructure is selected but not provisioned or accepted.
-- Product/Listing identity, cross-domain operating facts, AI analysis, workflow,
-  price command, UI and production deployment remain Slice 1 implementation.
+  is enabled by the reset. Every capability row remains `UNVERIFIED`, which is
+  why no call is reachable.
+- No model provider was contacted. Every provider row remains `UNVERIFIED`.
+- Human OIDC authentication has synthetic local tests; no real identity provider
+  was contacted. Signed-token servlet/DB verification does not establish actual
+  provider interoperability. The synthetic signed-token/real-DB browser journey
+  passes locally; actual IdP interoperability remains pending.
+- Yandex infrastructure has local fmt/init-without-backend, provider-schema
+  validate and mock-plan evidence. It has never been applied and no account was
+  contacted. Real state, alerts and runtime operation remain unproven; the
+  managed database bootstrap direction is accepted in Amendment-001. PG17
+  local standard/managed bootstrap and packaged artifact tests pass; real
+  Yandex behavior remains pending.
+- Local PG17 dump/restore, migration/privilege revalidation, object-loss refusal
+  and exact-byte recovery have executed. Real Yandex PITR and environment
+  bootstrap have not; local evidence is not provider recovery evidence.
+- The original PR's failed checks remain in the frozen Controller package.
+  C3's successful checks and v1.1 disposition evidence are separate later
+  records. The final delivery packet must verify the exact final Head, including
+  this canonical handoff commit, before Controller consumption.
 - V1 and SLICE-V1-001 are not production-ready until their future Gates pass.
 - Business sales/profit uplift is not claimed.
 
@@ -217,12 +305,10 @@ Cohort block only their named integration or production-enablement boundary.
 
 ## Next authorized action
 
-```text
-CLAUDE_FABLE_5 executes SLICE-V1-001 local Detailed Design and Initial Full
-Implementation under the approved Slice Contract and Execution Envelope. Claude may change in-scope
-backend, frontend, V0011+ migrations, tests, infrastructure-as-code, docs and
-runbooks and create local Git checkpoints. It may not push, mutate a remote
-branch/tag or create/update a PR under ordinary authority. It must keep production
-writes disabled and stop only on a material Conditional Design Gate trigger,
-Execution Envelope expansion or proven external-capability blocker.
-```
+The next review actor is GPT-5.6 Sol Pro Controller for
+`CONTROLLER_SLICE_V1_001_FINAL_CLOSURE_VERIFICATION` over the complete Frozen
+Finding Set. Codex must finish exact-final-Head local verification, publication,
+all required/security CI and the standalone delivery report before returning
+that handoff. It cannot issue the Controller verdict itself. The PR remains
+OPEN / DRAFT / UNMERGED; Ready, merge, deployment, real credentials/provider
+business calls, Gate EV, Gate E and production writes remain unauthorized.

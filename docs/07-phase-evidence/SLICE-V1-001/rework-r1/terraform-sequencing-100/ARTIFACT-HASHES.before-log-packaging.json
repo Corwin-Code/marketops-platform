@@ -1,0 +1,15 @@
+{
+  "bootstrap-validate.log": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+  "summary.json": "bcb6916dfb0c6435c0388f4070c2fb19eef822efb4d832cb20908ad9fc15ae59",
+  "version.json": "e6f53c613e59bd8bec48e54c4131c347fa0a87012d041efc8ecd22fa615300eb",
+  "staging-validate.log": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+  "fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "bootstrap-plan.jsonl": "dc2d45757a64997ea9cc4f1858378990f544b4bf289aecd82bdd6fb117f43aa7",
+  "verification.tfrc": "8a8431df308a7d2ebfb37c6740478a1ba1d6a8998cc4aa15c6c4fa8596884022",
+  "bootstrap-init.log": "cfd5dd9105c908196ecd8d08ec500639702837b64c6c5b89157616d9f1e13908",
+  "production-validate.log": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1",
+  "production-plan.jsonl": "a2a3efd83cc52b2b58a37a25b8de9140166c1820ba79b4391401387378cd13c0",
+  "staging-init.log": "86d99eacbc159f62fc4842dc90e8449fd0140b637d46480a4a1168f1b24afa95",
+  "staging-plan.jsonl": "80c3582de3d57965bc5f3d669881e159c943dcb32ffff312a8fa54c49bd8088d",
+  "production-init.log": "86d99eacbc159f62fc4842dc90e8449fd0140b637d46480a4a1168f1b24afa95"
+}

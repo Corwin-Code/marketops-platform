@@ -1,0 +1,9 @@
+# Only identifiers belong here. Credentials are delivered through the approved
+# ephemeral environment. Copy the exact Document API endpoint from bootstrap.
+bucket = "REPLACE-WITH-STATE-BUCKET"
+key = "marketops/production/terraform.tfstate"
+kms_key_id = "REPLACE_WITH_STATE_KMS_KEY_ID"
+endpoints = {
+  s3 = "https://storage.yandexcloud.net"
+  dynamodb = "REPLACE_WITH_EXACT_YDB_DOCUMENT_API_ENDPOINT"
+}

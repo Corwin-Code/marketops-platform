@@ -11,7 +11,12 @@ public enum AuditSourceDomain {
     ORGANIZATION_ACCOUNT("organizationaccount"),
     IDENTITY_ACCESS("identityaccess"),
     MARKETPLACE_INTEGRATION("marketplaceintegration"),
-    ADMIN_OBSERVABILITY("adminobservability");
+    ADMIN_OBSERVABILITY("adminobservability"),
+    PRODUCT_LISTING("productlisting"),
+    OPERATING_FACTS("operatingfacts"),
+    ANALYTICS_DECISION("analyticsdecision"),
+    AI_COPILOT("aicopilot"),
+    OPERATIONS_WORKFLOW("operationsworkflow");
 
     private final String dbValue;
 

@@ -43,7 +43,25 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0007__create_ingestion_control_plane_authority.sql",
             "V0008__attach_control_epoch_triggers.sql",
             "V0009__create_control_boundary_kinds_and_decision_evidence.sql",
-            "V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql");
+            "V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql",
+            "V0011__create_human_identity_and_business_authorization.sql",
+            "V0012__create_product_listing_identity_and_mapping.sql",
+            "V0013__create_cross_domain_operating_facts.sql",
+            "V0014__create_internal_fact_intake_and_file_import.sql",
+            "V0015__create_canonical_metric_definitions_and_values.sql",
+            "V0016__create_deterministic_diagnosis_rules_and_findings.sql",
+            "V0017__create_ai_projection_invocation_and_output.sql",
+            "V0018__create_recommendation_task_and_approval_workflow.sql",
+            "V0019__create_commercial_policy_and_guardrails.sql",
+            "V0020__create_price_command_outbox_readback_and_write_gate.sql",
+            "V0021__create_platform_api_profile_and_request_shape.sql",
+            "V0022__create_ingestion_run_lifecycle_and_replay_guard.sql",
+            "V0023__create_declared_normalization_and_drift_observation.sql",
+            "V0024__create_capability_write_operation_shape.sql",
+            "V0025__create_price_command_attempt_completion_and_lease_recovery.sql",
+            "V0026__rename_operational_capability_column_to_action_kind.sql",
+            "V0027__create_account_bound_registry_verification.sql",
+            "V0028__create_bounded_diagnostic_export.sql");
 
     private static PostgreSQLContainer container;
 
@@ -106,23 +124,86 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                             + " ORDER BY 1");
 
             assertThat(tables).containsExactly(
+                    "core.cost_version",
+                    "core.fact_provenance",
+                    "core.finance_input_version",
                     "core.fulfillment_mode",
+                    "core.internal_stock_snapshot",
                     "core.legal_entity",
+                    "core.listing_health_observation",
+                    "core.listing_mapping",
+                    "core.listing_mapping_candidate",
+                    "core.listing_price_observation",
+                    "core.listing_stock_observation",
+                    "core.listing_traffic_observation",
+                    "core.mapping_conflict",
                     "core.marketplace_account",
                     "core.marketplace_platform",
                     "core.organization",
+                    "core.platform_listing",
+                    "core.platform_listing_variant",
+                    "core.product",
+                    "core.product_barcode",
+                    "core.product_variant",
                     "core.store",
                     "core.store_fulfillment_declaration",
                     "core.store_warehouse_link",
                     "core.warehouse",
+                    "iam.action_scope",
+                    "iam.business_role",
+                    "iam.business_role_action_scope",
+                    "iam.identity_decision_event",
+                    "iam.identity_provider",
                     "iam.permission_kind",
                     "iam.service_account",
                     "iam.service_account_allowed_source",
                     "iam.service_account_scope_grant",
+                    "iam.user_account",
+                    "iam.user_role_assignment",
+                    "iam.user_scope_grant",
+                    "ledger.ad_spend_fact",
+                    "ledger.finance_fee_fact",
+                    "ledger.return_fact",
+                    "ledger.sales_fact",
+                    "mart.calculation_run",
+                    "mart.diagnosis_finding",
+                    "mart.diagnosis_finding_input",
+                    "mart.diagnosis_rule",
+                    "mart.diagnosis_rule_input",
+                    "mart.diagnostic_export_row",
+                    "mart.metric_definition",
+                    "mart.metric_input_reference",
+                    "mart.metric_value",
+                    "ops.ai_claim_evidence",
+                    "ops.ai_invocation",
+                    "ops.ai_model",
+                    "ops.ai_output_claim",
+                    "ops.ai_projection_definition",
+                    "ops.ai_projection_field",
+                    "ops.ai_provider",
+                    "ops.approval_decision",
                     "ops.authorization_decision_evidence",
+                    "ops.commercial_policy",
+                    "ops.commercial_policy_limit",
+                    "ops.diagnostic_export",
+                    "ops.diagnostic_export_part",
+                    "ops.endpoint_quota_window",
+                    "ops.guardrail_evaluation",
                     "ops.ingestion_checkpoint",
                     "ops.ingestion_run",
+                    "ops.kill_switch_event",
                     "ops.metadata_audit_event",
+                    "ops.pilot_allowlist_entry",
+                    "ops.policy_authorization",
+                    "ops.policy_limit_kind",
+                    "ops.price_command",
+                    "ops.price_command_attempt",
+                    "ops.price_command_readback",
+                    "ops.price_command_transition",
+                    "ops.recommendation",
+                    "ops.recommendation_evidence",
+                    "ops.work_task",
+                    "platform.capability_operation",
                     "platform.capability_subject_status",
                     "platform.capability_verification_event",
                     "platform.control_boundary_kind",
@@ -134,12 +215,24 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "platform.credential_store_scope",
                     "platform.feature_flag",
                     "platform.ingestion_job",
+                    "platform.platform_api_profile",
+                    "platform.platform_auth_header",
                     "platform.platform_capability",
                     "platform.platform_endpoint",
                     "platform.platform_permission_requirement",
+                    "platform.registry_verification_case",
+                    "raw.price_response_observation",
                     "raw.raw_acquisition_observation",
                     "raw.raw_content",
-                    "raw.raw_logical_unit");
+                    "raw.raw_logical_unit",
+                    "staging.canonical_field",
+                    "staging.import_batch",
+                    "staging.import_row",
+                    "staging.import_schema_profile",
+                    "staging.normalization_checkpoint",
+                    "staging.normalization_field",
+                    "staging.normalization_mapping",
+                    "staging.schema_drift_observation");
         }
     }
 
@@ -177,6 +270,59 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "SELECT platform_code FROM platform.control_epoch_membership_guard"
                             + " WHERE guard_kind = 'PLATFORM_JOB_SET' ORDER BY platform_code"))
                     .containsExactly("OZON", "WILDBERRIES");
+            assertThat(strings(connection,
+                    "SELECT code FROM iam.business_role ORDER BY ordinal"))
+                    .containsExactly("OWNER", "OPERATIONS", "FINANCE", "READ_ONLY");
+            assertThat(strings(connection,
+                    "SELECT code FROM iam.action_scope ORDER BY ordinal"))
+                    .containsExactly(
+                            "DIAGNOSTIC_VIEW", "EVIDENCE_VIEW", "MAPPING_RESOLVE",
+                            "INTERNAL_FACT_INTAKE", "RECOMMENDATION_MANAGE", "TASK_ASSIGN",
+                            "PRICE_CHANGE_APPROVE", "COMMERCIAL_POLICY_MANAGE",
+                            "COMMAND_RESOLVE", "KILL_SWITCH_OPERATE");
+            // A role matrix that grew without review is the quiet way a
+            // read-only profile acquires the ability to move a price.
+            assertThat(strings(connection,
+                    "SELECT action_code FROM iam.business_role_action_scope"
+                            + " WHERE role_code = 'READ_ONLY' ORDER BY action_code"))
+                    .containsExactly("DIAGNOSTIC_VIEW", "EVIDENCE_VIEW");
+            assertThat(count(connection,
+                    "SELECT count(*) FROM iam.business_role_action_scope"
+                            + " WHERE role_code <> 'OWNER' AND action_code IN"
+                            + " ('PRICE_CHANGE_APPROVE', 'COMMERCIAL_POLICY_MANAGE')"))
+                    .isZero();
+            assertThat(strings(connection,
+                    "SELECT metric_code FROM mart.metric_definition"
+                            + " WHERE domain = 'PROFIT' ORDER BY metric_code"))
+                    .containsExactly(
+                            "CONTRIBUTION_MARGIN", "MINIMUM_PRICE",
+                            "OBSERVED_SELLING_PRICE", "OPERATIONAL_CONTRIBUTION_PROFIT",
+                            "SETTLED_CONTRIBUTION_PROFIT");
+            assertThat(strings(connection,
+                    "SELECT rule_code FROM mart.diagnosis_rule ORDER BY ordinal"))
+                    .containsExactly(
+                            "DATA_BLOCKED", "NEGATIVE_MARGIN", "STOCKOUT_RISK", "HIGH_RETURN",
+                            "LOW_IMPRESSION", "LOW_CLICK_THROUGH", "LOW_CONVERSION",
+                            "ADVERTISING_INEFFICIENT", "PRICE_BELOW_MINIMUM");
+            // An unknown platform result must never be repeatable as a write.
+            // The absence of this transition is the guarantee, so it is asserted
+            // directly rather than inferred from the code that reads the table.
+            assertThat(count(connection,
+                    "SELECT count(*) FROM ops.price_command_transition"
+                            + " WHERE from_state = 'UNKNOWN_REQUIRES_READBACK'"
+                            + " AND to_state IN ('EXECUTING', 'LEASED', 'SUCCEEDED')"))
+                    .isZero();
+            assertThat(strings(connection,
+                    "SELECT to_state FROM ops.price_command_transition"
+                            + " WHERE from_state = 'READBACK_PENDING' ORDER BY to_state"))
+                    .containsExactly("READBACK_MISMATCH", "RETRY_WAIT", "SUCCEEDED",
+                            "UNKNOWN_REQUIRES_READBACK");
+            // No projection field may carry a buyer attribute or free source text.
+            assertThat(strings(connection,
+                    "SELECT DISTINCT data_classification FROM ops.ai_projection_field"
+                            + " ORDER BY 1"))
+                    .containsExactly("CANONICAL_METRIC", "DETERMINISTIC_FINDING",
+                            "OPAQUE_IDENTIFIER", "OPERATING_ATTRIBUTE");
             assertThat(single(connection,
                     "SELECT extname FROM pg_extension WHERE extname = 'btree_gist'"))
                     .isEqualTo("btree_gist");
@@ -339,6 +485,36 @@ class FlywayMigrationIT extends PostgresContainerSupport {
         assertThatThrownBy(() -> migrator(container).clean())
                 .as("no path in this project may drop a schema")
                 .isInstanceOf(Exception.class);
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("TC-DB-115 provider-preinstalled btree_gist cannot satisfy immutable V0002")
+    void preinstalledExtensionDoesNotBecomeAnAppliedMigration() throws Exception {
+        try (PostgreSQLContainer isolated = create()) {
+            isolated.start();
+            // Execute V0001 normally so even a valid history cannot make V0002
+            // tolerate an extension installed by a separate control plane.
+            Flyway.configure().configuration(migrator(isolated).getConfiguration())
+                    .target("0001").load().migrate();
+            try (Connection connection = asSuperuser(isolated);
+                 Statement statement = connection.createStatement()) {
+                statement.execute("CREATE EXTENSION btree_gist WITH SCHEMA public");
+            }
+            Throwable failure = Assertions.catchThrowable(() -> migrator(isolated).migrate());
+            assertThat(carriesSqlState(failure, "42710"))
+                    .as("immutable V0002 must refuse a duplicate extension")
+                    .isTrue();
+            try (Connection connection = asSuperuser(isolated)) {
+                assertThat(strings(connection,
+                        "SELECT script FROM public.flyway_schema_history WHERE type='SQL' ORDER BY installed_rank"))
+                        .containsExactly("V0001__create_foundation_schemas.sql");
+                assertThat(single(connection,
+                        "SELECT extname FROM pg_extension WHERE extname='btree_gist'"))
+                        .isEqualTo("btree_gist");
+                assertThat(single(connection,"SELECT to_regclass('ops.metadata_audit_event')")).isNull();
+            }
+        }
     }
 
     private static String schemaOwner(Connection connection, String schema) throws SQLException {

@@ -1,0 +1,71 @@
+{
+  "base": "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+  "reviewed_head": "30d16e5d7db2d2190635a06fececd5883093a876",
+  "protected_migrations": [
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0001__create_foundation_schemas.sql",
+      "sha256": "7c7f34ba3a3746883e236a5a4e6eb0efc87e58e3b33f895d7f1d71c369d0eb0d",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0002__enable_btree_gist_extension.sql",
+      "sha256": "438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0003__create_metadata_audit_event.sql",
+      "sha256": "efbe9ff5bb32fb96011f9d5b80426fb8d4134a2bd2314bb6294d8eb60be8135c",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0004__create_core_organization_metadata.sql",
+      "sha256": "39bff4689febfe3effa1e73953589976fa030c035412263e365f0d1a7be65d2c",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0005__create_iam_access_metadata.sql",
+      "sha256": "51a47d8cf735ff6378e4d0a3d201725b255e8f835e662a7d68b34d6dd51950f1",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0006__create_platform_registry_metadata.sql",
+      "sha256": "7225402b7a77cc04933e5d030772f9f6e2e98f4e552ac577e1254f998d73e902",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0007__create_ingestion_control_plane_authority.sql",
+      "sha256": "83ccccf382389ec62a401393cd85508183240eeb3d94215549a101f6ab5e8781",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0008__attach_control_epoch_triggers.sql",
+      "sha256": "8f148e213c8cd2f50c57c0d585708d59677d72663e4d45a6c62000dc663d5fea",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0009__create_control_boundary_kinds_and_decision_evidence.sql",
+      "sha256": "9b906c8e732aec72b7f069c5374cb0dc9894071e18e091281b9c28785336885d",
+      "matches_protected_base": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql",
+      "sha256": "a3b8ca08b796c1d211f17a042a8ec546cd0009d4457e2d68dcd930dfc36a13d9",
+      "matches_protected_base": true
+    }
+  ],
+  "original_commits_retained": [
+    "30d16e5d7db2d2190635a06fececd5883093a876",
+    "34c89b20b8e2a887b409aedb36641313c9d78412",
+    "1231a07b76787b1bd85276b3c35e7c2285af3e78",
+    "e2bff730f7918565eb42892cdf6bada04fe13eda",
+    "02c3b73fad51bd51bcc1cca5110caacf28da3976",
+    "0df670faca2acb8ca542433bd430bb8342416e2a",
+    "18c9ab3b254d455fba61ab52bf8a026b002bbafb",
+    "0d2fe059a551d2bbe12739a2c5ea7f50eba8dc41",
+    "6fe4eaf64c2b790d5b4a237de03bf6e02a46593b",
+    "9d38d1f876a18cf596b7468345068cac5784d7f5",
+    "a9b57a5957a643f76442d8dc9f059dbbe23d2243",
+    "36f251032d8c52d9826ba55ae312d41501fc976e",
+    "65e5166a255a94413d3ae274b9f68e0309e8c2b2"
+  ]
+}

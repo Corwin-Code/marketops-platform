@@ -1,0 +1,564 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "controller_review_evidence",
+  "review_id": "CONTROLLER_SLICE_V1_001_DEEP_REVIEW_R1",
+  "reviewed_at_utc": "2026-08-27T00:00:00Z",
+  "repository": "Corwin-Code/marketops-platform",
+  "pull_request": 20,
+  "identity": {
+    "protected_base": "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+    "protected_base_tree": "28029347daa05bbff40c1a0ca15c7ad0d9f1ac92",
+    "bundle_sha256": "2ac3599b4ec2c821f711acda4c95ad4bdfbd3484cdee8f38c672891d1d5df0e1",
+    "bundle_size_bytes": 635140,
+    "claude_local_commit": "30d16e5d7db2d2190635a06fececd5883093a876",
+    "claude_local_tree": "13b1b789cd4cff292d0d6ab24daca976afbba6da",
+    "remote_branch": "feat/SLICE-V1-001-sku-growth-profit-loop",
+    "remote_head": "30d16e5d7db2d2190635a06fececd5883093a876",
+    "remote_tree": "13b1b789cd4cff292d0d6ab24daca976afbba6da",
+    "publication_preserved_exact_commit": true,
+    "publication_preserved_exact_tree": true,
+    "tested_merge": "7a030140a521ac1cf257858feff6c4894cac2c04",
+    "tested_merge_tree": "13b1b789cd4cff292d0d6ab24daca976afbba6da",
+    "tested_merge_parents": [
+      "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+      "30d16e5d7db2d2190635a06fececd5883093a876"
+    ],
+    "pr_state": "OPEN_DRAFT_UNMERGED",
+    "changed_files": 356,
+    "additions": 46849,
+    "deletions": 48,
+    "commits_after_base": 13
+  },
+  "contract": {
+    "path": "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+    "sha256": "0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5",
+    "accepted_amendments": []
+  },
+  "review_surface": {
+    "migrations": [
+      "V0011",
+      "V0012",
+      "V0013",
+      "V0014",
+      "V0015",
+      "V0016",
+      "V0017",
+      "V0018",
+      "V0019",
+      "V0020",
+      "V0021",
+      "V0022",
+      "V0023",
+      "V0024",
+      "V0025",
+      "V0026"
+    ],
+    "modules": [
+      "identityaccess",
+      "productlisting",
+      "marketplaceintegration",
+      "operatingfacts",
+      "analyticsdecision",
+      "aicopilot",
+      "operationsworkflow",
+      "adminobservability",
+      "frontend-console",
+      "yandex-infra",
+      "testing-evidence-governance"
+    ],
+    "source_review_method": [
+      "PR changed-file inventory and patches",
+      "exact-Head source reads",
+      "migration/privilege review",
+      "CI artifacts and job logs",
+      "CodeQL review threads",
+      "Maker bundle and report",
+      "official Yandex/Terraform primary documentation for IaC claims"
+    ],
+    "frozen_finding_set_path": "FROZEN-FINDING-SET-SLICE-V1-001-PR20-R1.json",
+    "frozen_finding_set_sha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8"
+  },
+  "ci": {
+    "ruleset_required_contexts": 11,
+    "required_success": 8,
+    "required_failure": 3,
+    "failed_required": [
+      "governance",
+      "backend-build",
+      "backend-integration"
+    ],
+    "additional_failed": [
+      "CodeQL aggregate"
+    ],
+    "frontend": {
+      "lint": "PASS",
+      "typecheck": "PASS",
+      "test": "PASS 124",
+      "build": "PASS",
+      "browser": "PASS 8",
+      "line_coverage": "83.8%",
+      "branch_coverage": "75.0%"
+    },
+    "backend": {
+      "unit_architecture_tests": "PASS 380",
+      "postgresql_integration_tests": "PASS 225",
+      "line_coverage": "68.67%",
+      "required_line_coverage": "80%",
+      "branch_coverage": "52.39%",
+      "required_branch_coverage": "70%",
+      "jacoco_gate": "FAIL"
+    },
+    "governance": {
+      "validator": "PASS",
+      "production_readiness": "FAIL TC-GLOBAL-002",
+      "validator_tests": "SKIPPED in CI",
+      "local_migration_contract_test": "FAIL expected 10 migrations"
+    },
+    "security": {
+      "review_threads": 7,
+      "unresolved_threads": 7,
+      "high_alerts": 1,
+      "alerts": [
+        "CSRF disabled",
+        "2 missing-enum-case reports",
+        "3 unused-parameter reports",
+        "uncaught NumberFormatException"
+      ]
+    }
+  },
+  "acceptance_review": {
+    "S1-AC-001": {
+      "state": "EXTERNAL_EVIDENCE_PENDING",
+      "finding_ids": [],
+      "external_ids": [
+        "EXT-001"
+      ]
+    },
+    "S1-AC-002": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F004"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-003": {
+      "state": "IMPLEMENTED_UNPROVEN",
+      "finding_ids": [],
+      "external_ids": [
+        "EXT-001"
+      ]
+    },
+    "S1-AC-004": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F002",
+        "S1-F003",
+        "S1-F004"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-005": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F010"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-006": {
+      "state": "EXTERNAL_EVIDENCE_PENDING",
+      "finding_ids": [
+        "S1-F010",
+        "S1-F012"
+      ],
+      "external_ids": [
+        "EXT-002"
+      ]
+    },
+    "S1-AC-007": {
+      "state": "IMPLEMENTED_UNPROVEN",
+      "finding_ids": [
+        "S1-F005",
+        "S1-F012"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-008": {
+      "state": "EXTERNAL_EVIDENCE_PENDING",
+      "finding_ids": [
+        "S1-F003",
+        "S1-F007"
+      ],
+      "external_ids": [
+        "EXT-003"
+      ]
+    },
+    "S1-AC-009": {
+      "state": "EXTERNAL_EVIDENCE_PENDING",
+      "finding_ids": [
+        "S1-F003",
+        "S1-F007"
+      ],
+      "external_ids": [
+        "EXT-003"
+      ]
+    },
+    "S1-AC-010": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F003",
+        "S1-F006",
+        "S1-F007"
+      ],
+      "external_ids": [
+        "EXT-003"
+      ]
+    },
+    "S1-AC-011": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F005",
+        "S1-F006"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-012": {
+      "state": "IMPLEMENTED_UNPROVEN",
+      "finding_ids": [
+        "S1-F002",
+        "S1-F005"
+      ],
+      "external_ids": [
+        "EXT-002"
+      ]
+    },
+    "S1-AC-013": {
+      "state": "EXECUTABLY_VERIFIED_LOCAL",
+      "finding_ids": [],
+      "external_ids": []
+    },
+    "S1-AC-014": {
+      "state": "EXECUTABLY_VERIFIED_LOCAL",
+      "finding_ids": [],
+      "external_ids": []
+    },
+    "S1-AC-015": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F006"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-016": {
+      "state": "EXECUTABLY_VERIFIED_LOCAL",
+      "finding_ids": [],
+      "external_ids": []
+    },
+    "S1-AC-017": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F004",
+        "S1-F008"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-018": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F008"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-019": {
+      "state": "EXECUTABLY_VERIFIED_LOCAL",
+      "finding_ids": [],
+      "external_ids": []
+    },
+    "S1-AC-020": {
+      "state": "EXECUTABLY_VERIFIED_LOCAL",
+      "finding_ids": [],
+      "external_ids": []
+    },
+    "S1-AC-021": {
+      "state": "EXECUTABLY_VERIFIED_LOCAL",
+      "finding_ids": [],
+      "external_ids": []
+    },
+    "S1-AC-022": {
+      "state": "EXECUTABLY_VERIFIED_LOCAL",
+      "finding_ids": [],
+      "external_ids": []
+    },
+    "S1-AC-023": {
+      "state": "IMPLEMENTED_UNPROVEN",
+      "finding_ids": [
+        "S1-F003",
+        "S1-F009"
+      ],
+      "external_ids": [
+        "EXT-007"
+      ]
+    },
+    "S1-AC-024": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F009"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-025": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F003",
+        "S1-F005",
+        "S1-F009"
+      ],
+      "external_ids": [
+        "EXT-007"
+      ]
+    },
+    "S1-AC-026": {
+      "state": "OWNER_EVIDENCE_PENDING",
+      "finding_ids": [],
+      "external_ids": [
+        "EXT-004"
+      ]
+    },
+    "S1-AC-027": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F001",
+        "S1-F004"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-028": {
+      "state": "EXECUTABLY_VERIFIED_LOCAL",
+      "finding_ids": [],
+      "external_ids": []
+    },
+    "S1-AC-029": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F001"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-030": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F001",
+        "S1-F002",
+        "S1-F005",
+        "S1-F011"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-031": {
+      "state": "GATE_EV_PENDING",
+      "finding_ids": [
+        "S1-F001",
+        "S1-F002",
+        "S1-F003",
+        "S1-F005",
+        "S1-F007"
+      ],
+      "external_ids": [
+        "EXT-005"
+      ]
+    },
+    "S1-AC-032": {
+      "state": "GATE_EV_PENDING",
+      "finding_ids": [
+        "S1-F001",
+        "S1-F002",
+        "S1-F003",
+        "S1-F005",
+        "S1-F007"
+      ],
+      "external_ids": [
+        "EXT-005"
+      ]
+    },
+    "S1-AC-033": {
+      "state": "GATE_EV_PENDING",
+      "finding_ids": [
+        "S1-F002",
+        "S1-F005"
+      ],
+      "external_ids": [
+        "EXT-005"
+      ]
+    },
+    "S1-AC-034": {
+      "state": "EXECUTABLY_VERIFIED_LOCAL",
+      "finding_ids": [],
+      "external_ids": []
+    },
+    "S1-AC-035": {
+      "state": "IMPLEMENTED_UNPROVEN",
+      "finding_ids": [
+        "S1-F004",
+        "S1-F011"
+      ],
+      "external_ids": [
+        "EXT-001"
+      ]
+    },
+    "S1-AC-036": {
+      "state": "EXECUTABLY_VERIFIED_LOCAL",
+      "finding_ids": [],
+      "external_ids": []
+    },
+    "S1-AC-037": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F012"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-038": {
+      "state": "IMPLEMENTATION_DEFECT",
+      "finding_ids": [
+        "S1-F005",
+        "S1-F010",
+        "S1-F012"
+      ],
+      "external_ids": [
+        "EXT-002"
+      ]
+    },
+    "S1-AC-039": {
+      "state": "NOT_MET",
+      "finding_ids": [
+        "S1-F001",
+        "S1-F002",
+        "S1-F003",
+        "S1-F004",
+        "S1-F005",
+        "S1-F006",
+        "S1-F007",
+        "S1-F008",
+        "S1-F009",
+        "S1-F010",
+        "S1-F011",
+        "S1-F012",
+        "S1-F013"
+      ],
+      "external_ids": []
+    },
+    "S1-AC-040": {
+      "state": "OWNER_PENDING",
+      "finding_ids": [],
+      "external_ids": [
+        "EXT-006"
+      ]
+    },
+    "S1-AC-041": {
+      "state": "EXECUTABLY_VERIFIED_LOCAL",
+      "finding_ids": [],
+      "external_ids": []
+    }
+  },
+  "review_dimensions": {
+    "product_outcome_scope": "CHANGES_REQUIRED",
+    "source_authority": "BLOCKER",
+    "data_migration": "CHANGES_REQUIRED",
+    "state_concurrency": "BLOCKER",
+    "security_privacy": "BLOCKER",
+    "ai_correctness": "CHANGES_REQUIRED",
+    "controlled_execution": "BLOCKER",
+    "user_experience": "IMPLEMENTED_UNPROVEN",
+    "operations_recovery": "CHANGES_REQUIRED",
+    "executable_evidence": "CHANGES_REQUIRED"
+  },
+  "external_evidence_boundary": [
+    {
+      "id": "EXT-001",
+      "criteria": [
+        "S1-AC-001",
+        "S1-AC-003"
+      ],
+      "state": "EXTERNAL_EVIDENCE_PENDING",
+      "description": "真实 Yandex Identity Hub OIDC/MFA、disable/revoke/session/step-up 环境证据。"
+    },
+    {
+      "id": "EXT-002",
+      "criteria": [
+        "S1-AC-006"
+      ],
+      "state": "EXTERNAL_EVIDENCE_PENDING",
+      "description": "实际 Yandex PostgreSQL PITR/object retention 与 restore drill。"
+    },
+    {
+      "id": "EXT-003",
+      "criteria": [
+        "S1-AC-008",
+        "S1-AC-009",
+        "S1-AC-010"
+      ],
+      "state": "EXTERNAL_EVIDENCE_PENDING",
+      "description": "当前官方文档 + 真实 Ozon/WB account role/quota/read/write/readback capability evidence。"
+    },
+    {
+      "id": "EXT-004",
+      "criteria": [
+        "S1-AC-026"
+      ],
+      "state": "OWNER_EVIDENCE_PENDING",
+      "description": "Owner/运营批准的 golden diagnostic cases 和 usefulness acceptance。"
+    },
+    {
+      "id": "EXT-005",
+      "criteria": [
+        "S1-AC-031",
+        "S1-AC-032",
+        "S1-AC-033"
+      ],
+      "state": "GATE_EV_PENDING",
+      "description": "精确 Gate-EV envelope 下的真实 Write→Readback→Restore/Compensate 证据。"
+    },
+    {
+      "id": "EXT-006",
+      "criteria": [
+        "S1-AC-040"
+      ],
+      "state": "OWNER_PENDING",
+      "description": "Pilot cohort、users、stores、policy limits、monitoring/rollback criteria。"
+    },
+    {
+      "id": "EXT-007",
+      "criteria": [
+        "S1-AC-023",
+        "S1-AC-025"
+      ],
+      "state": "EXTERNAL_EVIDENCE_PENDING",
+      "description": "真实 AI provider eligibility、data terms、availability 和 failure behavior。"
+    }
+  ],
+  "official_primary_sources": [
+    {
+      "title": "Yandex Cloud Terraform reference for Application Load Balancer",
+      "verified_date": "2026-08-27",
+      "claim": "Production public ingress requires concrete ALB/backend/router/target resources and validate/plan evidence."
+    },
+    {
+      "title": "Yandex Cloud yandex_mdb_postgresql_user resource",
+      "verified_date": "2026-08-27",
+      "claim": "password_wo is write-only and not stored in Terraform state; current password argument does not provide that property."
+    }
+  ],
+  "review_conclusion": {
+    "verdict": "CHANGES_REQUIRED",
+    "contract_defect_found": false,
+    "amendment_required": false,
+    "formal_discovery_closed": true,
+    "frozen_finding_set_sha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8",
+    "next_actor": "CODEX",
+    "next_action": "SLICE_V1_001_FULL_PRODUCTION_ROOT_CAUSE_REWORK_R1",
+    "merge_authorization": "NOT_GRANTED",
+    "deployment": "NOT_AUTHORIZED",
+    "gate_ev": "NOT_AUTHORIZED",
+    "gate_e": "NOT_AUTHORIZED",
+    "production_write": "DISABLED"
+  }
+}

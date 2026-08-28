@@ -1,0 +1,11 @@
+<configuration>
+  <!-- The one-shot tool emits only its fixed completion or failure result.
+       Database-side audit remains authoritative for the approved change. -->
+  <appender name="MIGRATION_RESULT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder><pattern>%msg%n</pattern></encoder>
+  </appender>
+  <logger name="com.mimococo.marketops.shared.internal.migration.ManagedMigrationRunner" level="INFO" additivity="false">
+    <appender-ref ref="MIGRATION_RESULT"/>
+  </logger>
+  <root level="OFF"/>
+</configuration>

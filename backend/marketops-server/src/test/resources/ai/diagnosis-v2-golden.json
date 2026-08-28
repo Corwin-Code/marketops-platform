@@ -1,0 +1,27 @@
+{
+  "facts": [{
+    "statement": "The canonical conversion rate is available for this window.",
+    "evidenceRefs": ["11111111-1111-4111-8111-111111111111"],
+    "findingRefs": ["22222222-2222-4222-8222-222222222222"]
+  }],
+  "inferences": [{
+    "statement": "The stock gap may constrain conversion.",
+    "confidence": "LOW",
+    "counterEvidence": ["Traffic may have changed.", "Verify stock freshness."]
+  }],
+  "recommendations": [{
+    "statement": "Review a price change with the deterministic guardrail.",
+    "confidence": "LOW",
+    "actionCapability": "PRICE_CHANGE",
+    "proposedParameters": {"targetPrice": 99999999999999.9999, "currencyCode": "RUB"},
+    "expectedEffect": {"metric": "CONTRIBUTION_PROFIT", "direction": "INCREASE", "rationale": "Confirm demand sensitivity."},
+    "risk": {"level": "HIGH", "description": "Demand response is not known."},
+    "validationWindowDays": 14
+  }],
+  "unknowns": [{
+    "statement": "Demand response is unknown.",
+    "missingFact": "Elasticity by listing variant.",
+    "whyItMatters": "A price change may reduce orders.",
+    "nextEvidence": ["An approved bounded observation window.", "Current canonical sales facts."]
+  }]
+}

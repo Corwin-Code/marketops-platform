@@ -14,7 +14,7 @@ import org.testcontainers.utility.MountableFile;
  * so a privilege that only exists because a test set it up differently cannot
  * make the application appear to work.
  */
-final class TestDatabase {
+public final class TestDatabase {
 
     private static final String MIGRATION_ROLE = "marketops_migration";
     private static final String APPLICATION_ROLE = "marketops_app";
@@ -22,38 +22,45 @@ final class TestDatabase {
     private static final String MIGRATION_PASSWORD = UUID.randomUUID().toString();
     private static final String APPLICATION_PASSWORD = UUID.randomUUID().toString();
 
-    private static final PostgreSQLContainer CONTAINER = build();
-
-    static {
-        CONTAINER.start();
+    private static final class Shared {
+        private static final PostgreSQLContainer CONTAINER = isolatedContainer();
     }
 
     private TestDatabase() {
     }
 
     static PostgreSQLContainer container() {
-        return CONTAINER;
+        return Shared.CONTAINER;
     }
 
-    static String migrationRole() {
+    /** An independent server for tests that change shared platform configuration. */
+    public static PostgreSQLContainer isolatedContainer() {
+        var container = build();
+        container.start();
+        return container;
+    }
+
+    public static String migrationRole() {
         return MIGRATION_ROLE;
     }
 
-    static String applicationRole() {
+    public static String applicationRole() {
         return APPLICATION_ROLE;
     }
 
-    static String migrationPassword() {
+    public static String migrationPassword() {
         return MIGRATION_PASSWORD;
     }
 
-    static String applicationPassword() {
+    public static String applicationPassword() {
         return APPLICATION_PASSWORD;
     }
 
     private static PostgreSQLContainer build() {
         Path initDirectory = repositoryRoot().resolve("infra/compose/postgres-init");
-        return new PostgreSQLContainer(DockerImageName.parse("postgres:18.4"))
+        return new PostgreSQLContainer(DockerImageName.parse(
+                "postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3")
+                .asCompatibleSubstituteFor("postgres"))
                 .withDatabaseName("marketops")
                 .withUsername("postgres")
                 .withPassword(UUID.randomUUID().toString())
