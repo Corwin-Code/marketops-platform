@@ -122,6 +122,9 @@ def validate(manifest):
         raise ValueError("production configuration boundary required")
     if environment["MARKETOPS_SECRET_MOUNT_DIRECTORY"] != "/run/marketops/credentials":
         raise ValueError("ephemeral credential mount required")
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,254}",
+                        environment["MARKETOPS_OIDC_AUDIENCE"]):
+        raise ValueError("nonblank bounded OIDC audience required")
     if not re.fullmatch(r"jdbc:postgresql://c-[a-z0-9]{20}[.]rw[.]mdb[.]yandexcloud[.]net:6432/marketops[?]"
                         r"sslmode=verify-full&sslrootcert=/opt/marketops/certs/yandex-root[.]crt&targetServerType=primary",
                         environment["SPRING_DATASOURCE_URL"]):

@@ -147,13 +147,28 @@ public final class BrowserFixtureApplication {
     }
 
     private static void seedMetrics(JdbcClient jdbc, PriceCommandFixture.SeedIds graph) {
-        for (var item : Map.of("UNIT_COST", "50", "PLATFORM_FEES", "10", "MINIMUM_PRICE", "60",
-                "DATA_COMPLETENESS", "1", "PLATFORM_AVAILABLE_UNITS", "30").entrySet()) {
+        jdbc.sql("""
+                UPDATE mart.metric_value
+                   SET definition_version=2, oldest_source_time=now()-interval '1 hour', freshness_seconds=3600
+                 WHERE subject_id=:subject AND metric_code='OBSERVED_SELLING_PRICE'
+                """).param("subject", graph.subjectId()).update();
+        for (var item : Map.ofEntries(
+                Map.entry("UNIT_COST", "50"),
+                Map.entry("PLATFORM_FEES_PER_UNIT", "10"),
+                Map.entry("RETURN_LOSS_PER_UNIT", "0"),
+                Map.entry("AD_SPEND_PER_UNIT", "0"),
+                Map.entry("VARIABLE_TAX_PER_UNIT", "0"),
+                Map.entry("REQUIRED_PROFIT_PER_UNIT", "5"),
+                Map.entry("SAFETY_BUFFER_PER_UNIT", "2"),
+                Map.entry("BREAK_EVEN_PRICE", "60"),
+                Map.entry("MINIMUM_PRICE", "67"),
+                Map.entry("DATA_COMPLETENESS", "1"),
+                Map.entry("PLATFORM_AVAILABLE_UNITS", "30")).entrySet()) {
             jdbc.sql("""
                     INSERT INTO mart.metric_value(id,organization_id,calculation_run_id,metric_code,definition_version,
                         subject_kind,subject_id,window_code,period_start,period_end,value_state,numeric_value,
                         currency_code,confidence_state,estimated,input_digest,computed_at,oldest_source_time,freshness_seconds)
-                    VALUES(gen_random_uuid(),:org,:run,:code,1,'PLATFORM_LISTING_VARIANT',:subject,'D30',now()-interval '30 days',
+                    VALUES(gen_random_uuid(),:org,:run,:code,2,'PLATFORM_LISTING_VARIANT',:subject,'D30',now()-interval '30 days',
                         now(),'AVAILABLE',:value,'RUB','CANONICAL_CONFIRMED',false,repeat('1',64),now(),now()-interval '1 hour',3600)
                     """).param("org", graph.organizationId()).param("run", graph.calculationRunId())
                     .param("code", item.getKey()).param("subject", graph.subjectId()).param("value", new BigDecimal(item.getValue())).update();

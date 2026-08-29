@@ -121,7 +121,9 @@ public class DiagnosisRepository {
                                finding.subject_kind, finding.subject_id, finding.window_code,
                                finding.outcome, finding.severity, finding.decline_reason,
                                CAST(finding.detail AS text) AS detail, finding.evaluated_at,
-                               rule.blocks_execution, rule.ordinal
+                               (finding.outcome = 'TRIGGERED' AND rule.blocks_execution)
+                                   AS blocks_execution,
+                               rule.ordinal
                           FROM mart.diagnosis_finding AS finding
                           JOIN mart.diagnosis_rule AS rule
                             ON rule.rule_code = finding.rule_code

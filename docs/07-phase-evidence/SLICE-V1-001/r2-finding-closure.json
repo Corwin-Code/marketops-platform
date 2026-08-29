@@ -1,0 +1,276 @@
+{
+  "schemaVersion": "1.0",
+  "documentType": "SLICE_V1_001_SUPPLEMENTAL_R2_FINDING_CLOSURE_CANDIDATE",
+  "generatedAt": "2026-08-30T06:00:00+08:00",
+  "repository": "Corwin-Code/marketops-platform",
+  "branch": "fix/SLICE-V1-001-supplemental-assurance-r2",
+  "requiredBase": "db92cf2f8bd818f36dd8f5aa17b8589c4140b669",
+  "requiredBaseTree": "221e5a009d4cf5820d36c0e1bccd5b64caa6135b",
+  "authority": {
+    "contractSha256": "0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5",
+    "amendment001Sha256": "8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d",
+    "amendment002Sha256": "92fdd8d67b327fbd2288ba99290b5b59f2797106c4b691ce2bff22bb80198b93",
+    "amendment002AcceptanceEvidenceSha256": "f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923",
+    "r1FrozenFindingSetSha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8",
+    "supplementalR2ReviewSha256": "c772c76c89b753d4694ee5ec1eceddad3451ab7ef6acc2e36416d9d4171f26ff"
+  },
+  "candidateState": "ROOT_CAUSE_FIXED_FOCUSED_VERIFICATION_PASSED_FULL_EXACT_HEAD_VERIFICATION_PENDING",
+  "controllerVerdict": "PENDING_GPT_5_6_PRO_CONTROLLER",
+  "productionWriteEnabled": false,
+  "findings": [
+    {
+      "id": "S1-R2-G001",
+      "disposition": "CLOSED_BY_ACCEPTED_AMENDMENT_002",
+      "rootCause": "The earlier closure route had no accepted authority for deferring the listed real-provider, Owner and Gate evidence.",
+      "correction": "Commit the exact accepted Amendment-002 and acceptance evidence, retain every deferred production boundary in a 17-row machine-readable register, and mutation-test the prohibition on relabeling engineering fixtures as real evidence.",
+      "files": [
+        "docs/03-work-items/SLICE-V1-001-AMENDMENT-002-DEFERRED-REAL-INTEGRATION-AND-PREPRODUCTION-ASSURANCE.md",
+        "docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-002-ACCEPTANCE-EVIDENCE.md",
+        "docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json",
+        "scripts/validate_production_readiness.py",
+        "tests/test_validate_production_readiness.py"
+      ],
+      "tests": ["TC-GLOBAL-004", "DeferredEvidenceRegisterTests"],
+      "remainingAuthority": "Deferred evidence remains production-blocking until the future RELEASE-V1-001 gates named by Amendment-002."
+    },
+    {
+      "id": "S1-R2-F001",
+      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "rootCause": "AnalyticsCalculationService persisted an hour-aligned period while MetricEngine reconstructed a second now-ending FactWindow, so the query and identity could describe different facts.",
+      "correction": "AnalyticsCalculationService now owns one aligned half-open FactWindow and passes the same object to activity discovery, every MetricEngine fact query, persistence, diagnosis and digest generation; point queries use the exclusive period end.",
+      "files": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/AnalyticsCalculationService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/MetricEngine.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/infrastructure/jdbc/FactQueryRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/productlisting/internal/infrastructure/jdbc/MappingRepository.java"
+      ],
+      "tests": [
+        "AnalyticsCalculationServiceWindowTest.nonHourClockProducesOneExactQueriedAndStoredWindow",
+        "MetricEngineTest.everyFactQueryUsesTheRunOwnedExactWindow",
+        "OperatingFlowIT.TC-FLOW-003",
+        "OperatingFlowIT.TC-FLOW-004"
+      ]
+    },
+    {
+      "id": "S1-R2-F002",
+      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "rootCause": "Contribution Profit required sales, unit cost and fees but conditionally skipped return loss, advertising and tax, conflating absence with zero.",
+      "correction": "Operational and Settled Contribution Profit now enumerate sales, cost, platform fees, return loss, advertising and the appropriate tax authority; any absent or currency-conflicted component produces a non-available value, while an explicit sourced zero remains available.",
+      "files": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/MetricEngine.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/FeeTotals.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/OperatingFactService.java"
+      ],
+      "tests": [
+        "MetricEngineTest.everyMissingProfitComponentIndependentlyFailsClosed",
+        "MetricEngineTest.explicitSourcedZeroIsNotAbsence"
+      ]
+    },
+    {
+      "id": "S1-R2-F003",
+      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "rootCause": "MINIMUM_PRICE contained a partial break-even formula, defaulted missing terms, omitted Required Profit and Safety Buffer, and could not become CANONICAL_CONFIRMED through the real calculator.",
+      "correction": "V0029 forward-versions definitions, introduces BREAK_EVEN_PRICE and explicit per-unit commercial inputs, and defines MINIMUM_PRICE as canonical currency-consistent break-even plus sourced Required Profit and Safety Buffer without defaults.",
+      "files": [
+        "backend/marketops-server/src/main/resources/db/migration/V0029__version_profit_economics_and_commercial_inputs.sql",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/MetricCode.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/MetricEngine.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/ImportRowValidator.java"
+      ],
+      "tests": [
+        "MetricEngineTest.minimumPriceIncludesRequiredProfitAndSafetyBuffer",
+        "OperatingFlowIT.TC-FLOW-004",
+        "OperatingFlowIT.TC-FLOW-010",
+        "FlywayMigrationIT",
+        "ManagedMigrationRunnerIT"
+      ]
+    },
+    {
+      "id": "S1-R2-F004",
+      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "rootCause": "Guardrail subtracted a whole-window fee aggregate from a one-unit price and did not require return, advertising, tax, stock, freshness or currency evidence.",
+      "correction": "Guardrail now consumes only named per-unit components, checks Break-even and Minimum Price independently, requires every economics/safety/inventory assertion, validates source freshness and currency, and reports all blocking reasons deterministically.",
+      "files": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailEngine.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/GuardrailInput.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/GuardrailReason.java"
+      ],
+      "tests": [
+        "GuardrailEngineTest.aWholeWindowAggregateCannotReplacePerUnitEconomics",
+        "GuardrailEngineTest.removingAnyRequiredCostOrSafetyInputBreaksTheWriteGradePath",
+        "GuardrailEngineTest.missingStockBlocks",
+        "GuardrailEngineTest.missingFreshnessBlocks",
+        "GuardrailEngineTest.currencyMismatchBlocks",
+        "OperatingFlowIT.TC-R2-FLOW-001"
+      ]
+    },
+    {
+      "id": "S1-R2-F005",
+      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "rootCause": "ComputedMetric identity contained referenced inputs but omitted the asserted value/state/confidence/source time; DATA_COMPLETENESS also had no mapping or required-input identity.",
+      "correction": "The digest now includes normalized value, currency, ValueState, ConfidenceState, oldest source time and deterministic identity components. DATA_COMPLETENESS binds the effective mapping and each required-input state while MetricRepository retains append-only deduplication for equivalent reruns.",
+      "files": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/domain/ComputedMetric.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/MetricEngine.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/productlisting/ListingVariantContext.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/productlisting/internal/infrastructure/jdbc/MappingRepository.java"
+      ],
+      "tests": [
+        "ComputedMetricIdentityTest.equivalentRerunsDeduplicateButStalenessAndStateTransitionsDoNot",
+        "MetricEngineTest.mappingAndLateFactsChangeIdentityWithoutChangingTheWindow",
+        "OperatingFlowIT.TC-FLOW-004"
+      ]
+    },
+    {
+      "id": "S1-R2-F006",
+      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "rootCause": "The designated operating test accepted a blocked Guardrail as an alternate success and later command assertions tolerated refusal; browser fixtures injected the metrics instead of composing the calculator.",
+      "correction": "OperatingFlowIT now records facts, runs the actual MetricEngine and persistence, evaluates diagnosis and actual Guardrail, approves, and creates a DB-authoritative command with no early-return branch or external write. A same-class defect that marked CLEAR diagnosis rows as blocking was fixed in DiagnosisRepository.",
+      "files": [
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/OperatingFlowIT.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/infrastructure/jdbc/DiagnosisRepository.java"
+      ],
+      "tests": [
+        "OperatingFlowIT.TC-FLOW-003",
+        "OperatingFlowIT.TC-FLOW-004",
+        "OperatingFlowIT.TC-FLOW-005",
+        "OperatingFlowIT.TC-FLOW-008",
+        "OperatingFlowIT.TC-FLOW-009",
+        "OperatingFlowIT.TC-FLOW-010",
+        "OperatingFlowIT.TC-R2-FLOW-001"
+      ],
+      "sameClassDefect": "currentFindings projected rule.blocks_execution even when finding.outcome was CLEAR; it now blocks only TRIGGERED findings."
+    },
+    {
+      "id": "S1-R2-F007",
+      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "rootCause": "The permitAll maintenance surface relied on deployment routing; its interceptor checked only mutations and never authenticated the actual socket peer.",
+      "correction": "AdminMetadataGuard rejects every method unless HttpServletRequest.remoteAddr resolves to loopback, ignores all forwarding headers, then retains the write switch and operator attribution as additional mutation controls.",
+      "files": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/adminobservability/internal/web/AdminMetadataGuard.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/adminobservability/internal/web/AdminMetadataProblemAdvice.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/ErrorCode.java"
+      ],
+      "tests": [
+        "MaintenanceWriteGateApiIT.TC-API-080",
+        "MaintenanceWriteGateApiIT.TC-API-081",
+        "MaintenanceWriteGateApiIT.TC-API-082",
+        "MaintenanceWriteGateApiIT.TC-API-083",
+        "MaintenanceWriteGateApiIT.TC-API-084"
+      ]
+    },
+    {
+      "id": "S1-R2-F008",
+      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "rootCause": "Serving startup required issuer only and a blank audience validator returned success; Terraform and runtime bootstrap also accepted blank audience values.",
+      "correction": "Every non-local/non-CI environment now requires a bounded nonblank audience; the decoder fails closed if none is configured; staging, production, workload module and packaged bootstrap validate the same shape while local/CI exemptions remain explicit.",
+      "files": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/config/IdentityConfigurationContract.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/config/IdentityProperties.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/web/IdentitySecurityConfig.java",
+        "infra/yandex/environments/staging/variables.tf",
+        "infra/yandex/environments/production/variables.tf",
+        "infra/yandex/modules/workload/variables.tf",
+        "infra/yandex/runtime/bootstrap.py"
+      ],
+      "tests": [
+        "IdentityConfigurationContractTest.blankServingAudienceFailsStartupContract",
+        "IdentityConfigurationContractTest.oversizedServingAudienceFailsStartupContract",
+        "SignedBearerIdentityIT.invalidSignedClaimsCannotAuthenticate[audience]",
+        "YandexRuntimeTests.test_mutated_runtime_manifest_is_rejected"
+      ]
+    },
+    {
+      "id": "S1-R2-F009",
+      "disposition": "CANDIDATE_FIXED_LIVE_RULESET_ENFORCED_CONTROLLER_VERIFICATION_PENDING",
+      "rootCause": "The infrastructure workflow ran but its stable infrastructure-validation context was absent from protected main's required status checks.",
+      "correction": "The repository owns an exact 12-context inventory and mutation validator, and live Ruleset 20734984 was updated in place with strictRequiredStatusChecksPolicy=true while preserving every other rule.",
+      "files": [
+        ".github/required-status-checks.json",
+        "scripts/validate_governance.py",
+        "tests/test_required_status_checks.py",
+        "docs/07-phase-evidence/SLICE-V1-001/r2-ruleset-update-request.json",
+        "docs/07-phase-evidence/SLICE-V1-001/r2-ruleset-live-readback.json"
+      ],
+      "tests": [
+        "RequiredStatusChecksTests.test_inventory_requires_infrastructure_validation",
+        "validate_governance.py"
+      ],
+      "liveEvidence": {
+        "rulesetId": 20734984,
+        "rulesetName": "main-governance",
+        "updatedAt": "2026-08-30T05:49:05.437+08:00",
+        "strictRequiredStatusChecksPolicy": true,
+        "infrastructureValidationRequired": true,
+        "readbackSha256": "6038cb07be617a113a69c653156dc3e2773ec24576a99f4094564f8655572eae"
+      }
+    }
+  ],
+  "sameClassScans": [
+    {
+      "class": "reconstructed_time_windows",
+      "scope": "analytics calculation and every OperatingFactQuery call",
+      "disposition": "One FactWindow is constructed in AnalyticsCalculationService; MetricEngine performs no clock read or window reconstruction; unrelated operational clocks are not calculation identity."
+    },
+    {
+      "class": "derived_identity_omissions",
+      "scope": "ComputedMetric and persisted Guardrail evaluation identity",
+      "disposition": "Metric assertion state/value/currency/confidence/source-time/custom components and complete metric snapshots in guardrail digest are now bound; equivalent reruns remain deduplicated."
+    },
+    {
+      "class": "absent_treated_as_zero",
+      "scope": "profit, fee/tax categorization, Minimum Price and Guardrail economics",
+      "disposition": "All monetary deductions require an available sourced component; only published zero amounts remain zero. Unrelated import progress counters and empty checkpoint ordinals are administrative cardinalities, not commercial facts."
+    },
+    {
+      "class": "aggregate_unit_mismatch",
+      "scope": "analytics and price Guardrail arithmetic",
+      "disposition": "Whole-window totals are converted by explicit completed-unit denominators into named per-unit metrics; Guardrail no longer consumes aggregate PLATFORM_FEES."
+    },
+    {
+      "class": "guardrail_missing_evidence",
+      "scope": "all GuardrailEngine evaluation branches",
+      "disposition": "Required policy limits, mapping, diagnosis, all economics and safety metrics, stock, freshness, confidence, currency and standing authorization fail closed with stable reasons."
+    },
+    {
+      "class": "conditional_happy_path",
+      "scope": "OperatingFlowIT and browser/service composition evidence",
+      "disposition": "The designated actual-service test contains no early-return acceptance and requires a passing Guardrail, approval and command; synthetic browser fixtures remain only browser behavior evidence."
+    },
+    {
+      "class": "maintenance_admin_routes",
+      "scope": "/api/v1/admin/metadata/** controller inventory",
+      "disposition": "The one path-pattern interceptor covers every current maintenance controller and rejects non-loopback GET/HEAD/OPTIONS and mutations before handlers; server.forward-headers-strategy remains none."
+    },
+    {
+      "class": "optional_serving_security_properties",
+      "scope": "IdentityProperties, IdentityConfigurationContract, Terraform and runtime bootstrap",
+      "disposition": "Serving issuer and audience are mandatory; audience has one 1..255 bounded identifier grammar. jwk-set-uri remains intentionally optional because issuer discovery is the approved alternative."
+    },
+    {
+      "class": "workflow_missing_from_protected_checks",
+      "scope": ".github/workflows and live Ruleset 20734984",
+      "disposition": "All 12 stable job contexts, including infrastructure-validation, are present in both the repository inventory and live strict required checks."
+    },
+    {
+      "class": "deferred_status_relabeling",
+      "scope": "41-row acceptance status and 17-row Deferred Evidence Register",
+      "disposition": "Exactly 17 Amendment-002 rows retain OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001 and validators reject forbidden real-provider/production labels."
+    }
+  ],
+  "evidenceHashes": {
+    "deferredEvidenceRegisterSha256": "694858bdc90d5fcba08e232b8b34fc8934ecd1ce41c9861f280841f80ef5f934",
+    "requiredStatusChecksSha256": "8f9192cc821b01de8c2c98ca1199c2e93cfa59b34eb2eef5baa91ce2eb046907",
+    "rulesetUpdateRequestSha256": "e621136537198abe11a15af0d59987e225646f6c0fdcd227d15db7a841192014",
+    "rulesetLiveReadbackSha256": "6038cb07be617a113a69c653156dc3e2773ec24576a99f4094564f8655572eae"
+  },
+  "remainingLimitations": [
+    "Exact final-Head full local verification and remote CI are not yet recorded in this candidate artifact.",
+    "The GPT-5.6 Pro Controller exact-Head verdict is absent.",
+    "All Amendment-002 real-provider, Owner, release and Gate-EV evidence remains deferred and production-blocking.",
+    "PR #21 remains HOLD_DO_NOT_MERGE and is not reused by this branch."
+  ],
+  "nextAuthorizedActor": "GPT-5.6 Pro Controller",
+  "nextAction": "CONTROLLER_SLICE_V1_001_R2_FINAL_CLOSURE_VERIFICATION"
+}

@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import json
 import unittest
 
 from scripts.validate_production_readiness import (
     APPROVED_MIGRATIONS,
+    DEFERRED_ACCEPTANCE_IDS,
+    DEFERRED_EVIDENCE_REGISTER,
     HASH_PINNED_DOC_PATHS,
     DESTRUCTIVE_MIGRATION_STATEMENT,
     FORBIDDEN_BACKEND_DEPENDENCIES,
@@ -12,6 +15,7 @@ from scripts.validate_production_readiness import (
     IDENTIFIER_CONTEXT,
     IDENTIFIER_SCAFFOLD_TERMS,
     REQUIRED_NAMES,
+    ROOT,
     RETIRED_ARTEFACTS,
     RULE_DEFINITION_PATHS,
     SCAFFOLD_TERMS,
@@ -35,6 +39,7 @@ from scripts.validate_production_readiness import (
     comment_lines,
     contract_token_violations,
     declared_dependency_artifacts,
+    deferred_evidence_register_violations,
     matching_lines,
     pr_security_evidence_violations,
     runner_reference_violations,
@@ -81,6 +86,30 @@ class UnresolvedMarkerTests(unittest.TestCase):
     def test_word_containing_a_marker_is_not_detected(self) -> None:
         self.assertIsNone(UNRESOLVED_MARKERS.search("the TODOS_TABLE constant"))
         self.assertIsNone(UNRESOLVED_MARKERS.search("xxxyz"))
+
+
+class DeferredEvidenceRegisterTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.register = json.loads((ROOT / DEFERRED_EVIDENCE_REGISTER).read_text())
+
+    def test_register_exactly_covers_amendment_002(self) -> None:
+        self.assertEqual([], deferred_evidence_register_violations(self.register))
+        self.assertEqual(
+            set(DEFERRED_ACCEPTANCE_IDS),
+            {entry["acceptanceId"] for entry in self.register["entries"]},
+        )
+
+    def test_deferred_evidence_cannot_be_relabelled_verified(self) -> None:
+        mutated = json.loads(json.dumps(self.register))
+        mutated["entries"][0]["currentStatus"] = "VERIFIED"
+        errors = deferred_evidence_register_violations(mutated)
+        self.assertTrue(any("must not be relabeled VERIFIED" in error for error in errors))
+
+    def test_a_deferred_acceptance_cannot_disappear(self) -> None:
+        mutated = json.loads(json.dumps(self.register))
+        mutated["entries"].pop()
+        errors = deferred_evidence_register_violations(mutated)
+        self.assertTrue(any("exactly cover Amendment-002" in error for error in errors))
 
 
 class RepositoryContractPatternTests(unittest.TestCase):
@@ -435,6 +464,7 @@ class MigrationContractTests(unittest.TestCase):
                 "V0026__rename_operational_capability_column_to_action_kind.sql",
                 "V0027__create_account_bound_registry_verification.sql",
                 "V0028__create_bounded_diagnostic_export.sql",
+                "V0029__version_profit_economics_and_commercial_inputs.sql",
             ),
             APPROVED_MIGRATIONS,
         )

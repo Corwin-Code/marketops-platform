@@ -35,10 +35,16 @@ class IdentityConfigurationContract implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        if (EXEMPT_ENVIRONMENTS.contains(environment) || properties.configured()) {
+        if (EXEMPT_ENVIRONMENTS.contains(environment)) {
             return;
         }
-        throw new IllegalStateException(
-                "marketops.identity.oidc.issuer-uri must be configured in this environment");
+        if (!properties.configured()) {
+            throw new IllegalStateException(
+                    "marketops.identity.oidc.issuer-uri must be configured in this environment");
+        }
+        if (!properties.audienceConfigured()) {
+            throw new IllegalStateException(
+                    "marketops.identity.oidc.audience must be a nonblank bounded identifier in this environment");
+        }
     }
 }

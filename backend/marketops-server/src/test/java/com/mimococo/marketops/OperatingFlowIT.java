@@ -31,6 +31,7 @@ import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
 import com.mimococo.marketops.operatingfacts.SaleStage;
 import com.mimococo.marketops.operatingfacts.internal.application.ManualFactEntryService;
 import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.FactWriteRepository;
+import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.InternalReferenceRepository;
 import com.mimococo.marketops.operationsworkflow.ActionKind;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
 import com.mimococo.marketops.operationsworkflow.GuardrailReason;
@@ -105,6 +106,7 @@ class OperatingFlowIT {
     private static UUID listingVariantId;
     private static UUID policyId;
     private static UUID recommendationId;
+    private static UUID factProvenanceId;
 
     private static AuthenticatedActor actor;
 
@@ -136,6 +138,9 @@ class OperatingFlowIT {
 
     @Autowired
     private FactWriteRepository facts;
+
+    @Autowired
+    private InternalReferenceRepository internalReferences;
 
     @Autowired
     private OperatingFactQuery factQuery;
@@ -316,6 +321,22 @@ class OperatingFlowIT {
         var candidate = candidates.getFirst();
         mappings.confirm(actor, candidate.id(), "barcode match reviewed", candidate.version());
 
+        // The analytics service closes each run at the current whole-hour boundary.
+        // Seed this integration fixture's confirmed mapping inside that same temporal
+        // snapshot so the actual service path observes it without weakening the
+        // production query's exclusive as-of boundary.
+        Instant calculationBoundary = Instant.now()
+                .truncatedTo(java.time.temporal.ChronoUnit.HOURS);
+        jdbc.sql("""
+                        UPDATE core.listing_mapping
+                           SET effective_from = :effectiveFrom
+                         WHERE platform_listing_variant_id = :listingVariantId
+                        """)
+                .param("effectiveFrom", java.sql.Timestamp.from(
+                        calculationBoundary.minus(Duration.ofMinutes(1))))
+                .param("listingVariantId", listingVariantId)
+                .update();
+
         var context = listings.variantContext(listingVariantId, Instant.now()).orElseThrow();
         assertThat(context.mapped()).isTrue();
         assertThat(context.productVariantId()).isEqualTo(productVariantId);
@@ -332,46 +353,77 @@ class OperatingFlowIT {
     @DisplayName("TC-FLOW-003 facts arrive and carry where they came from")
     void recordFacts() {
         Instant now = Instant.now();
+        Instant calculationBoundary = now.truncatedTo(java.time.temporal.ChronoUnit.HOURS);
+        Instant pointObservation = calculationBoundary.minusSeconds(1);
         // Recorded as manual entry rather than as marketplace raw, because a
         // marketplace-sourced fact must name the stored evidence it came from
         // and no marketplace was contacted. The relational contract enforces
         // that, which is why this test cannot pretend otherwise.
-        UUID provenanceId = facts.recordProvenance(UUID.randomUUID(), organizationId,
+        factProvenanceId = facts.recordProvenance(UUID.randomUUID(), organizationId,
                 "MANUAL_ENTRY", null, null, userId, now.minus(Duration.ofHours(1)), now,
                 "seeded for the operating-flow test");
 
-        facts.insertPrice(UUID.randomUUID(), organizationId, provenanceId, listingVariantId,
+        facts.insertPrice(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
                 "flow:price:1", now.minus(Duration.ofHours(1)), "RUB",
                 new BigDecimal("120.0000"), new BigDecimal("100.0000"), null, "NO", "SELLING");
-        facts.insertStock(UUID.randomUUID(), organizationId, provenanceId, listingVariantId,
+        facts.insertStock(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
                 "MARKETPLACE_FULFILLED", "flow:stock:1", now.minus(Duration.ofHours(1)), 40, 2, 0);
-        facts.insertTraffic(UUID.randomUUID(), organizationId, provenanceId, listingVariantId,
-                "flow:traffic:1", now.minus(Duration.ofDays(30)), now, 10_000L, 140L, null,
-                null, 15L);
+        facts.insertTraffic(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+                "flow:traffic:1", calculationBoundary.minus(Duration.ofDays(30)),
+                calculationBoundary, 10_000L, 140L, null, null, 15L);
 
         for (int day = 1; day <= 5; day++) {
-            facts.insertSale(UUID.randomUUID(), organizationId, provenanceId, listingVariantId,
+            facts.insertSale(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
                     storeId, "COMPLETED", null, "flow:sale:" + day, "ORDER-" + day,
                     "LINE-" + day, "delivered", now.minus(Duration.ofDays(day)), 3, "RUB",
                     new BigDecimal("300.0000"), new BigDecimal("0.0000"),
                     new BigDecimal("300.0000"));
         }
-        facts.insertReturn(UUID.randomUUID(), organizationId, provenanceId, listingVariantId,
+        facts.insertReturn(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
                 storeId, "flow:return:1", "RETURN-1", "ORDER-1", "DELIVERY_REFUSAL", "QUALITY",
                 "buyer refused", now.minus(Duration.ofDays(1)), 1, "RUB",
                 new BigDecimal("100.0000"), new BigDecimal("20.0000"));
-        facts.insertFee(UUID.randomUUID(), organizationId, provenanceId, listingVariantId,
+        facts.insertFee(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
                 storeId, "flow:fee:1", "COMMISSION", "ORDER-1", "COMMISSION", "SETTLED",
                 now.minus(Duration.ofDays(1)), "RUB", new BigDecimal("150.0000"));
-        facts.insertAdvertising(UUID.randomUUID(), organizationId, provenanceId,
+        facts.insertFee(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+                storeId, "flow:fee:tax:1", "VARIABLE_TAX", "ORDER-1", "VARIABLE_TAX",
+                "SETTLED", now.minus(Duration.ofDays(1)), "RUB", new BigDecimal("30.0000"));
+        facts.insertAdvertising(UUID.randomUUID(), organizationId, factProvenanceId,
                 listingVariantId, storeId, "flow:ad:1", "CAMPAIGN-1", "SEARCH",
-                now.minus(Duration.ofDays(30)), now, "RUB", new BigDecimal("50.0000"), 5_000L,
-                60L, 2L, new BigDecimal("200.0000"));
+                calculationBoundary.minus(Duration.ofDays(30)), calculationBoundary, "RUB",
+                new BigDecimal("50.0000"), 5_000L, 60L, 2L, new BigDecimal("200.0000"));
+
+        Instant boundaryEnd = calculationBoundary;
+        Instant boundaryStart = boundaryEnd.minus(Duration.ofHours(1));
+        facts.insertSale(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+                storeId, "SETTLED", null, "flow:boundary:start", "BOUNDARY-START",
+                "LINE-START", "settled", boundaryStart, 1, "RUB",
+                new BigDecimal("10.0000"), BigDecimal.ZERO, new BigDecimal("10.0000"));
+        facts.insertSale(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+                storeId, "SETTLED", null, "flow:boundary:end", "BOUNDARY-END",
+                "LINE-END", "settled", boundaryEnd, 99, "RUB",
+                new BigDecimal("990.0000"), BigDecimal.ZERO, new BigDecimal("990.0000"));
+        assertThat(factQuery.sales(listingVariantId, SaleStage.SETTLED, null,
+                new FactWindow(boundaryStart, boundaryEnd)).units()).isEqualTo(1);
 
         manualEntry.enterCost(actor, "flow-widget-m", new BigDecimal("60.0000"), "RUB",
-                now.minus(Duration.ofDays(30)), "opening cost");
-        manualEntry.enterInternalStock(actor, "flow-widget-m", "flow-warehouse", 25, 0, now,
-                "stock count");
+                now.minus(Duration.ofHours(1)), "opening cost");
+        manualEntry.enterInternalStock(actor, "flow-widget-m", "flow-warehouse", 25, 0,
+                pointObservation, "stock count");
+
+        internalReferences.insertFinanceInput(UUID.randomUUID(), organizationId,
+                "VARIABLE_TAX_RATE", "ORGANIZATION", null, null, "RATE",
+                new BigDecimal("0.050000"), null, null, factProvenanceId,
+                now.minus(Duration.ofHours(1)), now);
+        internalReferences.insertFinanceInput(UUID.randomUUID(), organizationId,
+                "REQUIRED_PROFIT_PER_UNIT", "ORGANIZATION", null, null, "AMOUNT",
+                null, new BigDecimal("5.0000"), "RUB", factProvenanceId,
+                now.minus(Duration.ofHours(1)), now);
+        internalReferences.insertFinanceInput(UUID.randomUUID(), organizationId,
+                "SAFETY_BUFFER_PER_UNIT", "ORGANIZATION", null, null, "AMOUNT",
+                null, new BigDecimal("2.0000"), "RUB", factProvenanceId,
+                now.minus(Duration.ofHours(1)), now);
 
         FactWindow window = FactWindow.endingAt(now, Duration.ofDays(30));
         assertThat(factQuery.latestPrice(listingVariantId, now)).isPresent();
@@ -381,7 +433,7 @@ class OperatingFlowIT {
         assertThat(factQuery.internalStock(productVariantId, now)).isNotNull();
 
         // Every fact points back at where it came from.
-        assertThat(evidence.trail(provenanceId)).isPresent();
+        assertThat(evidence.trail(factProvenanceId)).isPresent();
     }
 
     // -----------------------------------------------------------------
@@ -396,11 +448,36 @@ class OperatingFlowIT {
                 calculation.run(storeId, MetricWindow.D30, "MANUAL", userId);
         assertThat(first.subjectCount()).isPositive();
         assertThat(first.valueCount()).isPositive();
+        Instant storedPeriodEnd = jdbc.sql("""
+                        SELECT period_end FROM mart.calculation_run WHERE id = :id
+                        """).param("id", first.calculationRunId())
+                .query((row, number) -> row.getTimestamp(1).toInstant()).single();
+        assertThat(storedPeriodEnd)
+                .isEqualTo(storedPeriodEnd.truncatedTo(java.time.temporal.ChronoUnit.HOURS));
+        assertThat(jdbc.sql("""
+                        SELECT count(DISTINCT (period_start, period_end))
+                          FROM mart.metric_value WHERE calculation_run_id = :id
+                        """).param("id", first.calculationRunId()).query(Integer.class).single())
+                .isEqualTo(1);
 
         Map<MetricCode, MetricValueView> values = metrics.currentValues(
                 SubjectKind.PLATFORM_LISTING_VARIANT, listingVariantId, MetricWindow.D30);
         assertThat(values).containsKeys(MetricCode.OBSERVED_SELLING_PRICE, MetricCode.UNIT_COST,
-                MetricCode.CONTRIBUTION_MARGIN, MetricCode.DATA_COMPLETENESS);
+                MetricCode.CONTRIBUTION_MARGIN, MetricCode.BREAK_EVEN_PRICE,
+                MetricCode.MINIMUM_PRICE, MetricCode.DATA_COMPLETENESS);
+        assertThat(List.of(MetricCode.UNIT_COST, MetricCode.PLATFORM_FEES_PER_UNIT,
+                MetricCode.RETURN_LOSS_PER_UNIT, MetricCode.AD_SPEND_PER_UNIT,
+                MetricCode.VARIABLE_TAX_PER_UNIT, MetricCode.REQUIRED_PROFIT_PER_UNIT,
+                MetricCode.SAFETY_BUFFER_PER_UNIT, MetricCode.BREAK_EVEN_PRICE,
+                MetricCode.MINIMUM_PRICE))
+                .allSatisfy(code -> assertThat(values.get(code))
+                        .as("required write-grade metric %s", code)
+                        .satisfies(value -> {
+                            assertThat(value.valueState()).isEqualTo(ValueState.AVAILABLE);
+                            assertThat(value.currencyCode()).isEqualTo("RUB");
+                        }));
+        assertThat(values.get(MetricCode.MINIMUM_PRICE).confidenceState())
+                .isEqualTo(ConfidenceState.CANONICAL_CONFIRMED);
 
         MetricValueView price = values.get(MetricCode.OBSERVED_SELLING_PRICE);
         assertThat(price.valueState()).isEqualTo(ValueState.AVAILABLE);
@@ -418,6 +495,34 @@ class OperatingFlowIT {
                 SubjectKind.PLATFORM_LISTING_VARIANT, listingVariantId, MetricWindow.D30)
                 .orElseThrow().inputDigest())
                 .isEqualTo(price.inputDigest());
+
+        MetricValueView priorReturnLoss = values.get(MetricCode.RETURN_LOSS);
+        long returnHistoryBefore = jdbc.sql("""
+                        SELECT count(*) FROM mart.metric_value
+                         WHERE subject_id=:subject AND metric_code='RETURN_LOSS'
+                        """).param("subject", listingVariantId).query(Long.class).single();
+        facts.insertReturn(UUID.randomUUID(), organizationId, factProvenanceId,
+                listingVariantId, storeId, "flow:return:late", "RETURN-LATE", "ORDER-LATE",
+                "DELIVERY_REFUSAL", "QUALITY", "late correction",
+                storedPeriodEnd.minusSeconds(1), 1, "RUB", BigDecimal.ZERO,
+                new BigDecimal("1.0000"));
+
+        calculation.run(storeId, MetricWindow.D30, "MANUAL", userId);
+        MetricValueView correctedReturnLoss = metrics.current(MetricCode.RETURN_LOSS,
+                SubjectKind.PLATFORM_LISTING_VARIANT, listingVariantId, MetricWindow.D30)
+                .orElseThrow();
+        assertThat(correctedReturnLoss.metricValueId())
+                .isNotEqualTo(priorReturnLoss.metricValueId());
+        assertThat(correctedReturnLoss.numericValue())
+                .isEqualByComparingTo(priorReturnLoss.numericValue().add(BigDecimal.ONE));
+        assertThat(jdbc.sql("""
+                        SELECT count(*) FROM mart.metric_value
+                         WHERE subject_id=:subject AND metric_code='RETURN_LOSS'
+                        """).param("subject", listingVariantId).query(Long.class).single())
+                .isGreaterThan(returnHistoryBefore);
+        assertThat(jdbc.sql("SELECT numeric_value FROM mart.metric_value WHERE id=:id")
+                .param("id", priorReturnLoss.metricValueId()).query(BigDecimal.class).single())
+                .isEqualByComparingTo(priorReturnLoss.numericValue());
     }
 
     @Test
@@ -432,6 +537,7 @@ class OperatingFlowIT {
         findings.stream()
                 .filter(finding -> finding.outcome() == DiagnosisFindingView.Outcome.DECLINED)
                 .forEach(finding -> assertThat(finding.declineReason()).isNotBlank());
+        assertThat(findings).filteredOn(DiagnosisFindingView::blocksExecution).isEmpty();
 
         List<PrioritySubjectView> queue = diagnosis.priorityQueue(storeId, MetricWindow.D30, 20);
         assertThat(queue).isNotEmpty();
@@ -519,6 +625,53 @@ class OperatingFlowIT {
 
     @Test
     @Order(9)
+    @DisplayName("TC-R2-FLOW-001 removing any required economics input blocks the actual service gate")
+    void everyRequiredEconomicsInputIsNecessaryToTheServicePath() {
+        RecommendationView proposal = recommendations.require(recommendationId);
+        JdbcClient fixture = fixtureJdbc();
+        Map<MetricCode, MetricValueView> current = metrics.currentValues(
+                SubjectKind.PLATFORM_LISTING_VARIANT, listingVariantId, MetricWindow.D30);
+        for (MetricCode removed : List.of(MetricCode.UNIT_COST,
+                MetricCode.PLATFORM_FEES_PER_UNIT, MetricCode.RETURN_LOSS_PER_UNIT,
+                MetricCode.AD_SPEND_PER_UNIT, MetricCode.VARIABLE_TAX_PER_UNIT,
+                MetricCode.REQUIRED_PROFIT_PER_UNIT, MetricCode.SAFETY_BUFFER_PER_UNIT)) {
+            UUID injectedId = UUID.randomUUID();
+            String digest = com.mimococo.marketops.shared.Digest.ofComponents(
+                    List.of("service-path-missing-input", removed.name()));
+            fixture.sql("""
+                            INSERT INTO mart.metric_value
+                                (id, organization_id, calculation_run_id, metric_code,
+                                 definition_version, subject_kind, subject_id, window_code,
+                                 period_start, period_end, value_state, numeric_value,
+                                 currency_code, confidence_state, estimated, input_digest,
+                                 computed_at, oldest_source_time, freshness_seconds)
+                            SELECT :id, organization_id, calculation_run_id, metric_code,
+                                   definition_version, subject_kind, subject_id, window_code,
+                                   period_start, period_end, 'NOT_AVAILABLE', NULL, NULL,
+                                   'INCOMPLETE', false, :digest, now() + interval '1 second',
+                                   NULL, NULL
+                              FROM mart.metric_value
+                             WHERE id = :source
+                            """)
+                    .param("id", injectedId)
+                    .param("digest", digest)
+                    .param("source", current.get(removed).metricValueId())
+                    .update();
+            try {
+                ImpactPreview blocked = guardrails.preview(proposal, null,
+                        GuardrailPurpose.IMPACT_PREVIEW);
+                assertThat(blocked.verdict().passed()).as("removed %s", removed).isFalse();
+                assertThat(blocked.verdict().reasons()).as("removed %s", removed)
+                        .contains(GuardrailReason.REQUIRED_METRIC_UNAVAILABLE);
+            } finally {
+                fixture.sql("DELETE FROM mart.metric_value WHERE id=:id")
+                        .param("id", injectedId).update();
+            }
+        }
+    }
+
+    @Test
+    @Order(10)
     @DisplayName("TC-FLOW-009 a decision needs a passing guardrail and a stated reason")
     void approveTheProposal() {
         recommendations.transition(OPERATOR, recommendationId, RecommendationState.VALIDATED,
@@ -533,18 +686,8 @@ class OperatingFlowIT {
         assertThat(preview.verdict().reasons())
                 .doesNotContain(GuardrailReason.NO_POLICY_IN_FORCE);
 
-        if (!preview.verdict().passed()) {
-            // The guardrail refused for a reason about the facts rather than
-            // about the policy being absent. That is a legitimate outcome and
-            // the rest of this test asserts the refusal rather than pretending.
-            assertThat(preview.verdict().reasons()).isNotEmpty();
-            assertThatThrownBy(() -> approvals.approve(actor, recommendationId,
-                    "approving for the pilot", proposal.version()))
-                    .isInstanceOf(OperationRejectedException.class)
-                    .extracting(failure -> ((OperationRejectedException) failure).errorCode())
-                    .isEqualTo(ErrorCode.GUARDRAIL_BLOCKED);
-            return;
-        }
+        assertThat(preview.verdict().reasons()).isEmpty();
+        assertThat(preview.verdict().passed()).isTrue();
 
         ApprovalService.Decision decision = approvals.approve(actor, recommendationId,
                 "approving for the pilot", proposal.version());
@@ -554,34 +697,32 @@ class OperatingFlowIT {
     }
 
     @Test
-    @Order(10)
-    @DisplayName("TC-FLOW-010 a command cannot be created while the gate would refuse it")
+    @Order(11)
+    @DisplayName("TC-FLOW-010 the DB-authoritative command is created only after the gate passes")
     void createTheCommand() {
         RecommendationView proposal = recommendations.require(recommendationId);
-        if (!proposal.state().authorized()) {
-            // The guardrail refused earlier, so there is nothing to execute.
-            // Asserting that is the correct end of this path.
-            assertThatThrownBy(() -> execution.createCommand(actor, recommendationId,
-                    proposal.version()))
-                    .isInstanceOf(OperationRejectedException.class);
-            return;
-        }
+        assertThat(proposal.state().authorized()).isTrue();
 
         allowlist.grant(actor, "OZON", storeId, listingVariantId,
                 Instant.now().minus(Duration.ofMinutes(1)),
                 Instant.now().plus(Duration.ofDays(7)), "pilot cohort");
         assertThat(allowlist.covers(storeId, listingVariantId)).isTrue();
 
-        // No verified PRICE_CHANGE capability is registered for this platform,
-        // so the command cannot even be created. That is the fail-closed
-        // behaviour: an unverified capability has no reachable specification.
-        assertThatThrownBy(() -> execution.createCommand(actor, recommendationId,
-                proposal.version()))
-                .isInstanceOf(OperationRejectedException.class)
-                .extracting(failure -> ((OperationRejectedException) failure).errorCode())
-                .isEqualTo(ErrorCode.CAPABILITY_NOT_USABLE);
+        // The capability projection is a prerequisite fixture, not part of this
+        // Facts-to-Command service-path proof. Arrange it with the migration role
+        // so the production V0027 guard continues to reject application-role
+        // attempts to manufacture VERIFIED registry facts.
+        JdbcClient fixture = fixtureJdbc();
+        UUID capabilityId = PriceCommandFixture.sharedCapability(fixture);
+        PriceCommandFixture.seedOperations(fixture, capabilityId, false);
 
-        assertThat(commands.forRecommendation(recommendationId)).isEmpty();
+        ExecutionService.Created created = execution.createCommand(actor, recommendationId,
+                proposal.version());
+        assertThat(created.verdict()).isNotNull();
+        assertThat(created.verdict().passed()).isTrue();
+        assertThat(commands.forRecommendation(recommendationId))
+                .hasValueSatisfying(command -> assertThat(command.id())
+                        .isEqualTo(created.commandId()));
     }
 
     // -----------------------------------------------------------------
@@ -589,7 +730,7 @@ class OperatingFlowIT {
     // -----------------------------------------------------------------
 
     @Test
-    @Order(11)
+    @Order(12)
     @DisplayName("TC-FLOW-011 with no eligible provider the explanation degrades and nothing else")
     void aiRefusesWithoutAProvider() {
         AiDiagnosis explanation = copilot.explain(userId, organizationId, listingVariantId,
@@ -610,7 +751,7 @@ class OperatingFlowIT {
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     @DisplayName("TC-FLOW-012 the work list and the task queue reflect what was decided")
     void readTheQueues() {
         assertThat(recommendations.stateCounts(storeId)).isNotEmpty();

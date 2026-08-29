@@ -48,6 +48,9 @@ public class OperatingFactService implements OperatingFactQuery {
     /** The fee category the profit definition subtracts separately. */
     private static final String ADVERTISING_CATEGORY = "ADVERTISING";
 
+    /** Tax is a separate contribution component and must not be counted as a platform fee. */
+    private static final String VARIABLE_TAX_CATEGORY = "VARIABLE_TAX";
+
     private final FactQueryRepository facts;
 
     OperatingFactService(FactQueryRepository facts) {
@@ -165,26 +168,29 @@ public class OperatingFactService implements OperatingFactQuery {
         Instant oldest = oldest(rows.stream()
                 .map(FactQueryRepository.FeeGroupRow::oldestSourceTime));
         if (currencies.size() > 1) {
-            return new FeeTotals(null, null, Map.of(), false,
+            return new FeeTotals(null, null, null, Map.of(), false,
                     FactEvidence.conflicted(provenance, oldest));
         }
 
         String currency = currencies.getFirst();
         Map<String, Money> byCategory = new LinkedHashMap<>();
-        Money nonAdvertising = Money.zero(currency);
-        Money advertising = Money.zero(currency);
+        Money nonAdvertising = null;
+        Money advertising = null;
+        Money variableTax = null;
         boolean settledOnly = true;
         for (FactQueryRepository.FeeGroupRow row : rows) {
             Money amount = money(row.amount(), currency);
             byCategory.put(row.feeCategory(), amount);
             if (ADVERTISING_CATEGORY.equals(row.feeCategory())) {
-                advertising = advertising.plus(amount);
+                advertising = advertising == null ? amount : advertising.plus(amount);
+            } else if (VARIABLE_TAX_CATEGORY.equals(row.feeCategory())) {
+                variableTax = variableTax == null ? amount : variableTax.plus(amount);
             } else {
-                nonAdvertising = nonAdvertising.plus(amount);
+                nonAdvertising = nonAdvertising == null ? amount : nonAdvertising.plus(amount);
             }
             settledOnly = settledOnly && row.settledOnly();
         }
-        return new FeeTotals(nonAdvertising, advertising, byCategory, settledOnly,
+        return new FeeTotals(nonAdvertising, advertising, variableTax, byCategory, settledOnly,
                 FactEvidence.of(provenance, oldest));
     }
 

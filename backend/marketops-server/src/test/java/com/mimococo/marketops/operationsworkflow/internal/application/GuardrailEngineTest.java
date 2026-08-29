@@ -97,7 +97,8 @@ class GuardrailEngineTest {
         @Test
         void aMetricThatIsNotAvailableIsTreatedAsMissing() {
             Map<MetricCode, MetricValueView> metrics = defaultMetrics();
-            metrics.put(MetricCode.PLATFORM_FEES, unavailable(MetricCode.PLATFORM_FEES));
+            metrics.put(MetricCode.PLATFORM_FEES_PER_UNIT,
+                    unavailable(MetricCode.PLATFORM_FEES_PER_UNIT));
 
             GuardrailOutcome outcome = GuardrailEngine.evaluate(
                     input().metrics(metrics).build());
@@ -147,6 +148,68 @@ class GuardrailEngineTest {
             assertThat(outcome.reasons())
                     .contains(GuardrailReason.DATA_COMPLETENESS_BELOW_MINIMUM);
         }
+
+        @Test
+        void missingFreshnessBlocks() {
+            Map<MetricCode, MetricValueView> metrics = defaultMetrics();
+            metrics.put(MetricCode.RETURN_LOSS_PER_UNIT,
+                    value(MetricCode.RETURN_LOSS_PER_UNIT, "2.0000",
+                            ConfidenceState.CANONICAL_CONFIRMED, null));
+
+            GuardrailOutcome outcome = GuardrailEngine.evaluate(input().metrics(metrics).build());
+
+            assertThat(outcome.reasons())
+                    .contains(GuardrailReason.INPUT_FRESHNESS_UNAVAILABLE);
+        }
+
+        @Test
+        void currencyMismatchBlocks() {
+            Map<MetricCode, MetricValueView> metrics = defaultMetrics();
+            metrics.put(MetricCode.AD_SPEND_PER_UNIT,
+                    value(MetricCode.AD_SPEND_PER_UNIT, "3.0000", "USD",
+                            ConfidenceState.CANONICAL_CONFIRMED, 600L));
+
+            GuardrailOutcome outcome = GuardrailEngine.evaluate(input().metrics(metrics).build());
+
+            assertThat(outcome.reasons()).contains(GuardrailReason.CURRENCY_MISMATCH);
+        }
+
+        @Test
+        void aWholeWindowAggregateCannotReplacePerUnitEconomics() {
+            Map<MetricCode, MetricValueView> metrics = defaultMetrics();
+            metrics.remove(MetricCode.PLATFORM_FEES_PER_UNIT);
+            metrics.put(MetricCode.PLATFORM_FEES,
+                    value(MetricCode.PLATFORM_FEES, "150.0000",
+                            ConfidenceState.CANONICAL_CONFIRMED, 600L));
+
+            GuardrailOutcome outcome = GuardrailEngine.evaluate(input().metrics(metrics).build());
+
+            assertThat(outcome.reasons()).contains(GuardrailReason.REQUIRED_METRIC_UNAVAILABLE);
+        }
+
+        @Test
+        void removingAnyRequiredCostOrSafetyInputBreaksTheWriteGradePath() {
+            List<MetricCode> requiredEconomics = List.of(
+                    MetricCode.UNIT_COST,
+                    MetricCode.PLATFORM_FEES_PER_UNIT,
+                    MetricCode.RETURN_LOSS_PER_UNIT,
+                    MetricCode.AD_SPEND_PER_UNIT,
+                    MetricCode.VARIABLE_TAX_PER_UNIT,
+                    MetricCode.REQUIRED_PROFIT_PER_UNIT,
+                    MetricCode.SAFETY_BUFFER_PER_UNIT);
+
+            for (MetricCode removed : requiredEconomics) {
+                Map<MetricCode, MetricValueView> metrics = defaultMetrics();
+                metrics.remove(removed);
+
+                GuardrailOutcome outcome = GuardrailEngine.evaluate(
+                        input().metrics(metrics).build());
+
+                assertThat(outcome.passed()).as("removed %s", removed).isFalse();
+                assertThat(outcome.reasons()).as("removed %s", removed)
+                        .contains(GuardrailReason.REQUIRED_METRIC_UNAVAILABLE);
+            }
+        }
     }
 
     @Nested
@@ -191,8 +254,8 @@ class GuardrailEngineTest {
                     input().proposedPrice("70.0000").build());
 
             assertThat(outcome.passed()).isFalse();
-            assertThat(outcome.projectedUnitProfit()).isEqualByComparingTo("-5.0000");
-            assertThat(outcome.currentUnitProfit()).isEqualByComparingTo("25.0000");
+            assertThat(outcome.projectedUnitProfit()).isEqualByComparingTo("-6.0000");
+            assertThat(outcome.currentUnitProfit()).isEqualByComparingTo("24.0000");
         }
     }
 
@@ -305,6 +368,19 @@ class GuardrailEngineTest {
             assertThat(outcome.reasons())
                     .contains(GuardrailReason.INVENTORY_BELOW_MINIMUM);
         }
+
+
+        @Test
+        void missingStockBlocks() {
+            Map<MetricCode, MetricValueView> metrics = defaultMetrics();
+            metrics.remove(MetricCode.PLATFORM_AVAILABLE_UNITS);
+
+            GuardrailOutcome outcome = GuardrailEngine.evaluate(input().metrics(metrics).build());
+
+            assertThat(outcome.reasons()).contains(
+                    GuardrailReason.REQUIRED_METRIC_UNAVAILABLE,
+                    GuardrailReason.INVENTORY_EVIDENCE_UNAVAILABLE);
+        }
     }
 
     @Nested
@@ -416,11 +492,29 @@ class GuardrailEngineTest {
         metrics.put(MetricCode.UNIT_COST,
                 value(MetricCode.UNIT_COST, "60.0000",
                         ConfidenceState.CANONICAL_CONFIRMED, 600L));
-        metrics.put(MetricCode.PLATFORM_FEES,
-                value(MetricCode.PLATFORM_FEES, "15.0000",
+        metrics.put(MetricCode.PLATFORM_FEES_PER_UNIT,
+                value(MetricCode.PLATFORM_FEES_PER_UNIT, "10.0000",
+                        ConfidenceState.CANONICAL_CONFIRMED, 600L));
+        metrics.put(MetricCode.RETURN_LOSS_PER_UNIT,
+                value(MetricCode.RETURN_LOSS_PER_UNIT, "2.0000",
+                        ConfidenceState.CANONICAL_CONFIRMED, 600L));
+        metrics.put(MetricCode.AD_SPEND_PER_UNIT,
+                value(MetricCode.AD_SPEND_PER_UNIT, "3.0000",
+                        ConfidenceState.CANONICAL_CONFIRMED, 600L));
+        metrics.put(MetricCode.VARIABLE_TAX_PER_UNIT,
+                value(MetricCode.VARIABLE_TAX_PER_UNIT, "1.0000",
+                        ConfidenceState.CANONICAL_CONFIRMED, 600L));
+        metrics.put(MetricCode.REQUIRED_PROFIT_PER_UNIT,
+                value(MetricCode.REQUIRED_PROFIT_PER_UNIT, "5.0000",
+                        ConfidenceState.CANONICAL_CONFIRMED, 600L));
+        metrics.put(MetricCode.SAFETY_BUFFER_PER_UNIT,
+                value(MetricCode.SAFETY_BUFFER_PER_UNIT, "2.0000",
+                        ConfidenceState.CANONICAL_CONFIRMED, 600L));
+        metrics.put(MetricCode.BREAK_EVEN_PRICE,
+                value(MetricCode.BREAK_EVEN_PRICE, "76.0000",
                         ConfidenceState.CANONICAL_CONFIRMED, 600L));
         metrics.put(MetricCode.MINIMUM_PRICE,
-                value(MetricCode.MINIMUM_PRICE, "75.0000",
+                value(MetricCode.MINIMUM_PRICE, "83.0000",
                         ConfidenceState.CANONICAL_CONFIRMED, 600L));
         metrics.put(MetricCode.DATA_COMPLETENESS,
                 value(MetricCode.DATA_COMPLETENESS, "0.9000",
@@ -433,16 +527,21 @@ class GuardrailEngineTest {
 
     private static MetricValueView value(MetricCode code, String amount,
                                          ConfidenceState confidence, Long freshnessSeconds) {
-        return new MetricValueView(UUID.randomUUID(), code, 1,
+        return value(code, amount, "RUB", confidence, freshnessSeconds);
+    }
+
+    private static MetricValueView value(MetricCode code, String amount, String currency,
+                                         ConfidenceState confidence, Long freshnessSeconds) {
+        return new MetricValueView(UUID.randomUUID(), code, 2,
                 SubjectKind.PLATFORM_LISTING_VARIANT, UUID.randomUUID(), MetricWindow.D30,
                 NOW.minus(Duration.ofDays(30)), NOW, ValueState.AVAILABLE,
-                new BigDecimal(amount), "RUB", confidence, false,
+                new BigDecimal(amount), currency, confidence, false,
                 NOW.minus(Duration.ofDays(30)), freshnessSeconds, "digest-" + code.name(),
                 NOW, List.of());
     }
 
     private static MetricValueView unavailable(MetricCode code) {
-        return new MetricValueView(UUID.randomUUID(), code, 1,
+        return new MetricValueView(UUID.randomUUID(), code, 2,
                 SubjectKind.PLATFORM_LISTING_VARIANT, UUID.randomUUID(), MetricWindow.D30,
                 NOW.minus(Duration.ofDays(30)), NOW, ValueState.NOT_AVAILABLE, null, null,
                 ConfidenceState.INCOMPLETE, false, null, null, "digest-" + code.name(), NOW,
@@ -459,6 +558,7 @@ class GuardrailEngineTest {
         private PolicyLimits policy = defaultPolicy(Map.of());
         private Map<MetricCode, MetricValueView> metrics = defaultMetrics();
         private BigDecimal currentPrice = new BigDecimal("100.0000");
+        private String currentPriceCurrency = "RUB";
         private BigDecimal proposedPrice = new BigDecimal("105.0000");
         private BigDecimal cumulativeDailyChangeRate = BigDecimal.ZERO;
         private Instant lastChangeAt;
@@ -486,6 +586,7 @@ class GuardrailEngineTest {
 
         Builder currentPriceAbsent() {
             this.currentPrice = null;
+            this.currentPriceCurrency = null;
             Map<MetricCode, MetricValueView> without = new EnumMap<>(this.metrics);
             without.remove(MetricCode.OBSERVED_SELLING_PRICE);
             this.metrics = without;
@@ -538,7 +639,8 @@ class GuardrailEngineTest {
         }
 
         GuardrailInput build() {
-            return new GuardrailInput(policy, metrics, currentPrice, proposedPrice,
+            return new GuardrailInput(policy, metrics, currentPrice, currentPriceCurrency,
+                    proposedPrice,
                     cumulativeDailyChangeRate, lastChangeAt, NOW, mappingResolved,
                     mappingConflictOpen, diagnosisBlocksExecution, entityVersionMatches,
                     recommendationValid, authorizationMaxChangeRate);

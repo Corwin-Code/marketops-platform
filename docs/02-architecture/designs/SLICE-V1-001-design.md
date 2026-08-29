@@ -6,13 +6,14 @@ slice: SLICE-V1-001
 slice_title: SKU Growth & Profit Diagnostic Loop
 contract: docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md
 contract_sha256: 0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5
-accepted_amendments: SLICE-V1-001-AMENDMENT-001
-accepted_amendment_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d
-implementation_state: ROOT_CAUSE_REWORK_CANDIDATE
-candidate_scope: PR20_PUBLISHED_CANDIDATE
+accepted_amendments: SLICE-V1-001-AMENDMENT-001,SLICE-V1-001-AMENDMENT-002
+accepted_amendment_001_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d
+accepted_amendment_002_sha256: 92fdd8d67b327fbd2288ba99290b5b59f2797106c4b691ce2bff22bb80198b93
+implementation_state: SUPPLEMENTAL_R2_ROOT_CAUSE_REWORK_CANDIDATE
+candidate_scope: R2_BRANCH_ONLY
 closure_claim: NONE
-base_commit: 89fc29be45327b592a9bcbeffbfec54c96fb66ed
-base_tree: 28029347daa05bbff40c1a0ca15c7ad0d9f1ac92
+base_commit: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
+base_tree: 221e5a009d4cf5820d36c0e1bccd5b64caa6135b
 production_write_enabled: false
 real_marketplace_call_made: false
 real_model_provider_call_made: false
@@ -21,22 +22,21 @@ infrastructure_applied: false
 
 ## 1. Implementation and current rework
 
-The original thirteen implementation commits were published as Draft PR #20.
-Controller review froze thirteen findings against Head
-`30d16e5d7db2d2190635a06fececd5883093a876`. Codex's corrections are published on
-the same branch. They remain a candidate, not a Controller closure verdict.
+PR #20 is merged. PR #21 is held and is not an R2 implementation base. The
+Supplemental R2 branch starts from exact protected-main commit
+`db92cf2f8bd818f36dd8f5aa17b8589c4140b669`. Its nine engineering fixes remain
+a candidate, not a Controller closure verdict.
 
 The code covers acquisition, canonical facts, diagnosis, recommendations,
-controlled commands and readback. Candidate migrations V0011–V0026 contain the
-in-scope corrections, V0027 adds account-bound registry verification, and V0028
-adds bounded asynchronous diagnostic export. The
-[final handoff index](../../07-phase-evidence/SLICE-V1-001/rework-r1/final-handoff.md)
-records C3 full regression, performance/export/restore, browser, infrastructure
-and CI evidence, plus the completed v1.1 CodeQL dispositions. Its final delivery
-packet must bind fresh verification to the exact final published Head. No real
-provider, Marketplace or production write is authorized or proven.
+controlled commands and readback. V0011–V0028 are immutable applied history;
+V0029 versions the profit economics and adds sourced Required Profit and Safety
+Buffer inputs. The final R2 packet must bind fresh verification to the exact
+published Head. Accepted Amendment-002 defers only its enumerated real/Owner/Gate
+evidence to `RELEASE-V1-001`; the Deferred Evidence Register preserves every
+future obligation. No real provider, Marketplace or production write is
+authorized or proven.
 
-## 2. The five decisions everything else follows from
+## 2. The decisions everything else follows from
 
 ### 2.1 A marketplace fact is a row, never a line of code
 
@@ -113,6 +113,32 @@ the rejected claims — and none of them raises, so an unavailable model degrade
 the explanation and leaves the diagnosis, the guardrails and the command path
 untouched.
 
+### 2.6 A metric assertion is the exact facts, window and state it names
+
+`AnalyticsCalculationService` creates one `FactWindow` and passes that exact
+object through every query, stored `calculation_run` and stored `metric_value`.
+Window facts use `[period_start, period_end)`; point facts resolve strictly
+before the as-of boundary. A recomputation may deduplicate only when value
+state, normalized value, currency, confidence, source time, mapping identity,
+input identities and explicit availability states all match.
+
+Contribution Profit is unavailable unless sales, unit cost, platform fees,
+return loss, advertising and tax are all present and currency-compatible. An
+explicit sourced zero remains available and is not equivalent to absence.
+Window totals are converted to canonical per-unit metrics before Guardrail use.
+V2 Minimum Price is exactly:
+
+```text
+Break-even Price
++ sourced Required Profit per Unit
++ sourced Safety Buffer per Unit
+```
+
+Break-even Price contains unit cost plus the per-unit platform-fee, return-loss,
+advertising and actual variable-tax inputs. Missing stock, missing freshness,
+missing economics, insufficient confidence or currency conflict blocks the
+write-grade Guardrail path.
+
 ## 3. Module shape
 
 Ten Spring Modulith modules. The two added by this slice are `operationsworkflow`
@@ -145,7 +171,7 @@ keeps one writer per table and one place a marketplace fact can live, at the
 cost of a dependency direction some readers will find surprising: workflow
 depends on integration rather than the reverse.
 
-## 4. Schema, V0011 through V0028
+## 4. Schema, V0011 through V0029
 
 | Migration | What it establishes |
 | --- | --- |
@@ -167,11 +193,12 @@ depends on integration rather than the reverse.
 | V0026 | `capability_code` renamed to `action_kind` in the two operational tables; dependent functions rebuilt |
 | V0027 | Account-bound verification submissions/reviews, audit and promotion/revocation functions |
 | V0028 | Bounded export jobs, immutable snapshot rows/parts, fenced worker and live authorization |
+| V0029 | V2 profit economics, canonical per-unit cost metrics, Break-even Price, and sourced Required Profit/Safety Buffer inputs |
 
 Every table in the eight foundation schemas appears in
 `platform.control_route_inventory` exactly once — a hundred and three tables,
 a hundred and three rows, twenty-four routed with three epoch triggers each.
-V0001–V0010 are untouched.
+V0001–V0028 are untouched by R2.
 
 ### Two defects the schema work found
 
@@ -240,7 +267,9 @@ columns and refuses to let the collision return.
   anything that can run script on the origin — the most useful thing an attacker
   could take from a console that changes real prices.
   The candidate servlet boundary requires an expiry and validates the exact
-  configured MFA claim. Missing `auth_time` cannot satisfy step-up; token renewal
+  configured audience and MFA claim. A non-local serving environment fails
+  startup when issuer or audience is absent/blank; a wrong audience is denied.
+  Missing `auth_time` cannot satisfy step-up; token renewal
   never substitutes `iat` for the original authentication time. Cookie, form,
   query and servlet-session authentication are not accepted.
 - **Authorization** is role plus action scope plus resource scope, evaluated per
@@ -289,6 +318,11 @@ a dynamic unprivileged user with no DB/Marketplace secret. The required alert
 configuration treats No Data as an alarm.
 Real alert provisioning, metric receipt and notification delivery remain
 pending; see the operational monitoring runbook.
+
+Every `/api/v1/admin/metadata/**` request also requires the actual socket peer
+to be loopback before method-specific authorization or maintenance-write gates
+run. The boundary applies to reads and writes; `Forwarded` and
+`X-Forwarded-For` cannot manufacture local authority.
 
 ## 8. What is not proven
 

@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * The maintenance surface in an environment that has not opted into writes.
  *
  * <p>Every mutation is refused with the same stable code before any handler
- * runs, regardless of attribution, while the query surface stays available.
+ * runs, regardless of attribution, while loopback queries stay available.
  * This is the posture of the base configuration, so it is asserted against a
  * running application rather than against the property alone.
  */
@@ -62,5 +62,58 @@ class MaintenanceWriteGateApiIT {
                 .andExpect(status().isOk());
         mockMvc.perform(get("/api/v1/admin/metadata/audit-events?limit=1"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("TC-API-082 non-loopback reads and mutations are denied before handlers")
+    void nonLoopbackPeerIsDeniedForEveryMethod() throws Exception {
+        mockMvc.perform(get("/api/v1/admin/metadata/organizations")
+                        .header("Authorization", "Bearer synthetic-maintenance-token")
+                        .with(request -> {
+                            request.setRemoteAddr("203.0.113.10");
+                            return request;
+                        }))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.title").value("MAINTENANCE_LOOPBACK_REQUIRED"));
+
+        mockMvc.perform(post("/api/v1/admin/metadata/organizations")
+                        .header("Authorization", "Bearer synthetic-maintenance-token")
+                        .header("X-Operator", "ivan.petrov")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"code\":\"remote\",\"displayName\":\"Remote\"}")
+                        .with(request -> {
+                            request.setRemoteAddr("203.0.113.10");
+                            return request;
+                        }))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.title").value("MAINTENANCE_LOOPBACK_REQUIRED"));
+    }
+
+    @Test
+    @DisplayName("TC-API-083 forwarding headers cannot manufacture a loopback peer")
+    void forwardingHeadersCannotManufactureLoopback() throws Exception {
+        mockMvc.perform(get("/api/v1/admin/metadata/organizations")
+                        .header("Authorization", "Bearer synthetic-maintenance-token")
+                        .header("Forwarded", "for=127.0.0.1;proto=https")
+                        .header("X-Forwarded-For", "127.0.0.1")
+                        .header("X-Real-IP", "127.0.0.1")
+                        .with(request -> {
+                            request.setRemoteAddr("198.51.100.7");
+                            return request;
+                        }))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.title").value("MAINTENANCE_LOOPBACK_REQUIRED"));
+    }
+
+    @Test
+    @DisplayName("TC-API-084 a hostname-shaped peer is denied without name resolution")
+    void hostnameShapedPeerIsDenied() throws Exception {
+        mockMvc.perform(get("/api/v1/admin/metadata/organizations")
+                        .with(request -> {
+                            request.setRemoteAddr("dead");
+                            return request;
+                        }))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.title").value("MAINTENANCE_LOOPBACK_REQUIRED"));
     }
 }

@@ -122,7 +122,7 @@ class RepresentativePerformanceIT {
             }
             report.put("rowCounts",counts);
             assertThat(counts).containsEntry("core.product_variant",5000L).containsEntry("ledger.sales_fact",720000L)
-                    .containsEntry("mart.metric_value",825240L).containsEntry("mart.metric_input_reference",2475720L)
+                    .containsEntry("mart.metric_value",1047420L).containsEntry("mart.metric_input_reference",3142260L)
                     .containsEntry("mart.diagnosis_finding",285660L).containsEntry("ops.recommendation",30000L);
             assertThat(jdbc.sql("SELECT count(*) FROM ops.price_command").query(Integer.class).single()).isZero();
             assertThat(jdbc.sql("SELECT count(*) FROM platform.platform_capability WHERE verification_state='VERIFIED'")
@@ -200,7 +200,7 @@ class RepresentativePerformanceIT {
         exportWorker.runOnce();
         var job = exports.status(actor,exportId);
         assertThat(job.state()).as("representative export: %s",job.failureCode()).isEqualTo("SUCCEEDED");
-        assertThat(job.rowCount()).isEqualTo(488000);
+        assertThat(job.rowCount()).isEqualTo(600000);
         assertThat(job.byteLength()).isBetween(100_000_000L,268435456L);
         var manifest = exports.manifest(actor,exportId);
         var document = mapper.readTree(manifest.document());
@@ -313,7 +313,7 @@ class RepresentativePerformanceIT {
             assertThat(json.size()).isEqualTo(test.name().equals("priority-maximum-page") ? 500 : 50);
             assertThat(test.url()).contains(json.get(0).path("storeId").asString());
         } else if (test.name().startsWith("sku-360")) {
-            assertThat(json.path("metrics").size()).isEqualTo(26);
+            assertThat(json.path("metrics").size()).isEqualTo(33);
             assertThat(json.path("findings").size()).isEqualTo(9);
             var sales = json.path("metrics").path("COMPLETED_NET_SALES");
             assertThat(sales.path("evidenceRefs").size()).isEqualTo(3);

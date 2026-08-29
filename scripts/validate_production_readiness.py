@@ -123,7 +123,33 @@ APPROVED_MIGRATIONS = (
     "V0026__rename_operational_capability_column_to_action_kind.sql",
     "V0027__create_account_bound_registry_verification.sql",
     "V0028__create_bounded_diagnostic_export.sql",
+    "V0029__version_profit_economics_and_commercial_inputs.sql",
 )
+
+DEFERRED_EVIDENCE_REGISTER = (
+    "docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json"
+)
+DEFERRED_ACCEPTANCE_IDS = (
+    "S1-AC-001", "S1-AC-003", "S1-AC-005", "S1-AC-006", "S1-AC-007",
+    "S1-AC-008", "S1-AC-009", "S1-AC-010", "S1-AC-012", "S1-AC-023",
+    "S1-AC-025", "S1-AC-026", "S1-AC-031", "S1-AC-032", "S1-AC-033",
+    "S1-AC-038", "S1-AC-040",
+)
+DEFERRED_CURRENT_STATUS = "OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001"
+DEFERRED_ENGINEERING_STATUS = "ENGINEERING_VERIFIED_RELEASE_EVIDENCE_PENDING"
+DEFERRED_RELEASE_STATES = {
+    DEFERRED_CURRENT_STATUS,
+    "GATE_EV_DEFERRED_TO_RELEASE_V1_001",
+    "OWNER_RELEASE_EVIDENCE_DEFERRED_TO_RELEASE_V1_001",
+}
+PROHIBITED_DEFERRED_STATUSES = {
+    "VERIFIED", "EXECUTABLY_VERIFIED", "NOT_APPLICABLE", "REAL_PROVIDER_PROVEN",
+    "PRODUCTION_READY",
+}
+DEFERRED_AUTHORITY_HASHES = {
+    "amendmentSha256": "92fdd8d67b327fbd2288ba99290b5b59f2797106c4b691ce2bff22bb80198b93",
+    "ownerAcceptanceSha256": "f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923",
+}
 
 # An applied migration is immutable. The pin covers the earliest migration,
 # which every environment has applied; editing it in place would desynchronise
@@ -1342,6 +1368,128 @@ def check_production_naming(report: Report, files: list[Path]) -> None:
                         )
 
 
+def deferred_evidence_register_violations(data: object, root: Path = ROOT) -> list[str]:
+    """Validate Amendment-002's exact deferred evidence boundary."""
+    errors: list[str] = []
+    if not isinstance(data, dict):
+        return ["deferred evidence register must be a JSON object"]
+    if data.get("schemaVersion") != 1:
+        errors.append("schemaVersion must be exactly 1")
+    if data.get("futureGate") != "RELEASE-V1-001":
+        errors.append("futureGate must be exactly RELEASE-V1-001")
+    if data.get("productionWriteEnabled") is not False:
+        errors.append("productionWriteEnabled must remain false")
+
+    authority = data.get("authority")
+    if not isinstance(authority, dict):
+        errors.append("authority must be an object")
+    else:
+        for field, expected in DEFERRED_AUTHORITY_HASHES.items():
+            if authority.get(field) != expected:
+                errors.append(f"authority {field} must be exactly {expected}")
+        for path_field, hash_field in (
+            ("amendmentPath", "amendmentSha256"),
+            ("ownerAcceptancePath", "ownerAcceptanceSha256"),
+        ):
+            relative = authority.get(path_field)
+            if not isinstance(relative, str) or not relative:
+                errors.append(f"authority {path_field} must be a repository path")
+                continue
+            candidate = root / relative
+            if not candidate.is_file():
+                errors.append(f"authority {path_field} does not exist: {relative}")
+                continue
+            actual = hashlib.sha256(candidate.read_bytes()).hexdigest()
+            expected = authority.get(hash_field)
+            if actual != expected:
+                errors.append(
+                    f"authority {path_field} hash mismatch: expected {expected}, found {actual}"
+                )
+
+    entries = data.get("entries")
+    if not isinstance(entries, list):
+        return errors + ["entries must be an array"]
+    ids = [entry.get("acceptanceId") for entry in entries if isinstance(entry, dict)]
+    if len(ids) != len(set(ids)):
+        errors.append("deferred acceptance IDs must be unique")
+    if set(ids) != set(DEFERRED_ACCEPTANCE_IDS) or len(ids) != len(DEFERRED_ACCEPTANCE_IDS):
+        errors.append(
+            "deferred acceptance IDs must exactly cover Amendment-002: "
+            + ", ".join(DEFERRED_ACCEPTANCE_IDS)
+        )
+
+    gate_ev_ids = {"S1-AC-031", "S1-AC-032", "S1-AC-033"}
+    owner_evidence_ids = {"S1-AC-026", "S1-AC-038", "S1-AC-040"}
+    required_text_fields = (
+        "engineeringEvidenceClosedNow", "deferredEvidence", "activationPrerequisite",
+        "productionBlockingEffect", "currentStatus", "engineeringStatus",
+        "releaseEvidenceState", "futureEvidencePath",
+    )
+    for index, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            errors.append(f"entry {index} must be an object")
+            continue
+        acceptance_id = entry.get("acceptanceId")
+        for field in required_text_fields:
+            if not isinstance(entry.get(field), str) or not entry.get(field):
+                errors.append(f"{acceptance_id or index} {field} must be non-empty")
+        if entry.get("currentStatus") != DEFERRED_CURRENT_STATUS:
+            errors.append(
+                f"{acceptance_id} currentStatus must be {DEFERRED_CURRENT_STATUS}"
+            )
+        if entry.get("engineeringStatus") != DEFERRED_ENGINEERING_STATUS:
+            errors.append(
+                f"{acceptance_id} engineeringStatus must be {DEFERRED_ENGINEERING_STATUS}"
+            )
+        release_state = entry.get("releaseEvidenceState")
+        if release_state not in DEFERRED_RELEASE_STATES:
+            errors.append(f"{acceptance_id} has invalid releaseEvidenceState: {release_state}")
+        expected_release_state = (
+            "GATE_EV_DEFERRED_TO_RELEASE_V1_001" if acceptance_id in gate_ev_ids
+            else "OWNER_RELEASE_EVIDENCE_DEFERRED_TO_RELEASE_V1_001"
+            if acceptance_id in owner_evidence_ids else DEFERRED_CURRENT_STATUS
+        )
+        if release_state != expected_release_state:
+            errors.append(
+                f"{acceptance_id} releaseEvidenceState must be {expected_release_state}"
+            )
+        expected_future_path = (
+            f"docs/07-phase-evidence/RELEASE-V1-001/{acceptance_id}/"
+        )
+        if entry.get("futureEvidencePath") != expected_future_path:
+            errors.append(
+                f"{acceptance_id} futureEvidencePath must be {expected_future_path}"
+            )
+        evidence_paths = entry.get("engineeringEvidencePaths")
+        if not isinstance(evidence_paths, list) or not evidence_paths:
+            errors.append(f"{acceptance_id} engineeringEvidencePaths must be non-empty")
+        else:
+            for relative in evidence_paths:
+                if not isinstance(relative, str) or not relative or not (root / relative).exists():
+                    errors.append(
+                        f"{acceptance_id} engineering evidence path does not exist: {relative}"
+                    )
+        for field in ("currentStatus", "engineeringStatus", "releaseEvidenceState"):
+            if entry.get(field) in PROHIBITED_DEFERRED_STATUSES:
+                errors.append(
+                    f"{acceptance_id} deferred evidence must not be relabeled "
+                    f"{entry.get(field)}"
+                )
+    return errors
+
+
+def check_deferred_evidence_register(report: Report) -> None:
+    rule = "TC-GLOBAL-004"
+    path = ROOT / DEFERRED_EVIDENCE_REGISTER
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        report.add(rule, DEFERRED_EVIDENCE_REGISTER, 0, f"register is unreadable: {error}")
+        return
+    for detail in deferred_evidence_register_violations(data):
+        report.add(rule, DEFERRED_EVIDENCE_REGISTER, 0, detail)
+
+
 def main() -> int:
     files = iter_files()
     report = Report(inspected_files=len(files))
@@ -1349,12 +1497,14 @@ def main() -> int:
     check_compromise_retirement(report, files)
     check_functional_comments(report, files)
     check_production_naming(report, files)
+    check_deferred_evidence_register(report)
 
-    rules = ("TC-GLOBAL-001", "TC-GLOBAL-002", "TC-GLOBAL-003")
+    rules = ("TC-GLOBAL-001", "TC-GLOBAL-002", "TC-GLOBAL-003", "TC-GLOBAL-004")
     labels = {
         "TC-GLOBAL-001": "Compromise Retirement Check",
         "TC-GLOBAL-002": "Functional JavaDoc Rewrite Check",
         "TC-GLOBAL-003": "Production Naming Check",
+        "TC-GLOBAL-004": "Deferred Evidence Boundary Check",
     }
 
     print(f"Production readiness validation over {report.inspected_files} files.")

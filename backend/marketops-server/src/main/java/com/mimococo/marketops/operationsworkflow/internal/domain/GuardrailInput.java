@@ -18,6 +18,7 @@ import java.util.Objects;
  * @param policy the limits in force, or {@code null} when none are
  * @param metrics current canonical values for the subject
  * @param currentPrice the price observed on the platform, or {@code null}
+ * @param currentPriceCurrency the observed price currency, or {@code null}
  * @param proposedPrice the price the recommendation proposes
  * @param cumulativeDailyChangeRate how much the price already moved today
  * @param lastChangeAt when the price last changed, or {@code null}
@@ -33,6 +34,7 @@ public record GuardrailInput(
         PolicyLimits policy,
         Map<MetricCode, MetricValueView> metrics,
         BigDecimal currentPrice,
+        String currentPriceCurrency,
         BigDecimal proposedPrice,
         BigDecimal cumulativeDailyChangeRate,
         Instant lastChangeAt,

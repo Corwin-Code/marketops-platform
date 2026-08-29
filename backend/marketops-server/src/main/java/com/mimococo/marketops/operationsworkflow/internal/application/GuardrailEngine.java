@@ -53,8 +53,19 @@ final class GuardrailEngine {
      */
     private static final Set<MetricCode> REQUIRED_METRICS = EnumSet.of(
             MetricCode.OBSERVED_SELLING_PRICE, MetricCode.UNIT_COST,
-            MetricCode.PLATFORM_FEES, MetricCode.MINIMUM_PRICE,
-            MetricCode.DATA_COMPLETENESS);
+            MetricCode.PLATFORM_FEES_PER_UNIT, MetricCode.RETURN_LOSS_PER_UNIT,
+            MetricCode.AD_SPEND_PER_UNIT, MetricCode.VARIABLE_TAX_PER_UNIT,
+            MetricCode.REQUIRED_PROFIT_PER_UNIT, MetricCode.SAFETY_BUFFER_PER_UNIT,
+            MetricCode.BREAK_EVEN_PRICE, MetricCode.MINIMUM_PRICE,
+            MetricCode.DATA_COMPLETENESS, MetricCode.PLATFORM_AVAILABLE_UNITS);
+
+    /** Money-valued assertions that must all use the policy currency. */
+    private static final Set<MetricCode> MONETARY_METRICS = EnumSet.of(
+            MetricCode.OBSERVED_SELLING_PRICE, MetricCode.UNIT_COST,
+            MetricCode.PLATFORM_FEES_PER_UNIT, MetricCode.RETURN_LOSS_PER_UNIT,
+            MetricCode.AD_SPEND_PER_UNIT, MetricCode.VARIABLE_TAX_PER_UNIT,
+            MetricCode.REQUIRED_PROFIT_PER_UNIT, MetricCode.SAFETY_BUFFER_PER_UNIT,
+            MetricCode.BREAK_EVEN_PRICE, MetricCode.MINIMUM_PRICE);
 
     /** Scale intermediate rates carry before comparison. */
     private static final int RATE_SCALE = 6;
@@ -97,17 +108,27 @@ final class GuardrailEngine {
             detail.put("changeRate", changeRate.toPlainString());
         }
 
-        BigDecimal breakEven = numeric(input, MetricCode.MINIMUM_PRICE);
+        BigDecimal minimumPrice = numeric(input, MetricCode.MINIMUM_PRICE);
+        BigDecimal breakEven = numeric(input, MetricCode.BREAK_EVEN_PRICE);
         BigDecimal unitCost = numeric(input, MetricCode.UNIT_COST);
-        BigDecimal fees = numeric(input, MetricCode.PLATFORM_FEES);
-        BigDecimal currentUnitProfit = unitProfit(currentPrice, unitCost, fees);
-        BigDecimal projectedUnitProfit = unitProfit(proposedPrice, unitCost, fees);
+        BigDecimal platformFees = numeric(input, MetricCode.PLATFORM_FEES_PER_UNIT);
+        BigDecimal returnLoss = numeric(input, MetricCode.RETURN_LOSS_PER_UNIT);
+        BigDecimal advertising = numeric(input, MetricCode.AD_SPEND_PER_UNIT);
+        BigDecimal variableTax = numeric(input, MetricCode.VARIABLE_TAX_PER_UNIT);
+        BigDecimal currentUnitProfit = unitProfit(currentPrice, unitCost, platformFees,
+                returnLoss, advertising, variableTax);
+        BigDecimal projectedUnitProfit = unitProfit(proposedPrice, unitCost, platformFees,
+                returnLoss, advertising, variableTax);
         BigDecimal currentMargin = margin(currentUnitProfit, currentPrice);
         BigDecimal projectedMargin = margin(projectedUnitProfit, proposedPrice);
 
         if (breakEven != null && proposedPrice.compareTo(breakEven) < 0) {
             detail.put("breakEvenPrice", breakEven.toPlainString());
             reasons.add(GuardrailReason.BELOW_BREAK_EVEN);
+        }
+        if (minimumPrice != null && proposedPrice.compareTo(minimumPrice) < 0) {
+            detail.put("minimumPrice", minimumPrice.toPlainString());
+            reasons.add(GuardrailReason.BELOW_MINIMUM_PRICE);
         }
 
         if (policy != null) {
@@ -184,6 +205,7 @@ final class GuardrailEngine {
             detail.put("lowConfidenceMetrics", String.join(",", lowConfidence));
             reasons.add(GuardrailReason.METRIC_CONFIDENCE_INSUFFICIENT);
         }
+        currencyConsistency(input, reasons, detail);
         BigDecimal observed = numeric(input, MetricCode.OBSERVED_SELLING_PRICE);
         if (observed != null) {
             detail.put("currentPrice", observed.toPlainString());
@@ -210,9 +232,18 @@ final class GuardrailEngine {
         if (maximumAge.isEmpty()) {
             return;
         }
-        Long oldest = input.metrics().values().stream()
+        List<String> freshnessMissing = REQUIRED_METRICS.stream()
+                .filter(code -> {
+                    MetricValueView value = input.metrics().get(code);
+                    return value == null || value.freshnessSeconds() == null;
+                }).map(Enum::name).sorted().toList();
+        if (!freshnessMissing.isEmpty()) {
+            detail.put("freshnessUnavailableMetrics", String.join(",", freshnessMissing));
+            reasons.add(GuardrailReason.INPUT_FRESHNESS_UNAVAILABLE);
+            return;
+        }
+        Long oldest = REQUIRED_METRICS.stream().map(input.metrics()::get)
                 .map(MetricValueView::freshnessSeconds)
-                .filter(java.util.Objects::nonNull)
                 .max(Long::compareTo)
                 .orElse(null);
         if (oldest == null) {
@@ -305,7 +336,11 @@ final class GuardrailEngine {
                                   Map<String, String> detail) {
         Optional<Integer> minimumUnits = policy.count("MIN_AVAILABLE_UNITS");
         BigDecimal available = numeric(input, MetricCode.PLATFORM_AVAILABLE_UNITS);
-        if (minimumUnits.isEmpty() || available == null) {
+        if (available == null) {
+            reasons.add(GuardrailReason.INVENTORY_EVIDENCE_UNAVAILABLE);
+            return;
+        }
+        if (minimumUnits.isEmpty()) {
             return;
         }
         detail.put("availableUnits", available.toPlainString());
@@ -350,12 +385,37 @@ final class GuardrailEngine {
     }
 
     /** What one unit contributes at a price, after cost and platform fees. */
-    private static BigDecimal unitProfit(BigDecimal price, BigDecimal unitCost,
-                                         BigDecimal fees) {
-        if (price == null || unitCost == null || fees == null) {
+    private static BigDecimal unitProfit(BigDecimal price, BigDecimal... costs) {
+        if (price == null || java.util.Arrays.stream(costs)
+                .anyMatch(java.util.Objects::isNull)) {
             return null;
         }
-        return price.subtract(unitCost).subtract(fees);
+        return java.util.Arrays.stream(costs).reduce(price, BigDecimal::subtract);
+    }
+
+    /** Money is comparable only when every required assertion matches policy. */
+    private static void currencyConsistency(GuardrailInput input,
+                                            List<GuardrailReason> reasons,
+                                            Map<String, String> detail) {
+        String expected = input.policy() == null
+                ? input.currentPriceCurrency() : input.policy().currencyCode();
+        List<String> mismatches = new ArrayList<>();
+        if (expected == null || input.currentPriceCurrency() == null
+                || !expected.equals(input.currentPriceCurrency())) {
+            mismatches.add("CURRENT_PRICE=" + input.currentPriceCurrency());
+        }
+        for (MetricCode code : MONETARY_METRICS) {
+            MetricValueView value = input.metrics().get(code);
+            if (value != null && value.available()
+                    && !java.util.Objects.equals(expected, value.currencyCode())) {
+                mismatches.add(code + "=" + value.currencyCode());
+            }
+        }
+        if (!mismatches.isEmpty()) {
+            detail.put("expectedCurrency", String.valueOf(expected));
+            detail.put("currencyMismatches", String.join(",", mismatches));
+            reasons.add(GuardrailReason.CURRENCY_MISMATCH);
+        }
     }
 
     /** What that contribution is as a proportion of the price. */

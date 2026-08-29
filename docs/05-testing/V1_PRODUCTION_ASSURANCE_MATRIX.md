@@ -36,11 +36,12 @@ Evidence strength is classified independently from a model or reviewer opinion.
 ## 2a. SLICE-V1-001 candidate evidence state
 
 ```yaml
-assessed_at: 2026-08-28
-assessed_against: PR20_REWORK_SUBMITTED_FOR_CLOSURE
+assessed_at: 2026-08-30
+assessed_against: SUPPLEMENTAL_R2_LOCAL_CANDIDATE
 controller_verdict: NOT_CLAIMED
 detail: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
+deferred_evidence: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
 ```
 
 This implementation-fact section does not amend the evidence classes or
@@ -48,12 +49,12 @@ requirements below. Counts are checkpoint results, not a final release verdict.
 
 | Class | Candidate evidence | Remaining boundary |
 | --- | --- | --- |
-| `SRC` | Immutable original Contract, accepted Amendment-001, preserved ADRs and source-bound worktree manifests. | Final commit/merge/tree binding. |
-| `UNIT` | C3 full backend 150/151: 846 unit/architecture tests each; frontend 150: 196 tests; unchanged coverage gates pass. | Final full regression and remote CI. |
-| `RDB` | C3 full 150/151: 374 real database integration tests each; PG17 application/managed/representative paths plus standard PG18 compatibility. | Exact-final-Head verification and independent closure. |
+| `SRC` | Immutable original Contract, accepted Amendment-001 and Amendment-002, preserved ADRs, R1 Finding Set and Supplemental R2 review. | Final R2 commit/tree/tested-merge binding. |
+| `UNIT` | R2 mutation-sensitive metric identity, missing-input, Minimum Price, Guardrail, audience, required-context and deferred-status tests. | Final full regression and remote CI. |
+| `RDB` | Actual-service facts→metrics→Guardrail→approval→command path plus half-open boundary and immutable-history assertions. | Exact-final-R2-Head verification and independent closure. |
 | `OBJ` | Actual filesystem and local HTTP adapter tests, exact hash/length verification, immutable DB custody and retention IaC. | Approved Yandex store, real retention/IAM operation and provider recovery remain unverified. |
-| `REAL_EXT` | No real business provider or cloud account used. Synthetic verification fixtures are explicitly scoped. | OIDC, Marketplace, Yandex and model provider evidence remains pending; production registry defaults stay UNVERIFIED. |
-| `SEC_NEG` | Signed-token/live-scope refusal, cross-store access denial, bounded outbound requests, symlink/redirect/response bounds, AI grounding and browser export integrity. | C3: 13 checks pass, 26 alerts fixed, five exact v1.1 dispositions; fresh final-Head Security CI required. |
+| `REAL_EXT` | No real business provider or cloud account used. Synthetic fixtures are explicitly scoped and cannot promote deferred evidence. | Exact Amendment-002 rows remain production-blocking in `RELEASE-V1-001`. |
+| `SEC_NEG` | Signed-token/live-scope refusal plus blank/wrong audience, actual-peer loopback enforcement, forwarding-header spoof refusal and existing outbound/PII/Secret controls. | Fresh exact-R2-Head Security CI required. |
 | `REPLAY` | Real PG17 stored-Raw replay in full runs 150/151: parser/missing-object refusal, crash after fact commit, repeat with no duplicate logical fact or source call. | Fresh final-Head suite; real source coverage remains external. |
 | `BROWSER` | 11 Chromium scenarios at 152, including real signed JWT/SQL evidence→approval→command→readback, export, new-login command recovery and actual local database outage. | Real identity/Marketplace interoperability and final exact-commit execution. |
 | `PERF` | PG17 representative 5,000-SKU/360,000-order profile, query plans, 488,000-record asynchronous export, explicit thresholds and settings. | Owner cohort and deployed capacity are unproven; no production throughput claim. |
@@ -63,8 +64,33 @@ requirements below. Counts are checkpoint results, not a final release verdict.
 
 The original Maker evidence assessment is preserved at the reviewed PR Head.
 Local evidence does not replace REAL_EXT, Owner approval, Gate EV or Gate E.
-See the [final handoff index](../07-phase-evidence/SLICE-V1-001/rework-r1/final-handoff.md)
-for C3 receipts, executed v1.1 dispositions and exact-final-Head delivery requirements.
+R1/C3 receipts remain historical. They do not replace the R2 final handoff or
+the exact protected Ruleset proof.
+
+## 2b. Supplemental R2 mutation-sensitive matrix
+
+| # | Required proof | Source |
+| --- | --- | --- |
+| 1 | Non-hour clock uses one exact stored/queried window | `AnalyticsCalculationServiceWindowTest` |
+| 2 | Start boundary included; end boundary excluded | `OperatingFlowIT` |
+| 3 | Missing return/ad/tax/fees/cost independently blocks profit | `MetricEngineTest` |
+| 4 | Explicit sourced zero differs from absence | `MetricEngineTest` |
+| 5 | Minimum Price includes Required Profit and Safety Buffer | `MetricEngineTest` |
+| 6 | Whole-window total cannot replace a per-unit value | `GuardrailEngineTest` |
+| 7 | Missing stock blocks | `GuardrailEngineTest` |
+| 8 | Missing freshness blocks | `GuardrailEngineTest` |
+| 9 | Currency mismatch blocks | `GuardrailEngineTest` |
+| 10 | Passage into staleness creates a new current assertion | `ComputedMetricIdentityTest` |
+| 11 | Mapping resolution changes completeness and identity | `MetricEngineTest` |
+| 12 | Late facts correct current state without rewriting history | `MetricEngineTest`; `OperatingFlowIT` |
+| 13 | Actual-service facts-to-command path passes | `OperatingFlowIT` |
+| 14 | Removing every required economics/safety input breaks the path | `GuardrailEngineTest`; `OperatingFlowIT.TC-R2-FLOW-001` |
+| 15 | Non-loopback maintenance GET/POST denied | `MaintenanceWriteGateApiIT` |
+| 16 | Forwarding headers cannot manufacture loopback | `MaintenanceWriteGateApiIT` |
+| 17 | Blank serving audience fails startup contract | `IdentityConfigurationContractTest`; `test_yandex_runtime.py` |
+| 18 | Wrong audience denied | `SignedBearerIdentityIT` |
+| 19 | Removing `infrastructure-validation` fails inventory validation | `test_required_status_checks.py` |
+| 20 | Deferred evidence cannot be relabeled verified | `DeferredEvidenceRegisterTests` |
 
 ## 3. Risk dimensions
 

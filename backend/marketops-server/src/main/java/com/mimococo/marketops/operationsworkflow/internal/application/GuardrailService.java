@@ -166,10 +166,11 @@ public class GuardrailService {
         PolicyLimits policy = policies.inForce(proposal.organizationId(), platformCode,
                 proposal.storeId(), productVariantId, now).orElse(null);
 
-        BigDecimal currentPrice = facts.latestPrice(subjectId, now)
-                .map(PriceSnapshot::effectivePrice)
-                .map(money -> money == null ? null : money.amount())
-                .orElse(null);
+        var observedPrice = facts.latestPrice(subjectId, now)
+                .map(PriceSnapshot::effectivePrice).orElse(null);
+        BigDecimal currentPrice = observedPrice == null ? null : observedPrice.amount();
+        String currentPriceCurrency = observedPrice == null
+                ? null : observedPrice.currencyCode();
 
         boolean blockedByDiagnosis = diagnosis
                 .currentFindings(SubjectKind.PLATFORM_LISTING_VARIANT, subjectId,
@@ -177,7 +178,7 @@ public class GuardrailService {
                 .stream()
                 .anyMatch(DiagnosisFindingView::blocksExecution);
 
-        return new GuardrailInput(policy, current, currentPrice,
+        return new GuardrailInput(policy, current, currentPrice, currentPriceCurrency,
                 proposedPrice(proposal), changeHistory.cumulativeChangeRate(subjectId,
                         now.minus(java.time.Duration.ofHours(DAILY_WINDOW_HOURS))),
                 changeHistory.lastChangeAt(subjectId).orElse(null), now, mapped, conflict,
@@ -229,12 +230,21 @@ public class GuardrailService {
         components.add(input.policy() == null
                 ? "NO_POLICY" : input.policy().policyId() + ":" + input.policy().policyVersion());
         components.add(String.valueOf(input.currentPrice()));
+        components.add(String.valueOf(input.currentPriceCurrency()));
         components.add(input.proposedPrice().toPlainString());
         components.add(String.valueOf(input.lastChangeAt()));
         components.add(input.cumulativeDailyChangeRate().toPlainString());
         components.add(Boolean.toString(input.mappingResolved()));
         components.add(Boolean.toString(input.mappingConflictOpen()));
         components.add(Boolean.toString(input.diagnosisBlocksExecution()));
+        input.metrics().entrySet().stream().sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> components.add(entry.getKey() + "="
+                        + entry.getValue().valueState() + ":"
+                        + entry.getValue().numericValue() + ":"
+                        + entry.getValue().currencyCode() + ":"
+                        + entry.getValue().confidenceState() + ":"
+                        + entry.getValue().freshnessSeconds() + ":"
+                        + entry.getValue().inputDigest()));
         components.add(outcome.reasons().stream().map(GuardrailReason::name)
                 .sorted().reduce("", (left, right) -> left + ',' + right));
         return Digest.ofComponents(components);

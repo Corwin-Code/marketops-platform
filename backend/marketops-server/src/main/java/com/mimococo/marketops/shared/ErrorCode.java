@@ -72,6 +72,9 @@ public enum ErrorCode {
     /** This environment does not accept metadata maintenance writes. */
     MAINTENANCE_WRITE_DISABLED("Metadata maintenance writes are disabled here."),
 
+    /** The maintenance request did not originate from a loopback socket peer. */
+    MAINTENANCE_LOOPBACK_REQUIRED("Metadata maintenance is available only from this host."),
+
     /** The mutation carries no valid operator attribution. */
     OPERATOR_ATTRIBUTION_MISSING("The request carries no valid operator attribution."),
 

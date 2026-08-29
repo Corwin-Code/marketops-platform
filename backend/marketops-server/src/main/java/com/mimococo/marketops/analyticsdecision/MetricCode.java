@@ -32,17 +32,24 @@ public enum MetricCode {
     AD_COST_OF_SALE(MetricDomain.ADVERTISING),
     UNIT_COST(MetricDomain.COST),
     PLATFORM_FEES(MetricDomain.COST),
+    PLATFORM_FEES_PER_UNIT(MetricDomain.COST),
     RETURN_LOSS(MetricDomain.COST),
+    RETURN_LOSS_PER_UNIT(MetricDomain.COST),
+    AD_SPEND_PER_UNIT(MetricDomain.COST),
     VARIABLE_TAX_ESTIMATE(MetricDomain.COST),
+    VARIABLE_TAX_PER_UNIT(MetricDomain.COST),
+    REQUIRED_PROFIT_PER_UNIT(MetricDomain.COST),
+    SAFETY_BUFFER_PER_UNIT(MetricDomain.COST),
     OPERATIONAL_CONTRIBUTION_PROFIT(MetricDomain.PROFIT),
     SETTLED_CONTRIBUTION_PROFIT(MetricDomain.PROFIT),
     CONTRIBUTION_MARGIN(MetricDomain.PROFIT),
     OBSERVED_SELLING_PRICE(MetricDomain.PROFIT),
+    BREAK_EVEN_PRICE(MetricDomain.PROFIT),
     MINIMUM_PRICE(MetricDomain.PROFIT),
     DATA_COMPLETENESS(MetricDomain.QUALITY);
 
     /** The version of every definition this release computes. */
-    public static final int DEFINITION_VERSION = 1;
+    public static final int DEFINITION_VERSION = 2;
 
     private final MetricDomain domain;
 
