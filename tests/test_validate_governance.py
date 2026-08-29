@@ -24,6 +24,7 @@ from scripts.validate_governance import (
     HISTORIC_CONTRACT_END,
     REQUIRED_FILES,
     V1_ACTIVE_SLICE_CONTRACT_SHA256,
+    SLICE_POST_MERGE_CONTROLLER_DECISION_RELATIVE_PATH,
     SLICE_REWORK_ARTIFACT_HASHES,
     WP_P0_002_ID,
     WP_P0_002_DESIGN_RELATIVE_PATH,
@@ -64,6 +65,7 @@ from scripts.validate_governance import (
     validate_readme_runtime_state_text,
     validate_required_file_set,
     validate_slice_v1_001_text,
+    validate_slice_post_merge_closure_texts,
     validate_slice_rework_evidence_text,
     validate_v1_current_state_text,
     validate_v1_authority_effect_texts,
@@ -2931,8 +2933,8 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "active_slice_contract: docs/03-work-items/other.md",
                 "active_slice_contract",
             ),
-            ("active_gate: SLICE_CONTRACT_APPROVED", "active_gate: READY_FOR_DESIGN", "active_gate"),
-            ("authorization: FULL_SCOPE_IMPLEMENTATION", "authorization: DESIGN_ONLY", "authorization"),
+            ("active_gate: POST_MERGE_CLOSURE_SYNC", "active_gate: READY_FOR_DESIGN", "active_gate"),
+            ("authorization: FINAL_REVIEW_ONLY", "authorization: DESIGN_ONLY", "authorization"),
         )
         for old, new, field in mutations:
             with self.subTest(field=field):
@@ -2973,7 +2975,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
         )
         errors = self.validate(current=current)
         self.assertTrue(any("active_slice_contract_sha256" in error for error in errors))
-        self.assertTrue(any("FULL_SCOPE_IMPLEMENTATION" in error for error in errors))
+        self.assertTrue(any("must be exactly" in error for error in errors))
 
     def test_coordinated_contract_and_hash_change_is_not_an_amendment(self) -> None:
         mutated = self.slice_contract_bytes() + b"\nR1 mutation requiring re-review\n"
@@ -2997,16 +2999,16 @@ class V1CurrentStateContractTests(unittest.TestCase):
         )
         errors = self.validate(current=current)
         self.assertTrue(any("authorization_condition" in error for error in errors))
-        self.assertTrue(any("FULL_SCOPE_IMPLEMENTATION" in error for error in errors))
 
     def test_rework_identity_phase_and_actor_cannot_drift(self) -> None:
         mutations = (
-            ("next_authorized_actor: GPT-5.6 Sol Pro Controller", "next_authorized_actor: CLAUDE_FABLE_5"),
-            ("slice_v1_001_rework_phase: FINAL_CLOSURE_VERIFICATION", "slice_v1_001_rework_phase: CLOSED"),
-            ("slice_v1_001_pr_state: OPEN_DRAFT_UNMERGED", "slice_v1_001_pr_state: MERGED"),
+            ("next_authorized_actor: CODEX", "next_authorized_actor: CLAUDE_FABLE_5"),
+            ("slice_v1_001_rework_phase: COMPLETE", "slice_v1_001_rework_phase: REOPENED"),
+            ("slice_v1_001_pr_state: CLOSED_MERGED", "slice_v1_001_pr_state: OPEN_DRAFT_UNMERGED"),
             ("slice_v1_001_finding_count: 13", "slice_v1_001_finding_count: 12"),
-            ("slice_v1_001_closure_claim: NONE", "slice_v1_001_closure_claim: APPROVED"),
-            ("candidate_state_scope: PR_BRANCH_ONLY", "candidate_state_scope: PROTECTED_MAIN"),
+            ("slice_v1_001_frozen_findings_closed: 13", "slice_v1_001_frozen_findings_closed: 12"),
+            ("slice_v1_001_formal_closure: PENDING_HUMAN_OWNER", "slice_v1_001_formal_closure: ACCEPTED"),
+            ("slice_v1_001_squash_commit: db92cf2f8bd818f36dd8f5aa17b8589c4140b669", "slice_v1_001_squash_commit: moved"),
             ("gate_ev: NOT_AUTHORIZED", "gate_ev: AUTHORIZED"),
         )
         for old, new in mutations:
@@ -3047,14 +3049,42 @@ class V1CurrentStateContractTests(unittest.TestCase):
             self.assertTrue(any("hash mismatch" in error for error in errors))
         mutations = (
             acceptance.replace("`S1-AC-001`", "`S1-AC-002`", 1),
-            acceptance.replace("`IMPLEMENTATION_DEFECT` |", "`EXECUTABLY_VERIFIED` |", 1),
-            acceptance.replace("`IMPLEMENTATION_DEFECT` | 32", "`IMPLEMENTATION_DEFECT` | 31", 1),
-            acceptance.replace("S1-F001,", "omitted,", 1),
+            acceptance.replace("`ENGINEERING_VERIFIED_EXTERNAL_PENDING`", "`ENGINEERING_VERIFIED`", 1),
+            acceptance.replace("`PROPOSED_VERIFIED` | 27", "`PROPOSED_VERIFIED` | 26", 1),
+            acceptance.replace("`GATE_EV_PENDING` — Exact unexpired Ozon", "`NOT_APPLICABLE` — Exact unexpired Ozon", 1),
         )
         for changed in mutations:
             self.assertNotEqual(acceptance, changed)
             errors = []
             validate_slice_rework_evidence_text(errors, changed, artifacts)
+            self.assertTrue(errors)
+
+    def test_post_merge_closure_artifacts_are_mutation_sensitive(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        evidence = root / "docs/07-phase-evidence/SLICE-V1-001"
+        post_merge = (evidence / "post-merge-closure-sync.md").read_text()
+        snapshot = (evidence / "CLOSURE-SNAPSHOT-DRAFT.md").read_text()
+        owner_template = (
+            root
+            / "docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-TEMPLATE.md"
+        ).read_text()
+        controller = (root / SLICE_POST_MERGE_CONTROLLER_DECISION_RELATIVE_PATH).read_bytes()
+        errors: list[str] = []
+        validate_slice_post_merge_closure_texts(
+            errors, post_merge, snapshot, owner_template, controller
+        )
+        self.assertEqual([], errors)
+
+        mutations = (
+            (post_merge.replace("production_write_enabled: false", "production_write_enabled: true", 1), snapshot, owner_template, controller),
+            (post_merge, snapshot.replace("owner_formal_closure: PENDING", "owner_formal_closure: ACCEPTED", 1), owner_template, controller),
+            (post_merge, snapshot.replace("`PROPOSED_OWNER_ACCEPTED_CONDITIONAL` | 14", "`PROPOSED_OWNER_ACCEPTED_CONDITIONAL` | 13", 1), owner_template, controller),
+            (post_merge, snapshot, owner_template.replace("GATE_EV: NOT_AUTHORIZED", "GATE_EV: AUTHORIZED", 1), controller),
+            (post_merge, snapshot, owner_template, controller + b"\n"),
+        )
+        for changed in mutations:
+            errors = []
+            validate_slice_post_merge_closure_texts(errors, *changed)
             self.assertTrue(errors)
 
 

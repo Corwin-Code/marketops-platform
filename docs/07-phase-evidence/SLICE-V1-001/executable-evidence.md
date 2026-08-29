@@ -5,20 +5,25 @@ document_type: executable_evidence_record
 slice: SLICE-V1-001
 executed_at: 2026-08-28
 executed_on: LOCAL_ISOLATED_FIXTURES
-assessment: REWORK_CANDIDATE_FOR_CLOSURE
-final_exact_commit_verification: REQUIRED_IN_DELIVERY_PACKET
+assessment: ENGINEERING_FINAL_GATE_PASS_MERGED
+final_exact_commit_verification: PASS_AT_A9A00537
 remote_rework_ci: C3_ALL_CHECKS_SUCCESS_AFTER_V1_1_DISPOSITION
+final_head_ci: ALL_13_CHECKS_SUCCESS
+actual_squash_merge: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
 external_business_systems_contacted: NONE
 ```
 
 ## Evidence boundary
 
-These are successive source-bound checkpoints, not a Controller verdict.
-The [final handoff index](rework-r1/final-handoff.md) identifies the final delivery
-requirements and separates historical snapshots from current evidence. The accepted original Slice Contract and
-Amendment-001 are identified in [Current State](../../00-governance/CURRENT_STATE.md).
-All thirteen Frozen Findings remain open for final independent verification.
-The [41-criterion matrix](acceptance-status.md) keeps local implementation,
+These are successive source-bound checkpoints. The historical
+[final handoff index](rework-r1/final-handoff.md) identifies the pre-merge delivery
+requirements and separates snapshots. The exact Final Head report passed the
+independent Controller Final Gate; all thirteen Frozen Findings are closed for
+that engineering Gate and PR #20 is merged. The current live identities are in
+the [post-merge closure record](post-merge-closure-sync.md). The accepted original
+Slice Contract and Amendment-001 remain identified in
+[Current State](../../00-governance/CURRENT_STATE.md). The
+[41-criterion matrix](acceptance-status.md) keeps engineering implementation,
 external evidence and Owner/Gate conditions separate.
 
 ## Verified C3 checkpoint and CodeQL v1.1
@@ -39,9 +44,10 @@ PR alert records and six unrelated thread records were unchanged. All 11
 threads are resolved; all 13 checks, including aggregate CodeQL, are SUCCESS.
 The original empty default-branch inventory is not an all-ref inventory.
 
-The final canonical commit must receive fresh full local verification and CI;
-its exact Head/tree, tested merge/parents and results belong in the final
-delivery packet, not a self-referential claim inside that same commit.
+The later final canonical commit received fresh full local verification and CI.
+Its exact Head/tree, tested merge/parents and results are bound by the standalone
+report SHA-256 recorded in the post-merge closure record rather than by a
+self-referential claim inside that commit.
 
 ## Preserved earlier checkpoints
 
@@ -112,10 +118,11 @@ remain in checkpoint logs; successful later runs are not retroactive passes.
 C1 and C2 failures above remain historical evidence. C3 closes the Linux
 provider-lock validation failure. Matrix v1.1 supersedes v1.0 and its API-length
 blocker; the five exact dispositions have executed. Current canonical sources
-are the handoff index, C3 receipts and v1.1 before/after evidence. Final delivery
-requires fresh complete local and remote verification on its exact Head.
+are the historical handoff index, C3 receipts and v1.1 before/after evidence.
+The exact Final Head later completed fresh local and remote verification; see the
+post-merge closure record for the report and merge identities.
 Real Yandex bootstrap/state secrecy/PITR/alert delivery, real OIDC/Marketplace/AI
 provider interoperability, Gate EV/E and Owner cohort evidence remain separate
 unauthorized boundaries. Local mocks, public documentation and test counts
-cannot establish those facts. No Ready, merge, deployment or production
-write enablement was performed.
+cannot establish those facts. PR #20 merge was a distinct authorized Git event;
+no deployment or production-write enablement was performed.

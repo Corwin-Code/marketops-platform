@@ -17,20 +17,25 @@ Read, in order:
 Chat history and old phase/WP language are not live authority. Historical records
 remain valuable evidence but are explicitly classified.
 
-## 2. Active execution after DR-0003 merge
+## 2. Active execution after SLICE-V1-001 engineering merge
 
 ```text
 Product version: V1
 Active Slice: SLICE-V1-001 — SKU Growth & Profit Diagnostic Loop
-Authorization: FULL_SCOPE_IMPLEMENTATION
-Next Maker: Claude Fable 5 / Claude Code
+Engineering state: MERGED / CONTROLLER FINAL GATE PASS
+Formal Slice closure: PENDING HUMAN OWNER
+Current work: POST-MERGE CLOSURE SYNC ONLY
+Next actor after the closure-sync Draft: GPT-5.6 Pro Controller
 Production write enablement: DISABLED
 ```
 
-Claude performs local Detailed Design and Initial Full Implementation continuously
-under the Slice Contract. Its ordinary authority ends at an exact local
-checkpoint and excludes remote Git/PR writes. A separate Design approval is not
-required unless a listed Conditional Design Gate trigger appears.
+PR #20 merged as squash commit
+`db92cf2f8bd818f36dd8f5aa17b8589c4140b669` with the exact approved tree. The
+current bounded package synchronizes canonical state, Acceptance layering and a
+Closure Snapshot Draft. It does not reopen product rework or authorize
+deployment, Gate EV, Gate E or production writes. Read the
+[post-merge closure evidence](docs/07-phase-evidence/SLICE-V1-001/post-merge-closure-sync.md)
+after `CURRENT_STATE.md`.
 
 ## 3. Standard Slice workflow
 

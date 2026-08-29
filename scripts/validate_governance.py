@@ -204,7 +204,11 @@ DR0003_REQUIRED_FILES = [
     "docs/04-api/V1_CAPABILITY_MATRIX.md",
     "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md",
     "docs/07-phase-evidence/README.md",
+    "docs/07-phase-evidence/SLICE-V1-001/post-merge-closure-sync.md",
+    "docs/07-phase-evidence/SLICE-V1-001/CLOSURE-SNAPSHOT-DRAFT.md",
     "docs/07-phase-evidence/V1/Baseline-Reset/README.md",
+    "docs/08-handoffs/CONTROLLER-SLICE-V1-001-POST-MERGE-NEXT-ACTION-DECISION.md",
+    "docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-TEMPLATE.md",
     "docs/08-handoffs/CONTROLLER-DR-0003-V1-BASELINE-RESET-REVIEW.md",
     "docs/08-handoffs/CODEX-DR-0003-GOVERNANCE-EXECUTION-PROMPT.md",
     "docs/08-handoffs/DR-0003-CONTROLLER-ARTIFACT-HASHES.md",
@@ -233,6 +237,12 @@ V1_ACTIVE_SLICE_CONTRACT_PATH = (
 V1_ACTIVE_SLICE_CONTRACT_SHA256 = (
     "0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5"
 )
+SLICE_POST_MERGE_CONTROLLER_DECISION_RELATIVE_PATH = (
+    "docs/08-handoffs/CONTROLLER-SLICE-V1-001-POST-MERGE-NEXT-ACTION-DECISION.md"
+)
+SLICE_POST_MERGE_CONTROLLER_DECISION_SHA256 = (
+    "1614d42f33cea89eb0c879324317e883b12f84bd85d3bb62f90f28a225a70376"
+)
 V1_SLICE_AUTHORIZATION_CONDITION = (
     "EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN"
 )
@@ -244,24 +254,43 @@ V1_ACTIVE_STATE = {
     "active_slice_contract": V1_ACTIVE_SLICE_CONTRACT_PATH,
     "active_slice_contract_sha256": V1_ACTIVE_SLICE_CONTRACT_SHA256,
     "active_slice_contract_authorization_condition": V1_SLICE_AUTHORIZATION_CONDITION,
-    "active_gate": "SLICE_CONTRACT_APPROVED",
-    "authorization": "FULL_SCOPE_IMPLEMENTATION",
-    "next_authorized_actor": "GPT-5.6 Sol Pro Controller",
-    "next_action": "CONTROLLER_SLICE_V1_001_FINAL_CLOSURE_VERIFICATION",
-    "slice_v1_001_implementation_state": "ROOT_CAUSE_REWORK_CANDIDATE",
-    "slice_v1_001_rework_phase": "FINAL_CLOSURE_VERIFICATION",
+    "active_gate": "POST_MERGE_CLOSURE_SYNC",
+    "authorization": "FINAL_REVIEW_ONLY",
+    "next_authorized_actor": "CODEX",
+    "next_action": "SLICE_V1_001_POST_MERGE_CLOSURE_SYNC",
+    "slice_v1_001_implementation_state": "MERGED_ENGINEERING_FINAL_GATE_PASS",
+    "slice_v1_001_rework_phase": "COMPLETE",
     "slice_v1_001_pr": "20",
-    "slice_v1_001_pr_state": "OPEN_DRAFT_UNMERGED",
+    "slice_v1_001_pr_state": "CLOSED_MERGED",
     "slice_v1_001_branch": "feat/SLICE-V1-001-sku-growth-profit-loop",
-    "slice_v1_001_review_state": "CONTROLLER_DEEP_REVIEW_COMPLETE",
+    "slice_v1_001_review_state": "CONTROLLER_FINAL_GATE_PASS",
     "slice_v1_001_reviewed_base": "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
     "slice_v1_001_reviewed_head": "30d16e5d7db2d2190635a06fececd5883093a876",
     "slice_v1_001_reviewed_tree": "13b1b789cd4cff292d0d6ab24daca976afbba6da",
+    "slice_v1_001_final_head": "a9a00537eadeddacbdb284ed47d83f68da0a624a",
+    "slice_v1_001_final_tree": "221e5a009d4cf5820d36c0e1bccd5b64caa6135b",
+    "slice_v1_001_tested_ci_merge": "768c4039c01d0a6453cd3dfd69d081d07078ebf1",
+    "slice_v1_001_squash_commit": "db92cf2f8bd818f36dd8f5aa17b8589c4140b669",
+    "slice_v1_001_squash_tree": "221e5a009d4cf5820d36c0e1bccd5b64caa6135b",
+    "slice_v1_001_squash_parent": "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
     "slice_v1_001_frozen_findings_sha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8",
     "slice_v1_001_finding_count": "13",
-    "slice_v1_001_closure_claim": "NONE",
-    "candidate_state_scope": "PR_BRANCH_ONLY",
-    "merge_authorization": "NOT_GRANTED",
+    "slice_v1_001_controller_final_gate": "PASS",
+    "slice_v1_001_controller_final_review_sha256": "752c169601146f5a174fbbe2bbab43c717561beb6fe3409b6f48d2ca4ebce12a",
+    "slice_v1_001_controller_erratum_001_sha256": "1206f698877c03ec7bdc2c75833fe56473937e42d0129ba2a55e4f965126d999",
+    "slice_v1_001_final_delivery_report_sha256": "b64992f479ef03258516242e853474de6ab905d1901e3700428df88289002be2",
+    "slice_v1_001_post_merge_controller_decision": SLICE_POST_MERGE_CONTROLLER_DECISION_RELATIVE_PATH,
+    "slice_v1_001_post_merge_controller_decision_sha256": SLICE_POST_MERGE_CONTROLLER_DECISION_SHA256,
+    "slice_v1_001_frozen_findings_closed": "13",
+    "slice_v1_001_unresolved_blocker_or_major": "0",
+    "slice_v1_001_closure_claim": "ENGINEERING_FINAL_GATE_PASS_FORMAL_CLOSURE_PENDING",
+    "slice_v1_001_formal_closure": "PENDING_HUMAN_OWNER",
+    "slice_v1_001_closure_snapshot": "DRAFT_REQUIRED",
+    "slice_v1_001_closure_sync_evidence": "docs/07-phase-evidence/SLICE-V1-001/post-merge-closure-sync.md",
+    "slice_v1_001_closure_snapshot_draft": "docs/07-phase-evidence/SLICE-V1-001/CLOSURE-SNAPSHOT-DRAFT.md",
+    "slice_v1_001_owner_formal_closure_template": "docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-TEMPLATE.md",
+    "candidate_state_scope": "HISTORICAL_PR_PROVENANCE",
+    "merge_authorization": "HUMAN_OWNER_GRANTED_AND_EXECUTED",
     "production_deployment": "NOT_AUTHORIZED",
     "gate_ev": "NOT_AUTHORIZED",
     "gate_e": "NOT_AUTHORIZED",
@@ -3860,50 +3889,203 @@ def validate_codeql_disposition_artifacts(
 def validate_slice_rework_evidence_text(
     errors: list[str], acceptance: str, artifacts: dict[str, bytes]
 ) -> None:
-    """Bind current candidate status to the immutable review, not Maker claims."""
+    """Bind post-merge Acceptance layers to immutable review and exact closure state."""
     for name, expected in SLICE_REWORK_ARTIFACT_HASHES.items():
         if name not in artifacts or hashlib.sha256(artifacts[name]).hexdigest() != expected:
             errors.append(f"SLICE-V1-001 frozen artifact missing or hash mismatch: {name}")
 
     metadata = leading_yaml_body(acceptance, "# SLICE-V1-001 acceptance status") or ""
     required = {
-        "assessed_against": "PR20_REWORK_SUBMITTED_FOR_CLOSURE",
-        "remote_publication": "PUBLISHED_DRAFT_CANDIDATE",
+        "assessed_against": "MERGED_MAIN_DB92CF2F_CONTROLLER_ENGINEERING_FINAL_GATE_PASS",
+        "remote_publication": "PR20_MERGED_CLOSURE_SYNC_DRAFT_PENDING",
         "contract_sha256": V1_ACTIVE_SLICE_CONTRACT_SHA256,
         "frozen_findings_sha256": V1_ACTIVE_STATE["slice_v1_001_frozen_findings_sha256"],
+        "controller_engineering_final_gate": "PASS",
+        "frozen_findings_closed": "13",
+        "unresolved_blocker_or_major": "0",
+        "owner_formal_closure": "PENDING",
         "production_write_enabled": "false",
     }
     for field, expected in required.items():
         if unique_yaml_value(metadata, field) != expected:
             errors.append(f"SLICE-V1-001 acceptance {field} must be exactly: {expected}")
-    rows = re.findall(r"(?m)^\|\s*`(S1-AC-\d{3})`\s*\|\s*`([A-Z_]+)`\s*\|([^\n]*)", acceptance)
+    rows = re.findall(
+        r"(?m)^\|\s*`(S1-AC-\d{3})`<br>[^|]*\|\s*`([A-Z_]+)`\s*\|"
+        r"\s*`([A-Z_]+)`[^|]*\|\s*`([A-Z_]+)`\s*\|",
+        acceptance,
+    )
     ids = Counter(row[0] for row in rows)
     expected_ids = {f"S1-AC-{number:03d}" for number in range(1, 42)}
     if set(ids) != expected_ids or any(count != 1 for count in ids.values()):
         errors.append("SLICE-V1-001 acceptance must contain exactly 41 unique contract criteria")
-    allowed = {"EXECUTABLY_VERIFIED", "IMPLEMENTED_UNPROVEN", "IMPLEMENTATION_DEFECT",
-               "EXTERNAL_EVIDENCE_PENDING", "GATE_EV_PENDING", "OWNER_PENDING", "NOT_APPLICABLE"}
-    if any(row[1] not in allowed for row in rows):
-        errors.append("SLICE-V1-001 acceptance uses an unsupported status (MET is not a current evidence state)")
-    if any(row[1] in {"EXECUTABLY_VERIFIED", "NOT_APPLICABLE"} for row in rows):
-        errors.append("SLICE-V1-001 candidate acceptance cannot self-claim criterion closure")
-    counts = Counter(row[1] for row in rows)
-    summaries = re.findall(r"(?m)^\|\s*`([A-Z_]+)`\s*\|\s*(\d+)\s*\|\s*$", acceptance)
-    if len(summaries) != len(counts) or dict((state, int(count)) for state, count in summaries) != counts:
-        errors.append("SLICE-V1-001 acceptance summary counts do not match its 41 rows")
+
+    external_pending = {
+        "S1-AC-001", "S1-AC-003", "S1-AC-005", "S1-AC-006",
+        "S1-AC-008", "S1-AC-009", "S1-AC-010", "S1-AC-023",
+        "S1-AC-025",
+    }
+    gate_ev_pending = {"S1-AC-031", "S1-AC-032", "S1-AC-033"}
+    owner_pending = {"S1-AC-026", "S1-AC-040"}
+    conditional = external_pending | gate_ev_pending | owner_pending
+    by_id = {row[0]: row for row in rows}
+    for criterion in expected_ids:
+        row = by_id.get(criterion)
+        if row is None:
+            continue
+        engineering, boundary, proposed = row[1:]
+        expected_engineering = (
+            "ENGINEERING_VERIFIED_EXTERNAL_PENDING"
+            if criterion in conditional
+            else "ENGINEERING_VERIFIED"
+        )
+        expected_boundary = (
+            "EXTERNAL_EVIDENCE_PENDING" if criterion in external_pending else
+            "GATE_EV_PENDING" if criterion in gate_ev_pending else
+            "OWNER_PENDING" if criterion in owner_pending else
+            "NOT_APPLICABLE"
+        )
+        expected_proposed = (
+            "PROPOSED_OWNER_ACCEPTED_CONDITIONAL"
+            if criterion in conditional
+            else "PROPOSED_VERIFIED"
+        )
+        if (engineering, boundary, proposed) != (
+            expected_engineering, expected_boundary, expected_proposed
+        ):
+            errors.append(
+                f"SLICE-V1-001 {criterion} closure layers must be exactly: "
+                f"{expected_engineering} / {expected_boundary} / {expected_proposed}"
+            )
+
+    if any(
+        token in acceptance
+        for token in ("`IMPLEMENTATION_DEFECT`", "`IMPLEMENTED_UNPROVEN`", "`EXECUTABLY_VERIFIED`")
+    ):
+        errors.append("SLICE-V1-001 current Acceptance matrix retains a pre-Final-Gate status")
+    for token in (
+        "27 executably verified",
+        "9 external-evidence pending",
+        "3 Gate-EV pending",
+        "1 Owner-evidence pending",
+        "1 Owner pending",
+        "`PROPOSED_VERIFIED` | 27",
+        "`PROPOSED_OWNER_ACCEPTED_CONDITIONAL` | 14",
+        "`PROPOSED_NOT_APPLICABLE` | 0",
+        "No real Ozon/WB write",
+    ):
+        if token not in acceptance:
+            errors.append(f"SLICE-V1-001 Acceptance layering missing exact token: {token}")
+
     name = "FROZEN-FINDING-SET-SLICE-V1-001-PR20-R1.json"
     try:
         findings = json.loads(artifacts.get(name, b"{}"))["findings"]
         if {finding["id"] for finding in findings} != {f"S1-F{number:03d}" for number in range(1, 14)}:
             errors.append("SLICE-V1-001 must retain all 13 frozen findings")
-        by_id = {row[0]: row for row in rows}
         for finding in findings:
             for criterion in finding["acceptance_criteria"]:
-                row = by_id.get(criterion)
-                if row is None or row[1] != "IMPLEMENTATION_DEFECT" or finding["id"] not in row[2]:
-                    errors.append(f"SLICE-V1-001 {criterion} omits its open frozen finding {finding['id']}")
+                if criterion not in expected_ids:
+                    errors.append(
+                        f"SLICE-V1-001 frozen finding {finding['id']} references unknown {criterion}"
+                    )
     except (KeyError, TypeError, ValueError):
         errors.append("SLICE-V1-001 frozen finding set is not readable")
+
+
+def validate_slice_post_merge_closure_texts(
+    errors: list[str],
+    post_merge: str,
+    snapshot: str,
+    owner_template: str,
+    controller_decision: bytes,
+) -> None:
+    """Keep post-merge identity, conditional Acceptance and Owner authority fail closed."""
+    if hashlib.sha256(controller_decision).hexdigest() != (
+        SLICE_POST_MERGE_CONTROLLER_DECISION_SHA256
+    ):
+        errors.append("SLICE-V1-001 post-merge Controller decision hash mismatch")
+
+    for token in (
+        "protected_main: db92cf2f8bd818f36dd8f5aa17b8589c4140b669",
+        "protected_main_tree: 221e5a009d4cf5820d36c0e1bccd5b64caa6135b",
+        "protected_main_parent: 89fc29be45327b592a9bcbeffbfec54c96fb66ed",
+        "13/13 closed",
+        "CONTROLLER_REVIEW_COVERAGE_FAILURE: NONE",
+        "b64992f479ef03258516242e853474de6ab905d1901e3700428df88289002be2",
+        "no Terraform apply, deployment, real Credential",
+        "PRs #13, #14 and #15",
+        "production_write_enabled: false",
+    ):
+        if token not in post_merge:
+            errors.append(f"SLICE-V1-001 post-merge evidence missing exact token: {token}")
+
+    metadata = leading_yaml_body(
+        snapshot, "# SLICE-V1-001 Closure Snapshot Draft"
+    ) or ""
+    snapshot_fields = {
+        "standard": "CLOSURE_SNAPSHOT_V1",
+        "snapshot_status": "DRAFT_PENDING_HUMAN_OWNER_FORMAL_CLOSURE",
+        "controller_engineering_closure": "PASS",
+        "owner_formal_closure": "PENDING",
+        "protected_main_at_draft_base": "db92cf2f8bd818f36dd8f5aa17b8589c4140b669",
+        "production_deployment": "NOT_AUTHORIZED",
+        "production_enablement": "NOT_AUTHORIZED",
+        "gate_ev": "NOT_AUTHORIZED",
+        "gate_e": "NOT_AUTHORIZED",
+        "production_write_enabled": "false",
+    }
+    for field, expected in snapshot_fields.items():
+        if unique_yaml_value(metadata, field) != expected:
+            errors.append(
+                f"SLICE-V1-001 Closure Snapshot {field} must be exactly: {expected}"
+            )
+    for number, heading in enumerate(
+        (
+            "Required identity",
+            "Normative truth",
+            "Implementation fact",
+            "Acceptance",
+            "External evidence",
+            "Residual items",
+            "Owner Formal Closure",
+            "Publication and next Slice",
+        ),
+        start=1,
+    ):
+        token = f"## {number}. {heading}"
+        if snapshot.count(token) != 1:
+            errors.append(
+                f"SLICE-V1-001 Closure Snapshot must contain heading exactly once: {token}"
+            )
+    for token in (
+        "`PROPOSED_VERIFIED` | 27",
+        "`PROPOSED_OWNER_ACCEPTED_CONDITIONAL` | 14",
+        "`PROPOSED_NOT_APPLICABLE` | 0",
+        "They are not `NON_BLOCKING_DEBT`",
+        "`VERIFIED_REAL_ACCOUNT` | none",
+        "`VERIFIED_REAL_PROVIDER` | none",
+        "`VERIFIED_CONTROLLED_PRODUCTION` | none",
+        "This Draft PR must remain OPEN / DRAFT / UNMERGED",
+    ):
+        if token not in snapshot:
+            errors.append(f"SLICE-V1-001 Closure Snapshot missing exact token: {token}")
+
+    for token in (
+        "status: TEMPLATE_NOT_ACCEPTANCE",
+        "<CLOSURE_SNAPSHOT_SHA256>",
+        "<CLOSURE_SYNC_HEAD> / <CLOSURE_SYNC_TREE>",
+        "27 VERIFIED",
+        "14 OWNER_ACCEPTED_CONDITIONAL",
+        "PRODUCTION_DEPLOYMENT: NOT_AUTHORIZED",
+        "PRODUCTION_ENABLEMENT: NOT_AUTHORIZED",
+        "GATE_EV: NOT_AUTHORIZED",
+        "GATE_E: NOT_AUTHORIZED",
+        "PRODUCTION_WRITE_ENABLED: false",
+        "not a request to re-review transactions",
+    ):
+        if token not in owner_template:
+            errors.append(
+                f"SLICE-V1-001 Owner Formal Closure template missing exact token: {token}"
+            )
 
 
 def validate_v1_current_state_text(
@@ -3928,6 +4110,20 @@ def validate_v1_current_state_text(
                  if (path := evidence_root / "rework-r1/frozen" / name).is_file()}
     acceptance = evidence_root / "acceptance-status.md"
     validate_slice_rework_evidence_text(errors, acceptance.read_text() if acceptance.is_file() else "", artifacts)
+    post_merge = evidence_root / "post-merge-closure-sync.md"
+    snapshot = evidence_root / "CLOSURE-SNAPSHOT-DRAFT.md"
+    owner_template = (
+        ROOT
+        / "docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-TEMPLATE.md"
+    )
+    controller_decision = ROOT / SLICE_POST_MERGE_CONTROLLER_DECISION_RELATIVE_PATH
+    validate_slice_post_merge_closure_texts(
+        errors,
+        post_merge.read_text() if post_merge.is_file() else "",
+        snapshot.read_text() if snapshot.is_file() else "",
+        owner_template.read_text() if owner_template.is_file() else "",
+        controller_decision.read_bytes() if controller_decision.is_file() else b"",
+    )
     disposition_root = evidence_root / "rework-r1/codeql-v1.1"
     validate_codeql_disposition_artifacts(
         errors, {path.name: path.read_bytes() for path in disposition_root.glob("*") if path.is_file()}

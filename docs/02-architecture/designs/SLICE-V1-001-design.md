@@ -8,11 +8,14 @@ contract: docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md
 contract_sha256: 0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5
 accepted_amendments: SLICE-V1-001-AMENDMENT-001
 accepted_amendment_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d
-implementation_state: ROOT_CAUSE_REWORK_CANDIDATE
-candidate_scope: PR20_PUBLISHED_CANDIDATE
-closure_claim: NONE
+implementation_state: MERGED_ENGINEERING_FINAL_GATE_PASS
+candidate_scope: PROTECTED_MAIN_MERGED_SOURCE
+closure_claim: ENGINEERING_FINAL_GATE_PASS_FORMAL_CLOSURE_PENDING
 base_commit: 89fc29be45327b592a9bcbeffbfec54c96fb66ed
 base_tree: 28029347daa05bbff40c1a0ca15c7ad0d9f1ac92
+final_head: a9a00537eadeddacbdb284ed47d83f68da0a624a
+final_tree: 221e5a009d4cf5820d36c0e1bccd5b64caa6135b
+squash_commit: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
 production_write_enabled: false
 real_marketplace_call_made: false
 real_model_provider_call_made: false
@@ -23,18 +26,20 @@ infrastructure_applied: false
 
 The original thirteen implementation commits were published as Draft PR #20.
 Controller review froze thirteen findings against Head
-`30d16e5d7db2d2190635a06fececd5883093a876`. Codex's corrections are published on
-the same branch. They remain a candidate, not a Controller closure verdict.
+`30d16e5d7db2d2190635a06fececd5883093a876`. Codex corrected them on the same
+branch; independent Final Gate closed all thirteen for the engineering Gate, and
+PR #20 was squash-merged with the exact approved tree. Formal Slice closure
+remains pending Human Owner acceptance of the Closure Snapshot.
 
 The code covers acquisition, canonical facts, diagnosis, recommendations,
-controlled commands and readback. Candidate migrations V0011–V0026 contain the
+controlled commands and readback. Merged migrations V0011–V0026 contain the
 in-scope corrections, V0027 adds account-bound registry verification, and V0028
 adds bounded asynchronous diagnostic export. The
-[final handoff index](../../07-phase-evidence/SLICE-V1-001/rework-r1/final-handoff.md)
-records C3 full regression, performance/export/restore, browser, infrastructure
-and CI evidence, plus the completed v1.1 CodeQL dispositions. Its final delivery
-packet must bind fresh verification to the exact final published Head. No real
-provider, Marketplace or production write is authorized or proven.
+[historical final handoff](../../07-phase-evidence/SLICE-V1-001/rework-r1/final-handoff.md)
+records C3 full regression and CodeQL provenance. The
+[post-merge closure index](../../07-phase-evidence/SLICE-V1-001/post-merge-closure-sync.md)
+binds exact Final Head, tested merge, actual squash and final verification. No
+real provider, Marketplace or production write is authorized or proven.
 
 ## 2. The five decisions everything else follows from
 

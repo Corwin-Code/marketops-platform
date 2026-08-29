@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-08-28
+as_of: 2026-08-30
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -19,8 +19,8 @@ active_slice_amendment_acceptance: HUMAN_OWNER_ACCEPTED_FOR_PR20_REWORK
 active_slice_amendment_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md
 active_slice_amendment_acceptance_evidence_sha256: e8fc208a4fcd9270b9187b65aa1618ecf6179166a3a44b4a37213bf067a91ee8
 active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
-active_gate: SLICE_CONTRACT_APPROVED
-authorization: FULL_SCOPE_IMPLEMENTATION
+active_gate: POST_MERGE_CLOSURE_SYNC
+authorization: FINAL_REVIEW_ONLY
 accepted_contract_mutation: PROHIBITED_APPEND_ONLY_AMENDMENT_REQUIRED
 execution_envelope: EXECUTION_ENVELOPE_V1
 maker_remote_git_authority: DENIED
@@ -44,32 +44,51 @@ execution_envelope_state: ACTIVE_UNDER_DR_0004
 closure_snapshot_standard_state: ACTIVE_UNDER_DR_0004
 conditional_design_gate: ENABLED
 mandatory_design_gate_for_every_slice: DISABLED
-slice_v1_001_implementation_state: ROOT_CAUSE_REWORK_CANDIDATE
-slice_v1_001_rework_phase: FINAL_CLOSURE_VERIFICATION
+slice_v1_001_implementation_state: MERGED_ENGINEERING_FINAL_GATE_PASS
+slice_v1_001_rework_phase: COMPLETE
 slice_v1_001_pr: 20
-slice_v1_001_pr_state: OPEN_DRAFT_UNMERGED
+slice_v1_001_pr_state: CLOSED_MERGED
 slice_v1_001_branch: feat/SLICE-V1-001-sku-growth-profit-loop
-slice_v1_001_review_state: CONTROLLER_DEEP_REVIEW_COMPLETE
+slice_v1_001_review_state: CONTROLLER_FINAL_GATE_PASS
 slice_v1_001_reviewed_base: 89fc29be45327b592a9bcbeffbfec54c96fb66ed
 slice_v1_001_reviewed_head: 30d16e5d7db2d2190635a06fececd5883093a876
 slice_v1_001_reviewed_tree: 13b1b789cd4cff292d0d6ab24daca976afbba6da
+slice_v1_001_final_head: a9a00537eadeddacbdb284ed47d83f68da0a624a
+slice_v1_001_final_tree: 221e5a009d4cf5820d36c0e1bccd5b64caa6135b
+slice_v1_001_tested_ci_merge: 768c4039c01d0a6453cd3dfd69d081d07078ebf1
+slice_v1_001_squash_commit: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
+slice_v1_001_squash_tree: 221e5a009d4cf5820d36c0e1bccd5b64caa6135b
+slice_v1_001_squash_parent: 89fc29be45327b592a9bcbeffbfec54c96fb66ed
 slice_v1_001_frozen_findings_sha256: 8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8
-slice_v1_001_rework_commit_state: PUBLISHED_DRAFT_CANDIDATE
+slice_v1_001_rework_commit_state: MERGED_TO_PROTECTED_MAIN
 slice_v1_001_finding_count: 13
-slice_v1_001_closure_claim: NONE
-slice_v1_001_execution_condition: AMENDMENT_001_ACCEPTED_FULL_REWORK_CONTINUES
+slice_v1_001_controller_final_gate: PASS
+slice_v1_001_controller_final_review_sha256: 752c169601146f5a174fbbe2bbab43c717561beb6fe3409b6f48d2ca4ebce12a
+slice_v1_001_controller_erratum_001_sha256: 1206f698877c03ec7bdc2c75833fe56473937e42d0129ba2a55e4f965126d999
+slice_v1_001_final_delivery_report_sha256: b64992f479ef03258516242e853474de6ab905d1901e3700428df88289002be2
+slice_v1_001_post_merge_controller_decision: docs/08-handoffs/CONTROLLER-SLICE-V1-001-POST-MERGE-NEXT-ACTION-DECISION.md
+slice_v1_001_post_merge_controller_decision_sha256: 1614d42f33cea89eb0c879324317e883b12f84bd85d3bb62f90f28a225a70376
+slice_v1_001_frozen_findings_closed: 13
+slice_v1_001_unresolved_blocker_or_major: 0
+slice_v1_001_closure_claim: ENGINEERING_FINAL_GATE_PASS_FORMAL_CLOSURE_PENDING
+slice_v1_001_formal_closure: PENDING_HUMAN_OWNER
+slice_v1_001_closure_snapshot: DRAFT_REQUIRED
+slice_v1_001_closure_sync_evidence: docs/07-phase-evidence/SLICE-V1-001/post-merge-closure-sync.md
+slice_v1_001_closure_snapshot_draft: docs/07-phase-evidence/SLICE-V1-001/CLOSURE-SNAPSHOT-DRAFT.md
+slice_v1_001_owner_formal_closure_template: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-TEMPLATE.md
+slice_v1_001_execution_condition: POST_MERGE_CLOSURE_SYNC_ONLY
 slice_v1_001_decision_request: docs/07-phase-evidence/SLICE-V1-001/rework-r1/DECISION-REQUEST-S1-F010-MANAGED-PG-BOOTSTRAP.md
-candidate_state_scope: PR_BRANCH_ONLY
-merge_authorization: NOT_GRANTED
+candidate_state_scope: HISTORICAL_PR_PROVENANCE
+merge_authorization: HUMAN_OWNER_GRANTED_AND_EXECUTED
 production_deployment: NOT_AUTHORIZED
 gate_ev: NOT_AUTHORIZED
 gate_e: NOT_AUTHORIZED
 slice_v1_001_as_built_design: docs/02-architecture/designs/SLICE-V1-001-design.md
 slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
-next_authorized_actor: GPT-5.6 Sol Pro Controller
-next_action: CONTROLLER_SLICE_V1_001_FINAL_CLOSURE_VERIFICATION
-slice_v1_001_handoff_pending: INDEPENDENT_CONTROLLER_FINAL_CLOSURE_VERIFICATION
+next_authorized_actor: CODEX
+next_action: SLICE_V1_001_POST_MERGE_CLOSURE_SYNC
+slice_v1_001_handoff_pending: CONTROLLER_BOUNDED_CLOSURE_BOOKKEEPING_VERIFICATION_AFTER_DRAFT
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
 bounded_real_write_verification_authorization: NONE
@@ -89,25 +108,32 @@ owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 
 ## Active authority
 
-This branch presents the continuous rework candidate for independent final
-closure verification. The Human Owner accepted exact
+PR #20 completed its protected squash merge after the independent Controller
+Final Gate and exact Human Owner authorization. Protected `main` is now
+`db92cf2f8bd818f36dd8f5aa17b8589c4140b669`; its tree is byte-identical to the
+approved Final Head tree and its sole parent is the pre-merge protected Base.
+The Controller closed all thirteen Frozen Findings for the engineering Final
+Gate with zero unresolved BLOCKER/MAJOR and no review-coverage failure. Formal
+Slice closure remains pending Human Owner acceptance of an exact Closure
+Snapshot. The current bounded work is documentation/governance closure sync;
+product rework is not reopened.
+
+The Human Owner accepted exact
 [Amendment-001](../03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md)
 at SHA-256 `8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d`.
 [Acceptance provenance](../08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md)
-authorizes PG17 managed bootstrap implementation in this same Draft PR.
+authorized PG17 managed bootstrap implementation in PR #20.
 The earlier [Decision Request](../07-phase-evidence/SLICE-V1-001/rework-r1/DECISION-REQUEST-S1-F010-MANAGED-PG-BOOTSTRAP.md)
 and failed compatibility evidence remain historical records. The compatibility
 decision is no longer pending; implementation, negative tests, equivalence,
 local restore evidence now exist. The C3 checkpoint has full local and remote
 verification; real staging verification remains external and unauthorized.
 The original Contract and V0001–V0010 remain byte-immutable, and standard V0002
-continues exact SQL execution. All thirteen Frozen Findings remain open for the
-Controller's independent verdict. The [final handoff index](../07-phase-evidence/SLICE-V1-001/rework-r1/final-handoff.md)
+continues exact SQL execution. The historical [final handoff index](../07-phase-evidence/SLICE-V1-001/rework-r1/final-handoff.md)
 binds the correction and acceptance maps to the verified C3 checkpoint and the
-executed, Owner-authorized CodeQL v1.1 dispositions. Delivery also requires the
-complete local and remote verification packet for the exact final published
-Head; C3 results cannot substitute for it. This is not a closure verdict or a
-change to protected main.
+executed, Owner-authorized CodeQL v1.1 dispositions. The exact-final-Head report,
+Controller Final Gate and post-merge identities are indexed by the
+[post-merge closure record](../07-phase-evidence/SLICE-V1-001/post-merge-closure-sync.md).
 
 The active product and Slice authority remains DR-0003,
 `OWNER_DECISIONS_V1.md`, `V1_PRODUCT_CONTRACT.md`, ADR-0005 through ADR-0008 and
@@ -119,16 +145,19 @@ is the immutable original DR-0004 plus exact Owner-accepted
 `docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md`. Claude completed the initial implementation and its exact checkpoint was
 published as Draft PR #20. The Human Owner supplied the exact Frozen Finding Set
 R1 and authorized Codex to perform the continuous in-scope root-cause rework on
-the same branch/PR. This candidate branch state does not update protected main.
-It does not grant Ready, merge, deployment, Gate EV, Gate E or real provider I/O.
+the same branch/PR. At that historical stage, the candidate branch did not update
+protected main and did not grant Ready, merge, deployment, Gate EV, Gate E or
+real provider I/O. Later Controller, Owner and D-17 merge authorities are recorded
+separately and did not grant production authority.
 
 The frozen originals' `status: PROPOSED_PENDING_EXACT_OWNER_ACCEPTANCE` and
 `status: PROPOSED_BY_DR_0004` fields are proposal-time provenance only, not live
 repository-effect state. Human Owner acceptance is durably recorded, but
 `ACTIVE_ON_PROTECTED_MAIN`, `ACTIVE_UNDER_DR_0004` and the execution/closure
-effects above apply only when the exact original artifacts, accepted Amendment
+effects above apply because the exact original artifacts, accepted Amendment
 and acceptance evidence are present on protected `main` after independent
-Controller approval and Human Owner merge authorization. A proposal branch does
+Controller approval and Human Owner merge authorization.
+A proposal branch does
 not activate repository authority.
 
 `SLICE_CONTRACT_APPROVED` and `FULL_SCOPE_IMPLEMENTATION` are valid only for the
@@ -248,27 +277,27 @@ V0011. DR-0003 itself contains no migration.
 - Owner-level decisions required to start Slice 1 are closed or assigned to a
   precise external evidence/production enablement Gate.
 
-## SLICE-V1-001 candidate PR and rework
+## SLICE-V1-001 merged implementation and historical rework provenance
 
-PR #20 is OPEN / DRAFT / UNMERGED on the branch named above. Its published,
-reviewed checkpoint contains thirteen original implementation commits. The
-reviewed identities are recorded above and in
+PR #20 is CLOSED / MERGED. Its pre-merge published checkpoint contained thirteen
+original implementation commits. The reviewed identities are recorded above and in
 `docs/07-phase-evidence/SLICE-V1-001/rework-r1/starting-identity.json`; these are
-starting identities, not the final rework commit or tree.
+historical starting identities, not the final rework commit or squash identity.
 
-Controller Deep Review is complete. All thirteen frozen findings remain open
-for final independent closure verification. No finding
-is self-approved. Local targeted test results do not establish overall PR
-quality, Slice completion, or V1 completion. The current acceptance matrix uses
-separate defect and external-evidence states rather than the superseded Maker
-self-assessment. The original assessment remains in Git at the reviewed Head.
+Controller Deep Review and Final Gate are complete. All thirteen frozen findings
+are closed for the engineering Final Gate; none was self-approved. Formal Slice
+closure, external evidence and production enablement remain separate. The current
+acceptance matrix separates engineering verification from external, Owner and
+Gate conditions. The original candidate assessment remains historical Git
+provenance at the reviewed Head.
 
-V0011–V0026 contain the in-scope candidate corrections. V0027 adds the
+V0011–V0026 contain the merged in-scope corrections. V0027 adds the
 account-bound verification workflow and V0028 bounded diagnostic exports. V0001–V0010 and the accepted original Slice
 Contract are unchanged. C3 is published and all 13 checks pass following the five
-exact v1.1 dispositions; all 11 review threads are resolved. Final identities,
-verification commands, coverage and CI are supplied in the final delivery
-packet. The reviewed Head above remains historical provenance.
+exact v1.1 dispositions; all 11 review threads were resolved before merge. Final
+Head, tested-merge, actual squash, validation, coverage and CI identities are
+bound by the post-merge closure record. The reviewed Head above remains
+historical provenance.
 
 ## Not completed and not claimed
 
@@ -290,9 +319,9 @@ packet. The reviewed Head above remains historical provenance.
   and exact-byte recovery have executed. Real Yandex PITR and environment
   bootstrap have not; local evidence is not provider recovery evidence.
 - The original PR's failed checks remain in the frozen Controller package.
-  C3's successful checks and v1.1 disposition evidence are separate later
-  records. The final delivery packet must verify the exact final Head, including
-  this canonical handoff commit, before Controller consumption.
+  C3's successful checks, v1.1 disposition evidence and the exact Final Head
+  verification are separate later records. Their historical bytes remain
+  unchanged.
 - V1 and SLICE-V1-001 are not production-ready until their future Gates pass.
 - Business sales/profit uplift is not claimed.
 
@@ -305,10 +334,9 @@ Cohort block only their named integration or production-enablement boundary.
 
 ## Next authorized action
 
-The next review actor is GPT-5.6 Sol Pro Controller for
-`CONTROLLER_SLICE_V1_001_FINAL_CLOSURE_VERIFICATION` over the complete Frozen
-Finding Set. Codex must finish exact-final-Head local verification, publication,
-all required/security CI and the standalone delivery report before returning
-that handoff. It cannot issue the Controller verdict itself. The PR remains
-OPEN / DRAFT / UNMERGED; Ready, merge, deployment, real credentials/provider
-business calls, Gate EV, Gate E and production writes remain unauthorized.
+Codex is authorized only to synchronize the merged engineering state, layered
+Acceptance status and Closure Snapshot Draft from exact protected `main`. The
+resulting closure-sync PR must remain OPEN / DRAFT / UNMERGED and then return to
+GPT-5.6 Pro Controller for bounded closure-bookkeeping verification. This work
+does not authorize Ready, merge, deployment, real credentials/provider business
+calls, Gate EV, Gate E or production writes.
