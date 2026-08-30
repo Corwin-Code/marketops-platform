@@ -230,7 +230,8 @@ class PriceWritePathIT extends PostgresContainerSupport {
         @ValueSource(strings = {
                 "target_price = 106", "prior_price = 99", "currency_code = 'USD'",
                 "entity_version_digest = repeat('2', 64)",
-                "idempotency_key = 'pc-a-different-authorization'"
+                "idempotency_key = 'pc-a-different-authorization'",
+                "fulfillment_mode_code = 'SELLER_FULFILLED'"
         })
         void aCommandCannotSubstituteAnyApprovedInput(String change) throws SQLException {
             execute(arranger, "UPDATE ops.price_command SET " + change
@@ -249,10 +250,86 @@ class PriceWritePathIT extends PostgresContainerSupport {
         }
 
         @Test
+        void arbitraryProposalParametersInvalidateCommandAndWorkerAuthority()
+                throws SQLException {
+            execute(arranger, "UPDATE ops.recommendation SET proposed_parameters = "
+                    + "'{\"targetPrice\":\"105.0000\",\"unexpected\":\"value\"}'::jsonb"
+                    + " WHERE id = '" + PriceWritePathFixture.RECOMMENDATION + "'");
+
+            assertThat(gateReasons(connection, COMMAND)).contains("COMMAND_AUTHORITY_MISMATCH");
+            assertThatThrownBy(() -> lease(connection, COMMAND, WORKER, LEASE_SECONDS))
+                    .satisfies(error -> assertThat(carriesSqlState(error,
+                            WRITE_GATE_CLOSED)).isTrue());
+        }
+
+        @Test
+        void aPostApprovalModeMutationClosesTheWorkerGate() throws SQLException {
+            execute(arranger, "UPDATE core.store_fulfillment_declaration SET status='ENDED'"
+                    + " WHERE store_id='" + STORE + "'");
+
+            assertThat(gateReasons(connection, COMMAND)).contains("COMMAND_AUTHORITY_MISMATCH");
+            assertThatThrownBy(() -> lease(connection, COMMAND, WORKER, LEASE_SECONDS))
+                    .satisfies(error -> assertThat(carriesSqlState(error,
+                            WRITE_GATE_CLOSED)).isTrue());
+        }
+
+        @Test
+        void aPostApprovalProfileMutationClosesTheWorkerGate() throws SQLException {
+            execute(arranger, "UPDATE core.economics_projection_profile SET status='RETIRED'"
+                    + " WHERE store_id='" + STORE + "'");
+
+            assertThat(gateReasons(connection, COMMAND)).contains("COMMAND_AUTHORITY_MISMATCH");
+            assertThatThrownBy(() -> lease(connection, COMMAND, WORKER, LEASE_SECONDS))
+                    .satisfies(error -> assertThat(carriesSqlState(error,
+                            WRITE_GATE_CLOSED)).isTrue());
+        }
+
+        @Test
+        void oneExactParameterSchemaIsSharedBySnapshotCommandAndWorkerFunctions()
+                throws SQLException {
+            assertThat(parameterContract("{\"targetPrice\":\"105.0000\"}"))
+                    .isTrue();
+            assertThat(parameterContract("{\"targetPrice\":\"105.0000\","
+                    + "\"fulfillmentModeCode\":\"MARKETPLACE_FULFILLED\"}"))
+                    .isTrue();
+            assertThat(parameterContract("{\"targetPrice\":\"105.0000\","
+                    + "\"fulfillmentModeCode\":\"UNKNOWN\"}"))
+                    .isFalse();
+            assertThat(parameterContract("{\"targetPrice\":\"105.0000\","
+                    + "\"fulfillmentModeCode\":\"inactive-lowercase\"}"))
+                    .isFalse();
+            assertThat(parameterContract("{\"targetPrice\":105.0000}"))
+                    .isFalse();
+            assertThat(parameterContract("{\"targetPrice\":\"105.0000\","
+                    + "\"unexpected\":\"value\"}"))
+                    .isFalse();
+        }
+
+        @Test
         void aPolicyChangeInvalidatesThePreviouslyEvaluatedSnapshot() throws SQLException {
             execute(arranger, "UPDATE ops.commercial_policy SET policy_version = 2 WHERE id = '"
                     + PriceWritePathFixture.POLICY + "'");
             assertThat(gateReasons(connection, COMMAND)).contains("COMMAND_AUTHORITY_MISMATCH");
+        }
+
+        @Test
+        void aGuardrailCannotPersistAnEvaluatedIdentityDifferentFromItsSnapshot() {
+            assertThatThrownBy(() -> execute(arranger, """
+                    INSERT INTO ops.guardrail_evaluation
+                        (id,organization_id,recommendation_id,policy_id,policy_version,
+                         purpose,outcome,reason_codes,detail,input_digest,evaluated_at,
+                         correlation_id,authority_snapshot)
+                    SELECT gen_random_uuid(),organization_id,recommendation_id,policy_id,
+                           policy_version,'IMPACT_PREVIEW','BLOCK',
+                           ARRAY['PROJECTED_ECONOMICS_UNAVAILABLE']::text[],detail,
+                           input_digest,statement_timestamp(),'mismatched-snapshot-fixture',
+                           jsonb_set(authority_snapshot,'{economics,profile,id}',
+                               to_jsonb(gen_random_uuid()::text))
+                      FROM ops.guardrail_evaluation
+                     WHERE id='""" + GUARDRAIL + "'"))
+                    .isInstanceOf(SQLException.class)
+                    .extracting(failure -> ((SQLException) failure).getSQLState())
+                    .isEqualTo(WRITE_GATE_CLOSED);
         }
 
         @Test
@@ -330,6 +407,12 @@ class PriceWritePathIT extends PostgresContainerSupport {
                     VALUES (gen_random_uuid(), '%s', '%s', 'PRICE_CHANGE_APPROVE', '%s',
                         now() - interval '1 hour', 'ACTIVE', now(), now())
                     """.formatted(PriceWritePathFixture.ORGANIZATION, PriceWritePathFixture.USER, STORE));
+        }
+
+        private boolean parameterContract(String parameters) throws SQLException {
+            return Boolean.parseBoolean(single(connection,
+                    "SELECT ops.price_change_parameter_contract_is_valid('"
+                            + parameters.replace("'", "''") + "'::jsonb)::text"));
         }
 
         @Test

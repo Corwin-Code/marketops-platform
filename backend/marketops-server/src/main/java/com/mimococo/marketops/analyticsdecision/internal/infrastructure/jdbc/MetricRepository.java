@@ -205,6 +205,22 @@ public class MetricRepository {
     public Map<MetricCode, MetricValueView> currentValues(SubjectKind subjectKind,
                                                           UUID subjectId,
                                                           MetricWindow window) {
+        return currentValues(subjectKind, subjectId, window, null);
+    }
+
+    /** Current canonical values bounded by the Guardrail's database-captured instant. */
+    public Map<MetricCode, MetricValueView> currentValuesAt(SubjectKind subjectKind,
+                                                            UUID subjectId,
+                                                            MetricWindow window,
+                                                            Instant at) {
+        return currentValues(subjectKind, subjectId, window,
+                java.util.Objects.requireNonNull(at, "at"));
+    }
+
+    private Map<MetricCode, MetricValueView> currentValues(SubjectKind subjectKind,
+                                                            UUID subjectId,
+                                                            MetricWindow window,
+                                                            Instant at) {
         List<MetricValueView> latest = jdbc.sql("""
                         SELECT DISTINCT ON (value.metric_code)
                                value.id, value.metric_code, value.definition_version,
@@ -218,11 +234,13 @@ public class MetricRepository {
                          WHERE value.subject_kind = :subjectKind
                            AND value.subject_id = :subjectId
                            AND value.window_code = :windowCode
+                           AND (CAST(:at AS timestamptz) IS NULL OR value.computed_at <= :at)
                          ORDER BY value.metric_code, value.computed_at DESC, value.id DESC
                         """)
                 .param("subjectKind", subjectKind.name())
                 .param("subjectId", subjectId)
                 .param("windowCode", window.name())
+                .param("at", at == null ? null : Timestamp.from(at))
                 .query(MetricRepository::mapValue)
                 .list();
 

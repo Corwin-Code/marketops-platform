@@ -22,8 +22,8 @@ infrastructure_applied: false
 
 ## 1. Implementation and current rework
 
-PR #20 is merged. PR #21 is held and is not an R2 implementation base. The
-Supplemental R2 branch starts from exact protected-main commit
+PR #20 is merged. PR #21 is held and is not an R2 implementation base. Draft
+PR #22 remains open and Draft. The Supplemental R2 branch starts from exact protected-main commit
 `db92cf2f8bd818f36dd8f5aa17b8589c4140b669`. Its nine engineering fixes remain
 a candidate, not a Controller closure verdict.
 
@@ -33,7 +33,10 @@ V0029 is the only unmerged migration and had no deployment or shared consumer;
 R2 therefore corrects it in place to add the versioned target-price economics
 and source-watermark authority described below. This is not an applied-history
 rewrite. The final R2 packet must bind fresh verification to the exact published
-Head. Accepted Amendment-002 defers only its enumerated real/Owner/Gate evidence
+Head. The final transitive-closure correction also removes a split JVM/DB clock
+from Guardrail evaluation and replaces the inherited one-key price parameter
+filter with the exact executable parameter contract described below. Accepted
+Amendment-002 defers only its enumerated real/Owner/Gate evidence
 to `RELEASE-V1-001`; the Deferred Evidence Register preserves every future
 obligation. No real provider, Marketplace or production write is authorized or
 proven.
@@ -104,6 +107,24 @@ freshness no longer match.
 The difference this makes: "somebody approved this price" becomes "somebody
 approved this price when the cost was what it is now". Hours pass between a
 review and an execution, and the world moves in them.
+
+One database statement captures `evaluation_as_of` and the complete
+`price_authority_snapshot` together. Metrics, diagnoses and price history are
+then queried only through that exact inclusive upper boundary. The evaluated
+metric-entity digest, fulfillment mode, economics profile and component
+identities are compared with the captured snapshot before an evaluation can be
+persisted. `evaluated_at` is therefore not a JVM approximation of a later DB
+snapshot. Approval, command creation and worker lease still re-resolve current
+authority at their own transaction instant, preserving expiration and mutation
+closure after the preview.
+
+`PRICE_CHANGE` recommendations have one executable JSON contract:
+`targetPrice` is required, `fulfillmentModeCode` is optional, and additional
+keys are forbidden. When exactly one fulfillment mode is active, omission
+selects that unique mode; multiple active modes require an explicit active code.
+`UNKNOWN`, inactive or syntactically invalid modes fail closed. The selected
+mode is bound in the snapshot, evaluation, approval and command, is returned by
+the API, and is read again by the worker rather than being inferred later.
 
 ### 2.5 The deterministic layer is the authority; the model explains it
 
@@ -219,7 +240,7 @@ depends on integration rather than the reverse.
 | V0026 | `capability_code` renamed to `action_kind` in the two operational tables; dependent functions rebuilt |
 | V0027 | Account-bound verification submissions/reviews, audit and promotion/revocation functions |
 | V0028 | Bounded export jobs, immutable snapshot rows/parts, fenced worker and live authorization |
-| V0029 | V2 fee-family coverage, versioned target-price economics profiles/components, source-feed watermarks, Break-even/Minimum Price identity, snapshot authority and transaction-time DB write gates |
+| V0029 | V2 fee-family coverage, versioned target-price economics profiles/components, source-feed watermarks, Break-even/Minimum Price identity, single-DB-as-of snapshot authority, exact price parameter schema, durable command mode and transaction-time DB write gates |
 
 Every table in the eight foundation schemas appears in
 `platform.control_route_inventory` exactly once — a hundred and seven tables,
@@ -227,6 +248,13 @@ a hundred and seven rows, twenty-four routed with three epoch triggers each.
 V0001–V0028 are untouched by R2. The four V0029 additions are
 `core.economics_projection_profile`, `core.economics_projection_profile_family`,
 `core.economics_projection_component` and `core.source_feed_watermark`.
+V0029 was rechecked before the transitive correction: it remained unmerged,
+undeployed and without a shared/persistent consumer. It is therefore corrected
+in place. The correction adds no fifth authority table; it strengthens
+`ops.price_authority_snapshot`, `ops.price_change_parameter_contract_is_valid`,
+`ops.create_price_command`, `ops.price_command_authority_matches` and the
+existing write-gate triggers/functions, and adds the durable
+`ops.price_command.fulfillment_mode_code` column.
 
 ### Two defects the schema work found
 
@@ -255,15 +283,19 @@ columns and refuses to let the collision return.
 3. A recommendation is proposed, carrying the digest of the values it rests on.
    An action with no write capability becomes a task instead — not a degraded
    price recommendation, a different thing.
-4. An operator takes an impact preview. It runs the same guardrail the gate will
-   run, against the same values, and records the verdict.
+4. An operator takes an impact preview. One DB capture returns the exact
+   `evaluation_as_of` and authority snapshot. The application bounds every
+   time-sensitive read by that instant, compares the evaluated identities with
+   the snapshot, runs the same guardrail the gate will run, and records the
+   verdict.
 5. A person approves, or a bounded standing authorization is spent. Never both:
    a decision attributable to both a person and a standing rule leaves nobody
    accountable. Approval needs a recent authentication proven against the
    identity provider's recorded maximum age.
 6. The guardrail runs again for execution specifically, and a command is
    created. Creating it makes no call.
-7. A worker claims the command. The write gate is evaluated **inside the
+7. A worker claims the command. The durable fulfillment mode is part of the
+   command authority, and the write gate is evaluated **inside the
    transaction that takes the claim**, so a switch thrown while the worker is
    deciding cannot be missed. Ten conditions, each separately real.
 8. The adapter performs the recorded operation. A synchronous platform's answer

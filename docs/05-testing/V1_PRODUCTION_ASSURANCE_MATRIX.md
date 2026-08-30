@@ -50,8 +50,8 @@ requirements below. Counts are checkpoint results, not a final release verdict.
 | Class | Candidate evidence | Remaining boundary |
 | --- | --- | --- |
 | `SRC` | Immutable original Contract, accepted Amendment-001 and Amendment-002, preserved ADRs, R1 Finding Set and Supplemental R2 review. | Final R2 commit/tree/tested-merge binding. |
-| `UNIT` | R2 mutation-sensitive metric identity, four-state fee-family coverage, target-aware fixed/percentage/tier economics, transaction-time freshness, Guardrail, audience, required-context and deferred-status tests. | Final exact-Head remote CI and independent Controller verdict. |
-| `RDB` | Actual-service facts→metrics→profile/watermark resolution→Guardrail→approval→command path; DB rechecks profile/components and eight watermarks at command/worker time. | Exact-final-R2-Head remote CI and independent closure. |
+| `UNIT` | R2 mutation-sensitive metric identity, four-state fee-family coverage, target-aware fixed/percentage/tier economics, exact `PRICE_CHANGE` parameter-schema parity, transaction-time freshness, Guardrail, audience, required-context and deferred-status tests. | Final exact-Head remote CI and independent Controller verdict. |
+| `RDB` | Actual-service facts→single DB as-of capture→bounded metric/diagnosis/history reads→evaluated/snapshot identity comparison→Guardrail→approval→command→worker-lease path; DB rechecks mode/profile/components and eight watermarks at command/worker time. | Exact-final-R2-Head remote CI and independent closure. |
 | `OBJ` | Actual filesystem and local HTTP adapter tests, exact hash/length verification, immutable DB custody and retention IaC. | Approved Yandex store, real retention/IAM operation and provider recovery remain unverified. |
 | `REAL_EXT` | No real business provider or cloud account used. Synthetic fixtures are explicitly scoped and cannot promote deferred evidence. | Exact Amendment-002 rows remain production-blocking in `RELEASE-V1-001`. |
 | `SEC_NEG` | Signed-token/live-scope refusal plus blank/wrong audience, actual-peer loopback enforcement, forwarding-header spoof refusal and existing outbound/PII/Secret controls. | Fresh exact-R2-Head Security CI required. |
@@ -101,11 +101,25 @@ the exact protected Ruleset proof.
 | 28 | CodeQL source annotation is identified exactly as run `99214089692`, `AdminMetadataGuard.java:88`, Missing catch of NumberFormatException | Controller source annotation; `AdminMetadataGuard` regression compilation |
 | 29 | Numeric remote-address parsing catches `NumberFormatException` and denies instead of escaping | `AdminMetadataGuard`; `MaintenanceWriteGateApiIT` |
 | 30 | Required remote contexts, including aggregate CodeQL, pass on exact final Head/tested merge | Draft PR #22 live checks; pending final publication at document commit |
+| 31 | One DB statement captures `evaluation_as_of` and the complete authority snapshot; the JVM clock is not an evaluation authority | `GuardrailRepository.captureAuthority`; `OperatingFlowIT.profileBoundaryCannotSplitEvaluatedAndStoredAuthority`; `watermarkBoundaryCannotSplitEvaluatedAndStoredAuthority` |
+| 32 | Every metric, diagnosis and price-history read used by Guardrail is bounded by the captured DB instant | `MetricQuery.currentValuesAt`; `DiagnosisQuery.currentFindingsAt`; `PriceChangeHistory.priorChangesAt`; `OperatingFlowIT.profileBoundaryCannotSplitEvaluatedAndStoredAuthority` |
+| 33 | Evaluated metric entity, mode, profile and component identities must equal the stored snapshot; mismatched persistence is rejected by PostgreSQL | `OperatingFlowIT.profileBoundaryCannotSplitEvaluatedAndStoredAuthority`; `OperatingFlowIT.watermarkBoundaryCannotSplitEvaluatedAndStoredAuthority`; `PriceWritePathIT.aGuardrailCannotPersistAnEvaluatedIdentityDifferentFromItsSnapshot` |
+| 34 | Exact parameter schema is required `targetPrice`, optional `fulfillmentModeCode`, and no additional keys in Java and PostgreSQL | `PriceChangeParameterContractTest`; `PriceWritePathIT.oneExactParameterSchemaIsSharedBySnapshotCommandAndWorkerFunctions` |
+| 35 | One active fulfillment mode permits an omitted key and binds the unique mode | `OperatingFlowIT.approveTheProposal` |
+| 36 | Multiple active modes reject omission; an explicit active mode with distinct economics traverses actual Preview→Approval→Command→worker lease | `OperatingFlowIT.approveTheProposal`; `OperatingFlowIT.createTheCommand` |
+| 37 | `UNKNOWN`, inactive and syntactically invalid modes, plus arbitrary extra keys, fail closed | `PriceChangeParameterContractTest.unknownInactiveSyntaxAndEveryExtraKeyFailClosed`; `OperatingFlowIT.approveTheProposal`; `PriceWritePathIT.arbitraryProposalParametersInvalidateCommandAndWorkerAuthority` |
+| 38 | Post-approval mode/profile mutation closes command/worker authority while target and idempotency mutation controls remain intact | `OperatingFlowIT.createTheCommand`; `PriceWritePathIT.aPostApprovalModeMutationClosesTheWorkerGate`; `aPostApprovalProfileMutationClosesTheWorkerGate`; `aCommandCannotSubstituteAnyApprovedInput`; `creationDerivesThePriceAndIsIdempotentForTheSameAuthorization` |
+| 39 | Selected mode is durable across snapshot, Guardrail evaluation, approval, command API/view, worker row and DB predicate | `OperatingFlowIT.createTheCommand`; `PriceCommandView`; `PriceCommandRepository`; `CommandTimeline`; `PriceWritePathIT.aCommandCannotSubstituteAnyApprovedInput` |
 
 Rows 28–30 deliberately separate the exact historical source annotation, its
 local correction, and the still-pending exact-final-Head aggregate remote result.
 An earlier empty open-alert query is not evidence that the annotation never
 existed and is not substituted for the final CodeQL check.
+
+Rows 31–39 are the final transitive-closure proof set. They bind the single
+as-of source, evaluated-versus-snapshot identity comparison, exact mode parameter
+schema and multi-mode real-PostgreSQL end-to-end path without claiming a
+Controller verdict.
 
 ## 3. Risk dimensions
 

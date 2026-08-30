@@ -18,6 +18,9 @@ initial_remote_ci: PASS_12_OF_12_REQUIRED_CONTEXTS
 bounded_closure_start_head: 63ab9e8d33b4cf586d45d49c2280735113da83eb
 bounded_closure_start_tree: 82540ee1e6bc7d35ad962551ffd29743e4b7ad72
 bounded_closure_start_tested_merge: 5f5ab4c8844f2c38e3d0cc117a76363c8def4ddc
+transitive_closure_start_head: 7f93683fea2858e9180b2b10078e31de11b0af3e
+transitive_closure_start_tree: 17711aca639edbbd594d516828fa87264470af66
+controller_source_comment: https://github.com/Corwin-Code/marketops-platform/pull/22#issuecomment-5467970562
 final_candidate_identity_resolution: THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS_AND_BODY
 handoff_state: FINAL_CONTAINING_COMMIT_LOCAL_AND_REMOTE_REVERIFY
 controller_verdict: NOT_CLAIMED
@@ -31,17 +34,68 @@ next_authorized_actor_after_verified_remote_handoff: GPT-5.6 Pro Controller
 next_action_after_verified_remote_handoff: CONTROLLER_SLICE_V1_001_R2_FINAL_CLOSURE_VERIFICATION
 ```
 
-This file records the bounded F002–F005 closure on published Draft PR #22. The
+This file records the final transitive closure after the bounded F002–F005 work
+on published Draft PR #22. The
 Human Owner explicitly authorized this branch push and Draft PR publication.
 Because PR #22 already exists, this cycle maintains that Draft rather than
 creating a duplicate. It starts from exact Head/tree/tested merge
 `63ab9e8d33b4cf586d45d49c2280735113da83eb` /
 `82540ee1e6bc7d35ad962551ffd29743e4b7ad72` /
 `5f5ab4c8844f2c38e3d0cc117a76363c8def4ddc` and preserves the accepted candidate
-closures for G001/F001/F006/F007/F008/F009. The final candidate is the commit
+closures for G001/F001/F006/F007/F008/F009. Final transitive work starts from
+`7f93683fea2858e9180b2b10078e31de11b0af3e` / tree
+`17711aca639edbbd594d516828fa87264470af66` and responds to the exact Controller
+source comment recorded above. The final candidate is the commit
 containing this document; its exact Head/tree/tested merge and remote CI are
 bound after push in PR #22's live refs/body, avoiding a false self-referential
 commit hash.
+
+## Final transitive closure
+
+The first root cause was a split authority clock. `GuardrailService` read
+current values relative to a JVM instant while PostgreSQL later built the stored
+snapshot relative to `statement_timestamp()`. An effective profile, component
+set, policy, mapping or watermark could cross a boundary between those instants,
+so evaluated values and persisted authority could disagree while each looked
+individually valid.
+
+The correction makes `ops.capture_price_authority_snapshot` the one source of
+`evaluation_as_of` and the complete snapshot. Metric, diagnosis and prior-price
+queries accept and enforce that upper bound. The application parses policy,
+mapping, prior price, mode, profile, components and watermarks from that one
+snapshot; it compares evaluated metric-entity, mode, profile and component
+identities before persistence. The PostgreSQL insert trigger independently
+requires `authority_snapshot = ops.price_authority_snapshot(recommendation_id,
+evaluated_at)`. Approval, command and worker gates intentionally use their own
+later transaction instant so currentness mutation and aging still close them.
+
+The second root cause was an inherited target-only key restriction. V0020's
+historical predicate allowed only `targetPrice`; wrappers therefore could not
+carry an explicit fulfillment mode into command authority. The replacement
+contract is exact: required `targetPrice`, optional `fulfillmentModeCode`, and
+no additional keys. A single active mode may be omitted; multiple active modes
+require one explicit active mode. `UNKNOWN`, inactive/invalid codes and extra
+keys fail closed. The selected mode is durable through recommendation, snapshot,
+Guardrail evaluation, approval, `ops.price_command`, API/view, currentness
+predicate and worker row.
+
+Real PostgreSQL boundary evidence is mutation-sensitive:
+
+- `OperatingFlowIT.profileBoundaryCannotSplitEvaluatedAndStoredAuthority` proves
+  a profile boundary cannot split the evaluated identity from the snapshot.
+- `OperatingFlowIT.watermarkBoundaryCannotSplitEvaluatedAndStoredAuthority`
+  proves the same for a source watermark.
+- `PriceWritePathIT.aGuardrailCannotPersistAnEvaluatedIdentityDifferentFromItsSnapshot`
+  proves DB rejection of an exact identity mismatch.
+- `OperatingFlowIT.approveTheProposal` and `createTheCommand` prove one-mode
+  omission, two-mode omission refusal, explicit active mode with distinct
+  economics, Preview→Approval→Command→`ops.lease_price_command`, plus
+  inactive/unknown/extra-key and post-approval mode/profile closure.
+- `PriceWritePathIT` preserves target-price and idempotency mutation coverage and
+  proves schema parity at snapshot, command and worker boundaries.
+
+The targeted backend set passed 186/186 and the frontend set passed 196/196.
+These are engineering facts only; they do not self-issue the Controller verdict.
 
 ## Authority and immutable inputs
 
@@ -62,10 +116,15 @@ The Contract, accepted Amendment-001, accepted Amendment-002 and its acceptance
 evidence match these exact bytes. V0001–V0028 remain unmodified. The only R2
 migration is
 `backend/marketops-server/src/main/resources/db/migration/V0029__version_profit_economics_and_commercial_inputs.sql`.
-It was unmerged, undeployed and had no shared consumer at bounded-closure start,
-so its correction in place does not alter applied migration history. It adds
-four tables: the economics profile, family contract, components and source-feed
-watermarks. No real migration or deployment was executed.
+It was reverified unmerged, undeployed and without a shared/persistent consumer
+at transitive-closure start, so its correction in place does not alter applied
+migration history. It retains the four added tables (economics profile, family
+contract, components and source-feed watermarks) and strengthens the existing
+snapshot/write-gate surfaces with
+`ops.price_change_parameter_contract_is_valid`, the as-of overload and capture
+function, durable `ops.price_command.fulfillment_mode_code`, mode-aware command
+construction and mode-aware worker authority. No real migration or deployment
+was executed.
 
 ## Finding and same-class disposition
 
@@ -73,6 +132,11 @@ The machine-readable [R2 closure map](r2-finding-closure.json) records
 `S1-R2-G001` as closed only by accepted Amendment-002 and records root cause,
 correction, affected files and tests for `S1-R2-F001` through `S1-R2-F009`.
 Those engineering corrections remain Controller-verdict pending.
+
+It also records the exact final-transitive disposition: single as-of source,
+evaluated-versus-snapshot identity comparison, exact mode parameter schema and
+the multi-mode real-database end-to-end path. No new finding ID or formal
+closure is invented by the implementation agent.
 
 The bounded closure establishes two separate economic authorities. Historical
 Contribution Profit uses a versioned `FeeFamily` contract and distinguishes
@@ -100,9 +164,12 @@ recorded facts
 → actual MetricEngine
 → stored current metrics
 → Diagnosis
+→ one DB evaluation_as_of + complete authority snapshot
+→ evaluated/snapshot identity comparison
 → actual Guardrail
 → Approval / Policy Authorization
-→ DB-authoritative Command creation
+→ mode-bound DB-authoritative Command creation
+→ DB worker lease/current-authority recheck
 ```
 
 `OperatingFlowIT` has no early-return alternate success. It requires a passing
@@ -123,18 +190,18 @@ refs; this section does not invent them.
 | --- | --- |
 | `git diff --check` | PASS |
 | `python3 scripts/validate_governance.py` | PASS before canonical-doc synchronization; repeated on containing commit |
-| `python3 scripts/validate_production_readiness.py` | PASS over 2377 files; `TC-GLOBAL-001..004` PASS |
+| `python3 scripts/validate_production_readiness.py` | PASS over 2379 files; `TC-GLOBAL-001..004` PASS |
 | `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_*.py'` | 377 PASS |
-| `./mvnw -B -ntp clean verify` | 875 unit + 383 integration PASS; 0 failures/errors/skips; JaCoCo gates PASS |
+| `./mvnw -B -ntp clean verify` | 877 unit + 391 integration PASS; 0 failures/errors/skips; JaCoCo gates PASS |
 | `./mvnw -B -ntp -Dtest='*ArchitectureTest' -DfailIfNoTests=true test` | 65 PASS |
-| `OperatingFlowIT` | 23 PASS; actual profile/family/watermark service gates included |
-| `OperatingFlowIT,PriceWritePathIT` | 106 PASS; transaction-time DB authority included |
+| `OperatingFlowIT` | 25 PASS; actual profile/family/watermark service gates plus profile/watermark as-of boundaries and multi-mode path included |
+| `OperatingFlowIT,PriceWritePathIT,PriceCommandWorkerIT,PriceChangeParameterContractTest,GuardrailEngineTest,ApplicationConfigurationTest` | 186 PASS; single-as-of, exact parameter schema, durable mode and transaction-time DB authority included |
 | `bash scripts/verify_coverage_thresholds.sh all` | backend and frontend negative controls PASS |
-| `npm ci`; lint / format / typecheck | PASS |
-| `npm run test -- --run`; `npm run test:ci` | 196 PASS; statements 88.60%, branches 84.52%, functions 92.41%, lines 89.72% |
+| `npm ci`; lint / format / typecheck under Node 24.19.0/npm 11.17.0 | PASS |
+| `npm run test -- --run`; `npm run test:ci` | 196 PASS; statements 88.60%, branches 84.44%, functions 92.41%, lines 89.72% |
 | `npm run build`; `npm run verify:bundle`; `npm run sbom` | PASS; bundle isolation and CycloneDX 1.6 PASS |
 | `npm run test:browser` with exact `MARKETOPS_SOURCE_HEAD_SHA` | PENDING containing-commit binding |
-| `python3 scripts/verify_terraform.py` with Terraform 1.14.9 | bootstrap/staging/production synthetic plans PASS; mock provider only, no apply/API |
+| `python3 scripts/verify_terraform.py` with checksum-verified Terraform 1.14.9 | bootstrap/staging/production synthetic plans PASS; mock provider only, no apply/API |
 | Terraform and Yandex runtime unittest subsets | 9 + 13 PASS |
 | `python3 scripts/verify_migration_artifact.py` | PENDING exact clean containing commit |
 

@@ -6,12 +6,8 @@ import com.mimococo.marketops.analyticsdecision.DecisionFreshness;
 import com.mimococo.marketops.analyticsdecision.MetricCode;
 import com.mimococo.marketops.analyticsdecision.MetricQuery;
 import com.mimococo.marketops.analyticsdecision.MetricValueView;
-import com.mimococo.marketops.analyticsdecision.PriceEconomicsQuery;
-import com.mimococo.marketops.analyticsdecision.PriceEconomicsResolution;
 import com.mimococo.marketops.analyticsdecision.SubjectKind;
 import com.mimococo.marketops.marketplaceintegration.PriceChangeHistory;
-import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
-import com.mimococo.marketops.operatingfacts.PriceSnapshot;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
 import com.mimococo.marketops.operationsworkflow.GuardrailReason;
 import com.mimococo.marketops.operationsworkflow.GuardrailVerdict;
@@ -21,14 +17,10 @@ import com.mimococo.marketops.operationsworkflow.internal.domain.GuardrailInput;
 import com.mimococo.marketops.operationsworkflow.internal.domain.GuardrailOutcome;
 import com.mimococo.marketops.operationsworkflow.internal.domain.PolicyLimits;
 import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.GuardrailRepository;
-import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.PolicyRepository;
-import com.mimococo.marketops.productlisting.ListingIdentityDirectory;
-import com.mimococo.marketops.productlisting.ListingVariantContext;
 import com.mimococo.marketops.shared.CorrelationId;
 import com.mimococo.marketops.shared.Digest;
 import com.mimococo.marketops.shared.IdGenerator;
 import java.math.BigDecimal;
-import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,35 +51,20 @@ public class GuardrailService {
 
     private final MetricQuery metrics;
     private final DiagnosisQuery diagnosis;
-    private final PriceEconomicsQuery economics;
-    private final OperatingFactQuery facts;
-    private final ListingIdentityDirectory listings;
-    private final PolicyRepository policies;
     private final GuardrailRepository evaluations;
     private final PriceChangeHistory changeHistory;
     private final IdGenerator idGenerator;
-    private final Clock clock;
 
     GuardrailService(MetricQuery metrics,
                      DiagnosisQuery diagnosis,
-                     PriceEconomicsQuery economics,
-                     OperatingFactQuery facts,
-                     ListingIdentityDirectory listings,
-                     PolicyRepository policies,
                      GuardrailRepository evaluations,
                      PriceChangeHistory changeHistory,
-                     IdGenerator idGenerator,
-                     Clock clock) {
+                     IdGenerator idGenerator) {
         this.metrics = metrics;
         this.diagnosis = diagnosis;
-        this.economics = economics;
-        this.facts = facts;
-        this.listings = listings;
-        this.policies = policies;
         this.evaluations = evaluations;
         this.changeHistory = changeHistory;
         this.idGenerator = idGenerator;
-        this.clock = clock;
     }
 
     /**
@@ -112,10 +89,11 @@ public class GuardrailService {
     @Transactional
     public ImpactPreview preview(RecommendationView proposal, BigDecimal authorizationBound,
                                  GuardrailPurpose purpose) {
-        Instant now = clock.instant();
-        String authoritySnapshot = evaluations.authoritySnapshot(proposal.id());
-        GuardrailInput input = gather(proposal, authorizationBound, now);
+        GuardrailRepository.AuthoritySnapshot authority =
+                evaluations.captureAuthority(proposal.id());
+        GuardrailInput input = gather(proposal, authorizationBound, authority);
         GuardrailOutcome outcome = GuardrailEngine.evaluate(input);
+        authority.requireOutcomeIdentity(outcome);
         String inputDigest = digestOf(proposal, input, outcome);
 
         UUID evaluationId = idGenerator.newId();
@@ -124,7 +102,7 @@ public class GuardrailService {
                 policy == null ? null : policy.policyId(),
                 policy == null ? null : policy.policyVersion(),
                 purpose, outcome.passed(), outcome.reasons(), outcome.detail(), inputDigest,
-                authoritySnapshot, now, CorrelationId.current());
+                authority.document(), authority.evaluationAsOf(), CorrelationId.current());
 
         GuardrailVerdict verdict = new GuardrailVerdict(evaluationId, purpose, outcome.passed(),
                 outcome.reasons(), policy == null ? null : policy.policyId(),
@@ -159,62 +137,33 @@ public class GuardrailService {
      * that belonged to a different product for part of the evaluation.
      */
     private GuardrailInput gather(RecommendationView proposal, BigDecimal authorizationBound,
-                                  Instant now) {
+                                  GuardrailRepository.AuthoritySnapshot authority) {
+        Instant now = authority.evaluationAsOf();
         UUID subjectId = proposal.subjectId();
-        Map<MetricCode, MetricValueView> current = metrics.currentValues(
-                SubjectKind.PLATFORM_LISTING_VARIANT, subjectId, proposal.window());
-
-        Optional<ListingVariantContext> context = listings.variantContext(subjectId, now);
-        boolean mapped = context.map(ListingVariantContext::mapped).orElse(false);
-        boolean conflict = context.map(ListingVariantContext::conflictOpen).orElse(true);
-        UUID productVariantId = context.map(ListingVariantContext::productVariantId)
-                .orElse(null);
-        String platformCode = context.map(ListingVariantContext::platformCode).orElse(null);
-        UUID marketplaceAccountId = context.map(ListingVariantContext::marketplaceAccountId)
-                .orElse(null);
-
-        PolicyLimits policy = policies.inForce(proposal.organizationId(), platformCode,
-                proposal.storeId(), productVariantId, now).orElse(null);
-
-        var observedPrice = facts.latestPrice(subjectId, now)
-                .map(PriceSnapshot::effectivePrice).orElse(null);
-        BigDecimal currentPrice = observedPrice == null ? null : observedPrice.amount();
-        String currentPriceCurrency = observedPrice == null
-                ? null : observedPrice.currencyCode();
+        Map<MetricCode, MetricValueView> current = metrics.currentValuesAt(
+                SubjectKind.PLATFORM_LISTING_VARIANT, subjectId, proposal.window(), now);
+        String evaluatedEntityDigest = EntityVersion.of(current);
+        if (!java.util.Objects.equals(evaluatedEntityDigest,
+                authority.currentEntityDigest())) {
+            throw new IllegalStateException(
+                    "evaluated metric identity does not match authority snapshot");
+        }
 
         boolean blockedByDiagnosis = diagnosis
-                .currentFindings(SubjectKind.PLATFORM_LISTING_VARIANT, subjectId,
-                        proposal.window())
+                .currentFindingsAt(SubjectKind.PLATFORM_LISTING_VARIANT, subjectId,
+                        proposal.window(), now)
                 .stream()
                 .anyMatch(DiagnosisFindingView::blocksExecution);
 
-        List<String> activeFulfillmentModes = economics.activeFulfillmentModes(
-                proposal.storeId(), now);
-        String requestedFulfillmentMode = proposal.proposedParameters()
-                .get("fulfillmentModeCode");
-        String fulfillmentModeCode = requestedFulfillmentMode != null
-                ? requestedFulfillmentMode
-                : activeFulfillmentModes.size() == 1
-                        ? activeFulfillmentModes.getFirst() : null;
-        boolean fulfillmentModeActive = fulfillmentModeCode != null
-                && activeFulfillmentModes.contains(fulfillmentModeCode);
-        PriceEconomicsResolution profile = fulfillmentModeActive
-                ? economics.resolveProfile(proposal.organizationId(), platformCode,
-                        marketplaceAccountId, proposal.storeId(), fulfillmentModeCode, now)
-                : PriceEconomicsResolution.unavailable(
-                        PriceEconomicsResolution.Status.MISSING,
-                        "fulfillment-mode-not-explicitly-active");
-        DecisionFreshness freshness = economics.decisionFreshness(
-                proposal.organizationId(), platformCode, marketplaceAccountId,
-                proposal.storeId(), now);
-
-        return new GuardrailInput(policy, current, currentPrice, currentPriceCurrency,
-                proposedPrice(proposal), fulfillmentModeCode, profile, freshness,
+        return new GuardrailInput(authority.policy(), current, authority.currentPrice(),
+                authority.currentPriceCurrency(), proposedPrice(proposal),
+                authority.fulfillmentModeCode(), authority.economics(), authority.freshness(),
                 changeHistory.cumulativeChangeRate(subjectId,
-                        now.minus(java.time.Duration.ofHours(DAILY_WINDOW_HOURS))),
-                changeHistory.lastChangeAt(subjectId).orElse(null), now, mapped, conflict,
+                        now.minus(java.time.Duration.ofHours(DAILY_WINDOW_HOURS)), now),
+                changeHistory.lastChangeAt(subjectId, now).orElse(null), now,
+                authority.mappingResolved(), authority.mappingConflictOpen(),
                 blockedByDiagnosis,
-                EntityVersion.of(current).equals(proposal.entityVersionDigest()),
+                evaluatedEntityDigest.equals(proposal.entityVersionDigest()),
                 proposal.validUntil().isAfter(now), authorizationBound);
     }
 

@@ -115,6 +115,22 @@ public class DiagnosisRepository {
     public List<DiagnosisFindingView> currentFindings(SubjectKind subjectKind,
                                                       UUID subjectId,
                                                       MetricWindow window) {
+        return currentFindings(subjectKind, subjectId, window, null);
+    }
+
+    /** Current findings bounded by the Guardrail's database-captured instant. */
+    public List<DiagnosisFindingView> currentFindingsAt(SubjectKind subjectKind,
+                                                        UUID subjectId,
+                                                        MetricWindow window,
+                                                        Instant at) {
+        return currentFindings(subjectKind, subjectId, window,
+                java.util.Objects.requireNonNull(at, "at"));
+    }
+
+    private List<DiagnosisFindingView> currentFindings(SubjectKind subjectKind,
+                                                       UUID subjectId,
+                                                       MetricWindow window,
+                                                       Instant at) {
         return jdbc.sql("""
                         SELECT DISTINCT ON (rule.ordinal)
                                finding.id, finding.rule_code, finding.rule_version,
@@ -131,11 +147,13 @@ public class DiagnosisRepository {
                          WHERE finding.subject_kind = :subjectKind
                            AND finding.subject_id = :subjectId
                            AND finding.window_code = :windowCode
+                           AND (CAST(:at AS timestamptz) IS NULL OR finding.evaluated_at <= :at)
                          ORDER BY rule.ordinal, finding.evaluated_at DESC, finding.id DESC
                         """)
                 .param("subjectKind", subjectKind.name())
                 .param("subjectId", subjectId)
                 .param("windowCode", window.name())
+                .param("at", at == null ? null : java.sql.Timestamp.from(at))
                 .query(this::mapFinding)
                 .list();
     }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "documentType": "SLICE_V1_001_SUPPLEMENTAL_R2_FINDING_CLOSURE_CANDIDATE",
-  "generatedAt": "2026-08-30T07:01:00+08:00",
+  "generatedAt": "2026-08-30T16:00:00+08:00",
   "repository": "Corwin-Code/marketops-platform",
   "branch": "fix/SLICE-V1-001-supplemental-assurance-r2",
   "requiredBase": "db92cf2f8bd818f36dd8f5aa17b8589c4140b669",
@@ -14,7 +14,7 @@
     "r1FrozenFindingSetSha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8",
     "supplementalR2ReviewSha256": "c772c76c89b753d4694ee5ec1eceddad3451ab7ef6acc2e36416d9d4171f26ff"
   },
-  "candidateState": "ROOT_CAUSE_FIXED_LOCAL_FULL_REGRESSION_PASS_FINAL_CONTAINING_COMMIT_REVERIFY",
+  "candidateState": "FINAL_TRANSITIVE_ROOT_CAUSE_FIXED_LOCAL_FULL_PRECOMMIT_REGRESSION_PASS_FINAL_CONTAINING_COMMIT_REVERIFY",
   "controllerVerdict": "PENDING_GPT_5_6_PRO_CONTROLLER",
   "productionWriteEnabled": false,
   "remoteHandoff": {
@@ -29,9 +29,50 @@
       "63ab9e8d33b4cf586d45d49c2280735113da83eb"
     ],
     "boundedClosureStartRequiredContexts": "PASS_12_OF_12",
+    "transitiveClosureStartHead": "7f93683fea2858e9180b2b10078e31de11b0af3e",
+    "transitiveClosureStartTree": "17711aca639edbbd594d516828fa87264470af66",
+    "controllerSourceComment": "https://github.com/Corwin-Code/marketops-platform/pull/22#issuecomment-5467970562",
     "finalCandidateIdentityResolution": "THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS_AND_BODY",
     "mergeAuthorization": "NOT_GRANTED",
     "productionEnablement": false
+  },
+  "finalTransitiveClosure": {
+    "disposition": "CANDIDATE_FIXED_CONTROLLER_REVERIFICATION_PENDING",
+    "singleAsOfSource": {
+      "rootCause": "GuardrailService evaluated JVM-clock current values while PostgreSQL captured the persisted authority snapshot with statement_timestamp(), permitting effective-dated profile or watermark authority to change between the two instants.",
+      "correction": "ops.capture_price_authority_snapshot returns one DB evaluation_as_of with the complete snapshot. Metric, diagnosis and price-history reads are bounded by that instant, and GuardrailService compares the evaluated metric entity, fulfillment mode, profile and component identities with the captured snapshot before insert. PostgreSQL rejects a supplied evaluated identity that differs from its exact snapshot.",
+      "profileBoundaryTest": "OperatingFlowIT.profileBoundaryCannotSplitEvaluatedAndStoredAuthority",
+      "watermarkBoundaryTest": "OperatingFlowIT.watermarkBoundaryCannotSplitEvaluatedAndStoredAuthority",
+      "evaluatedSnapshotIdentityTest": "PriceWritePathIT.aGuardrailCannotPersistAnEvaluatedIdentityDifferentFromItsSnapshot"
+    },
+    "parameterContract": {
+      "schema": {
+        "required": ["targetPrice"],
+        "optional": ["fulfillmentModeCode"],
+        "additionalProperties": false
+      },
+      "resolution": "Omitted fulfillmentModeCode is valid only with exactly one active mode; multiple active modes require one explicit active mode. UNKNOWN, inactive, invalid syntax and extra keys fail closed.",
+      "binding": "The selected mode is bound across recommendation, price authority snapshot, Guardrail evaluation, approval, command column/API view, DB currentness predicate and worker row.",
+      "javaContractTest": "PriceChangeParameterContractTest",
+      "databaseContractTest": "PriceWritePathIT.oneExactParameterSchemaIsSharedBySnapshotCommandAndWorkerFunctions",
+      "singleModeTest": "OperatingFlowIT.approveTheProposal",
+      "multiModeRealDatabaseTest": "OperatingFlowIT.approveTheProposal -> createTheCommand -> ops.lease_price_command",
+      "unknownInactiveExtraKeyTests": [
+        "PriceChangeParameterContractTest.unknownInactiveSyntaxAndEveryExtraKeyFailClosed",
+        "OperatingFlowIT.approveTheProposal",
+        "PriceWritePathIT.arbitraryProposalParametersInvalidateCommandAndWorkerAuthority"
+      ],
+      "postApprovalMutationTests": [
+        "OperatingFlowIT.createTheCommand",
+        "PriceWritePathIT.aPostApprovalModeMutationClosesTheWorkerGate",
+        "PriceWritePathIT.aPostApprovalProfileMutationClosesTheWorkerGate"
+      ]
+    },
+    "targetedRegression": {
+      "backend": "PASS_186_OF_186",
+      "frontend": "PASS_196_OF_196"
+    },
+    "controllerVerdict": "NOT_SELF_ISSUED"
   },
   "findings": [
     {
@@ -257,12 +298,21 @@
   "migrationInventory": {
     "immutableHistory": "V0001_THROUGH_V0028_UNMODIFIED",
     "correctedMigration": "V0029__version_profit_economics_and_commercial_inputs.sql",
-    "correctionBoundary": "V0029_WAS_UNMERGED_UNDEPLOYED_AND_HAD_NO_SHARED_CONSUMER_AT_BOUNDED_CLOSURE_START",
+    "correctionBoundary": "V0029_WAS_REVERIFIED_UNMERGED_UNDEPLOYED_AND_WITHOUT_A_SHARED_OR_PERSISTENT_CONSUMER_AT_TRANSITIVE_CLOSURE_START",
     "newTables": [
       "core.economics_projection_profile",
       "core.economics_projection_profile_family",
       "core.economics_projection_component",
       "core.source_feed_watermark"
+    ],
+    "transitiveClosureObjects": [
+      "ops.price_change_parameter_contract_is_valid(jsonb)",
+      "ops.price_authority_snapshot(uuid,timestamptz)",
+      "ops.capture_price_authority_snapshot(uuid)",
+      "ops.r2_price_authority_is_current(uuid,jsonb)",
+      "ops.price_command.fulfillment_mode_code",
+      "ops.price_command_authority_matches(uuid,jsonb,text)",
+      "ops.create_price_command(uuid,uuid,timestamptz,text)"
     ],
     "realMigrationOrDeployment": "NOT_EXECUTED"
   },
@@ -271,6 +321,31 @@
       "class": "reconstructed_time_windows",
       "scope": "analytics calculation and every OperatingFactQuery call",
       "disposition": "One FactWindow is constructed in AnalyticsCalculationService; MetricEngine performs no clock read or window reconstruction; unrelated operational clocks are not calculation identity."
+    },
+    {
+      "class": "split_effective_authority_clocks",
+      "scope": "Guardrail snapshot, metric/diagnosis/history inputs and every effective-dated profile, policy, mapping, component and watermark resolution",
+      "disposition": "One PostgreSQL capture supplies evaluation_as_of and the complete snapshot. Application reads use explicit *At methods bounded by that instant; approval, command and worker currentness intentionally use their own later DB transaction instant to preserve aging and mutation closure."
+    },
+    {
+      "class": "snapshot_values_independently_requeried",
+      "scope": "Guardrail policy, prior price, mapping, mode, economics profile/components and feed watermarks",
+      "disposition": "GuardrailRepository parses these values from the one captured snapshot. GuardrailService compares evaluated metric-entity, mode, profile and component identities with it; the DB insert trigger independently requires the exact evaluated-at snapshot."
+    },
+    {
+      "class": "proposed_parameters_schema_drift",
+      "scope": "every proposed_parameters parser/restriction in Java and PostgreSQL",
+      "disposition": "Executable PRICE_CHANGE parameters have exactly required targetPrice, optional fulfillmentModeCode and no extras in RecommendationService, ExecutionService and V0029 functions. The V0024 request-template token parser and AI OutputValidator schema are separate non-executable contracts and were dispositioned without change. V0020 is immutable historical SQL and is replaced by V0029 authority functions."
+    },
+    {
+      "class": "fulfillment_mode_identity_loss",
+      "scope": "API recommendation through snapshot, Guardrail, approval, command and worker",
+      "disposition": "Multiple active modes require an explicit active code; the resolved code is stored in the snapshot and guardrail evaluation, copied into ops.price_command.fulfillment_mode_code, returned in PriceCommandView/frontend parsing and selected in the worker repository. Currentness predicates require equality at every stage."
+    },
+    {
+      "class": "earlier_predicate_wrapper_bypass",
+      "scope": "V0029 wrappers around V0020 snapshot, create-command and worker predicates",
+      "disposition": "V0029 replaces the executable snapshot, parameter validator, create-command and authority-match surfaces so no wrapper can fall back to V0020's targetPrice-only restriction or omit the durable mode. V0001-V0028 bytes remain immutable."
     },
     {
       "class": "derived_identity_omissions",
@@ -358,8 +433,8 @@
     "identityResolution": "THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS_AND_BODY",
     "cleanWorktree": "PENDING_CONTAINING_COMMIT",
     "localVerification": "FULL_PRECOMMIT_REGRESSION_PASS_FINAL_IDENTITY_BOUND_REVERIFY_PENDING",
-    "backendUnitTests": 875,
-    "backendIntegrationTests": 383,
+    "backendUnitTests": 877,
+    "backendIntegrationTests": 391,
     "pythonTests": 377,
     "frontendTests": 196,
     "browserTests": "PENDING_EXACT_CONTAINING_COMMIT_HEAD_BINDING",

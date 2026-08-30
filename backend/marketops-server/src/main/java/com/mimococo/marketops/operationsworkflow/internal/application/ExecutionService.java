@@ -95,6 +95,7 @@ public class ExecutionService {
     public Created createCommand(AuthenticatedActor actor, UUID recommendationId,
                                  long expectedVersion) {
         RecommendationView proposal = recommendations.require(recommendationId);
+        PriceChangeParameterContract.requireValid(proposal.proposedParameters());
         authorization.require(actor, ActionScopeCode.PRICE_CHANGE_APPROVE,
                 ResourceScope.store(proposal.storeId()));
         if (proposal.version() != expectedVersion) {

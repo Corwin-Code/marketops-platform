@@ -27,6 +27,12 @@ public interface PriceChangeHistory {
      */
     BigDecimal cumulativeChangeRate(UUID platformListingVariantId, Instant since);
 
+    /** Movement in the half-open decision interval, capped by the captured instant. */
+    BigDecimal cumulativeChangeRate(UUID platformListingVariantId, Instant since, Instant at);
+
     /** When the price was last changed by this product, if it ever was. */
     Optional<Instant> lastChangeAt(UUID platformListingVariantId);
+
+    /** Last completed change no later than the captured decision instant. */
+    Optional<Instant> lastChangeAt(UUID platformListingVariantId, Instant at);
 }
