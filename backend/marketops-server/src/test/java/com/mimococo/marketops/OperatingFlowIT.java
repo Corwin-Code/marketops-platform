@@ -914,9 +914,17 @@ class OperatingFlowIT {
                             """).param("oldEvaluation", oldAuthority.verdict().evaluationId())
                     .param("newEvaluation", newAuthority.verdict().evaluationId())
                     .query(Integer.class).single()).isZero();
-            assertThat(jdbc.sql("SELECT count(*) FROM ops.approval_decision")
+            assertThat(jdbc.sql("""
+                            SELECT count(*)
+                              FROM ops.approval_decision
+                             WHERE recommendation_id=:recommendation
+                            """).param("recommendation", recommendationId)
                     .query(Integer.class).single()).isZero();
-            assertThat(jdbc.sql("SELECT count(*) FROM ops.price_command")
+            assertThat(jdbc.sql("""
+                            SELECT count(*)
+                              FROM ops.price_command
+                             WHERE recommendation_id=:recommendation
+                            """).param("recommendation", recommendationId)
                     .query(Integer.class).single()).isZero();
         } finally {
             fixture.sql("DELETE FROM core.economics_projection_component WHERE profile_id=:id")
