@@ -19,7 +19,16 @@
   "controllerVerdict": "PASS_R2_ENGINEERING_FINAL_GATE",
   "controllerCommentId": 5469390502,
   "productionReadiness": "DEFERRED_TO_RELEASE_V1_001",
-  "ownerFormalClosure": "PENDING_HUMAN_OWNER_DECISION",
+  "ownerFormalClosure": "HUMAN_OWNER_ACCEPTED",
+  "sliceState": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+  "controllerBookkeepingVerdict": "PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+  "controllerBookkeepingComment": 5469802650,
+  "snapshotSourceCommit": "7f52b4c0e145cfb86e4982416aa7bdca79da7ec6",
+  "snapshotSourceTree": "619b79844641d299ad6b5283f6dcea21c03e9ab3",
+  "snapshotGitBlobSha1": "e26359ec216c04319a4bf1e7126906eb204593d2",
+  "snapshotSha256": "5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e84823ddedf30aab2e3",
+  "ownerAcceptanceComment": 5469935477,
+  "ownerAcceptanceEvidence": "docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md",
   "productionWriteEnabled": false,
   "remoteHandoff": {
     "pullRequest": 22,
@@ -462,10 +471,10 @@
   },
   "remainingLimitations": [
     "Engineering implementation is merged, but production readiness remains deferred to RELEASE-V1-001.",
-    "Human Owner Formal Closure has not been issued.",
+    "Human Owner Formal Closure is accepted without promoting production readiness.",
     "All Amendment-002 real-provider, Owner, release and Gate-EV evidence remains deferred and production-blocking.",
-    "PR #21 remains HOLD_DO_NOT_MERGE and is not reused by this branch."
+    "PR #21 was closed unmerged as superseded, its obsolete remote ref was removed, and it was not reused by this branch."
   ],
   "nextAuthorizedActor": "GPT-5.6 Pro Controller",
-  "nextAction": "CONTROLLER_SLICE_V1_001_R2_POST_MERGE_BOOKKEEPING_VERIFICATION"
+  "nextAction": "CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK"
 }

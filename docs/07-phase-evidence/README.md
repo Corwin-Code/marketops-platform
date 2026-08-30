@@ -41,7 +41,7 @@ provider, real database, production release or business outcome evidence.
 
 ## SLICE-V1-001 R2 post-merge record
 
-The current engineering and closure-bookkeeping entry points are:
+The current engineering and formal-closure entry points are:
 
 - [`acceptance-status.md`](SLICE-V1-001/acceptance-status.md) — 24
   engineering-verified non-deferred criteria and 17 exact Amendment-002 deferred
@@ -51,8 +51,12 @@ The current engineering and closure-bookkeeping entry points are:
 - [`post-merge-closure-sync.md`](SLICE-V1-001/post-merge-closure-sync.md) — actual
   protected SQUASH identity and zero-product-change bookkeeping record;
 - [`CLOSURE-SNAPSHOT-DRAFT.md`](SLICE-V1-001/CLOSURE-SNAPSHOT-DRAFT.md) — draft
-  for Controller bookkeeping verification and later Human Owner decision.
+  frozen at the exact bytes accepted by the Human Owner;
+- [`OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md`](../08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md)
+  — complete exact Owner acceptance and bound Snapshot identities.
 
-`PASS_R2_ENGINEERING_FINAL_GATE` closes the engineering finding set only.
-Production readiness remains deferred to `RELEASE-V1-001`; Human Owner Formal
-Closure is pending and `production_write_enabled` remains `false`.
+`PASS_R2_ENGINEERING_FINAL_GATE` closed the engineering finding set. Controller
+comment `5469802650` passed the exact post-merge bookkeeping packet, and Human
+Owner comment `5469935477` issued Formal Closure over the frozen Snapshot.
+Production readiness remains deferred to `RELEASE-V1-001`; every deferred row
+remains production-blocking and `production_write_enabled` remains `false`.

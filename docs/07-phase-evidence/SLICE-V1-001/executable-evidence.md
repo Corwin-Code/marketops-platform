@@ -15,6 +15,11 @@ actual_squash_commit: d562b81f4f0271aa33a53b21ccaffc88b5610c0c
 actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b
 actual_squash_sole_parent: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
 remote_rework_ci: PASS_12_OF_12_REQUIRED_CONTEXTS_AND_AGGREGATE_CODEQL
+controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING
+controller_bookkeeping_comment: 5469802650
+owner_formal_closure: HUMAN_OWNER_ACCEPTED
+owner_acceptance_comment: 5469935477
+slice_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
 external_business_systems_contacted: NONE
 deployment: NOT_EXECUTED
 production_write_enabled: false
@@ -28,10 +33,12 @@ final Head/tree/signed tested merge, closed all ten frozen Supplemental R2 items
 and reported zero unresolved BLOCKER or MAJOR finding. The Human Owner then
 authorized the exact protected SQUASH merge recorded above.
 
-This is engineering evidence, not real-provider, deployment, production
-readiness or Human Owner Formal Closure evidence. The [41-criterion
-matrix](acceptance-status.md) keeps the 24 engineering-verified rows separate
-from all 17 Amendment-002 rows deferred to `RELEASE-V1-001`.
+This is engineering evidence, not real-provider, deployment or production
+readiness evidence. Human Owner Formal Closure is preserved separately in the
+[exact acceptance evidence](../../08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md).
+The [41-criterion matrix](acceptance-status.md) keeps the 24
+engineering-verified rows separate from all 17 Amendment-002 rows deferred to
+`RELEASE-V1-001`.
 
 ## Exact R2 final-gate evidence
 

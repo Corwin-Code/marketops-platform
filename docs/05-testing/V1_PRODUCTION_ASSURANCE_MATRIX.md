@@ -48,7 +48,12 @@ actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b
 actual_squash_sole_parent: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
 engineering_implementation: ENGINEERING_IMPLEMENTATION_CLOSED
 production_readiness: DEFERRED_TO_RELEASE_V1_001
-owner_formal_closure: PENDING
+owner_formal_closure: HUMAN_OWNER_ACCEPTED
+slice_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING
+controller_bookkeeping_comment: 5469802650
+owner_acceptance_comment: 5469935477
+owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
 detail: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 deferred_evidence: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
@@ -59,7 +64,7 @@ requirements below. Counts are checkpoint results, not a final release verdict.
 
 | Class | Candidate evidence | Remaining boundary |
 | --- | --- | --- |
-| `SRC` | Immutable original Contract, accepted Amendment-001 and Amendment-002, preserved ADRs, R1 Finding Set, Supplemental R2 review, exact final Head/tree/tested merge, Controller PASS and actual SQUASH identity. | Human Owner Formal Closure remains pending. |
+| `SRC` | Immutable original Contract, accepted Amendment-001 and Amendment-002, preserved ADRs, R1 Finding Set, Supplemental R2 review, exact final Head/tree/tested merge, Controller PASS, actual SQUASH identity and exact Owner Formal Closure evidence. | Production release evidence remains deferred. |
 | `UNIT` | R2 mutation-sensitive metric identity, four-state fee-family coverage, target-aware fixed/percentage/tier economics, exact `PRICE_CHANGE` parameter-schema parity, transaction-time freshness, Guardrail, audience, required-context and deferred-status tests passed on the exact final Head. | Real-provider and release evidence remains deferred where Amendment-002 specifies it. |
 | `RDB` | Actual-service facts→single DB as-of capture→bounded metric/diagnosis/history reads→evaluated/snapshot identity comparison→Guardrail→approval→command→worker-lease path passed on PostgreSQL; DB rechecks mode/profile/components and eight watermarks at command/worker time. | Production database execution is prohibited and unproven. |
 | `OBJ` | Actual filesystem and local HTTP adapter tests, exact hash/length verification, immutable DB custody and retention IaC. | Approved Yandex store, real retention/IAM operation and provider recovery remain unverified. |
@@ -70,7 +75,7 @@ requirements below. Counts are checkpoint results, not a final release verdict.
 | `PERF` | PG17 representative 5,000-SKU/360,000-order profile, query plans, 488,000-record asynchronous export, explicit thresholds and settings. | Owner cohort and deployed capacity are unproven; no production throughput claim. |
 | `DR` | Executed isolated PG17 dump/restore, migration/privilege validation, missing-object refusal and exact-byte recovery. | Real Yandex PITR, deployment rollback and environment restore remain pending. |
 | `OPS` | Failure-drill index maps runbooks to executed local faults. Private signals and bounded telemetry transport/No Data are tested. | Actual alert creation, channel delivery, support acknowledgement and staging drill. |
-| `AUDIT` | DB authority, immutable attempt/readback/approval/import/verification evidence, actor-bound browser/service paths, Controller Engineering Final Gate and exact merge identity. | Human Owner Formal Closure and any future real Gate-EV evidence remain pending. |
+| `AUDIT` | DB authority, immutable attempt/readback/approval/import/verification evidence, actor-bound browser/service paths, Controller Engineering Final Gate, exact merge identity and Owner Formal Closure evidence. | Any future real Gate-EV evidence remains deferred. |
 
 The original Maker evidence assessment is preserved at the reviewed PR Head.
 Local evidence does not replace REAL_EXT, Owner approval, Gate EV or Gate E.
@@ -130,7 +135,8 @@ Rows 31–39 are the final transitive-closure proof set accepted by Controller
 comment `5469390502`. They bind the single as-of source,
 evaluated-versus-snapshot identity comparison, exact mode parameter schema and
 multi-mode real-PostgreSQL end-to-end path without claiming production readiness
-or Human Owner Formal Closure.
+or production readiness. Human Owner Formal Closure is recorded separately and
+does not promote any deferred evidence row.
 
 ## 3. Risk dimensions
 

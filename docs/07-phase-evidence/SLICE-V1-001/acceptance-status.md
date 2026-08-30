@@ -10,7 +10,7 @@ amendment_002_sha256: 92fdd8d67b327fbd2288ba99290b5b59f2797106c4b691ce2bff22bb80
 amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923
 assessed_at: 2026-08-30
 assessed_against: ACTUAL_SQUASH_COMMIT_D562B81F4F0271AA33A53B21CCAFFC88B5610C0C
-assessment_phase: POST_MERGE_CLOSURE_SYNC
+assessment_phase: FORMAL_CLOSURE_ACCEPTED
 bounded_closure_scope: S1-R2_ENGINEERING_IMPLEMENTATION_CLOSED
 remote_publication: PR_22_MERGED_PROTECTED_SQUASH
 initial_published_head: c3d2160a9c302d993e2b01a08946f46fae0b01d5
@@ -34,7 +34,17 @@ actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b
 actual_squash_sole_parent: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
 engineering_implementation: ENGINEERING_IMPLEMENTATION_CLOSED
 production_readiness: DEFERRED_TO_RELEASE_V1_001
-owner_formal_closure: PENDING
+owner_formal_closure: HUMAN_OWNER_ACCEPTED
+slice_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING
+controller_bookkeeping_comment: 5469802650
+snapshot_source_commit: 7f52b4c0e145cfb86e4982416aa7bdca79da7ec6
+snapshot_source_tree: 619b79844641d299ad6b5283f6dcea21c03e9ab3
+snapshot_git_blob_sha1: e26359ec216c04319a4bf1e7126906eb204593d2
+snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e84823ddedf30aab2e3
+owner_acceptance_comment: 5469935477
+owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
+next_action: NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY
 initial_remote_ci: PASS_12_OF_12_REQUIRED_CONTEXTS
 final_candidate_identity_resolution: APPROVED_HEAD_TREE_SIGNED_TESTED_MERGE_AND_ACTUAL_SQUASH
 frozen_findings_sha256: 8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8
@@ -63,7 +73,9 @@ fulfillment-mode binding.
 
 A non-deferred row now uses `EXECUTABLY_VERIFIED`, meaning the engineering
 obligation passed the accepted exact-Head evidence and Controller gate. It does
-not mean production-ready, real-provider-proven or Human Owner formally closed.
+not mean production-ready or real-provider-proven. Human Owner comment
+`5469935477` separately issued Formal Closure over the exact frozen Snapshot;
+that decision does not promote or relabel any criterion.
 Every exact Amendment-002 deferred row continues to use
 `OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001`, with its retained engineering
 evidence and future obligation bound in the

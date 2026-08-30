@@ -23,17 +23,19 @@ remain valuable evidence but are explicitly classified.
 Product version: V1
 Active Slice: SLICE-V1-001 — SKU Growth & Profit Diagnostic Loop
 Engineering implementation: MERGED at d562b81f4f0271aa33a53b21ccaffc88b5610c0c
-Current mode: DOCS_GOVERNANCE_CLOSURE_SYNC_ONLY
-Next actor: GPT-5.6 Pro Controller — bounded post-merge bookkeeping verification
+Slice status: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+Owner Formal Closure: HUMAN_OWNER_ACCEPTED
+Next action: NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY
 Production write enablement: DISABLED
 ```
 
 The exact PR #22 engineering candidate passed Controller Engineering Final Gate
-and was protected-SQUASH-merged. Production readiness remains deferred to
-`RELEASE-V1-001`; every Amendment-002 deferred obligation remains
-production-blocking. Human Owner Formal Closure has not been issued, and the next
-Slice cannot start until the closure-sync Draft, Controller bookkeeping verdict
-and Owner-accepted Closure Snapshot complete.
+and was protected-SQUASH-merged. Controller comment `5469802650` then passed the
+exact post-merge bookkeeping packet. Human Owner comment `5469935477` accepted
+the exact Closure Snapshot and formally closed SLICE-V1-001 engineering.
+Production readiness remains deferred to `RELEASE-V1-001`; every Amendment-002
+deferred obligation remains production-blocking and production writes remain
+disabled.
 
 ## 3. Standard Slice workflow
 

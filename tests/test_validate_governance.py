@@ -2934,7 +2934,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "active_slice_contract",
             ),
             (
-                "active_gate: SLICE_V1_001_POST_MERGE_CLOSURE_SYNC",
+                "active_gate: SLICE_V1_001_FORMAL_CLOSURE_ACCEPTED",
                 "active_gate: READY_FOR_DESIGN",
                 "active_gate",
             ),
@@ -3007,7 +3007,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
         mutations = (
             ("next_authorized_actor: GPT-5.6 Pro Controller", "next_authorized_actor: CLAUDE_FABLE_5"),
             (
-                "slice_v1_001_rework_phase: R2_POST_MERGE_CLOSURE_SYNC",
+                "slice_v1_001_rework_phase: R2_FORMAL_CLOSURE_ACCEPTED",
                 "slice_v1_001_rework_phase: CLOSED",
             ),
             (
@@ -3024,7 +3024,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "slice_v1_001_closure_claim: OWNER_FORMALLY_CLOSED",
             ),
             (
-                "candidate_state_scope: PROTECTED_MAIN_MERGED_ENGINEERING_IMPLEMENTATION",
+                "candidate_state_scope: PROTECTED_MAIN_ENGINEERING_MERGED_FORMAL_CLOSURE_ACCEPTED",
                 "candidate_state_scope: PRODUCTION_READY",
             ),
             (
@@ -3087,6 +3087,21 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "actual_squash_tree: 0000000000000000000000000000000000000000",
                 1,
             ),
+            acceptance.replace(
+                "owner_formal_closure: HUMAN_OWNER_ACCEPTED",
+                "owner_formal_closure: PENDING",
+                1,
+            ),
+            acceptance.replace(
+                "controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+                "controller_bookkeeping_verdict: MISSING",
+                1,
+            ),
+            acceptance.replace(
+                "snapshot_git_blob_sha1: e26359ec216c04319a4bf1e7126906eb204593d2",
+                "snapshot_git_blob_sha1: 0000000000000000000000000000000000000000",
+                1,
+            ),
         )
         for changed in mutations:
             self.assertNotEqual(acceptance, changed)
@@ -3094,7 +3109,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
             validate_slice_rework_evidence_text(errors, changed, artifacts)
             self.assertTrue(errors)
 
-    def test_post_merge_closure_documents_bind_identity_and_pending_boundaries(self) -> None:
+    def test_formal_closure_documents_bind_identity_and_deferred_boundaries(self) -> None:
         root = Path(__file__).resolve().parents[1]
         documents = {
             relative: (root / relative).read_text()
@@ -3122,8 +3137,8 @@ class V1CurrentStateContractTests(unittest.TestCase):
             ),
             (
                 "docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-TEMPLATE.md",
-                "template_status: NOT_ISSUED_NOT_ACCEPTED",
-                "template_status: OWNER_ACCEPTED",
+                "template_status: FULFILLED_BY_SEPARATE_EXACT_OWNER_ACCEPTANCE",
+                "template_status: OWNER_ACCEPTED_WITHOUT_EVIDENCE",
             ),
             (
                 "docs/07-phase-evidence/SLICE-V1-001/r2-finding-closure.json",
@@ -3137,6 +3152,66 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 changed = dict(documents)
                 changed[relative] = changed[relative].replace(old, new, 1)
                 errors = []
+                validate_slice_post_merge_closure_documents(errors, changed)
+                self.assertTrue(errors)
+
+    def test_formal_closure_rejects_missing_or_changed_owner_evidence(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        documents = {
+            relative: (root / relative).read_text()
+            for relative in SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS
+        }
+        evidence = (
+            "docs/08-handoffs/"
+            "OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md"
+        )
+        for changed in (
+            {path: text for path, text in documents.items() if path != evidence},
+            {**documents, evidence: documents[evidence] + "\n"},
+            {
+                **documents,
+                evidence: documents[evidence].replace(
+                    "controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+                    "controller_bookkeeping_verdict: MISSING",
+                    1,
+                ),
+            },
+        ):
+            errors: list[str] = []
+            validate_slice_post_merge_closure_documents(errors, changed)
+            self.assertTrue(errors)
+
+    def test_formal_closure_rejects_changed_snapshot_hash_and_blob(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        documents = {
+            relative: (root / relative).read_text()
+            for relative in SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS
+        }
+        snapshot = "docs/07-phase-evidence/SLICE-V1-001/CLOSURE-SNAPSHOT-DRAFT.md"
+        changed = {**documents, snapshot: documents[snapshot] + "\n"}
+        errors: list[str] = []
+        validate_slice_post_merge_closure_documents(errors, changed)
+        self.assertTrue(any("Snapshot SHA-256 changed" in error for error in errors))
+        self.assertTrue(any("Snapshot Git blob SHA-1 changed" in error for error in errors))
+
+    def test_formal_closure_rejects_release_gate_pilot_and_production_claims(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        documents = {
+            relative: (root / relative).read_text()
+            for relative in SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS
+        }
+        path = "docs/07-phase-evidence/SLICE-V1-001/post-merge-closure-sync.md"
+        for claim in (
+            "production_readiness: PRODUCTION_READY",
+            "production_write_enabled: true",
+            "gate_ev: AUTHORIZED",
+            "gate_e: AUTHORIZED",
+            "pilot: ACTIVATED",
+            "release_v1_001: ACTIVATED",
+        ):
+            with self.subTest(claim=claim):
+                changed = {**documents, path: documents[path] + "\n" + claim + "\n"}
+                errors: list[str] = []
                 validate_slice_post_merge_closure_documents(errors, changed)
                 self.assertTrue(errors)
 

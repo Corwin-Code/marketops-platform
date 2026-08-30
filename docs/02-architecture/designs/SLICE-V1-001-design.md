@@ -21,7 +21,13 @@ actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b
 actual_squash_sole_parent: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
 engineering_closure: ENGINEERING_IMPLEMENTATION_CLOSED
 production_readiness: DEFERRED_TO_RELEASE_V1_001
-owner_formal_closure: PENDING
+owner_formal_closure: HUMAN_OWNER_ACCEPTED
+slice_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING
+controller_bookkeeping_comment: 5469802650
+owner_acceptance_comment: 5469935477
+owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
+next_action: NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY
 base_commit: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
 base_tree: 221e5a009d4cf5820d36c0e1bccd5b64caa6135b
 production_write_enabled: false
@@ -32,8 +38,9 @@ infrastructure_applied: false
 
 ## 1. Implementation and post-merge state
 
-PR #20 and PR #22 are merged. PR #21 remains held and is not an R2
-implementation or closure-sync base. Controller comment `5469390502` closed the
+PR #20 and PR #22 are merged. PR #21 was closed unmerged as superseded and its
+obsolete remote ref was removed; it was never an R2 implementation or
+closure-sync base. Controller comment `5469390502` closed the
 complete ten-item frozen Supplemental R2 set with zero unresolved BLOCKER or
 MAJOR finding. PR #22 was then protected-SQUASH-merged as
 `d562b81f4f0271aa33a53b21ccaffc88b5610c0c`; its tree is exactly the approved
@@ -49,9 +56,12 @@ from Guardrail evaluation and replaces the inherited one-key price parameter
 filter with the exact executable parameter contract described below. Accepted
 Amendment-002 defers only its enumerated real/Owner/Gate evidence
 to `RELEASE-V1-001`; the Deferred Evidence Register preserves every future
-obligation. The engineering implementation is closed, but Human Owner Formal
-Closure and production readiness are not claimed. No real provider, Marketplace
-or production write is authorized or proven.
+obligation. Controller comment `5469802650` passed the exact post-merge
+bookkeeping packet, and Human Owner comment `5469935477` accepted the frozen
+Closure Snapshot and formally closed the Slice's engineering lifecycle. This
+does not claim production readiness: all deferred release obligations remain
+production-blocking. No real provider, Marketplace or production write is
+authorized or proven.
 
 ## 2. The decisions everything else follows from
 

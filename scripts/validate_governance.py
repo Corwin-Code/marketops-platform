@@ -115,8 +115,8 @@ DR0004_CURRENT_STATE = {
     "remote_git_publication_delegate": "CODEX",
     "deep_review_mode": "ONE_SHOT_DISCOVERY_FROZEN_FINDING_SET",
     "final_gate_mode": "CLOSURE_VERIFICATION_ONLY",
-    "owner_formal_slice_closure": "REQUIRED",
-    "closure_snapshot_before_next_slice": "REQUIRED",
+    "owner_formal_slice_closure": "HUMAN_OWNER_ACCEPTED",
+    "closure_snapshot_before_next_slice": "SATISFIED_EXACT_OWNER_ACCEPTED",
     "dual_truth_model": "NORMATIVE_AND_IMPLEMENTATION_FACT",
     "dr0004_original_contract": DR0004_DR_RELATIVE_PATH,
     "dr0004_original_contract_sha256": DR0004_ARTIFACT_HASHES[
@@ -208,6 +208,7 @@ DR0003_REQUIRED_FILES = [
     "docs/07-phase-evidence/SLICE-V1-001/post-merge-closure-sync.md",
     "docs/08-handoffs/CONTROLLER-SLICE-V1-001-R2-ENGINEERING-FINAL-GATE-PASS.md",
     "docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-TEMPLATE.md",
+    "docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md",
     "docs/07-phase-evidence/V1/Baseline-Reset/README.md",
     "docs/08-handoffs/CONTROLLER-DR-0003-V1-BASELINE-RESET-REVIEW.md",
     "docs/08-handoffs/CODEX-DR-0003-GOVERNANCE-EXECUTION-PROMPT.md",
@@ -253,6 +254,21 @@ V1_AMENDMENT_002_ACCEPTANCE_PATH = (
 V1_AMENDMENT_002_ACCEPTANCE_SHA256 = (
     "f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923"
 )
+V1_CLOSURE_SNAPSHOT_PATH = (
+    "docs/07-phase-evidence/SLICE-V1-001/CLOSURE-SNAPSHOT-DRAFT.md"
+)
+V1_CLOSURE_SNAPSHOT_GIT_BLOB_SHA1 = (
+    "e26359ec216c04319a4bf1e7126906eb204593d2"
+)
+V1_CLOSURE_SNAPSHOT_SHA256 = (
+    "5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e84823ddedf30aab2e3"
+)
+V1_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md"
+)
+V1_OWNER_FORMAL_CLOSURE_EVIDENCE_SHA256 = (
+    "50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33"
+)
 V1_ACTIVE_STATE = {
     "lifecycle_state": "EXECUTING_V1",
     "product_version": "V1",
@@ -261,10 +277,10 @@ V1_ACTIVE_STATE = {
     "active_slice_contract": V1_ACTIVE_SLICE_CONTRACT_PATH,
     "active_slice_contract_sha256": V1_ACTIVE_SLICE_CONTRACT_SHA256,
     "active_slice_contract_authorization_condition": V1_SLICE_AUTHORIZATION_CONDITION,
-    "active_gate": "SLICE_V1_001_POST_MERGE_CLOSURE_SYNC",
+    "active_gate": "SLICE_V1_001_FORMAL_CLOSURE_ACCEPTED",
     "authorization": "FINAL_REVIEW_ONLY",
     "r2_remote_publication_authority": (
-        "HUMAN_OWNER_EXPLICIT_POST_MERGE_CLOSURE_SYNC_BRANCH_AND_DRAFT_PR"
+        "HUMAN_OWNER_EXPLICIT_FORMAL_CLOSURE_RECORDING_AND_PROTECTED_SQUASH_PR_23"
     ),
     "active_slice_amendment_002": V1_AMENDMENT_002_PATH,
     "active_slice_amendment_002_sha256": V1_AMENDMENT_002_SHA256,
@@ -272,9 +288,9 @@ V1_ACTIVE_STATE = {
     "active_slice_amendment_002_acceptance_evidence": V1_AMENDMENT_002_ACCEPTANCE_PATH,
     "active_slice_amendment_002_acceptance_evidence_sha256": V1_AMENDMENT_002_ACCEPTANCE_SHA256,
     "next_authorized_actor": "GPT-5.6 Pro Controller",
-    "next_action": "CONTROLLER_SLICE_V1_001_R2_POST_MERGE_BOOKKEEPING_VERIFICATION",
+    "next_action": "NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY",
     "slice_v1_001_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
-    "slice_v1_001_rework_phase": "R2_POST_MERGE_CLOSURE_SYNC",
+    "slice_v1_001_rework_phase": "R2_FORMAL_CLOSURE_ACCEPTED",
     "slice_v1_001_pr": "22",
     "slice_v1_001_pr_state": "MERGED_PROTECTED_SQUASH",
     "slice_v1_001_branch": "fix/SLICE-V1-001-supplemental-assurance-r2",
@@ -319,20 +335,56 @@ V1_ACTIVE_STATE = {
     "slice_v1_001_unresolved_major": "0",
     "slice_v1_001_closure_claim": "ENGINEERING_IMPLEMENTATION_CLOSED",
     "slice_v1_001_production_readiness": "DEFERRED_TO_RELEASE_V1_001",
-    "slice_v1_001_owner_formal_closure": "PENDING",
+    "slice_v1_001_owner_formal_closure": "HUMAN_OWNER_ACCEPTED",
+    "slice_v1_001_state": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
     "slice_v1_001_execution_condition": (
-        "POST_MERGE_BOOKKEEPING_AND_OWNER_FORMAL_CLOSURE_PENDING"
+        "FORMALLY_CLOSED_WITH_DEFERRED_RELEASE_OBLIGATIONS"
     ),
-    "slice_v1_001_docs_closure_pr_21": "HOLD_DO_NOT_MERGE",
+    "slice_v1_001_docs_closure_pr_21": "CLOSED_UNMERGED_SUPERSEDED_REF_DELETED",
     "slice_v1_001_closure_sync_branch": (
         "docs/SLICE-V1-001-r2-post-merge-closure-sync"
     ),
     "slice_v1_001_closure_sync_identity_resolution": (
         "THIS_DOCUMENT_CONTAINING_COMMIT_AND_NEW_DRAFT_PR_LIVE_REFS"
     ),
-    "slice_v1_001_handoff_pending": "POST_MERGE_BOOKKEEPING_VERIFICATION",
-    "candidate_state_scope": "PROTECTED_MAIN_MERGED_ENGINEERING_IMPLEMENTATION",
-    "merge_authorization": "CONSUMED_EXACT_PROTECTED_SQUASH_PR_22",
+    "slice_v1_001_closure_sync_pr": "23",
+    "slice_v1_001_closure_sync_source_head": (
+        "7f52b4c0e145cfb86e4982416aa7bdca79da7ec6"
+    ),
+    "slice_v1_001_closure_sync_source_tree": (
+        "619b79844641d299ad6b5283f6dcea21c03e9ab3"
+    ),
+    "slice_v1_001_closure_sync_source_tested_merge": (
+        "d2d05514565e1d19131b02527ed05f698169006c"
+    ),
+    "slice_v1_001_controller_bookkeeping_verdict": (
+        "PASS_POST_MERGE_CLOSURE_BOOKKEEPING"
+    ),
+    "slice_v1_001_controller_bookkeeping_comment": "5469802650",
+    "slice_v1_001_snapshot_source_commit": (
+        "7f52b4c0e145cfb86e4982416aa7bdca79da7ec6"
+    ),
+    "slice_v1_001_snapshot_source_tree": (
+        "619b79844641d299ad6b5283f6dcea21c03e9ab3"
+    ),
+    "slice_v1_001_snapshot_git_blob_sha1": V1_CLOSURE_SNAPSHOT_GIT_BLOB_SHA1,
+    "slice_v1_001_snapshot_sha256": V1_CLOSURE_SNAPSHOT_SHA256,
+    "slice_v1_001_owner_acceptance_comment": "5469935477",
+    "slice_v1_001_owner_acceptance_evidence": (
+        V1_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH
+    ),
+    "slice_v1_001_owner_acceptance_evidence_sha256": (
+        V1_OWNER_FORMAL_CLOSURE_EVIDENCE_SHA256
+    ),
+    "slice_v1_001_handoff_pending": (
+        "CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK"
+    ),
+    "candidate_state_scope": (
+        "PROTECTED_MAIN_ENGINEERING_MERGED_FORMAL_CLOSURE_ACCEPTED"
+    ),
+    "merge_authorization": (
+        "HUMAN_OWNER_AUTHORIZED_PROTECTED_SQUASH_PR_23_IF_ALL_GATES_PASS"
+    ),
     "production_deployment": "NOT_AUTHORIZED",
     "gate_ev": "NOT_AUTHORIZED",
     "gate_e": "NOT_AUTHORIZED",
@@ -3941,7 +3993,7 @@ def validate_slice_rework_evidence_text(
         "assessed_against": (
             "ACTUAL_SQUASH_COMMIT_D562B81F4F0271AA33A53B21CCAFFC88B5610C0C"
         ),
-        "assessment_phase": "POST_MERGE_CLOSURE_SYNC",
+        "assessment_phase": "FORMAL_CLOSURE_ACCEPTED",
         "remote_publication": "PR_22_MERGED_PROTECTED_SQUASH",
         "initial_published_head": "c3d2160a9c302d993e2b01a08946f46fae0b01d5",
         "initial_published_tree": "9d7641eccc2d233bf2c5615e7c4776721269bc15",
@@ -3961,7 +4013,17 @@ def validate_slice_rework_evidence_text(
         "actual_squash_sole_parent": "db92cf2f8bd818f36dd8f5aa17b8589c4140b669",
         "engineering_implementation": "ENGINEERING_IMPLEMENTATION_CLOSED",
         "production_readiness": "DEFERRED_TO_RELEASE_V1_001",
-        "owner_formal_closure": "PENDING",
+        "owner_formal_closure": "HUMAN_OWNER_ACCEPTED",
+        "slice_state": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+        "controller_bookkeeping_verdict": "PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+        "controller_bookkeeping_comment": "5469802650",
+        "snapshot_source_commit": "7f52b4c0e145cfb86e4982416aa7bdca79da7ec6",
+        "snapshot_source_tree": "619b79844641d299ad6b5283f6dcea21c03e9ab3",
+        "snapshot_git_blob_sha1": V1_CLOSURE_SNAPSHOT_GIT_BLOB_SHA1,
+        "snapshot_sha256": V1_CLOSURE_SNAPSHOT_SHA256,
+        "owner_acceptance_comment": "5469935477",
+        "owner_acceptance_evidence": V1_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH,
+        "next_action": "NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY",
         "contract_sha256": V1_ACTIVE_SLICE_CONTRACT_SHA256,
         "frozen_findings_sha256": V1_ACTIVE_STATE["slice_v1_001_frozen_findings_sha256"],
         "supplemental_r2_review_sha256": V1_ACTIVE_STATE[
@@ -4018,24 +4080,33 @@ def validate_slice_rework_evidence_text(
 SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS = {
     "START_HERE.md": (
         "Engineering implementation: MERGED at d562b81f4f0271aa33a53b21ccaffc88b5610c0c",
-        "Current mode: DOCS_GOVERNANCE_CLOSURE_SYNC_ONLY",
+        "Slice status: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+        "Owner Formal Closure: HUMAN_OWNER_ACCEPTED",
+        "Next action: NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY",
     ),
     "docs/02-architecture/designs/SLICE-V1-001-design.md": (
         "implementation_state: ENGINEERING_IMPLEMENTATION_MERGED",
         "controller_final_gate: PASS_R2_ENGINEERING_FINAL_GATE",
         "actual_squash_commit: d562b81f4f0271aa33a53b21ccaffc88b5610c0c",
         "production_readiness: DEFERRED_TO_RELEASE_V1_001",
-        "owner_formal_closure: PENDING",
+        "owner_formal_closure: HUMAN_OWNER_ACCEPTED",
+        "slice_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+        "controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+        "owner_acceptance_comment: 5469935477",
     ),
     "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md": (
         "controller_verdict: PASS_R2_ENGINEERING_FINAL_GATE",
         "actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b",
         "engineering_implementation: ENGINEERING_IMPLEMENTATION_CLOSED",
-        "owner_formal_closure: PENDING",
+        "owner_formal_closure: HUMAN_OWNER_ACCEPTED",
+        "slice_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+        "controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
     ),
     "docs/07-phase-evidence/README.md": (
         "SLICE-V1-001 R2 post-merge record",
         "CLOSURE-SNAPSHOT-DRAFT.md",
+        "OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md",
+        "Owner comment `5469935477` issued Formal Closure",
         "production_write_enabled` remains `false`",
     ),
     "docs/07-phase-evidence/SLICE-V1-001/CLOSURE-SNAPSHOT-DRAFT.md": (
@@ -4056,6 +4127,9 @@ SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS = {
         "assessment: ENGINEERING_IMPLEMENTATION_CLOSED",
         "controller_comment_id: 5469390502",
         "remote_rework_ci: PASS_12_OF_12_REQUIRED_CONTEXTS_AND_AGGREGATE_CODEQL",
+        "controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+        "owner_formal_closure: HUMAN_OWNER_ACCEPTED",
+        "slice_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
         "deployment: NOT_EXECUTED",
         "production_write_enabled: false",
     ),
@@ -4064,9 +4138,12 @@ SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS = {
         "base_actual_merged_main: d562b81f4f0271aa33a53b21ccaffc88b5610c0c",
         "base_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b",
         "base_sole_parent: db92cf2f8bd818f36dd8f5aa17b8589c4140b669",
-        "formal_owner_closure: NOT_ISSUED",
+        "controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+        "formal_owner_closure: HUMAN_OWNER_ACCEPTED",
+        "owner_acceptance_comment: 5469935477",
+        "slice_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
         "production_write_enabled: false",
-        "CONTROLLER_SLICE_V1_001_R2_POST_MERGE_BOOKKEEPING_VERIFICATION",
+        "CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK",
     ),
     "docs/07-phase-evidence/SLICE-V1-001/r2-finding-closure.json": (
         '"documentType": "SLICE_V1_001_SUPPLEMENTAL_R2_FINDING_CLOSURE_ENGINEERING_CLOSED"',
@@ -4074,11 +4151,17 @@ SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS = {
         '"controllerVerdict": "PASS_R2_ENGINEERING_FINAL_GATE"',
         '"controllerCommentId": 5469390502',
         '"productionReadiness": "DEFERRED_TO_RELEASE_V1_001"',
-        '"ownerFormalClosure": "PENDING_HUMAN_OWNER_DECISION"',
+        '"ownerFormalClosure": "HUMAN_OWNER_ACCEPTED"',
+        '"sliceState": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS"',
+        '"controllerBookkeepingVerdict": "PASS_POST_MERGE_CLOSURE_BOOKKEEPING"',
+        '"controllerBookkeepingComment": 5469802650',
+        '"snapshotGitBlobSha1": "e26359ec216c04319a4bf1e7126906eb204593d2"',
+        '"snapshotSha256": "5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e84823ddedf30aab2e3"',
+        '"ownerAcceptanceComment": 5469935477',
         '"actualSquashCommit": "d562b81f4f0271aa33a53b21ccaffc88b5610c0c"',
         '"actualSquashTree": "390ebe37bea778b7a4548381ad357fc99aa0da6b"',
         '"actualSquashSoleParent": "db92cf2f8bd818f36dd8f5aa17b8589c4140b669"',
-        '"nextAction": "CONTROLLER_SLICE_V1_001_R2_POST_MERGE_BOOKKEEPING_VERIFICATION"',
+        '"nextAction": "CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK"',
     ),
     "docs/08-handoffs/CONTROLLER-SLICE-V1-001-R2-ENGINEERING-FINAL-GATE-PASS.md": (
         "verdict: PASS_R2_ENGINEERING_FINAL_GATE",
@@ -4089,11 +4172,29 @@ SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS = {
         "production_write_enabled: false",
     ),
     "docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-TEMPLATE.md": (
-        "template_status: NOT_ISSUED_NOT_ACCEPTED",
-        "owner_formal_closure: PENDING_HUMAN_OWNER_DECISION",
-        "controller_bookkeeping_verdict: PENDING",
+        "template_status: FULFILLED_BY_SEPARATE_EXACT_OWNER_ACCEPTANCE",
+        "owner_formal_closure: HUMAN_OWNER_ACCEPTED",
+        "controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+        "accepted_closure_snapshot_git_blob_sha1: e26359ec216c04319a4bf1e7126906eb204593d2",
+        "accepted_closure_snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e84823ddedf30aab2e3",
+        "owner_acceptance_comment: 5469935477",
         "production_write_enabled: false",
-        "unexecuted template",
+    ),
+    V1_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH: (
+        "evidence_id: OWNER_SLICE_V1_001_FORMAL_CLOSURE_ACCEPTANCE",
+        "source_comment_id: 5469935477",
+        "source_author_association: OWNER",
+        "owner_formal_closure: HUMAN_OWNER_ACCEPTED",
+        "slice_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+        "snapshot_source_commit: 7f52b4c0e145cfb86e4982416aa7bdca79da7ec6",
+        "snapshot_source_tree: 619b79844641d299ad6b5283f6dcea21c03e9ab3",
+        "snapshot_git_blob_sha1: e26359ec216c04319a4bf1e7126906eb204593d2",
+        "snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e84823ddedf30aab2e3",
+        "controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+        "controller_bookkeeping_comment: 5469802650",
+        "production_readiness: DEFERRED_TO_RELEASE_V1_001",
+        "next_action: NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY",
+        "production_write_enabled: false",
     ),
 }
 
@@ -4113,19 +4214,35 @@ def validate_slice_post_merge_closure_documents(
                     f"SLICE-V1-001 post-merge document {path} missing exact token: {token}"
                 )
 
-    snapshot = documents.get(
-        "docs/07-phase-evidence/SLICE-V1-001/CLOSURE-SNAPSHOT-DRAFT.md", ""
+    snapshot = documents.get(V1_CLOSURE_SNAPSHOT_PATH, "").encode()
+    if hashlib.sha256(snapshot).hexdigest() != V1_CLOSURE_SNAPSHOT_SHA256:
+        errors.append("SLICE-V1-001 frozen Closure Snapshot SHA-256 changed")
+    git_blob = b"blob " + str(len(snapshot)).encode() + b"\0" + snapshot
+    if hashlib.sha1(git_blob).hexdigest() != V1_CLOSURE_SNAPSHOT_GIT_BLOB_SHA1:
+        errors.append("SLICE-V1-001 frozen Closure Snapshot Git blob SHA-1 changed")
+
+    owner_evidence = documents.get(
+        V1_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH, ""
+    ).encode()
+    if hashlib.sha256(owner_evidence).hexdigest() != V1_OWNER_FORMAL_CLOSURE_EVIDENCE_SHA256:
+        errors.append("SLICE-V1-001 Owner Formal Closure evidence SHA-256 changed")
+
+    combined = "\n".join(
+        text for path, text in documents.items() if path != V1_CLOSURE_SNAPSHOT_PATH
     )
-    forbidden_snapshot_claims = (
-        "status: OWNER_FORMALLY_CLOSED",
-        "formal_owner_closure: ISSUED",
+    prohibited_claims = (
         "production_readiness: PRODUCTION_READY",
         "production_write_enabled: true",
+        "gate_ev: AUTHORIZED",
+        "gate_e: AUTHORIZED",
+        "pilot: ACTIVATED",
+        "release_v1_001: ACTIVATED",
     )
-    for claim in forbidden_snapshot_claims:
-        if claim in snapshot:
+    normalized = combined.lower()
+    for claim in prohibited_claims:
+        if claim.lower() in normalized:
             errors.append(
-                "SLICE-V1-001 draft Closure Snapshot contains a prohibited claim: "
+                "SLICE-V1-001 Formal Closure contains a prohibited release claim: "
                 + claim
             )
 
