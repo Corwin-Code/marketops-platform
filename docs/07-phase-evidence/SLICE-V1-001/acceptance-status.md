@@ -9,8 +9,14 @@ amendment_001_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14d
 amendment_002_sha256: 92fdd8d67b327fbd2288ba99290b5b59f2797106c4b691ce2bff22bb80198b93
 amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923
 assessed_at: 2026-08-30
-assessed_against: SUPPLEMENTAL_R2_LOCAL_CANDIDATE
-remote_publication: PENDING_R2_DRAFT_PR
+assessed_against: SUPPLEMENTAL_R2_DRAFT_PR_22_CONTAINING_COMMIT
+remote_publication: PUBLISHED_OPEN_DRAFT_PR_22
+initial_published_head: c3d2160a9c302d993e2b01a08946f46fae0b01d5
+initial_published_tree: 9d7641eccc2d233bf2c5615e7c4776721269bc15
+initial_tested_merge: 353670b4a311f98b56fae593f8b2b34d5f39a80e
+initial_tested_merge_tree: 9d7641eccc2d233bf2c5615e7c4776721269bc15
+initial_remote_ci: PASS_12_OF_12_REQUIRED_CONTEXTS
+final_candidate_identity_resolution: THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS
 frozen_findings_sha256: 8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8
 supplemental_r2_review_sha256: c772c76c89b753d4694ee5ec1eceddad3451ab7ef6acc2e36416d9d4171f26ff
 deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
@@ -25,9 +31,13 @@ each with separate durable acceptance provenance. Amendment-002 closes only
 `S1-R2-G001`; it does not waive `S1-R2-F001` through `S1-R2-F009` or any retained
 engineering requirement.
 
-This is an R2 candidate assessment, not a Controller verdict. A non-deferred row
-uses `IMPLEMENTED_UNPROVEN` until exact-final-Head local/remote evidence and the
-Controller R2 verdict exist. Every exact Amendment-002 deferred row uses
+This is an R2 candidate assessment, not a Controller verdict. Draft PR #22 was
+published under explicit Human Owner transport authority. Its initial exact
+Head/tree and tested merge passed all 12 required contexts; the containing
+metadata commit must be reverified locally and remotely and its final exact
+identity is bound in the PR body and live refs. A non-deferred row uses
+`IMPLEMENTED_UNPROVEN` until the Controller R2 verdict exists. Every exact
+Amendment-002 deferred row uses
 `OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001`, with its retained engineering
 evidence and future obligation bound in the
 [Deferred Evidence Register](deferred-evidence-register.json). It may never be

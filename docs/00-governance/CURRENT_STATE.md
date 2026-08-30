@@ -30,6 +30,7 @@ accepted_contract_mutation: PROHIBITED_APPEND_ONLY_AMENDMENT_REQUIRED
 execution_envelope: EXECUTION_ENVELOPE_V1
 maker_remote_git_authority: DENIED
 remote_git_publication_delegate: CODEX
+r2_remote_publication_authority: HUMAN_OWNER_EXPLICIT_BRANCH_AND_DRAFT_PR_22
 deep_review_mode: ONE_SHOT_DISCOVERY_FROZEN_FINDING_SET
 final_gate_mode: CLOSURE_VERIFICATION_ONLY
 owner_formal_slice_closure: REQUIRED
@@ -51,16 +52,22 @@ conditional_design_gate: ENABLED
 mandatory_design_gate_for_every_slice: DISABLED
 slice_v1_001_implementation_state: SUPPLEMENTAL_R2_ROOT_CAUSE_REWORK_CANDIDATE
 slice_v1_001_rework_phase: R2_FIX_VERIFY
-slice_v1_001_pr: 20
-slice_v1_001_pr_state: MERGED_SOURCE_PR
+slice_v1_001_pr: 22
+slice_v1_001_pr_state: OPEN_DRAFT_R2_CANDIDATE
 slice_v1_001_branch: fix/SLICE-V1-001-supplemental-assurance-r2
-slice_v1_001_review_state: SUPPLEMENTAL_R2_ACTIVE_REWORK_REQUIRED
+slice_v1_001_review_state: SUPPLEMENTAL_R2_FINAL_CONTROLLER_VERIFICATION_PENDING
 slice_v1_001_reviewed_base: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
 slice_v1_001_reviewed_head: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
 slice_v1_001_reviewed_tree: 221e5a009d4cf5820d36c0e1bccd5b64caa6135b
 slice_v1_001_frozen_findings_sha256: 8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8
 slice_v1_001_supplemental_r2_review_sha256: c772c76c89b753d4694ee5ec1eceddad3451ab7ef6acc2e36416d9d4171f26ff
-slice_v1_001_rework_commit_state: LOCAL_R2_CANDIDATE_UNPUBLISHED
+slice_v1_001_rework_commit_state: REMOTE_DRAFT_PR_INITIAL_CI_PASS_FINAL_METADATA_REVERIFY
+slice_v1_001_initial_published_head: c3d2160a9c302d993e2b01a08946f46fae0b01d5
+slice_v1_001_initial_published_tree: 9d7641eccc2d233bf2c5615e7c4776721269bc15
+slice_v1_001_initial_tested_merge: 353670b4a311f98b56fae593f8b2b34d5f39a80e
+slice_v1_001_initial_tested_merge_tree: 9d7641eccc2d233bf2c5615e7c4776721269bc15
+slice_v1_001_initial_remote_ci: PASS_12_OF_12_REQUIRED_CONTEXTS
+slice_v1_001_final_candidate_identity_resolution: THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS
 slice_v1_001_finding_count: 9
 slice_v1_001_closure_claim: NONE
 slice_v1_001_execution_condition: AMENDMENTS_001_AND_002_ACCEPTED_R2_REWORK_CONTINUES
@@ -77,7 +84,7 @@ slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
 next_authorized_actor: GPT-5.6 Pro Controller
 next_action: CONTROLLER_SLICE_V1_001_R2_FINAL_CLOSURE_VERIFICATION
-slice_v1_001_handoff_pending: VERIFIED_R2_DRAFT_PR_HANDOFF
+slice_v1_001_handoff_pending: FINAL_CONTAINING_COMMIT_LOCAL_AND_REMOTE_REVERIFY
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
 bounded_real_write_verification_authorization: NONE
@@ -125,8 +132,14 @@ published as Draft PR #20 and then merged. The Human Owner supplied the exact R1
 Frozen Finding Set and Supplemental R2 review, and authorized Codex to perform
 the continuous in-scope R2 root-cause rework from protected-main commit
 `db92cf2f8bd818f36dd8f5aa17b8589c4140b669`. PR #21 is held and is not reused
-as the R2 implementation branch. This candidate branch state does not update protected main.
-It does not grant Ready, merge, deployment, Gate EV, Gate E or real provider I/O.
+as the R2 implementation branch. The Human Owner separately authorized Codex to
+publish this exact work branch and create one new Draft PR. That transport is
+now Draft PR #22. Its initial published Head `c3d2160a9c302d993e2b01a08946f46fae0b01d5`
+and tested merge `353670b4a311f98b56fae593f8b2b34d5f39a80e` passed all 12 required
+contexts. The final candidate is the commit containing this state update and is
+bound after publication by PR #22's live Head/tree/tested-merge refs and PR
+body. This candidate branch state does not update protected main. It does not
+grant Ready, merge, deployment, Gate EV, Gate E or real provider I/O.
 
 The frozen originals' `status: PROPOSED_PENDING_EXACT_OWNER_ACCEPTANCE` and
 `status: PROPOSED_BY_DR_0004` fields are proposal-time provenance only, not live

@@ -3003,7 +3003,14 @@ class V1CurrentStateContractTests(unittest.TestCase):
         mutations = (
             ("next_authorized_actor: GPT-5.6 Pro Controller", "next_authorized_actor: CLAUDE_FABLE_5"),
             ("slice_v1_001_rework_phase: R2_FIX_VERIFY", "slice_v1_001_rework_phase: CLOSED"),
-            ("slice_v1_001_pr_state: MERGED_SOURCE_PR", "slice_v1_001_pr_state: OPEN_DRAFT_UNMERGED"),
+            (
+                "slice_v1_001_pr_state: OPEN_DRAFT_R2_CANDIDATE",
+                "slice_v1_001_pr_state: MERGED",
+            ),
+            (
+                "slice_v1_001_initial_remote_ci: PASS_12_OF_12_REQUIRED_CONTEXTS",
+                "slice_v1_001_initial_remote_ci: PASS_11_OF_12_REQUIRED_CONTEXTS",
+            ),
             ("slice_v1_001_finding_count: 9", "slice_v1_001_finding_count: 8"),
             ("slice_v1_001_closure_claim: NONE", "slice_v1_001_closure_claim: APPROVED"),
             ("candidate_state_scope: PR_BRANCH_ONLY", "candidate_state_scope: PROTECTED_MAIN"),
@@ -3054,7 +3061,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
             ),
             acceptance.replace("`IMPLEMENTED_UNPROVEN` | 24", "`IMPLEMENTED_UNPROVEN` | 23", 1),
             acceptance.replace(
-                "assessed_against: SUPPLEMENTAL_R2_LOCAL_CANDIDATE",
+                "assessed_against: SUPPLEMENTAL_R2_DRAFT_PR_22_CONTAINING_COMMIT",
                 "assessed_against: CLOSED",
                 1,
             ),

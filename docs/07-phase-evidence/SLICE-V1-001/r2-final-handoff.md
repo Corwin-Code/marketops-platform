@@ -8,11 +8,16 @@ required_base_tree: 221e5a009d4cf5820d36c0e1bccd5b64caa6135b
 implementation_checkpoint_head: 7eeed1b12c0b172d1dc51c53ee04d1d749476e8a
 implementation_checkpoint_tree: 90f87cabf133ad7f7e0f2c67e4be28065e1a0366
 implementation_checkpoint_local_verification: PASS_EXACT_CLEAN_CHECKOUT
-remote_branch_publication: PENDING_EXPLICIT_DESTINATION_APPROVAL
-pull_request: NOT_CREATED
-tested_merge: NOT_AVAILABLE_BEFORE_PULL_REQUEST
-remote_ci: NOT_RUN
-handoff_state: LOCAL_EXACT_VERIFIED_REMOTE_HANDOFF_PENDING
+remote_branch_publication: PUBLISHED_BY_EXPLICIT_HUMAN_OWNER_AUTHORITY
+pull_request: https://github.com/Corwin-Code/marketops-platform/pull/22
+pull_request_state: OPEN_DRAFT
+initial_published_head: c3d2160a9c302d993e2b01a08946f46fae0b01d5
+initial_published_tree: 9d7641eccc2d233bf2c5615e7c4776721269bc15
+initial_tested_merge: 353670b4a311f98b56fae593f8b2b34d5f39a80e
+initial_tested_merge_tree: 9d7641eccc2d233bf2c5615e7c4776721269bc15
+initial_remote_ci: PASS_12_OF_12_REQUIRED_CONTEXTS
+final_candidate_identity_resolution: THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS_AND_BODY
+handoff_state: FINAL_CONTAINING_COMMIT_LOCAL_AND_REMOTE_REVERIFY
 controller_verdict: NOT_CLAIMED
 candidate_scope: LOCAL_AND_FUTURE_DRAFT_PR_BRANCH_ONLY
 production_write_enabled: false
@@ -24,11 +29,13 @@ next_authorized_actor_after_verified_remote_handoff: GPT-5.6 Pro Controller
 next_action_after_verified_remote_handoff: CONTROLLER_SLICE_V1_001_R2_FINAL_CLOSURE_VERIFICATION
 ```
 
-This file records the exact clean local implementation checkpoint and the
-remaining remote handoff condition. It is not yet the completed remote handoff:
-the work branch and Draft PR have not been published because the external write
-requires direct approval of the concrete GitHub destination. No remote CI,
-tested merge or PR identity is claimed before those objects exist.
+This file records the exact clean local implementation checkpoint and published
+Draft PR #22. The Human Owner explicitly authorized this concrete branch push
+and new Draft PR. Its initial exact Head/tree and tested merge passed all 12
+required contexts. Because this document synchronizes that result, the final
+candidate is the commit containing this document. Its exact Head/tree/tested
+merge and second remote CI run are bound after push in PR #22's live refs and PR
+body, avoiding a false self-referential commit hash.
 
 ## Authority and immutable inputs
 
@@ -192,20 +199,31 @@ evidence placeholder. No row is relabeled as real-provider verified or
 production-ready. The 24 non-deferred acceptance rows remain
 `IMPLEMENTED_UNPROVEN`; no Controller verdict is self-issued.
 
-## Remote handoff condition
+## Published Draft PR checkpoint
 
-The authorized destination described by the work package is
+The Human Owner explicitly authorized publication to
 `https://github.com/Corwin-Code/marketops-platform.git`, branch
-`fix/SLICE-V1-001-supplemental-assurance-r2`. The remote branch does not yet
-exist and PR #21 remains `HOLD_DO_NOT_MERGE`. Publication was attempted once and
-stopped by the external-write safety reviewer, which requires the Human Owner to
-directly approve this concrete destination. No workaround or second attempt was
-made.
+`fix/SLICE-V1-001-supplemental-assurance-r2`, and creation of one new Draft PR.
+Codex pushed the existing two-commit series without reconstruction and created
+[Draft PR #22](https://github.com/Corwin-Code/marketops-platform/pull/22) against
+exact base `db92cf2f8bd818f36dd8f5aa17b8589c4140b669`. PR #21 remains
+`HOLD_DO_NOT_MERGE` and was not reused.
 
-After that approval, Codex must publish the exact local commit series, create
-one new Draft PR, record its Head/tree/tested-merge identities, wait for all 12
-required contexts, update the canonical status/handoff without claiming closure,
-and leave the PR Draft and unmerged for the GPT-5.6 Pro Controller.
+The initial published Head/tree were
+`c3d2160a9c302d993e2b01a08946f46fae0b01d5` /
+`9d7641eccc2d233bf2c5615e7c4776721269bc15`. GitHub's signed tested merge was
+`353670b4a311f98b56fae593f8b2b34d5f39a80e`, tree
+`9d7641eccc2d233bf2c5615e7c4776721269bc15`, with ordered parents base then
+published Head. All 12 required contexts passed: `governance`,
+`infrastructure-validation`, `architecture-boundary`, `backend-build`,
+`backend-integration`, `frontend-lint`, `frontend-typecheck`, `frontend-test`,
+`frontend-build`, `dependency-review`, `codeql-java` and `codeql-typescript`.
+
+This synchronization is metadata-only. The final candidate is the containing
+commit, so it must receive the same complete local and remote verification. Its
+exact identities and final CI run are recorded out-of-tree in PR #22's body and
+live refs after publication. The PR remains Draft and unmerged for the GPT-5.6
+Pro Controller; no Controller verdict or closure is claimed here.
 
 ## External and production boundaries
 

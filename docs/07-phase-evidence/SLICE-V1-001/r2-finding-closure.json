@@ -14,9 +14,25 @@
     "r1FrozenFindingSetSha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8",
     "supplementalR2ReviewSha256": "c772c76c89b753d4694ee5ec1eceddad3451ab7ef6acc2e36416d9d4171f26ff"
   },
-  "candidateState": "ROOT_CAUSE_FIXED_EXACT_LOCAL_CHECKPOINT_VERIFIED_REMOTE_CI_PENDING",
+  "candidateState": "ROOT_CAUSE_FIXED_DRAFT_PR_22_INITIAL_REMOTE_CI_PASS_FINAL_CONTAINING_COMMIT_REVERIFY",
   "controllerVerdict": "PENDING_GPT_5_6_PRO_CONTROLLER",
   "productionWriteEnabled": false,
+  "remoteHandoff": {
+    "pullRequest": 22,
+    "pullRequestState": "OPEN_DRAFT",
+    "initialPublishedHead": "c3d2160a9c302d993e2b01a08946f46fae0b01d5",
+    "initialPublishedTree": "9d7641eccc2d233bf2c5615e7c4776721269bc15",
+    "initialTestedMerge": "353670b4a311f98b56fae593f8b2b34d5f39a80e",
+    "initialTestedMergeTree": "9d7641eccc2d233bf2c5615e7c4776721269bc15",
+    "initialTestedMergeOrderedParents": [
+      "db92cf2f8bd818f36dd8f5aa17b8589c4140b669",
+      "c3d2160a9c302d993e2b01a08946f46fae0b01d5"
+    ],
+    "initialRequiredContexts": "PASS_12_OF_12",
+    "finalCandidateIdentityResolution": "THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS_AND_BODY",
+    "mergeAuthorization": "NOT_GRANTED",
+    "productionEnablement": false
+  },
   "findings": [
     {
       "id": "S1-R2-G001",
