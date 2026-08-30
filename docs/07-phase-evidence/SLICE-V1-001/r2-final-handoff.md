@@ -5,9 +5,8 @@ repository: Corwin-Code/marketops-platform
 branch: fix/SLICE-V1-001-supplemental-assurance-r2
 required_base: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
 required_base_tree: 221e5a009d4cf5820d36c0e1bccd5b64caa6135b
-implementation_checkpoint_head: 7eeed1b12c0b172d1dc51c53ee04d1d749476e8a
-implementation_checkpoint_tree: 90f87cabf133ad7f7e0f2c67e4be28065e1a0366
-implementation_checkpoint_local_verification: PASS_EXACT_CLEAN_CHECKOUT
+implementation_checkpoint_identity: THIS_DOCUMENT_CONTAINING_COMMIT
+implementation_checkpoint_local_verification: FULL_PRECOMMIT_PASS_EXACT_COMMIT_REVERIFY_PENDING
 remote_branch_publication: PUBLISHED_BY_EXPLICIT_HUMAN_OWNER_AUTHORITY
 pull_request: https://github.com/Corwin-Code/marketops-platform/pull/22
 pull_request_state: OPEN_DRAFT
@@ -16,6 +15,9 @@ initial_published_tree: 9d7641eccc2d233bf2c5615e7c4776721269bc15
 initial_tested_merge: 353670b4a311f98b56fae593f8b2b34d5f39a80e
 initial_tested_merge_tree: 9d7641eccc2d233bf2c5615e7c4776721269bc15
 initial_remote_ci: PASS_12_OF_12_REQUIRED_CONTEXTS
+bounded_closure_start_head: 63ab9e8d33b4cf586d45d49c2280735113da83eb
+bounded_closure_start_tree: 82540ee1e6bc7d35ad962551ffd29743e4b7ad72
+bounded_closure_start_tested_merge: 5f5ab4c8844f2c38e3d0cc117a76363c8def4ddc
 final_candidate_identity_resolution: THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS_AND_BODY
 handoff_state: FINAL_CONTAINING_COMMIT_LOCAL_AND_REMOTE_REVERIFY
 controller_verdict: NOT_CLAIMED
@@ -29,13 +31,17 @@ next_authorized_actor_after_verified_remote_handoff: GPT-5.6 Pro Controller
 next_action_after_verified_remote_handoff: CONTROLLER_SLICE_V1_001_R2_FINAL_CLOSURE_VERIFICATION
 ```
 
-This file records the exact clean local implementation checkpoint and published
-Draft PR #22. The Human Owner explicitly authorized this concrete branch push
-and new Draft PR. Its initial exact Head/tree and tested merge passed all 12
-required contexts. Because this document synchronizes that result, the final
-candidate is the commit containing this document. Its exact Head/tree/tested
-merge and second remote CI run are bound after push in PR #22's live refs and PR
-body, avoiding a false self-referential commit hash.
+This file records the bounded F002–F005 closure on published Draft PR #22. The
+Human Owner explicitly authorized this branch push and Draft PR publication.
+Because PR #22 already exists, this cycle maintains that Draft rather than
+creating a duplicate. It starts from exact Head/tree/tested merge
+`63ab9e8d33b4cf586d45d49c2280735113da83eb` /
+`82540ee1e6bc7d35ad962551ffd29743e4b7ad72` /
+`5f5ab4c8844f2c38e3d0cc117a76363c8def4ddc` and preserves the accepted candidate
+closures for G001/F001/F006/F007/F008/F009. The final candidate is the commit
+containing this document; its exact Head/tree/tested merge and remote CI are
+bound after push in PR #22's live refs/body, avoiding a false self-referential
+commit hash.
 
 ## Authority and immutable inputs
 
@@ -56,6 +62,10 @@ The Contract, accepted Amendment-001, accepted Amendment-002 and its acceptance
 evidence match these exact bytes. V0001–V0028 remain unmodified. The only R2
 migration is
 `backend/marketops-server/src/main/resources/db/migration/V0029__version_profit_economics_and_commercial_inputs.sql`.
+It was unmerged, undeployed and had no shared consumer at bounded-closure start,
+so its correction in place does not alter applied migration history. It adds
+four tables: the economics profile, family contract, components and source-feed
+watermarks. No real migration or deployment was executed.
 
 ## Finding and same-class disposition
 
@@ -64,13 +74,24 @@ The machine-readable [R2 closure map](r2-finding-closure.json) records
 correction, affected files and tests for `S1-R2-F001` through `S1-R2-F009`.
 Those engineering corrections remain Controller-verdict pending.
 
-Its ten same-class scans cover reconstructed windows, mutation-insensitive
-identity, absent-as-zero arithmetic, aggregate/per-unit mismatch, incomplete
-Guardrail evidence, conditional happy paths, maintenance routes, optional
-serving security, omitted workflow contexts and deferred-status relabeling. A
-same-class DNS ambiguity was also removed: maintenance peer validation now
-parses IPv4 locally, accepts only numeric IPv6 literals and never resolves a
-hostname-shaped value.
+The bounded closure establishes two separate economic authorities. Historical
+Contribution Profit uses a versioned `FeeFamily` contract and distinguishes
+required value, explicit zero, verified non-applicability and missing/incomplete
+per family. Proposed Break-even/Minimum and Guardrail never use historical fee
+averages: the shared calculator applies exact fixed/percentage/tier components
+to the target price under a platform/account/store/fulfillment/currency/effective
+profile. Its profile/version/component identities are persisted in the metric
+and Impact Preview.
+
+Freshness authority is likewise explicit. Eight attributed feed watermarks are
+evaluated against the preview, approval/command and worker transaction instant;
+a recent event window or persisted `freshness_seconds` cannot substitute. An
+attributed reconciliation may refresh authority, but it does not revive an old
+snapshot. Same-class scans cover tier/mode boundaries, family removal,
+absence-versus-zero, profile ambiguity/expiry, wall-clock aging, reconciliation,
+approval/worker rechecks and the previously accepted R2 classes. A same-class
+DNS ambiguity remains removed: maintenance peer validation parses numeric
+addresses locally and never resolves a hostname-shaped value.
 
 The required executable path is proven as:
 
@@ -85,47 +106,54 @@ recorded facts
 ```
 
 `OperatingFlowIT` has no early-return alternate success. It requires a passing
-Guardrail and command, proves late-fact correction without history rewrite, and
-removes each required economics/safety input through the actual service gate.
+Guardrail and command, proves late-fact correction without history rewrite,
+removes every economics/safety input and every historical fee family through
+the actual service, exercises missing/expired/ambiguous profiles, and proves a
+stale watermark blocks until an attributable fresh watermark is appended.
 
-## Exact clean local verification
+## Exact local verification state
 
-All commands below ran from a clean checkout at Head
-`7eeed1b12c0b172d1dc51c53ee04d1d749476e8a`, tree
-`90f87cabf133ad7f7e0f2c67e4be28065e1a0366`.
+The full precommit regression is complete. The containing commit is
+self-referential, so browser source binding, clean migration-artifact identity
+and the final full backend run are repeated after this document is committed.
+Their exact Head/tree/artifact values are recorded in PR #22's body and live
+refs; this section does not invent them.
 
-| Command / surface | Result |
+| Command / surface | Current result |
 | --- | --- |
 | `git diff --check` | PASS |
-| `python3 scripts/validate_governance.py` | PASS |
-| `python3 scripts/validate_production_readiness.py` | PASS over 2367 files; `TC-GLOBAL-001..004` PASS |
+| `python3 scripts/validate_governance.py` | PASS before canonical-doc synchronization; repeated on containing commit |
+| `python3 scripts/validate_production_readiness.py` | PASS over 2377 files; `TC-GLOBAL-001..004` PASS |
 | `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_*.py'` | 377 PASS |
-| `./mvnw -B -ntp clean -Dmarketops.build.gitCommit=7eeed1b12c0b172d1dc51c53ee04d1d749476e8a verify` | 378 PASS; 0 failures/errors/skips; JaCoCo gates PASS |
+| `./mvnw -B -ntp clean verify` | 875 unit + 383 integration PASS; 0 failures/errors/skips; JaCoCo gates PASS |
 | `./mvnw -B -ntp -Dtest='*ArchitectureTest' -DfailIfNoTests=true test` | 65 PASS |
+| `OperatingFlowIT` | 23 PASS; actual profile/family/watermark service gates included |
+| `OperatingFlowIT,PriceWritePathIT` | 106 PASS; transaction-time DB authority included |
 | `bash scripts/verify_coverage_thresholds.sh all` | backend and frontend negative controls PASS |
-| `npm ci` | lockfile install PASS |
-| `npm run lint` / `npm run format:check` / `npm run typecheck` | PASS |
-| `npm run test -- --run` | 13 files / 196 tests PASS |
-| `npm run test:ci` | 196 PASS; statements 88.60%, branches 84.52%, functions 92.41%, lines 89.72% |
-| `npm run build` / `npm run verify:bundle` / `npm run sbom` | PASS; bundle isolation and CycloneDX 1.6 PASS |
-| `npm run test:browser` with exact `MARKETOPS_SOURCE_HEAD_SHA` | 11 PASS, including real local DB outage/recovery |
-| `python3 scripts/verify_terraform.py` with Terraform 1.14.9 | bootstrap/staging/production synthetic plans PASS; no apply/provider call |
+| `npm ci`; lint / format / typecheck | PASS |
+| `npm run test -- --run`; `npm run test:ci` | 196 PASS; statements 88.60%, branches 84.52%, functions 92.41%, lines 89.72% |
+| `npm run build`; `npm run verify:bundle`; `npm run sbom` | PASS; bundle isolation and CycloneDX 1.6 PASS |
+| `npm run test:browser` with exact `MARKETOPS_SOURCE_HEAD_SHA` | PENDING containing-commit binding |
+| `python3 scripts/verify_terraform.py` with Terraform 1.14.9 | bootstrap/staging/production synthetic plans PASS; mock provider only, no apply/API |
 | Terraform and Yandex runtime unittest subsets | 9 + 13 PASS |
-| `python3 scripts/verify_migration_artifact.py` | PASS; exact clean commit/tree, `uncommittedWorktree:false` |
+| `python3 scripts/verify_migration_artifact.py` | PENDING exact clean containing commit |
 
-The packaged artifact SHA-256 is
-`6e63f655cd477f3e2d05dd3b3ff0249c4412736401e5fd3b10c3928645da8e38`.
-The isolated backend and migration image identities are respectively
-`sha256:fec133becc08a5eefc8a923b46f7b65f67d6667b40d044a7e0ab0d70f0303a13`
-and
-`sha256:fa7a60ac18e94ae2dc363e64ffaf6e371aea3f5b800b92dd57139b01f8f477e3`.
-That verifier made no database connection, provider call, credential use or
-deployment. Terraform plans used only the mock provider and explicitly record
-`apply: NOT_EXECUTED`.
+The historical CodeQL source annotation is preserved exactly: run
+`99214089692`, `AdminMetadataGuard.java:88`, `Missing catch of
+NumberFormatException`, potential uncaught `NumberFormatException`, notice.
+`AdminMetadataGuard` now catches that exception and denies the address. The
+earlier empty open-alert query is not treated as a substitute; aggregate CodeQL
+remains pending the exact final Head/tested merge remote run.
 
-## Changed-file inventory at the implementation checkpoint
+The artifact verifier and Terraform verification make no database connection,
+provider call, credential use or deployment. Terraform uses only the mock
+provider and records `apply: NOT_EXECUTED`.
 
-The Base-to-checkpoint diff contains 57 files:
+## Changed-file inventory at the bounded closure checkpoint
+
+The Base-to-candidate diff contains 73 files. The 57-file inherited R2
+checkpoint inventory is preserved below, followed by the 16 bounded-closure
+additions:
 
 ```text
 .github/required-status-checks.json
@@ -187,6 +215,25 @@ tests/test_validate_production_readiness.py
 tests/test_yandex_runtime.py
 ```
 
+```text
+backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/DecisionFreshness.java
+backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/FeeCoverageState.java
+backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/FeeFamily.java
+backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/PriceEconomicsCalculator.java
+backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/PriceEconomicsProfile.java
+backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/PriceEconomicsQuery.java
+backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/PriceEconomicsResolution.java
+backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/domain/MetricInput.java
+backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/infrastructure/jdbc/PriceEconomicsRepository.java
+backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/ImpactPreview.java
+backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/GuardrailOutcome.java
+backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandFixture.java
+backend/marketops-server/src/test/java/com/mimococo/marketops/analyticsdecision/PriceEconomicsCalculatorTest.java
+backend/marketops-server/src/test/java/com/mimococo/marketops/database/PriceWritePathFixture.java
+backend/marketops-server/src/test/java/com/mimococo/marketops/database/PriceWritePathIT.java
+docs/07-phase-evidence/SLICE-V1-001/r2-final-handoff.md
+```
+
 ## Protected control and deferred evidence
 
 Ruleset `20734984` is active and strict. Its live readback contains all 12
@@ -203,11 +250,11 @@ production-ready. The 24 non-deferred acceptance rows remain
 
 The Human Owner explicitly authorized publication to
 `https://github.com/Corwin-Code/marketops-platform.git`, branch
-`fix/SLICE-V1-001-supplemental-assurance-r2`, and creation of one new Draft PR.
-Codex pushed the existing two-commit series without reconstruction and created
-[Draft PR #22](https://github.com/Corwin-Code/marketops-platform/pull/22) against
-exact base `db92cf2f8bd818f36dd8f5aa17b8589c4140b669`. PR #21 remains
-`HOLD_DO_NOT_MERGE` and was not reused.
+`fix/SLICE-V1-001-supplemental-assurance-r2`, and a Draft PR. Earlier work
+created [Draft PR #22](https://github.com/Corwin-Code/marketops-platform/pull/22)
+against exact base `db92cf2f8bd818f36dd8f5aa17b8589c4140b669`; this bounded closure updates
+that existing Draft instead of creating a duplicate. PR #21 remains
+`HOLD_DO_NOT_MERGE` and is not reused.
 
 The initial published Head/tree were
 `c3d2160a9c302d993e2b01a08946f46fae0b01d5` /
@@ -218,6 +265,15 @@ published Head. All 12 required contexts passed: `governance`,
 `infrastructure-validation`, `architecture-boundary`, `backend-build`,
 `backend-integration`, `frontend-lint`, `frontend-typecheck`, `frontend-test`,
 `frontend-build`, `dependency-review`, `codeql-java` and `codeql-typescript`.
+
+The bounded F002–F005 closure began at published Head/tree
+`63ab9e8d33b4cf586d45d49c2280735113da83eb` /
+`82540ee1e6bc7d35ad962551ffd29743e4b7ad72`; its tested merge was
+`5f5ab4c8844f2c38e3d0cc117a76363c8def4ddc`. Final publication must prove the
+new branch Head, remote tree and tested merge are exactly the locally verified
+candidate, all 12 required contexts pass, the specific historical CodeQL
+annotation is absent, open CodeQL alerts remain empty, deployments for the final
+Head remain empty, and the PR is still open/Draft/unmerged.
 
 This synchronization is metadata-only. The final candidate is the containing
 commit, so it must receive the same complete local and remote verification. Its

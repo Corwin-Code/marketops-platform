@@ -3,11 +3,15 @@ package com.mimococo.marketops.operationsworkflow.internal.application;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mimococo.marketops.analyticsdecision.ConfidenceState;
+import com.mimococo.marketops.analyticsdecision.DecisionFreshness;
+import com.mimococo.marketops.analyticsdecision.FeeFamily;
 import com.mimococo.marketops.analyticsdecision.MetricCode;
 import com.mimococo.marketops.analyticsdecision.MetricValueView;
 import com.mimococo.marketops.analyticsdecision.MetricWindow;
 import com.mimococo.marketops.analyticsdecision.SubjectKind;
 import com.mimococo.marketops.analyticsdecision.ValueState;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsProfile;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsResolution;
 import com.mimococo.marketops.operationsworkflow.GuardrailReason;
 import com.mimococo.marketops.operationsworkflow.internal.domain.GuardrailInput;
 import com.mimococo.marketops.operationsworkflow.internal.domain.GuardrailOutcome;
@@ -97,8 +101,8 @@ class GuardrailEngineTest {
         @Test
         void aMetricThatIsNotAvailableIsTreatedAsMissing() {
             Map<MetricCode, MetricValueView> metrics = defaultMetrics();
-            metrics.put(MetricCode.PLATFORM_FEES_PER_UNIT,
-                    unavailable(MetricCode.PLATFORM_FEES_PER_UNIT));
+            metrics.put(MetricCode.REQUIRED_PROFIT_PER_UNIT,
+                    unavailable(MetricCode.REQUIRED_PROFIT_PER_UNIT));
 
             GuardrailOutcome outcome = GuardrailEngine.evaluate(
                     input().metrics(metrics).build());
@@ -124,13 +128,8 @@ class GuardrailEngineTest {
 
         @Test
         void staleInputsBlock() {
-            Map<MetricCode, MetricValueView> metrics = defaultMetrics();
-            metrics.put(MetricCode.OBSERVED_SELLING_PRICE,
-                    value(MetricCode.OBSERVED_SELLING_PRICE, "100.0000",
-                            ConfidenceState.CANONICAL_CONFIRMED, 200_000L));
-
             GuardrailOutcome outcome = GuardrailEngine.evaluate(
-                    input().metrics(metrics).build());
+                    input().freshness(freshness(Duration.ofDays(3), null)).build());
 
             assertThat(outcome.reasons()).contains(GuardrailReason.INPUT_TOO_STALE);
         }
@@ -151,12 +150,13 @@ class GuardrailEngineTest {
 
         @Test
         void missingFreshnessBlocks() {
-            Map<MetricCode, MetricValueView> metrics = defaultMetrics();
-            metrics.put(MetricCode.RETURN_LOSS_PER_UNIT,
-                    value(MetricCode.RETURN_LOSS_PER_UNIT, "2.0000",
-                            ConfidenceState.CANONICAL_CONFIRMED, null));
+            DecisionFreshness complete = freshness();
+            Map<DecisionFreshness.Feed, DecisionFreshness.Watermark> withoutReturns =
+                    new EnumMap<>(complete.watermarks());
+            withoutReturns.remove(DecisionFreshness.Feed.RETURNS);
 
-            GuardrailOutcome outcome = GuardrailEngine.evaluate(input().metrics(metrics).build());
+            GuardrailOutcome outcome = GuardrailEngine.evaluate(input().freshness(
+                    new DecisionFreshness(withoutReturns, complete.requiredFeeds())).build());
 
             assertThat(outcome.reasons())
                     .contains(GuardrailReason.INPUT_FRESHNESS_UNAVAILABLE);
@@ -164,12 +164,18 @@ class GuardrailEngineTest {
 
         @Test
         void currencyMismatchBlocks() {
-            Map<MetricCode, MetricValueView> metrics = defaultMetrics();
-            metrics.put(MetricCode.AD_SPEND_PER_UNIT,
-                    value(MetricCode.AD_SPEND_PER_UNIT, "3.0000", "USD",
-                            ConfidenceState.CANONICAL_CONFIRMED, 600L));
+            PriceEconomicsProfile rub = economics().profile();
+            PriceEconomicsProfile usd = new PriceEconomicsProfile(rub.profileId(),
+                    rub.profileVersion(), rub.organizationId(), rub.platformCode(),
+                    rub.marketplaceAccountId(), rub.storeId(), rub.fulfillmentModeCode(),
+                    "USD", rub.effectiveFrom(), rub.effectiveTo(), rub.verificationState(),
+                    rub.verifiedAt(), rub.verificationExpiresAt(), rub.evidenceReference(),
+                    rub.minimumSupportedPrice(), rub.maximumSupportedPrice(),
+                    rub.familyApplicability(), rub.components());
 
-            GuardrailOutcome outcome = GuardrailEngine.evaluate(input().metrics(metrics).build());
+            GuardrailOutcome outcome = GuardrailEngine.evaluate(input().economics(
+                    new PriceEconomicsResolution(PriceEconomicsResolution.Status.AVAILABLE,
+                            usd, "currency-mutation")).build());
 
             assertThat(outcome.reasons()).contains(GuardrailReason.CURRENCY_MISMATCH);
         }
@@ -177,24 +183,42 @@ class GuardrailEngineTest {
         @Test
         void aWholeWindowAggregateCannotReplacePerUnitEconomics() {
             Map<MetricCode, MetricValueView> metrics = defaultMetrics();
-            metrics.remove(MetricCode.PLATFORM_FEES_PER_UNIT);
             metrics.put(MetricCode.PLATFORM_FEES,
                     value(MetricCode.PLATFORM_FEES, "150.0000",
                             ConfidenceState.CANONICAL_CONFIRMED, 600L));
 
-            GuardrailOutcome outcome = GuardrailEngine.evaluate(input().metrics(metrics).build());
+            GuardrailOutcome outcome = GuardrailEngine.evaluate(input().metrics(metrics)
+                    .economics(PriceEconomicsResolution.unavailable(
+                            PriceEconomicsResolution.Status.MISSING,
+                            "historical-aggregate-is-not-a-profile")).build());
 
-            assertThat(outcome.reasons()).contains(GuardrailReason.REQUIRED_METRIC_UNAVAILABLE);
+            assertThat(outcome.reasons()).contains(GuardrailReason.ECONOMICS_PROFILE_MISSING);
+        }
+
+        @Test
+        void expiredAmbiguousAndUnverifiedProfilesEachFailClosed() {
+            Map<PriceEconomicsResolution.Status, GuardrailReason> cases = Map.of(
+                    PriceEconomicsResolution.Status.EXPIRED,
+                    GuardrailReason.ECONOMICS_PROFILE_EXPIRED,
+                    PriceEconomicsResolution.Status.AMBIGUOUS,
+                    GuardrailReason.ECONOMICS_PROFILE_AMBIGUOUS,
+                    PriceEconomicsResolution.Status.UNVERIFIED,
+                    GuardrailReason.ECONOMICS_PROFILE_UNVERIFIED);
+
+            cases.forEach((status, reason) -> {
+                GuardrailOutcome outcome = GuardrailEngine.evaluate(input().economics(
+                        PriceEconomicsResolution.unavailable(status,
+                                "synthetic:" + status)).build());
+
+                assertThat(outcome.passed()).as(status.name()).isFalse();
+                assertThat(outcome.reasons()).as(status.name()).contains(reason);
+            });
         }
 
         @Test
         void removingAnyRequiredCostOrSafetyInputBreaksTheWriteGradePath() {
             List<MetricCode> requiredEconomics = List.of(
                     MetricCode.UNIT_COST,
-                    MetricCode.PLATFORM_FEES_PER_UNIT,
-                    MetricCode.RETURN_LOSS_PER_UNIT,
-                    MetricCode.AD_SPEND_PER_UNIT,
-                    MetricCode.VARIABLE_TAX_PER_UNIT,
                     MetricCode.REQUIRED_PROFIT_PER_UNIT,
                     MetricCode.SAFETY_BUFFER_PER_UNIT);
 
@@ -552,6 +576,68 @@ class GuardrailEngineTest {
         return new BigDecimal(value);
     }
 
+    private static PriceEconomicsResolution economics() {
+        UUID profileId = UUID.fromString("55555555-5555-4555-8555-555555555555");
+        Map<FeeFamily, PriceEconomicsProfile.Applicability> families =
+                new EnumMap<>(FeeFamily.class);
+        for (FeeFamily family : FeeFamily.values()) {
+            families.put(family, PriceEconomicsProfile.Applicability.REQUIRED);
+        }
+        List<PriceEconomicsProfile.Component> components = List.of(
+                component("10000000-0000-4000-8000-000000000001", "COMMISSION",
+                        FeeFamily.COMMISSION, "10.0000"),
+                component("10000000-0000-4000-8000-000000000002", "FULFILLMENT",
+                        FeeFamily.FULFILLMENT_DELIVERY, "1.0000"),
+                component("10000000-0000-4000-8000-000000000003", "STORAGE",
+                        FeeFamily.STORAGE, "0.0000"),
+                component("10000000-0000-4000-8000-000000000004", "PROMOTION",
+                        FeeFamily.PROMOTION, "0.0000"),
+                component("10000000-0000-4000-8000-000000000005", "OTHER_VARIABLE",
+                        FeeFamily.OTHER_VARIABLE, "0.0000"),
+                component("10000000-0000-4000-8000-000000000006", "RETURN_LOSS",
+                        FeeFamily.RETURN_LOSS, "2.0000"),
+                component("10000000-0000-4000-8000-000000000007", "ADVERTISING",
+                        FeeFamily.ADVERTISING, "2.0000"),
+                component("10000000-0000-4000-8000-000000000008", "VARIABLE_TAX",
+                        FeeFamily.VARIABLE_TAX, "1.0000"));
+        PriceEconomicsProfile profile = new PriceEconomicsProfile(profileId, 1,
+                UUID.randomUUID(), "OZON", UUID.randomUUID(), UUID.randomUUID(),
+                "MARKETPLACE_FULFILLED", "RUB", NOW.minus(Duration.ofDays(1)),
+                NOW.plus(Duration.ofDays(1)),
+                PriceEconomicsProfile.VerificationState.ENGINEERING_VERIFIED,
+                NOW.minus(Duration.ofMinutes(10)), NOW.plus(Duration.ofDays(1)),
+                "synthetic:guardrail-engine", new BigDecimal("1.0000"),
+                new BigDecimal("1000.0000"), families, components);
+        return new PriceEconomicsResolution(PriceEconomicsResolution.Status.AVAILABLE,
+                profile, "synthetic-current-profile");
+    }
+
+    private static PriceEconomicsProfile.Component component(String id, String code,
+                                                              FeeFamily family,
+                                                              String amount) {
+        return new PriceEconomicsProfile.Component(UUID.fromString(id), code, family,
+                PriceEconomicsProfile.ComponentKind.FIXED, new BigDecimal(amount), null,
+                null, null, "synthetic:" + code);
+    }
+
+    private static DecisionFreshness freshness() {
+        return freshness(Duration.ofMinutes(10), null);
+    }
+
+    private static DecisionFreshness freshness(Duration age,
+                                                DecisionFreshness.Feed reconciledFeed) {
+        Map<DecisionFreshness.Feed, DecisionFreshness.Watermark> watermarks =
+                new EnumMap<>(DecisionFreshness.Feed.class);
+        for (DecisionFreshness.Feed feed : DecisionFreshness.Feed.values()) {
+            watermarks.put(feed, new DecisionFreshness.Watermark(UUID.randomUUID(), feed,
+                    NOW.minus(age), NOW.minus(age).plusSeconds(30),
+                    feed == reconciledFeed ? NOW.minus(age).plusSeconds(60) : null,
+                    "synthetic:" + feed));
+        }
+        return new DecisionFreshness(watermarks,
+                List.of(DecisionFreshness.Feed.values()));
+    }
+
     /** Builds one guardrail input, starting from a case that passes. */
     private static final class Builder {
 
@@ -560,6 +646,8 @@ class GuardrailEngineTest {
         private BigDecimal currentPrice = new BigDecimal("100.0000");
         private String currentPriceCurrency = "RUB";
         private BigDecimal proposedPrice = new BigDecimal("105.0000");
+        private PriceEconomicsResolution economics = GuardrailEngineTest.economics();
+        private DecisionFreshness freshness = GuardrailEngineTest.freshness();
         private BigDecimal cumulativeDailyChangeRate = BigDecimal.ZERO;
         private Instant lastChangeAt;
         private boolean mappingResolved = true;
@@ -576,6 +664,16 @@ class GuardrailEngineTest {
 
         Builder metrics(Map<MetricCode, MetricValueView> value) {
             this.metrics = value;
+            return this;
+        }
+
+        Builder economics(PriceEconomicsResolution value) {
+            this.economics = value;
+            return this;
+        }
+
+        Builder freshness(DecisionFreshness value) {
+            this.freshness = value;
             return this;
         }
 
@@ -640,7 +738,7 @@ class GuardrailEngineTest {
 
         GuardrailInput build() {
             return new GuardrailInput(policy, metrics, currentPrice, currentPriceCurrency,
-                    proposedPrice,
+                    proposedPrice, "MARKETPLACE_FULFILLED", economics, freshness,
                     cumulativeDailyChangeRate, lastChangeAt, NOW, mappingResolved,
                     mappingConflictOpen, diagnosisBlocksExecution, entityVersionMatches,
                     recommendationValid, authorizationMaxChangeRate);

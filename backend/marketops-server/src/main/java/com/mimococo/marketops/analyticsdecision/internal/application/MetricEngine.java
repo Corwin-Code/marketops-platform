@@ -3,6 +3,10 @@ package com.mimococo.marketops.analyticsdecision.internal.application;
 import com.mimococo.marketops.analyticsdecision.ConfidenceState;
 import com.mimococo.marketops.analyticsdecision.MetricCode;
 import com.mimococo.marketops.analyticsdecision.MetricWindow;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsCalculator;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsProfile;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsQuery;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsResolution;
 import com.mimococo.marketops.analyticsdecision.ValueState;
 import com.mimococo.marketops.analyticsdecision.internal.config.AnalyticsProperties;
 import com.mimococo.marketops.analyticsdecision.internal.domain.ComputedMetric;
@@ -67,13 +71,16 @@ public class MetricEngine {
 
     private final OperatingFactQuery facts;
     private final ListingIdentityDirectory listings;
+    private final PriceEconomicsQuery economics;
     private final AnalyticsProperties properties;
 
     MetricEngine(OperatingFactQuery facts,
                  ListingIdentityDirectory listings,
+                 PriceEconomicsQuery economics,
                  AnalyticsProperties properties) {
         this.facts = facts;
         this.listings = listings;
+        this.economics = economics;
         this.properties = properties;
     }
 
@@ -112,6 +119,27 @@ public class MetricEngine {
         Optional<UUID> mappingId = listingContext
                 .filter(context -> context.mapped() && !context.conflictOpen())
                 .map(context -> context.mappingId());
+        List<String> fulfillmentModes = listingContext
+                .map(context -> economics.activeFulfillmentModes(context.storeId(), periodEnd))
+                .orElseGet(List::of);
+        PriceEconomicsResolution economicsResolution = listingContext.isPresent()
+                && fulfillmentModes.size() == 1
+                ? economics.resolveProfile(organizationId,
+                        listingContext.orElseThrow().platformCode(),
+                        listingContext.orElseThrow().marketplaceAccountId(), storeId,
+                        fulfillmentModes.getFirst(), periodEnd)
+                : PriceEconomicsResolution.unavailable(
+                        fulfillmentModes.size() > 1
+                                ? PriceEconomicsResolution.Status.AMBIGUOUS
+                                : PriceEconomicsResolution.Status.MISSING,
+                        "periodic-metric-fulfillment-scope-count=" + fulfillmentModes.size());
+        PriceEconomicsCalculator.HistoricalCoverage feeCoverage =
+                economicsResolution.available()
+                        ? PriceEconomicsCalculator.historicalCoverage(
+                                economicsResolution.profile(), fees)
+                        : new PriceEconomicsCalculator.HistoricalCoverage(false, Map.of(),
+                                List.of("ECONOMICS_PROFILE_"
+                                        + economicsResolution.status()));
         Optional<CostSnapshot> unitCost = mappedVariant
                 .flatMap(variantId -> facts.unitCost(variantId, periodEnd));
         InternalStockSnapshot internalStock = mappedVariant
@@ -184,7 +212,7 @@ public class MetricEngine {
                 .orElseGet(() -> absent(MetricCode.UNIT_COST, ConfidenceState.INCOMPLETE)));
 
         putMoney(metrics, MetricCode.PLATFORM_FEES,
-                fees.platformFeesAvailable() ? fees.total() : null,
+                feeCoverage.complete() && fees.platformFeesAvailable() ? fees.total() : null,
                 fees.evidence());
         putMoney(metrics, MetricCode.RETURN_LOSS,
                 returns.available() ? returns.lossAmount() : null, returns.evidence());
@@ -192,8 +220,9 @@ public class MetricEngine {
                 variableTax(completed, taxRate));
 
         metrics.put(MetricCode.PLATFORM_FEES_PER_UNIT,
-                perUnit(MetricCode.PLATFORM_FEES_PER_UNIT, fees.total(), fees.evidence(),
-                        completed, fees.settledOnly()));
+                perUnit(MetricCode.PLATFORM_FEES_PER_UNIT,
+                        feeCoverage.complete() ? fees.total() : null, fees.evidence(),
+                        completed, fees.settledOnly(), feeCoverage));
         metrics.put(MetricCode.RETURN_LOSS_PER_UNIT,
                 perUnit(MetricCode.RETURN_LOSS_PER_UNIT, returns.lossAmount(),
                         returns.evidence(), completed, true));
@@ -211,11 +240,11 @@ public class MetricEngine {
         metrics.put(MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT,
                 contributionProfit(MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT,
                         completed, unitCost, fees, returns, advertising,
-                        metrics.get(MetricCode.VARIABLE_TAX_ESTIMATE), false));
+                        metrics.get(MetricCode.VARIABLE_TAX_ESTIMATE), feeCoverage, false));
         metrics.put(MetricCode.SETTLED_CONTRIBUTION_PROFIT,
                 contributionProfit(MetricCode.SETTLED_CONTRIBUTION_PROFIT,
                         settled, unitCost, fees, returns, advertising,
-                        aggregateActualTax(fees), true));
+                        aggregateActualTax(fees), feeCoverage, true));
         metrics.put(MetricCode.CONTRIBUTION_MARGIN,
                 moneyRatio(MetricCode.CONTRIBUTION_MARGIN,
                         moneyOf(metrics.get(MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT)),
@@ -229,8 +258,14 @@ public class MetricEngine {
                 () -> metrics.put(MetricCode.OBSERVED_SELLING_PRICE,
                         absent(MetricCode.OBSERVED_SELLING_PRICE,
                                 ConfidenceState.INCOMPLETE)));
-        metrics.put(MetricCode.BREAK_EVEN_PRICE, breakEvenPrice(metrics));
-        metrics.put(MetricCode.MINIMUM_PRICE, minimumPrice(metrics));
+        PriceEconomicsCalculator.Solution priceSolution = solvePrices(
+                economicsResolution, metrics);
+        metrics.put(MetricCode.BREAK_EVEN_PRICE, projectedPriceMetric(
+                MetricCode.BREAK_EVEN_PRICE, economicsResolution, priceSolution,
+                priceSolution.breakEvenPrice(), metrics));
+        metrics.put(MetricCode.MINIMUM_PRICE, projectedPriceMetric(
+                MetricCode.MINIMUM_PRICE, economicsResolution, priceSolution,
+                priceSolution.minimumPrice(), metrics));
         metrics.put(MetricCode.DATA_COMPLETENESS,
                 dataCompleteness(metrics, mappingId));
 
@@ -304,24 +339,31 @@ public class MetricEngine {
                                                      ReturnTotals returns,
                                                      AdvertisingTotals advertising,
                                                      ComputedMetric variableTax,
+                                                     PriceEconomicsCalculator.HistoricalCoverage
+                                                             feeCoverage,
                                                      boolean requireSettledFees) {
         boolean salesAvailable = sales.available() && sales.netAmount() != null;
         boolean costAvailable = unitCost.isPresent();
-        boolean feesAvailable = fees.platformFeesAvailable();
+        boolean feesAvailable = fees.platformFeesAvailable() && feeCoverage.complete();
         boolean returnsAvailable = returns.available() && returns.lossAmount() != null;
         boolean advertisingAvailable = advertising.available()
                 && advertising.spendAmount() != null;
         boolean taxAvailable = variableTax.valueState() == ValueState.AVAILABLE
                 && variableTax.numericValue() != null && variableTax.currencyCode() != null;
 
-        List<String> states = List.of(
+        List<String> states = new ArrayList<>(List.of(
                 "sales=" + salesAvailable,
                 "cost=" + costAvailable,
                 "platformFees=" + feesAvailable,
                 "returnLoss=" + returnsAvailable,
                 "advertising=" + advertisingAvailable,
                 "tax=" + taxAvailable,
-                "settledFees=" + fees.settledOnly());
+                "settledFees=" + fees.settledOnly()));
+        feeCoverage.familyStates().entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> states.add("feeFamily:" + entry.getKey()
+                        + '=' + entry.getValue()));
+        feeCoverage.reasons().forEach(reason -> states.add("feeCoverage:" + reason));
         List<MetricInput> metricInputs = new ArrayList<>();
         metricInputs.addAll(inputs(sales.evidence()));
         metricInputs.addAll(inputs(fees.evidence()));
@@ -387,10 +429,27 @@ public class MetricEngine {
                                           FactEvidence evidence,
                                           SalesTotals completed,
                                           boolean settledOnly) {
+        return perUnit(metricCode, total, evidence, completed, settledOnly, null);
+    }
+
+    /** Convert a covered historical amount while retaining every family state. */
+    private static ComputedMetric perUnit(MetricCode metricCode,
+                                          Money total,
+                                          FactEvidence evidence,
+                                          SalesTotals completed,
+                                          boolean settledOnly,
+                                          PriceEconomicsCalculator.HistoricalCoverage coverage) {
         List<MetricInput> metricInputs = new ArrayList<>(inputs(evidence));
         metricInputs.addAll(inputs(completed.evidence()));
-        List<String> states = List.of("totalPresent=" + (total != null),
-                "unitsPresent=" + completed.available(), "settled=" + settledOnly);
+        List<String> states = new ArrayList<>(List.of("totalPresent=" + (total != null),
+                "unitsPresent=" + completed.available(), "settled=" + settledOnly));
+        if (coverage != null) {
+            coverage.familyStates().entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .forEach(entry -> states.add("feeFamily:" + entry.getKey()
+                            + '=' + entry.getValue()));
+            coverage.reasons().forEach(reason -> states.add("feeCoverage:" + reason));
+        }
         if (total == null || !evidence.usable() || !completed.available()) {
             return absent(metricCode, confidenceFor(merge(evidence, completed.evidence())),
                     metricInputs, states);
@@ -426,59 +485,68 @@ public class MetricEngine {
                 List.of("amountInput=true"));
     }
 
-    /** Sum all canonical per-unit costs before profit and safety policy. */
-    private static ComputedMetric breakEvenPrice(Map<MetricCode, ComputedMetric> metrics) {
-        List<MetricCode> components = List.of(MetricCode.UNIT_COST,
-                MetricCode.PLATFORM_FEES_PER_UNIT, MetricCode.RETURN_LOSS_PER_UNIT,
-                MetricCode.AD_SPEND_PER_UNIT, MetricCode.VARIABLE_TAX_PER_UNIT);
-        return sumMoney(MetricCode.BREAK_EVEN_PRICE, components, metrics);
+    /** Solve current profile economics without substituting historical averages. */
+    private static PriceEconomicsCalculator.Solution solvePrices(
+            PriceEconomicsResolution resolution,
+            Map<MetricCode, ComputedMetric> metrics) {
+        if (!resolution.available()) {
+            return PriceEconomicsCalculator.Solution.unavailable(
+                    "ECONOMICS_PROFILE_" + resolution.status());
+        }
+        Money unitCost = moneyOf(metrics.get(MetricCode.UNIT_COST));
+        Money requiredProfit = moneyOf(metrics.get(MetricCode.REQUIRED_PROFIT_PER_UNIT));
+        Money safetyBuffer = moneyOf(metrics.get(MetricCode.SAFETY_BUFFER_PER_UNIT));
+        return PriceEconomicsCalculator.solve(resolution.profile(), unitCost,
+                requiredProfit, safetyBuffer);
     }
 
-    /** Contractual Minimum Price = break-even + required profit + safety buffer. */
-    private static ComputedMetric minimumPrice(Map<MetricCode, ComputedMetric> metrics) {
-        return sumMoney(MetricCode.MINIMUM_PRICE,
-                List.of(MetricCode.BREAK_EVEN_PRICE, MetricCode.REQUIRED_PROFIT_PER_UNIT,
-                        MetricCode.SAFETY_BUFFER_PER_UNIT), metrics);
-    }
-
-    private static ComputedMetric sumMoney(MetricCode resultCode,
-                                           List<MetricCode> componentCodes,
-                                           Map<MetricCode, ComputedMetric> metrics) {
-        List<ComputedMetric> components = componentCodes.stream().map(metrics::get).toList();
-        List<String> states = components.stream()
-                .map(metric -> metric.metricCode() + "=" + metric.valueState() + ":"
-                        + metric.confidenceState())
-                .toList();
-        List<MetricInput> metricInputs = components.stream()
-                .flatMap(metric -> metric.inputs().stream()).toList();
-        if (components.stream().anyMatch(metric -> metric.valueState() != ValueState.AVAILABLE
-                || metric.numericValue() == null || metric.currencyCode() == null)) {
-            ConfidenceState confidence = components.stream()
-                    .anyMatch(metric -> metric.confidenceState() == ConfidenceState.CONFLICTED)
-                    ? ConfidenceState.CONFLICTED : ConfidenceState.INCOMPLETE;
-            return absent(resultCode, confidence, metricInputs, states);
+    /** Bind the solved value to the profile and exact component tiers it consumes. */
+    private static ComputedMetric projectedPriceMetric(
+            MetricCode metricCode,
+            PriceEconomicsResolution resolution,
+            PriceEconomicsCalculator.Solution solution,
+            BigDecimal value,
+            Map<MetricCode, ComputedMetric> metrics) {
+        List<MetricInput> metricInputs = new ArrayList<>();
+        List<String> states = new ArrayList<>();
+        states.add("economicsResolution=" + resolution.status());
+        states.addAll(solution.reasons().stream().map(reason -> "solver=" + reason).toList());
+        for (MetricCode inputCode : List.of(MetricCode.UNIT_COST,
+                MetricCode.REQUIRED_PROFIT_PER_UNIT, MetricCode.SAFETY_BUFFER_PER_UNIT)) {
+            ComputedMetric input = metrics.get(inputCode);
+            if (input != null) {
+                metricInputs.addAll(input.inputs());
+                states.add(inputCode + "=" + input.valueState() + ':'
+                        + input.confidenceState());
+            }
         }
-        List<Money> amounts = components.stream()
-                .map(metric -> Money.of(metric.numericValue(), metric.currencyCode())).toList();
-        if (!sameCurrency(amounts)) {
-            return absent(resultCode, ConfidenceState.CONFLICTED, metricInputs,
-                    append(states, "currencyCompatible=false"));
+        if (!resolution.available() || !solution.available() || value == null) {
+            return absent(metricCode, ConfidenceState.INCOMPLETE, metricInputs, states);
         }
-        Money total = amounts.stream().reduce(Money.zero(amounts.getFirst().currencyCode()),
-                Money::plus);
-        ConfidenceState confidence = components.stream()
-                .anyMatch(metric -> metric.confidenceState()
-                        == ConfidenceState.ESTIMATED_EXPLAINED)
-                ? ConfidenceState.ESTIMATED_EXPLAINED
-                : components.stream().anyMatch(metric -> metric.confidenceState()
-                        != ConfidenceState.CANONICAL_CONFIRMED)
-                        ? ConfidenceState.CANONICAL_PENDING_SETTLEMENT
-                        : ConfidenceState.CANONICAL_CONFIRMED;
-        Instant sourceTime = components.stream().map(ComputedMetric::oldestSourceTime)
-                .filter(java.util.Objects::nonNull).min(Instant::compareTo).orElse(null);
-        return new ComputedMetric(resultCode, ValueState.AVAILABLE, total.amount(),
-                total.currencyCode(), confidence, sourceTime, distinct(metricInputs),
-                append(states, "currencyCompatible=true"));
+        PriceEconomicsProfile profile = resolution.profile();
+        metricInputs.add(MetricInput.economicsProfile(profile.profileId()));
+        PriceEconomicsCalculator.Projection projection =
+                PriceEconomicsCalculator.project(profile, value);
+        projection.componentIds().forEach(id ->
+                metricInputs.add(MetricInput.economicsComponent(id)));
+        states.add("profileId=" + profile.profileId());
+        states.add("profileVersion=" + profile.profileVersion());
+        states.add("fulfillmentMode=" + profile.fulfillmentModeCode());
+        projection.familyCoverage().entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> states.add("projectedFamily:" + entry.getKey()
+                        + '=' + entry.getValue()));
+        Instant sourceTime = List.of(
+                        metrics.get(MetricCode.UNIT_COST),
+                        metrics.get(MetricCode.REQUIRED_PROFIT_PER_UNIT),
+                        metrics.get(MetricCode.SAFETY_BUFFER_PER_UNIT))
+                .stream().map(ComputedMetric::oldestSourceTime)
+                .filter(java.util.Objects::nonNull)
+                .reduce(profile.verifiedAt(), (left, right) ->
+                        left.isBefore(right) ? left : right);
+        return new ComputedMetric(metricCode, ValueState.AVAILABLE, value,
+                profile.currencyCode(), ConfidenceState.CANONICAL_CONFIRMED,
+                sourceTime, distinct(metricInputs), states);
     }
 
     /**

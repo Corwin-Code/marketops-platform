@@ -2,6 +2,7 @@ package com.mimococo.marketops.operationsworkflow;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -22,10 +23,15 @@ import java.util.UUID;
  * @param proposedPrice the price the recommendation proposes
  * @param changeRate the proportional change, or {@code null} without a current price
  * @param breakEvenPrice the price below which the unit loses money, or {@code null}
+ * @param minimumPrice contractual projected Minimum Price, or {@code null}
  * @param currentUnitProfit unit contribution profit at the current price, or {@code null}
  * @param projectedUnitProfit unit contribution profit at the proposed price, or {@code null}
  * @param currentMargin contribution margin now, or {@code null}
  * @param projectedMargin contribution margin at the proposed price, or {@code null}
+ * @param economicsProfileId exact projection profile identity, or {@code null}
+ * @param economicsProfileVersion exact projection profile version, or {@code null}
+ * @param fulfillmentModeCode exact fulfilment scope, or {@code null}
+ * @param projectedComponentIds exact component tiers selected at proposed price
  * @param verdict the deterministic guardrail decision
  */
 public record ImpactPreview(
@@ -35,14 +41,21 @@ public record ImpactPreview(
         BigDecimal proposedPrice,
         BigDecimal changeRate,
         BigDecimal breakEvenPrice,
+        BigDecimal minimumPrice,
         BigDecimal currentUnitProfit,
         BigDecimal projectedUnitProfit,
         BigDecimal currentMargin,
         BigDecimal projectedMargin,
+        UUID economicsProfileId,
+        Integer economicsProfileVersion,
+        String fulfillmentModeCode,
+        List<UUID> projectedComponentIds,
         GuardrailVerdict verdict) {
 
     public ImpactPreview {
         Objects.requireNonNull(recommendationId, "recommendationId");
+        projectedComponentIds = List.copyOf(Objects.requireNonNull(
+                projectedComponentIds, "projectedComponentIds"));
         Objects.requireNonNull(verdict, "verdict");
     }
 

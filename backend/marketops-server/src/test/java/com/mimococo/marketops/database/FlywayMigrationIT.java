@@ -126,6 +126,9 @@ class FlywayMigrationIT extends PostgresContainerSupport {
 
             assertThat(tables).containsExactly(
                     "core.cost_version",
+                    "core.economics_projection_component",
+                    "core.economics_projection_family",
+                    "core.economics_projection_profile",
                     "core.fact_provenance",
                     "core.finance_input_version",
                     "core.fulfillment_mode",
@@ -146,6 +149,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "core.product",
                     "core.product_barcode",
                     "core.product_variant",
+                    "core.source_feed_watermark",
                     "core.store",
                     "core.store_fulfillment_declaration",
                     "core.store_warehouse_link",

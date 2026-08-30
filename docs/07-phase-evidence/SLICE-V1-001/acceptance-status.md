@@ -10,11 +10,15 @@ amendment_002_sha256: 92fdd8d67b327fbd2288ba99290b5b59f2797106c4b691ce2bff22bb80
 amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923
 assessed_at: 2026-08-30
 assessed_against: SUPPLEMENTAL_R2_DRAFT_PR_22_CONTAINING_COMMIT
+bounded_closure_scope: S1-R2-F002_THROUGH_F005_ONLY
 remote_publication: PUBLISHED_OPEN_DRAFT_PR_22
 initial_published_head: c3d2160a9c302d993e2b01a08946f46fae0b01d5
 initial_published_tree: 9d7641eccc2d233bf2c5615e7c4776721269bc15
 initial_tested_merge: 353670b4a311f98b56fae593f8b2b34d5f39a80e
 initial_tested_merge_tree: 9d7641eccc2d233bf2c5615e7c4776721269bc15
+bounded_closure_start_head: 63ab9e8d33b4cf586d45d49c2280735113da83eb
+bounded_closure_start_tree: 82540ee1e6bc7d35ad962551ffd29743e4b7ad72
+bounded_closure_start_tested_merge: 5f5ab4c8844f2c38e3d0cc117a76363c8def4ddc
 initial_remote_ci: PASS_12_OF_12_REQUIRED_CONTEXTS
 final_candidate_identity_resolution: THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS
 frozen_findings_sha256: 8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8
@@ -32,10 +36,11 @@ each with separate durable acceptance provenance. Amendment-002 closes only
 engineering requirement.
 
 This is an R2 candidate assessment, not a Controller verdict. Draft PR #22 was
-published under explicit Human Owner transport authority. Its initial exact
-Head/tree and tested merge passed all 12 required contexts; the containing
-metadata commit must be reverified locally and remotely and its final exact
-identity is bound in the PR body and live refs. A non-deferred row uses
+published under explicit Human Owner transport authority. The bounded
+F002–F005 closure starts from exact Head/tree/tested merge recorded above and
+preserves the accepted candidate dispositions for G001/F001/F006/F007/F008/F009.
+The containing commit must be reverified locally and remotely and its final
+exact identity is bound in the PR body and live refs. A non-deferred row uses
 `IMPLEMENTED_UNPROVEN` until the Controller R2 verdict exists. Every exact
 Amendment-002 deferred row uses
 `OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001`, with its retained engineering
@@ -72,7 +77,7 @@ merge, deployment and production enablement are distinct later authorizations.
 | `S1-AC-017` | `IMPLEMENTED_UNPROVEN` | COGS, physical stock and finance facts can be entered manually and imported through the productized Excel/CSV path with preview, hash, validation, rejection, audit and replay. | S1-F004, S1-F008 | No additional external boundary identified in the frozen set |
 | `S1-AC-018` | `IMPLEMENTED_UNPROVEN` | duplicate, malformed, stale and conflicting imports are handled deterministically; no silent overwrite occurs. | S1-F008 | No additional external boundary identified in the frozen set |
 | `S1-AC-019` | `IMPLEMENTED_UNPROVEN` | key funnel, stock, return, ad and profit facts are traceable to source Raw and show Source Time/Freshness/Confidence. | S1-F008 | No additional external boundary identified in the frozen set |
-| `S1-AC-020` | `IMPLEMENTED_UNPROVEN` | Contribution Profit/Minimum Price and canonical/estimated states reproduce against versioned golden examples; missing inputs do not produce fake precision. | S1-R2-F001/F002/F003/F005/F006 candidate fix; Controller verification pending | No additional external boundary identified in the frozen set |
+| `S1-AC-020` | `IMPLEMENTED_UNPROVEN` | Contribution Profit/Minimum Price and canonical/estimated states reproduce against versioned golden examples; missing inputs do not produce fake precision. | S1-R2-F001/F002/F003/F005/F006 candidate fix: independent four-state fee-family coverage for historical actuals; target-aware versioned profile/components for proposed Break-even/Minimum; exact identity/freshness binding; Controller verification pending | No additional external boundary identified in the frozen set |
 | `S1-AC-021` | `IMPLEMENTED_UNPROVEN` | Completed/Retained/Settled Sale and late-return/adjustment behavior are tested without rewriting historical source facts. | Independent verification of mapped evidence pending | No additional external boundary identified in the frozen set |
 | `S1-AC-022` | `IMPLEMENTED_UNPROVEN` | deterministic diagnosis and rule order correctly identify or decline Low Impression/CTR/Conversion, High Return, Stockout Risk, Negative Margin and Data Blocked cases. | Independent verification of mapped evidence pending | No additional external boundary identified in the frozen set |
 | `S1-AC-023` | `OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001` | AI projection allowlist and PII/Secret negative tests pass. | S1-F003, S1-F009 | EXT-007: EXTERNAL_EVIDENCE_PENDING |
@@ -80,8 +85,8 @@ merge, deployment and production enablement are distinct later authorizations.
 | `S1-AC-025` | `OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001` | model failure, timeout, malformed output and provider unavailability degrade safely; no deterministic Gate is bypassed. | S1-F003, S1-F005, S1-F009 | EXT-007: EXTERNAL_EVIDENCE_PENDING |
 | `S1-AC-026` | `OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001` | approved golden diagnostic cases demonstrate useful cross-domain reasoning while preserving explicit uncertainty and competing explanations. | S1-F009 | EXT-004: OWNER_EVIDENCE_PENDING |
 | `S1-AC-027` | `IMPLEMENTED_UNPROVEN` | Recommendation → Task → Approval/Policy Authorization is complete, scoped, expiring, attributable and immutable in audit. | S1-F001, S1-F004 | No additional external boundary identified in the frozen set |
-| `S1-AC-028` | `IMPLEMENTED_UNPROVEN` | Commercial Policy versions and overrides apply deterministically; missing/invalid/expired policy denies execution. | S1-R2-F004 candidate fix; Controller verification pending | No additional external boundary identified in the frozen set |
-| `S1-AC-029` | `IMPLEMENTED_UNPROVEN` | price Dry Run/Impact Preview uses current canonical facts, entity version and prior platform value; stale previews cannot execute. | S1-R2-F001/F003/F004/F005/F006 candidate fix; historical S1-F001 | No additional external boundary identified in the frozen set |
+| `S1-AC-028` | `IMPLEMENTED_UNPROVEN` | Commercial Policy versions and overrides apply deterministically; missing/invalid/expired policy denies execution. | S1-R2-F004 candidate fix: policy evaluation uses the same exact economics profile/component set and transaction-time watermark authority as the projected target; Controller verification pending | No additional external boundary identified in the frozen set |
+| `S1-AC-029` | `IMPLEMENTED_UNPROVEN` | price Dry Run/Impact Preview uses current canonical facts, entity version and prior platform value; stale previews cannot execute. | S1-R2-F001/F003/F004/F005/F006 candidate fix: Impact Preview/approval/command bind target, mode, profile/version/components and eight watermarks; DB rechecks current authority at transaction time; historical S1-F001 | No additional external boundary identified in the frozen set |
 | `S1-AC-030` | `IMPLEMENTED_UNPROVEN` | command idempotency, lease/fence, retry and state transitions pass unit, property and real-database tests. | S1-F001, S1-F002, S1-F005 | No additional external boundary identified in the frozen set |
 | `S1-AC-031` | `OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001` | low-risk real Ozon bounded verification write reaches the intended final value, Readback and complete Audit; unknown result is safely resolvable. The operation is performed only inside an exact unexpired Gate-EV authorization envelope. | S1-F002, S1-F007 | EXT-005: GATE_EV_PENDING |
 | `S1-AC-032` | `OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001` | equivalent real WB bounded verification evidence exists, including native asynchronous/partial/quarantine semantics where applicable, and is generated only under its own exact Gate-EV authorization. | S1-F002, S1-F007 | EXT-005: GATE_EV_PENDING |
@@ -124,7 +129,7 @@ the exact commit/merge and fresh full verification/CI binding for these sources.
 | `S1-AC-017` | `FileIntakeFlowIT.java`; `SpreadsheetReaderTest.java`; `ImportRowValidatorTest.java` |
 | `S1-AC-018` | `FileIntakeFlowIT.java`; `ImportRowValidatorTest.java` |
 | `S1-AC-019` | `OperatingFlowIT.java`; `StoredRawReplayIT.java` |
-| `S1-AC-020` | `MetricEngineTest.java`; `ComputedMetricIdentityTest.java`; `AnalyticsCalculationServiceWindowTest.java`; `OperatingFlowIT.java` |
+| `S1-AC-020` | `PriceEconomicsCalculatorTest.java`; `MetricEngineTest.java`; `ComputedMetricIdentityTest.java`; `AnalyticsCalculationServiceWindowTest.java`; `OperatingFlowIT.java` |
 | `S1-AC-021` | `OperatingFlowIT.java` |
 | `S1-AC-022` | `DiagnosisEngineTest.java`; `OperatingFlowIT.java` |
 | `S1-AC-023` | `OperatingFlowIT.java`; `OutputValidatorTest.java`; `HttpModelGatewayTest.java` |
@@ -132,8 +137,8 @@ the exact commit/merge and fresh full verification/CI binding for these sources.
 | `S1-AC-025` | `OperatingFlowIT.java`; `HttpModelGatewayTest.java` |
 | `S1-AC-026` | `OutputValidatorTest.java` |
 | `S1-AC-027` | `OperatingFlowIT.java`; `PriceWritePathIT.java`; `RegistryVerificationFlowIT.java` |
-| `S1-AC-028` | `GuardrailEngineTest.java`; `MetricEngineTest.java`; `OperatingFlowIT.java` |
-| `S1-AC-029` | `OperatingFlowIT.java`; `PriceWritePathIT.java` |
+| `S1-AC-028` | `PriceEconomicsCalculatorTest.java`; `GuardrailEngineTest.java`; `MetricEngineTest.java`; `OperatingFlowIT.java`; `PriceWritePathIT.java` |
+| `S1-AC-029` | `PriceEconomicsCalculatorTest.java`; `OperatingFlowIT.java`; `PriceWritePathIT.java` |
 | `S1-AC-030` | `PriceWritePathIT.java`; `PriceCommandWorkerIT.java` |
 | `S1-AC-031` | `PriceCommandWorkerIT.java`; `RegistryVerificationFlowIT.java` |
 | `S1-AC-032` | `PriceCommandWorkerIT.java`; `PlatformHttpAdaptersTest.java` |

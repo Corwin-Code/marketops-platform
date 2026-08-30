@@ -6,10 +6,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.mimococo.marketops.analyticsdecision.ConfidenceState;
+import com.mimococo.marketops.analyticsdecision.FeeFamily;
 import com.mimococo.marketops.analyticsdecision.MetricCode;
 import com.mimococo.marketops.analyticsdecision.MetricWindow;
 import com.mimococo.marketops.analyticsdecision.SubjectKind;
 import com.mimococo.marketops.analyticsdecision.ValueState;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsProfile;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsQuery;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsResolution;
 import com.mimococo.marketops.analyticsdecision.internal.config.AnalyticsProperties;
 import com.mimococo.marketops.analyticsdecision.internal.domain.ComputedMetric;
 import com.mimococo.marketops.operatingfacts.AdvertisingTotals;
@@ -135,8 +139,10 @@ class MetricEngineTest {
     private static final class Fixture {
         private final OperatingFactQuery facts = mock(OperatingFactQuery.class);
         private final ListingIdentityDirectory listings = mock(ListingIdentityDirectory.class);
+        private final PriceEconomicsQuery economics = mock(PriceEconomicsQuery.class);
         private final UUID organizationId = UUID.randomUUID();
         private final UUID storeId = UUID.randomUUID();
+        private final UUID accountId = UUID.randomUUID();
         private final UUID listingId = UUID.randomUUID();
         private final UUID variantId = UUID.randomUUID();
         private FactEvidence returnEvidence;
@@ -194,13 +200,54 @@ class MetricEngineTest {
                             null, Money.of(new BigDecimal("2.0000"), "RUB"))));
             when(listings.variantContext(listingId, END)).thenReturn(Optional.of(
                     new ListingVariantContext(listingId, UUID.randomUUID(), storeId,
-                            UUID.randomUUID(), "OZON", "listing", "variant",
+                            accountId, "OZON", "listing", "variant",
                             UUID.randomUUID(), variantId, false)));
+            when(economics.activeFulfillmentModes(storeId, END))
+                    .thenReturn(List.of("MARKETPLACE_FULFILLED"));
+            when(economics.resolveProfile(organizationId, "OZON", accountId, storeId,
+                    "MARKETPLACE_FULFILLED", END)).thenReturn(profile());
         }
 
         private Map<MetricCode, ComputedMetric> compute() {
-            return new MetricEngine(facts, listings, new AnalyticsProperties()).compute(
+            return new MetricEngine(facts, listings, economics, new AnalyticsProperties()).compute(
                     organizationId, storeId, listingId, MetricWindow.D30, WINDOW);
+        }
+
+        private PriceEconomicsResolution profile() {
+            Map<FeeFamily, PriceEconomicsProfile.Applicability> families =
+                    new java.util.EnumMap<>(FeeFamily.class);
+            for (FeeFamily family : FeeFamily.values()) {
+                families.put(family, switch (family) {
+                    case COMMISSION, RETURN_LOSS, ADVERTISING, VARIABLE_TAX ->
+                            PriceEconomicsProfile.Applicability.REQUIRED;
+                    default -> PriceEconomicsProfile.Applicability.VERIFIED_NOT_APPLICABLE;
+                });
+            }
+            List<PriceEconomicsProfile.Component> components = List.of(
+                    component("10000000-0000-4000-8000-000000000011", "COMMISSION",
+                            FeeFamily.COMMISSION, "10.0000"),
+                    component("10000000-0000-4000-8000-000000000012", "RETURN_LOSS",
+                            FeeFamily.RETURN_LOSS, "2.0000"),
+                    component("10000000-0000-4000-8000-000000000013", "ADVERTISING",
+                            FeeFamily.ADVERTISING, "2.0000"),
+                    component("10000000-0000-4000-8000-000000000014", "VARIABLE_TAX",
+                            FeeFamily.VARIABLE_TAX, "1.0000"));
+            PriceEconomicsProfile value = new PriceEconomicsProfile(UUID.randomUUID(), 1,
+                    organizationId, "OZON", accountId, storeId, "MARKETPLACE_FULFILLED",
+                    "RUB", END.minus(Duration.ofDays(1)), END.plus(Duration.ofDays(1)),
+                    PriceEconomicsProfile.VerificationState.ENGINEERING_VERIFIED,
+                    END.minus(Duration.ofHours(1)), END.plus(Duration.ofDays(1)),
+                    "synthetic:metric-engine", new BigDecimal("1.0000"),
+                    new BigDecimal("1000.0000"), families, components);
+            return new PriceEconomicsResolution(PriceEconomicsResolution.Status.AVAILABLE,
+                    value, "synthetic-current-profile");
+        }
+
+        private PriceEconomicsProfile.Component component(String id, String code,
+                                                           FeeFamily family, String amount) {
+            return new PriceEconomicsProfile.Component(UUID.fromString(id), code, family,
+                    PriceEconomicsProfile.ComponentKind.FIXED, new BigDecimal(amount), null,
+                    null, null, "synthetic:" + code);
         }
 
         private void remove(String component) {

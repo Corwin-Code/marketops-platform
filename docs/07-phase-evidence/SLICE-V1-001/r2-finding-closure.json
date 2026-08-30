@@ -14,21 +14,21 @@
     "r1FrozenFindingSetSha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8",
     "supplementalR2ReviewSha256": "c772c76c89b753d4694ee5ec1eceddad3451ab7ef6acc2e36416d9d4171f26ff"
   },
-  "candidateState": "ROOT_CAUSE_FIXED_DRAFT_PR_22_INITIAL_REMOTE_CI_PASS_FINAL_CONTAINING_COMMIT_REVERIFY",
+  "candidateState": "ROOT_CAUSE_FIXED_LOCAL_FULL_REGRESSION_PASS_FINAL_CONTAINING_COMMIT_REVERIFY",
   "controllerVerdict": "PENDING_GPT_5_6_PRO_CONTROLLER",
   "productionWriteEnabled": false,
   "remoteHandoff": {
     "pullRequest": 22,
     "pullRequestState": "OPEN_DRAFT",
-    "initialPublishedHead": "c3d2160a9c302d993e2b01a08946f46fae0b01d5",
-    "initialPublishedTree": "9d7641eccc2d233bf2c5615e7c4776721269bc15",
-    "initialTestedMerge": "353670b4a311f98b56fae593f8b2b34d5f39a80e",
-    "initialTestedMergeTree": "9d7641eccc2d233bf2c5615e7c4776721269bc15",
+    "boundedClosureStartHead": "63ab9e8d33b4cf586d45d49c2280735113da83eb",
+    "boundedClosureStartTree": "82540ee1e6bc7d35ad962551ffd29743e4b7ad72",
+    "boundedClosureStartTestedMerge": "5f5ab4c8844f2c38e3d0cc117a76363c8def4ddc",
+    "boundedClosureStartTestedMergeTree": "82540ee1e6bc7d35ad962551ffd29743e4b7ad72",
     "initialTestedMergeOrderedParents": [
       "db92cf2f8bd818f36dd8f5aa17b8589c4140b669",
-      "c3d2160a9c302d993e2b01a08946f46fae0b01d5"
+      "63ab9e8d33b4cf586d45d49c2280735113da83eb"
     ],
-    "initialRequiredContexts": "PASS_12_OF_12",
+    "boundedClosureStartRequiredContexts": "PASS_12_OF_12",
     "finalCandidateIdentityResolution": "THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS_AND_BODY",
     "mergeAuthorization": "NOT_GRANTED",
     "productionEnablement": false
@@ -70,33 +70,48 @@
     {
       "id": "S1-R2-F002",
       "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
-      "rootCause": "Contribution Profit required sales, unit cost and fees but conditionally skipped return loss, advertising and tax, conflating absence with zero.",
-      "correction": "Operational and Settled Contribution Profit now enumerate sales, cost, platform fees, return loss, advertising and the appropriate tax authority; any absent or currency-conflicted component produces a non-available value, while an explicit sourced zero remains available.",
+      "rootCause": "A non-null aggregate platform-fee total was treated as complete even when an independently applicable category had disappeared. The model had no versioned fee-family applicability contract and therefore could not distinguish applicable-with-value, applicable-explicit-zero, verified-not-applicable and missing/incomplete.",
+      "correction": "The effective PriceEconomicsProfile now declares every FeeFamily independently. Historical Contribution Profit accepts only complete required families, preserves an explicit sourced zero, accepts verified non-applicability without inventing an amount, and fails closed when any applicable commission, fulfillment/delivery, storage, promotion or other-variable family is removed.",
       "files": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/FeeFamily.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/FeeCoverageState.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/PriceEconomicsProfile.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/PriceEconomicsCalculator.java",
         "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/MetricEngine.java",
-        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/FeeTotals.java",
-        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/OperatingFactService.java"
+        "backend/marketops-server/src/main/resources/db/migration/V0029__version_profit_economics_and_commercial_inputs.sql"
       ],
       "tests": [
-        "MetricEngineTest.everyMissingProfitComponentIndependentlyFailsClosed",
-        "MetricEngineTest.explicitSourcedZeroIsNotAbsence"
+        "PriceEconomicsCalculatorTest.everyRequiredHistoricalPlatformFeeFamilyMustBePresentIndependently",
+        "PriceEconomicsCalculatorTest.aMissingRequiredFamilyNeverBecomesZero",
+        "PriceEconomicsCalculatorTest.explicitSourcedZeroIsCoveredButVerifiedNonApplicabilityIsNotAZeroFact",
+        "PriceEconomicsCalculatorTest.verifiedHistoricalNonApplicabilityPassesWithoutInventingAnAmount",
+        "OperatingFlowIT.everyRequiredFeeFamilyIsNecessaryToTheServicePath"
       ]
     },
     {
       "id": "S1-R2-F003",
       "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
-      "rootCause": "MINIMUM_PRICE contained a partial break-even formula, defaulted missing terms, omitted Required Profit and Safety Buffer, and could not become CANONICAL_CONFIRMED through the real calculator.",
-      "correction": "V0029 forward-versions definitions, introduces BREAK_EVEN_PRICE and explicit per-unit commercial inputs, and defines MINIMUM_PRICE as canonical currency-consistent break-even plus sourced Required Profit and Safety Buffer without defaults.",
+      "rootCause": "Break-even and Minimum Price reused historical average deductions, so a proposed target could cross a percentage/tier boundary or fulfillment mode without changing its projected economics. No exact versioned target-price profile or component identity was bound to the metric.",
+      "correction": "V0029 defines effective PriceEconomicsProfile authority scoped by platform/account/store/fulfillment-mode/currency/effective range/verification/evidence and fixed, percentage and tiered components. The shared bounded PriceEconomicsCalculator evaluates the proposed target and solves Break-even and Minimum from the same profile/component set; ambiguity, expiry, gaps/overlaps, missing families and invalid/non-monotone ranges fail closed.",
       "files": [
         "backend/marketops-server/src/main/resources/db/migration/V0029__version_profit_economics_and_commercial_inputs.sql",
-        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/MetricCode.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/PriceEconomicsProfile.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/PriceEconomicsResolution.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/PriceEconomicsQuery.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/PriceEconomicsCalculator.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/infrastructure/jdbc/PriceEconomicsRepository.java",
         "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/MetricEngine.java",
-        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/ImportRowValidator.java"
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/MetricInput.java"
       ],
       "tests": [
-        "MetricEngineTest.minimumPriceIncludesRequiredProfitAndSafetyBuffer",
-        "OperatingFlowIT.TC-FLOW-004",
-        "OperatingFlowIT.TC-FLOW-010",
+        "PriceEconomicsCalculatorTest.sameTierUsesTheSameComponentAndExactProposedPrice",
+        "PriceEconomicsCalculatorTest.crossingHigherTierSelectsTheHigherTierIdentity",
+        "PriceEconomicsCalculatorTest.crossingLowerTierSelectsTheLowerTierIdentity",
+        "PriceEconomicsCalculatorTest.fulfilmentModesHaveDistinctScopedComponents",
+        "PriceEconomicsCalculatorTest.fixedPlusPercentageUsesBothTermsAtTheProposedPrice",
+        "PriceEconomicsCalculatorTest.minimumPriceUsesTheSameProfileAndSelectedComponentsAsProjection",
+        "PriceEconomicsCalculatorTest.overlappingTierAuthorityFailsClosed",
+        "OperatingFlowIT.profileResolutionFailuresBlockTheActualPreviewService",
         "FlywayMigrationIT",
         "ManagedMigrationRunnerIT"
       ]
@@ -104,38 +119,43 @@
     {
       "id": "S1-R2-F004",
       "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
-      "rootCause": "Guardrail subtracted a whole-window fee aggregate from a one-unit price and did not require return, advertising, tax, stock, freshness or currency evidence.",
-      "correction": "Guardrail now consumes only named per-unit components, checks Break-even and Minimum Price independently, requires every economics/safety/inventory assertion, validates source freshness and currency, and reports all blocking reasons deterministically.",
+      "rootCause": "The proposed-price Guardrail combined historical per-unit metrics with a target price and a persisted freshness value. Its snapshot did not bind the exact profile, fulfillment mode, selected tier/component identities or current feed-watermark authority.",
+      "correction": "GuardrailService resolves an explicit or uniquely active fulfillment declaration and the exact effective economics profile. Impact Preview, Guardrail and persisted snapshot use the shared target-aware calculator and bind profile id/version/range/evidence, family contract, selected components, eight watermark identities, evaluation instant and ages. DB approval/command/worker gates independently revalidate that current authority.",
       "files": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/PriceEconomicsCalculator.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/infrastructure/jdbc/PriceEconomicsRepository.java",
         "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailEngine.java",
         "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
         "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/GuardrailInput.java",
-        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/GuardrailReason.java"
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/GuardrailReason.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/ImpactPreview.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0029__version_profit_economics_and_commercial_inputs.sql"
       ],
       "tests": [
-        "GuardrailEngineTest.aWholeWindowAggregateCannotReplacePerUnitEconomics",
-        "GuardrailEngineTest.removingAnyRequiredCostOrSafetyInputBreaksTheWriteGradePath",
-        "GuardrailEngineTest.missingStockBlocks",
-        "GuardrailEngineTest.missingFreshnessBlocks",
-        "GuardrailEngineTest.currencyMismatchBlocks",
-        "OperatingFlowIT.TC-R2-FLOW-001"
+        "OperatingFlowIT.approveTheProposal",
+        "OperatingFlowIT.profileResolutionFailuresBlockTheActualPreviewService",
+        "PriceWritePathIT.anEconomicsComponentChangeInvalidatesThePreviouslyApprovedSnapshot",
+        "PriceWritePathIT.wallClockAloneExpiresApprovalAndCommandAuthorityUntilAttributedRefresh"
       ]
     },
     {
       "id": "S1-R2-F005",
       "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
-      "rootCause": "ComputedMetric identity contained referenced inputs but omitted the asserted value/state/confidence/source time; DATA_COMPLETENESS also had no mapping or required-input identity.",
-      "correction": "The digest now includes normalized value, currency, ValueState, ConfidenceState, oldest source time and deterministic identity components. DATA_COMPLETENESS binds the effective mapping and each required-input state while MetricRepository retains append-only deduplication for equivalent reruns.",
+      "rootCause": "The prior candidate fixed metric identity but still used persisted freshness seconds/event-window recency as write authority. Wall-clock passage, late reconciliation and per-feed omission could therefore leave an old approved decision apparently current without any new metric assertion.",
+      "correction": "The accepted mutation-sensitive ComputedMetric identity correction is preserved. In addition, DecisionFreshness and source_feed_watermark establish eight attributable feed authorities. Effective reconciled time wins when present, otherwise ingestion time is conservative; preview and every DB-controlled write stage calculate age against its own transaction instant, and an attributed refresh creates a new watermark while never reviving the old snapshot.",
       "files": [
         "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/domain/ComputedMetric.java",
-        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/MetricEngine.java",
-        "backend/marketops-server/src/main/java/com/mimococo/marketops/productlisting/ListingVariantContext.java",
-        "backend/marketops-server/src/main/java/com/mimococo/marketops/productlisting/internal/infrastructure/jdbc/MappingRepository.java"
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/DecisionFreshness.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/infrastructure/jdbc/PriceEconomicsRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0029__version_profit_economics_and_commercial_inputs.sql"
       ],
       "tests": [
         "ComputedMetricIdentityTest.equivalentRerunsDeduplicateButStalenessAndStateTransitionsDoNot",
-        "MetricEngineTest.mappingAndLateFactsChangeIdentityWithoutChangingTheWindow",
-        "OperatingFlowIT.TC-FLOW-004"
+        "PriceEconomicsCalculatorTest.decisionAgeAdvancesWithoutCreatingANewMetricOrWatermark",
+        "PriceEconomicsCalculatorTest.reconciliationWatermarkIsTheAttributableFreshnessAuthorityNotWindowStart",
+        "OperatingFlowIT.currentFeedWatermarksGovernTheActualPreviewService",
+        "PriceWritePathIT.wallClockAloneExpiresApprovalAndCommandAuthorityUntilAttributedRefresh"
       ]
     },
     {
@@ -223,6 +243,29 @@
       }
     }
   ],
+  "codeqlDisposition": {
+    "historicalRunId": 99214089692,
+    "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/adminobservability/internal/web/AdminMetadataGuard.java",
+    "line": 88,
+    "title": "Missing catch of NumberFormatException",
+    "message": "Potential uncaught NumberFormatException in numeric remote-address parsing.",
+    "severity": "notice",
+    "correction": "Numeric parsing now catches NumberFormatException and fails the loopback check closed.",
+    "earlierOpenAlertQuery": "EMPTY_BUT_NOT_SUBSTITUTED_FOR_SOURCE_ANNOTATION_OR_FINAL_AGGREGATE_CHECK",
+    "finalAggregateCodeql": "PENDING_EXACT_FINAL_HEAD_AND_TESTED_MERGE_REMOTE_CI"
+  },
+  "migrationInventory": {
+    "immutableHistory": "V0001_THROUGH_V0028_UNMODIFIED",
+    "correctedMigration": "V0029__version_profit_economics_and_commercial_inputs.sql",
+    "correctionBoundary": "V0029_WAS_UNMERGED_UNDEPLOYED_AND_HAD_NO_SHARED_CONSUMER_AT_BOUNDED_CLOSURE_START",
+    "newTables": [
+      "core.economics_projection_profile",
+      "core.economics_projection_profile_family",
+      "core.economics_projection_component",
+      "core.source_feed_watermark"
+    ],
+    "realMigrationOrDeployment": "NOT_EXECUTED"
+  },
   "sameClassScans": [
     {
       "class": "reconstructed_time_windows",
@@ -232,17 +275,47 @@
     {
       "class": "derived_identity_omissions",
       "scope": "ComputedMetric and persisted Guardrail evaluation identity",
-      "disposition": "Metric assertion state/value/currency/confidence/source-time/custom components and complete metric snapshots in guardrail digest are now bound; equivalent reruns remain deduplicated."
+      "disposition": "Metric assertion state/value/currency/confidence/source-time/custom components remain bound. Price decisions additionally bind target, mode, exact profile/version/range/evidence, family contract, selected components and watermark identities; equivalent reruns remain deduplicated."
     },
     {
       "class": "absent_treated_as_zero",
       "scope": "profit, fee/tax categorization, Minimum Price and Guardrail economics",
-      "disposition": "All monetary deductions require an available sourced component; only published zero amounts remain zero. Unrelated import progress counters and empty checkpoint ordinals are administrative cardinalities, not commercial facts."
+      "disposition": "Each required FeeFamily has an independent applicability/coverage state. Only an attributable explicit zero is zero; verified non-applicability contributes no invented amount and missing/incomplete blocks. Unrelated administrative cardinalities are not commercial facts."
     },
     {
       "class": "aggregate_unit_mismatch",
       "scope": "analytics and price Guardrail arithmetic",
-      "disposition": "Whole-window totals are converted by explicit completed-unit denominators into named per-unit metrics; Guardrail no longer consumes aggregate PLATFORM_FEES."
+      "disposition": "Historical actuals retain explicit completed-unit denominators and family coverage. Proposed-price Guardrail does not consume historical fee averages; it evaluates the target through the exact fixed/percentage/tier profile."
+    },
+    {
+      "class": "historical_average_used_for_projection",
+      "scope": "Break-even, Minimum Price and Impact Preview",
+      "disposition": "All proposed-price paths use PriceEconomicsCalculator with the exact effective profile and target price; historical averages cannot enter projection."
+    },
+    {
+      "class": "fee_shape_and_tier_boundary",
+      "scope": "fixed, percentage, tiered and fulfillment-mode economics",
+      "disposition": "Same-tier, higher/lower tier, mode switch and fixed-plus-percentage cases bind the selected component identities; overlap, gap, ambiguity and invalid ranges fail closed."
+    },
+    {
+      "class": "fee_family_completeness",
+      "scope": "historical platform-fee actuals",
+      "disposition": "Commission, fulfillment/delivery, storage, promotion and other-variable families are independently removed in unit and actual-service tests; no aggregate can mask a missing required family."
+    },
+    {
+      "class": "persisted_freshness_as_current_authority",
+      "scope": "preview, approval, command creation and worker claim",
+      "disposition": "Persisted freshness seconds are descriptive only. Current authority derives from eight attributed source-feed watermarks and transaction-time age; wall-clock aging closes the DB gate without creating a metric row."
+    },
+    {
+      "class": "event_window_freshness_substitution",
+      "scope": "late/reconciled source feeds",
+      "disposition": "Reconciled effective time is authoritative when attributed; otherwise ingestion time is conservative. Event-window start or recent unrelated events cannot substitute for a feed watermark."
+    },
+    {
+      "class": "approval_or_command_skips_current_authority",
+      "scope": "Impact Preview through DB worker lease",
+      "disposition": "Snapshot creation, approval/command binding and worker dispatch all require the same exact profile/components/watermarks to remain current; refresh creates a new authority and never revives the old snapshot."
     },
     {
       "class": "guardrail_missing_evidence",
@@ -282,21 +355,24 @@
     "rulesetLiveReadbackSha256": "6038cb07be617a113a69c653156dc3e2773ec24576a99f4094564f8655572eae"
   },
   "implementationCheckpoint": {
-    "head": "7eeed1b12c0b172d1dc51c53ee04d1d749476e8a",
-    "tree": "90f87cabf133ad7f7e0f2c67e4be28065e1a0366",
-    "cleanWorktree": true,
-    "localVerification": "PASS",
-    "backendTests": 378,
+    "identityResolution": "THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS_AND_BODY",
+    "cleanWorktree": "PENDING_CONTAINING_COMMIT",
+    "localVerification": "FULL_PRECOMMIT_REGRESSION_PASS_FINAL_IDENTITY_BOUND_REVERIFY_PENDING",
+    "backendUnitTests": 875,
+    "backendIntegrationTests": 383,
     "pythonTests": 377,
     "frontendTests": 196,
-    "browserTests": 11,
+    "browserTests": "PENDING_EXACT_CONTAINING_COMMIT_HEAD_BINDING",
     "architectureTests": 65,
-    "packagedArtifactSha256": "6e63f655cd477f3e2d05dd3b3ff0249c4412736401e5fd3b10c3928645da8e38",
-    "remotePublication": "PENDING_EXPLICIT_DESTINATION_APPROVAL",
-    "remoteCi": "NOT_RUN"
+    "terraformTests": 9,
+    "yandexRuntimeTests": 13,
+    "terraformPlans": "PASS_MOCK_PROVIDER_ONLY_NO_APPLY_NO_PROVIDER_API",
+    "packagedArtifactSha256": "PENDING_EXACT_CLEAN_CONTAINING_COMMIT",
+    "remotePublication": "AUTHORIZED_EXISTING_BRANCH_AND_DRAFT_PR_22_MAINTENANCE_PENDING_FINAL_COMMIT",
+    "remoteCi": "PENDING_FINAL_PUBLICATION"
   },
   "remainingLimitations": [
-    "The clean implementation checkpoint has complete local verification; the later canonical handoff commit and remote CI remain pending explicit destination approval.",
+    "The full precommit regression passes; exact-containing-commit browser/artifact/full binding and remote CI are pending final publication.",
     "The GPT-5.6 Pro Controller exact-Head verdict is absent.",
     "All Amendment-002 real-provider, Owner, release and Gate-EV evidence remains deferred and production-blocking.",
     "PR #21 remains HOLD_DO_NOT_MERGE and is not reused by this branch."

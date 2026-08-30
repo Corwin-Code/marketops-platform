@@ -1,7 +1,11 @@
 package com.mimococo.marketops.operationsworkflow.internal.application;
 
+import com.mimococo.marketops.analyticsdecision.DecisionFreshness;
 import com.mimococo.marketops.analyticsdecision.MetricCode;
 import com.mimococo.marketops.analyticsdecision.MetricValueView;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsCalculator;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsProfile;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsResolution;
 import com.mimococo.marketops.operationsworkflow.GuardrailReason;
 import com.mimococo.marketops.operationsworkflow.internal.domain.GuardrailInput;
 import com.mimococo.marketops.operationsworkflow.internal.domain.GuardrailOutcome;
@@ -16,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
+import com.mimococo.marketops.shared.Money;
 
 /**
  * The deterministic decision about whether a price may change.
@@ -53,19 +59,13 @@ final class GuardrailEngine {
      */
     private static final Set<MetricCode> REQUIRED_METRICS = EnumSet.of(
             MetricCode.OBSERVED_SELLING_PRICE, MetricCode.UNIT_COST,
-            MetricCode.PLATFORM_FEES_PER_UNIT, MetricCode.RETURN_LOSS_PER_UNIT,
-            MetricCode.AD_SPEND_PER_UNIT, MetricCode.VARIABLE_TAX_PER_UNIT,
             MetricCode.REQUIRED_PROFIT_PER_UNIT, MetricCode.SAFETY_BUFFER_PER_UNIT,
-            MetricCode.BREAK_EVEN_PRICE, MetricCode.MINIMUM_PRICE,
             MetricCode.DATA_COMPLETENESS, MetricCode.PLATFORM_AVAILABLE_UNITS);
 
     /** Money-valued assertions that must all use the policy currency. */
     private static final Set<MetricCode> MONETARY_METRICS = EnumSet.of(
             MetricCode.OBSERVED_SELLING_PRICE, MetricCode.UNIT_COST,
-            MetricCode.PLATFORM_FEES_PER_UNIT, MetricCode.RETURN_LOSS_PER_UNIT,
-            MetricCode.AD_SPEND_PER_UNIT, MetricCode.VARIABLE_TAX_PER_UNIT,
-            MetricCode.REQUIRED_PROFIT_PER_UNIT, MetricCode.SAFETY_BUFFER_PER_UNIT,
-            MetricCode.BREAK_EVEN_PRICE, MetricCode.MINIMUM_PRICE);
+            MetricCode.REQUIRED_PROFIT_PER_UNIT, MetricCode.SAFETY_BUFFER_PER_UNIT);
 
     /** Scale intermediate rates carry before comparison. */
     private static final int RATE_SCALE = 6;
@@ -108,17 +108,12 @@ final class GuardrailEngine {
             detail.put("changeRate", changeRate.toPlainString());
         }
 
-        BigDecimal minimumPrice = numeric(input, MetricCode.MINIMUM_PRICE);
-        BigDecimal breakEven = numeric(input, MetricCode.BREAK_EVEN_PRICE);
-        BigDecimal unitCost = numeric(input, MetricCode.UNIT_COST);
-        BigDecimal platformFees = numeric(input, MetricCode.PLATFORM_FEES_PER_UNIT);
-        BigDecimal returnLoss = numeric(input, MetricCode.RETURN_LOSS_PER_UNIT);
-        BigDecimal advertising = numeric(input, MetricCode.AD_SPEND_PER_UNIT);
-        BigDecimal variableTax = numeric(input, MetricCode.VARIABLE_TAX_PER_UNIT);
-        BigDecimal currentUnitProfit = unitProfit(currentPrice, unitCost, platformFees,
-                returnLoss, advertising, variableTax);
-        BigDecimal projectedUnitProfit = unitProfit(proposedPrice, unitCost, platformFees,
-                returnLoss, advertising, variableTax);
+        ProjectedDecision projected = project(input, currentPrice, proposedPrice,
+                reasons, detail);
+        BigDecimal minimumPrice = projected.minimumPrice();
+        BigDecimal breakEven = projected.breakEvenPrice();
+        BigDecimal currentUnitProfit = projected.currentUnitProfit();
+        BigDecimal projectedUnitProfit = projected.projectedUnitProfit();
         BigDecimal currentMargin = margin(currentUnitProfit, currentPrice);
         BigDecimal projectedMargin = margin(projectedUnitProfit, proposedPrice);
 
@@ -142,8 +137,93 @@ final class GuardrailEngine {
         authorizationBound(input, changeRate, reasons, detail);
 
         return new GuardrailOutcome(List.copyOf(reasons), Map.copyOf(detail), changeRate,
-                breakEven, currentUnitProfit, projectedUnitProfit, currentMargin,
-                projectedMargin);
+                breakEven, minimumPrice, currentUnitProfit, projectedUnitProfit,
+                currentMargin, projectedMargin, projected.profileId(),
+                projected.profileVersion(), input.fulfillmentModeCode(),
+                projected.componentIds());
+    }
+
+    /** Resolve and evaluate one exact profile for current and proposed prices. */
+    private static ProjectedDecision project(GuardrailInput input,
+                                             BigDecimal currentPrice,
+                                             BigDecimal proposedPrice,
+                                             List<GuardrailReason> reasons,
+                                             Map<String, String> detail) {
+        PriceEconomicsResolution resolution = input.economics();
+        if (!resolution.available()) {
+            GuardrailReason reason = switch (resolution.status()) {
+                case AMBIGUOUS -> GuardrailReason.ECONOMICS_PROFILE_AMBIGUOUS;
+                case EXPIRED -> GuardrailReason.ECONOMICS_PROFILE_EXPIRED;
+                case UNVERIFIED -> GuardrailReason.ECONOMICS_PROFILE_UNVERIFIED;
+                case MISSING -> GuardrailReason.ECONOMICS_PROFILE_MISSING;
+                case UNSUPPORTED, AVAILABLE ->
+                        GuardrailReason.PROJECTED_ECONOMICS_UNAVAILABLE;
+            };
+            reasons.add(reason);
+            detail.put("economicsResolution", resolution.status() + ":" + resolution.detail());
+            return ProjectedDecision.unavailable();
+        }
+
+        PriceEconomicsProfile profile = resolution.profile();
+        detail.put("economicsProfileId", profile.profileId().toString());
+        detail.put("economicsProfileVersion", Integer.toString(profile.profileVersion()));
+        detail.put("economicsVerificationState", profile.verificationState().name());
+        detail.put("fulfillmentModeCode", profile.fulfillmentModeCode());
+
+        PriceEconomicsCalculator.Projection current = currentPrice == null
+                ? null : PriceEconomicsCalculator.project(profile, currentPrice);
+        PriceEconomicsCalculator.Projection proposed =
+                PriceEconomicsCalculator.project(profile, proposedPrice);
+        BigDecimal unitCost = numeric(input, MetricCode.UNIT_COST);
+        BigDecimal requiredProfit = numeric(input, MetricCode.REQUIRED_PROFIT_PER_UNIT);
+        BigDecimal safetyBuffer = numeric(input, MetricCode.SAFETY_BUFFER_PER_UNIT);
+        PriceEconomicsCalculator.Solution solution = null;
+        if (unitCost != null && requiredProfit != null && safetyBuffer != null) {
+            solution = PriceEconomicsCalculator.solve(profile,
+                    Money.of(unitCost, profile.currencyCode()),
+                    Money.of(requiredProfit, profile.currencyCode()),
+                    Money.of(safetyBuffer, profile.currencyCode()));
+        }
+        if (current == null || !current.available() || !proposed.available()
+                || solution == null || !solution.available()) {
+            reasons.add(GuardrailReason.PROJECTED_ECONOMICS_UNAVAILABLE);
+            List<String> projectionReasons = new ArrayList<>();
+            if (current == null) {
+                projectionReasons.add("CURRENT_PRICE_UNAVAILABLE");
+            } else {
+                projectionReasons.addAll(current.reasons());
+            }
+            projectionReasons.addAll(proposed.reasons());
+            if (solution == null) {
+                projectionReasons.add("SOLVER_INPUT_UNAVAILABLE");
+            } else {
+                projectionReasons.addAll(solution.reasons());
+            }
+            detail.put("projectionBlockingReasons", String.join(",", projectionReasons));
+            return new ProjectedDecision(profile.profileId(), profile.profileVersion(),
+                    solution == null ? null : solution.breakEvenPrice(),
+                    solution == null ? null : solution.minimumPrice(), null, null,
+                    proposed.componentIds());
+        }
+
+        BigDecimal currentProfit = unitProfit(currentPrice, unitCost,
+                current.totalVariableCost());
+        BigDecimal proposedProfit = unitProfit(proposedPrice, unitCost,
+                proposed.totalVariableCost());
+        detail.put("currentProjectedVariableCost",
+                current.totalVariableCost().toPlainString());
+        detail.put("proposedProjectedVariableCost",
+                proposed.totalVariableCost().toPlainString());
+        detail.put("projectedComponentIds", proposed.componentIds().stream()
+                .map(UUID::toString).sorted().reduce("", (left, right) ->
+                        left.isEmpty() ? right : left + ',' + right));
+        detail.put("projectedFamilyCoverage", proposed.familyCoverage().entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(entry -> entry.getKey() + "=" + entry.getValue())
+                .reduce("", (left, right) -> left.isEmpty() ? right : left + ',' + right));
+        return new ProjectedDecision(profile.profileId(), profile.profileVersion(),
+                solution.breakEvenPrice(), solution.minimumPrice(), currentProfit,
+                proposedProfit, proposed.componentIds());
     }
 
     /** The proposal itself must still be the one that was reviewed. */
@@ -214,7 +294,7 @@ final class GuardrailEngine {
         return input.currentPrice() != null ? input.currentPrice() : observed;
     }
 
-    /** How much of the picture is present, and how old the freshest part is. */
+    /** How much is present, and how old each independent source feed is now. */
     private static void completenessAndFreshness(GuardrailInput input,
                                                  PolicyLimits policy,
                                                  List<GuardrailReason> reasons,
@@ -232,24 +312,28 @@ final class GuardrailEngine {
         if (maximumAge.isEmpty()) {
             return;
         }
-        List<String> freshnessMissing = REQUIRED_METRICS.stream()
-                .filter(code -> {
-                    MetricValueView value = input.metrics().get(code);
-                    return value == null || value.freshnessSeconds() == null;
-                }).map(Enum::name).sorted().toList();
+        DecisionFreshness freshness = input.decisionFreshness();
+        List<String> freshnessMissing = freshness.missingFeeds().stream()
+                .map(Enum::name).sorted().toList();
         if (!freshnessMissing.isEmpty()) {
-            detail.put("freshnessUnavailableMetrics", String.join(",", freshnessMissing));
+            detail.put("freshnessUnavailableFeeds", String.join(",", freshnessMissing));
             reasons.add(GuardrailReason.INPUT_FRESHNESS_UNAVAILABLE);
             return;
         }
-        Long oldest = REQUIRED_METRICS.stream().map(input.metrics()::get)
-                .map(MetricValueView::freshnessSeconds)
-                .max(Long::compareTo)
-                .orElse(null);
-        if (oldest == null) {
+        Map<DecisionFreshness.Feed, Long> ages = freshness.agesAt(input.evaluatedAt());
+        if (ages.size() != freshness.requiredFeeds().size()
+                || ages.values().stream().anyMatch(age -> age < 0)) {
+            reasons.add(GuardrailReason.INPUT_FRESHNESS_UNAVAILABLE);
             return;
         }
+        long oldest = ages.values().stream().max(Long::compareTo).orElseThrow();
         detail.put("inputAgeSeconds", Long.toString(oldest));
+        detail.put("freshnessWatermarks", freshness.requiredFeeds().stream().map(feed -> {
+            DecisionFreshness.Watermark watermark = freshness.watermarks().get(feed);
+            return feed + "=" + watermark.watermarkId() + '@' + watermark.effectiveAt()
+                    + ":" + ages.get(feed);
+        }).sorted().reduce("", (left, right) ->
+                left.isEmpty() ? right : left + ',' + right));
         if (oldest > maximumAge.get()) {
             reasons.add(GuardrailReason.INPUT_TOO_STALE);
         }
@@ -404,6 +488,12 @@ final class GuardrailEngine {
                 || !expected.equals(input.currentPriceCurrency())) {
             mismatches.add("CURRENT_PRICE=" + input.currentPriceCurrency());
         }
+        if (input.economics().available()
+                && !java.util.Objects.equals(expected,
+                        input.economics().profile().currencyCode())) {
+            mismatches.add("ECONOMICS_PROFILE="
+                    + input.economics().profile().currencyCode());
+        }
         for (MetricCode code : MONETARY_METRICS) {
             MetricValueView value = input.metrics().get(code);
             if (value != null && value.available()
@@ -424,5 +514,24 @@ final class GuardrailEngine {
             return null;
         }
         return unitProfit.divide(price, RATE_SCALE, RoundingMode.HALF_UP);
+    }
+
+    /** Projection values kept together so no result can be paired with another profile. */
+    private record ProjectedDecision(
+            UUID profileId,
+            Integer profileVersion,
+            BigDecimal breakEvenPrice,
+            BigDecimal minimumPrice,
+            BigDecimal currentUnitProfit,
+            BigDecimal projectedUnitProfit,
+            List<UUID> componentIds) {
+
+        private ProjectedDecision {
+            componentIds = List.copyOf(componentIds);
+        }
+
+        static ProjectedDecision unavailable() {
+            return new ProjectedDecision(null, null, null, null, null, null, List.of());
+        }
     }
 }

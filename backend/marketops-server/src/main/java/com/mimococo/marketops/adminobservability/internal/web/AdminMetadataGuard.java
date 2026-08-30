@@ -85,7 +85,12 @@ class AdminMetadataGuard implements HandlerInterceptor {
             if (!octet.matches("[0-9]{1,3}")) {
                 return false;
             }
-            int value = Integer.parseInt(octet);
+            int value;
+            try {
+                value = Integer.parseInt(octet);
+            } catch (NumberFormatException outsideIntegerRange) {
+                return false;
+            }
             if (value > 255) {
                 return false;
             }

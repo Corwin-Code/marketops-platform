@@ -35,6 +35,21 @@ public enum GuardrailReason {
     /** A required canonical value carries a confidence too low to act on. */
     METRIC_CONFIDENCE_INSUFFICIENT,
 
+    /** No scoped price-economics profile is current for the proposal. */
+    ECONOMICS_PROFILE_MISSING,
+
+    /** More than one price-economics profile claims the proposal scope. */
+    ECONOMICS_PROFILE_AMBIGUOUS,
+
+    /** The profile or its verification interval elapsed. */
+    ECONOMICS_PROFILE_EXPIRED,
+
+    /** The profile has no current verification evidence. */
+    ECONOMICS_PROFILE_UNVERIFIED,
+
+    /** A component shape, tier, coverage contract or price solution is unsupported. */
+    PROJECTED_ECONOMICS_UNAVAILABLE,
+
     /** Required monetary values do not all speak the policy currency. */
     CURRENCY_MISMATCH,
 

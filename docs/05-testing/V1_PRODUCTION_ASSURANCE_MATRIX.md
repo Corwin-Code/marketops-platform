@@ -50,8 +50,8 @@ requirements below. Counts are checkpoint results, not a final release verdict.
 | Class | Candidate evidence | Remaining boundary |
 | --- | --- | --- |
 | `SRC` | Immutable original Contract, accepted Amendment-001 and Amendment-002, preserved ADRs, R1 Finding Set and Supplemental R2 review. | Final R2 commit/tree/tested-merge binding. |
-| `UNIT` | R2 mutation-sensitive metric identity, missing-input, Minimum Price, Guardrail, audience, required-context and deferred-status tests. | Final full regression and remote CI. |
-| `RDB` | Actual-service facts→metrics→Guardrail→approval→command path plus half-open boundary and immutable-history assertions. | Exact-final-R2-Head verification and independent closure. |
+| `UNIT` | R2 mutation-sensitive metric identity, four-state fee-family coverage, target-aware fixed/percentage/tier economics, transaction-time freshness, Guardrail, audience, required-context and deferred-status tests. | Final exact-Head remote CI and independent Controller verdict. |
+| `RDB` | Actual-service facts→metrics→profile/watermark resolution→Guardrail→approval→command path; DB rechecks profile/components and eight watermarks at command/worker time. | Exact-final-R2-Head remote CI and independent closure. |
 | `OBJ` | Actual filesystem and local HTTP adapter tests, exact hash/length verification, immutable DB custody and retention IaC. | Approved Yandex store, real retention/IAM operation and provider recovery remain unverified. |
 | `REAL_EXT` | No real business provider or cloud account used. Synthetic fixtures are explicitly scoped and cannot promote deferred evidence. | Exact Amendment-002 rows remain production-blocking in `RELEASE-V1-001`. |
 | `SEC_NEG` | Signed-token/live-scope refusal plus blank/wrong audience, actual-peer loopback enforcement, forwarding-header spoof refusal and existing outbound/PII/Secret controls. | Fresh exact-R2-Head Security CI required. |
@@ -73,24 +73,39 @@ the exact protected Ruleset proof.
 | --- | --- | --- |
 | 1 | Non-hour clock uses one exact stored/queried window | `AnalyticsCalculationServiceWindowTest` |
 | 2 | Start boundary included; end boundary excluded | `OperatingFlowIT` |
-| 3 | Missing return/ad/tax/fees/cost independently blocks profit | `MetricEngineTest` |
-| 4 | Explicit sourced zero differs from absence | `MetricEngineTest` |
-| 5 | Minimum Price includes Required Profit and Safety Buffer | `MetricEngineTest` |
-| 6 | Whole-window total cannot replace a per-unit value | `GuardrailEngineTest` |
-| 7 | Missing stock blocks | `GuardrailEngineTest` |
-| 8 | Missing freshness blocks | `GuardrailEngineTest` |
-| 9 | Currency mismatch blocks | `GuardrailEngineTest` |
-| 10 | Passage into staleness creates a new current assertion | `ComputedMetricIdentityTest` |
-| 11 | Mapping resolution changes completeness and identity | `MetricEngineTest` |
-| 12 | Late facts correct current state without rewriting history | `MetricEngineTest`; `OperatingFlowIT` |
-| 13 | Actual-service facts-to-command path passes | `OperatingFlowIT` |
-| 14 | Removing every required economics/safety input breaks the path | `GuardrailEngineTest`; `OperatingFlowIT.TC-R2-FLOW-001` |
-| 15 | Non-loopback maintenance GET/POST denied | `MaintenanceWriteGateApiIT` |
-| 16 | Forwarding headers cannot manufacture loopback | `MaintenanceWriteGateApiIT` |
-| 17 | Blank serving audience fails startup contract | `IdentityConfigurationContractTest`; `test_yandex_runtime.py` |
-| 18 | Wrong audience denied | `SignedBearerIdentityIT` |
-| 19 | Removing `infrastructure-validation` fails inventory validation | `test_required_status_checks.py` |
-| 20 | Deferred evidence cannot be relabeled verified | `DeferredEvidenceRegisterTests` |
+| 3 | Same-tier target uses the exact proposed price and component identity | `PriceEconomicsCalculatorTest.sameTierUsesTheSameComponentAndExactProposedPrice` |
+| 4 | Crossing higher/lower tiers selects the corresponding tier identity | `PriceEconomicsCalculatorTest.crossingHigherTierSelectsTheHigherTierIdentity`; `crossingLowerTierSelectsTheLowerTierIdentity` |
+| 5 | Fulfillment modes resolve distinct scoped components | `PriceEconomicsCalculatorTest.fulfilmentModesHaveDistinctScopedComponents` |
+| 6 | Fixed plus percentage components both use the proposed price | `PriceEconomicsCalculatorTest.fixedPlusPercentageUsesBothTermsAtTheProposedPrice` |
+| 7 | Minimum Price uses the same profile/components as projection | `PriceEconomicsCalculatorTest.minimumPriceUsesTheSameProfileAndSelectedComponentsAsProjection` |
+| 8 | Tier overlap, gap/non-resolution and multiple profile authority fail closed | `PriceEconomicsCalculatorTest.overlappingTierAuthorityFailsClosed`; `OperatingFlowIT.profileResolutionFailuresBlockTheActualPreviewService` |
+| 9 | Missing/expired profile authority blocks the actual preview service | `OperatingFlowIT.profileResolutionFailuresBlockTheActualPreviewService` |
+| 10 | Impact Preview and persisted Minimum Price bind the exact profile id/version/mode | `OperatingFlowIT.approveTheProposal` |
+| 11 | Mutating an economics component invalidates an approved snapshot/command | `PriceWritePathIT.anEconomicsComponentChangeInvalidatesThePreviouslyApprovedSnapshot` |
+| 12 | Every required historical fee family is independently necessary | `PriceEconomicsCalculatorTest.everyRequiredHistoricalPlatformFeeFamilyMustBePresentIndependently`; `OperatingFlowIT.everyRequiredFeeFamilyIsNecessaryToTheServicePath` |
+| 13 | Required-family absence never becomes zero | `PriceEconomicsCalculatorTest.aMissingRequiredFamilyNeverBecomesZero` |
+| 14 | Explicit sourced zero remains covered | `PriceEconomicsCalculatorTest.explicitSourcedZeroIsCoveredButVerifiedNonApplicabilityIsNotAZeroFact` |
+| 15 | Verified non-applicability does not invent an amount | `PriceEconomicsCalculatorTest.verifiedHistoricalNonApplicabilityPassesWithoutInventingAnAmount` |
+| 16 | Missing return/ad/tax/cost and every required economics input independently block | `MetricEngineTest`; `OperatingFlowIT.everyRequiredEconomicsInputIsNecessaryToTheServicePath` |
+| 17 | Missing stock and currency mismatch block | `GuardrailEngineTest` |
+| 18 | Current freshness ages with wall clock without a new metric/watermark | `PriceEconomicsCalculatorTest.decisionAgeAdvancesWithoutCreatingANewMetricOrWatermark`; `PriceWritePathIT.wallClockAloneExpiresApprovalAndCommandAuthorityUntilAttributedRefresh` |
+| 19 | Reconciliation watermark, not source-window start, is attributable authority | `PriceEconomicsCalculatorTest.reconciliationWatermarkIsTheAttributableFreshnessAuthorityNotWindowStart` |
+| 20 | Stale/missing feed watermark blocks the actual preview service and attributable refresh restores it | `OperatingFlowIT.currentFeedWatermarksGovernTheActualPreviewService` |
+| 21 | DB command/worker gate reevaluates all eight watermarks at transaction time | `PriceWritePathIT.wallClockAloneExpiresApprovalAndCommandAuthorityUntilAttributedRefresh` |
+| 22 | Old snapshots remain invalid after a new attributable refresh | `PriceWritePathIT.wallClockAloneExpiresApprovalAndCommandAuthorityUntilAttributedRefresh` |
+| 23 | Mapping resolution changes completeness and identity | `MetricEngineTest` |
+| 24 | Late facts correct current state without rewriting history | `MetricEngineTest`; `OperatingFlowIT` |
+| 25 | Actual-service facts-to-command path passes with no early-return alternative | `OperatingFlowIT.computeMetrics`; `approveTheProposal`; `createTheCommand` |
+| 26 | Non-loopback maintenance requests and forwarding-header spoofing are denied | `MaintenanceWriteGateApiIT` |
+| 27 | Blank/wrong serving audience fails closed | `IdentityConfigurationContractTest`; `SignedBearerIdentityIT`; `test_yandex_runtime.py` |
+| 28 | CodeQL source annotation is identified exactly as run `99214089692`, `AdminMetadataGuard.java:88`, Missing catch of NumberFormatException | Controller source annotation; `AdminMetadataGuard` regression compilation |
+| 29 | Numeric remote-address parsing catches `NumberFormatException` and denies instead of escaping | `AdminMetadataGuard`; `MaintenanceWriteGateApiIT` |
+| 30 | Required remote contexts, including aggregate CodeQL, pass on exact final Head/tested merge | Draft PR #22 live checks; pending final publication at document commit |
+
+Rows 28–30 deliberately separate the exact historical source annotation, its
+local correction, and the still-pending exact-final-Head aggregate remote result.
+An earlier empty open-alert query is not evidence that the annotation never
+existed and is not substituted for the final CodeQL check.
 
 ## 3. Risk dimensions
 

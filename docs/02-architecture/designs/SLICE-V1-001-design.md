@@ -28,13 +28,15 @@ Supplemental R2 branch starts from exact protected-main commit
 a candidate, not a Controller closure verdict.
 
 The code covers acquisition, canonical facts, diagnosis, recommendations,
-controlled commands and readback. V0011–V0028 are immutable applied history;
-V0029 versions the profit economics and adds sourced Required Profit and Safety
-Buffer inputs. The final R2 packet must bind fresh verification to the exact
-published Head. Accepted Amendment-002 defers only its enumerated real/Owner/Gate
-evidence to `RELEASE-V1-001`; the Deferred Evidence Register preserves every
-future obligation. No real provider, Marketplace or production write is
-authorized or proven.
+controlled commands and readback. V0011–V0028 are immutable applied history.
+V0029 is the only unmerged migration and had no deployment or shared consumer;
+R2 therefore corrects it in place to add the versioned target-price economics
+and source-watermark authority described below. This is not an applied-history
+rewrite. The final R2 packet must bind fresh verification to the exact published
+Head. Accepted Amendment-002 defers only its enumerated real/Owner/Gate evidence
+to `RELEASE-V1-001`; the Deferred Evidence Register preserves every future
+obligation. No real provider, Marketplace or production write is authorized or
+proven.
 
 ## 2. The decisions everything else follows from
 
@@ -91,9 +93,13 @@ missing input as a zero and the arithmetic kept working.
 ### 2.4 An approval is about the facts it was made from
 
 Every recommendation stores a digest of the canonical values its case rests on.
-An approval stores the same digest. The write gate compares the stored digest
-against the proposal's current one at the moment a worker claims the command,
-and refuses when they differ.
+For a price change this includes the target price, fulfillment mode, exact
+economics profile/version/effective range/evidence, fee-family contract,
+component identities and source-watermark identities. An approval stores the
+same digest. The write gate re-resolves current authority and compares the
+stored digest against the proposal at approval, command creation and worker
+claim time; it refuses when the profile, components, watermarks or their current
+freshness no longer match.
 
 The difference this makes: "somebody approved this price" becomes "somebody
 approved this price when the cost was what it is now". Hours pass between a
@@ -122,22 +128,42 @@ before the as-of boundary. A recomputation may deduplicate only when value
 state, normalized value, currency, confidence, source time, mapping identity,
 input identities and explicit availability states all match.
 
-Contribution Profit is unavailable unless sales, unit cost, platform fees,
-return loss, advertising and tax are all present and currency-compatible. An
-explicit sourced zero remains available and is not equivalent to absence.
-Window totals are converted to canonical per-unit metrics before Guardrail use.
-V2 Minimum Price is exactly:
+Historical Contribution Profit and proposed-price economics are separate
+authorities. Historical actuals consume the ledger and the effective
+`FeeFamily` coverage contract. Every family is represented as exactly one of
+`PRESENT_NONZERO`, `PRESENT_EXPLICIT_ZERO`, `VERIFIED_NOT_APPLICABLE` or
+`MISSING_OR_INCOMPLETE`. Required families must be one of the first two states; an explicit
+sourced zero is never equivalent to absence, and removal of one platform fee
+category cannot be hidden by another category's aggregate.
+
+Projected Break-even and Minimum Price never average historical fees. The
+effective `PriceEconomicsProfile` is scoped by platform, account, store,
+fulfillment mode, currency, effective range, verification state and evidence.
+Its fixed, percentage and tiered components are evaluated against the proposed
+target price by the shared `PriceEconomicsCalculator`. The bounded deterministic
+solver finds:
 
 ```text
-Break-even Price
-+ sourced Required Profit per Unit
-+ sourced Safety Buffer per Unit
+Break-even: price = unit cost + projected component total(price)
+Minimum:    price = unit cost + sourced Required Profit per Unit
+                     + sourced Safety Buffer per Unit
+                     + projected component total(price)
 ```
 
-Break-even Price contains unit cost plus the per-unit platform-fee, return-loss,
-advertising and actual variable-tax inputs. Missing stock, missing freshness,
-missing economics, insufficient confidence or currency conflict blocks the
-write-grade Guardrail path.
+The calculator rejects missing required families/components, ambiguous or
+expired profiles, tier gaps/overlaps, non-monotone or out-of-range economics and
+currency conflict. Metric calculation, Impact Preview and Guardrail use the
+same component set and bind the selected profile/component identities.
+
+Current decision freshness is independent of a persisted metric age. Eight
+`source_feed_watermark` authorities—`PRICE`, `STOCK`, `SALES`, `RETURNS`,
+`FINANCE_FEES`, `ADVERTISING`, `INTERNAL_COST` and `COMMERCIAL_INPUTS`—carry
+source/effective, ingestion and reconciliation attribution. Effective source
+time is authoritative when reconciled; otherwise the conservative ingestion
+time applies. Freshness is reevaluated against the transaction instant at
+preview, approval/command binding and worker claim. Missing/stale watermarks,
+missing stock, missing economics or insufficient confidence block the
+write-grade path without creating a new metric row.
 
 ## 3. Module shape
 
@@ -152,7 +178,7 @@ and `aicopilot`; the rest existed and were extended.
 | `marketplaceintegration` | Raw custody, acquisition, platform adapters, price command execution, kill switch | `PriceCommandGateway`, `PriceChangeHistory`, `RawEvidenceQuery`, `IngestionJobDirectory` |
 | `productlisting` | Product, variant, listing, listing variant, mapping, conflicts | `ListingIdentityDirectory`, `ListingVariantContext` |
 | `operatingfacts` | Cross-domain facts, file intake, manual entry, normalization, provenance | `OperatingFactQuery`, `EvidenceQuery` |
-| `analyticsdecision` | Canonical metrics, deterministic diagnosis rules, priority | `MetricQuery`, `DiagnosisQuery`, `MetricCode` |
+| `analyticsdecision` | Canonical metrics, deterministic diagnosis rules, priority, target-price economics | `MetricQuery`, `DiagnosisQuery`, `MetricCode`, `PriceEconomicsQuery`, `PriceEconomicsCalculator` |
 | `aicopilot` | Projection, model gateway, output validation, claims | `AiCopilot`, `AiClaim` |
 | `operationsworkflow` | Recommendations, tasks, approvals, policy, guardrails, allowlist | `RecommendationView`, `GuardrailVerdict`, `ImpactPreview` |
 | `adminobservability` | Audit journal, metadata status | `MetadataAuditRecorder`, `MetadataAuditQueries` |
@@ -193,12 +219,14 @@ depends on integration rather than the reverse.
 | V0026 | `capability_code` renamed to `action_kind` in the two operational tables; dependent functions rebuilt |
 | V0027 | Account-bound verification submissions/reviews, audit and promotion/revocation functions |
 | V0028 | Bounded export jobs, immutable snapshot rows/parts, fenced worker and live authorization |
-| V0029 | V2 profit economics, canonical per-unit cost metrics, Break-even Price, and sourced Required Profit/Safety Buffer inputs |
+| V0029 | V2 fee-family coverage, versioned target-price economics profiles/components, source-feed watermarks, Break-even/Minimum Price identity, snapshot authority and transaction-time DB write gates |
 
 Every table in the eight foundation schemas appears in
-`platform.control_route_inventory` exactly once — a hundred and three tables,
-a hundred and three rows, twenty-four routed with three epoch triggers each.
-V0001–V0028 are untouched by R2.
+`platform.control_route_inventory` exactly once — a hundred and seven tables,
+a hundred and seven rows, twenty-four routed with three epoch triggers each.
+V0001–V0028 are untouched by R2. The four V0029 additions are
+`core.economics_projection_profile`, `core.economics_projection_profile_family`,
+`core.economics_projection_component` and `core.source_feed_watermark`.
 
 ### Two defects the schema work found
 

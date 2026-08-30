@@ -2,6 +2,8 @@ package com.mimococo.marketops.operationsworkflow.internal.domain;
 
 import com.mimococo.marketops.analyticsdecision.MetricCode;
 import com.mimococo.marketops.analyticsdecision.MetricValueView;
+import com.mimococo.marketops.analyticsdecision.DecisionFreshness;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsResolution;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
@@ -20,6 +22,9 @@ import java.util.Objects;
  * @param currentPrice the price observed on the platform, or {@code null}
  * @param currentPriceCurrency the observed price currency, or {@code null}
  * @param proposedPrice the price the recommendation proposes
+ * @param fulfillmentModeCode exact fulfilment mode the proposed price applies to
+ * @param economics the single scoped price-projection authority, or a fail-closed result
+ * @param decisionFreshness current attributable source-feed watermarks
  * @param cumulativeDailyChangeRate how much the price already moved today
  * @param lastChangeAt when the price last changed, or {@code null}
  * @param evaluatedAt the instant the evaluation is made for
@@ -36,6 +41,9 @@ public record GuardrailInput(
         BigDecimal currentPrice,
         String currentPriceCurrency,
         BigDecimal proposedPrice,
+        String fulfillmentModeCode,
+        PriceEconomicsResolution economics,
+        DecisionFreshness decisionFreshness,
         BigDecimal cumulativeDailyChangeRate,
         Instant lastChangeAt,
         Instant evaluatedAt,
@@ -49,6 +57,8 @@ public record GuardrailInput(
     public GuardrailInput {
         metrics = Map.copyOf(Objects.requireNonNull(metrics, "metrics"));
         Objects.requireNonNull(proposedPrice, "proposedPrice");
+        Objects.requireNonNull(economics, "economics");
+        Objects.requireNonNull(decisionFreshness, "decisionFreshness");
         Objects.requireNonNull(evaluatedAt, "evaluatedAt");
         cumulativeDailyChangeRate = cumulativeDailyChangeRate == null
                 ? BigDecimal.ZERO : cumulativeDailyChangeRate;

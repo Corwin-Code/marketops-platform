@@ -2,9 +2,12 @@ package com.mimococo.marketops.operationsworkflow.internal.application;
 
 import com.mimococo.marketops.analyticsdecision.DiagnosisFindingView;
 import com.mimococo.marketops.analyticsdecision.DiagnosisQuery;
+import com.mimococo.marketops.analyticsdecision.DecisionFreshness;
 import com.mimococo.marketops.analyticsdecision.MetricCode;
 import com.mimococo.marketops.analyticsdecision.MetricQuery;
 import com.mimococo.marketops.analyticsdecision.MetricValueView;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsQuery;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsResolution;
 import com.mimococo.marketops.analyticsdecision.SubjectKind;
 import com.mimococo.marketops.marketplaceintegration.PriceChangeHistory;
 import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
@@ -56,6 +59,7 @@ public class GuardrailService {
 
     private final MetricQuery metrics;
     private final DiagnosisQuery diagnosis;
+    private final PriceEconomicsQuery economics;
     private final OperatingFactQuery facts;
     private final ListingIdentityDirectory listings;
     private final PolicyRepository policies;
@@ -66,6 +70,7 @@ public class GuardrailService {
 
     GuardrailService(MetricQuery metrics,
                      DiagnosisQuery diagnosis,
+                     PriceEconomicsQuery economics,
                      OperatingFactQuery facts,
                      ListingIdentityDirectory listings,
                      PolicyRepository policies,
@@ -75,6 +80,7 @@ public class GuardrailService {
                      Clock clock) {
         this.metrics = metrics;
         this.diagnosis = diagnosis;
+        this.economics = economics;
         this.facts = facts;
         this.listings = listings;
         this.policies = policies;
@@ -126,9 +132,11 @@ public class GuardrailService {
         return new ImpactPreview(proposal.id(),
                 policy == null ? currencyOf(input) : policy.currencyCode(),
                 input.currentPrice(), input.proposedPrice(), outcome.changeRate(),
-                outcome.breakEvenPrice(), outcome.currentUnitProfit(),
+                outcome.breakEvenPrice(), outcome.minimumPrice(), outcome.currentUnitProfit(),
                 outcome.projectedUnitProfit(), outcome.currentMargin(),
-                outcome.projectedMargin(), verdict);
+                outcome.projectedMargin(), outcome.economicsProfileId(),
+                outcome.economicsProfileVersion(), outcome.fulfillmentModeCode(),
+                outcome.projectedComponentIds(), verdict);
     }
 
     /** Whether an execution verdict for this proposal currently passes. */
@@ -162,6 +170,8 @@ public class GuardrailService {
         UUID productVariantId = context.map(ListingVariantContext::productVariantId)
                 .orElse(null);
         String platformCode = context.map(ListingVariantContext::platformCode).orElse(null);
+        UUID marketplaceAccountId = context.map(ListingVariantContext::marketplaceAccountId)
+                .orElse(null);
 
         PolicyLimits policy = policies.inForce(proposal.organizationId(), platformCode,
                 proposal.storeId(), productVariantId, now).orElse(null);
@@ -178,8 +188,29 @@ public class GuardrailService {
                 .stream()
                 .anyMatch(DiagnosisFindingView::blocksExecution);
 
+        List<String> activeFulfillmentModes = economics.activeFulfillmentModes(
+                proposal.storeId(), now);
+        String requestedFulfillmentMode = proposal.proposedParameters()
+                .get("fulfillmentModeCode");
+        String fulfillmentModeCode = requestedFulfillmentMode != null
+                ? requestedFulfillmentMode
+                : activeFulfillmentModes.size() == 1
+                        ? activeFulfillmentModes.getFirst() : null;
+        boolean fulfillmentModeActive = fulfillmentModeCode != null
+                && activeFulfillmentModes.contains(fulfillmentModeCode);
+        PriceEconomicsResolution profile = fulfillmentModeActive
+                ? economics.resolveProfile(proposal.organizationId(), platformCode,
+                        marketplaceAccountId, proposal.storeId(), fulfillmentModeCode, now)
+                : PriceEconomicsResolution.unavailable(
+                        PriceEconomicsResolution.Status.MISSING,
+                        "fulfillment-mode-not-explicitly-active");
+        DecisionFreshness freshness = economics.decisionFreshness(
+                proposal.organizationId(), platformCode, marketplaceAccountId,
+                proposal.storeId(), now);
+
         return new GuardrailInput(policy, current, currentPrice, currentPriceCurrency,
-                proposedPrice(proposal), changeHistory.cumulativeChangeRate(subjectId,
+                proposedPrice(proposal), fulfillmentModeCode, profile, freshness,
+                changeHistory.cumulativeChangeRate(subjectId,
                         now.minus(java.time.Duration.ofHours(DAILY_WINDOW_HOURS))),
                 changeHistory.lastChangeAt(subjectId).orElse(null), now, mapped, conflict,
                 blockedByDiagnosis,
@@ -232,6 +263,41 @@ public class GuardrailService {
         components.add(String.valueOf(input.currentPrice()));
         components.add(String.valueOf(input.currentPriceCurrency()));
         components.add(input.proposedPrice().toPlainString());
+        components.add(String.valueOf(input.fulfillmentModeCode()));
+        components.add(input.evaluatedAt().toString());
+        components.add(input.economics().status().name());
+        if (input.economics().available()) {
+            var profile = input.economics().profile();
+            components.add(profile.profileId().toString());
+            components.add(Integer.toString(profile.profileVersion()));
+            components.add(profile.verificationState().name());
+            components.add(profile.verifiedAt().toString());
+            components.add(String.valueOf(profile.verificationExpiresAt()));
+            profile.familyApplicability().entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .forEach(entry -> components.add("FAMILY:" + entry.getKey()
+                            + ':' + entry.getValue()));
+            profile.components().stream()
+                    .sorted(java.util.Comparator.comparing(component ->
+                            component.componentId().toString()))
+                    .forEach(component -> components.add("COMPONENT:"
+                            + component.componentId() + ':' + component.componentCode()
+                            + ':' + component.family() + ':' + component.kind() + ':'
+                            + component.fixedAmount() + ':' + component.rate() + ':'
+                            + component.lowerPriceInclusive() + ':'
+                            + component.upperPriceExclusive()));
+        }
+        input.decisionFreshness().requiredFeeds().stream().sorted().forEach(feed -> {
+            DecisionFreshness.Watermark watermark =
+                    input.decisionFreshness().watermarks().get(feed);
+            components.add(watermark == null ? "WATERMARK:" + feed + ":MISSING"
+                    : "WATERMARK:" + feed + ':' + watermark.watermarkId() + ':'
+                            + watermark.sourceUpdatedAt() + ':' + watermark.ingestedAt()
+                            + ':' + watermark.reconciledAt() + ':'
+                            + watermark.effectiveAt());
+            components.add("WATERMARK_AGE:" + feed + ':'
+                    + input.decisionFreshness().agesAt(input.evaluatedAt()).get(feed));
+        });
         components.add(String.valueOf(input.lastChangeAt()));
         components.add(input.cumulativeDailyChangeRate().toPlainString());
         components.add(Boolean.toString(input.mappingResolved()));

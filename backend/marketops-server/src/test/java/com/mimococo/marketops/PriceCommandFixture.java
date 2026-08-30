@@ -76,6 +76,8 @@ public final class PriceCommandFixture {
                     display_name, status, created_at, updated_at)
                 VALUES ('%s', '%s', '%s', 'store-%s', 'Worker Store', 'ACTIVE', now(), now())
                 """.formatted(storeId, organizationId, accountId, code));
+        seedEconomicsAuthority(jdbc, organizationId, accountId, storeId,
+                "worker-" + code);
 
         run(jdbc, """
                 INSERT INTO iam.identity_provider (id, code, display_name, issuer,
@@ -199,6 +201,11 @@ public final class PriceCommandFixture {
                         now() - interval '1 day', 'ACTIVE', '%s', 'seeded', now(), now())
                 """.formatted(policyId, organizationId, code, userId));
         run(jdbc, """
+                INSERT INTO ops.commercial_policy_limit
+                    (id,policy_id,limit_code,duration_seconds)
+                VALUES (gen_random_uuid(),'%s','MAX_INPUT_AGE_SECONDS',86400)
+                """.formatted(policyId));
+        run(jdbc, """
                 INSERT INTO ops.recommendation (id, organization_id, store_id, subject_kind,
                     subject_id, action_kind, origin, calculation_run_id, window_code, state,
                     priority_score, proposed_parameters, expected_effect, risk_label,
@@ -256,6 +263,70 @@ public final class PriceCommandFixture {
                         digest));
         return new SeedIds(organizationId, storeId, listingVariantId, providerId, userId,
                 provenanceId, runId, commandId);
+    }
+
+    /** Seed a complete synthetic projection profile and eight current feed watermarks. */
+    public static UUID seedEconomicsAuthority(JdbcClient jdbc, UUID organizationId,
+                                               UUID accountId, UUID storeId, String suffix) {
+        UUID profileId = UUID.randomUUID();
+        run(jdbc, """
+                INSERT INTO core.store_fulfillment_declaration
+                    (id,organization_id,store_id,fulfillment_mode_code,effective_from,
+                     effective_to,status,created_at,updated_at)
+                VALUES (gen_random_uuid(),'%s','%s','MARKETPLACE_FULFILLED',
+                        now()-interval '1 day',now()+interval '30 days','ACTIVE',now(),now())
+                """.formatted(organizationId, storeId));
+        run(jdbc, """
+                INSERT INTO core.economics_projection_profile
+                    (id,profile_version,organization_id,platform_code,
+                     marketplace_account_id,store_id,fulfillment_mode_code,currency_code,
+                     effective_from,effective_to,verification_state,verified_at,
+                     verification_expires_at,evidence_reference,minimum_supported_price,
+                     maximum_supported_price,status,created_at)
+                VALUES ('%s',1,'%s','OZON','%s','%s','MARKETPLACE_FULFILLED','RUB',
+                        now()-interval '1 day',now()+interval '30 days',
+                        'ENGINEERING_VERIFIED',now()-interval '1 minute',
+                        now()+interval '30 days','synthetic://%s/economics',1,1000,
+                        'ACTIVE',now())
+                """.formatted(profileId, organizationId, accountId, storeId,
+                        shortCode(suffix)));
+        run(jdbc, """
+                INSERT INTO core.economics_projection_family
+                    (profile_id,family_code,applicability_state,evidence_reference)
+                SELECT '%s',family,'REQUIRED','synthetic://%s/family/'||family
+                  FROM unnest(ARRAY['COMMISSION','FULFILLMENT_DELIVERY','STORAGE','PROMOTION',
+                    'OTHER_VARIABLE','RETURN_LOSS','ADVERTISING','VARIABLE_TAX']) family
+                """.formatted(profileId, shortCode(suffix)));
+        run(jdbc, """
+                INSERT INTO core.economics_projection_component
+                    (id,profile_id,component_code,family_code,component_kind,fixed_amount,
+                     evidence_reference)
+                SELECT gen_random_uuid(),'%s',component_code,family_code,'FIXED',amount,
+                       'synthetic://%s/component/'||component_code
+                  FROM (VALUES
+                    ('COMMISSION','COMMISSION',10.0000::numeric),
+                    ('FULFILLMENT','FULFILLMENT_DELIVERY',5.0000::numeric),
+                    ('STORAGE','STORAGE',0.0000::numeric),
+                    ('PROMOTION','PROMOTION',0.0000::numeric),
+                    ('OTHER_VARIABLE','OTHER_VARIABLE',0.0000::numeric),
+                    ('RETURN_LOSS','RETURN_LOSS',2.0000::numeric),
+                    ('ADVERTISING','ADVERTISING',2.0000::numeric),
+                    ('VARIABLE_TAX','VARIABLE_TAX',1.0000::numeric))
+                    component(component_code,family_code,amount)
+                """.formatted(profileId, shortCode(suffix)));
+        run(jdbc, """
+                INSERT INTO core.source_feed_watermark
+                    (id,organization_id,platform_code,marketplace_account_id,store_id,
+                     feed_code,source_updated_at,ingested_at,reconciled_at,evidence_reference,
+                     verification_state,recorded_at)
+                SELECT gen_random_uuid(),'%s','OZON','%s','%s',feed,
+                       now()-interval '1 minute',now()-interval '50 seconds',
+                       now()-interval '40 seconds','synthetic://%s/watermark/'||feed,
+                       'VERIFIED',now()
+                  FROM unnest(ARRAY['PRICE','STOCK','SALES','RETURNS','FINANCE_FEES',
+                    'ADVERTISING','INTERNAL_COST','COMMERCIAL_INPUTS']) feed
+                """.formatted(organizationId, accountId, storeId, shortCode(suffix)));
+        return profileId;
     }
 
     /** Synthetic graph identities shared by worker and browser fixtures. */

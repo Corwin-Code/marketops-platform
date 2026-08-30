@@ -116,6 +116,113 @@ class PriceWritePathIT extends PostgresContainerSupport {
     }
 
     @Nested
+    @DisplayName("TC-R2-FRESH-DB command authority ages at transaction time")
+    class DecisionTimeFreshness {
+
+        @Test
+        void wallClockAloneExpiresApprovalAndCommandAuthorityUntilAttributedRefresh()
+                throws SQLException {
+            long metricRows = count(connection, "SELECT count(*) FROM mart.metric_value");
+            execute(arranger, "UPDATE ops.commercial_policy_limit"
+                    + " SET duration_seconds=1 WHERE policy_id='"
+                    + PriceWritePathFixture.POLICY
+                    + "' AND limit_code='MAX_INPUT_AGE_SECONDS'");
+            appendAllWatermarks("inside-boundary");
+            rebindFixtureSnapshots();
+
+            String current = "SELECT ops.r2_price_authority_is_current("
+                    + "ops.price_authority_snapshot('"
+                    + PriceWritePathFixture.RECOMMENDATION
+                    + "'),statement_timestamp())::text";
+            assertThat(single(connection, current)).isEqualTo("true");
+            assertThat(gateReasons(connection, COMMAND)).isEmpty();
+
+            execute(connection, "SELECT pg_sleep(2)");
+
+            assertThat(single(connection, current)).isEqualTo("false");
+            assertThat(count(connection, "SELECT count(*) FROM mart.metric_value"))
+                    .isEqualTo(metricRows);
+            assertThat(gateReasons(connection, COMMAND))
+                    .contains("COMMAND_AUTHORITY_MISMATCH");
+
+            allowCreator();
+            execute(arranger, "DELETE FROM ops.price_command WHERE id='" + COMMAND + "'");
+            assertThatThrownBy(() -> single(connection,
+                    "SELECT ops.create_price_command('"
+                            + PriceWritePathFixture.RECOMMENDATION + "',0,'"
+                            + PriceWritePathFixture.USER + "','stale-authority')"))
+                    .satisfies(error -> assertThat(carriesSqlState(error,
+                            WRITE_GATE_CLOSED)).isTrue());
+
+            appendAllWatermarks("attributed-refresh");
+            assertThat(single(connection, current)).isEqualTo("true");
+            assertThat(single(connection, "SELECT count(*)::text"
+                    + " FROM core.source_feed_watermark"
+                    + " WHERE evidence_reference LIKE"
+                    + " 'synthetic://price-write/attributed-refresh/%'"))
+                    .isEqualTo("8");
+            // The source is current again, but the old approval remains bound
+            // to the old watermark identities and cannot silently revive.
+            assertThatThrownBy(() -> single(connection,
+                    "SELECT ops.create_price_command('"
+                            + PriceWritePathFixture.RECOMMENDATION + "',0,'"
+                            + PriceWritePathFixture.USER + "','changed-authority')"))
+                    .satisfies(error -> assertThat(carriesSqlState(error,
+                            WRITE_GATE_CLOSED)).isTrue());
+        }
+
+        private void appendAllWatermarks(String evidence) throws SQLException {
+            execute(arranger, """
+                    INSERT INTO core.source_feed_watermark
+                        (id,organization_id,platform_code,marketplace_account_id,store_id,
+                         feed_code,source_updated_at,ingested_at,reconciled_at,
+                         evidence_reference,verification_state,recorded_at)
+                    SELECT gen_random_uuid(),'%s','OZON','%s','%s',feed,
+                           statement_timestamp()-interval '100 milliseconds',
+                           statement_timestamp()-interval '50 milliseconds',NULL,
+                           'synthetic://price-write/%s/'||feed,'VERIFIED',
+                           statement_timestamp()
+                      FROM unnest(ARRAY['PRICE','STOCK','SALES','RETURNS','FINANCE_FEES',
+                        'ADVERTISING','INTERNAL_COST','COMMERCIAL_INPUTS']) feed
+                    """.formatted(PriceWritePathFixture.ORGANIZATION,
+                            PriceWritePathFixture.ACCOUNT, STORE, evidence));
+        }
+
+        private void rebindFixtureSnapshots() throws SQLException {
+            String expression = "ops.price_authority_snapshot('"
+                    + PriceWritePathFixture.RECOMMENDATION + "')";
+            execute(arranger, "UPDATE ops.guardrail_evaluation SET authority_snapshot="
+                    + expression + " WHERE recommendation_id='"
+                    + PriceWritePathFixture.RECOMMENDATION + "'");
+            execute(arranger, "UPDATE ops.approval_decision SET authority_snapshot="
+                    + expression + " WHERE recommendation_id='"
+                    + PriceWritePathFixture.RECOMMENDATION + "'");
+            execute(arranger, "UPDATE ops.price_command SET authority_snapshot="
+                    + expression + " WHERE recommendation_id='"
+                    + PriceWritePathFixture.RECOMMENDATION + "'");
+        }
+
+        private void allowCreator() throws SQLException {
+            execute(arranger, """
+                    INSERT INTO iam.user_role_assignment
+                        (id,organization_id,user_id,role_code,effective_from,status,
+                         created_at,updated_at)
+                    VALUES (gen_random_uuid(),'%s','%s','OWNER',now()-interval '1 hour',
+                            'ACTIVE',now(),now())
+                    """.formatted(PriceWritePathFixture.ORGANIZATION,
+                            PriceWritePathFixture.USER));
+            execute(arranger, """
+                    INSERT INTO iam.user_scope_grant
+                        (id,organization_id,user_id,action_code,store_ref_id,effective_from,
+                         status,created_at,updated_at)
+                    VALUES (gen_random_uuid(),'%s','%s','PRICE_CHANGE_APPROVE','%s',
+                            now()-interval '1 hour','ACTIVE',now(),now())
+                    """.formatted(PriceWritePathFixture.ORGANIZATION,
+                            PriceWritePathFixture.USER, STORE));
+        }
+    }
+
+    @Nested
     @DisplayName("TC-WRITE-101 the gate is a conjunction and every part is real")
     class WriteGate {
 
@@ -146,6 +253,18 @@ class PriceWritePathIT extends PostgresContainerSupport {
             execute(arranger, "UPDATE ops.commercial_policy SET policy_version = 2 WHERE id = '"
                     + PriceWritePathFixture.POLICY + "'");
             assertThat(gateReasons(connection, COMMAND)).contains("COMMAND_AUTHORITY_MISMATCH");
+        }
+
+        @Test
+        void anEconomicsComponentChangeInvalidatesThePreviouslyApprovedSnapshot()
+                throws SQLException {
+            execute(arranger, "UPDATE core.economics_projection_component"
+                    + " SET fixed_amount = fixed_amount + 1"
+                    + " WHERE profile_id = (SELECT id FROM core.economics_projection_profile"
+                    + " WHERE store_id = '" + STORE + "')"
+                    + " AND family_code = 'COMMISSION'");
+            assertThat(gateReasons(connection, COMMAND))
+                    .contains("COMMAND_AUTHORITY_MISMATCH");
         }
 
         @Test
