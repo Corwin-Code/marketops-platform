@@ -110,8 +110,8 @@ public class IdentitySecurityConfig {
      * The token decoder, present only when an issuer is configured.
      *
      * <p>Validation is the standard set plus two deployment facts: the issuer
-     * must be the exact one configured, and the audience must match when one is
-     * recorded. Both are checked before any claim is used, so a correctly signed
+     * must be the exact one configured, and a configured audience must match.
+     * Missing audience configuration itself fails validation. Both are checked before any claim is used, so a correctly signed
      * token minted for a different application is refused rather than resolved.
      * Expiry is mandatory; the library's timestamp validator only validates an
      * expiry when present and would otherwise accept an unbounded bearer token.
@@ -146,7 +146,9 @@ public class IdentitySecurityConfig {
 
     private static OAuth2TokenValidator<Jwt> audienceValidator(String audience) {
         if (audience == null || audience.isBlank()) {
-            return token -> OAuth2TokenValidatorResult.success();
+            return token -> OAuth2TokenValidatorResult.failure(
+                    new org.springframework.security.oauth2.core.OAuth2Error(
+                            "invalid_token", "no token audience is configured", null));
         }
         return token -> {
             List<String> declared = token.getAudience();

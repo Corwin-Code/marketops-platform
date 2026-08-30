@@ -95,6 +95,9 @@ public class RecommendationService {
             throw OperationRejectedException.of(ErrorCode.DUPLICATE_IDENTITY);
         }
         String validRisk = MetadataFieldPolicy.requireText("riskLabel", riskLabel);
+        if (actionKind == ActionKind.PRICE_CHANGE) {
+            PriceChangeParameterContract.requireValid(proposedParameters);
+        }
 
         Instant now = clock.instant();
         Map<MetricCode, MetricValueView> current = metrics.currentValues(

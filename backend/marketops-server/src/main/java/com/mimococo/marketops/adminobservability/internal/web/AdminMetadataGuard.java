@@ -7,6 +7,8 @@ import com.mimococo.marketops.shared.MetadataFieldPolicy;
 import com.mimococo.marketops.shared.OperationRejectedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -14,15 +16,15 @@ import org.springframework.web.servlet.HandlerInterceptor;
 /**
  * Boundary of every metadata maintenance mutation.
  *
- * <p>Two rules run before any handler: the environment must accept maintenance
- * writes, and the mutation must carry valid operator attribution. Queries pass
- * freely — the maintenance query surface is not gated.
+ * <p>The actual socket peer must be loopback for every method. Mutations then
+ * also require the environment write switch and valid operator attribution.
+ * Forwarding headers are deliberately irrelevant to this boundary.
  *
  * <p>A refusal thrown here reaches the shared maintenance problem boundary,
  * which returns the stable error and journals a truthful system-observed
  * denial. The rejected attribution value itself is never stored or logged.
- * Attribution is a recording obligation, not authentication; the surface stays
- * safe because the server binds to loopback and the write switch fails closed.
+ * Attribution is a recording obligation, not authentication; the peer check is
+ * enforced even in serving profiles that bind the application to all interfaces.
  */
 @Component
 class AdminMetadataGuard implements HandlerInterceptor {
@@ -37,6 +39,9 @@ class AdminMetadataGuard implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) {
+        if (!isLoopbackPeer(request.getRemoteAddr())) {
+            throw OperationRejectedException.of(ErrorCode.MAINTENANCE_LOOPBACK_REQUIRED);
+        }
         if (isQuery(request)) {
             return true;
         }
@@ -49,6 +54,51 @@ class AdminMetadataGuard implements HandlerInterceptor {
         }
         request.setAttribute(OperatorAttribution.REQUEST_ATTRIBUTE, operator);
         return true;
+    }
+
+    private static boolean isLoopbackPeer(String remoteAddress) {
+        if (remoteAddress == null || remoteAddress.isBlank()) {
+            return false;
+        }
+        if (!remoteAddress.contains(":")) {
+            return isIpv4LoopbackLiteral(remoteAddress);
+        }
+        if (!remoteAddress.matches("[0-9A-Fa-f:.]+")) {
+            return false;
+        }
+        try {
+            return InetAddress.getByName(remoteAddress).isLoopbackAddress();
+        } catch (UnknownHostException invalidPeerAddress) {
+            return false;
+        }
+    }
+
+    /** Parse dotted IPv4 locally so a hostname-shaped value can never trigger DNS. */
+    private static boolean isIpv4LoopbackLiteral(String remoteAddress) {
+        String[] octets = remoteAddress.split("\\.", -1);
+        if (octets.length != 4) {
+            return false;
+        }
+        int first = -1;
+        for (int index = 0; index < octets.length; index++) {
+            String octet = octets[index];
+            if (!octet.matches("[0-9]{1,3}")) {
+                return false;
+            }
+            int value;
+            try {
+                value = Integer.parseInt(octet);
+            } catch (NumberFormatException outsideIntegerRange) {
+                return false;
+            }
+            if (value > 255) {
+                return false;
+            }
+            if (index == 0) {
+                first = value;
+            }
+        }
+        return first == 127;
     }
 
     private static boolean isQuery(HttpServletRequest request) {

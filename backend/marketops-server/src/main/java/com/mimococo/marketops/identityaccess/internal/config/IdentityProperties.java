@@ -32,6 +32,8 @@ public final class IdentityProperties {
     @Pattern(regexp = HTTPS_LOCATION, message = "the key set must be an https location")
     private String jwkSetUri;
 
+    @Pattern(regexp = "[A-Za-z0-9][A-Za-z0-9._:/-]{0,254}",
+            message = "the audience must be a bounded identifier")
     private String audience;
 
     private Duration sessionRecordingInterval = Duration.ofMinutes(5);
@@ -56,7 +58,7 @@ public final class IdentityProperties {
         this.jwkSetUri = jwkSetUri;
     }
 
-    /** Audience a token must be addressed to, or {@code null} to accept any. */
+    /** Audience a token must be addressed to, or {@code null} when locally unconfigured. */
     public String getAudience() {
         return audience;
     }
@@ -79,5 +81,10 @@ public final class IdentityProperties {
     /** Whether an issuer is configured at all. */
     public boolean configured() {
         return issuerUri != null && !issuerUri.isBlank();
+    }
+
+    /** Whether a bounded nonblank token audience is configured. */
+    public boolean audienceConfigured() {
+        return audience != null && audience.matches("[A-Za-z0-9][A-Za-z0-9._:/-]{0,254}");
     }
 }

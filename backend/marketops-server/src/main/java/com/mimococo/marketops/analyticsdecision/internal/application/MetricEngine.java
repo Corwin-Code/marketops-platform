@@ -3,6 +3,10 @@ package com.mimococo.marketops.analyticsdecision.internal.application;
 import com.mimococo.marketops.analyticsdecision.ConfidenceState;
 import com.mimococo.marketops.analyticsdecision.MetricCode;
 import com.mimococo.marketops.analyticsdecision.MetricWindow;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsCalculator;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsProfile;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsQuery;
+import com.mimococo.marketops.analyticsdecision.PriceEconomicsResolution;
 import com.mimococo.marketops.analyticsdecision.ValueState;
 import com.mimococo.marketops.analyticsdecision.internal.config.AnalyticsProperties;
 import com.mimococo.marketops.analyticsdecision.internal.domain.ComputedMetric;
@@ -63,17 +67,20 @@ public class MetricEngine {
     private static final int DAY_SCALE = 2;
 
     /** The profit inputs data completeness is measured over. */
-    private static final int PROFIT_INPUT_COUNT = 6;
+    private static final int PROFIT_INPUT_COUNT = 8;
 
     private final OperatingFactQuery facts;
     private final ListingIdentityDirectory listings;
+    private final PriceEconomicsQuery economics;
     private final AnalyticsProperties properties;
 
     MetricEngine(OperatingFactQuery facts,
                  ListingIdentityDirectory listings,
+                 PriceEconomicsQuery economics,
                  AnalyticsProperties properties) {
         this.facts = facts;
         this.listings = listings;
+        this.economics = economics;
         this.properties = properties;
     }
 
@@ -84,14 +91,14 @@ public class MetricEngine {
      * @param storeId store the subject sits on
      * @param listingVariantId the subject
      * @param window the observation window
-     * @param periodEnd first instant after the window
+     * @param factWindow the one exact half-open window owned by the calculation run
      */
     public Map<MetricCode, ComputedMetric> compute(UUID organizationId,
                                                    UUID storeId,
                                                    UUID listingVariantId,
                                                    MetricWindow window,
-                                                   Instant periodEnd) {
-        FactWindow factWindow = FactWindow.endingAt(periodEnd, window.length());
+                                                   FactWindow factWindow) {
+        Instant periodEnd = factWindow.periodEnd();
         Map<MetricCode, ComputedMetric> metrics = new EnumMap<>(MetricCode.class);
 
         TrafficTotals traffic = facts.traffic(listingVariantId, factWindow);
@@ -105,7 +112,34 @@ public class MetricEngine {
         AdvertisingTotals advertising = facts.advertising(listingVariantId, factWindow);
         StockSnapshot stock = facts.latestStock(listingVariantId, periodEnd);
 
-        Optional<UUID> mappedVariant = listings.internalVariantAt(listingVariantId, periodEnd);
+        var listingContext = listings.variantContext(listingVariantId, periodEnd);
+        Optional<UUID> mappedVariant = listingContext
+                .filter(context -> context.mapped() && !context.conflictOpen())
+                .map(context -> context.productVariantId());
+        Optional<UUID> mappingId = listingContext
+                .filter(context -> context.mapped() && !context.conflictOpen())
+                .map(context -> context.mappingId());
+        List<String> fulfillmentModes = listingContext
+                .map(context -> economics.activeFulfillmentModes(context.storeId(), periodEnd))
+                .orElseGet(List::of);
+        PriceEconomicsResolution economicsResolution = listingContext.isPresent()
+                && fulfillmentModes.size() == 1
+                ? economics.resolveProfile(organizationId,
+                        listingContext.orElseThrow().platformCode(),
+                        listingContext.orElseThrow().marketplaceAccountId(), storeId,
+                        fulfillmentModes.getFirst(), periodEnd)
+                : PriceEconomicsResolution.unavailable(
+                        fulfillmentModes.size() > 1
+                                ? PriceEconomicsResolution.Status.AMBIGUOUS
+                                : PriceEconomicsResolution.Status.MISSING,
+                        "periodic-metric-fulfillment-scope-count=" + fulfillmentModes.size());
+        PriceEconomicsCalculator.HistoricalCoverage feeCoverage =
+                economicsResolution.available()
+                        ? PriceEconomicsCalculator.historicalCoverage(
+                                economicsResolution.profile(), fees)
+                        : new PriceEconomicsCalculator.HistoricalCoverage(false, Map.of(),
+                                List.of("ECONOMICS_PROFILE_"
+                                        + economicsResolution.status()));
         Optional<CostSnapshot> unitCost = mappedVariant
                 .flatMap(variantId -> facts.unitCost(variantId, periodEnd));
         InternalStockSnapshot internalStock = mappedVariant
@@ -113,6 +147,10 @@ public class MetricEngine {
                 .orElseGet(InternalStockSnapshot::absent);
         Optional<FinanceInputSnapshot> taxRate = facts.financeInput(organizationId,
                 "VARIABLE_TAX_RATE", storeId, mappedVariant.orElse(null), periodEnd);
+        Optional<FinanceInputSnapshot> requiredProfit = facts.financeInput(organizationId,
+                "REQUIRED_PROFIT_PER_UNIT", storeId, mappedVariant.orElse(null), periodEnd);
+        Optional<FinanceInputSnapshot> safetyBuffer = facts.financeInput(organizationId,
+                "SAFETY_BUFFER_PER_UNIT", storeId, mappedVariant.orElse(null), periodEnd);
 
         putCount(metrics, MetricCode.IMPRESSIONS, traffic.impressions(), traffic.evidence());
         putCount(metrics, MetricCode.CLICKS, traffic.clicks(), traffic.evidence());
@@ -173,21 +211,40 @@ public class MetricEngine {
                                 MetricInput.provenance(cost.provenanceId()))))
                 .orElseGet(() -> absent(MetricCode.UNIT_COST, ConfidenceState.INCOMPLETE)));
 
-        putMoney(metrics, MetricCode.PLATFORM_FEES, fees.available() ? fees.total() : null,
+        putMoney(metrics, MetricCode.PLATFORM_FEES,
+                feeCoverage.complete() && fees.platformFeesAvailable() ? fees.total() : null,
                 fees.evidence());
         putMoney(metrics, MetricCode.RETURN_LOSS,
                 returns.available() ? returns.lossAmount() : null, returns.evidence());
         metrics.put(MetricCode.VARIABLE_TAX_ESTIMATE,
                 variableTax(completed, taxRate));
 
+        metrics.put(MetricCode.PLATFORM_FEES_PER_UNIT,
+                perUnit(MetricCode.PLATFORM_FEES_PER_UNIT,
+                        feeCoverage.complete() ? fees.total() : null, fees.evidence(),
+                        completed, fees.settledOnly(), feeCoverage));
+        metrics.put(MetricCode.RETURN_LOSS_PER_UNIT,
+                perUnit(MetricCode.RETURN_LOSS_PER_UNIT, returns.lossAmount(),
+                        returns.evidence(), completed, true));
+        metrics.put(MetricCode.AD_SPEND_PER_UNIT,
+                perUnit(MetricCode.AD_SPEND_PER_UNIT, advertising.spendAmount(),
+                        advertising.evidence(), completed, true));
+        metrics.put(MetricCode.VARIABLE_TAX_PER_UNIT,
+                perUnit(MetricCode.VARIABLE_TAX_PER_UNIT, fees.variableTax(),
+                        fees.evidence(), completed, fees.settledOnly()));
+        metrics.put(MetricCode.REQUIRED_PROFIT_PER_UNIT,
+                financeAmount(MetricCode.REQUIRED_PROFIT_PER_UNIT, requiredProfit));
+        metrics.put(MetricCode.SAFETY_BUFFER_PER_UNIT,
+                financeAmount(MetricCode.SAFETY_BUFFER_PER_UNIT, safetyBuffer));
+
         metrics.put(MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT,
                 contributionProfit(MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT,
                         completed, unitCost, fees, returns, advertising,
-                        metrics.get(MetricCode.VARIABLE_TAX_ESTIMATE)));
+                        metrics.get(MetricCode.VARIABLE_TAX_ESTIMATE), feeCoverage, false));
         metrics.put(MetricCode.SETTLED_CONTRIBUTION_PROFIT,
                 contributionProfit(MetricCode.SETTLED_CONTRIBUTION_PROFIT,
                         settled, unitCost, fees, returns, advertising,
-                        metrics.get(MetricCode.VARIABLE_TAX_ESTIMATE)));
+                        aggregateActualTax(fees), feeCoverage, true));
         metrics.put(MetricCode.CONTRIBUTION_MARGIN,
                 moneyRatio(MetricCode.CONTRIBUTION_MARGIN,
                         moneyOf(metrics.get(MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT)),
@@ -201,10 +258,16 @@ public class MetricEngine {
                 () -> metrics.put(MetricCode.OBSERVED_SELLING_PRICE,
                         absent(MetricCode.OBSERVED_SELLING_PRICE,
                                 ConfidenceState.INCOMPLETE)));
-        metrics.put(MetricCode.MINIMUM_PRICE,
-                breakEvenPrice(completed, unitCost, fees, returns, taxRate));
+        PriceEconomicsCalculator.Solution priceSolution = solvePrices(
+                economicsResolution, metrics);
+        metrics.put(MetricCode.BREAK_EVEN_PRICE, projectedPriceMetric(
+                MetricCode.BREAK_EVEN_PRICE, economicsResolution, priceSolution,
+                priceSolution.breakEvenPrice(), metrics));
+        metrics.put(MetricCode.MINIMUM_PRICE, projectedPriceMetric(
+                MetricCode.MINIMUM_PRICE, economicsResolution, priceSolution,
+                priceSolution.minimumPrice(), metrics));
         metrics.put(MetricCode.DATA_COMPLETENESS,
-                dataCompleteness(metrics, mappedVariant.isPresent()));
+                dataCompleteness(metrics, mappingId));
 
         return applyFreshness(metrics, periodEnd);
     }
@@ -275,93 +338,215 @@ public class MetricEngine {
                                                      FeeTotals fees,
                                                      ReturnTotals returns,
                                                      AdvertisingTotals advertising,
-                                                     ComputedMetric variableTax) {
-        if (!sales.available() || unitCost.isEmpty() || !fees.available()) {
-            return absent(metricCode, ConfidenceState.INCOMPLETE);
-        }
-        Money net = sales.netAmount();
-        Money cost = unitCost.get().unitCost().times(BigDecimal.valueOf(sales.units()));
-        Money profit = net.minus(cost).minus(fees.total());
-        List<MetricInput> inputs = new ArrayList<>(inputs(sales.evidence()));
-        inputs.addAll(inputs(fees.evidence()));
-        inputs.add(MetricInput.costVersion(unitCost.get().costVersionId()));
-        inputs.add(MetricInput.provenance(unitCost.get().provenanceId()));
+                                                     ComputedMetric variableTax,
+                                                     PriceEconomicsCalculator.HistoricalCoverage
+                                                             feeCoverage,
+                                                     boolean requireSettledFees) {
+        boolean salesAvailable = sales.available() && sales.netAmount() != null;
+        boolean costAvailable = unitCost.isPresent();
+        boolean feesAvailable = fees.platformFeesAvailable() && feeCoverage.complete();
+        boolean returnsAvailable = returns.available() && returns.lossAmount() != null;
+        boolean advertisingAvailable = advertising.available()
+                && advertising.spendAmount() != null;
+        boolean taxAvailable = variableTax.valueState() == ValueState.AVAILABLE
+                && variableTax.numericValue() != null && variableTax.currencyCode() != null;
 
-        if (returns.available() && returns.lossAmount() != null) {
-            profit = profit.minus(returns.lossAmount());
-            inputs.addAll(inputs(returns.evidence()));
-        }
-        if (advertising.available() && advertising.spendAmount() != null) {
-            profit = profit.minus(advertising.spendAmount());
-            inputs.addAll(inputs(advertising.evidence()));
-        }
-        boolean estimated = false;
-        if (variableTax.valueState() == ValueState.AVAILABLE) {
-            profit = profit.minus(Money.of(variableTax.numericValue(),
-                    variableTax.currencyCode()));
-            inputs.addAll(variableTax.inputs());
-            estimated = true;
+        List<String> states = new ArrayList<>(List.of(
+                "sales=" + salesAvailable,
+                "cost=" + costAvailable,
+                "platformFees=" + feesAvailable,
+                "returnLoss=" + returnsAvailable,
+                "advertising=" + advertisingAvailable,
+                "tax=" + taxAvailable,
+                "settledFees=" + fees.settledOnly()));
+        feeCoverage.familyStates().entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> states.add("feeFamily:" + entry.getKey()
+                        + '=' + entry.getValue()));
+        feeCoverage.reasons().forEach(reason -> states.add("feeCoverage:" + reason));
+        List<MetricInput> metricInputs = new ArrayList<>();
+        metricInputs.addAll(inputs(sales.evidence()));
+        metricInputs.addAll(inputs(fees.evidence()));
+        metricInputs.addAll(inputs(returns.evidence()));
+        metricInputs.addAll(inputs(advertising.evidence()));
+        metricInputs.addAll(variableTax.inputs());
+        unitCost.ifPresent(cost -> {
+            metricInputs.add(MetricInput.costVersion(cost.costVersionId()));
+            metricInputs.add(MetricInput.provenance(cost.provenanceId()));
+        });
+
+        if (!salesAvailable || !costAvailable || !feesAvailable || !returnsAvailable
+                || !advertisingAvailable || !taxAvailable) {
+            return absent(metricCode, ConfidenceState.INCOMPLETE, metricInputs, states);
         }
 
-        ConfidenceState confidence = estimated
-                ? ConfidenceState.ESTIMATED_EXPLAINED
-                : fees.settledOnly()
-                        ? ConfidenceState.CANONICAL_CONFIRMED
-                        : ConfidenceState.CANONICAL_PENDING_SETTLEMENT;
+        Money tax = Money.of(variableTax.numericValue(), variableTax.currencyCode());
+        Money cost = unitCost.orElseThrow().unitCost()
+                .times(BigDecimal.valueOf(sales.units()));
+        List<Money> amounts = List.of(sales.netAmount(), cost, fees.total(),
+                returns.lossAmount(), advertising.spendAmount(), tax);
+        if (!sameCurrency(amounts)) {
+            return absent(metricCode, ConfidenceState.CONFLICTED, metricInputs,
+                    append(states, "currencyCompatible=false"));
+        }
+
+        Money profit = sales.netAmount().minus(cost).minus(fees.total())
+                .minus(returns.lossAmount()).minus(advertising.spendAmount()).minus(tax);
+        ConfidenceState confidence;
+        if (variableTax.confidenceState() == ConfidenceState.ESTIMATED_EXPLAINED) {
+            confidence = ConfidenceState.ESTIMATED_EXPLAINED;
+        } else if (requireSettledFees && !fees.settledOnly()) {
+            confidence = ConfidenceState.CANONICAL_PENDING_SETTLEMENT;
+        } else {
+            confidence = ConfidenceState.CANONICAL_CONFIRMED;
+        }
         return new ComputedMetric(metricCode, ValueState.AVAILABLE, profit.amount(),
-                profit.currencyCode(), confidence,
-                oldest(sales.evidence().oldestSourceTime(), fees.evidence().oldestSourceTime()),
-                inputs);
+                profit.currencyCode(), confidence, oldestSource(
+                        sales.evidence().oldestSourceTime(), fees.evidence().oldestSourceTime(),
+                        returns.evidence().oldestSourceTime(),
+                        advertising.evidence().oldestSourceTime(),
+                        unitCost.orElseThrow().effectiveFrom(), variableTax.oldestSourceTime()),
+                distinct(metricInputs), append(states, "currencyCompatible=true"));
     }
 
-    /**
-     * The unit price at which contribution profit is exactly zero.
-     *
-     * <p>The proportional fee rate is observed rather than assumed: it is what
-     * the platform actually charged as a share of what it actually sold. A rate
-     * at or above one leaves no price that breaks even, which is undefined
-     * rather than infinite.
-     */
-    private static ComputedMetric breakEvenPrice(SalesTotals completed,
-                                                 Optional<CostSnapshot> unitCost,
-                                                 FeeTotals fees,
-                                                 ReturnTotals returns,
-                                                 Optional<FinanceInputSnapshot> taxRate) {
-        if (unitCost.isEmpty() || !completed.available() || completed.units() <= 0
-                || !fees.available()) {
-            return absent(MetricCode.MINIMUM_PRICE, ConfidenceState.INCOMPLETE);
+    /** An actual tax aggregate used by settled profit; it is never exposed as a metric. */
+    private static ComputedMetric aggregateActualTax(FeeTotals fees) {
+        if (!fees.variableTaxAvailable()) {
+            return absent(MetricCode.VARIABLE_TAX_PER_UNIT, ConfidenceState.INCOMPLETE,
+                    inputs(fees.evidence()), List.of("actualTax=false"));
         }
-        BigDecimal net = completed.netAmount().amount();
-        if (net.signum() <= 0) {
-            return undefined(MetricCode.MINIMUM_PRICE, completed.evidence());
-        }
-        BigDecimal feeRate = fees.total().amount()
-                .divide(net, RATIO_SCALE, RoundingMode.HALF_UP);
-        BigDecimal tax = taxRate.map(FinanceInputSnapshot::rateValue).orElse(BigDecimal.ZERO);
-        BigDecimal denominator = BigDecimal.ONE.subtract(feeRate).subtract(tax);
-        if (denominator.signum() <= 0) {
-            return undefined(MetricCode.MINIMUM_PRICE, completed.evidence());
-        }
+        return new ComputedMetric(MetricCode.VARIABLE_TAX_PER_UNIT, ValueState.AVAILABLE,
+                fees.variableTax().amount(), fees.variableTax().currencyCode(),
+                fees.settledOnly() ? ConfidenceState.CANONICAL_CONFIRMED
+                        : ConfidenceState.CANONICAL_PENDING_SETTLEMENT,
+                fees.evidence().oldestSourceTime(), inputs(fees.evidence()),
+                List.of("actualTax=true", "settled=" + fees.settledOnly()));
+    }
 
-        BigDecimal units = BigDecimal.valueOf(completed.units());
-        BigDecimal returnLossPerUnit = returns.available() && returns.lossAmount() != null
-                ? returns.lossAmount().amount().divide(units, RATIO_SCALE, RoundingMode.HALF_UP)
-                : BigDecimal.ZERO;
-        BigDecimal numerator = unitCost.get().unitCost().amount().add(returnLossPerUnit);
-        Money price = Money.of(numerator.divide(denominator, Money.SCALE, RoundingMode.HALF_UP),
-                unitCost.get().unitCost().currencyCode());
+    /** Convert one explicitly published whole-window amount to a per-unit amount. */
+    private static ComputedMetric perUnit(MetricCode metricCode,
+                                          Money total,
+                                          FactEvidence evidence,
+                                          SalesTotals completed,
+                                          boolean settledOnly) {
+        return perUnit(metricCode, total, evidence, completed, settledOnly, null);
+    }
 
-        List<MetricInput> inputs = new ArrayList<>(inputs(completed.evidence()));
-        inputs.addAll(inputs(fees.evidence()));
-        inputs.add(MetricInput.costVersion(unitCost.get().costVersionId()));
-        taxRate.ifPresent(rate ->
-                inputs.add(MetricInput.financeInput(rate.financeInputVersionId())));
-        ConfidenceState confidence = taxRate.isPresent()
-                ? ConfidenceState.ESTIMATED_EXPLAINED
-                : ConfidenceState.CANONICAL_PENDING_SETTLEMENT;
-        return new ComputedMetric(MetricCode.MINIMUM_PRICE, ValueState.AVAILABLE,
-                price.amount(), price.currencyCode(), confidence,
-                completed.evidence().oldestSourceTime(), inputs);
+    /** Convert a covered historical amount while retaining every family state. */
+    private static ComputedMetric perUnit(MetricCode metricCode,
+                                          Money total,
+                                          FactEvidence evidence,
+                                          SalesTotals completed,
+                                          boolean settledOnly,
+                                          PriceEconomicsCalculator.HistoricalCoverage coverage) {
+        List<MetricInput> metricInputs = new ArrayList<>(inputs(evidence));
+        metricInputs.addAll(inputs(completed.evidence()));
+        List<String> states = new ArrayList<>(List.of("totalPresent=" + (total != null),
+                "unitsPresent=" + completed.available(), "settled=" + settledOnly));
+        if (coverage != null) {
+            coverage.familyStates().entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .forEach(entry -> states.add("feeFamily:" + entry.getKey()
+                            + '=' + entry.getValue()));
+            coverage.reasons().forEach(reason -> states.add("feeCoverage:" + reason));
+        }
+        if (total == null || !evidence.usable() || !completed.available()) {
+            return absent(metricCode, confidenceFor(merge(evidence, completed.evidence())),
+                    metricInputs, states);
+        }
+        if (completed.units() <= 0) {
+            return new ComputedMetric(metricCode, ValueState.UNDEFINED, null, null,
+                    confidenceFor(merge(evidence, completed.evidence())),
+                    oldest(evidence.oldestSourceTime(), completed.evidence().oldestSourceTime()),
+                    distinct(metricInputs), append(states, "unitsPositive=false"));
+        }
+        BigDecimal value = total.amount().divide(BigDecimal.valueOf(completed.units()),
+                Money.SCALE, RoundingMode.HALF_UP);
+        return new ComputedMetric(metricCode, ValueState.AVAILABLE, value,
+                total.currencyCode(), settledOnly ? ConfidenceState.CANONICAL_CONFIRMED
+                        : ConfidenceState.CANONICAL_PENDING_SETTLEMENT,
+                oldest(evidence.oldestSourceTime(), completed.evidence().oldestSourceTime()),
+                distinct(metricInputs), append(states, "unitsPositive=true"));
+    }
+
+    /** A versioned company-owned amount; no default is permitted. */
+    private static ComputedMetric financeAmount(MetricCode metricCode,
+                                                Optional<FinanceInputSnapshot> input) {
+        if (input.isEmpty() || input.get().amountValue() == null) {
+            return absent(metricCode, ConfidenceState.INCOMPLETE, List.of(),
+                    List.of("amountInput=false"));
+        }
+        FinanceInputSnapshot value = input.get();
+        return new ComputedMetric(metricCode, ValueState.AVAILABLE,
+                value.amountValue().amount(), value.amountValue().currencyCode(),
+                ConfidenceState.CANONICAL_CONFIRMED, value.effectiveFrom(),
+                List.of(MetricInput.financeInput(value.financeInputVersionId()),
+                        MetricInput.provenance(value.provenanceId())),
+                List.of("amountInput=true"));
+    }
+
+    /** Solve current profile economics without substituting historical averages. */
+    private static PriceEconomicsCalculator.Solution solvePrices(
+            PriceEconomicsResolution resolution,
+            Map<MetricCode, ComputedMetric> metrics) {
+        if (!resolution.available()) {
+            return PriceEconomicsCalculator.Solution.unavailable(
+                    "ECONOMICS_PROFILE_" + resolution.status());
+        }
+        Money unitCost = moneyOf(metrics.get(MetricCode.UNIT_COST));
+        Money requiredProfit = moneyOf(metrics.get(MetricCode.REQUIRED_PROFIT_PER_UNIT));
+        Money safetyBuffer = moneyOf(metrics.get(MetricCode.SAFETY_BUFFER_PER_UNIT));
+        return PriceEconomicsCalculator.solve(resolution.profile(), unitCost,
+                requiredProfit, safetyBuffer);
+    }
+
+    /** Bind the solved value to the profile and exact component tiers it consumes. */
+    private static ComputedMetric projectedPriceMetric(
+            MetricCode metricCode,
+            PriceEconomicsResolution resolution,
+            PriceEconomicsCalculator.Solution solution,
+            BigDecimal value,
+            Map<MetricCode, ComputedMetric> metrics) {
+        List<MetricInput> metricInputs = new ArrayList<>();
+        List<String> states = new ArrayList<>();
+        states.add("economicsResolution=" + resolution.status());
+        states.addAll(solution.reasons().stream().map(reason -> "solver=" + reason).toList());
+        for (MetricCode inputCode : List.of(MetricCode.UNIT_COST,
+                MetricCode.REQUIRED_PROFIT_PER_UNIT, MetricCode.SAFETY_BUFFER_PER_UNIT)) {
+            ComputedMetric input = metrics.get(inputCode);
+            if (input != null) {
+                metricInputs.addAll(input.inputs());
+                states.add(inputCode + "=" + input.valueState() + ':'
+                        + input.confidenceState());
+            }
+        }
+        if (!resolution.available() || !solution.available() || value == null) {
+            return absent(metricCode, ConfidenceState.INCOMPLETE, metricInputs, states);
+        }
+        PriceEconomicsProfile profile = resolution.profile();
+        metricInputs.add(MetricInput.economicsProfile(profile.profileId()));
+        PriceEconomicsCalculator.Projection projection =
+                PriceEconomicsCalculator.project(profile, value);
+        projection.componentIds().forEach(id ->
+                metricInputs.add(MetricInput.economicsComponent(id)));
+        states.add("profileId=" + profile.profileId());
+        states.add("profileVersion=" + profile.profileVersion());
+        states.add("fulfillmentMode=" + profile.fulfillmentModeCode());
+        projection.familyCoverage().entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> states.add("projectedFamily:" + entry.getKey()
+                        + '=' + entry.getValue()));
+        Instant sourceTime = List.of(
+                        metrics.get(MetricCode.UNIT_COST),
+                        metrics.get(MetricCode.REQUIRED_PROFIT_PER_UNIT),
+                        metrics.get(MetricCode.SAFETY_BUFFER_PER_UNIT))
+                .stream().map(ComputedMetric::oldestSourceTime)
+                .filter(java.util.Objects::nonNull)
+                .reduce(profile.verifiedAt(), (left, right) ->
+                        left.isBefore(right) ? left : right);
+        return new ComputedMetric(metricCode, ValueState.AVAILABLE, value,
+                profile.currencyCode(), ConfidenceState.CANONICAL_CONFIRMED,
+                sourceTime, distinct(metricInputs), states);
     }
 
     /**
@@ -372,11 +557,12 @@ public class MetricEngine {
      * blocked needs to see which of a small, fixed set is missing.
      */
     private static ComputedMetric dataCompleteness(Map<MetricCode, ComputedMetric> metrics,
-                                                   boolean mappingResolved) {
+                                                   Optional<UUID> mappingId) {
         List<MetricCode> profitInputs = List.of(
                 MetricCode.COMPLETED_NET_SALES, MetricCode.UNIT_COST,
-                MetricCode.PLATFORM_FEES, MetricCode.RETURN_LOSS,
-                MetricCode.AD_SPEND, MetricCode.VARIABLE_TAX_ESTIMATE);
+                MetricCode.PLATFORM_FEES_PER_UNIT, MetricCode.RETURN_LOSS_PER_UNIT,
+                MetricCode.AD_SPEND_PER_UNIT, MetricCode.VARIABLE_TAX_PER_UNIT,
+                MetricCode.REQUIRED_PROFIT_PER_UNIT, MetricCode.SAFETY_BUFFER_PER_UNIT);
         long resolved = profitInputs.stream()
                 .map(metrics::get)
                 .filter(metric -> metric != null && metric.valueState() == ValueState.AVAILABLE)
@@ -388,11 +574,22 @@ public class MetricEngine {
         // so completeness is zero regardless of how many marketplace facts
         // arrived. Reporting a high share for an unmappable listing would hide
         // exactly the condition the blocking rule exists to catch.
-        BigDecimal value = mappingResolved ? share : BigDecimal.ZERO;
+        BigDecimal value = mappingId.isPresent() ? share : BigDecimal.ZERO;
+        List<MetricInput> metricInputs = profitInputs.stream().map(metrics::get)
+                .flatMap(metric -> metric.inputs().stream()).collect(java.util.stream.Collectors.toCollection(ArrayList::new));
+        mappingId.ifPresent(id -> metricInputs.add(MetricInput.listingMapping(id)));
+        List<String> states = profitInputs.stream().map(code -> {
+            ComputedMetric metric = metrics.get(code);
+            return code + "=" + metric.valueState() + ":" + metric.confidenceState();
+        }).collect(java.util.stream.Collectors.toCollection(ArrayList::new));
+        states.add("mapping=" + mappingId.isPresent());
+        Instant sourceTime = profitInputs.stream().map(metrics::get)
+                .map(ComputedMetric::oldestSourceTime).filter(java.util.Objects::nonNull)
+                .min(Instant::compareTo).orElse(null);
         return new ComputedMetric(MetricCode.DATA_COMPLETENESS, ValueState.AVAILABLE, value,
-                null, mappingResolved
+                null, mappingId.isPresent()
                         ? ConfidenceState.CANONICAL_CONFIRMED : ConfidenceState.INCOMPLETE,
-                null, List.of());
+                sourceTime, distinct(metricInputs), states);
     }
 
     // -----------------------------------------------------------------------
@@ -458,6 +655,14 @@ public class MetricEngine {
                 confidence, null, List.of());
     }
 
+    private static ComputedMetric absent(MetricCode metricCode,
+                                         ConfidenceState confidence,
+                                         List<MetricInput> inputs,
+                                         List<String> identityComponents) {
+        return new ComputedMetric(metricCode, ValueState.NOT_AVAILABLE, null, null,
+                confidence, null, distinct(inputs), identityComponents);
+    }
+
     private static ComputedMetric undefined(MetricCode metricCode, FactEvidence evidence) {
         return new ComputedMetric(metricCode, ValueState.UNDEFINED, null, null,
                 confidenceFor(evidence), evidence.oldestSourceTime(), inputs(evidence));
@@ -508,6 +713,25 @@ public class MetricEngine {
         return first.isBefore(second) ? first : second;
     }
 
+    private static Instant oldestSource(Instant... values) {
+        return java.util.Arrays.stream(values).filter(java.util.Objects::nonNull)
+                .min(Instant::compareTo).orElse(null);
+    }
+
+    private static boolean sameCurrency(List<Money> amounts) {
+        return amounts.stream().map(Money::currencyCode).distinct().count() == 1;
+    }
+
+    private static List<MetricInput> distinct(List<MetricInput> inputs) {
+        return inputs.stream().distinct().toList();
+    }
+
+    private static List<String> append(List<String> values, String value) {
+        List<String> combined = new ArrayList<>(values);
+        combined.add(value);
+        return List.copyOf(combined);
+    }
+
     /**
      * Downgrade any value whose freshest contributing fact is older than its
      * domain allows.
@@ -527,7 +751,8 @@ public class MetricEngine {
             adjusted.put(code, stale && metric.confidenceState().sufficientForWrite()
                     ? new ComputedMetric(metric.metricCode(), metric.valueState(),
                             metric.numericValue(), metric.currencyCode(),
-                            ConfidenceState.STALE, metric.oldestSourceTime(), metric.inputs())
+                            ConfidenceState.STALE, metric.oldestSourceTime(), metric.inputs(),
+                            metric.identityComponents())
                     : metric);
         });
         return Map.copyOf(adjusted);

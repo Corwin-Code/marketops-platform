@@ -284,6 +284,7 @@ export interface PriceCommand {
   readonly recommendationId: string;
   readonly storeId: string;
   readonly platformCode: string;
+  readonly fulfillmentModeCode: string | null;
   readonly currencyCode: string;
   readonly priorPrice: string;
   readonly targetPrice: string;
@@ -558,6 +559,7 @@ export function parseCommand(body: unknown): PriceCommand | undefined {
     recommendationId: text(body, 'recommendationId') ?? '',
     storeId: text(body, 'storeId') ?? '',
     platformCode: text(body, 'platformCode') ?? '',
+    fulfillmentModeCode: optionalText(body, 'fulfillmentModeCode'),
     currencyCode: text(body, 'currencyCode') ?? '',
     priorPrice,
     targetPrice,

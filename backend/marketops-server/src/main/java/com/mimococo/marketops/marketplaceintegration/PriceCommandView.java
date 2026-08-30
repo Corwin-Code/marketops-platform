@@ -19,6 +19,7 @@ import java.util.UUID;
  * @param storeId store the listing sits on
  * @param platformListingVariantId the listing variant it changes
  * @param platformCode marketplace it targets
+ * @param fulfillmentModeCode exact Store fulfillment authority selected by the approval
  * @param idempotencyKey identity a platform retry must not duplicate
  * @param currencyCode currency of both prices
  * @param priorPrice the price held before
@@ -41,6 +42,7 @@ public record PriceCommandView(
         UUID storeId,
         UUID platformListingVariantId,
         String platformCode,
+        String fulfillmentModeCode,
         String idempotencyKey,
         String currencyCode,
         BigDecimal priorPrice,

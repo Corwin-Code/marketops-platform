@@ -73,6 +73,7 @@ public class AdminMetadataProblemAdvice {
             Map.entry(ErrorCode.CAPABILITY_VERIFICATION_NOT_SUPPORTED, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.PRODUCTION_WRITE_DISABLED, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.MAINTENANCE_WRITE_DISABLED, HttpStatus.FORBIDDEN),
+            Map.entry(ErrorCode.MAINTENANCE_LOOPBACK_REQUIRED, HttpStatus.FORBIDDEN),
             Map.entry(ErrorCode.OPERATOR_ATTRIBUTION_MISSING, HttpStatus.BAD_REQUEST));
 
     private final MetadataAuditRecorder auditRecorder;

@@ -50,7 +50,7 @@ public class FactQueryRepository {
         this.jdbc = jdbc;
     }
 
-    /** The most recent price observation at or before an instant. */
+    /** The most recent price observation strictly before an exclusive instant. */
     public Optional<PriceRow> latestPrice(UUID listingVariantId, Instant asOf) {
         return jdbc.sql("""
                         SELECT price.id, price.observed_at, price.currency_code,
@@ -61,7 +61,7 @@ public class FactQueryRepository {
                           JOIN core.fact_provenance AS provenance
                             ON provenance.id = price.provenance_id
                          WHERE price.platform_listing_variant_id = :listingVariantId
-                           AND price.observed_at <= :asOf
+                           AND price.observed_at < :asOf
                         """
                         + NOT_SUPERSEDED.formatted("core.listing_price_observation", "price")
                         + """
@@ -84,7 +84,7 @@ public class FactQueryRepository {
     }
 
     /**
-     * The most recent availability per fulfillment mode at or before an instant.
+     * The most recent availability per fulfillment mode before an exclusive instant.
      *
      * <p>Each mode is answered from its own latest observation, because a source
      * that reports one mode more often than another must not make the other look
@@ -100,7 +100,7 @@ public class FactQueryRepository {
                           JOIN core.fact_provenance AS provenance
                             ON provenance.id = stock.provenance_id
                          WHERE stock.platform_listing_variant_id = :listingVariantId
-                           AND stock.observed_at <= :asOf
+                           AND stock.observed_at < :asOf
                         """
                         + NOT_SUPERSEDED.formatted("core.listing_stock_observation", "stock")
                         + """
@@ -341,7 +341,7 @@ public class FactQueryRepository {
                          WHERE cost.product_variant_id = :productVariantId
                            AND cost.cost_kind = 'PURCHASE'
                            AND cost.status = 'ACTIVE'
-                           AND cost.effective_from <= :asOf
+                           AND cost.effective_from < :asOf
                            AND (cost.effective_to IS NULL OR cost.effective_to > :asOf)
                         """)
                 .param("productVariantId", productVariantId)
@@ -380,7 +380,7 @@ public class FactQueryRepository {
                          WHERE input.organization_id = :organizationId
                            AND input.input_code = :inputCode
                            AND input.status = 'ACTIVE'
-                           AND input.effective_from <= :asOf
+                           AND input.effective_from < :asOf
                            AND (input.effective_to IS NULL OR input.effective_to > :asOf)
                            AND (input.scope_kind = 'ORGANIZATION'
                                 OR (input.scope_kind = 'STORE'
@@ -408,7 +408,7 @@ public class FactQueryRepository {
                 .optional();
     }
 
-    /** The most recent internal stock snapshot at or before an instant. */
+    /** The most recent internal stock snapshot before an exclusive instant. */
     public Optional<InternalStockRow> internalStock(UUID productVariantId, Instant asOf) {
         return jdbc.sql("""
                         SELECT sum(latest.quantity_on_hand) AS quantity_on_hand,
@@ -429,7 +429,7 @@ public class FactQueryRepository {
                                      snapshot.observed_at, snapshot.provenance_id
                                 FROM core.internal_stock_snapshot AS snapshot
                                WHERE snapshot.product_variant_id = :productVariantId
-                                 AND snapshot.observed_at <= :asOf
+                                 AND snapshot.observed_at < :asOf
                                ORDER BY snapshot.warehouse_id, snapshot.observed_at DESC,
                                         snapshot.id DESC
                           ) AS latest

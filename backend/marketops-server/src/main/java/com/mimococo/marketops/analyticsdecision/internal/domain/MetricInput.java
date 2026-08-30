@@ -46,12 +46,24 @@ public record MetricInput(Kind kind, UUID referenceId) {
         return new MetricInput(Kind.LISTING_MAPPING, id);
     }
 
+    /** An input that is a scoped economics profile version. */
+    public static MetricInput economicsProfile(UUID id) {
+        return new MetricInput(Kind.ECONOMICS_PROFILE, id);
+    }
+
+    /** An input that is one selected fixed, percentage or tier component. */
+    public static MetricInput economicsComponent(UUID id) {
+        return new MetricInput(Kind.ECONOMICS_COMPONENT, id);
+    }
+
     /** The sorts of input a metric can have. */
     public enum Kind {
         FACT_PROVENANCE,
         COST_VERSION,
         FINANCE_INPUT_VERSION,
         METRIC_VALUE,
-        LISTING_MAPPING
+        LISTING_MAPPING,
+        ECONOMICS_PROFILE,
+        ECONOMICS_COMPONENT
     }
 }

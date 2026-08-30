@@ -286,7 +286,8 @@ public class PriceCommandRepository {
         return jdbc.sql("""
                         SELECT id, organization_id, recommendation_id, store_id,
                                platform_listing_variant_id, platform_code, capability_id,
-                               idempotency_key, currency_code, prior_price, target_price,
+                               fulfillment_mode_code, idempotency_key, currency_code,
+                               prior_price, target_price,
                                state, attempt_no, retry_budget_remaining, fence_token,
                                lease_owner
                           FROM ops.price_command WHERE id = :commandId
@@ -340,6 +341,12 @@ public class PriceCommandRepository {
      * consume the day's allowance would block real work for no reason.
      */
     public BigDecimal cumulativeChangeRate(UUID platformListingVariantId, Instant since) {
+        return cumulativeChangeRate(platformListingVariantId, since, null);
+    }
+
+    /** Completed movement bounded by the exact Guardrail evaluation instant. */
+    public BigDecimal cumulativeChangeRate(UUID platformListingVariantId, Instant since,
+                                           Instant at) {
         return jdbc.sql("""
                         SELECT coalesce(sum(abs(
                                    (command.target_price - command.prior_price)
@@ -347,22 +354,31 @@ public class PriceCommandRepository {
                           FROM ops.price_command AS command
                          WHERE command.platform_listing_variant_id = :variantId
                            AND command.terminal_at >= :since
+                           AND (CAST(:at AS timestamptz) IS NULL OR command.terminal_at <= :at)
                            AND command.state IN ('SUCCEEDED', 'COMPENSATED')
                         """)
                 .param("variantId", platformListingVariantId)
                 .param("since", Timestamp.from(since))
+                .param("at", at == null ? null : Timestamp.from(at))
                 .query(BigDecimal.class)
                 .single();
     }
 
     /** When this product last changed the price of one listing variant. */
     public Optional<Instant> lastChangeAt(UUID platformListingVariantId) {
+        return lastChangeAt(platformListingVariantId, null);
+    }
+
+    /** Latest completed change bounded by the exact Guardrail evaluation instant. */
+    public Optional<Instant> lastChangeAt(UUID platformListingVariantId, Instant at) {
         return jdbc.sql("""
                         SELECT max(terminal_at) FROM ops.price_command
                          WHERE platform_listing_variant_id = :variantId
+                           AND (CAST(:at AS timestamptz) IS NULL OR terminal_at <= :at)
                            AND state IN ('SUCCEEDED', 'COMPENSATED')
                         """)
                 .param("variantId", platformListingVariantId)
+                .param("at", at == null ? null : Timestamp.from(at))
                 .query(Timestamp.class)
                 .optional()
                 .map(Timestamp::toInstant);
@@ -426,7 +442,8 @@ public class PriceCommandRepository {
                 .list();
         return new PriceCommandView(command.id(), command.recommendationId(),
                 command.storeId(), command.platformListingVariantId(), command.platformCode(),
-                command.idempotencyKey(), command.currencyCode(), command.priorPrice(),
+                command.fulfillmentModeCode(), command.idempotencyKey(),
+                command.currencyCode(), command.priorPrice(),
                 command.targetPrice(), command.state(), command.attemptNo(),
                 command.retryBudgetRemaining(), command.failureCode(), command.leaseOwner(),
                 command.leaseExpiresAt(), command.nextAttemptAt(), command.createdAt(),
@@ -435,7 +452,8 @@ public class PriceCommandRepository {
 
     private static final String SELECT_COMMAND = """
             SELECT id, recommendation_id, store_id, platform_listing_variant_id,
-                   platform_code, idempotency_key, currency_code, prior_price, target_price,
+                   platform_code, fulfillment_mode_code, idempotency_key, currency_code,
+                   prior_price, target_price,
                    state, attempt_no, retry_budget_remaining, failure_code, lease_owner,
                    lease_expires_at, next_attempt_at, created_at, terminal_at
               FROM ops.price_command
@@ -451,6 +469,7 @@ public class PriceCommandRepository {
                 rows.getObject("store_id", UUID.class),
                 rows.getObject("platform_listing_variant_id", UUID.class),
                 rows.getString("platform_code"),
+                rows.getString("fulfillment_mode_code"),
                 rows.getString("idempotency_key"),
                 rows.getString("currency_code"),
                 rows.getBigDecimal("prior_price"),
@@ -476,6 +495,7 @@ public class PriceCommandRepository {
                 rows.getObject("platform_listing_variant_id", UUID.class),
                 rows.getString("platform_code"),
                 rows.getObject("capability_id", UUID.class),
+                rows.getString("fulfillment_mode_code"),
                 rows.getString("idempotency_key"),
                 rows.getString("currency_code"),
                 rows.getBigDecimal("prior_price"),
@@ -497,6 +517,7 @@ public class PriceCommandRepository {
      * @param platformListingVariantId the listing variant it changes
      * @param platformCode marketplace it targets
      * @param capabilityId the write capability being used
+     * @param fulfillmentModeCode exact Store fulfillment authority selected by the approval
      * @param idempotencyKey identity a platform retry must not duplicate
      * @param currencyCode currency of both prices
      * @param priorPrice the price held before
@@ -509,7 +530,8 @@ public class PriceCommandRepository {
      */
     public record CommandRow(UUID id, UUID organizationId, UUID recommendationId, UUID storeId,
                              UUID platformListingVariantId, String platformCode,
-                             UUID capabilityId, String idempotencyKey, String currencyCode,
+                             UUID capabilityId, String fulfillmentModeCode,
+                             String idempotencyKey, String currencyCode,
                              BigDecimal priorPrice, BigDecimal targetPrice,
                              PriceCommandState state, int attemptNo, int retryBudgetRemaining,
                              long fenceToken, String leaseOwner) {

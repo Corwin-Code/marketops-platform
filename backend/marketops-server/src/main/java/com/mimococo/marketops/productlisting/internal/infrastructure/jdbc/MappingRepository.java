@@ -338,6 +338,7 @@ public class MappingRepository {
                                listing.id AS listing_id, listing.store_id,
                                listing.marketplace_account_id, listing.platform_code,
                                listing.native_listing_key, variant.native_variant_key,
+                               mapping.id AS mapping_id,
                                mapping.product_variant_id,
                                EXISTS (
                                    SELECT 1 FROM core.mapping_conflict AS conflict
@@ -349,7 +350,7 @@ public class MappingRepository {
                           LEFT JOIN core.listing_mapping AS mapping
                             ON mapping.platform_listing_variant_id = variant.id
                            AND mapping.status = 'ACTIVE'
-                           AND mapping.effective_from <= :at
+                           AND mapping.effective_from < :at
                            AND (mapping.effective_to IS NULL OR mapping.effective_to > :at)
                          WHERE variant.id = :listingVariantId
                         """)
@@ -363,6 +364,7 @@ public class MappingRepository {
                         rows.getString("platform_code"),
                         rows.getString("native_listing_key"),
                         rows.getString("native_variant_key"),
+                        rows.getObject("mapping_id", UUID.class),
                         rows.getObject("product_variant_id", UUID.class),
                         rows.getBoolean("conflict_open")))
                 .optional();

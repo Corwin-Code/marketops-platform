@@ -106,6 +106,12 @@ export function CommandTimeline({ context, commandId }: CommandTimelineProps): R
         <dd>{formatAmount(command.priorPrice, command.currencyCode)}</dd>
         <dt>Price intended</dt>
         <dd>{formatAmount(command.targetPrice, command.currencyCode)}</dd>
+        {command.fulfillmentModeCode !== null && (
+          <>
+            <dt>Fulfillment mode</dt>
+            <dd>{command.fulfillmentModeCode}</dd>
+          </>
+        )}
         <dt>Attempts made</dt>
         <dd>{command.attemptNo}</dd>
         {command.failureCode !== null && (

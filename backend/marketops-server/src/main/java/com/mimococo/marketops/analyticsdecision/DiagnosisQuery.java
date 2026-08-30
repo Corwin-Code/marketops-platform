@@ -1,5 +1,6 @@
 package com.mimococo.marketops.analyticsdecision;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +17,12 @@ public interface DiagnosisQuery {
     List<DiagnosisFindingView> currentFindings(SubjectKind subjectKind,
                                                UUID subjectId,
                                                MetricWindow window);
+
+    /** The latest finding for each rule no later than one captured decision instant. */
+    List<DiagnosisFindingView> currentFindingsAt(SubjectKind subjectKind,
+                                                 UUID subjectId,
+                                                 MetricWindow window,
+                                                 Instant at);
 
     /**
      * The subjects a store should look at first.
