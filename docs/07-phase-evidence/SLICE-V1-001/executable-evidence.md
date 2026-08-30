@@ -3,23 +3,45 @@
 ```yaml
 document_type: executable_evidence_record
 slice: SLICE-V1-001
-executed_at: 2026-08-28
-executed_on: LOCAL_ISOLATED_FIXTURES
-assessment: REWORK_CANDIDATE_FOR_CLOSURE
-final_exact_commit_verification: REQUIRED_IN_DELIVERY_PACKET
-remote_rework_ci: C3_ALL_CHECKS_SUCCESS_AFTER_V1_1_DISPOSITION
+executed_at: 2026-08-30
+executed_on: LOCAL_ISOLATED_FIXTURES_AND_GITHUB_CI
+assessment: ENGINEERING_IMPLEMENTATION_CLOSED
+controller_final_gate: PASS_R2_ENGINEERING_FINAL_GATE
+controller_comment_id: 5469390502
+approved_engineering_head: f35327a584b980ec4acf7ace7c88e124d6d79709
+approved_engineering_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b
+approved_tested_merge: bcc3b37965003c3ea1af720ea847dc27fb473a9e
+actual_squash_commit: d562b81f4f0271aa33a53b21ccaffc88b5610c0c
+actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b
+actual_squash_sole_parent: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
+remote_rework_ci: PASS_12_OF_12_REQUIRED_CONTEXTS_AND_AGGREGATE_CODEQL
 external_business_systems_contacted: NONE
+deployment: NOT_EXECUTED
+production_write_enabled: false
 ```
 
 ## Evidence boundary
 
-These are successive source-bound checkpoints, not a Controller verdict.
-The [final handoff index](rework-r1/final-handoff.md) identifies the final delivery
-requirements and separates historical snapshots from current evidence. The accepted original Slice Contract and
-Amendment-001 are identified in [Current State](../../00-governance/CURRENT_STATE.md).
-All thirteen Frozen Findings remain open for final independent verification.
-The [41-criterion matrix](acceptance-status.md) keeps local implementation,
-external evidence and Owner/Gate conditions separate.
+The historical checkpoints below remain source-bound evidence. The current
+engineering verdict is Controller comment `5469390502`, which accepted the exact
+final Head/tree/signed tested merge, closed all ten frozen Supplemental R2 items
+and reported zero unresolved BLOCKER or MAJOR finding. The Human Owner then
+authorized the exact protected SQUASH merge recorded above.
+
+This is engineering evidence, not real-provider, deployment, production
+readiness or Human Owner Formal Closure evidence. The [41-criterion
+matrix](acceptance-status.md) keeps the 24 engineering-verified rows separate
+from all 17 Amendment-002 rows deferred to `RELEASE-V1-001`.
+
+## Exact R2 final-gate evidence
+
+The approved final Head passed 877 unit, 391 PostgreSQL integration, 65
+architecture, 377 Python, 196 frontend and 11 browser tests. PR #22 passed all
+12 protected required contexts plus aggregate CodeQL; aggregate annotations were
+empty. The actual SQUASH commit has the same approved tree and exactly the
+reviewed base as its sole parent. No deployment, Terraform apply, production DB,
+Credential, real provider/Marketplace call, Gate EV, Gate E, Pilot or production
+write occurred.
 
 ## Verified C3 checkpoint and CodeQL v1.1
 
@@ -39,9 +61,9 @@ PR alert records and six unrelated thread records were unchanged. All 11
 threads are resolved; all 13 checks, including aggregate CodeQL, are SUCCESS.
 The original empty default-branch inventory is not an all-ref inventory.
 
-The final canonical commit must receive fresh full local verification and CI;
-its exact Head/tree, tested merge/parents and results belong in the final
-delivery packet, not a self-referential claim inside that same commit.
+That historical requirement was satisfied by the exact R2 final Head, signed
+tested merge, remote checks and Controller PASS recorded above. The older C3
+identities remain historical and are not promoted to final R2 evidence.
 
 ## Preserved earlier checkpoints
 
@@ -112,10 +134,10 @@ remain in checkpoint logs; successful later runs are not retroactive passes.
 C1 and C2 failures above remain historical evidence. C3 closes the Linux
 provider-lock validation failure. Matrix v1.1 supersedes v1.0 and its API-length
 blocker; the five exact dispositions have executed. Current canonical sources
-are the handoff index, C3 receipts and v1.1 before/after evidence. Final delivery
-requires fresh complete local and remote verification on its exact Head.
+are the R2 final handoff, Controller Engineering Final Gate, exact SQUASH
+identity, C3 receipts and v1.1 before/after evidence.
 Real Yandex bootstrap/state secrecy/PITR/alert delivery, real OIDC/Marketplace/AI
 provider interoperability, Gate EV/E and Owner cohort evidence remain separate
 unauthorized boundaries. Local mocks, public documentation and test counts
-cannot establish those facts. No Ready, merge, deployment or production
-write enablement was performed.
+cannot establish those facts. The exact protected merge was performed; no
+deployment or production-write enablement was performed.

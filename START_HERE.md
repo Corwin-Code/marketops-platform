@@ -17,20 +17,23 @@ Read, in order:
 Chat history and old phase/WP language are not live authority. Historical records
 remain valuable evidence but are explicitly classified.
 
-## 2. Active execution after DR-0003 merge
+## 2. Active execution after PR #22 merge
 
 ```text
 Product version: V1
 Active Slice: SLICE-V1-001 — SKU Growth & Profit Diagnostic Loop
-Authorization: FULL_SCOPE_IMPLEMENTATION
-Next Maker: Claude Fable 5 / Claude Code
+Engineering implementation: MERGED at d562b81f4f0271aa33a53b21ccaffc88b5610c0c
+Current mode: DOCS_GOVERNANCE_CLOSURE_SYNC_ONLY
+Next actor: GPT-5.6 Pro Controller — bounded post-merge bookkeeping verification
 Production write enablement: DISABLED
 ```
 
-Claude performs local Detailed Design and Initial Full Implementation continuously
-under the Slice Contract. Its ordinary authority ends at an exact local
-checkpoint and excludes remote Git/PR writes. A separate Design approval is not
-required unless a listed Conditional Design Gate trigger appears.
+The exact PR #22 engineering candidate passed Controller Engineering Final Gate
+and was protected-SQUASH-merged. Production readiness remains deferred to
+`RELEASE-V1-001`; every Amendment-002 deferred obligation remains
+production-blocking. Human Owner Formal Closure has not been issued, and the next
+Slice cannot start until the closure-sync Draft, Controller bookkeeping verdict
+and Owner-accepted Closure Snapshot complete.
 
 ## 3. Standard Slice workflow
 
@@ -44,8 +47,8 @@ sync main
 → one Codex full in-scope Root-Cause Rework/Fix/Verify cycle
 → GPT Final closure verification on exact Head/evidence
 → Human Owner-authorized protected merge
-→ Gate EV / Gate E / release as applicable
-→ Controller Slice Closure → Owner Formal Closure
+→ post-merge governance/Closure Snapshot synchronization
+→ bounded Controller bookkeeping verification → Owner Formal Closure
 → Closure Snapshot → next Slice
 ```
 

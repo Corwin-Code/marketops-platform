@@ -246,14 +246,23 @@ class RepositoryContractPatternTests(unittest.TestCase):
 
         self.assertTrue(any("auto-commit: true" in violation for violation in violations))
 
-    def test_old_phase_authorization_is_rejected(self) -> None:
+    def test_post_merge_state_cannot_reactivate_implementation_authority(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)
         mutated = source.replace(
+            "authorization: FINAL_REVIEW_ONLY",
             "authorization: FULL_SCOPE_IMPLEMENTATION",
-            "authorization: DESIGN_ONLY",
         )
         violations = contract_token_violations(mutated, required=COMPLETION_STATE_TOKENS)
-        self.assertTrue(any("FULL_SCOPE_IMPLEMENTATION" in violation for violation in violations))
+        self.assertTrue(any("FINAL_REVIEW_ONLY" in violation for violation in violations))
+
+    def test_post_merge_squash_identity_is_required(self) -> None:
+        source = "\n".join(COMPLETION_STATE_TOKENS)
+        mutated = source.replace(
+            "slice_v1_001_actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b",
+            "slice_v1_001_actual_squash_tree: 0000000000000000000000000000000000000000",
+        )
+        violations = contract_token_violations(mutated, required=COMPLETION_STATE_TOKENS)
+        self.assertTrue(any("actual_squash_tree" in violation for violation in violations))
 
     def test_enabled_production_write_is_rejected(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)

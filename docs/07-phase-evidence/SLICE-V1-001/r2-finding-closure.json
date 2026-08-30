@@ -1,9 +1,10 @@
 {
   "schemaVersion": "1.0",
-  "documentType": "SLICE_V1_001_SUPPLEMENTAL_R2_FINDING_CLOSURE_CANDIDATE",
+  "documentType": "SLICE_V1_001_SUPPLEMENTAL_R2_FINDING_CLOSURE_ENGINEERING_CLOSED",
   "generatedAt": "2026-08-30T16:00:00+08:00",
   "repository": "Corwin-Code/marketops-platform",
-  "branch": "fix/SLICE-V1-001-supplemental-assurance-r2",
+  "engineeringBranch": "fix/SLICE-V1-001-supplemental-assurance-r2",
+  "closureSyncBranch": "docs/SLICE-V1-001-r2-post-merge-closure-sync",
   "requiredBase": "db92cf2f8bd818f36dd8f5aa17b8589c4140b669",
   "requiredBaseTree": "221e5a009d4cf5820d36c0e1bccd5b64caa6135b",
   "authority": {
@@ -14,12 +15,15 @@
     "r1FrozenFindingSetSha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8",
     "supplementalR2ReviewSha256": "c772c76c89b753d4694ee5ec1eceddad3451ab7ef6acc2e36416d9d4171f26ff"
   },
-  "candidateState": "FINAL_TRANSITIVE_ROOT_CAUSE_FIXED_LOCAL_FULL_PRECOMMIT_REGRESSION_PASS_FINAL_CONTAINING_COMMIT_REVERIFY",
-  "controllerVerdict": "PENDING_GPT_5_6_PRO_CONTROLLER",
+  "candidateState": "ENGINEERING_IMPLEMENTATION_MERGED",
+  "controllerVerdict": "PASS_R2_ENGINEERING_FINAL_GATE",
+  "controllerCommentId": 5469390502,
+  "productionReadiness": "DEFERRED_TO_RELEASE_V1_001",
+  "ownerFormalClosure": "PENDING_HUMAN_OWNER_DECISION",
   "productionWriteEnabled": false,
   "remoteHandoff": {
     "pullRequest": 22,
-    "pullRequestState": "OPEN_DRAFT",
+    "pullRequestState": "MERGED_PROTECTED_SQUASH",
     "boundedClosureStartHead": "63ab9e8d33b4cf586d45d49c2280735113da83eb",
     "boundedClosureStartTree": "82540ee1e6bc7d35ad962551ffd29743e4b7ad72",
     "boundedClosureStartTestedMerge": "5f5ab4c8844f2c38e3d0cc117a76363c8def4ddc",
@@ -31,13 +35,20 @@
     "boundedClosureStartRequiredContexts": "PASS_12_OF_12",
     "transitiveClosureStartHead": "7f93683fea2858e9180b2b10078e31de11b0af3e",
     "transitiveClosureStartTree": "17711aca639edbbd594d516828fa87264470af66",
-    "controllerSourceComment": "https://github.com/Corwin-Code/marketops-platform/pull/22#issuecomment-5467970562",
-    "finalCandidateIdentityResolution": "THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS_AND_BODY",
-    "mergeAuthorization": "NOT_GRANTED",
+    "controllerSourceComment": "https://github.com/Corwin-Code/marketops-platform/pull/22#issuecomment-5469390502",
+    "approvedEngineeringHead": "f35327a584b980ec4acf7ace7c88e124d6d79709",
+    "approvedEngineeringTree": "390ebe37bea778b7a4548381ad357fc99aa0da6b",
+    "approvedTestedMerge": "bcc3b37965003c3ea1af720ea847dc27fb473a9e",
+    "actualSquashCommit": "d562b81f4f0271aa33a53b21ccaffc88b5610c0c",
+    "actualSquashTree": "390ebe37bea778b7a4548381ad357fc99aa0da6b",
+    "actualSquashSoleParent": "db92cf2f8bd818f36dd8f5aa17b8589c4140b669",
+    "requiredContexts": "PASS_12_OF_12",
+    "aggregateCodeql": "SUCCESS_ANNOTATIONS_EMPTY",
+    "mergeAuthorization": "CONSUMED_EXACT_PROTECTED_SQUASH_MERGE",
     "productionEnablement": false
   },
   "finalTransitiveClosure": {
-    "disposition": "CANDIDATE_FIXED_CONTROLLER_REVERIFICATION_PENDING",
+    "disposition": "ENGINEERING_CLOSED_BY_CONTROLLER_FINAL_GATE",
     "singleAsOfSource": {
       "rootCause": "GuardrailService evaluated JVM-clock current values while PostgreSQL captured the persisted authority snapshot with statement_timestamp(), permitting effective-dated profile or watermark authority to change between the two instants.",
       "correction": "ops.capture_price_authority_snapshot returns one DB evaluation_as_of with the complete snapshot. Metric, diagnosis and price-history reads are bounded by that instant, and GuardrailService compares the evaluated metric entity, fulfillment mode, profile and component identities with the captured snapshot before insert. PostgreSQL rejects a supplied evaluated identity that differs from its exact snapshot.",
@@ -72,7 +83,7 @@
       "backend": "PASS_186_OF_186",
       "frontend": "PASS_196_OF_196"
     },
-    "controllerVerdict": "NOT_SELF_ISSUED"
+    "controllerVerdict": "PASS_R2_ENGINEERING_FINAL_GATE"
   },
   "findings": [
     {
@@ -92,7 +103,7 @@
     },
     {
       "id": "S1-R2-F001",
-      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "disposition": "ENGINEERING_CLOSED_BY_CONTROLLER_FINAL_GATE",
       "rootCause": "AnalyticsCalculationService persisted an hour-aligned period while MetricEngine reconstructed a second now-ending FactWindow, so the query and identity could describe different facts.",
       "correction": "AnalyticsCalculationService now owns one aligned half-open FactWindow and passes the same object to activity discovery, every MetricEngine fact query, persistence, diagnosis and digest generation; point queries use the exclusive period end.",
       "files": [
@@ -110,7 +121,7 @@
     },
     {
       "id": "S1-R2-F002",
-      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "disposition": "ENGINEERING_CLOSED_BY_CONTROLLER_FINAL_GATE",
       "rootCause": "A non-null aggregate platform-fee total was treated as complete even when an independently applicable category had disappeared. The model had no versioned fee-family applicability contract and therefore could not distinguish applicable-with-value, applicable-explicit-zero, verified-not-applicable and missing/incomplete.",
       "correction": "The effective PriceEconomicsProfile now declares every FeeFamily independently. Historical Contribution Profit accepts only complete required families, preserves an explicit sourced zero, accepts verified non-applicability without inventing an amount, and fails closed when any applicable commission, fulfillment/delivery, storage, promotion or other-variable family is removed.",
       "files": [
@@ -131,7 +142,7 @@
     },
     {
       "id": "S1-R2-F003",
-      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "disposition": "ENGINEERING_CLOSED_BY_CONTROLLER_FINAL_GATE",
       "rootCause": "Break-even and Minimum Price reused historical average deductions, so a proposed target could cross a percentage/tier boundary or fulfillment mode without changing its projected economics. No exact versioned target-price profile or component identity was bound to the metric.",
       "correction": "V0029 defines effective PriceEconomicsProfile authority scoped by platform/account/store/fulfillment-mode/currency/effective range/verification/evidence and fixed, percentage and tiered components. The shared bounded PriceEconomicsCalculator evaluates the proposed target and solves Break-even and Minimum from the same profile/component set; ambiguity, expiry, gaps/overlaps, missing families and invalid/non-monotone ranges fail closed.",
       "files": [
@@ -159,7 +170,7 @@
     },
     {
       "id": "S1-R2-F004",
-      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "disposition": "ENGINEERING_CLOSED_BY_CONTROLLER_FINAL_GATE",
       "rootCause": "The proposed-price Guardrail combined historical per-unit metrics with a target price and a persisted freshness value. Its snapshot did not bind the exact profile, fulfillment mode, selected tier/component identities or current feed-watermark authority.",
       "correction": "GuardrailService resolves an explicit or uniquely active fulfillment declaration and the exact effective economics profile. Impact Preview, Guardrail and persisted snapshot use the shared target-aware calculator and bind profile id/version/range/evidence, family contract, selected components, eight watermark identities, evaluation instant and ages. DB approval/command/worker gates independently revalidate that current authority.",
       "files": [
@@ -181,7 +192,7 @@
     },
     {
       "id": "S1-R2-F005",
-      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "disposition": "ENGINEERING_CLOSED_BY_CONTROLLER_FINAL_GATE",
       "rootCause": "The prior candidate fixed metric identity but still used persisted freshness seconds/event-window recency as write authority. Wall-clock passage, late reconciliation and per-feed omission could therefore leave an old approved decision apparently current without any new metric assertion.",
       "correction": "The accepted mutation-sensitive ComputedMetric identity correction is preserved. In addition, DecisionFreshness and source_feed_watermark establish eight attributable feed authorities. Effective reconciled time wins when present, otherwise ingestion time is conservative; preview and every DB-controlled write stage calculate age against its own transaction instant, and an attributed refresh creates a new watermark while never reviving the old snapshot.",
       "files": [
@@ -201,7 +212,7 @@
     },
     {
       "id": "S1-R2-F006",
-      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "disposition": "ENGINEERING_CLOSED_BY_CONTROLLER_FINAL_GATE",
       "rootCause": "The designated operating test accepted a blocked Guardrail as an alternate success and later command assertions tolerated refusal; browser fixtures injected the metrics instead of composing the calculator.",
       "correction": "OperatingFlowIT now records facts, runs the actual MetricEngine and persistence, evaluates diagnosis and actual Guardrail, approves, and creates a DB-authoritative command with no early-return branch or external write. A same-class defect that marked CLEAR diagnosis rows as blocking was fixed in DiagnosisRepository.",
       "files": [
@@ -221,7 +232,7 @@
     },
     {
       "id": "S1-R2-F007",
-      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "disposition": "ENGINEERING_CLOSED_BY_CONTROLLER_FINAL_GATE",
       "rootCause": "The permitAll maintenance surface relied on deployment routing; its interceptor checked only mutations and never authenticated the actual socket peer.",
       "correction": "AdminMetadataGuard rejects every method unless HttpServletRequest.remoteAddr resolves to loopback, ignores all forwarding headers, then retains the write switch and operator attribution as additional mutation controls.",
       "files": [
@@ -239,7 +250,7 @@
     },
     {
       "id": "S1-R2-F008",
-      "disposition": "CANDIDATE_FIXED_CONTROLLER_VERIFICATION_PENDING",
+      "disposition": "ENGINEERING_CLOSED_BY_CONTROLLER_FINAL_GATE",
       "rootCause": "Serving startup required issuer only and a blank audience validator returned success; Terraform and runtime bootstrap also accepted blank audience values.",
       "correction": "Every non-local/non-CI environment now requires a bounded nonblank audience; the decoder fails closed if none is configured; staging, production, workload module and packaged bootstrap validate the same shape while local/CI exemptions remain explicit.",
       "files": [
@@ -260,7 +271,7 @@
     },
     {
       "id": "S1-R2-F009",
-      "disposition": "CANDIDATE_FIXED_LIVE_RULESET_ENFORCED_CONTROLLER_VERIFICATION_PENDING",
+      "disposition": "ENGINEERING_CLOSED_BY_CONTROLLER_FINAL_GATE",
       "rootCause": "The infrastructure workflow ran but its stable infrastructure-validation context was absent from protected main's required status checks.",
       "correction": "The repository owns an exact 12-context inventory and mutation validator, and live Ruleset 20734984 was updated in place with strictRequiredStatusChecksPolicy=true while preserving every other rule.",
       "files": [
@@ -293,7 +304,7 @@
     "severity": "notice",
     "correction": "Numeric parsing now catches NumberFormatException and fails the loopback check closed.",
     "earlierOpenAlertQuery": "EMPTY_BUT_NOT_SUBSTITUTED_FOR_SOURCE_ANNOTATION_OR_FINAL_AGGREGATE_CHECK",
-    "finalAggregateCodeql": "PENDING_EXACT_FINAL_HEAD_AND_TESTED_MERGE_REMOTE_CI"
+    "finalAggregateCodeql": "SUCCESS_CHECK_99269640673_ANNOTATIONS_EMPTY"
   },
   "migrationInventory": {
     "immutableHistory": "V0001_THROUGH_V0028_UNMODIFIED",
@@ -430,28 +441,31 @@
     "rulesetLiveReadbackSha256": "6038cb07be617a113a69c653156dc3e2773ec24576a99f4094564f8655572eae"
   },
   "implementationCheckpoint": {
-    "identityResolution": "THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS_AND_BODY",
-    "cleanWorktree": "PENDING_CONTAINING_COMMIT",
-    "localVerification": "FULL_PRECOMMIT_REGRESSION_PASS_FINAL_IDENTITY_BOUND_REVERIFY_PENDING",
+    "identityResolution": "APPROVED_ENGINEERING_HEAD_AND_ACTUAL_PROTECTED_SQUASH_IDENTITY_BOUND",
+    "cleanWorktree": true,
+    "localVerification": "PASS_EXACT_APPROVED_ENGINEERING_HEAD",
     "backendUnitTests": 877,
     "backendIntegrationTests": 391,
     "pythonTests": 377,
     "frontendTests": 196,
-    "browserTests": "PENDING_EXACT_CONTAINING_COMMIT_HEAD_BINDING",
+    "browserTests": "PASS_11_OF_11_EXACT_HEAD",
     "architectureTests": 65,
     "terraformTests": 9,
     "yandexRuntimeTests": 13,
     "terraformPlans": "PASS_MOCK_PROVIDER_ONLY_NO_APPLY_NO_PROVIDER_API",
-    "packagedArtifactSha256": "PENDING_EXACT_CLEAN_CONTAINING_COMMIT",
-    "remotePublication": "AUTHORIZED_EXISTING_BRANCH_AND_DRAFT_PR_22_MAINTENANCE_PENDING_FINAL_COMMIT",
-    "remoteCi": "PENDING_FINAL_PUBLICATION"
+    "packagedArtifactSha256": "7b656f81dae44fd2eeda8e9a393dc8c0e94d47181e3a13602a7c340706a775d0",
+    "remotePublication": "PR_22_MERGED_PROTECTED_SQUASH",
+    "remoteCi": "PASS_12_OF_12_REQUIRED_CONTEXTS_AND_AGGREGATE_CODEQL",
+    "actualSquashCommit": "d562b81f4f0271aa33a53b21ccaffc88b5610c0c",
+    "actualSquashTree": "390ebe37bea778b7a4548381ad357fc99aa0da6b",
+    "actualSquashSoleParent": "db92cf2f8bd818f36dd8f5aa17b8589c4140b669"
   },
   "remainingLimitations": [
-    "The full precommit regression passes; exact-containing-commit browser/artifact/full binding and remote CI are pending final publication.",
-    "The GPT-5.6 Pro Controller exact-Head verdict is absent.",
+    "Engineering implementation is merged, but production readiness remains deferred to RELEASE-V1-001.",
+    "Human Owner Formal Closure has not been issued.",
     "All Amendment-002 real-provider, Owner, release and Gate-EV evidence remains deferred and production-blocking.",
     "PR #21 remains HOLD_DO_NOT_MERGE and is not reused by this branch."
   ],
   "nextAuthorizedActor": "GPT-5.6 Pro Controller",
-  "nextAction": "CONTROLLER_SLICE_V1_001_R2_FINAL_CLOSURE_VERIFICATION"
+  "nextAction": "CONTROLLER_SLICE_V1_001_R2_POST_MERGE_BOOKKEEPING_VERIFICATION"
 }

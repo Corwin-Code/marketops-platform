@@ -24,13 +24,13 @@ active_slice_amendment_002_acceptance: HUMAN_OWNER_ACCEPTED_FOR_SUPPLEMENTAL_R2
 active_slice_amendment_002_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-002-ACCEPTANCE-EVIDENCE.md
 active_slice_amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923
 active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
-active_gate: SLICE_CONTRACT_APPROVED
-authorization: FULL_SCOPE_IMPLEMENTATION
+active_gate: SLICE_V1_001_POST_MERGE_CLOSURE_SYNC
+authorization: FINAL_REVIEW_ONLY
 accepted_contract_mutation: PROHIBITED_APPEND_ONLY_AMENDMENT_REQUIRED
 execution_envelope: EXECUTION_ENVELOPE_V1
 maker_remote_git_authority: DENIED
 remote_git_publication_delegate: CODEX
-r2_remote_publication_authority: HUMAN_OWNER_EXPLICIT_BRANCH_AND_DRAFT_PR_22
+r2_remote_publication_authority: HUMAN_OWNER_EXPLICIT_POST_MERGE_CLOSURE_SYNC_BRANCH_AND_DRAFT_PR
 deep_review_mode: ONE_SHOT_DISCOVERY_FROZEN_FINDING_SET
 final_gate_mode: CLOSURE_VERIFICATION_ONLY
 owner_formal_slice_closure: REQUIRED
@@ -50,31 +50,46 @@ execution_envelope_state: ACTIVE_UNDER_DR_0004
 closure_snapshot_standard_state: ACTIVE_UNDER_DR_0004
 conditional_design_gate: ENABLED
 mandatory_design_gate_for_every_slice: DISABLED
-slice_v1_001_implementation_state: SUPPLEMENTAL_R2_ROOT_CAUSE_REWORK_CANDIDATE
-slice_v1_001_rework_phase: R2_FIX_VERIFY
+slice_v1_001_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED
+slice_v1_001_rework_phase: R2_POST_MERGE_CLOSURE_SYNC
 slice_v1_001_pr: 22
-slice_v1_001_pr_state: OPEN_DRAFT_R2_CANDIDATE
+slice_v1_001_pr_state: MERGED_PROTECTED_SQUASH
 slice_v1_001_branch: fix/SLICE-V1-001-supplemental-assurance-r2
-slice_v1_001_review_state: SUPPLEMENTAL_R2_FINAL_CONTROLLER_VERIFICATION_PENDING
+slice_v1_001_review_state: PASS_R2_ENGINEERING_FINAL_GATE
 slice_v1_001_reviewed_base: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
-slice_v1_001_reviewed_head: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
-slice_v1_001_reviewed_tree: 221e5a009d4cf5820d36c0e1bccd5b64caa6135b
+slice_v1_001_reviewed_head: f35327a584b980ec4acf7ace7c88e124d6d79709
+slice_v1_001_reviewed_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b
 slice_v1_001_frozen_findings_sha256: 8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8
 slice_v1_001_supplemental_r2_review_sha256: c772c76c89b753d4694ee5ec1eceddad3451ab7ef6acc2e36416d9d4171f26ff
-slice_v1_001_rework_commit_state: REMOTE_DRAFT_PR_INITIAL_CI_PASS_FINAL_METADATA_REVERIFY
+slice_v1_001_rework_commit_state: MERGED_EXACT_PROTECTED_SQUASH
 slice_v1_001_initial_published_head: c3d2160a9c302d993e2b01a08946f46fae0b01d5
 slice_v1_001_initial_published_tree: 9d7641eccc2d233bf2c5615e7c4776721269bc15
 slice_v1_001_initial_tested_merge: 353670b4a311f98b56fae593f8b2b34d5f39a80e
 slice_v1_001_initial_tested_merge_tree: 9d7641eccc2d233bf2c5615e7c4776721269bc15
 slice_v1_001_initial_remote_ci: PASS_12_OF_12_REQUIRED_CONTEXTS
-slice_v1_001_final_candidate_identity_resolution: THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS
-slice_v1_001_finding_count: 9
-slice_v1_001_closure_claim: NONE
-slice_v1_001_execution_condition: AMENDMENTS_001_AND_002_ACCEPTED_R2_REWORK_CONTINUES
+slice_v1_001_final_candidate_identity_resolution: PR_22_FINAL_HEAD_TREE_AND_SIGNED_TESTED_MERGE
+slice_v1_001_controller_final_gate: PASS_R2_ENGINEERING_FINAL_GATE
+slice_v1_001_controller_comment_id: 5469390502
+slice_v1_001_approved_engineering_head: f35327a584b980ec4acf7ace7c88e124d6d79709
+slice_v1_001_approved_engineering_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b
+slice_v1_001_approved_tested_merge: bcc3b37965003c3ea1af720ea847dc27fb473a9e
+slice_v1_001_actual_squash_commit: d562b81f4f0271aa33a53b21ccaffc88b5610c0c
+slice_v1_001_actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b
+slice_v1_001_actual_squash_sole_parent: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
+slice_v1_001_finding_count: 10
+slice_v1_001_engineering_findings_closed: 10_OF_10
+slice_v1_001_unresolved_blocker: 0
+slice_v1_001_unresolved_major: 0
+slice_v1_001_closure_claim: ENGINEERING_IMPLEMENTATION_CLOSED
+slice_v1_001_production_readiness: DEFERRED_TO_RELEASE_V1_001
+slice_v1_001_owner_formal_closure: PENDING
+slice_v1_001_execution_condition: POST_MERGE_BOOKKEEPING_AND_OWNER_FORMAL_CLOSURE_PENDING
 slice_v1_001_source_pr_20: MERGED
 slice_v1_001_docs_closure_pr_21: HOLD_DO_NOT_MERGE
-candidate_state_scope: PR_BRANCH_ONLY
-merge_authorization: NOT_GRANTED
+slice_v1_001_closure_sync_branch: docs/SLICE-V1-001-r2-post-merge-closure-sync
+slice_v1_001_closure_sync_identity_resolution: THIS_DOCUMENT_CONTAINING_COMMIT_AND_NEW_DRAFT_PR_LIVE_REFS
+candidate_state_scope: PROTECTED_MAIN_MERGED_ENGINEERING_IMPLEMENTATION
+merge_authorization: CONSUMED_EXACT_PROTECTED_SQUASH_PR_22
 production_deployment: NOT_AUTHORIZED
 gate_ev: NOT_AUTHORIZED
 gate_e: NOT_AUTHORIZED
@@ -83,8 +98,8 @@ slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-s
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
 next_authorized_actor: GPT-5.6 Pro Controller
-next_action: CONTROLLER_SLICE_V1_001_R2_FINAL_CLOSURE_VERIFICATION
-slice_v1_001_handoff_pending: FINAL_CONTAINING_COMMIT_LOCAL_AND_REMOTE_REVERIFY
+next_action: CONTROLLER_SLICE_V1_001_R2_POST_MERGE_BOOKKEEPING_VERIFICATION
+slice_v1_001_handoff_pending: POST_MERGE_BOOKKEEPING_VERIFICATION
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
 bounded_real_write_verification_authorization: NONE
@@ -104,8 +119,8 @@ owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 
 ## Active authority
 
-This branch presents the Supplemental R2 root-cause rework candidate. The Human
-Owner accepted exact
+The exact Supplemental R2 engineering candidate has completed its protected
+merge. The Human Owner accepted exact
 [Amendment-001](../03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md)
 at SHA-256 `8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d`.
 The Human Owner also accepted exact
@@ -116,9 +131,22 @@ It closes `S1-R2-G001` without waiving any engineering defect and moves only the
 enumerated real/Owner/Gate evidence to reserved `RELEASE-V1-001`. The exact
 Deferred Evidence Register keeps those obligations production-blocking. The
 original Contract, accepted Amendment bytes and V0001–V0028 remain immutable;
-V0029 is the only forward R2 migration. Nine Supplemental R2 findings remain
-pending the Controller's independent final verdict. This branch is not a Slice
-closure verdict or a change to protected main.
+V0029 is the only forward R2 migration.
+
+Controller comment `5469390502` issued `PASS_R2_ENGINEERING_FINAL_GATE` over
+Head `f35327a584b980ec4acf7ace7c88e124d6d79709`, tree
+`390ebe37bea778b7a4548381ad357fc99aa0da6b` and signed tested merge
+`bcc3b37965003c3ea1af720ea847dc27fb473a9e`. All ten frozen Supplemental R2
+items are engineering-closed with zero unresolved BLOCKER or MAJOR finding. The
+Human Owner then authorized the exact protected SQUASH merge. Protected `main`
+now contains commit `d562b81f4f0271aa33a53b21ccaffc88b5610c0c`, with the same tree and sole
+parent `db92cf2f8bd818f36dd8f5aa17b8589c4140b669`.
+
+This state is `ENGINEERING_IMPLEMENTATION_CLOSED` and
+`PRODUCTION_READINESS_DEFERRED_TO_RELEASE_V1_001`. It is not Human Owner Formal
+Closure, production readiness, deployment authority or Capability enablement.
+All seventeen Amendment-002 deferred rows remain production-blocking, and
+`production_write_enabled` remains `false`.
 
 The active product and Slice authority remains DR-0003,
 `OWNER_DECISIONS_V1.md`, `V1_PRODUCT_CONTRACT.md`, ADR-0005 through ADR-0008 and
@@ -127,19 +155,12 @@ the Slice Contract named above. DR-0004, `EXECUTION_ENVELOPE_POLICY.md` and
 changing that product outcome or the active Slice Contract bytes. Their authority
 is the immutable original DR-0004 plus exact Owner-accepted
 `DR-0004-AMENDMENT-001`, with durable acceptance provenance in
-`docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md`. Claude completed the initial implementation and its exact checkpoint was
-published as Draft PR #20 and then merged. The Human Owner supplied the exact R1
-Frozen Finding Set and Supplemental R2 review, and authorized Codex to perform
-the continuous in-scope R2 root-cause rework from protected-main commit
-`db92cf2f8bd818f36dd8f5aa17b8589c4140b669`. PR #21 is held and is not reused
-as the R2 implementation branch. The Human Owner separately authorized Codex to
-publish this exact work branch and create one new Draft PR. That transport is
-now Draft PR #22. Its initial published Head `c3d2160a9c302d993e2b01a08946f46fae0b01d5`
-and tested merge `353670b4a311f98b56fae593f8b2b34d5f39a80e` passed all 12 required
-contexts. The final candidate is the commit containing this state update and is
-bound after publication by PR #22's live Head/tree/tested-merge refs and PR
-body. This candidate branch state does not update protected main. It does not
-grant Ready, merge, deployment, Gate EV, Gate E or real provider I/O.
+`docs/08-handoffs/OWNER-DR-0004-ACCEPTANCE-EVIDENCE.md`. PR #20 and the exact
+PR #22 SQUASH merge preserve the implementation lineage. PR #21 remains held,
+open, Draft and unmerged; it is not reused. The current branch performs only
+post-merge documentation/governance synchronization. Its containing commit and
+new Draft PR live refs bind the closure-sync identity without changing product,
+migration, runtime, IaC or fixture behavior.
 
 The frozen originals' `status: PROPOSED_PENDING_EXACT_OWNER_ACCEPTANCE` and
 `status: PROPOSED_BY_DR_0004` fields are proposal-time provenance only, not live
@@ -150,12 +171,12 @@ and acceptance evidence are present on protected `main` after independent
 Controller approval and Human Owner merge authorization. A proposal branch does
 not activate repository authority.
 
-`SLICE_CONTRACT_APPROVED` and `FULL_SCOPE_IMPLEMENTATION` are valid only for the
-exact `active_slice_contract` path and `active_slice_contract_sha256` recorded in
-the leading metadata. A byte change or identity mismatch is prohibited and makes
-that authorization invalid; updating the original hash or re-reviewing edited
-original bytes cannot restore it. Restore the accepted bytes. Any normative
-change requires a separately accepted additive Amendment.
+The earlier `SLICE_CONTRACT_APPROVED` / `FULL_SCOPE_IMPLEMENTATION` authority was
+valid only for the exact `active_slice_contract` path and hash recorded above.
+The current `FINAL_REVIEW_ONLY` authority permits this bounded bookkeeping sync,
+not further product implementation. A byte change or identity mismatch remains
+prohibited; any normative change requires a separately accepted additive
+Amendment.
 
 The accepted original Contract is permanently byte-frozen. A normative change
 requires a separately identified, exact, Owner-accepted additive Amendment; a
@@ -267,27 +288,25 @@ V0011. DR-0003 itself contains no migration.
 - Owner-level decisions required to start Slice 1 are closed or assigned to a
   precise external evidence/production enablement Gate.
 
-## SLICE-V1-001 Supplemental R2 candidate
+## SLICE-V1-001 Supplemental R2 post-merge state
 
-PR #20 is merged. PR #21 remains OPEN / DRAFT / UNMERGED and is explicitly held;
-it is based on the pre-R2 tree and must not be reused or merged as the R2 result.
-The R2 branch starts at exact protected-main commit
-`db92cf2f8bd818f36dd8f5aa17b8589c4140b669`, tree
-`221e5a009d4cf5820d36c0e1bccd5b64caa6135b`.
+PR #20 and PR #22 are merged. PR #21 remains OPEN / DRAFT / UNMERGED and is
+explicitly held; it must not be reused or merged. PR #22's exact engineering
+Head/tree/tested merge received `PASS_R2_ENGINEERING_FINAL_GATE`, and its
+protected SQUASH commit is now the actual `main` identity recorded above.
 
-Controller Supplemental Assurance R2 is active. `S1-R2-G001` is
-`CLOSED_BY_ACCEPTED_AMENDMENT_002`; `S1-R2-F001` through `S1-R2-F009` remain a
-single continuous rework set pending independent verification. No engineering
-finding is self-approved. Local targeted results do not establish overall PR
-quality, Slice engineering closure, or V1 production readiness.
+`S1-R2-G001` is `CLOSED_BY_ACCEPTED_AMENDMENT_002`; `S1-R2-F001` through
+`S1-R2-F009` are engineering-closed by Controller comment `5469390502`. This is
+the complete ten-item frozen Supplemental R2 set, with zero unresolved BLOCKER
+or MAJOR finding. V0001–V0028 and the accepted Contract/Amendments remain
+unchanged. V0029 is merged in the exact reviewed tree but has not been deployed
+or applied to a production database.
 
-V0001–V0028 and the accepted Contract/Amendments remain unchanged. V0029 is the
-forward-only migration for versioned profit economics and sourced commercial
-inputs. The final R2 handoff must bind exact final Head/tree/tested-merge,
-complete local and remote verification, the finding closure map, same-class
-scan, live Ruleset evidence and Deferred Evidence Register hash. Until that
-packet exists and the Controller issues its verdict, this is only an R2
-candidate.
+The only active work is canonical post-merge bookkeeping and preparation of a
+Draft Closure Snapshot for bounded Controller verification. Human Owner Formal
+Closure remains pending. This bookkeeping state cannot authorize product edits,
+deployment, credentials, provider calls, Gate EV, Gate E, Pilot or production
+writes.
 
 ## Not completed and not claimed
 
@@ -308,8 +327,8 @@ candidate.
 - Local PG17 dump/restore, migration/privilege revalidation, object-loss refusal
   and exact-byte recovery have executed. Real Yandex PITR and environment
   bootstrap have not; local evidence is not provider recovery evidence.
-- R1/C3 and PR #20 evidence remain historical. They do not substitute for exact
-  final R2 Head verification or the new protected Ruleset context.
+- R1/C3 and PR #20 evidence remain historical. The exact R2 final Head, signed
+  tested merge, Controller PASS and actual SQUASH identity are separately bound.
 - V1 and SLICE-V1-001 are not production-ready until their future Gates pass.
 - Business sales/profit uplift is not claimed.
 
@@ -325,9 +344,9 @@ continues to govern other external product/configuration questions.
 ## Next authorized action
 
 The next review actor is GPT-5.6 Pro Controller for
-`CONTROLLER_SLICE_V1_001_R2_FINAL_CLOSURE_VERIFICATION` over the complete R1 and
-Supplemental R2 authority set. Codex must finish exact-final-Head local
-verification, R2 Draft PR publication, all required/security CI and the
-standalone R2 handoff before returning control. Codex cannot issue the
-Controller verdict. Ready, merge, deployment, real credentials/provider calls,
-Gate EV, Gate E, Pilot and production writes remain unauthorized.
+`CONTROLLER_SLICE_V1_001_R2_POST_MERGE_BOOKKEEPING_VERIFICATION`. The review is
+bounded to actual merge identity, canonical status synchronization, validator
+enforcement and zero product/migration diff. It does not reopen engineering
+Discovery or issue Human Owner Formal Closure. Deployment, real
+credentials/provider calls, Gate EV, Gate E, Pilot and production writes remain
+unauthorized.

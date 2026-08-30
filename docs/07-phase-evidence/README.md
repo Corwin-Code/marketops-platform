@@ -38,3 +38,21 @@ Each evidence index identifies:
 
 A fixture/in-memory test remains useful but must not be mislabeled as real
 provider, real database, production release or business outcome evidence.
+
+## SLICE-V1-001 R2 post-merge record
+
+The current engineering and closure-bookkeeping entry points are:
+
+- [`acceptance-status.md`](SLICE-V1-001/acceptance-status.md) — 24
+  engineering-verified non-deferred criteria and 17 exact Amendment-002 deferred
+  criteria;
+- [`executable-evidence.md`](SLICE-V1-001/executable-evidence.md) — exact final
+  Head/tested-merge verification and preserved historical checkpoints;
+- [`post-merge-closure-sync.md`](SLICE-V1-001/post-merge-closure-sync.md) — actual
+  protected SQUASH identity and zero-product-change bookkeeping record;
+- [`CLOSURE-SNAPSHOT-DRAFT.md`](SLICE-V1-001/CLOSURE-SNAPSHOT-DRAFT.md) — draft
+  for Controller bookkeeping verification and later Human Owner decision.
+
+`PASS_R2_ENGINEERING_FINAL_GATE` closes the engineering finding set only.
+Production readiness remains deferred to `RELEASE-V1-001`; Human Owner Formal
+Closure is pending and `production_write_enabled` remains `false`.
