@@ -61,7 +61,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0025__create_price_command_attempt_completion_and_lease_recovery.sql",
             "V0026__rename_operational_capability_column_to_action_kind.sql",
             "V0027__create_account_bound_registry_verification.sql",
-            "V0028__create_bounded_diagnostic_export.sql");
+            "V0028__create_bounded_diagnostic_export.sql",
+            "V0029__version_profit_economics_and_commercial_inputs.sql");
 
     private static PostgreSQLContainer container;
 
@@ -125,6 +126,9 @@ class FlywayMigrationIT extends PostgresContainerSupport {
 
             assertThat(tables).containsExactly(
                     "core.cost_version",
+                    "core.economics_projection_component",
+                    "core.economics_projection_family",
+                    "core.economics_projection_profile",
                     "core.fact_provenance",
                     "core.finance_input_version",
                     "core.fulfillment_mode",
@@ -145,6 +149,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "core.product",
                     "core.product_barcode",
                     "core.product_variant",
+                    "core.source_feed_watermark",
                     "core.store",
                     "core.store_fulfillment_declaration",
                     "core.store_warehouse_link",
@@ -293,9 +298,10 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     .isZero();
             assertThat(strings(connection,
                     "SELECT metric_code FROM mart.metric_definition"
-                            + " WHERE domain = 'PROFIT' ORDER BY metric_code"))
+                            + " WHERE domain = 'PROFIT' AND status = 'ACTIVE'"
+                            + " ORDER BY metric_code"))
                     .containsExactly(
-                            "CONTRIBUTION_MARGIN", "MINIMUM_PRICE",
+                            "BREAK_EVEN_PRICE", "CONTRIBUTION_MARGIN", "MINIMUM_PRICE",
                             "OBSERVED_SELLING_PRICE", "OPERATIONAL_CONTRIBUTION_PROFIT",
                             "SETTLED_CONTRIBUTION_PROFIT");
             assertThat(strings(connection,

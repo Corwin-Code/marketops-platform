@@ -134,7 +134,8 @@ public class ImportRowValidator {
      */
     private Outcome validateFinanceInput(UUID organizationId, Map<String, Object> values) {
         if (!enumValue(values, "inputCode", "VARIABLE_TAX_RATE", "PAYMENT_PROCESSING_RATE",
-                "RETURN_HANDLING_UNIT_COST", "INBOUND_LOGISTICS_UNIT_COST")
+                "RETURN_HANDLING_UNIT_COST", "INBOUND_LOGISTICS_UNIT_COST",
+                "REQUIRED_PROFIT_PER_UNIT", "SAFETY_BUFFER_PER_UNIT")
                 || !enumValue(values, "scopeKind", "ORGANIZATION", "STORE", "PRODUCT_VARIANT")
                 || !enumValue(values, "valueKind", "RATE", "AMOUNT")) {
             return Outcome.rejected(values, VALUE_OUT_OF_RANGE, "inputCode/scopeKind/valueKind");

@@ -6,13 +6,14 @@ slice: SLICE-V1-001
 slice_title: SKU Growth & Profit Diagnostic Loop
 contract: docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md
 contract_sha256: 0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5
-accepted_amendments: SLICE-V1-001-AMENDMENT-001
-accepted_amendment_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d
-implementation_state: ROOT_CAUSE_REWORK_CANDIDATE
-candidate_scope: PR20_PUBLISHED_CANDIDATE
+accepted_amendments: SLICE-V1-001-AMENDMENT-001,SLICE-V1-001-AMENDMENT-002
+accepted_amendment_001_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d
+accepted_amendment_002_sha256: 92fdd8d67b327fbd2288ba99290b5b59f2797106c4b691ce2bff22bb80198b93
+implementation_state: SUPPLEMENTAL_R2_ROOT_CAUSE_REWORK_CANDIDATE
+candidate_scope: R2_BRANCH_ONLY
 closure_claim: NONE
-base_commit: 89fc29be45327b592a9bcbeffbfec54c96fb66ed
-base_tree: 28029347daa05bbff40c1a0ca15c7ad0d9f1ac92
+base_commit: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
+base_tree: 221e5a009d4cf5820d36c0e1bccd5b64caa6135b
 production_write_enabled: false
 real_marketplace_call_made: false
 real_model_provider_call_made: false
@@ -21,22 +22,26 @@ infrastructure_applied: false
 
 ## 1. Implementation and current rework
 
-The original thirteen implementation commits were published as Draft PR #20.
-Controller review froze thirteen findings against Head
-`30d16e5d7db2d2190635a06fececd5883093a876`. Codex's corrections are published on
-the same branch. They remain a candidate, not a Controller closure verdict.
+PR #20 is merged. PR #21 is held and is not an R2 implementation base. Draft
+PR #22 remains open and Draft. The Supplemental R2 branch starts from exact protected-main commit
+`db92cf2f8bd818f36dd8f5aa17b8589c4140b669`. Its nine engineering fixes remain
+a candidate, not a Controller closure verdict.
 
 The code covers acquisition, canonical facts, diagnosis, recommendations,
-controlled commands and readback. Candidate migrations V0011–V0026 contain the
-in-scope corrections, V0027 adds account-bound registry verification, and V0028
-adds bounded asynchronous diagnostic export. The
-[final handoff index](../../07-phase-evidence/SLICE-V1-001/rework-r1/final-handoff.md)
-records C3 full regression, performance/export/restore, browser, infrastructure
-and CI evidence, plus the completed v1.1 CodeQL dispositions. Its final delivery
-packet must bind fresh verification to the exact final published Head. No real
-provider, Marketplace or production write is authorized or proven.
+controlled commands and readback. V0011–V0028 are immutable applied history.
+V0029 is the only unmerged migration and had no deployment or shared consumer;
+R2 therefore corrects it in place to add the versioned target-price economics
+and source-watermark authority described below. This is not an applied-history
+rewrite. The final R2 packet must bind fresh verification to the exact published
+Head. The final transitive-closure correction also removes a split JVM/DB clock
+from Guardrail evaluation and replaces the inherited one-key price parameter
+filter with the exact executable parameter contract described below. Accepted
+Amendment-002 defers only its enumerated real/Owner/Gate evidence
+to `RELEASE-V1-001`; the Deferred Evidence Register preserves every future
+obligation. No real provider, Marketplace or production write is authorized or
+proven.
 
-## 2. The five decisions everything else follows from
+## 2. The decisions everything else follows from
 
 ### 2.1 A marketplace fact is a row, never a line of code
 
@@ -91,13 +96,35 @@ missing input as a zero and the arithmetic kept working.
 ### 2.4 An approval is about the facts it was made from
 
 Every recommendation stores a digest of the canonical values its case rests on.
-An approval stores the same digest. The write gate compares the stored digest
-against the proposal's current one at the moment a worker claims the command,
-and refuses when they differ.
+For a price change this includes the target price, fulfillment mode, exact
+economics profile/version/effective range/evidence, fee-family contract,
+component identities and source-watermark identities. An approval stores the
+same digest. The write gate re-resolves current authority and compares the
+stored digest against the proposal at approval, command creation and worker
+claim time; it refuses when the profile, components, watermarks or their current
+freshness no longer match.
 
 The difference this makes: "somebody approved this price" becomes "somebody
 approved this price when the cost was what it is now". Hours pass between a
 review and an execution, and the world moves in them.
+
+One database statement captures `evaluation_as_of` and the complete
+`price_authority_snapshot` together. Metrics, diagnoses and price history are
+then queried only through that exact inclusive upper boundary. The evaluated
+metric-entity digest, fulfillment mode, economics profile and component
+identities are compared with the captured snapshot before an evaluation can be
+persisted. `evaluated_at` is therefore not a JVM approximation of a later DB
+snapshot. Approval, command creation and worker lease still re-resolve current
+authority at their own transaction instant, preserving expiration and mutation
+closure after the preview.
+
+`PRICE_CHANGE` recommendations have one executable JSON contract:
+`targetPrice` is required, `fulfillmentModeCode` is optional, and additional
+keys are forbidden. When exactly one fulfillment mode is active, omission
+selects that unique mode; multiple active modes require an explicit active code.
+`UNKNOWN`, inactive or syntactically invalid modes fail closed. The selected
+mode is bound in the snapshot, evaluation, approval and command, is returned by
+the API, and is read again by the worker rather than being inferred later.
 
 ### 2.5 The deterministic layer is the authority; the model explains it
 
@@ -113,6 +140,52 @@ the rejected claims — and none of them raises, so an unavailable model degrade
 the explanation and leaves the diagnosis, the guardrails and the command path
 untouched.
 
+### 2.6 A metric assertion is the exact facts, window and state it names
+
+`AnalyticsCalculationService` creates one `FactWindow` and passes that exact
+object through every query, stored `calculation_run` and stored `metric_value`.
+Window facts use `[period_start, period_end)`; point facts resolve strictly
+before the as-of boundary. A recomputation may deduplicate only when value
+state, normalized value, currency, confidence, source time, mapping identity,
+input identities and explicit availability states all match.
+
+Historical Contribution Profit and proposed-price economics are separate
+authorities. Historical actuals consume the ledger and the effective
+`FeeFamily` coverage contract. Every family is represented as exactly one of
+`PRESENT_NONZERO`, `PRESENT_EXPLICIT_ZERO`, `VERIFIED_NOT_APPLICABLE` or
+`MISSING_OR_INCOMPLETE`. Required families must be one of the first two states; an explicit
+sourced zero is never equivalent to absence, and removal of one platform fee
+category cannot be hidden by another category's aggregate.
+
+Projected Break-even and Minimum Price never average historical fees. The
+effective `PriceEconomicsProfile` is scoped by platform, account, store,
+fulfillment mode, currency, effective range, verification state and evidence.
+Its fixed, percentage and tiered components are evaluated against the proposed
+target price by the shared `PriceEconomicsCalculator`. The bounded deterministic
+solver finds:
+
+```text
+Break-even: price = unit cost + projected component total(price)
+Minimum:    price = unit cost + sourced Required Profit per Unit
+                     + sourced Safety Buffer per Unit
+                     + projected component total(price)
+```
+
+The calculator rejects missing required families/components, ambiguous or
+expired profiles, tier gaps/overlaps, non-monotone or out-of-range economics and
+currency conflict. Metric calculation, Impact Preview and Guardrail use the
+same component set and bind the selected profile/component identities.
+
+Current decision freshness is independent of a persisted metric age. Eight
+`source_feed_watermark` authorities—`PRICE`, `STOCK`, `SALES`, `RETURNS`,
+`FINANCE_FEES`, `ADVERTISING`, `INTERNAL_COST` and `COMMERCIAL_INPUTS`—carry
+source/effective, ingestion and reconciliation attribution. Effective source
+time is authoritative when reconciled; otherwise the conservative ingestion
+time applies. Freshness is reevaluated against the transaction instant at
+preview, approval/command binding and worker claim. Missing/stale watermarks,
+missing stock, missing economics or insufficient confidence block the
+write-grade path without creating a new metric row.
+
 ## 3. Module shape
 
 Ten Spring Modulith modules. The two added by this slice are `operationsworkflow`
@@ -126,7 +199,7 @@ and `aicopilot`; the rest existed and were extended.
 | `marketplaceintegration` | Raw custody, acquisition, platform adapters, price command execution, kill switch | `PriceCommandGateway`, `PriceChangeHistory`, `RawEvidenceQuery`, `IngestionJobDirectory` |
 | `productlisting` | Product, variant, listing, listing variant, mapping, conflicts | `ListingIdentityDirectory`, `ListingVariantContext` |
 | `operatingfacts` | Cross-domain facts, file intake, manual entry, normalization, provenance | `OperatingFactQuery`, `EvidenceQuery` |
-| `analyticsdecision` | Canonical metrics, deterministic diagnosis rules, priority | `MetricQuery`, `DiagnosisQuery`, `MetricCode` |
+| `analyticsdecision` | Canonical metrics, deterministic diagnosis rules, priority, target-price economics | `MetricQuery`, `DiagnosisQuery`, `MetricCode`, `PriceEconomicsQuery`, `PriceEconomicsCalculator` |
 | `aicopilot` | Projection, model gateway, output validation, claims | `AiCopilot`, `AiClaim` |
 | `operationsworkflow` | Recommendations, tasks, approvals, policy, guardrails, allowlist | `RecommendationView`, `GuardrailVerdict`, `ImpactPreview` |
 | `adminobservability` | Audit journal, metadata status | `MetadataAuditRecorder`, `MetadataAuditQueries` |
@@ -145,7 +218,7 @@ keeps one writer per table and one place a marketplace fact can live, at the
 cost of a dependency direction some readers will find surprising: workflow
 depends on integration rather than the reverse.
 
-## 4. Schema, V0011 through V0028
+## 4. Schema, V0011 through V0029
 
 | Migration | What it establishes |
 | --- | --- |
@@ -167,11 +240,21 @@ depends on integration rather than the reverse.
 | V0026 | `capability_code` renamed to `action_kind` in the two operational tables; dependent functions rebuilt |
 | V0027 | Account-bound verification submissions/reviews, audit and promotion/revocation functions |
 | V0028 | Bounded export jobs, immutable snapshot rows/parts, fenced worker and live authorization |
+| V0029 | V2 fee-family coverage, versioned target-price economics profiles/components, source-feed watermarks, Break-even/Minimum Price identity, single-DB-as-of snapshot authority, exact price parameter schema, durable command mode and transaction-time DB write gates |
 
 Every table in the eight foundation schemas appears in
-`platform.control_route_inventory` exactly once — a hundred and three tables,
-a hundred and three rows, twenty-four routed with three epoch triggers each.
-V0001–V0010 are untouched.
+`platform.control_route_inventory` exactly once — a hundred and seven tables,
+a hundred and seven rows, twenty-four routed with three epoch triggers each.
+V0001–V0028 are untouched by R2. The four V0029 additions are
+`core.economics_projection_profile`, `core.economics_projection_profile_family`,
+`core.economics_projection_component` and `core.source_feed_watermark`.
+V0029 was rechecked before the transitive correction: it remained unmerged,
+undeployed and without a shared/persistent consumer. It is therefore corrected
+in place. The correction adds no fifth authority table; it strengthens
+`ops.price_authority_snapshot`, `ops.price_change_parameter_contract_is_valid`,
+`ops.create_price_command`, `ops.price_command_authority_matches` and the
+existing write-gate triggers/functions, and adds the durable
+`ops.price_command.fulfillment_mode_code` column.
 
 ### Two defects the schema work found
 
@@ -200,15 +283,19 @@ columns and refuses to let the collision return.
 3. A recommendation is proposed, carrying the digest of the values it rests on.
    An action with no write capability becomes a task instead — not a degraded
    price recommendation, a different thing.
-4. An operator takes an impact preview. It runs the same guardrail the gate will
-   run, against the same values, and records the verdict.
+4. An operator takes an impact preview. One DB capture returns the exact
+   `evaluation_as_of` and authority snapshot. The application bounds every
+   time-sensitive read by that instant, compares the evaluated identities with
+   the snapshot, runs the same guardrail the gate will run, and records the
+   verdict.
 5. A person approves, or a bounded standing authorization is spent. Never both:
    a decision attributable to both a person and a standing rule leaves nobody
    accountable. Approval needs a recent authentication proven against the
    identity provider's recorded maximum age.
 6. The guardrail runs again for execution specifically, and a command is
    created. Creating it makes no call.
-7. A worker claims the command. The write gate is evaluated **inside the
+7. A worker claims the command. The durable fulfillment mode is part of the
+   command authority, and the write gate is evaluated **inside the
    transaction that takes the claim**, so a switch thrown while the worker is
    deciding cannot be missed. Ten conditions, each separately real.
 8. The adapter performs the recorded operation. A synchronous platform's answer
@@ -240,7 +327,9 @@ columns and refuses to let the collision return.
   anything that can run script on the origin — the most useful thing an attacker
   could take from a console that changes real prices.
   The candidate servlet boundary requires an expiry and validates the exact
-  configured MFA claim. Missing `auth_time` cannot satisfy step-up; token renewal
+  configured audience and MFA claim. A non-local serving environment fails
+  startup when issuer or audience is absent/blank; a wrong audience is denied.
+  Missing `auth_time` cannot satisfy step-up; token renewal
   never substitutes `iat` for the original authentication time. Cookie, form,
   query and servlet-session authentication are not accepted.
 - **Authorization** is role plus action scope plus resource scope, evaluated per
@@ -289,6 +378,11 @@ a dynamic unprivileged user with no DB/Marketplace secret. The required alert
 configuration treats No Data as an alarm.
 Real alert provisioning, metric receipt and notification delivery remain
 pending; see the operational monitoring runbook.
+
+Every `/api/v1/admin/metadata/**` request also requires the actual socket peer
+to be loopback before method-specific authorization or maintenance-write gates
+run. The boundary applies to reads and writes; `Forwarded` and
+`X-Forwarded-For` cannot manufacture local authority.
 
 ## 8. What is not proven
 

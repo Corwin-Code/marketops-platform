@@ -493,6 +493,7 @@ describe('TC-UI-022 a partial answer is refused rather than half-rendered', () =
     const command = parseCommand({
       id: 'c1',
       state: 'READBACK_MISMATCH',
+      fulfillmentModeCode: 'SELLER_FULFILLED',
       priorPrice: '100.0000',
       targetPrice: '105.0000',
       readbacks: [
@@ -507,6 +508,7 @@ describe('TC-UI-022 a partial answer is refused rather than half-rendered', () =
     });
 
     expect(command?.readbacks).toHaveLength(1);
+    expect(command?.fulfillmentModeCode).toBe('SELLER_FULFILLED');
     expect(command?.readbacks[0]?.observedPrice).toBe('140.0000');
   });
 });

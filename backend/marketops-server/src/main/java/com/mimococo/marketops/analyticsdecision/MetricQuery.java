@@ -1,5 +1,6 @@
 package com.mimococo.marketops.analyticsdecision;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +31,12 @@ public interface MetricQuery {
     Map<MetricCode, MetricValueView> currentValues(SubjectKind subjectKind,
                                                    UUID subjectId,
                                                    MetricWindow window);
+
+    /** The latest value of every metric no later than one captured decision instant. */
+    Map<MetricCode, MetricValueView> currentValuesAt(SubjectKind subjectKind,
+                                                     UUID subjectId,
+                                                     MetricWindow window,
+                                                     Instant at);
 
     /**
      * Every stored value of one metric for one subject, newest first.

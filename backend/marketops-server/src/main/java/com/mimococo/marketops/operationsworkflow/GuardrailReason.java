@@ -26,11 +26,32 @@ public enum GuardrailReason {
     /** The freshest contributing fact is older than the policy allows. */
     INPUT_TOO_STALE,
 
+    /** A required metric carries no source time, so freshness cannot be established. */
+    INPUT_FRESHNESS_UNAVAILABLE,
+
     /** A required canonical value is missing, so nothing can be compared. */
     REQUIRED_METRIC_UNAVAILABLE,
 
     /** A required canonical value carries a confidence too low to act on. */
     METRIC_CONFIDENCE_INSUFFICIENT,
+
+    /** No scoped price-economics profile is current for the proposal. */
+    ECONOMICS_PROFILE_MISSING,
+
+    /** More than one price-economics profile claims the proposal scope. */
+    ECONOMICS_PROFILE_AMBIGUOUS,
+
+    /** The profile or its verification interval elapsed. */
+    ECONOMICS_PROFILE_EXPIRED,
+
+    /** The profile has no current verification evidence. */
+    ECONOMICS_PROFILE_UNVERIFIED,
+
+    /** A component shape, tier, coverage contract or price solution is unsupported. */
+    PROJECTED_ECONOMICS_UNAVAILABLE,
+
+    /** Required monetary values do not all speak the policy currency. */
+    CURRENCY_MISMATCH,
 
     /** The proposed price would leave contribution margin under the floor. */
     MARGIN_BELOW_MINIMUM,
@@ -40,6 +61,9 @@ public enum GuardrailReason {
 
     /** The proposed price is below the break-even price. */
     BELOW_BREAK_EVEN,
+
+    /** The proposed price is below contractual Minimum Price. */
+    BELOW_MINIMUM_PRICE,
 
     /** The single change is larger than the policy allows. */
     SINGLE_CHANGE_TOO_LARGE,
@@ -52,6 +76,9 @@ public enum GuardrailReason {
 
     /** Available units are below the floor a price change requires. */
     INVENTORY_BELOW_MINIMUM,
+
+    /** No canonical platform stock assertion is available. */
+    INVENTORY_EVIDENCE_UNAVAILABLE,
 
     /** The listing has no confirmed internal mapping. */
     MAPPING_UNRESOLVED,

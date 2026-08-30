@@ -36,11 +36,12 @@ Evidence strength is classified independently from a model or reviewer opinion.
 ## 2a. SLICE-V1-001 candidate evidence state
 
 ```yaml
-assessed_at: 2026-08-28
-assessed_against: PR20_REWORK_SUBMITTED_FOR_CLOSURE
+assessed_at: 2026-08-30
+assessed_against: SUPPLEMENTAL_R2_LOCAL_CANDIDATE
 controller_verdict: NOT_CLAIMED
 detail: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
+deferred_evidence: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
 ```
 
 This implementation-fact section does not amend the evidence classes or
@@ -48,12 +49,12 @@ requirements below. Counts are checkpoint results, not a final release verdict.
 
 | Class | Candidate evidence | Remaining boundary |
 | --- | --- | --- |
-| `SRC` | Immutable original Contract, accepted Amendment-001, preserved ADRs and source-bound worktree manifests. | Final commit/merge/tree binding. |
-| `UNIT` | C3 full backend 150/151: 846 unit/architecture tests each; frontend 150: 196 tests; unchanged coverage gates pass. | Final full regression and remote CI. |
-| `RDB` | C3 full 150/151: 374 real database integration tests each; PG17 application/managed/representative paths plus standard PG18 compatibility. | Exact-final-Head verification and independent closure. |
+| `SRC` | Immutable original Contract, accepted Amendment-001 and Amendment-002, preserved ADRs, R1 Finding Set and Supplemental R2 review. | Final R2 commit/tree/tested-merge binding. |
+| `UNIT` | R2 mutation-sensitive metric identity, four-state fee-family coverage, target-aware fixed/percentage/tier economics, exact `PRICE_CHANGE` parameter-schema parity, transaction-time freshness, Guardrail, audience, required-context and deferred-status tests. | Final exact-Head remote CI and independent Controller verdict. |
+| `RDB` | Actual-service facts→single DB as-of capture→bounded metric/diagnosis/history reads→evaluated/snapshot identity comparison→Guardrail→approval→command→worker-lease path; DB rechecks mode/profile/components and eight watermarks at command/worker time. | Exact-final-R2-Head remote CI and independent closure. |
 | `OBJ` | Actual filesystem and local HTTP adapter tests, exact hash/length verification, immutable DB custody and retention IaC. | Approved Yandex store, real retention/IAM operation and provider recovery remain unverified. |
-| `REAL_EXT` | No real business provider or cloud account used. Synthetic verification fixtures are explicitly scoped. | OIDC, Marketplace, Yandex and model provider evidence remains pending; production registry defaults stay UNVERIFIED. |
-| `SEC_NEG` | Signed-token/live-scope refusal, cross-store access denial, bounded outbound requests, symlink/redirect/response bounds, AI grounding and browser export integrity. | C3: 13 checks pass, 26 alerts fixed, five exact v1.1 dispositions; fresh final-Head Security CI required. |
+| `REAL_EXT` | No real business provider or cloud account used. Synthetic fixtures are explicitly scoped and cannot promote deferred evidence. | Exact Amendment-002 rows remain production-blocking in `RELEASE-V1-001`. |
+| `SEC_NEG` | Signed-token/live-scope refusal plus blank/wrong audience, actual-peer loopback enforcement, forwarding-header spoof refusal and existing outbound/PII/Secret controls. | Fresh exact-R2-Head Security CI required. |
 | `REPLAY` | Real PG17 stored-Raw replay in full runs 150/151: parser/missing-object refusal, crash after fact commit, repeat with no duplicate logical fact or source call. | Fresh final-Head suite; real source coverage remains external. |
 | `BROWSER` | 11 Chromium scenarios at 152, including real signed JWT/SQL evidence→approval→command→readback, export, new-login command recovery and actual local database outage. | Real identity/Marketplace interoperability and final exact-commit execution. |
 | `PERF` | PG17 representative 5,000-SKU/360,000-order profile, query plans, 488,000-record asynchronous export, explicit thresholds and settings. | Owner cohort and deployed capacity are unproven; no production throughput claim. |
@@ -63,8 +64,62 @@ requirements below. Counts are checkpoint results, not a final release verdict.
 
 The original Maker evidence assessment is preserved at the reviewed PR Head.
 Local evidence does not replace REAL_EXT, Owner approval, Gate EV or Gate E.
-See the [final handoff index](../07-phase-evidence/SLICE-V1-001/rework-r1/final-handoff.md)
-for C3 receipts, executed v1.1 dispositions and exact-final-Head delivery requirements.
+R1/C3 receipts remain historical. They do not replace the R2 final handoff or
+the exact protected Ruleset proof.
+
+## 2b. Supplemental R2 mutation-sensitive matrix
+
+| # | Required proof | Source |
+| --- | --- | --- |
+| 1 | Non-hour clock uses one exact stored/queried window | `AnalyticsCalculationServiceWindowTest` |
+| 2 | Start boundary included; end boundary excluded | `OperatingFlowIT` |
+| 3 | Same-tier target uses the exact proposed price and component identity | `PriceEconomicsCalculatorTest.sameTierUsesTheSameComponentAndExactProposedPrice` |
+| 4 | Crossing higher/lower tiers selects the corresponding tier identity | `PriceEconomicsCalculatorTest.crossingHigherTierSelectsTheHigherTierIdentity`; `crossingLowerTierSelectsTheLowerTierIdentity` |
+| 5 | Fulfillment modes resolve distinct scoped components | `PriceEconomicsCalculatorTest.fulfilmentModesHaveDistinctScopedComponents` |
+| 6 | Fixed plus percentage components both use the proposed price | `PriceEconomicsCalculatorTest.fixedPlusPercentageUsesBothTermsAtTheProposedPrice` |
+| 7 | Minimum Price uses the same profile/components as projection | `PriceEconomicsCalculatorTest.minimumPriceUsesTheSameProfileAndSelectedComponentsAsProjection` |
+| 8 | Tier overlap, gap/non-resolution and multiple profile authority fail closed | `PriceEconomicsCalculatorTest.overlappingTierAuthorityFailsClosed`; `OperatingFlowIT.profileResolutionFailuresBlockTheActualPreviewService` |
+| 9 | Missing/expired profile authority blocks the actual preview service | `OperatingFlowIT.profileResolutionFailuresBlockTheActualPreviewService` |
+| 10 | Impact Preview and persisted Minimum Price bind the exact profile id/version/mode | `OperatingFlowIT.approveTheProposal` |
+| 11 | Mutating an economics component invalidates an approved snapshot/command | `PriceWritePathIT.anEconomicsComponentChangeInvalidatesThePreviouslyApprovedSnapshot` |
+| 12 | Every required historical fee family is independently necessary | `PriceEconomicsCalculatorTest.everyRequiredHistoricalPlatformFeeFamilyMustBePresentIndependently`; `OperatingFlowIT.everyRequiredFeeFamilyIsNecessaryToTheServicePath` |
+| 13 | Required-family absence never becomes zero | `PriceEconomicsCalculatorTest.aMissingRequiredFamilyNeverBecomesZero` |
+| 14 | Explicit sourced zero remains covered | `PriceEconomicsCalculatorTest.explicitSourcedZeroIsCoveredButVerifiedNonApplicabilityIsNotAZeroFact` |
+| 15 | Verified non-applicability does not invent an amount | `PriceEconomicsCalculatorTest.verifiedHistoricalNonApplicabilityPassesWithoutInventingAnAmount` |
+| 16 | Missing return/ad/tax/cost and every required economics input independently block | `MetricEngineTest`; `OperatingFlowIT.everyRequiredEconomicsInputIsNecessaryToTheServicePath` |
+| 17 | Missing stock and currency mismatch block | `GuardrailEngineTest` |
+| 18 | Current freshness ages with wall clock without a new metric/watermark | `PriceEconomicsCalculatorTest.decisionAgeAdvancesWithoutCreatingANewMetricOrWatermark`; `PriceWritePathIT.wallClockAloneExpiresApprovalAndCommandAuthorityUntilAttributedRefresh` |
+| 19 | Reconciliation watermark, not source-window start, is attributable authority | `PriceEconomicsCalculatorTest.reconciliationWatermarkIsTheAttributableFreshnessAuthorityNotWindowStart` |
+| 20 | Stale/missing feed watermark blocks the actual preview service and attributable refresh restores it | `OperatingFlowIT.currentFeedWatermarksGovernTheActualPreviewService` |
+| 21 | DB command/worker gate reevaluates all eight watermarks at transaction time | `PriceWritePathIT.wallClockAloneExpiresApprovalAndCommandAuthorityUntilAttributedRefresh` |
+| 22 | Old snapshots remain invalid after a new attributable refresh | `PriceWritePathIT.wallClockAloneExpiresApprovalAndCommandAuthorityUntilAttributedRefresh` |
+| 23 | Mapping resolution changes completeness and identity | `MetricEngineTest` |
+| 24 | Late facts correct current state without rewriting history | `MetricEngineTest`; `OperatingFlowIT` |
+| 25 | Actual-service facts-to-command path passes with no early-return alternative | `OperatingFlowIT.computeMetrics`; `approveTheProposal`; `createTheCommand` |
+| 26 | Non-loopback maintenance requests and forwarding-header spoofing are denied | `MaintenanceWriteGateApiIT` |
+| 27 | Blank/wrong serving audience fails closed | `IdentityConfigurationContractTest`; `SignedBearerIdentityIT`; `test_yandex_runtime.py` |
+| 28 | CodeQL source annotation is identified exactly as run `99214089692`, `AdminMetadataGuard.java:88`, Missing catch of NumberFormatException | Controller source annotation; `AdminMetadataGuard` regression compilation |
+| 29 | Numeric remote-address parsing catches `NumberFormatException` and denies instead of escaping | `AdminMetadataGuard`; `MaintenanceWriteGateApiIT` |
+| 30 | Required remote contexts, including aggregate CodeQL, pass on exact final Head/tested merge | Draft PR #22 live checks; pending final publication at document commit |
+| 31 | One DB statement captures `evaluation_as_of` and the complete authority snapshot; the JVM clock is not an evaluation authority | `GuardrailRepository.captureAuthority`; `OperatingFlowIT.profileBoundaryCannotSplitEvaluatedAndStoredAuthority`; `watermarkBoundaryCannotSplitEvaluatedAndStoredAuthority` |
+| 32 | Every metric, diagnosis and price-history read used by Guardrail is bounded by the captured DB instant | `MetricQuery.currentValuesAt`; `DiagnosisQuery.currentFindingsAt`; `PriceChangeHistory.priorChangesAt`; `OperatingFlowIT.profileBoundaryCannotSplitEvaluatedAndStoredAuthority` |
+| 33 | Evaluated metric entity, mode, profile and component identities must equal the stored snapshot; mismatched persistence is rejected by PostgreSQL | `OperatingFlowIT.profileBoundaryCannotSplitEvaluatedAndStoredAuthority`; `OperatingFlowIT.watermarkBoundaryCannotSplitEvaluatedAndStoredAuthority`; `PriceWritePathIT.aGuardrailCannotPersistAnEvaluatedIdentityDifferentFromItsSnapshot` |
+| 34 | Exact parameter schema is required `targetPrice`, optional `fulfillmentModeCode`, and no additional keys in Java and PostgreSQL | `PriceChangeParameterContractTest`; `PriceWritePathIT.oneExactParameterSchemaIsSharedBySnapshotCommandAndWorkerFunctions` |
+| 35 | One active fulfillment mode permits an omitted key and binds the unique mode | `OperatingFlowIT.approveTheProposal` |
+| 36 | Multiple active modes reject omission; an explicit active mode with distinct economics traverses actual Preview→Approval→Command→worker lease | `OperatingFlowIT.approveTheProposal`; `OperatingFlowIT.createTheCommand` |
+| 37 | `UNKNOWN`, inactive and syntactically invalid modes, plus arbitrary extra keys, fail closed | `PriceChangeParameterContractTest.unknownInactiveSyntaxAndEveryExtraKeyFailClosed`; `OperatingFlowIT.approveTheProposal`; `PriceWritePathIT.arbitraryProposalParametersInvalidateCommandAndWorkerAuthority` |
+| 38 | Post-approval mode/profile mutation closes command/worker authority while target and idempotency mutation controls remain intact | `OperatingFlowIT.createTheCommand`; `PriceWritePathIT.aPostApprovalModeMutationClosesTheWorkerGate`; `aPostApprovalProfileMutationClosesTheWorkerGate`; `aCommandCannotSubstituteAnyApprovedInput`; `creationDerivesThePriceAndIsIdempotentForTheSameAuthorization` |
+| 39 | Selected mode is durable across snapshot, Guardrail evaluation, approval, command API/view, worker row and DB predicate | `OperatingFlowIT.createTheCommand`; `PriceCommandView`; `PriceCommandRepository`; `CommandTimeline`; `PriceWritePathIT.aCommandCannotSubstituteAnyApprovedInput` |
+
+Rows 28–30 deliberately separate the exact historical source annotation, its
+local correction, and the still-pending exact-final-Head aggregate remote result.
+An earlier empty open-alert query is not evidence that the annotation never
+existed and is not substituted for the final CodeQL check.
+
+Rows 31–39 are the final transitive-closure proof set. They bind the single
+as-of source, evaluated-versus-snapshot identity comparison, exact mode parameter
+schema and multi-mode real-PostgreSQL end-to-end path without claiming a
+Controller verdict.
 
 ## 3. Risk dimensions
 

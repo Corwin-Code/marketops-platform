@@ -119,6 +119,11 @@ final class PriceWritePathFixture {
                 VALUES ('%s', '%s', '%s', 'acme-store', 'Acme Store',
                         'ACTIVE', now(), now())
                 """.formatted(STORE, ORGANIZATION, ACCOUNT));
+        com.mimococo.marketops.PriceCommandFixture.seedEconomicsAuthority(
+                org.springframework.jdbc.core.simple.JdbcClient.create(
+                        new org.springframework.jdbc.datasource.SingleConnectionDataSource(
+                                connection, true)),
+                ORGANIZATION, ACCOUNT, STORE, "price-write-path");
     }
 
     private static void identity(Connection connection) throws SQLException {
@@ -280,6 +285,11 @@ final class PriceWritePathFixture {
                         now(), now())
                 """.formatted(POLICY, ORGANIZATION, USER));
         execute(connection, """
+                INSERT INTO ops.commercial_policy_limit
+                    (id,policy_id,limit_code,duration_seconds)
+                VALUES (gen_random_uuid(),'%s','MAX_INPUT_AGE_SECONDS',86400)
+                """.formatted(POLICY));
+        execute(connection, """
                 INSERT INTO ops.policy_authorization
                     (id, organization_id, policy_id, action_kind, scope_kind, store_ref_id,
                      max_change_rate, max_uses, used_count, valid_from, valid_until, status,
@@ -382,11 +392,16 @@ final class PriceWritePathFixture {
                 "ops.policy_authorization",
                 "ops.commercial_policy_limit",
                 "ops.commercial_policy",
+                "core.source_feed_watermark",
+                "core.economics_projection_component",
+                "core.economics_projection_family",
+                "core.economics_projection_profile",
                 "mart.metric_input_reference",
                 "mart.metric_value",
                 "mart.calculation_run",
                 "core.listing_price_observation",
                 "core.fact_provenance",
+                "core.store_fulfillment_declaration",
                 "platform.capability_operation",
                 "platform.feature_flag",
                 "platform.capability_subject_status",

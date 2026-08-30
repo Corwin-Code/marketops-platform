@@ -16,6 +16,7 @@ import java.util.UUID;
  * @param platformCode marketplace the listing lives on
  * @param nativeListingKey the marketplace's own listing identifier
  * @param nativeVariantKey the marketplace's own variant identifier
+ * @param mappingId the effective confirmed mapping, or {@code null}
  * @param productVariantId the internal variant it maps to, or {@code null}
  * @param conflictOpen whether an unresolved mapping conflict blocks it
  */
@@ -27,6 +28,7 @@ public record ListingVariantContext(
         String platformCode,
         String nativeListingKey,
         String nativeVariantKey,
+        UUID mappingId,
         UUID productVariantId,
         boolean conflictOpen) {
 

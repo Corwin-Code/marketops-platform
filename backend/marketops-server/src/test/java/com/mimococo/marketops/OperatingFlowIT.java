@@ -31,6 +31,7 @@ import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
 import com.mimococo.marketops.operatingfacts.SaleStage;
 import com.mimococo.marketops.operatingfacts.internal.application.ManualFactEntryService;
 import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.FactWriteRepository;
+import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.InternalReferenceRepository;
 import com.mimococo.marketops.operationsworkflow.ActionKind;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
 import com.mimococo.marketops.operationsworkflow.GuardrailReason;
@@ -97,6 +98,7 @@ class OperatingFlowIT {
     private static final String ISSUER = "https://id.example.test/realms/acme";
 
     private static UUID organizationId;
+    private static UUID marketplaceAccountId;
     private static UUID storeId;
     private static UUID warehouseId;
     private static UUID identityProviderId;
@@ -105,6 +107,10 @@ class OperatingFlowIT {
     private static UUID listingVariantId;
     private static UUID policyId;
     private static UUID recommendationId;
+    private static UUID factProvenanceId;
+    private static UUID economicsProfileId;
+    private static UUID selectedEconomicsProfileId;
+    private static UUID selectedModeDeclarationId;
 
     private static AuthenticatedActor actor;
 
@@ -136,6 +142,9 @@ class OperatingFlowIT {
 
     @Autowired
     private FactWriteRepository facts;
+
+    @Autowired
+    private InternalReferenceRepository internalReferences;
 
     @Autowired
     private OperatingFactQuery factQuery;
@@ -208,7 +217,7 @@ class OperatingFlowIT {
     void seedOrganizationAndIdentity() {
         organizationId = UUID.randomUUID();
         UUID legalEntityId = UUID.randomUUID();
-        UUID accountId = UUID.randomUUID();
+        marketplaceAccountId = UUID.randomUUID();
         storeId = UUID.randomUUID();
         warehouseId = UUID.randomUUID();
 
@@ -231,7 +240,7 @@ class OperatingFlowIT {
                         VALUES (:id, :org, :entity, 'OZON', 'flow-acme-ozon', 'Flow Ozon',
                                 'ACTIVE', now(), now())
                         """)
-                .param("id", accountId).param("org", organizationId)
+                .param("id", marketplaceAccountId).param("org", organizationId)
                 .param("entity", legalEntityId).update();
         jdbc.sql("""
                         INSERT INTO core.store
@@ -241,7 +250,7 @@ class OperatingFlowIT {
                                 now(), now())
                         """)
                 .param("id", storeId).param("org", organizationId)
-                .param("account", accountId).update();
+                .param("account", marketplaceAccountId).update();
         jdbc.sql("""
                         INSERT INTO core.warehouse
                             (id, organization_id, legal_entity_id, code, display_name,
@@ -316,6 +325,22 @@ class OperatingFlowIT {
         var candidate = candidates.getFirst();
         mappings.confirm(actor, candidate.id(), "barcode match reviewed", candidate.version());
 
+        // The analytics service closes each run at the current whole-hour boundary.
+        // Seed this integration fixture's confirmed mapping inside that same temporal
+        // snapshot so the actual service path observes it without weakening the
+        // production query's exclusive as-of boundary.
+        Instant calculationBoundary = Instant.now()
+                .truncatedTo(java.time.temporal.ChronoUnit.HOURS);
+        jdbc.sql("""
+                        UPDATE core.listing_mapping
+                           SET effective_from = :effectiveFrom
+                         WHERE platform_listing_variant_id = :listingVariantId
+                        """)
+                .param("effectiveFrom", java.sql.Timestamp.from(
+                        calculationBoundary.minus(Duration.ofMinutes(1))))
+                .param("listingVariantId", listingVariantId)
+                .update();
+
         var context = listings.variantContext(listingVariantId, Instant.now()).orElseThrow();
         assertThat(context.mapped()).isTrue();
         assertThat(context.productVariantId()).isEqualTo(productVariantId);
@@ -332,46 +357,90 @@ class OperatingFlowIT {
     @DisplayName("TC-FLOW-003 facts arrive and carry where they came from")
     void recordFacts() {
         Instant now = Instant.now();
+        Instant calculationBoundary = now.truncatedTo(java.time.temporal.ChronoUnit.HOURS);
+        Instant pointObservation = calculationBoundary.minusSeconds(1);
         // Recorded as manual entry rather than as marketplace raw, because a
         // marketplace-sourced fact must name the stored evidence it came from
         // and no marketplace was contacted. The relational contract enforces
         // that, which is why this test cannot pretend otherwise.
-        UUID provenanceId = facts.recordProvenance(UUID.randomUUID(), organizationId,
+        factProvenanceId = facts.recordProvenance(UUID.randomUUID(), organizationId,
                 "MANUAL_ENTRY", null, null, userId, now.minus(Duration.ofHours(1)), now,
                 "seeded for the operating-flow test");
 
-        facts.insertPrice(UUID.randomUUID(), organizationId, provenanceId, listingVariantId,
+        facts.insertPrice(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
                 "flow:price:1", now.minus(Duration.ofHours(1)), "RUB",
                 new BigDecimal("120.0000"), new BigDecimal("100.0000"), null, "NO", "SELLING");
-        facts.insertStock(UUID.randomUUID(), organizationId, provenanceId, listingVariantId,
+        facts.insertStock(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
                 "MARKETPLACE_FULFILLED", "flow:stock:1", now.minus(Duration.ofHours(1)), 40, 2, 0);
-        facts.insertTraffic(UUID.randomUUID(), organizationId, provenanceId, listingVariantId,
-                "flow:traffic:1", now.minus(Duration.ofDays(30)), now, 10_000L, 140L, null,
-                null, 15L);
+        facts.insertTraffic(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+                "flow:traffic:1", calculationBoundary.minus(Duration.ofDays(30)),
+                calculationBoundary, 10_000L, 140L, null, null, 15L);
 
         for (int day = 1; day <= 5; day++) {
-            facts.insertSale(UUID.randomUUID(), organizationId, provenanceId, listingVariantId,
+            facts.insertSale(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
                     storeId, "COMPLETED", null, "flow:sale:" + day, "ORDER-" + day,
                     "LINE-" + day, "delivered", now.minus(Duration.ofDays(day)), 3, "RUB",
                     new BigDecimal("300.0000"), new BigDecimal("0.0000"),
                     new BigDecimal("300.0000"));
         }
-        facts.insertReturn(UUID.randomUUID(), organizationId, provenanceId, listingVariantId,
+        facts.insertReturn(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
                 storeId, "flow:return:1", "RETURN-1", "ORDER-1", "DELIVERY_REFUSAL", "QUALITY",
                 "buyer refused", now.minus(Duration.ofDays(1)), 1, "RUB",
                 new BigDecimal("100.0000"), new BigDecimal("20.0000"));
-        facts.insertFee(UUID.randomUUID(), organizationId, provenanceId, listingVariantId,
+        facts.insertFee(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
                 storeId, "flow:fee:1", "COMMISSION", "ORDER-1", "COMMISSION", "SETTLED",
                 now.minus(Duration.ofDays(1)), "RUB", new BigDecimal("150.0000"));
-        facts.insertAdvertising(UUID.randomUUID(), organizationId, provenanceId,
+        facts.insertFee(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+                storeId, "flow:fee:fulfilment:1", "FULFILLMENT", "ORDER-1", "FULFILLMENT",
+                "SETTLED", now.minus(Duration.ofDays(1)), "RUB", new BigDecimal("30.0000"));
+        facts.insertFee(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+                storeId, "flow:fee:storage:1", "STORAGE", "ORDER-1", "STORAGE", "SETTLED",
+                now.minus(Duration.ofDays(1)), "RUB", BigDecimal.ZERO);
+        facts.insertFee(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+                storeId, "flow:fee:promotion:1", "PROMOTION", "ORDER-1", "PROMOTION",
+                "SETTLED", now.minus(Duration.ofDays(1)), "RUB", new BigDecimal("10.0000"));
+        facts.insertFee(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+                storeId, "flow:fee:other:1", "OTHER", "ORDER-1", "OTHER_VARIABLE",
+                "SETTLED", now.minus(Duration.ofDays(1)), "RUB", new BigDecimal("5.0000"));
+        facts.insertFee(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+                storeId, "flow:fee:tax:1", "VARIABLE_TAX", "ORDER-1", "VARIABLE_TAX",
+                "SETTLED", now.minus(Duration.ofDays(1)), "RUB", new BigDecimal("30.0000"));
+        facts.insertAdvertising(UUID.randomUUID(), organizationId, factProvenanceId,
                 listingVariantId, storeId, "flow:ad:1", "CAMPAIGN-1", "SEARCH",
-                now.minus(Duration.ofDays(30)), now, "RUB", new BigDecimal("50.0000"), 5_000L,
-                60L, 2L, new BigDecimal("200.0000"));
+                calculationBoundary.minus(Duration.ofDays(30)), calculationBoundary, "RUB",
+                new BigDecimal("50.0000"), 5_000L, 60L, 2L, new BigDecimal("200.0000"));
+
+        Instant boundaryEnd = calculationBoundary;
+        Instant boundaryStart = boundaryEnd.minus(Duration.ofHours(1));
+        facts.insertSale(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+                storeId, "SETTLED", null, "flow:boundary:start", "BOUNDARY-START",
+                "LINE-START", "settled", boundaryStart, 1, "RUB",
+                new BigDecimal("10.0000"), BigDecimal.ZERO, new BigDecimal("10.0000"));
+        facts.insertSale(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+                storeId, "SETTLED", null, "flow:boundary:end", "BOUNDARY-END",
+                "LINE-END", "settled", boundaryEnd, 99, "RUB",
+                new BigDecimal("990.0000"), BigDecimal.ZERO, new BigDecimal("990.0000"));
+        assertThat(factQuery.sales(listingVariantId, SaleStage.SETTLED, null,
+                new FactWindow(boundaryStart, boundaryEnd)).units()).isEqualTo(1);
 
         manualEntry.enterCost(actor, "flow-widget-m", new BigDecimal("60.0000"), "RUB",
-                now.minus(Duration.ofDays(30)), "opening cost");
-        manualEntry.enterInternalStock(actor, "flow-widget-m", "flow-warehouse", 25, 0, now,
-                "stock count");
+                now.minus(Duration.ofHours(1)), "opening cost");
+        manualEntry.enterInternalStock(actor, "flow-widget-m", "flow-warehouse", 25, 0,
+                pointObservation, "stock count");
+
+        internalReferences.insertFinanceInput(UUID.randomUUID(), organizationId,
+                "VARIABLE_TAX_RATE", "ORGANIZATION", null, null, "RATE",
+                new BigDecimal("0.050000"), null, null, factProvenanceId,
+                now.minus(Duration.ofHours(1)), now);
+        internalReferences.insertFinanceInput(UUID.randomUUID(), organizationId,
+                "REQUIRED_PROFIT_PER_UNIT", "ORGANIZATION", null, null, "AMOUNT",
+                null, new BigDecimal("5.0000"), "RUB", factProvenanceId,
+                now.minus(Duration.ofHours(1)), now);
+        internalReferences.insertFinanceInput(UUID.randomUUID(), organizationId,
+                "SAFETY_BUFFER_PER_UNIT", "ORGANIZATION", null, null, "AMOUNT",
+                null, new BigDecimal("2.0000"), "RUB", factProvenanceId,
+                now.minus(Duration.ofHours(1)), now);
+        seedEconomicsAuthority(now);
 
         FactWindow window = FactWindow.endingAt(now, Duration.ofDays(30));
         assertThat(factQuery.latestPrice(listingVariantId, now)).isPresent();
@@ -381,7 +450,7 @@ class OperatingFlowIT {
         assertThat(factQuery.internalStock(productVariantId, now)).isNotNull();
 
         // Every fact points back at where it came from.
-        assertThat(evidence.trail(provenanceId)).isPresent();
+        assertThat(evidence.trail(factProvenanceId)).isPresent();
     }
 
     // -----------------------------------------------------------------
@@ -396,11 +465,36 @@ class OperatingFlowIT {
                 calculation.run(storeId, MetricWindow.D30, "MANUAL", userId);
         assertThat(first.subjectCount()).isPositive();
         assertThat(first.valueCount()).isPositive();
+        Instant storedPeriodEnd = jdbc.sql("""
+                        SELECT period_end FROM mart.calculation_run WHERE id = :id
+                        """).param("id", first.calculationRunId())
+                .query((row, number) -> row.getTimestamp(1).toInstant()).single();
+        assertThat(storedPeriodEnd)
+                .isEqualTo(storedPeriodEnd.truncatedTo(java.time.temporal.ChronoUnit.HOURS));
+        assertThat(jdbc.sql("""
+                        SELECT count(DISTINCT (period_start, period_end))
+                          FROM mart.metric_value WHERE calculation_run_id = :id
+                        """).param("id", first.calculationRunId()).query(Integer.class).single())
+                .isEqualTo(1);
 
         Map<MetricCode, MetricValueView> values = metrics.currentValues(
                 SubjectKind.PLATFORM_LISTING_VARIANT, listingVariantId, MetricWindow.D30);
         assertThat(values).containsKeys(MetricCode.OBSERVED_SELLING_PRICE, MetricCode.UNIT_COST,
-                MetricCode.CONTRIBUTION_MARGIN, MetricCode.DATA_COMPLETENESS);
+                MetricCode.CONTRIBUTION_MARGIN, MetricCode.BREAK_EVEN_PRICE,
+                MetricCode.MINIMUM_PRICE, MetricCode.DATA_COMPLETENESS);
+        assertThat(List.of(MetricCode.UNIT_COST, MetricCode.PLATFORM_FEES_PER_UNIT,
+                MetricCode.RETURN_LOSS_PER_UNIT, MetricCode.AD_SPEND_PER_UNIT,
+                MetricCode.VARIABLE_TAX_PER_UNIT, MetricCode.REQUIRED_PROFIT_PER_UNIT,
+                MetricCode.SAFETY_BUFFER_PER_UNIT, MetricCode.BREAK_EVEN_PRICE,
+                MetricCode.MINIMUM_PRICE))
+                .allSatisfy(code -> assertThat(values.get(code))
+                        .as("required write-grade metric %s", code)
+                        .satisfies(value -> {
+                            assertThat(value.valueState()).isEqualTo(ValueState.AVAILABLE);
+                            assertThat(value.currencyCode()).isEqualTo("RUB");
+                        }));
+        assertThat(values.get(MetricCode.MINIMUM_PRICE).confidenceState())
+                .isEqualTo(ConfidenceState.CANONICAL_CONFIRMED);
 
         MetricValueView price = values.get(MetricCode.OBSERVED_SELLING_PRICE);
         assertThat(price.valueState()).isEqualTo(ValueState.AVAILABLE);
@@ -418,6 +512,34 @@ class OperatingFlowIT {
                 SubjectKind.PLATFORM_LISTING_VARIANT, listingVariantId, MetricWindow.D30)
                 .orElseThrow().inputDigest())
                 .isEqualTo(price.inputDigest());
+
+        MetricValueView priorReturnLoss = values.get(MetricCode.RETURN_LOSS);
+        long returnHistoryBefore = jdbc.sql("""
+                        SELECT count(*) FROM mart.metric_value
+                         WHERE subject_id=:subject AND metric_code='RETURN_LOSS'
+                        """).param("subject", listingVariantId).query(Long.class).single();
+        facts.insertReturn(UUID.randomUUID(), organizationId, factProvenanceId,
+                listingVariantId, storeId, "flow:return:late", "RETURN-LATE", "ORDER-LATE",
+                "DELIVERY_REFUSAL", "QUALITY", "late correction",
+                storedPeriodEnd.minusSeconds(1), 1, "RUB", BigDecimal.ZERO,
+                new BigDecimal("1.0000"));
+
+        calculation.run(storeId, MetricWindow.D30, "MANUAL", userId);
+        MetricValueView correctedReturnLoss = metrics.current(MetricCode.RETURN_LOSS,
+                SubjectKind.PLATFORM_LISTING_VARIANT, listingVariantId, MetricWindow.D30)
+                .orElseThrow();
+        assertThat(correctedReturnLoss.metricValueId())
+                .isNotEqualTo(priorReturnLoss.metricValueId());
+        assertThat(correctedReturnLoss.numericValue())
+                .isEqualByComparingTo(priorReturnLoss.numericValue().add(BigDecimal.ONE));
+        assertThat(jdbc.sql("""
+                        SELECT count(*) FROM mart.metric_value
+                         WHERE subject_id=:subject AND metric_code='RETURN_LOSS'
+                        """).param("subject", listingVariantId).query(Long.class).single())
+                .isGreaterThan(returnHistoryBefore);
+        assertThat(jdbc.sql("SELECT numeric_value FROM mart.metric_value WHERE id=:id")
+                .param("id", priorReturnLoss.metricValueId()).query(BigDecimal.class).single())
+                .isEqualByComparingTo(priorReturnLoss.numericValue());
     }
 
     @Test
@@ -432,6 +554,7 @@ class OperatingFlowIT {
         findings.stream()
                 .filter(finding -> finding.outcome() == DiagnosisFindingView.Outcome.DECLINED)
                 .forEach(finding -> assertThat(finding.declineReason()).isNotBlank());
+        assertThat(findings).filteredOn(DiagnosisFindingView::blocksExecution).isEmpty();
 
         List<PrioritySubjectView> queue = diagnosis.priorityQueue(storeId, MetricWindow.D30, 20);
         assertThat(queue).isNotEmpty();
@@ -519,8 +642,421 @@ class OperatingFlowIT {
 
     @Test
     @Order(9)
+    @DisplayName("TC-R2-FLOW-001 removing any required economics input blocks the actual service gate")
+    void everyRequiredEconomicsInputIsNecessaryToTheServicePath() {
+        RecommendationView proposal = recommendations.require(recommendationId);
+        JdbcClient fixture = fixtureJdbc();
+        Map<MetricCode, MetricValueView> current = metrics.currentValues(
+                SubjectKind.PLATFORM_LISTING_VARIANT, listingVariantId, MetricWindow.D30);
+        for (MetricCode removed : List.of(MetricCode.UNIT_COST,
+                MetricCode.REQUIRED_PROFIT_PER_UNIT, MetricCode.SAFETY_BUFFER_PER_UNIT)) {
+            UUID injectedId = UUID.randomUUID();
+            String digest = com.mimococo.marketops.shared.Digest.ofComponents(
+                    List.of("service-path-missing-input", removed.name()));
+            fixture.sql("""
+                            INSERT INTO mart.metric_value
+                                (id, organization_id, calculation_run_id, metric_code,
+                                 definition_version, subject_kind, subject_id, window_code,
+                                 period_start, period_end, value_state, numeric_value,
+                                 currency_code, confidence_state, estimated, input_digest,
+                                 computed_at, oldest_source_time, freshness_seconds)
+                            SELECT :id, organization_id, calculation_run_id, metric_code,
+                                   definition_version, subject_kind, subject_id, window_code,
+                                   period_start, period_end, 'NOT_AVAILABLE', NULL, NULL,
+                                   'INCOMPLETE', false, :digest, statement_timestamp(),
+                                   NULL, NULL
+                              FROM mart.metric_value
+                             WHERE id = :source
+                            """)
+                    .param("id", injectedId)
+                    .param("digest", digest)
+                    .param("source", current.get(removed).metricValueId())
+                    .update();
+            try {
+                ImpactPreview blocked = guardrails.preview(proposal, null,
+                        GuardrailPurpose.IMPACT_PREVIEW);
+                assertThat(blocked.verdict().passed()).as("removed %s", removed).isFalse();
+                assertThat(blocked.verdict().reasons()).as("removed %s", removed)
+                        .contains(GuardrailReason.REQUIRED_METRIC_UNAVAILABLE);
+            } finally {
+                fixture.sql("DELETE FROM mart.metric_value WHERE id=:id")
+                        .param("id", injectedId).update();
+            }
+        }
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("TC-R2-FLOW-002 every required fee-family removal blocks the actual service path")
+    void everyRequiredFeeFamilyIsNecessaryToTheServicePath() {
+        RecommendationView proposal = recommendations.require(recommendationId);
+        JdbcClient fixture = fixtureJdbc();
+        for (String family : List.of("COMMISSION", "FULFILLMENT_DELIVERY", "STORAGE",
+                "PROMOTION", "OTHER_VARIABLE")) {
+            ComponentFixture component = fixture.sql("""
+                    SELECT id,component_code,fixed_amount,evidence_reference
+                      FROM core.economics_projection_component
+                     WHERE profile_id=:profile AND family_code=:family
+                    """).param("profile", economicsProfileId).param("family", family)
+                    .query((row, number) -> new ComponentFixture(
+                            row.getObject("id", UUID.class), row.getString("component_code"),
+                            row.getBigDecimal("fixed_amount"),
+                            row.getString("evidence_reference"))).single();
+            fixture.sql("DELETE FROM core.economics_projection_component WHERE id=:id")
+                    .param("id", component.id()).update();
+            try {
+                ImpactPreview blocked = guardrails.preview(proposal, null,
+                        GuardrailPurpose.IMPACT_PREVIEW);
+                assertThat(blocked.verdict().passed()).as("removed %s", family).isFalse();
+                assertThat(blocked.verdict().reasons()).as("removed %s", family)
+                        .contains(GuardrailReason.PROJECTED_ECONOMICS_UNAVAILABLE);
+            } finally {
+                fixture.sql("""
+                        INSERT INTO core.economics_projection_component
+                            (id,profile_id,component_code,family_code,component_kind,
+                             fixed_amount,rate_value,lower_price_inclusive,
+                             upper_price_exclusive,evidence_reference)
+                        VALUES(:id,:profile,:code,:family,'FIXED',:amount,NULL,NULL,NULL,
+                               :evidence)
+                        """).param("id", component.id()).param("profile", economicsProfileId)
+                        .param("code", component.code()).param("family", family)
+                        .param("amount", component.amount())
+                        .param("evidence", component.evidence()).update();
+            }
+        }
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("TC-R2-FRESH-001 source watermarks, not metric rows or event windows, govern preview freshness")
+    void currentFeedWatermarksGovernTheActualPreviewService() {
+        RecommendationView proposal = recommendations.require(recommendationId);
+        long metricRows = jdbc.sql("SELECT count(*) FROM mart.metric_value")
+                .query(Long.class).single();
+
+        appendSalesWatermark(Duration.ofDays(31), "stale-sync");
+        ImpactPreview stale = guardrails.preview(proposal, null,
+                GuardrailPurpose.IMPACT_PREVIEW);
+        assertThat(stale.verdict().passed()).isFalse();
+        assertThat(stale.verdict().reasons()).contains(GuardrailReason.INPUT_TOO_STALE);
+        assertThat(jdbc.sql("SELECT count(*) FROM mart.metric_value")
+                .query(Long.class).single()).isEqualTo(metricRows);
+
+        // A new business event is still not a source synchronization assertion.
+        facts.insertSale(UUID.randomUUID(), organizationId, factProvenanceId,
+                listingVariantId, storeId, "COMPLETED", null,
+                "flow:fresh-business-event", "ORDER-FRESH", "LINE-FRESH", "delivered",
+                Instant.now(), 1, "RUB", new BigDecimal("100.0000"), BigDecimal.ZERO,
+                new BigDecimal("100.0000"));
+        ImpactPreview stillStale = guardrails.preview(proposal, null,
+                GuardrailPurpose.IMPACT_PREVIEW);
+        assertThat(stillStale.verdict().reasons()).contains(GuardrailReason.INPUT_TOO_STALE);
+
+        appendSalesWatermark(Duration.ZERO, "attributable-refresh");
+        ImpactPreview refreshed = guardrails.preview(proposal, null,
+                GuardrailPurpose.IMPACT_PREVIEW);
+        assertThat(refreshed.verdict().reasons())
+                .doesNotContain(GuardrailReason.INPUT_TOO_STALE,
+                        GuardrailReason.INPUT_FRESHNESS_UNAVAILABLE);
+        assertThat(jdbc.sql("SELECT count(*) FROM mart.metric_value")
+                .query(Long.class).single()).isEqualTo(metricRows);
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("TC-R2-PROFILE-001 missing, expired and overlapping scoped profiles fail closed")
+    void profileResolutionFailuresBlockTheActualPreviewService() {
+        RecommendationView proposal = recommendations.require(recommendationId);
+        JdbcClient fixture = fixtureJdbc();
+
+        fixture.sql("""
+                UPDATE core.economics_projection_profile
+                   SET verification_expires_at=now()-interval '1 second'
+                 WHERE id=:id
+                """).param("id", economicsProfileId).update();
+        assertThat(guardrails.preview(proposal, null, GuardrailPurpose.IMPACT_PREVIEW)
+                .verdict().reasons()).contains(GuardrailReason.ECONOMICS_PROFILE_EXPIRED);
+        fixture.sql("""
+                UPDATE core.economics_projection_profile
+                   SET verification_expires_at=now()+interval '30 days'
+                 WHERE id=:id
+                """).param("id", economicsProfileId).update();
+
+        UUID overlapping = UUID.randomUUID();
+        fixture.sql("""
+                INSERT INTO core.economics_projection_profile
+                    (id,profile_version,organization_id,platform_code,
+                     marketplace_account_id,store_id,fulfillment_mode_code,currency_code,
+                     effective_from,effective_to,verification_state,verified_at,
+                     verification_expires_at,evidence_reference,minimum_supported_price,
+                     maximum_supported_price,status,created_at)
+                SELECT :copy,2,organization_id,platform_code,marketplace_account_id,store_id,
+                       fulfillment_mode_code,currency_code,effective_from,effective_to,
+                       verification_state,verified_at,verification_expires_at,
+                       'synthetic://operating-flow/overlap',minimum_supported_price,
+                       maximum_supported_price,status,now()
+                  FROM core.economics_projection_profile WHERE id=:source
+                """).param("copy", overlapping).param("source", economicsProfileId).update();
+        try {
+            assertThat(guardrails.preview(proposal, null, GuardrailPurpose.IMPACT_PREVIEW)
+                    .verdict().reasons())
+                    .contains(GuardrailReason.ECONOMICS_PROFILE_AMBIGUOUS);
+        } finally {
+            fixture.sql("DELETE FROM core.economics_projection_profile WHERE id=:id")
+                    .param("id", overlapping).update();
+        }
+
+        UUID sellerMode = UUID.randomUUID();
+        fixture.sql("""
+                INSERT INTO core.store_fulfillment_declaration
+                    (id,organization_id,store_id,fulfillment_mode_code,effective_from,
+                     effective_to,status,created_at,updated_at)
+                VALUES(:id,:org,:store,'SELLER_FULFILLED',now()-interval '1 day',
+                       now()+interval '1 day','ACTIVE',now(),now())
+                """).param("id", sellerMode).param("org", organizationId)
+                .param("store", storeId).update();
+        fixture.sql("""
+                UPDATE ops.recommendation
+                   SET proposed_parameters=proposed_parameters
+                       || '{"fulfillmentModeCode":"SELLER_FULFILLED"}'::jsonb
+                 WHERE id=:id
+                """).param("id", recommendationId).update();
+        try {
+            assertThat(guardrails.preview(recommendations.require(recommendationId), null,
+                    GuardrailPurpose.IMPACT_PREVIEW).verdict().reasons())
+                    .contains(GuardrailReason.ECONOMICS_PROFILE_MISSING);
+        } finally {
+            fixture.sql("""
+                    UPDATE ops.recommendation
+                       SET proposed_parameters=proposed_parameters-'fulfillmentModeCode'
+                     WHERE id=:id
+                    """).param("id", recommendationId).update();
+            fixture.sql("DELETE FROM core.store_fulfillment_declaration WHERE id=:id")
+                    .param("id", sellerMode).update();
+        }
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("TC-R2-ASOF-001 profile calculations and the stored snapshot share one DB instant")
+    void profileBoundaryCannotSplitEvaluatedAndStoredAuthority() {
+        RecommendationView proposal = recommendations.require(recommendationId);
+        JdbcClient fixture = fixtureJdbc();
+        java.sql.Timestamp originalEffectiveTo = fixture.sql("""
+                        SELECT effective_to
+                          FROM core.economics_projection_profile
+                         WHERE id=:id
+                        """).param("id", economicsProfileId)
+                .query(java.sql.Timestamp.class).single();
+        Instant databaseNow = fixture.sql("SELECT statement_timestamp()")
+                .query(java.sql.Timestamp.class).single().toInstant();
+        Instant boundary = databaseNow.plusSeconds(3);
+        UUID lowerPriceProfile = UUID.randomUUID();
+
+        fixture.sql("""
+                UPDATE core.economics_projection_profile
+                   SET effective_to=:boundary
+                 WHERE id=:id
+                """).param("boundary", java.sql.Timestamp.from(boundary))
+                .param("id", economicsProfileId).update();
+        fixture.sql("""
+                INSERT INTO core.economics_projection_profile
+                    (id,profile_version,organization_id,platform_code,
+                     marketplace_account_id,store_id,fulfillment_mode_code,currency_code,
+                     effective_from,effective_to,verification_state,verified_at,
+                     verification_expires_at,evidence_reference,minimum_supported_price,
+                     maximum_supported_price,status,created_at)
+                SELECT :copy,2,organization_id,platform_code,marketplace_account_id,store_id,
+                       fulfillment_mode_code,currency_code,:boundary,:effectiveTo,
+                       verification_state,verified_at,verification_expires_at,
+                       'synthetic://operating-flow/profile-boundary-p2',
+                       minimum_supported_price,maximum_supported_price,status,created_at
+                  FROM core.economics_projection_profile WHERE id=:source
+                """).param("copy", lowerPriceProfile)
+                .param("boundary", java.sql.Timestamp.from(boundary))
+                .param("effectiveTo", originalEffectiveTo)
+                .param("source", economicsProfileId).update();
+        cloneEconomicsContract(fixture, economicsProfileId, lowerPriceProfile, true);
+
+        try {
+            ImpactPreview oldAuthority = guardrails.preview(proposal, null,
+                    GuardrailPurpose.IMPACT_PREVIEW);
+            assertThat(oldAuthority.verdict().passed()).isTrue();
+            assertThat(oldAuthority.economicsProfileId()).isEqualTo(economicsProfileId);
+            assertStoredEvaluationMatchesSnapshot(oldAuthority, economicsProfileId, null);
+
+            // This is the split the old JVM-clock/DB-clock shape admitted: a
+            // calculation already made with P1 followed by a DB snapshot made
+            // after the boundary resolves P2 instead.
+            fixture.sql("SELECT pg_sleep(3.2)")
+                    .query((row, number) -> row.getObject(1)).single();
+            String currentProfile = jdbc.sql("""
+                            SELECT ops.price_authority_snapshot(:recommendation)
+                                #>> '{economics,profile,id}'
+                            """).param("recommendation", recommendationId)
+                    .query(String.class).single();
+            assertThat(currentProfile).isEqualTo(lowerPriceProfile.toString())
+                    .isNotEqualTo(oldAuthority.economicsProfileId().toString());
+
+            ImpactPreview newAuthority = guardrails.preview(proposal, null,
+                    GuardrailPurpose.IMPACT_PREVIEW);
+            assertThat(newAuthority.verdict().passed()).isTrue();
+            assertThat(newAuthority.economicsProfileId()).isEqualTo(lowerPriceProfile);
+            assertThat(newAuthority.minimumPrice())
+                    .isLessThan(oldAuthority.minimumPrice());
+            assertStoredEvaluationMatchesSnapshot(newAuthority, lowerPriceProfile, null);
+            assertThat(jdbc.sql("""
+                            SELECT count(*)
+                              FROM ops.guardrail_evaluation
+                             WHERE id IN (:oldEvaluation,:newEvaluation)
+                               AND (detail->>'economicsProfileId') IS DISTINCT FROM
+                                   authority_snapshot #>> '{economics,profile,id}'
+                            """).param("oldEvaluation", oldAuthority.verdict().evaluationId())
+                    .param("newEvaluation", newAuthority.verdict().evaluationId())
+                    .query(Integer.class).single()).isZero();
+            assertThat(jdbc.sql("""
+                            SELECT count(*)
+                              FROM ops.approval_decision
+                             WHERE recommendation_id=:recommendation
+                            """).param("recommendation", recommendationId)
+                    .query(Integer.class).single()).isZero();
+            assertThat(jdbc.sql("""
+                            SELECT count(*)
+                              FROM ops.price_command
+                             WHERE recommendation_id=:recommendation
+                            """).param("recommendation", recommendationId)
+                    .query(Integer.class).single()).isZero();
+        } finally {
+            fixture.sql("DELETE FROM core.economics_projection_component WHERE profile_id=:id")
+                    .param("id", lowerPriceProfile).update();
+            fixture.sql("DELETE FROM core.economics_projection_family WHERE profile_id=:id")
+                    .param("id", lowerPriceProfile).update();
+            fixture.sql("DELETE FROM core.economics_projection_profile WHERE id=:id")
+                    .param("id", lowerPriceProfile).update();
+            fixture.sql("""
+                    UPDATE core.economics_projection_profile
+                       SET effective_to=:effectiveTo
+                     WHERE id=:id
+                    """).param("effectiveTo", originalEffectiveTo)
+                    .param("id", economicsProfileId).update();
+        }
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("TC-R2-ASOF-002 watermark calculation and persistence share the captured DB instant")
+    void watermarkBoundaryCannotSplitEvaluatedAndStoredAuthority() {
+        RecommendationView proposal = recommendations.require(recommendationId);
+        JdbcClient fixture = fixtureJdbc();
+        String oldWatermark = watermarkIdAt(recommendationId, null);
+        Instant databaseNow = fixture.sql("SELECT statement_timestamp()")
+                .query(java.sql.Timestamp.class).single().toInstant();
+        Instant boundary = databaseNow.plusSeconds(3);
+        UUID newWatermark = UUID.randomUUID();
+        fixture.sql("""
+                INSERT INTO core.source_feed_watermark
+                    (id,organization_id,platform_code,marketplace_account_id,store_id,
+                     feed_code,source_updated_at,ingested_at,reconciled_at,evidence_reference,
+                     verification_state,recorded_at)
+                VALUES(:id,:org,'OZON',:account,:store,'SALES',:source,:ingested,NULL,
+                       'synthetic://operating-flow/watermark-boundary-new','VERIFIED',:boundary)
+                """).param("id", newWatermark).param("org", organizationId)
+                .param("account", marketplaceAccountId).param("store", storeId)
+                .param("source", java.sql.Timestamp.from(databaseNow.minusSeconds(10)))
+                .param("ingested", java.sql.Timestamp.from(databaseNow.minusSeconds(5)))
+                .param("boundary", java.sql.Timestamp.from(boundary)).update();
+        try {
+            ImpactPreview oldAuthority = guardrails.preview(proposal, null,
+                    GuardrailPurpose.IMPACT_PREVIEW);
+            assertThat(watermarkIdAt(null, oldAuthority.verdict().evaluationId()))
+                    .isEqualTo(oldWatermark);
+            assertStoredEvaluationMatchesSnapshot(oldAuthority,
+                    oldAuthority.economicsProfileId(), oldWatermark);
+
+            fixture.sql("SELECT pg_sleep(3.2)")
+                    .query((row, number) -> row.getObject(1)).single();
+            assertThat(watermarkIdAt(recommendationId, null))
+                    .isEqualTo(newWatermark.toString())
+                    .isNotEqualTo(oldWatermark);
+
+            ImpactPreview newAuthority = guardrails.preview(proposal, null,
+                    GuardrailPurpose.IMPACT_PREVIEW);
+            assertThat(newAuthority.verdict().passed()).isTrue();
+            assertStoredEvaluationMatchesSnapshot(newAuthority,
+                    newAuthority.economicsProfileId(), newWatermark.toString());
+            assertThat(watermarkIdAt(null, newAuthority.verdict().evaluationId()))
+                    .isEqualTo(newWatermark.toString());
+        } finally {
+            fixture.sql("DELETE FROM core.source_feed_watermark WHERE id=:id")
+                    .param("id", newWatermark).update();
+        }
+    }
+
+    @Test
+    @Order(10)
     @DisplayName("TC-FLOW-009 a decision needs a passing guardrail and a stated reason")
     void approveTheProposal() {
+        JdbcClient fixture = fixtureJdbc();
+        selectedModeDeclarationId = UUID.randomUUID();
+        selectedEconomicsProfileId = UUID.randomUUID();
+        fixture.sql("""
+                INSERT INTO core.store_fulfillment_declaration
+                    (id,organization_id,store_id,fulfillment_mode_code,effective_from,
+                     effective_to,status,created_at,updated_at)
+                VALUES(:id,:org,:store,'SELLER_FULFILLED',now()-interval '1 day',
+                       now()+interval '30 days','ACTIVE',now(),now())
+                """).param("id", selectedModeDeclarationId).param("org", organizationId)
+                .param("store", storeId).update();
+        fixture.sql("""
+                INSERT INTO core.economics_projection_profile
+                    (id,profile_version,organization_id,platform_code,
+                     marketplace_account_id,store_id,fulfillment_mode_code,currency_code,
+                     effective_from,effective_to,verification_state,verified_at,
+                     verification_expires_at,evidence_reference,minimum_supported_price,
+                     maximum_supported_price,status,created_at)
+                SELECT :copy,1,organization_id,platform_code,marketplace_account_id,store_id,
+                       'SELLER_FULFILLED',currency_code,effective_from,effective_to,
+                       verification_state,verified_at,verification_expires_at,
+                       'synthetic://operating-flow/seller-profile',minimum_supported_price,
+                       maximum_supported_price,status,created_at
+                  FROM core.economics_projection_profile WHERE id=:source
+                """).param("copy", selectedEconomicsProfileId)
+                .param("source", economicsProfileId).update();
+        cloneEconomicsContract(fixture, economicsProfileId, selectedEconomicsProfileId, true);
+
+        // Two active modes require one explicit selection. The SQL contract
+        // remains true for the optional omission, but mode resolution refuses
+        // the ambiguity. UNKNOWN, inactive modes and extra keys all fail closed.
+        RecommendationView twoModeProposal = recommendations.require(recommendationId);
+        assertThat(guardrails.preview(twoModeProposal, null, GuardrailPurpose.IMPACT_PREVIEW)
+                .verdict().passed()).isFalse();
+        assertParameterContract(fixture, "{\"targetPrice\":\"105.0000\"}", true);
+
+        setRecommendationParameters(fixture,
+                "{\"targetPrice\":\"105.0000\",\"fulfillmentModeCode\":\"UNKNOWN\"}");
+        assertParameterContract(fixture,
+                "{\"targetPrice\":\"105.0000\",\"fulfillmentModeCode\":\"UNKNOWN\"}",
+                false);
+        assertThat(guardrails.preview(recommendations.require(recommendationId), null,
+                GuardrailPurpose.IMPACT_PREVIEW).verdict().passed()).isFalse();
+
+        setRecommendationParameters(fixture,
+                "{\"targetPrice\":\"105.0000\",\"fulfillmentModeCode\":\"DROPSHIP\"}");
+        assertParameterContract(fixture,
+                "{\"targetPrice\":\"105.0000\",\"fulfillmentModeCode\":\"DROPSHIP\"}",
+                true);
+        assertThat(guardrails.preview(recommendations.require(recommendationId), null,
+                GuardrailPurpose.IMPACT_PREVIEW).verdict().passed()).isFalse();
+
+        setRecommendationParameters(fixture,
+                "{\"targetPrice\":\"105.0000\",\"unexpected\":\"value\"}");
+        assertParameterContract(fixture,
+                "{\"targetPrice\":\"105.0000\",\"unexpected\":\"value\"}", false);
+        assertThat(guardrails.preview(recommendations.require(recommendationId), null,
+                GuardrailPurpose.IMPACT_PREVIEW).verdict().passed()).isFalse();
+
+        setRecommendationParameters(fixture,
+                "{\"targetPrice\":\"105.0000\",\"fulfillmentModeCode\":\"SELLER_FULFILLED\"}");
         recommendations.transition(OPERATOR, recommendationId, RecommendationState.VALIDATED,
                 null, recommendations.require(recommendationId).version());
         recommendations.transition(OPERATOR, recommendationId,
@@ -533,18 +1069,24 @@ class OperatingFlowIT {
         assertThat(preview.verdict().reasons())
                 .doesNotContain(GuardrailReason.NO_POLICY_IN_FORCE);
 
-        if (!preview.verdict().passed()) {
-            // The guardrail refused for a reason about the facts rather than
-            // about the policy being absent. That is a legitimate outcome and
-            // the rest of this test asserts the refusal rather than pretending.
-            assertThat(preview.verdict().reasons()).isNotEmpty();
-            assertThatThrownBy(() -> approvals.approve(actor, recommendationId,
-                    "approving for the pilot", proposal.version()))
-                    .isInstanceOf(OperationRejectedException.class)
-                    .extracting(failure -> ((OperationRejectedException) failure).errorCode())
-                    .isEqualTo(ErrorCode.GUARDRAIL_BLOCKED);
-            return;
-        }
+        assertThat(preview.verdict().reasons()).isEmpty();
+        assertThat(preview.verdict().passed()).isTrue();
+        assertThat(preview.economicsProfileId()).isEqualTo(selectedEconomicsProfileId);
+        assertThat(preview.economicsProfileVersion()).isEqualTo(1);
+        assertThat(preview.fulfillmentModeCode()).isEqualTo("SELLER_FULFILLED");
+        assertThat(preview.minimumPrice()).isLessThan(new BigDecimal("87.0000"));
+        assertThat(jdbc.sql("""
+                        SELECT count(*)
+                          FROM mart.metric_value value
+                          JOIN mart.metric_input_reference input
+                            ON input.metric_value_id=value.id
+                         WHERE value.metric_code='MINIMUM_PRICE'
+                           AND value.subject_id=:subject
+                           AND input.reference_kind='ECONOMICS_PROFILE'
+                           AND input.reference_id=:profile
+                        """).param("subject", listingVariantId)
+                .param("profile", economicsProfileId).query(Integer.class).single())
+                .isPositive();
 
         ApprovalService.Decision decision = approvals.approve(actor, recommendationId,
                 "approving for the pilot", proposal.version());
@@ -554,34 +1096,121 @@ class OperatingFlowIT {
     }
 
     @Test
-    @Order(10)
-    @DisplayName("TC-FLOW-010 a command cannot be created while the gate would refuse it")
+    @Order(11)
+    @DisplayName("TC-FLOW-010 the DB-authoritative command is created only after the gate passes")
     void createTheCommand() {
         RecommendationView proposal = recommendations.require(recommendationId);
-        if (!proposal.state().authorized()) {
-            // The guardrail refused earlier, so there is nothing to execute.
-            // Asserting that is the correct end of this path.
-            assertThatThrownBy(() -> execution.createCommand(actor, recommendationId,
-                    proposal.version()))
-                    .isInstanceOf(OperationRejectedException.class);
-            return;
-        }
+        assertThat(proposal.state().authorized()).isTrue();
+
+        JdbcClient fixture = fixtureJdbc();
+        fixture.sql("""
+                UPDATE core.store_fulfillment_declaration
+                   SET status='ENDED'
+                 WHERE id=:id
+                """).param("id", selectedModeDeclarationId).update();
+        assertThatThrownBy(() -> execution.createCommand(actor, recommendationId,
+                proposal.version())).isInstanceOf(OperationRejectedException.class)
+                .extracting(failure -> ((OperationRejectedException) failure).errorCode())
+                .isEqualTo(ErrorCode.GUARDRAIL_BLOCKED);
+        fixture.sql("""
+                UPDATE core.store_fulfillment_declaration
+                   SET status='ACTIVE'
+                 WHERE id=:id
+                """).param("id", selectedModeDeclarationId).update();
+
+        fixture.sql("""
+                UPDATE core.economics_projection_profile
+                   SET status='RETIRED'
+                 WHERE id=:id
+                """).param("id", selectedEconomicsProfileId).update();
+        assertThatThrownBy(() -> execution.createCommand(actor, recommendationId,
+                proposal.version())).isInstanceOf(OperationRejectedException.class)
+                .extracting(failure -> ((OperationRejectedException) failure).errorCode())
+                .isEqualTo(ErrorCode.GUARDRAIL_BLOCKED);
+        fixture.sql("""
+                UPDATE core.economics_projection_profile
+                   SET status='ACTIVE'
+                 WHERE id=:id
+                """).param("id", selectedEconomicsProfileId).update();
 
         allowlist.grant(actor, "OZON", storeId, listingVariantId,
                 Instant.now().minus(Duration.ofMinutes(1)),
                 Instant.now().plus(Duration.ofDays(7)), "pilot cohort");
         assertThat(allowlist.covers(storeId, listingVariantId)).isTrue();
 
-        // No verified PRICE_CHANGE capability is registered for this platform,
-        // so the command cannot even be created. That is the fail-closed
-        // behaviour: an unverified capability has no reachable specification.
-        assertThatThrownBy(() -> execution.createCommand(actor, recommendationId,
-                proposal.version()))
-                .isInstanceOf(OperationRejectedException.class)
-                .extracting(failure -> ((OperationRejectedException) failure).errorCode())
-                .isEqualTo(ErrorCode.CAPABILITY_NOT_USABLE);
+        // The capability projection is a prerequisite fixture, not part of this
+        // Facts-to-Command service-path proof. Arrange it with the migration role
+        // so the production V0027 guard continues to reject application-role
+        // attempts to manufacture VERIFIED registry facts.
+        UUID capabilityId = PriceCommandFixture.sharedCapability(fixture);
+        PriceCommandFixture.seedOperations(fixture, capabilityId, false);
+        fixture.sql("""
+                INSERT INTO platform.capability_subject_status
+                    (id,organization_id,platform_code,capability_id,store_id,availability,
+                     last_verified_at,evidence_ref,verified_source_title,created_at,updated_at)
+                VALUES(gen_random_uuid(),:org,'OZON',:capability,:store,'AVAILABLE',now(),
+                       'synthetic://operating-flow/worker-gate',
+                       'Synthetic worker-gate fixture',now(),now())
+                ON CONFLICT (capability_id,store_id) WHERE store_id IS NOT NULL
+                DO UPDATE SET availability='AVAILABLE',last_verified_at=now(),
+                    evidence_ref=EXCLUDED.evidence_ref,
+                    verified_source_title=EXCLUDED.verified_source_title,updated_at=now()
+                """).param("org", organizationId).param("capability", capabilityId)
+                .param("store", storeId).update();
+        fixture.sql("""
+                INSERT INTO platform.feature_flag
+                    (id,flag_code,flag_kind,scope_kind,state,status,created_at,updated_at)
+                SELECT gen_random_uuid(),'price-change-write','WRITE_CAPABILITY','GLOBAL',
+                       'ENABLED','ACTIVE',now(),now()
+                 WHERE NOT EXISTS (
+                    SELECT 1 FROM platform.feature_flag
+                     WHERE flag_code='price-change-write' AND scope_kind='GLOBAL'
+                       AND status='ACTIVE')
+                """).update();
+        fixture.sql("""
+                INSERT INTO platform.feature_flag
+                    (id,flag_code,flag_kind,scope_kind,capability_id,state,status,
+                     created_at,updated_at)
+                SELECT gen_random_uuid(),'price-change-write','WRITE_CAPABILITY','CAPABILITY',
+                       :capability,'ENABLED','ACTIVE',now(),now()
+                 WHERE NOT EXISTS (
+                    SELECT 1 FROM platform.feature_flag
+                     WHERE flag_code='price-change-write' AND scope_kind='CAPABILITY'
+                       AND capability_id=:capability AND status='ACTIVE')
+                """).param("capability", capabilityId).update();
+        fixture.sql("""
+                UPDATE platform.feature_flag
+                   SET state='ENABLED',updated_at=now()
+                 WHERE flag_code='price-change-write' AND status='ACTIVE'
+                   AND (scope_kind='GLOBAL'
+                        OR (scope_kind='CAPABILITY' AND capability_id=:capability))
+                """).param("capability", capabilityId).update();
 
-        assertThat(commands.forRecommendation(recommendationId)).isEmpty();
+        ExecutionService.Created created = execution.createCommand(actor, recommendationId,
+                proposal.version());
+        assertThat(created.verdict()).isNotNull();
+        assertThat(created.verdict().passed()).isTrue();
+        assertThat(commands.forRecommendation(recommendationId))
+                .hasValueSatisfying(command -> {
+                    assertThat(command.id()).isEqualTo(created.commandId());
+                    assertThat(command.fulfillmentModeCode())
+                            .isEqualTo("SELLER_FULFILLED");
+                });
+        assertThat(jdbc.sql("""
+                        SELECT fulfillment_mode_code
+                          FROM ops.price_command
+                         WHERE id=:id
+                        """).param("id", created.commandId())
+                .query(String.class).single()).isEqualTo("SELLER_FULFILLED");
+        assertThat(jdbc.sql("SELECT ops.price_command_authority_matches(:id)")
+                .param("id", created.commandId()).query(Boolean.class).single()).isTrue();
+        long fence = jdbc.sql("SELECT ops.lease_price_command(:id,:worker,120)")
+                .param("id", created.commandId()).param("worker", "r2-mode-binding-test")
+                .query(Long.class).single();
+        assertThat(fence).isPositive();
+        assertThat(jdbc.sql("SELECT state FROM ops.price_command WHERE id=:id")
+                .param("id", created.commandId()).query(String.class).single())
+                .isEqualTo("LEASED");
     }
 
     // -----------------------------------------------------------------
@@ -589,7 +1218,7 @@ class OperatingFlowIT {
     // -----------------------------------------------------------------
 
     @Test
-    @Order(11)
+    @Order(12)
     @DisplayName("TC-FLOW-011 with no eligible provider the explanation degrades and nothing else")
     void aiRefusesWithoutAProvider() {
         AiDiagnosis explanation = copilot.explain(userId, organizationId, listingVariantId,
@@ -610,7 +1239,7 @@ class OperatingFlowIT {
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     @DisplayName("TC-FLOW-012 the work list and the task queue reflect what was decided")
     void readTheQueues() {
         assertThat(recommendations.stateCounts(storeId)).isNotEmpty();
@@ -816,6 +1445,178 @@ class OperatingFlowIT {
                 TestDatabase.container().getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword()));
     }
 
+    private static void cloneEconomicsContract(JdbcClient fixture, UUID sourceProfile,
+                                                UUID targetProfile,
+                                                boolean lowerCommission) {
+        fixture.sql("""
+                INSERT INTO core.economics_projection_family
+                    (profile_id,family_code,applicability_state,evidence_reference)
+                SELECT :target,family_code,applicability_state,
+                       evidence_reference||'/clone'
+                  FROM core.economics_projection_family
+                 WHERE profile_id=:source
+                """).param("target", targetProfile).param("source", sourceProfile).update();
+        fixture.sql("""
+                INSERT INTO core.economics_projection_component
+                    (id,profile_id,component_code,family_code,component_kind,fixed_amount,
+                     rate_value,lower_price_inclusive,upper_price_exclusive,evidence_reference)
+                SELECT gen_random_uuid(),:target,component_code,family_code,component_kind,
+                       CASE WHEN :lowerCommission AND family_code='COMMISSION'
+                            THEN 2.0000 ELSE fixed_amount END,
+                       rate_value,lower_price_inclusive,upper_price_exclusive,
+                       evidence_reference||'/clone'
+                  FROM core.economics_projection_component
+                 WHERE profile_id=:source
+                """).param("target", targetProfile).param("source", sourceProfile)
+                .param("lowerCommission", lowerCommission).update();
+    }
+
+    private void assertStoredEvaluationMatchesSnapshot(ImpactPreview preview,
+                                                       UUID expectedProfile,
+                                                       String expectedSalesWatermark) {
+        UUID evaluationId = preview.verdict().evaluationId();
+        assertThat(jdbc.sql("""
+                        SELECT authority_snapshot = ops.price_authority_snapshot(
+                                   recommendation_id,evaluated_at)
+                          FROM ops.guardrail_evaluation
+                         WHERE id=:id
+                        """).param("id", evaluationId).query(Boolean.class).single()).isTrue();
+        assertThat(jdbc.sql("""
+                        SELECT (detail->>'economicsProfileId') || ':' ||
+                               (authority_snapshot #>> '{economics,profile,id}')
+                          FROM ops.guardrail_evaluation
+                         WHERE id=:id
+                        """).param("id", evaluationId).query(String.class).single())
+                .isEqualTo(expectedProfile + ":" + expectedProfile);
+        if (expectedSalesWatermark != null) {
+            assertThat(watermarkIdAt(null, evaluationId)).isEqualTo(expectedSalesWatermark);
+        }
+    }
+
+    private String watermarkIdAt(UUID recommendation, UUID evaluation) {
+        if (evaluation != null) {
+            return jdbc.sql("""
+                            SELECT watermark->>'id'
+                              FROM ops.guardrail_evaluation guardrail
+                              CROSS JOIN LATERAL jsonb_array_elements(
+                                  guardrail.authority_snapshot #> '{economics,watermarks}') watermark
+                             WHERE guardrail.id=:id
+                               AND watermark->>'feedCode'='SALES'
+                            """).param("id", evaluation).query(String.class).single();
+        }
+        return jdbc.sql("""
+                        SELECT watermark->>'id'
+                          FROM jsonb_array_elements(
+                              ops.price_authority_snapshot(:id) #> '{economics,watermarks}') watermark
+                         WHERE watermark->>'feedCode'='SALES'
+                        """).param("id", recommendation).query(String.class).single();
+    }
+
+    private static void setRecommendationParameters(JdbcClient fixture, String parameters) {
+        fixture.sql("""
+                UPDATE ops.recommendation
+                   SET proposed_parameters=CAST(:parameters AS jsonb)
+                 WHERE id=:id
+                """).param("parameters", parameters).param("id", recommendationId).update();
+    }
+
+    private static void assertParameterContract(JdbcClient fixture, String parameters,
+                                                boolean expected) {
+        assertThat(fixture.sql("""
+                        SELECT ops.price_change_parameter_contract_is_valid(
+                            CAST(:parameters AS jsonb))
+                        """).param("parameters", parameters)
+                .query(Boolean.class).single()).isEqualTo(expected);
+    }
+
+    /** Synthetic, isolated authority data; no provider/account fact is claimed. */
+    private static void seedEconomicsAuthority(Instant now) {
+        JdbcClient fixture = fixtureJdbc();
+        economicsProfileId = UUID.randomUUID();
+        fixture.sql("""
+                INSERT INTO core.store_fulfillment_declaration
+                    (id,organization_id,store_id,fulfillment_mode_code,effective_from,
+                     effective_to,status,created_at,updated_at)
+                VALUES(:id,:org,:store,'MARKETPLACE_FULFILLED',:from,:to,'ACTIVE',:now,:now)
+                """).param("id", UUID.randomUUID()).param("org", organizationId)
+                .param("store", storeId)
+                .param("from", java.sql.Timestamp.from(now.minus(Duration.ofDays(1))))
+                .param("to", java.sql.Timestamp.from(now.plus(Duration.ofDays(30))))
+                .param("now", java.sql.Timestamp.from(now)).update();
+        fixture.sql("""
+                INSERT INTO core.economics_projection_profile
+                    (id,profile_version,organization_id,platform_code,
+                     marketplace_account_id,store_id,fulfillment_mode_code,currency_code,
+                     effective_from,effective_to,verification_state,verified_at,
+                     verification_expires_at,evidence_reference,minimum_supported_price,
+                     maximum_supported_price,status,created_at)
+                VALUES(:id,1,:org,'OZON',:account,:store,'MARKETPLACE_FULFILLED','RUB',
+                    :from,:to,'ENGINEERING_VERIFIED',:verified,:to,
+                    'synthetic://operating-flow/economics',1.0000,1000.0000,'ACTIVE',:now)
+                """).param("id", economicsProfileId).param("org", organizationId)
+                .param("account", marketplaceAccountId).param("store", storeId)
+                .param("from", java.sql.Timestamp.from(now.minus(Duration.ofDays(1))))
+                .param("verified", java.sql.Timestamp.from(now.minus(Duration.ofHours(1))))
+                .param("to", java.sql.Timestamp.from(now.plus(Duration.ofDays(30))))
+                .param("now", java.sql.Timestamp.from(now)).update();
+        fixture.sql("""
+                INSERT INTO core.economics_projection_family
+                    (profile_id,family_code,applicability_state,evidence_reference)
+                SELECT :profile,family,'REQUIRED','synthetic://operating-flow/family/'||family
+                  FROM unnest(ARRAY['COMMISSION','FULFILLMENT_DELIVERY','STORAGE','PROMOTION',
+                    'OTHER_VARIABLE','RETURN_LOSS','ADVERTISING','VARIABLE_TAX']) family
+                """).param("profile", economicsProfileId).update();
+        fixture.sql("""
+                INSERT INTO core.economics_projection_component
+                    (id,profile_id,component_code,family_code,component_kind,fixed_amount,
+                     rate_value,lower_price_inclusive,upper_price_exclusive,evidence_reference)
+                SELECT gen_random_uuid(),:profile,component_code,family_code,'FIXED',amount,
+                       NULL,NULL,NULL,'synthetic://operating-flow/component/'||component_code
+                  FROM (VALUES
+                    ('COMMISSION','COMMISSION',10.0000::numeric),
+                    ('FULFILLMENT','FULFILLMENT_DELIVERY',5.0000::numeric),
+                    ('STORAGE','STORAGE',0.0000::numeric),
+                    ('PROMOTION','PROMOTION',0.0000::numeric),
+                    ('OTHER_VARIABLE','OTHER_VARIABLE',0.0000::numeric),
+                    ('RETURN_LOSS','RETURN_LOSS',2.0000::numeric),
+                    ('ADVERTISING','ADVERTISING',2.0000::numeric),
+                    ('VARIABLE_TAX','VARIABLE_TAX',1.0000::numeric))
+                    component(component_code,family_code,amount)
+                """).param("profile", economicsProfileId).update();
+        fixture.sql("""
+                INSERT INTO core.source_feed_watermark
+                    (id,organization_id,platform_code,marketplace_account_id,store_id,
+                     feed_code,source_updated_at,ingested_at,reconciled_at,evidence_reference,
+                     verification_state,recorded_at)
+                SELECT gen_random_uuid(),:org,'OZON',:account,:store,feed,:source,:ingested,
+                       :reconciled,'synthetic://operating-flow/watermark/'||feed,'VERIFIED',:now
+                  FROM unnest(ARRAY['PRICE','STOCK','SALES','RETURNS','FINANCE_FEES',
+                    'ADVERTISING','INTERNAL_COST','COMMERCIAL_INPUTS']) feed
+                """).param("org", organizationId).param("account", marketplaceAccountId)
+                .param("store", storeId)
+                .param("source", java.sql.Timestamp.from(now.minus(Duration.ofHours(1))))
+                .param("ingested", java.sql.Timestamp.from(now.minus(Duration.ofMinutes(59))))
+                .param("reconciled", java.sql.Timestamp.from(now.minus(Duration.ofMinutes(58))))
+                .param("now", java.sql.Timestamp.from(now)).update();
+    }
+
+    private static void appendSalesWatermark(Duration sourceAge, String evidenceSuffix) {
+        Instant now = Instant.now();
+        fixtureJdbc().sql("""
+                INSERT INTO core.source_feed_watermark
+                    (id,organization_id,platform_code,marketplace_account_id,store_id,
+                     feed_code,source_updated_at,ingested_at,reconciled_at,evidence_reference,
+                     verification_state,recorded_at)
+                VALUES(:id,:org,'OZON',:account,:store,'SALES',:source,:ingested,NULL,
+                       :evidence,'VERIFIED',:recorded)
+                """).param("id", UUID.randomUUID()).param("org", organizationId)
+                .param("account", marketplaceAccountId).param("store", storeId)
+                .param("source", java.sql.Timestamp.from(now.minus(sourceAge)))
+                .param("ingested", java.sql.Timestamp.from(now.minusSeconds(1)))
+                .param("evidence", "synthetic://operating-flow/" + evidenceSuffix)
+                .param("recorded", java.sql.Timestamp.from(now)).update();
+    }
+
     private void retireSyntheticModel(UUID provider) {
         fixtureJdbc().sql("UPDATE ops.ai_provider SET status='RETIRED',updated_at=now(),version=version+1 WHERE id=:id")
                 .param("id",provider).update();
@@ -973,6 +1774,10 @@ class OperatingFlowIT {
 
     private static CommercialPolicyService.LimitDraft durationLimit(String code, long seconds) {
         return new CommercialPolicyService.LimitDraft(code, null, null, null, seconds);
+    }
+
+    private record ComponentFixture(UUID id, String code, BigDecimal amount,
+                                    String evidence) {
     }
 
     /** Confidence states this flow may legitimately produce, for readability. */

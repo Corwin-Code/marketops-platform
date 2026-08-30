@@ -116,7 +116,7 @@ public class AnalyticsCalculationService {
         int findingsStored = 0;
         for (UUID subjectId : subjects) {
             Map<MetricCode, ComputedMetric> computed = metricEngine.compute(
-                    store.organizationId(), storeId, subjectId, window, now);
+                    store.organizationId(), storeId, subjectId, window, factWindow);
             Map<MetricCode, UUID> storedValueIds = storeValues(runId, store.organizationId(),
                     subjectId, window, factWindow, computed, now);
             valuesStored += storedValueIds.size();

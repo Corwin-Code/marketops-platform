@@ -3001,10 +3001,17 @@ class V1CurrentStateContractTests(unittest.TestCase):
 
     def test_rework_identity_phase_and_actor_cannot_drift(self) -> None:
         mutations = (
-            ("next_authorized_actor: GPT-5.6 Sol Pro Controller", "next_authorized_actor: CLAUDE_FABLE_5"),
-            ("slice_v1_001_rework_phase: FINAL_CLOSURE_VERIFICATION", "slice_v1_001_rework_phase: CLOSED"),
-            ("slice_v1_001_pr_state: OPEN_DRAFT_UNMERGED", "slice_v1_001_pr_state: MERGED"),
-            ("slice_v1_001_finding_count: 13", "slice_v1_001_finding_count: 12"),
+            ("next_authorized_actor: GPT-5.6 Pro Controller", "next_authorized_actor: CLAUDE_FABLE_5"),
+            ("slice_v1_001_rework_phase: R2_FIX_VERIFY", "slice_v1_001_rework_phase: CLOSED"),
+            (
+                "slice_v1_001_pr_state: OPEN_DRAFT_R2_CANDIDATE",
+                "slice_v1_001_pr_state: MERGED",
+            ),
+            (
+                "slice_v1_001_initial_remote_ci: PASS_12_OF_12_REQUIRED_CONTEXTS",
+                "slice_v1_001_initial_remote_ci: PASS_11_OF_12_REQUIRED_CONTEXTS",
+            ),
+            ("slice_v1_001_finding_count: 9", "slice_v1_001_finding_count: 8"),
             ("slice_v1_001_closure_claim: NONE", "slice_v1_001_closure_claim: APPROVED"),
             ("candidate_state_scope: PR_BRANCH_ONLY", "candidate_state_scope: PROTECTED_MAIN"),
             ("gate_ev: NOT_AUTHORIZED", "gate_ev: AUTHORIZED"),
@@ -3047,9 +3054,17 @@ class V1CurrentStateContractTests(unittest.TestCase):
             self.assertTrue(any("hash mismatch" in error for error in errors))
         mutations = (
             acceptance.replace("`S1-AC-001`", "`S1-AC-002`", 1),
-            acceptance.replace("`IMPLEMENTATION_DEFECT` |", "`EXECUTABLY_VERIFIED` |", 1),
-            acceptance.replace("`IMPLEMENTATION_DEFECT` | 32", "`IMPLEMENTATION_DEFECT` | 31", 1),
-            acceptance.replace("S1-F001,", "omitted,", 1),
+            acceptance.replace(
+                "`OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001` |",
+                "`EXECUTABLY_VERIFIED` |",
+                1,
+            ),
+            acceptance.replace("`IMPLEMENTED_UNPROVEN` | 24", "`IMPLEMENTED_UNPROVEN` | 23", 1),
+            acceptance.replace(
+                "assessed_against: SUPPLEMENTAL_R2_DRAFT_PR_22_CONTAINING_COMMIT",
+                "assessed_against: CLOSED",
+                1,
+            ),
         )
         for changed in mutations:
             self.assertNotEqual(acceptance, changed)

@@ -109,6 +109,10 @@ variable "oidc_jwk_set_uri" {
 
 variable "oidc_audience" {
   type = string
+  validation {
+    condition     = can(regex("^[A-Za-z0-9][A-Za-z0-9._:/-]{0,254}$", var.oidc_audience))
+    error_message = "A nonblank bounded OIDC audience is required."
+  }
 }
 
 variable "public_hostname" {

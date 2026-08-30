@@ -236,6 +236,19 @@ V1_ACTIVE_SLICE_CONTRACT_SHA256 = (
 V1_SLICE_AUTHORIZATION_CONDITION = (
     "EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN"
 )
+V1_AMENDMENT_002_PATH = (
+    "docs/03-work-items/"
+    "SLICE-V1-001-AMENDMENT-002-DEFERRED-REAL-INTEGRATION-AND-PREPRODUCTION-ASSURANCE.md"
+)
+V1_AMENDMENT_002_SHA256 = (
+    "92fdd8d67b327fbd2288ba99290b5b59f2797106c4b691ce2bff22bb80198b93"
+)
+V1_AMENDMENT_002_ACCEPTANCE_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-002-ACCEPTANCE-EVIDENCE.md"
+)
+V1_AMENDMENT_002_ACCEPTANCE_SHA256 = (
+    "f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923"
+)
 V1_ACTIVE_STATE = {
     "lifecycle_state": "EXECUTING_V1",
     "product_version": "V1",
@@ -246,20 +259,35 @@ V1_ACTIVE_STATE = {
     "active_slice_contract_authorization_condition": V1_SLICE_AUTHORIZATION_CONDITION,
     "active_gate": "SLICE_CONTRACT_APPROVED",
     "authorization": "FULL_SCOPE_IMPLEMENTATION",
-    "next_authorized_actor": "GPT-5.6 Sol Pro Controller",
-    "next_action": "CONTROLLER_SLICE_V1_001_FINAL_CLOSURE_VERIFICATION",
-    "slice_v1_001_implementation_state": "ROOT_CAUSE_REWORK_CANDIDATE",
-    "slice_v1_001_rework_phase": "FINAL_CLOSURE_VERIFICATION",
-    "slice_v1_001_pr": "20",
-    "slice_v1_001_pr_state": "OPEN_DRAFT_UNMERGED",
-    "slice_v1_001_branch": "feat/SLICE-V1-001-sku-growth-profit-loop",
-    "slice_v1_001_review_state": "CONTROLLER_DEEP_REVIEW_COMPLETE",
-    "slice_v1_001_reviewed_base": "89fc29be45327b592a9bcbeffbfec54c96fb66ed",
-    "slice_v1_001_reviewed_head": "30d16e5d7db2d2190635a06fececd5883093a876",
-    "slice_v1_001_reviewed_tree": "13b1b789cd4cff292d0d6ab24daca976afbba6da",
+    "r2_remote_publication_authority": "HUMAN_OWNER_EXPLICIT_BRANCH_AND_DRAFT_PR_22",
+    "active_slice_amendment_002": V1_AMENDMENT_002_PATH,
+    "active_slice_amendment_002_sha256": V1_AMENDMENT_002_SHA256,
+    "active_slice_amendment_002_acceptance": "HUMAN_OWNER_ACCEPTED_FOR_SUPPLEMENTAL_R2",
+    "active_slice_amendment_002_acceptance_evidence": V1_AMENDMENT_002_ACCEPTANCE_PATH,
+    "active_slice_amendment_002_acceptance_evidence_sha256": V1_AMENDMENT_002_ACCEPTANCE_SHA256,
+    "next_authorized_actor": "GPT-5.6 Pro Controller",
+    "next_action": "CONTROLLER_SLICE_V1_001_R2_FINAL_CLOSURE_VERIFICATION",
+    "slice_v1_001_implementation_state": "SUPPLEMENTAL_R2_ROOT_CAUSE_REWORK_CANDIDATE",
+    "slice_v1_001_rework_phase": "R2_FIX_VERIFY",
+    "slice_v1_001_pr": "22",
+    "slice_v1_001_pr_state": "OPEN_DRAFT_R2_CANDIDATE",
+    "slice_v1_001_branch": "fix/SLICE-V1-001-supplemental-assurance-r2",
+    "slice_v1_001_review_state": "SUPPLEMENTAL_R2_FINAL_CONTROLLER_VERIFICATION_PENDING",
+    "slice_v1_001_reviewed_base": "db92cf2f8bd818f36dd8f5aa17b8589c4140b669",
+    "slice_v1_001_reviewed_head": "db92cf2f8bd818f36dd8f5aa17b8589c4140b669",
+    "slice_v1_001_reviewed_tree": "221e5a009d4cf5820d36c0e1bccd5b64caa6135b",
     "slice_v1_001_frozen_findings_sha256": "8e5bd4ee3f5727bff9e9d1a7fc58739c635e6fd75483f28a4f302fcb222ae3a8",
-    "slice_v1_001_finding_count": "13",
+    "slice_v1_001_supplemental_r2_review_sha256": "c772c76c89b753d4694ee5ec1eceddad3451ab7ef6acc2e36416d9d4171f26ff",
+    "slice_v1_001_rework_commit_state": "REMOTE_DRAFT_PR_INITIAL_CI_PASS_FINAL_METADATA_REVERIFY",
+    "slice_v1_001_initial_published_head": "c3d2160a9c302d993e2b01a08946f46fae0b01d5",
+    "slice_v1_001_initial_published_tree": "9d7641eccc2d233bf2c5615e7c4776721269bc15",
+    "slice_v1_001_initial_tested_merge": "353670b4a311f98b56fae593f8b2b34d5f39a80e",
+    "slice_v1_001_initial_tested_merge_tree": "9d7641eccc2d233bf2c5615e7c4776721269bc15",
+    "slice_v1_001_initial_remote_ci": "PASS_12_OF_12_REQUIRED_CONTEXTS",
+    "slice_v1_001_final_candidate_identity_resolution": "THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS",
+    "slice_v1_001_finding_count": "9",
     "slice_v1_001_closure_claim": "NONE",
+    "slice_v1_001_handoff_pending": "FINAL_CONTAINING_COMMIT_LOCAL_AND_REMOTE_REVERIFY",
     "candidate_state_scope": "PR_BRANCH_ONLY",
     "merge_authorization": "NOT_GRANTED",
     "production_deployment": "NOT_AUTHORIZED",
@@ -3867,28 +3895,56 @@ def validate_slice_rework_evidence_text(
 
     metadata = leading_yaml_body(acceptance, "# SLICE-V1-001 acceptance status") or ""
     required = {
-        "assessed_against": "PR20_REWORK_SUBMITTED_FOR_CLOSURE",
-        "remote_publication": "PUBLISHED_DRAFT_CANDIDATE",
+        "assessed_against": "SUPPLEMENTAL_R2_DRAFT_PR_22_CONTAINING_COMMIT",
+        "remote_publication": "PUBLISHED_OPEN_DRAFT_PR_22",
+        "initial_published_head": "c3d2160a9c302d993e2b01a08946f46fae0b01d5",
+        "initial_published_tree": "9d7641eccc2d233bf2c5615e7c4776721269bc15",
+        "initial_tested_merge": "353670b4a311f98b56fae593f8b2b34d5f39a80e",
+        "initial_tested_merge_tree": "9d7641eccc2d233bf2c5615e7c4776721269bc15",
+        "initial_remote_ci": "PASS_12_OF_12_REQUIRED_CONTEXTS",
+        "final_candidate_identity_resolution": "THIS_DOCUMENT_CONTAINING_COMMIT_AND_PR_22_LIVE_REFS",
         "contract_sha256": V1_ACTIVE_SLICE_CONTRACT_SHA256,
         "frozen_findings_sha256": V1_ACTIVE_STATE["slice_v1_001_frozen_findings_sha256"],
+        "supplemental_r2_review_sha256": V1_ACTIVE_STATE[
+            "slice_v1_001_supplemental_r2_review_sha256"
+        ],
+        "amendment_002_sha256": V1_AMENDMENT_002_SHA256,
+        "amendment_002_acceptance_evidence_sha256": V1_AMENDMENT_002_ACCEPTANCE_SHA256,
         "production_write_enabled": "false",
     }
     for field, expected in required.items():
         if unique_yaml_value(metadata, field) != expected:
             errors.append(f"SLICE-V1-001 acceptance {field} must be exactly: {expected}")
-    rows = re.findall(r"(?m)^\|\s*`(S1-AC-\d{3})`\s*\|\s*`([A-Z_]+)`\s*\|([^\n]*)", acceptance)
+    rows = re.findall(r"(?m)^\|\s*`(S1-AC-\d{3})`\s*\|\s*`([A-Z0-9_]+)`\s*\|([^\n]*)", acceptance)
     ids = Counter(row[0] for row in rows)
     expected_ids = {f"S1-AC-{number:03d}" for number in range(1, 42)}
     if set(ids) != expected_ids or any(count != 1 for count in ids.values()):
         errors.append("SLICE-V1-001 acceptance must contain exactly 41 unique contract criteria")
-    allowed = {"EXECUTABLY_VERIFIED", "IMPLEMENTED_UNPROVEN", "IMPLEMENTATION_DEFECT",
-               "EXTERNAL_EVIDENCE_PENDING", "GATE_EV_PENDING", "OWNER_PENDING", "NOT_APPLICABLE"}
+    allowed = {
+        "IMPLEMENTED_UNPROVEN",
+        "OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001",
+    }
     if any(row[1] not in allowed for row in rows):
-        errors.append("SLICE-V1-001 acceptance uses an unsupported status (MET is not a current evidence state)")
-    if any(row[1] in {"EXECUTABLY_VERIFIED", "NOT_APPLICABLE"} for row in rows):
-        errors.append("SLICE-V1-001 candidate acceptance cannot self-claim criterion closure")
+        errors.append("SLICE-V1-001 R2 candidate acceptance uses an unsupported status")
+    deferred_ids = {
+        "S1-AC-001", "S1-AC-003", "S1-AC-005", "S1-AC-006", "S1-AC-007",
+        "S1-AC-008", "S1-AC-009", "S1-AC-010", "S1-AC-012", "S1-AC-023",
+        "S1-AC-025", "S1-AC-026", "S1-AC-031", "S1-AC-032", "S1-AC-033",
+        "S1-AC-038", "S1-AC-040",
+    }
+    by_id = {row[0]: row for row in rows}
+    for criterion in expected_ids:
+        expected_status = (
+            "OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001"
+            if criterion in deferred_ids else "IMPLEMENTED_UNPROVEN"
+        )
+        row = by_id.get(criterion)
+        if row is None or row[1] != expected_status:
+            errors.append(
+                f"SLICE-V1-001 {criterion} status must be exactly: {expected_status}"
+            )
     counts = Counter(row[1] for row in rows)
-    summaries = re.findall(r"(?m)^\|\s*`([A-Z_]+)`\s*\|\s*(\d+)\s*\|\s*$", acceptance)
+    summaries = re.findall(r"(?m)^\|\s*`([A-Z0-9_]+)`\s*\|\s*(\d+)\s*\|\s*$", acceptance)
     if len(summaries) != len(counts) or dict((state, int(count)) for state, count in summaries) != counts:
         errors.append("SLICE-V1-001 acceptance summary counts do not match its 41 rows")
     name = "FROZEN-FINDING-SET-SLICE-V1-001-PR20-R1.json"
@@ -3896,12 +3952,6 @@ def validate_slice_rework_evidence_text(
         findings = json.loads(artifacts.get(name, b"{}"))["findings"]
         if {finding["id"] for finding in findings} != {f"S1-F{number:03d}" for number in range(1, 14)}:
             errors.append("SLICE-V1-001 must retain all 13 frozen findings")
-        by_id = {row[0]: row for row in rows}
-        for finding in findings:
-            for criterion in finding["acceptance_criteria"]:
-                row = by_id.get(criterion)
-                if row is None or row[1] != "IMPLEMENTATION_DEFECT" or finding["id"] not in row[2]:
-                    errors.append(f"SLICE-V1-001 {criterion} omits its open frozen finding {finding['id']}")
     except (KeyError, TypeError, ValueError):
         errors.append("SLICE-V1-001 frozen finding set is not readable")
 
@@ -3985,6 +4035,18 @@ def validate_v1_current_state_text(
             "FULL_SCOPE_IMPLEMENTATION requires the exact immutable original "
             "active Slice Contract path/hash and its accepted authorization binding"
         )
+
+    for path, expected in (
+        (V1_AMENDMENT_002_PATH, V1_AMENDMENT_002_SHA256),
+        (V1_AMENDMENT_002_ACCEPTANCE_PATH, V1_AMENDMENT_002_ACCEPTANCE_SHA256),
+    ):
+        candidate = ROOT / path
+        actual = hashlib.sha256(candidate.read_bytes()).hexdigest() if candidate.is_file() else None
+        if actual != expected:
+            errors.append(
+                f"SLICE-V1-001 accepted Amendment-002 authority hash mismatch for {path}: "
+                f"expected {expected}, found {actual}"
+            )
 
     for field, expected in {
         "conditional_design_gate": "ENABLED",
@@ -5117,6 +5179,53 @@ def validate_common_secrets(errors: list[str]) -> None:
                 break
 
 
+REQUIRED_STATUS_CONTEXTS = {
+    "governance",
+    "backend-build",
+    "architecture-boundary",
+    "backend-integration",
+    "frontend-lint",
+    "frontend-typecheck",
+    "frontend-test",
+    "frontend-build",
+    "dependency-review",
+    "codeql-java",
+    "codeql-typescript",
+    "infrastructure-validation",
+}
+
+
+def validate_required_status_inventory(
+    errors: list[str], inventory: dict[str, object] | None = None
+) -> None:
+    """Bind the protected-main inventory to every stable CI context."""
+    path = ROOT / ".github/required-status-checks.json"
+    if inventory is None:
+        try:
+            inventory = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            errors.append(f"required status inventory is unreadable: {error}")
+            return
+    contexts = inventory.get("requiredContexts")
+    if not isinstance(contexts, list) or set(contexts) != REQUIRED_STATUS_CONTEXTS:
+        errors.append(
+            "required status inventory must contain the exact stable context set, "
+            "including infrastructure-validation"
+        )
+    if inventory.get("strictRequiredStatusChecksPolicy") is not True:
+        errors.append("required status inventory must preserve strict branch currency")
+    workflow = ROOT / ".github/workflows/infrastructure.yml"
+    try:
+        workflow_text = workflow.read_text(encoding="utf-8")
+    except OSError as error:
+        errors.append(f"infrastructure workflow is unreadable: {error}")
+        return
+    if "infrastructure-validation:" not in workflow_text or (
+        "name: infrastructure-validation" not in workflow_text
+    ):
+        errors.append("infrastructure-validation must remain a stable workflow context")
+
+
 def main() -> int:
     errors: list[str] = []
     validate_parallel_current_state_paths(
@@ -5136,6 +5245,7 @@ def main() -> int:
     validate_readme_runtime_state(errors)
     validate_controller_review_standard_v2(errors)
     validate_traceability(errors)
+    validate_required_status_inventory(errors)
     validate_common_secrets(errors)
 
     if errors:

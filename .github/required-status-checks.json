@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0",
+  "repository": "Corwin-Code/marketops-platform",
+  "rulesetId": 20734984,
+  "rulesetName": "main-governance",
+  "target": "~DEFAULT_BRANCH",
+  "enforcement": "active",
+  "strictRequiredStatusChecksPolicy": true,
+  "requiredContexts": [
+    "governance",
+    "backend-build",
+    "architecture-boundary",
+    "backend-integration",
+    "frontend-lint",
+    "frontend-typecheck",
+    "frontend-test",
+    "frontend-build",
+    "dependency-review",
+    "codeql-java",
+    "codeql-typescript",
+    "infrastructure-validation"
+  ]
+}

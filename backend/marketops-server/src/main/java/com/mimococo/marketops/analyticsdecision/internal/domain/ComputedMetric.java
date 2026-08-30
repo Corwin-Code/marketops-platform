@@ -19,10 +19,10 @@ import java.util.UUID;
  * from the same inputs. A number without the state that says whether it may be
  * acted on is a number somebody will act on regardless.
  *
- * <p>The digest covers the inputs, never the result. Recomputing from identical
- * inputs therefore lands on the row that already exists, and a recomputation
- * after a late return lands on a new one — which is exactly the behaviour the
- * append-only value table needs to stay both reproducible and correctable.
+ * <p>The digest covers both the referenced inputs and the complete assertion.
+ * This preserves equivalent-rerun deduplication while ensuring mapping,
+ * availability, value, confidence and freshness-state transitions append a new
+ * current assertion instead of colliding with an older meaning.
  *
  * @param metricCode which metric this is
  * @param valueState whether a number was produced, and why not when it was not
@@ -31,6 +31,7 @@ import java.util.UUID;
  * @param confidenceState how much weight the value can carry
  * @param oldestSourceTime earliest contributing source time, or {@code null}
  * @param inputs the exact inputs the value was derived from
+ * @param identityComponents deterministic non-reference state that affects the assertion
  */
 public record ComputedMetric(
         MetricCode metricCode,
@@ -39,13 +40,28 @@ public record ComputedMetric(
         String currencyCode,
         ConfidenceState confidenceState,
         Instant oldestSourceTime,
-        List<MetricInput> inputs) {
+        List<MetricInput> inputs,
+        List<String> identityComponents) {
+
+    /** Construct a metric that has no additional non-reference identity state. */
+    public ComputedMetric(MetricCode metricCode,
+                          ValueState valueState,
+                          BigDecimal numericValue,
+                          String currencyCode,
+                          ConfidenceState confidenceState,
+                          Instant oldestSourceTime,
+                          List<MetricInput> inputs) {
+        this(metricCode, valueState, numericValue, currencyCode, confidenceState,
+                oldestSourceTime, inputs, List.of());
+    }
 
     public ComputedMetric {
         Objects.requireNonNull(metricCode, "metricCode");
         Objects.requireNonNull(valueState, "valueState");
         Objects.requireNonNull(confidenceState, "confidenceState");
         inputs = List.copyOf(Objects.requireNonNull(inputs, "inputs"));
+        identityComponents = List.copyOf(
+                Objects.requireNonNull(identityComponents, "identityComponents"));
     }
 
     /** Whether an explicit versioned estimate contributed to this value. */
@@ -73,6 +89,13 @@ public record ComputedMetric(
         components.add(windowCode);
         components.add(periodStart.toString());
         components.add(periodEnd.toString());
+        components.add(valueState.name());
+        components.add(numericValue == null ? "NO_NUMBER" : numericValue.stripTrailingZeros().toPlainString());
+        components.add(currencyCode == null ? "NO_CURRENCY" : currencyCode);
+        components.add(confidenceState.name());
+        components.add(oldestSourceTime == null ? "NO_SOURCE_TIME" : oldestSourceTime.toString());
+        identityComponents.stream().sorted()
+                .forEach(component -> components.add("STATE:" + component));
         inputs.stream()
                 .sorted(Comparator.comparing((MetricInput input) -> input.kind().name())
                         .thenComparing(input -> input.referenceId().toString()))

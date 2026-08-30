@@ -11,6 +11,7 @@ import com.mimococo.marketops.analyticsdecision.SubjectKind;
 import com.mimococo.marketops.analyticsdecision.internal.infrastructure.jdbc.DiagnosisRepository;
 import com.mimococo.marketops.analyticsdecision.internal.infrastructure.jdbc.MetricRepository;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +94,20 @@ public class AnalyticsQueryService implements MetricQuery, DiagnosisQuery {
 
     @Override
     @Transactional(readOnly = true, timeout = 5)
+    public Map<MetricCode, MetricValueView> currentValuesAt(SubjectKind subjectKind,
+                                                            UUID subjectId,
+                                                            MetricWindow window,
+                                                            Instant at) {
+        Map<MetricCode, MetricValueView> values =
+                metrics.currentValuesAt(subjectKind, subjectId, window, at);
+        Map<MetricCode, MetricValueView> withEvidence =
+                new java.util.EnumMap<>(MetricCode.class);
+        values.forEach((code, value) -> withEvidence.put(code, withEvidence(value)));
+        return Map.copyOf(withEvidence);
+    }
+
+    @Override
+    @Transactional(readOnly = true, timeout = 5)
     public List<MetricValueView> history(MetricCode metricCode, SubjectKind subjectKind,
                                          UUID subjectId, MetricWindow window, int limit) {
         return metrics.history(metricCode, subjectKind, subjectId, window,
@@ -107,6 +122,15 @@ public class AnalyticsQueryService implements MetricQuery, DiagnosisQuery {
     public List<DiagnosisFindingView> currentFindings(SubjectKind subjectKind, UUID subjectId,
                                                       MetricWindow window) {
         return diagnoses.currentFindings(subjectKind, subjectId, window).stream()
+                .map(this::withInputs)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true, timeout = 5)
+    public List<DiagnosisFindingView> currentFindingsAt(SubjectKind subjectKind, UUID subjectId,
+                                                        MetricWindow window, Instant at) {
+        return diagnoses.currentFindingsAt(subjectKind, subjectId, window, at).stream()
                 .map(this::withInputs)
                 .toList();
     }

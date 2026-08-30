@@ -2,13 +2,12 @@ package com.mimococo.marketops.operationsworkflow.internal.application;
 
 import com.mimococo.marketops.analyticsdecision.DiagnosisFindingView;
 import com.mimococo.marketops.analyticsdecision.DiagnosisQuery;
+import com.mimococo.marketops.analyticsdecision.DecisionFreshness;
 import com.mimococo.marketops.analyticsdecision.MetricCode;
 import com.mimococo.marketops.analyticsdecision.MetricQuery;
 import com.mimococo.marketops.analyticsdecision.MetricValueView;
 import com.mimococo.marketops.analyticsdecision.SubjectKind;
 import com.mimococo.marketops.marketplaceintegration.PriceChangeHistory;
-import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
-import com.mimococo.marketops.operatingfacts.PriceSnapshot;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
 import com.mimococo.marketops.operationsworkflow.GuardrailReason;
 import com.mimococo.marketops.operationsworkflow.GuardrailVerdict;
@@ -18,14 +17,10 @@ import com.mimococo.marketops.operationsworkflow.internal.domain.GuardrailInput;
 import com.mimococo.marketops.operationsworkflow.internal.domain.GuardrailOutcome;
 import com.mimococo.marketops.operationsworkflow.internal.domain.PolicyLimits;
 import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.GuardrailRepository;
-import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.PolicyRepository;
-import com.mimococo.marketops.productlisting.ListingIdentityDirectory;
-import com.mimococo.marketops.productlisting.ListingVariantContext;
 import com.mimococo.marketops.shared.CorrelationId;
 import com.mimococo.marketops.shared.Digest;
 import com.mimococo.marketops.shared.IdGenerator;
 import java.math.BigDecimal;
-import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,32 +51,20 @@ public class GuardrailService {
 
     private final MetricQuery metrics;
     private final DiagnosisQuery diagnosis;
-    private final OperatingFactQuery facts;
-    private final ListingIdentityDirectory listings;
-    private final PolicyRepository policies;
     private final GuardrailRepository evaluations;
     private final PriceChangeHistory changeHistory;
     private final IdGenerator idGenerator;
-    private final Clock clock;
 
     GuardrailService(MetricQuery metrics,
                      DiagnosisQuery diagnosis,
-                     OperatingFactQuery facts,
-                     ListingIdentityDirectory listings,
-                     PolicyRepository policies,
                      GuardrailRepository evaluations,
                      PriceChangeHistory changeHistory,
-                     IdGenerator idGenerator,
-                     Clock clock) {
+                     IdGenerator idGenerator) {
         this.metrics = metrics;
         this.diagnosis = diagnosis;
-        this.facts = facts;
-        this.listings = listings;
-        this.policies = policies;
         this.evaluations = evaluations;
         this.changeHistory = changeHistory;
         this.idGenerator = idGenerator;
-        this.clock = clock;
     }
 
     /**
@@ -106,10 +89,11 @@ public class GuardrailService {
     @Transactional
     public ImpactPreview preview(RecommendationView proposal, BigDecimal authorizationBound,
                                  GuardrailPurpose purpose) {
-        Instant now = clock.instant();
-        String authoritySnapshot = evaluations.authoritySnapshot(proposal.id());
-        GuardrailInput input = gather(proposal, authorizationBound, now);
+        GuardrailRepository.AuthoritySnapshot authority =
+                evaluations.captureAuthority(proposal.id());
+        GuardrailInput input = gather(proposal, authorizationBound, authority);
         GuardrailOutcome outcome = GuardrailEngine.evaluate(input);
+        authority.requireOutcomeIdentity(outcome);
         String inputDigest = digestOf(proposal, input, outcome);
 
         UUID evaluationId = idGenerator.newId();
@@ -118,7 +102,7 @@ public class GuardrailService {
                 policy == null ? null : policy.policyId(),
                 policy == null ? null : policy.policyVersion(),
                 purpose, outcome.passed(), outcome.reasons(), outcome.detail(), inputDigest,
-                authoritySnapshot, now, CorrelationId.current());
+                authority.document(), authority.evaluationAsOf(), CorrelationId.current());
 
         GuardrailVerdict verdict = new GuardrailVerdict(evaluationId, purpose, outcome.passed(),
                 outcome.reasons(), policy == null ? null : policy.policyId(),
@@ -126,9 +110,11 @@ public class GuardrailService {
         return new ImpactPreview(proposal.id(),
                 policy == null ? currencyOf(input) : policy.currencyCode(),
                 input.currentPrice(), input.proposedPrice(), outcome.changeRate(),
-                outcome.breakEvenPrice(), outcome.currentUnitProfit(),
+                outcome.breakEvenPrice(), outcome.minimumPrice(), outcome.currentUnitProfit(),
                 outcome.projectedUnitProfit(), outcome.currentMargin(),
-                outcome.projectedMargin(), verdict);
+                outcome.projectedMargin(), outcome.economicsProfileId(),
+                outcome.economicsProfileVersion(), outcome.fulfillmentModeCode(),
+                outcome.projectedComponentIds(), verdict);
     }
 
     /** Whether an execution verdict for this proposal currently passes. */
@@ -151,38 +137,33 @@ public class GuardrailService {
      * that belonged to a different product for part of the evaluation.
      */
     private GuardrailInput gather(RecommendationView proposal, BigDecimal authorizationBound,
-                                  Instant now) {
+                                  GuardrailRepository.AuthoritySnapshot authority) {
+        Instant now = authority.evaluationAsOf();
         UUID subjectId = proposal.subjectId();
-        Map<MetricCode, MetricValueView> current = metrics.currentValues(
-                SubjectKind.PLATFORM_LISTING_VARIANT, subjectId, proposal.window());
-
-        Optional<ListingVariantContext> context = listings.variantContext(subjectId, now);
-        boolean mapped = context.map(ListingVariantContext::mapped).orElse(false);
-        boolean conflict = context.map(ListingVariantContext::conflictOpen).orElse(true);
-        UUID productVariantId = context.map(ListingVariantContext::productVariantId)
-                .orElse(null);
-        String platformCode = context.map(ListingVariantContext::platformCode).orElse(null);
-
-        PolicyLimits policy = policies.inForce(proposal.organizationId(), platformCode,
-                proposal.storeId(), productVariantId, now).orElse(null);
-
-        BigDecimal currentPrice = facts.latestPrice(subjectId, now)
-                .map(PriceSnapshot::effectivePrice)
-                .map(money -> money == null ? null : money.amount())
-                .orElse(null);
+        Map<MetricCode, MetricValueView> current = metrics.currentValuesAt(
+                SubjectKind.PLATFORM_LISTING_VARIANT, subjectId, proposal.window(), now);
+        String evaluatedEntityDigest = EntityVersion.of(current);
+        if (!java.util.Objects.equals(evaluatedEntityDigest,
+                authority.currentEntityDigest())) {
+            throw new IllegalStateException(
+                    "evaluated metric identity does not match authority snapshot");
+        }
 
         boolean blockedByDiagnosis = diagnosis
-                .currentFindings(SubjectKind.PLATFORM_LISTING_VARIANT, subjectId,
-                        proposal.window())
+                .currentFindingsAt(SubjectKind.PLATFORM_LISTING_VARIANT, subjectId,
+                        proposal.window(), now)
                 .stream()
                 .anyMatch(DiagnosisFindingView::blocksExecution);
 
-        return new GuardrailInput(policy, current, currentPrice,
-                proposedPrice(proposal), changeHistory.cumulativeChangeRate(subjectId,
-                        now.minus(java.time.Duration.ofHours(DAILY_WINDOW_HOURS))),
-                changeHistory.lastChangeAt(subjectId).orElse(null), now, mapped, conflict,
+        return new GuardrailInput(authority.policy(), current, authority.currentPrice(),
+                authority.currentPriceCurrency(), proposedPrice(proposal),
+                authority.fulfillmentModeCode(), authority.economics(), authority.freshness(),
+                changeHistory.cumulativeChangeRate(subjectId,
+                        now.minus(java.time.Duration.ofHours(DAILY_WINDOW_HOURS)), now),
+                changeHistory.lastChangeAt(subjectId, now).orElse(null), now,
+                authority.mappingResolved(), authority.mappingConflictOpen(),
                 blockedByDiagnosis,
-                EntityVersion.of(current).equals(proposal.entityVersionDigest()),
+                evaluatedEntityDigest.equals(proposal.entityVersionDigest()),
                 proposal.validUntil().isAfter(now), authorizationBound);
     }
 
@@ -229,12 +210,56 @@ public class GuardrailService {
         components.add(input.policy() == null
                 ? "NO_POLICY" : input.policy().policyId() + ":" + input.policy().policyVersion());
         components.add(String.valueOf(input.currentPrice()));
+        components.add(String.valueOf(input.currentPriceCurrency()));
         components.add(input.proposedPrice().toPlainString());
+        components.add(String.valueOf(input.fulfillmentModeCode()));
+        components.add(input.evaluatedAt().toString());
+        components.add(input.economics().status().name());
+        if (input.economics().available()) {
+            var profile = input.economics().profile();
+            components.add(profile.profileId().toString());
+            components.add(Integer.toString(profile.profileVersion()));
+            components.add(profile.verificationState().name());
+            components.add(profile.verifiedAt().toString());
+            components.add(String.valueOf(profile.verificationExpiresAt()));
+            profile.familyApplicability().entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .forEach(entry -> components.add("FAMILY:" + entry.getKey()
+                            + ':' + entry.getValue()));
+            profile.components().stream()
+                    .sorted(java.util.Comparator.comparing(component ->
+                            component.componentId().toString()))
+                    .forEach(component -> components.add("COMPONENT:"
+                            + component.componentId() + ':' + component.componentCode()
+                            + ':' + component.family() + ':' + component.kind() + ':'
+                            + component.fixedAmount() + ':' + component.rate() + ':'
+                            + component.lowerPriceInclusive() + ':'
+                            + component.upperPriceExclusive()));
+        }
+        input.decisionFreshness().requiredFeeds().stream().sorted().forEach(feed -> {
+            DecisionFreshness.Watermark watermark =
+                    input.decisionFreshness().watermarks().get(feed);
+            components.add(watermark == null ? "WATERMARK:" + feed + ":MISSING"
+                    : "WATERMARK:" + feed + ':' + watermark.watermarkId() + ':'
+                            + watermark.sourceUpdatedAt() + ':' + watermark.ingestedAt()
+                            + ':' + watermark.reconciledAt() + ':'
+                            + watermark.effectiveAt());
+            components.add("WATERMARK_AGE:" + feed + ':'
+                    + input.decisionFreshness().agesAt(input.evaluatedAt()).get(feed));
+        });
         components.add(String.valueOf(input.lastChangeAt()));
         components.add(input.cumulativeDailyChangeRate().toPlainString());
         components.add(Boolean.toString(input.mappingResolved()));
         components.add(Boolean.toString(input.mappingConflictOpen()));
         components.add(Boolean.toString(input.diagnosisBlocksExecution()));
+        input.metrics().entrySet().stream().sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> components.add(entry.getKey() + "="
+                        + entry.getValue().valueState() + ":"
+                        + entry.getValue().numericValue() + ":"
+                        + entry.getValue().currencyCode() + ":"
+                        + entry.getValue().confidenceState() + ":"
+                        + entry.getValue().freshnessSeconds() + ":"
+                        + entry.getValue().inputDigest()));
         components.add(outcome.reasons().stream().map(GuardrailReason::name)
                 .sorted().reduce("", (left, right) -> left + ',' + right));
         return Digest.ofComponents(components);
