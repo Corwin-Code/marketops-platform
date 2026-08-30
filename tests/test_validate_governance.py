@@ -23,6 +23,7 @@ from scripts.validate_governance import (
     HISTORIC_CONTRACT_BEGIN,
     HISTORIC_CONTRACT_END,
     REQUIRED_FILES,
+    SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS,
     V1_ACTIVE_SLICE_CONTRACT_SHA256,
     SLICE_REWORK_ARTIFACT_HASHES,
     WP_P0_002_ID,
@@ -64,6 +65,7 @@ from scripts.validate_governance import (
     validate_readme_runtime_state_text,
     validate_required_file_set,
     validate_slice_v1_001_text,
+    validate_slice_post_merge_closure_documents,
     validate_slice_rework_evidence_text,
     validate_v1_current_state_text,
     validate_v1_authority_effect_texts,
@@ -2931,8 +2933,12 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "active_slice_contract: docs/03-work-items/other.md",
                 "active_slice_contract",
             ),
-            ("active_gate: SLICE_CONTRACT_APPROVED", "active_gate: READY_FOR_DESIGN", "active_gate"),
-            ("authorization: FULL_SCOPE_IMPLEMENTATION", "authorization: DESIGN_ONLY", "authorization"),
+            (
+                "active_gate: SLICE_V1_001_FORMAL_CLOSURE_ACCEPTED",
+                "active_gate: READY_FOR_DESIGN",
+                "active_gate",
+            ),
+            ("authorization: FINAL_REVIEW_ONLY", "authorization: DESIGN_ONLY", "authorization"),
         )
         for old, new, field in mutations:
             with self.subTest(field=field):
@@ -2973,7 +2979,6 @@ class V1CurrentStateContractTests(unittest.TestCase):
         )
         errors = self.validate(current=current)
         self.assertTrue(any("active_slice_contract_sha256" in error for error in errors))
-        self.assertTrue(any("FULL_SCOPE_IMPLEMENTATION" in error for error in errors))
 
     def test_coordinated_contract_and_hash_change_is_not_an_amendment(self) -> None:
         mutated = self.slice_contract_bytes() + b"\nR1 mutation requiring re-review\n"
@@ -2989,7 +2994,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
         )
         self.assertTrue(any("additive Amendment" in error for error in errors))
 
-    def test_full_scope_requires_exact_review_authorization_condition(self) -> None:
+    def test_post_merge_sync_retains_exact_review_authorization_condition(self) -> None:
         current = self.current().replace(
             "EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN",
             "HASH_UPDATED_WITHOUT_REVIEW",
@@ -2997,23 +3002,35 @@ class V1CurrentStateContractTests(unittest.TestCase):
         )
         errors = self.validate(current=current)
         self.assertTrue(any("authorization_condition" in error for error in errors))
-        self.assertTrue(any("FULL_SCOPE_IMPLEMENTATION" in error for error in errors))
 
     def test_rework_identity_phase_and_actor_cannot_drift(self) -> None:
         mutations = (
             ("next_authorized_actor: GPT-5.6 Pro Controller", "next_authorized_actor: CLAUDE_FABLE_5"),
-            ("slice_v1_001_rework_phase: R2_FIX_VERIFY", "slice_v1_001_rework_phase: CLOSED"),
             (
-                "slice_v1_001_pr_state: OPEN_DRAFT_R2_CANDIDATE",
-                "slice_v1_001_pr_state: MERGED",
+                "slice_v1_001_rework_phase: R2_FORMAL_CLOSURE_ACCEPTED",
+                "slice_v1_001_rework_phase: CLOSED",
+            ),
+            (
+                "slice_v1_001_pr_state: MERGED_PROTECTED_SQUASH",
+                "slice_v1_001_pr_state: OPEN",
             ),
             (
                 "slice_v1_001_initial_remote_ci: PASS_12_OF_12_REQUIRED_CONTEXTS",
                 "slice_v1_001_initial_remote_ci: PASS_11_OF_12_REQUIRED_CONTEXTS",
             ),
-            ("slice_v1_001_finding_count: 9", "slice_v1_001_finding_count: 8"),
-            ("slice_v1_001_closure_claim: NONE", "slice_v1_001_closure_claim: APPROVED"),
-            ("candidate_state_scope: PR_BRANCH_ONLY", "candidate_state_scope: PROTECTED_MAIN"),
+            ("slice_v1_001_finding_count: 10", "slice_v1_001_finding_count: 9"),
+            (
+                "slice_v1_001_closure_claim: ENGINEERING_IMPLEMENTATION_CLOSED",
+                "slice_v1_001_closure_claim: OWNER_FORMALLY_CLOSED",
+            ),
+            (
+                "candidate_state_scope: PROTECTED_MAIN_ENGINEERING_MERGED_FORMAL_CLOSURE_ACCEPTED",
+                "candidate_state_scope: PRODUCTION_READY",
+            ),
+            (
+                "slice_v1_001_actual_squash_commit: d562b81f4f0271aa33a53b21ccaffc88b5610c0c",
+                "slice_v1_001_actual_squash_commit: 0000000000000000000000000000000000000000",
+            ),
             ("gate_ev: NOT_AUTHORIZED", "gate_ev: AUTHORIZED"),
         )
         for old, new in mutations:
@@ -3059,10 +3076,30 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "`EXECUTABLY_VERIFIED` |",
                 1,
             ),
-            acceptance.replace("`IMPLEMENTED_UNPROVEN` | 24", "`IMPLEMENTED_UNPROVEN` | 23", 1),
+            acceptance.replace("`EXECUTABLY_VERIFIED` | 24", "`EXECUTABLY_VERIFIED` | 23", 1),
             acceptance.replace(
-                "assessed_against: SUPPLEMENTAL_R2_DRAFT_PR_22_CONTAINING_COMMIT",
-                "assessed_against: CLOSED",
+                "assessed_against: ACTUAL_SQUASH_COMMIT_D562B81F4F0271AA33A53B21CCAFFC88B5610C0C",
+                "assessed_against: UNBOUND",
+                1,
+            ),
+            acceptance.replace(
+                "actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b",
+                "actual_squash_tree: 0000000000000000000000000000000000000000",
+                1,
+            ),
+            acceptance.replace(
+                "owner_formal_closure: HUMAN_OWNER_ACCEPTED",
+                "owner_formal_closure: PENDING",
+                1,
+            ),
+            acceptance.replace(
+                "controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+                "controller_bookkeeping_verdict: MISSING",
+                1,
+            ),
+            acceptance.replace(
+                "snapshot_git_blob_sha1: e26359ec216c04319a4bf1e7126906eb204593d2",
+                "snapshot_git_blob_sha1: 0000000000000000000000000000000000000000",
                 1,
             ),
         )
@@ -3071,6 +3108,112 @@ class V1CurrentStateContractTests(unittest.TestCase):
             errors = []
             validate_slice_rework_evidence_text(errors, changed, artifacts)
             self.assertTrue(errors)
+
+    def test_formal_closure_documents_bind_identity_and_deferred_boundaries(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        documents = {
+            relative: (root / relative).read_text()
+            for relative in SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS
+        }
+        errors: list[str] = []
+        validate_slice_post_merge_closure_documents(errors, documents)
+        self.assertEqual([], errors)
+
+        mutations = (
+            (
+                "docs/07-phase-evidence/SLICE-V1-001/CLOSURE-SNAPSHOT-DRAFT.md",
+                "formal_owner_closure: NOT_ISSUED",
+                "formal_owner_closure: ISSUED",
+            ),
+            (
+                "docs/07-phase-evidence/SLICE-V1-001/post-merge-closure-sync.md",
+                "base_actual_merged_main: d562b81f4f0271aa33a53b21ccaffc88b5610c0c",
+                "base_actual_merged_main: 0000000000000000000000000000000000000000",
+            ),
+            (
+                "docs/08-handoffs/CONTROLLER-SLICE-V1-001-R2-ENGINEERING-FINAL-GATE-PASS.md",
+                "frozen_r2_findings_closed: 10_OF_10",
+                "frozen_r2_findings_closed: 9_OF_10",
+            ),
+            (
+                "docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-TEMPLATE.md",
+                "template_status: FULFILLED_BY_SEPARATE_EXACT_OWNER_ACCEPTANCE",
+                "template_status: OWNER_ACCEPTED_WITHOUT_EVIDENCE",
+            ),
+            (
+                "docs/07-phase-evidence/SLICE-V1-001/r2-finding-closure.json",
+                '"controllerCommentId": 5469390502',
+                '"controllerCommentId": 0',
+            ),
+        )
+        for relative, old, new in mutations:
+            with self.subTest(relative=relative, token=old):
+                self.assertIn(old, documents[relative])
+                changed = dict(documents)
+                changed[relative] = changed[relative].replace(old, new, 1)
+                errors = []
+                validate_slice_post_merge_closure_documents(errors, changed)
+                self.assertTrue(errors)
+
+    def test_formal_closure_rejects_missing_or_changed_owner_evidence(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        documents = {
+            relative: (root / relative).read_text()
+            for relative in SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS
+        }
+        evidence = (
+            "docs/08-handoffs/"
+            "OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md"
+        )
+        for changed in (
+            {path: text for path, text in documents.items() if path != evidence},
+            {**documents, evidence: documents[evidence] + "\n"},
+            {
+                **documents,
+                evidence: documents[evidence].replace(
+                    "controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+                    "controller_bookkeeping_verdict: MISSING",
+                    1,
+                ),
+            },
+        ):
+            errors: list[str] = []
+            validate_slice_post_merge_closure_documents(errors, changed)
+            self.assertTrue(errors)
+
+    def test_formal_closure_rejects_changed_snapshot_hash_and_blob(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        documents = {
+            relative: (root / relative).read_text()
+            for relative in SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS
+        }
+        snapshot = "docs/07-phase-evidence/SLICE-V1-001/CLOSURE-SNAPSHOT-DRAFT.md"
+        changed = {**documents, snapshot: documents[snapshot] + "\n"}
+        errors: list[str] = []
+        validate_slice_post_merge_closure_documents(errors, changed)
+        self.assertTrue(any("Snapshot SHA-256 changed" in error for error in errors))
+        self.assertTrue(any("Snapshot Git blob SHA-1 changed" in error for error in errors))
+
+    def test_formal_closure_rejects_release_gate_pilot_and_production_claims(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        documents = {
+            relative: (root / relative).read_text()
+            for relative in SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS
+        }
+        path = "docs/07-phase-evidence/SLICE-V1-001/post-merge-closure-sync.md"
+        for claim in (
+            "production_readiness: PRODUCTION_READY",
+            "production_write_enabled: true",
+            "gate_ev: AUTHORIZED",
+            "gate_e: AUTHORIZED",
+            "pilot: ACTIVATED",
+            "release_v1_001: ACTIVATED",
+        ):
+            with self.subTest(claim=claim):
+                changed = {**documents, path: documents[path] + "\n" + claim + "\n"}
+                errors: list[str] = []
+                validate_slice_post_merge_closure_documents(errors, changed)
+                self.assertTrue(errors)
 
 
 class V1DecisionContractTests(unittest.TestCase):

@@ -33,12 +33,27 @@ Evidence strength is classified independently from a model or reviewer opinion.
 | `OPS` | Operator runbook drill | executed runbook with observable result | runbook file existence |
 | `AUDIT` | Audit trace | end-to-end actor/evidence/command/readback chain | log line only |
 
-## 2a. SLICE-V1-001 candidate evidence state
+## 2a. SLICE-V1-001 post-merge engineering evidence state
 
 ```yaml
 assessed_at: 2026-08-30
-assessed_against: SUPPLEMENTAL_R2_LOCAL_CANDIDATE
-controller_verdict: NOT_CLAIMED
+assessed_against: ACTUAL_SQUASH_COMMIT_D562B81F4F0271AA33A53B21CCAFFC88B5610C0C
+controller_verdict: PASS_R2_ENGINEERING_FINAL_GATE
+controller_comment_id: 5469390502
+approved_engineering_head: f35327a584b980ec4acf7ace7c88e124d6d79709
+approved_engineering_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b
+approved_tested_merge: bcc3b37965003c3ea1af720ea847dc27fb473a9e
+actual_squash_commit: d562b81f4f0271aa33a53b21ccaffc88b5610c0c
+actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b
+actual_squash_sole_parent: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
+engineering_implementation: ENGINEERING_IMPLEMENTATION_CLOSED
+production_readiness: DEFERRED_TO_RELEASE_V1_001
+owner_formal_closure: HUMAN_OWNER_ACCEPTED
+slice_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING
+controller_bookkeeping_comment: 5469802650
+owner_acceptance_comment: 5469935477
+owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
 detail: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 deferred_evidence: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
@@ -49,23 +64,23 @@ requirements below. Counts are checkpoint results, not a final release verdict.
 
 | Class | Candidate evidence | Remaining boundary |
 | --- | --- | --- |
-| `SRC` | Immutable original Contract, accepted Amendment-001 and Amendment-002, preserved ADRs, R1 Finding Set and Supplemental R2 review. | Final R2 commit/tree/tested-merge binding. |
-| `UNIT` | R2 mutation-sensitive metric identity, four-state fee-family coverage, target-aware fixed/percentage/tier economics, exact `PRICE_CHANGE` parameter-schema parity, transaction-time freshness, Guardrail, audience, required-context and deferred-status tests. | Final exact-Head remote CI and independent Controller verdict. |
-| `RDB` | Actual-service facts→single DB as-of capture→bounded metric/diagnosis/history reads→evaluated/snapshot identity comparison→Guardrail→approval→command→worker-lease path; DB rechecks mode/profile/components and eight watermarks at command/worker time. | Exact-final-R2-Head remote CI and independent closure. |
+| `SRC` | Immutable original Contract, accepted Amendment-001 and Amendment-002, preserved ADRs, R1 Finding Set, Supplemental R2 review, exact final Head/tree/tested merge, Controller PASS, actual SQUASH identity and exact Owner Formal Closure evidence. | Production release evidence remains deferred. |
+| `UNIT` | R2 mutation-sensitive metric identity, four-state fee-family coverage, target-aware fixed/percentage/tier economics, exact `PRICE_CHANGE` parameter-schema parity, transaction-time freshness, Guardrail, audience, required-context and deferred-status tests passed on the exact final Head. | Real-provider and release evidence remains deferred where Amendment-002 specifies it. |
+| `RDB` | Actual-service facts→single DB as-of capture→bounded metric/diagnosis/history reads→evaluated/snapshot identity comparison→Guardrail→approval→command→worker-lease path passed on PostgreSQL; DB rechecks mode/profile/components and eight watermarks at command/worker time. | Production database execution is prohibited and unproven. |
 | `OBJ` | Actual filesystem and local HTTP adapter tests, exact hash/length verification, immutable DB custody and retention IaC. | Approved Yandex store, real retention/IAM operation and provider recovery remain unverified. |
 | `REAL_EXT` | No real business provider or cloud account used. Synthetic fixtures are explicitly scoped and cannot promote deferred evidence. | Exact Amendment-002 rows remain production-blocking in `RELEASE-V1-001`. |
-| `SEC_NEG` | Signed-token/live-scope refusal plus blank/wrong audience, actual-peer loopback enforcement, forwarding-header spoof refusal and existing outbound/PII/Secret controls. | Fresh exact-R2-Head Security CI required. |
-| `REPLAY` | Real PG17 stored-Raw replay in full runs 150/151: parser/missing-object refusal, crash after fact commit, repeat with no duplicate logical fact or source call. | Fresh final-Head suite; real source coverage remains external. |
-| `BROWSER` | 11 Chromium scenarios at 152, including real signed JWT/SQL evidence→approval→command→readback, export, new-login command recovery and actual local database outage. | Real identity/Marketplace interoperability and final exact-commit execution. |
+| `SEC_NEG` | Signed-token/live-scope refusal plus blank/wrong audience, actual-peer loopback enforcement, forwarding-header spoof refusal and existing outbound/PII/Secret controls; exact-Head Security CI passed. | Real identity/provider interoperability remains deferred. |
+| `REPLAY` | Real PG17 stored-Raw replay and exact-final-Head regression cover parser/missing-object refusal, crash after fact commit and repeat without duplicate logical fact or source call. | Real source coverage remains external. |
+| `BROWSER` | 11 exact-final-Head Chromium scenarios include real signed JWT/SQL evidence→approval→command→readback, export, new-login command recovery and actual local database outage. | Real identity/Marketplace interoperability remains deferred. |
 | `PERF` | PG17 representative 5,000-SKU/360,000-order profile, query plans, 488,000-record asynchronous export, explicit thresholds and settings. | Owner cohort and deployed capacity are unproven; no production throughput claim. |
 | `DR` | Executed isolated PG17 dump/restore, migration/privilege validation, missing-object refusal and exact-byte recovery. | Real Yandex PITR, deployment rollback and environment restore remain pending. |
 | `OPS` | Failure-drill index maps runbooks to executed local faults. Private signals and bounded telemetry transport/No Data are tested. | Actual alert creation, channel delivery, support acknowledgement and staging drill. |
-| `AUDIT` | DB authority, immutable attempt/readback/approval/import/verification evidence, and actor-bound browser/service paths. | Controller closure, real Gate-EV evidence and final exact identity. |
+| `AUDIT` | DB authority, immutable attempt/readback/approval/import/verification evidence, actor-bound browser/service paths, Controller Engineering Final Gate, exact merge identity and Owner Formal Closure evidence. | Any future real Gate-EV evidence remains deferred. |
 
 The original Maker evidence assessment is preserved at the reviewed PR Head.
 Local evidence does not replace REAL_EXT, Owner approval, Gate EV or Gate E.
-R1/C3 receipts remain historical. They do not replace the R2 final handoff or
-the exact protected Ruleset proof.
+R1/C3 receipts remain historical. The R2 final handoff, protected Ruleset proof,
+Controller PASS and actual SQUASH identity are the current engineering record.
 
 ## 2b. Supplemental R2 mutation-sensitive matrix
 
@@ -100,7 +115,7 @@ the exact protected Ruleset proof.
 | 27 | Blank/wrong serving audience fails closed | `IdentityConfigurationContractTest`; `SignedBearerIdentityIT`; `test_yandex_runtime.py` |
 | 28 | CodeQL source annotation is identified exactly as run `99214089692`, `AdminMetadataGuard.java:88`, Missing catch of NumberFormatException | Controller source annotation; `AdminMetadataGuard` regression compilation |
 | 29 | Numeric remote-address parsing catches `NumberFormatException` and denies instead of escaping | `AdminMetadataGuard`; `MaintenanceWriteGateApiIT` |
-| 30 | Required remote contexts, including aggregate CodeQL, pass on exact final Head/tested merge | Draft PR #22 live checks; pending final publication at document commit |
+| 30 | Required remote contexts, including aggregate CodeQL, pass on exact final Head/tested merge | PR #22: 12/12 required contexts plus aggregate CodeQL SUCCESS; aggregate annotations empty |
 | 31 | One DB statement captures `evaluation_as_of` and the complete authority snapshot; the JVM clock is not an evaluation authority | `GuardrailRepository.captureAuthority`; `OperatingFlowIT.profileBoundaryCannotSplitEvaluatedAndStoredAuthority`; `watermarkBoundaryCannotSplitEvaluatedAndStoredAuthority` |
 | 32 | Every metric, diagnosis and price-history read used by Guardrail is bounded by the captured DB instant | `MetricQuery.currentValuesAt`; `DiagnosisQuery.currentFindingsAt`; `PriceChangeHistory.priorChangesAt`; `OperatingFlowIT.profileBoundaryCannotSplitEvaluatedAndStoredAuthority` |
 | 33 | Evaluated metric entity, mode, profile and component identities must equal the stored snapshot; mismatched persistence is rejected by PostgreSQL | `OperatingFlowIT.profileBoundaryCannotSplitEvaluatedAndStoredAuthority`; `OperatingFlowIT.watermarkBoundaryCannotSplitEvaluatedAndStoredAuthority`; `PriceWritePathIT.aGuardrailCannotPersistAnEvaluatedIdentityDifferentFromItsSnapshot` |
@@ -112,14 +127,16 @@ the exact protected Ruleset proof.
 | 39 | Selected mode is durable across snapshot, Guardrail evaluation, approval, command API/view, worker row and DB predicate | `OperatingFlowIT.createTheCommand`; `PriceCommandView`; `PriceCommandRepository`; `CommandTimeline`; `PriceWritePathIT.aCommandCannotSubstituteAnyApprovedInput` |
 
 Rows 28–30 deliberately separate the exact historical source annotation, its
-local correction, and the still-pending exact-final-Head aggregate remote result.
+local correction, and the successful exact-final-Head aggregate remote result.
 An earlier empty open-alert query is not evidence that the annotation never
 existed and is not substituted for the final CodeQL check.
 
-Rows 31–39 are the final transitive-closure proof set. They bind the single
-as-of source, evaluated-versus-snapshot identity comparison, exact mode parameter
-schema and multi-mode real-PostgreSQL end-to-end path without claiming a
-Controller verdict.
+Rows 31–39 are the final transitive-closure proof set accepted by Controller
+comment `5469390502`. They bind the single as-of source,
+evaluated-versus-snapshot identity comparison, exact mode parameter schema and
+multi-mode real-PostgreSQL end-to-end path without claiming production readiness
+or production readiness. Human Owner Formal Closure is recorded separately and
+does not promote any deferred evidence row.
 
 ## 3. Risk dimensions
 

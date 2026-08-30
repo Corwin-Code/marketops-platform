@@ -9,9 +9,25 @@ contract_sha256: 0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d
 accepted_amendments: SLICE-V1-001-AMENDMENT-001,SLICE-V1-001-AMENDMENT-002
 accepted_amendment_001_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d
 accepted_amendment_002_sha256: 92fdd8d67b327fbd2288ba99290b5b59f2797106c4b691ce2bff22bb80198b93
-implementation_state: SUPPLEMENTAL_R2_ROOT_CAUSE_REWORK_CANDIDATE
-candidate_scope: R2_BRANCH_ONLY
-closure_claim: NONE
+implementation_state: ENGINEERING_IMPLEMENTATION_MERGED
+candidate_scope: PROTECTED_MAIN
+controller_final_gate: PASS_R2_ENGINEERING_FINAL_GATE
+controller_comment_id: 5469390502
+approved_engineering_head: f35327a584b980ec4acf7ace7c88e124d6d79709
+approved_engineering_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b
+approved_tested_merge: bcc3b37965003c3ea1af720ea847dc27fb473a9e
+actual_squash_commit: d562b81f4f0271aa33a53b21ccaffc88b5610c0c
+actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b
+actual_squash_sole_parent: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
+engineering_closure: ENGINEERING_IMPLEMENTATION_CLOSED
+production_readiness: DEFERRED_TO_RELEASE_V1_001
+owner_formal_closure: HUMAN_OWNER_ACCEPTED
+slice_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
+controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING
+controller_bookkeeping_comment: 5469802650
+owner_acceptance_comment: 5469935477
+owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
+next_action: NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY
 base_commit: db92cf2f8bd818f36dd8f5aa17b8589c4140b669
 base_tree: 221e5a009d4cf5820d36c0e1bccd5b64caa6135b
 production_write_enabled: false
@@ -20,26 +36,32 @@ real_model_provider_call_made: false
 infrastructure_applied: false
 ```
 
-## 1. Implementation and current rework
+## 1. Implementation and post-merge state
 
-PR #20 is merged. PR #21 is held and is not an R2 implementation base. Draft
-PR #22 remains open and Draft. The Supplemental R2 branch starts from exact protected-main commit
-`db92cf2f8bd818f36dd8f5aa17b8589c4140b669`. Its nine engineering fixes remain
-a candidate, not a Controller closure verdict.
+PR #20 and PR #22 are merged. PR #21 was closed unmerged as superseded and its
+obsolete remote ref was removed; it was never an R2 implementation or
+closure-sync base. Controller comment `5469390502` closed the
+complete ten-item frozen Supplemental R2 set with zero unresolved BLOCKER or
+MAJOR finding. PR #22 was then protected-SQUASH-merged as
+`d562b81f4f0271aa33a53b21ccaffc88b5610c0c`; its tree is exactly the approved
+engineering tree and its sole parent is the reviewed base.
 
 The code covers acquisition, canonical facts, diagnosis, recommendations,
 controlled commands and readback. V0011–V0028 are immutable applied history.
-V0029 is the only unmerged migration and had no deployment or shared consumer;
-R2 therefore corrects it in place to add the versioned target-price economics
-and source-watermark authority described below. This is not an applied-history
-rewrite. The final R2 packet must bind fresh verification to the exact published
-Head. The final transitive-closure correction also removes a split JVM/DB clock
+V0029 was the only unmerged migration when R2 corrected it in place; it is now
+merged in the exact reviewed tree but remains undeployed and unapplied to any
+production database. This is not an applied-history rewrite. The final
+transitive-closure correction removes a split JVM/DB clock
 from Guardrail evaluation and replaces the inherited one-key price parameter
 filter with the exact executable parameter contract described below. Accepted
 Amendment-002 defers only its enumerated real/Owner/Gate evidence
 to `RELEASE-V1-001`; the Deferred Evidence Register preserves every future
-obligation. No real provider, Marketplace or production write is authorized or
-proven.
+obligation. Controller comment `5469802650` passed the exact post-merge
+bookkeeping packet, and Human Owner comment `5469935477` accepted the frozen
+Closure Snapshot and formally closed the Slice's engineering lifecycle. This
+does not claim production readiness: all deferred release obligations remain
+production-blocking. No real provider, Marketplace or production write is
+authorized or proven.
 
 ## 2. The decisions everything else follows from
 
@@ -398,7 +420,7 @@ point of the Assurance Matrix.
 | Any real platform write | Requires a Gate-EV envelope. Not authorized, not attempted. |
 | Complete deployable Terraform/runtime path | Local fmt/init-without-backend/provider-schema validate/mock-plan checks pass. Actual account/state/runtime operation is unproven. The Owner accepted Amendment-001: PG17, provider-managed extensions and a public Flyway external-attestation V0002 executor, preserving standard-profile SQL and V0001–V0010 bytes. |
 | Performance under representative load | PG17/MockMvc measurements, five-second read-budget lock/recovery, a 488,000-record asynchronous export and local database/object restore pass at checkpoint 131. Actual Owner cohort and production capacity are unproven; final source-bound regression remains required. |
-| Final exact-commit backend/CI quality | Local full rework checkpoint 131 passes 845 unit and 371 integration tests plus the unchanged 80%/70% coverage gate. This is a source-manifest-bound worktree checkpoint, not final published Head/CI evidence. Earlier failures remain preserved in the rework logs. |
+| Production/release quality | The exact final Head passed 877 unit, 391 PostgreSQL integration, 65 architecture, 377 Python, 196 frontend and 11 browser tests; 12/12 required contexts and aggregate CodeQL passed before merge. Real provider, release and production evidence remain deferred. |
 
 ## 9. Original implementation checkpoints
 
