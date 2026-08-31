@@ -305,12 +305,11 @@ public class AvailabilityProjectionRepository {
     /**
      * The last demand answer that was eligible for one child subject.
      *
-     * <p>Carry-forward needs a previously eligible answer, and a previously
-     * eligible answer is by definition not in the current windows: if one of
-     * those were eligible the policy would have selected it and carry-forward
-     * would not arise. It therefore comes from what was stored, keyed by the
-     * child's own identity so a channel carries its own history rather than
-     * the variant's.
+     * <p>The answer carry-forward needs is by definition not among the current
+     * windows: if one of those were eligible the policy would select it and
+     * carry-forward would not arise. It therefore comes from what is stored,
+     * keyed by the child's own identity so a channel carries its own record
+     * rather than the variant's.
      */
     public Optional<CarriedForwardRow> lastEligibleDemand(UUID organizationId,
                                                           ChildKind childKind,
