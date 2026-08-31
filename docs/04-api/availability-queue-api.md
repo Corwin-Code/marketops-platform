@@ -50,9 +50,12 @@ request shape, by the service and by a database constraint, so the refusal does
 not depend on any one of them being correct.
 
 Recording an action moves the case to `VERIFYING`. It never moves it to
-success. Whether the business risk actually improved is a separate observation
-that has not been made yet, and the verification route is where it is made —
-with four outcomes, of which only `VERIFIED` closes the case.
+success. Whether the business risk actually improved is a separate observation,
+and in the ordinary case nobody makes it through this API at all: every
+recalculation of the same subject reports whether the cause is repaired, and a
+case closes on its own once the improvement has held through the governed
+window. The verification route exists for the observation a person makes
+themselves — with four outcomes, of which only `VERIFIED` closes the case.
 
 ## Accepting a risk
 

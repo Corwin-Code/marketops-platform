@@ -70,6 +70,22 @@ either.
 Resolve it through the cost and finance-input path that owns the missing
 component. The availability queue does not estimate profit to fill the gap.
 
+## A case that is verifying and not closing
+
+Nothing is stuck. A case stays in verification until the cause it was raised for
+is actually repaired and stays repaired for the governed window, and the
+recalculation reports that on its own — there is no button that closes it.
+
+Read the case's own record before doing anything. A case with no improvement
+recorded means the cause is still present: the action did not work, or it worked
+on something else. A case with an improvement recorded is inside the window and
+will close by itself. A case that reopened had its improvement come back, which
+is a regression rather than a failure of the action.
+
+What does need somebody is a case whose outcome deadline has passed with the
+cause still present. That is recorded as a failure and returns the case for
+different work, not for the same work again.
+
 ## The queue has stopped being current
 
 The loop reports one of three named incidents. Each one means the queue an
