@@ -95,7 +95,10 @@ frozen_finding_set_sha256: 60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f7
 engineering_findings_addressed: 18_OF_18_PENDING_INDEPENDENT_CLOSURE_VERIFICATION
 controller_verdict: NOT_CLAIMED
 owner_formal_closure: NOT_CLAIMED
-remote_publication: CODEX_DRAFT_PR_TRANSPORT_PENDING
+remote_publication: DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS
+draft_pr: 26
+draft_pr_url: https://github.com/Corwin-Code/marketops-platform/pull/26
+required_checks: PASS_12_OF_12_PLUS_AGGREGATE_CODEQL
 controlled_write_target: NONE_IN_THIS_SLICE
 real_provider_calls: NONE
 deployment: NOT_EXECUTED

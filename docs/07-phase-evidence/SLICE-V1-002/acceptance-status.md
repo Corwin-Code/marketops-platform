@@ -19,7 +19,10 @@ frozen_finding_set_sha256: 60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f7
 engineering_closure: NOT_CLAIMED
 controller_verdict: NOT_CLAIMED
 owner_formal_closure: NOT_CLAIMED
-remote_publication: CODEX_DRAFT_PR_TRANSPORT_PENDING
+remote_publication: DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS
+draft_pr: 26
+draft_pr_url: https://github.com/Corwin-Code/marketops-platform/pull/26
+required_checks: PASS_12_OF_12_PLUS_AGGREGATE_CODEQL
 controlled_write_target: NONE_IN_THIS_SLICE
 real_provider_calls: NONE
 deployment: NOT_EXECUTED
@@ -31,8 +34,8 @@ production_write_enabled: false
 
 ## Interpretation
 
-This is an honest implementation status, not a closure claim. `94` of the
-hundred criteria are proven by a test that runs today, `5` are partially proven,
+This is an honest implementation status, not a closure claim. `95` of the
+hundred criteria are proven by a test that runs today, `4` are partially proven,
 and `1` remains reserved for independent closure rather than self-issued
 evidence.
 
@@ -63,9 +66,10 @@ What remains partial is named rather than glossed:
 - durable correlation, structured logs, health incidents and audit evidence are
   asserted, while no distributed trace exporter is claimed (`S2-AC-080`);
 - every named incident has a runbook, but no human-executed operator drill is
-  represented as an automated fact (`S2-AC-081`);
-- the complete local gate is recorded here; remote security/required checks are
-  pending the new Draft PR (`S2-AC-098`).
+  represented as an automated fact (`S2-AC-081`).
+
+Draft PR #26 now has all 12 required contexts and aggregate CodeQL passing;
+`S2-AC-098` is therefore executably verified without changing a threshold.
 
 The Frozen Finding Set paths that were absent in the reviewed source are now
 executable: governed inbound and policy lifecycles, return/retention/QC and
@@ -177,7 +181,7 @@ self-claimed here.
 | `S2-AC-095` | `EXECUTABLY_VERIFIED` | performance evidence proves the internal SLOs and hourly sweep at the declared acceptance capacity. | TC-TARGET-CAP-001, TC-RECON-003 and RepresentativePerformanceIT bind the 5,000-variant synthetic profile to targeted response observations, complete worker traversal and real-PostgreSQL keyset enumeration |
 | `S2-AC-096` | `EXECUTABLY_VERIFIED` | fault injection proves missed-trigger recovery, worker restart, late evidence and SLO incident visibility. | TC-LOOP-006, TC-LOOP-008, TC-LOOP-009, TC-LOOP-010 and TC-LOOP-011 inject the dropped trigger, concurrent run, overdue incident, interrupted worker and late/reordered/stale fact paths |
 | `S2-AC-097` | `EXECUTABLY_VERIFIED` | Requirement/Owner Decision → Design → Code → Test → Evidence traceability is complete. | v1-traceability.csv contains OD-S2-001 through OD-S2-020; the as-built design maps the implementation; this document maps all 100 criteria; V0034-root-cause-rework-evidence.md maps every frozen finding to code and tests |
-| `S2-AC-098` | `PARTIALLY_VERIFIED` | full repository regression, governance validation, production- readiness validation and security scans pass with no threshold weakening. | local backend/frontend/browser/governance/readiness/supply-chain gates run without weakened thresholds; the new Draft-PR required security checks remain pending transport |
+| `S2-AC-098` | `EXECUTABLY_VERIFIED` | full repository regression, governance validation, production- readiness validation and security scans pass with no threshold weakening. | local backend/frontend/browser/governance/readiness/supply-chain gates pass without weakened thresholds; Draft PR #26 passes all 12 required contexts plus aggregate CodeQL after repairing every new security annotation and the global-feed integration isolation defect |
 | `S2-AC-099` | `EXECUTABLY_VERIFIED` | canonical docs, runbooks, evidence inventory and exact Git identity are synchronized in the same implementation. | CURRENT_STATE, the roadmap, the capability matrix, the design, this status, the executable evidence, the API contract and the runbook are updated in this same implementation |
 | `S2-AC-100` | `NOT_IMPLEMENTED` | no unresolved BLOCKER or MAJOR implementation finding remains at Final Closure Verification. | not implemented in this checkpoint |
 
@@ -185,8 +189,8 @@ self-claimed here.
 
 | Status | Count |
 | --- | ---: |
-| `EXECUTABLY_VERIFIED` | 94 |
-| `PARTIALLY_VERIFIED` | 5 |
+| `EXECUTABLY_VERIFIED` | 95 |
+| `PARTIALLY_VERIFIED` | 4 |
 | `NOT_IMPLEMENTED` | 1 |
 | Total | 100 |
 

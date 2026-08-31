@@ -39,7 +39,9 @@ slice_v1_002_finding_count: 18
 slice_v1_002_engineering_findings_addressed: 18_OF_18_PENDING_INDEPENDENT_CLOSURE_VERIFICATION
 slice_v1_002_controller_verdict: NOT_CLAIMED
 slice_v1_002_owner_formal_closure: NOT_CLAIMED
-slice_v1_002_remote_publication: CODEX_DRAFT_PR_TRANSPORT_PENDING
+slice_v1_002_remote_publication: DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS
+slice_v1_002_draft_pr: 26
+slice_v1_002_draft_pr_url: https://github.com/Corwin-Code/marketops-platform/pull/26
 slice_v1_002_controlled_write_target: NONE_IN_THIS_SLICE
 slice_v1_002_real_provider_calls: NONE
 slice_v1_002_as_built_design: docs/02-architecture/designs/SLICE-V1-002-design.md
@@ -132,8 +134,8 @@ slice_v1_001_as_built_design: docs/02-architecture/designs/SLICE-V1-001-design.m
 slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
-next_authorized_actor: Codex Rework / Fix / Verification Agent
-next_action: VERIFY_LOCAL_PUBLISH_DRAFT_PR_AND_WAIT_REMOTE_CHECKS
+next_authorized_actor: Independent Controller Final Closure Verification
+next_action: CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_DRAFT_PR_26
 slice_v1_001_handoff_pending: CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
@@ -417,8 +419,10 @@ The coherent root-cause rework is locally verified on branch
 `fix/SLICE-V1-002-root-cause-rework-r1`; all 18 findings have an implemented
 engineering disposition, pending independent closure verification. No
 Controller verdict, Owner Formal Closure, merge, deployment, provider call or
-production enablement is claimed. Codex Draft-PR transport is the next bounded
-operation. Its entry points are:
+production enablement is claimed. Codex published the rework to open Draft PR
+#26, where all 12 required contexts and aggregate CodeQL pass. Independent
+Controller Final Closure Verification is the next bounded operation. Its entry
+points are:
 
 ```text
 docs/02-architecture/designs/SLICE-V1-002-design.md
@@ -441,8 +445,11 @@ capability anywhere in the module or in any migration.
 
 ## Next authorized action
 
-The active action is `SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION` inside the exact
-accepted Contract named above. SLICE-V1-001's closed lifecycle action remains
+The repository gate remains `SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION` inside the
+exact accepted Contract named above, but the bounded rework and remote
+verification action is complete. The next authorized action is
+`CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_DRAFT_PR_26` by an independent
+Controller. SLICE-V1-001's closed lifecycle action remains
 `NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY` for the Slice after this one, and its
 bounded `CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK` over the actual
 PR #23 SQUASH identity and cleanup receipt is unchanged by this flip.

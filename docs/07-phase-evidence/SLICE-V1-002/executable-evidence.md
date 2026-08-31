@@ -17,7 +17,10 @@ engineering_findings_addressed: 18_OF_18_PENDING_INDEPENDENT_CLOSURE_VERIFICATIO
 engineering_closure: NOT_CLAIMED
 controller_verdict: NOT_CLAIMED
 owner_formal_closure: NOT_CLAIMED
-remote_publication: CODEX_DRAFT_PR_TRANSPORT_PENDING
+remote_publication: DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS
+draft_pr: 26
+draft_pr_url: https://github.com/Corwin-Code/marketops-platform/pull/26
+required_checks: PASS_12_OF_12_PLUS_AGGREGATE_CODEQL
 external_business_systems_contacted: NONE
 deployment: NOT_EXECUTED
 gate_ev: NOT_AUTHORIZED
@@ -87,6 +90,7 @@ The database evidence is real PostgreSQL, not an in-memory substitute.
 | `make supply-chain` | passed; backend and frontend CycloneDX 1.6 inventories written | dependency convergence, license inventory and reproducible SBOM generation |
 | `npm run lint && npm run format:check && npm run typecheck && npm run test:ci && npm run build && npm run verify:bundle` | 227 passed; all static, coverage, build and bundle gates passed | frontend suite including queue, cases and the governed authority panel |
 | `npm run test:browser` | 12 passed | the browser suite against the real backend and a V0034-migrated PostgreSQL database |
+| Draft PR #26 remote required checks | 12/12 required contexts passed; aggregate CodeQL passed with no remaining new alert | exact remote backend, frontend, architecture, governance, infrastructure, dependency and security gates |
 
 ## Coverage
 
@@ -138,6 +142,8 @@ caught cannot judge whether the tests are good enough.
 | Automatic outcome verification did not exist: the state machine was complete but nothing observed the risk, so a case would have waited in `VERIFYING` for a person to click | reading the mandatory product path against the code; `V0033` and `OutcomeCondition` let the recalculation answer it, covered by `TC-CASE-021` through `TC-CASE-025` |
 | The case journal would have grown with the recalculation rate, appending an identical "still waiting" row on every pass | adversarial reading; an observation that changes nothing is no longer appended, pinned by `TC-CASE-024` |
 | `FlywayMigrationIT` keeps its own approved-migration list and two new migrations were absent from it | the full regression, which is what that list exists for |
+| The first Draft-PR CodeQL pass found one unsafe pair index, three contradictory null-flow paths and seven inputs with no semantic effect | the bounds guard, null-flow simplification, meaningful withdrawal audit evidence and exact method signatures close all 11 annotations; Java, TypeScript and aggregate CodeQL pass |
+| The accepted-fact cursor and targeted queue are global, but their ordered integration test shared the suite database and assumed no other class had published facts | both remote backend jobs exposed three order-dependent counts; `AvailabilityRecalculationLoopIT` now owns an isolated migrated PostgreSQL database and both full jobs pass |
 
 ## Targeted and sweep equivalence
 

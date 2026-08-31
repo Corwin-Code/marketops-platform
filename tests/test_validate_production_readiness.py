@@ -265,7 +265,7 @@ class RepositoryContractPatternTests(unittest.TestCase):
             ("slice_v1_002_controller_verdict: NOT_CLAIMED", "PASS"),
             ("slice_v1_002_owner_formal_closure: NOT_CLAIMED", "HUMAN_OWNER_ACCEPTED"),
             (
-                "slice_v1_002_remote_publication: CODEX_DRAFT_PR_TRANSPORT_PENDING",
+                "slice_v1_002_remote_publication: DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS",
                 "MERGED",
             ),
         ):

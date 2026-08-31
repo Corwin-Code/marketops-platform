@@ -348,7 +348,11 @@ V1_ACTIVE_STATE = {
     ),
     "slice_v1_002_controller_verdict": "NOT_CLAIMED",
     "slice_v1_002_owner_formal_closure": "NOT_CLAIMED",
-    "slice_v1_002_remote_publication": "CODEX_DRAFT_PR_TRANSPORT_PENDING",
+    "slice_v1_002_remote_publication": "DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS",
+    "slice_v1_002_draft_pr": "26",
+    "slice_v1_002_draft_pr_url": (
+        "https://github.com/Corwin-Code/marketops-platform/pull/26"
+    ),
     "slice_v1_002_controlled_write_target": "NONE_IN_THIS_SLICE",
     "slice_v1_002_real_provider_calls": "NONE",
     "slice_v1_002_as_built_design": (
@@ -366,8 +370,8 @@ V1_ACTIVE_STATE = {
     "slice_v1_002_deferred_release_register": (
         "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json"
     ),
-    "next_authorized_actor": "Codex Rework / Fix / Verification Agent",
-    "next_action": "VERIFY_LOCAL_PUBLISH_DRAFT_PR_AND_WAIT_REMOTE_CHECKS",
+    "next_authorized_actor": "Independent Controller Final Closure Verification",
+    "next_action": "CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_DRAFT_PR_26",
     "slice_v1_001_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_001_rework_phase": "R2_FORMAL_CLOSURE_ACCEPTED",
     "slice_v1_001_pr": "22",
