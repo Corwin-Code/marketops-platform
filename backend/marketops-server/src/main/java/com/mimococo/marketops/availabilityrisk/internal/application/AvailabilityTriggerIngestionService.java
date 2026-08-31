@@ -2,6 +2,7 @@ package com.mimococo.marketops.availabilityrisk.internal.application;
 
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityRecalculationRepository;
 import com.mimococo.marketops.operatingfacts.AcceptedFactChange;
+import com.mimococo.marketops.operatingfacts.AcceptedFactCursor;
 import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
 import com.mimococo.marketops.productlisting.ListingIdentityDirectory;
 import com.mimococo.marketops.shared.IdGenerator;
@@ -58,10 +59,13 @@ public class AvailabilityTriggerIngestionService {
     @Transactional
     public ScanResult scanOnce(int limit) {
         Instant now = clock.instant();
-        queue.startCursor(now);
-        Instant position = queue.cursorPosition().orElse(now);
+        // First start performs a deterministic backfill. Starting at "now"
+        // would permanently delegate pre-existing accepted facts to the sweep.
+        queue.startCursor(Instant.EPOCH);
+        AcceptedFactCursor position = queue.cursorPosition()
+                .orElseGet(() -> AcceptedFactCursor.beginningAt(Instant.EPOCH));
 
-        var changes = facts.factsAcceptedSince(position, limit);
+        var changes = facts.factsAcceptedAfter(position, limit);
         if (changes.isEmpty()) {
             queue.advanceCursor(position, now, 0);
             return new ScanResult(0, 0, 0, position);
@@ -69,12 +73,10 @@ public class AvailabilityTriggerIngestionService {
 
         java.util.Set<UUID> queued = new java.util.LinkedHashSet<>();
         int unmapped = 0;
-        Instant furthest = position;
+        AcceptedFactCursor furthest = position;
         String correlationId = "availability-scan:" + ids.newId();
         for (AcceptedFactChange change : changes) {
-            if (change.factAcceptedAt().isAfter(furthest)) {
-                furthest = change.factAcceptedAt();
-            }
+            furthest = change.cursor();
             Optional<UUID> variant = variantOf(change);
             if (variant.isEmpty()) {
                 // A fact about a listing nobody has mapped has no internal
@@ -127,6 +129,6 @@ public class AvailabilityTriggerIngestionService {
      * @param unmapped facts with no mapped internal variant
      * @param position where the feed is now read to
      */
-    public record ScanResult(int scanned, int queued, int unmapped, Instant position) {
+    public record ScanResult(int scanned, int queued, int unmapped, AcceptedFactCursor position) {
     }
 }

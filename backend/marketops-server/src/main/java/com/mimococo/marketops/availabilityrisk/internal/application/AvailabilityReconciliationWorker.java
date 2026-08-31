@@ -6,6 +6,7 @@ import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.Inbo
 import com.mimococo.marketops.operationsworkflow.AvailabilityExceptionGovernance;
 import com.mimococo.marketops.shared.IdGenerator;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +39,11 @@ public class AvailabilityReconciliationWorker {
     private static final Logger LOG =
             LoggerFactory.getLogger(AvailabilityReconciliationWorker.class);
 
-    /** The largest portfolio one sweep will visit in a pass. */
-    private static final int PORTFOLIO_LIMIT = 20_000;
+    /** Bounded database page; a run continues until every page is exhausted. */
+    private static final int PORTFOLIO_PAGE = 1_000;
+
+    /** An unfinished run older than one complete cadence is an interrupted run. */
+    private static final Duration MAX_RUN_AGE = Duration.ofHours(1);
 
     private final AvailabilityRecalculationRepository queue;
     private final AvailabilityRiskRefreshService refresh;
@@ -72,6 +76,7 @@ public class AvailabilityReconciliationWorker {
         Instant asOf = clock.instant();
         UUID runId = ids.newId();
         String correlationId = "availability-sweep:" + runId;
+        queue.failAbandonedRuns(organizationId, asOf.minus(MAX_RUN_AGE), asOf);
         try {
             queue.startRun(runId, organizationId, asOf, triggerKind, asOf, correlationId);
         } catch (DuplicateKeyException alreadyRunning) {
@@ -84,43 +89,53 @@ public class AvailabilityReconciliationWorker {
             return java.util.Optional.empty();
         }
 
-        List<UUID> variants = queue.variantsToReconcile(organizationId, asOf, PORTFOLIO_LIMIT);
         int changed = 0;
+        int failures = 0;
         List<UUID> visited = new ArrayList<>();
-        try {
-            for (UUID variantId : variants) {
-                if (visit(organizationId, variantId, asOf, runId)) {
-                    changed++;
-                }
-                visited.add(variantId);
+        List<UUID> successful = new ArrayList<>();
+        UUID after = null;
+        while (true) {
+            List<UUID> variants = queue.variantsToReconcile(
+                    organizationId, asOf, after, PORTFOLIO_PAGE);
+            if (variants.isEmpty()) {
+                break;
             }
-        } catch (RuntimeException failure) {
-            LOG.error("reconciliation sweep {} of organization {} failed after {} variants",
-                    runId, organizationId, visited.size(), failure);
-            queue.finishRun(new AvailabilityRecalculationRepository.RunOutcome(runId, "FAILED",
-                    visited.size(), changed, 0, 0, 0, "SWEEP_FAILED", clock.instant()));
-            return java.util.Optional.of(new SweepResult(runId, false, visited.size(), changed,
-                    0, 0, 0));
+            for (UUID variantId : variants) {
+                visited.add(variantId);
+                after = variantId;
+                try {
+                    if (visit(organizationId, variantId, asOf, runId)) {
+                        changed++;
+                    }
+                    successful.add(variantId);
+                } catch (RuntimeException failure) {
+                    failures++;
+                    LOG.error("reconciliation sweep {} could not refresh variant {}",
+                            runId, variantId, failure);
+                }
+            }
+            queue.recordRunProgress(runId, after, visited.size(), changed, failures);
         }
 
         Instant completedAt = clock.instant();
-        int repaired = queue.repairCoveredRequests(organizationId, visited, completedAt);
+        int repaired = queue.repairCoveredRequests(organizationId, successful, completedAt);
         int expiredExceptions = exceptions.expireDue(organizationId, completedAt).size();
+        exceptions.revalidateActive(organizationId, completedAt);
         int lapsedInbound = inbound.countLapsed(organizationId, asOf);
-        queue.finishRun(new AvailabilityRecalculationRepository.RunOutcome(runId, "COMPLETED",
-                visited.size(), changed, repaired, lapsedInbound, expiredExceptions, null,
-                completedAt));
-        return java.util.Optional.of(new SweepResult(runId, true, visited.size(), changed,
-                repaired, lapsedInbound, expiredExceptions));
+        String state = failures == 0 ? "COMPLETED" : "FAILED";
+        queue.finishRun(new AvailabilityRecalculationRepository.RunOutcome(runId, state,
+                visited.size(), changed, repaired, failures, lapsedInbound, expiredExceptions,
+                failures == 0 ? null : "VARIANT_REFRESH_FAILED", completedAt));
+        return java.util.Optional.of(new SweepResult(runId, failures == 0, visited.size(), changed,
+                repaired, lapsedInbound, expiredExceptions, failures));
     }
 
     /**
      * Recalculate one variant inside a sweep.
      *
-     * <p>One variant's failure ends the sweep rather than being swallowed,
-     * because a sweep that quietly skipped rows would report success over a
-     * portfolio it did not actually cover, and the whole point of the sweep is
-     * that its coverage can be relied on.
+     * <p>One variant's failure is recorded and isolated. The run continues so
+     * every later variant is still inspected, then finishes {@code FAILED}
+     * rather than claiming full success over the skipped answer.
      *
      * @return whether the card's lane moved
      */
@@ -149,6 +164,6 @@ public class AvailabilityReconciliationWorker {
      */
     public record SweepResult(UUID runId, boolean completed, int variantCount,
                               int changedCardCount, int repairedCount, int lapsedInboundCount,
-                              int expiredExceptionCount) {
+                              int expiredExceptionCount, int failedVariantCount) {
     }
 }

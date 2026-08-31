@@ -27,10 +27,10 @@ import org.springframework.test.context.DynamicPropertySource;
  * An accepted fact becoming an updated answer, and the sweep that catches what
  * targeting missed.
  *
- * <p>The scan is started before any fact is seeded, so the feed position is
- * established first and this test observes exactly the facts it published. That
- * is also how a real installation behaves: the cursor starts where the worker
- * starts, and the hourly sweep is what covers everything before it.
+ * <p>The facts exist before the first scan. This proves a fresh cursor performs
+ * the required backfill rather than choosing startup time and silently skipping
+ * accepted history. Two facts deliberately share one provenance timestamp and
+ * are consumed through one-row pages to exercise the complete feed key.
  *
  * <p>Nothing external is contacted. The loop reads canonical facts and writes a
  * projection, a case and its own evidence; this Slice has no platform write
@@ -55,6 +55,7 @@ class AvailabilityRecalculationLoopIT {
     private static final UUID USER = UUID.fromString("dddd0000-0000-0000-0000-00000000000b");
 
     private static JdbcClient seed;
+    private static String firstCursorItemKey;
 
     @Autowired
     private AvailabilityTriggerIngestionService ingestion;
@@ -91,31 +92,37 @@ class AvailabilityRecalculationLoopIT {
 
     @Test
     @Order(1)
-    @DisplayName("TC-LOOP-001 the feed position is established before any fact exists")
-    void theCursorStartsBeforeTheFacts() {
+    @DisplayName("TC-LOOP-001 first start backfills facts accepted before the worker existed")
+    void firstStartBackfillsAcceptedFacts() {
         seedTopology();
         seedIdentity();
         seedMapping();
         seedPolicies();
+        seedFacts();
 
-        AvailabilityTriggerIngestionService.ScanResult first = ingestion.scanOnce(500);
+        AvailabilityTriggerIngestionService.ScanResult first = ingestion.scanOnce(1);
+        firstCursorItemKey = first.position().itemKey();
 
-        assertThat(first.queued()).isZero();
+        assertThat(first.scanned()).isEqualTo(1);
+        assertThat(first.queued()).isEqualTo(1);
         assertThat(count("SELECT count(*) FROM ops.availability_fact_cursor")).isEqualTo(1);
     }
 
     @Test
     @Order(2)
-    @DisplayName("TC-LOOP-002 accepted facts become one recalculation per variant")
-    void acceptedFactsBecomeOneRequestPerVariant() {
-        seedFacts();
+    @DisplayName("TC-LOOP-002 same-timestamp facts survive one-row page boundaries")
+    void sameTimestampFactsSurvivePageBoundaries() {
+        AvailabilityTriggerIngestionService.ScanResult second = ingestion.scanOnce(1);
+        AvailabilityTriggerIngestionService.ScanResult third = ingestion.scanOnce(1);
+        AvailabilityTriggerIngestionService.ScanResult exhausted = ingestion.scanOnce(1);
 
-        AvailabilityTriggerIngestionService.ScanResult scan = ingestion.scanOnce(500);
-
-        assertThat(scan.scanned()).isGreaterThanOrEqualTo(2);
-        assertThat(scan.queued())
-                .as("a stock observation and a health observation are one recalculation")
-                .isEqualTo(1);
+        assertThat(second.scanned()).isEqualTo(1);
+        assertThat(third.scanned()).isEqualTo(1);
+        assertThat(exhausted.scanned()).isZero();
+        assertThat(firstCursorItemKey).isNotEqualTo(second.position().itemKey());
+        assertThat(second.position().itemKey()).isNotEqualTo(third.position().itemKey());
+        assertThat(count("SELECT scanned_count FROM ops.availability_fact_cursor"))
+                .isEqualTo(3);
         assertThat(count("SELECT count(*) FROM ops.availability_recalculation_request"
                 + " WHERE organization_id = '" + ORGANIZATION + "' AND state = 'PENDING'"))
                 .isEqualTo(1);
@@ -123,12 +130,18 @@ class AvailabilityRecalculationLoopIT {
 
     @Test
     @Order(3)
-    @DisplayName("TC-LOOP-003 rescanning the same facts queues no further work")
-    void rescanningQueuesNothingFurther() {
+    @DisplayName("TC-LOOP-003 replay after a stale checkpoint is idempotent")
+    void replayAfterStaleCheckpointIsIdempotent() {
         long before = count("SELECT count(*) FROM ops.availability_recalculation_request"
                 + " WHERE organization_id = '" + ORGANIZATION + "'");
 
-        ingestion.scanOnce(500);
+        sql("UPDATE ops.availability_fact_cursor"
+                + " SET position_at = '1970-01-01T00:00:00Z',"
+                + " position_provenance_id = '00000000-0000-0000-0000-000000000000',"
+                + " position_item_key = '' WHERE feed_code = 'ACCEPTED_FACT'");
+        while (ingestion.scanOnce(1).scanned() > 0) {
+            // Drain the replay through the same smallest possible page.
+        }
 
         assertThat(count("SELECT count(*) FROM ops.availability_recalculation_request"
                 + " WHERE organization_id = '" + ORGANIZATION + "'")).isEqualTo(before);
@@ -262,6 +275,73 @@ class AvailabilityRecalculationLoopIT {
         assertThat(state.lastCompletedSweep()).isNotNull();
     }
 
+    @Test
+    @Order(10)
+    @DisplayName("TC-LOOP-010 a restart records the interrupted sweep and completes the next one")
+    void restartRecoversAnInterruptedSweep() {
+        UUID interrupted = UUID.randomUUID();
+        sql("""
+                INSERT INTO ops.availability_reconciliation_run
+                    (id, organization_id, as_of, state, trigger_kind, started_at,
+                     last_product_variant_id, variant_count, correlation_id)
+                VALUES ('%s', '%s', now() - interval '70 minutes', 'RUNNING', 'SCHEDULED',
+                        now() - interval '70 minutes', '%s', 1, 'interrupted-sweep')
+                """.formatted(interrupted, ORGANIZATION, VARIANT));
+
+        AvailabilityReconciliationWorker.SweepResult recovered =
+                reconciliation.sweep(ORGANIZATION, "RECOVERY").orElseThrow();
+
+        assertThat(recovered.completed()).isTrue();
+        assertThat(recovered.variantCount()).isEqualTo(1);
+        assertThat(string("SELECT state || ':' || failure_code"
+                + " FROM ops.availability_reconciliation_run WHERE id = '" + interrupted + "'"))
+                .isEqualTo("FAILED:WORKER_INTERRUPTED");
+        assertThat(count("SELECT count(*) FROM ops.availability_case"
+                + " WHERE organization_id = '" + ORGANIZATION + "'"))
+                .as("restarting and replaying the portfolio does not duplicate cases")
+                .isEqualTo(2);
+        assertThat(count("SELECT count(*) FROM ops.availability_recalculation_request"
+                + " WHERE organization_id = '" + ORGANIZATION + "'"
+                + "   AND state IN ('PENDING', 'LEASED')")).isZero();
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("TC-LOOP-011 late reordered stale evidence is attributable and cannot replace current truth")
+    void lateReorderedExpiredEvidenceIsDeterministic() {
+        UUID lateProvenance = UUID.randomUUID();
+        sql("""
+                INSERT INTO core.fact_provenance (id, organization_id, source_kind, source_time,
+                        ingestion_time, recorded_by_user_id, evidence_note)
+                VALUES ('%s', '%s', 'MANUAL_ENTRY', now() - interval '2 days',
+                        now(), '%s', 'deliberately late stale fact')
+                """.formatted(lateProvenance, ORGANIZATION, USER));
+        sql("""
+                INSERT INTO core.listing_stock_observation (id, organization_id, provenance_id,
+                        platform_listing_variant_id, fulfillment_mode_code, source_fact_key,
+                        observed_at, available_quantity, reserved_quantity)
+                VALUES ('%s', '%s', '%s', '%s', 'MARKETPLACE_FULFILLED',
+                        'loop-stock-late-stale', now() - interval '2 days', 999, 0)
+                """.formatted(UUID.randomUUID(), ORGANIZATION, lateProvenance, LISTING_VARIANT));
+
+        AvailabilityTriggerIngestionService.ScanResult late = ingestion.scanOnce(10);
+        assertThat(late.scanned()).isEqualTo(1);
+        assertThat(late.queued()).isEqualTo(1);
+        assertThat(targeted.runOnce(10)).isEqualTo(1);
+
+        assertThat(string("SELECT lane FROM mart.availability_risk_card"
+                + " WHERE product_variant_id = '" + VARIANT + "'"))
+                .as("a later-accepted but expired observation cannot overwrite fresh zero stock")
+                .isEqualTo(AvailabilityLane.CRITICAL.name());
+        assertThat(count("SELECT count(*) FROM ops.availability_case"
+                + " WHERE organization_id = '" + ORGANIZATION + "'"))
+                .as("late evidence updates the same causes rather than duplicating work")
+                .isEqualTo(2);
+        assertThat(count("SELECT count(*) FROM ops.availability_slo_observation"
+                + " WHERE organization_id = '" + ORGANIZATION + "'"
+                + " AND source_event_time < fact_accepted_at")).isGreaterThanOrEqualTo(2);
+    }
+
     private void seedTopology() {
         sql("""
                 INSERT INTO core.organization (id, code, display_name, status, created_at, updated_at)
@@ -389,8 +469,10 @@ class AvailabilityRecalculationLoopIT {
         sql("""
                 INSERT INTO core.internal_stock_snapshot (id, organization_id, provenance_id,
                         warehouse_id, product_variant_id, source_fact_key, observed_at,
-                        quantity_on_hand, quantity_reserved)
-                VALUES ('%s', '%s', '%s', '%s', '%s', 'loop-internal-1', now(), 40, 0)
+                        quantity_on_hand, quantity_reserved, quantity_quality_locked,
+                        quantity_damaged, quantity_written_off, sellable)
+                VALUES ('%s', '%s', '%s', '%s', '%s', 'loop-internal-1', now(),
+                        40, 0, 0, 0, 0, 'YES')
                 """.formatted(UUID.randomUUID(), ORGANIZATION, internalProvenance, WAREHOUSE,
                 VARIANT));
         sql("""

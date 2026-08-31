@@ -85,13 +85,17 @@ Controller PASS and actual SQUASH identity are the current engineering record.
 ## 2c. SLICE-V1-002 implementation evidence state
 
 ```yaml
-assessed_at: 2026-08-31
+assessed_at: 2026-09-01
 slice: SLICE-V1-002
 contract_sha256: d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e
-implementation_state: MANDATORY_PRODUCT_PATH_IMPLEMENTED
+implementation_state: ROOT_CAUSE_REWORK_VERIFIED_LOCAL
+reviewed_source_head: c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6
+reviewed_source_tree: c94341232b5fa67b5c40a1e6be121a7696e748c4
+frozen_finding_set_sha256: 60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f799879ebcf94
+engineering_findings_addressed: 18_OF_18_PENDING_INDEPENDENT_CLOSURE_VERIFICATION
 controller_verdict: NOT_CLAIMED
 owner_formal_closure: NOT_CLAIMED
-remote_publication: NOT_CLAIMED
+remote_publication: CODEX_DRAFT_PR_TRANSPORT_PENDING
 controlled_write_target: NONE_IN_THIS_SLICE
 real_provider_calls: NONE
 deployment: NOT_EXECUTED
@@ -101,6 +105,7 @@ pilot: NOT_AUTHORIZED
 production_write_enabled: false
 detail: docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md
 executable_evidence: docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md
+root_cause_rework_evidence: docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md
 deferred_release: docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json
 ```
 
@@ -168,8 +173,8 @@ existed and is not substituted for the final CodeQL check.
 Rows 31–39 are the final transitive-closure proof set accepted by Controller
 comment `5469390502`. They bind the single as-of source,
 evaluated-versus-snapshot identity comparison, exact mode parameter schema and
-multi-mode real-PostgreSQL end-to-end path without claiming production readiness
-or production readiness. Human Owner Formal Closure is recorded separately and
+multi-mode real-PostgreSQL end-to-end path without claiming production readiness.
+Human Owner Formal Closure is recorded separately and
 does not promote any deferred evidence row.
 
 ## 3. Risk dimensions

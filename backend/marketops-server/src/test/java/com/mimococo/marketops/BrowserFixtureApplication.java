@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import org.springframework.boot.SpringApplication;
@@ -138,6 +139,55 @@ public final class BrowserFixtureApplication {
                 } catch (Exception failed) { exchange.sendResponseHeaders(500, -1); }
                 finally { exchange.close(); }
             });
+            driver.createContext("/availability/reopen-and-exception", exchange -> {
+                try {
+                    if (!"POST".equals(exchange.getRequestMethod())
+                            || !"browser-test".equals(exchange.getRequestHeaders()
+                            .getFirst("X-Fixture-Driver"))) {
+                        exchange.sendResponseHeaders(405, -1); return;
+                    }
+                    UUID caseId = fixture.sql("""
+                            SELECT id FROM ops.availability_case
+                             WHERE organization_id=:org AND cause_code='CHANNEL_OUT_OF_STOCK'
+                               AND state='VERIFYING'
+                             ORDER BY created_at LIMIT 1
+                            """).param("org", graph.organizationId()).query(UUID.class).single();
+                    var cases = context.getBean(AvailabilityCaseIntake.class);
+                    Instant improvement = Instant.now().minus(Duration.ofMinutes(3));
+                    cases.observeCondition(caseId, "CHANNEL_FRESH_AND_SELLABLE", true, improvement,
+                            Duration.ofMinutes(1));
+                    var reopened = cases.observeCondition(caseId,
+                            "CHANNEL_FRESH_AND_SELLABLE", false,
+                            improvement.plus(Duration.ofMinutes(2)), Duration.ofMinutes(1));
+                    var requested = context.getBean(AvailabilityExceptionGovernance.class).request(
+                            new AvailabilityExceptionGovernance.ExceptionRequest(
+                                    graph.organizationId(), reopened.id(), reopened.childId(),
+                                    reopened.causeCode(), reopened.severity(),
+                                    ExceptionScopeKind.CHILD, reopened.childId().toString(),
+                                    ExceptionReasonCode.SUPPLIER_OUTAGE_ACCEPTED,
+                                    "supplier confirmed a bounded outage during browser verification",
+                                    "the channel remains unavailable for a bounded review period",
+                                    new BigDecimal("100.0000"), "RUB",
+                                    "ev://supplier/outage/browser-1", actor.userId(), "OPS_LEAD",
+                                    Instant.now(), Instant.now().plus(Duration.ofDays(7)),
+                                    Instant.now().plus(Duration.ofDays(3)),
+                                    "browser-exception-" + reopened.id(), Instant.now()));
+                    byte[] bytes = mapper.writeValueAsBytes(Map.of("caseId", reopened.id(),
+                            "caseState", reopened.state(), "reopenCount", reopened.reopenCount(),
+                            "exceptionId", requested.id(), "exceptionState", requested.state()));
+                    exchange.getResponseHeaders().set("Content-Type", "application/json");
+                    exchange.sendResponseHeaders(200, bytes.length);
+                    exchange.getResponseBody().write(bytes);
+                } catch (Exception failed) {
+                    byte[] bytes = (failed.getClass().getSimpleName() + ": "
+                            + Objects.toString(failed.getMessage(), "no message"))
+                            .getBytes(StandardCharsets.UTF_8);
+                    exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=utf-8");
+                    exchange.sendResponseHeaders(500, bytes.length);
+                    exchange.getResponseBody().write(bytes);
+                }
+                finally { exchange.close(); }
+            });
             driver.start();
             Runtime.getRuntime().addShutdownHook(new Thread(() -> driver.stop(0)));
         } catch (Exception failed) {
@@ -191,6 +241,15 @@ public final class BrowserFixtureApplication {
                 VALUES(gen_random_uuid(),:org,2,60,240,480,2880,1440,:owner,'agreed activation policy',
                     'ev://ops/activation',now()-interval '10 days','ACTIVE',1,now())
                 """).param("org", graph.organizationId()).param("owner", graph.userId()).update();
+        jdbc.sql("""
+                INSERT INTO core.exception_materiality_policy (id, organization_id, currency_code,
+                    material_profit_at_risk, material_duration_days, repeat_occurrence_count,
+                    repeat_lookback_days, max_exception_days, owner_user_id, reason,
+                    evidence_reference, effective_from, status, policy_version, created_at)
+                VALUES (gen_random_uuid(), :org, 'RUB', 50000.0000, 14, 3, 90, 30, :owner,
+                    'synthetic browser exception materiality', 'ev://ops/materiality/browser',
+                    now() - interval '10 days', 'ACTIVE', 1, now())
+                """).param("org", graph.organizationId()).param("owner", graph.userId()).update();
 
         // A channel with nothing on it: critical before demand is even consulted.
         jdbc.sql("""
@@ -210,9 +269,10 @@ public final class BrowserFixtureApplication {
         if (warehouse != null) {
             jdbc.sql("""
                     INSERT INTO core.internal_stock_snapshot(id,organization_id,provenance_id,warehouse_id,
-                        product_variant_id,source_fact_key,observed_at,quantity_on_hand,quantity_reserved)
+                        product_variant_id,source_fact_key,observed_at,quantity_on_hand,quantity_reserved,
+                        quantity_quality_locked,quantity_damaged,quantity_written_off,sellable)
                     VALUES(gen_random_uuid(),:org,:provenance,:warehouse,:variant,
-                        'browser-availability-internal',now(),40,0)
+                        'browser-availability-internal',now(),40,0,0,0,0,'YES')
                     """).param("org", graph.organizationId()).param("provenance", graph.provenanceId())
                     .param("warehouse", warehouse).param("variant", variant).update();
         }

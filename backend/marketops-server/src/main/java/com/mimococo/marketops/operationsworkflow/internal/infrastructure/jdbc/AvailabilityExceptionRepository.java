@@ -181,6 +181,20 @@ public class AvailabilityExceptionRepository {
                            SET state = 'ACTIVE', effective_from = :effectiveFrom,
                                expires_at = :expiresAt, review_at = :reviewAt,
                                materiality_policy_id = :policyId, policy_version = :policyVersion,
+                               accepted_risk_digest = (
+                                   SELECT md5(concat_ws('|', child.cause_code, child.lane,
+                                       child.evidence_state, child.confidence_state,
+                                       child.available_units, child.daily_demand_rate,
+                                       child.days_of_cover, child.projected_stockout_at,
+                                       child.conservative_proof::text, child.blocker_codes::text,
+                                       card.policy_version_digest))
+                                     FROM mart.availability_risk_child child
+                                     JOIN mart.availability_risk_card card
+                                       ON card.id = child.card_id
+                                      AND card.organization_id = child.organization_id
+                                    WHERE child.id = ops.availability_accepted_exception.child_id
+                                      AND child.organization_id =
+                                          ops.availability_accepted_exception.organization_id),
                                updated_at = :at, version = version + 1
                          WHERE id = :id
                         """)
@@ -228,6 +242,80 @@ public class AvailabilityExceptionRepository {
                 .param("organizationId", organizationId).param("at", Timestamp.from(at))
                 .query(AvailabilityExceptionRepository::map)
                 .list();
+    }
+
+    /** Active acceptances that must remain valid as their authorities change. */
+    public List<AcceptedExceptionView> active(UUID organizationId, Instant at) {
+        return jdbc.sql(SELECT + """
+                         WHERE organization_id = :organizationId
+                           AND state = 'ACTIVE'
+                           AND effective_from <= :at AND expires_at > :at
+                         ORDER BY id
+                        """)
+                .param("organizationId", organizationId).param("at", Timestamp.from(at))
+                .query(AvailabilityExceptionRepository::map).list();
+    }
+
+    /** Current calculated target to which one acceptance is relationally bound. */
+    public Optional<CurrentRisk> currentRisk(UUID exceptionId) {
+        return jdbc.sql("""
+                        SELECT child.cause_code, child.lane, child.store_id,
+                               child.platform_listing_variant_id,
+                               child.fulfillment_mode_code, card.product_variant_id,
+                               child.profit_at_risk_amount, child.profit_at_risk_currency,
+                               md5(concat_ws('|', child.cause_code, child.lane,
+                                   child.evidence_state, child.confidence_state,
+                                   child.available_units, child.daily_demand_rate,
+                                   child.days_of_cover, child.projected_stockout_at,
+                                   child.conservative_proof::text, child.blocker_codes::text,
+                                   card.policy_version_digest)) AS risk_digest,
+                               accepted.accepted_risk_digest
+                          FROM ops.availability_accepted_exception accepted
+                          JOIN mart.availability_risk_child child
+                            ON child.id = accepted.child_id
+                           AND child.organization_id = accepted.organization_id
+                          JOIN mart.availability_risk_card card
+                            ON card.id = child.card_id
+                           AND card.organization_id = child.organization_id
+                         WHERE accepted.id = :exceptionId
+                        """)
+                .param("exceptionId", exceptionId)
+                .query((rows, number) -> new CurrentRisk(
+                        rows.getString("cause_code"), rows.getString("lane"),
+                        rows.getObject("store_id", UUID.class),
+                        rows.getObject("platform_listing_variant_id", UUID.class),
+                        rows.getString("fulfillment_mode_code"),
+                        rows.getObject("product_variant_id", UUID.class),
+                        rows.getBigDecimal("profit_at_risk_amount"),
+                        rows.getString("profit_at_risk_currency"),
+                        rows.getString("risk_digest"),
+                        rows.getString("accepted_risk_digest")))
+                .optional();
+    }
+
+    /** Whether the approving identity still holds the role under which it decided. */
+    public boolean approvalAuthorityLive(UUID exceptionId, Instant at) {
+        return Boolean.TRUE.equals(jdbc.sql("""
+                        SELECT EXISTS (
+                            SELECT 1
+                              FROM ops.availability_exception_decision decision
+                              JOIN iam.user_account actor
+                                ON actor.id = decision.decided_by_user_id
+                               AND actor.organization_id = decision.organization_id
+                              JOIN iam.user_role_assignment assignment
+                                ON assignment.user_id = actor.id
+                               AND assignment.organization_id = actor.organization_id
+                               AND assignment.role_code = decision.decided_by_role_code
+                             WHERE decision.exception_id = :exceptionId
+                               AND decision.decision = 'APPROVED'
+                               AND actor.status = 'ACTIVE'
+                               AND assignment.status = 'ACTIVE'
+                               AND assignment.effective_from <= :at
+                               AND (assignment.effective_to IS NULL
+                                    OR assignment.effective_to > :at))
+                        """)
+                .param("exceptionId", exceptionId).param("at", Timestamp.from(at))
+                .query(Boolean.class).single());
     }
 
     /** Every acceptance recorded against one case, newest first. */
@@ -376,5 +464,12 @@ public class AvailabilityExceptionRepository {
                               Instant authenticatedAt, boolean stepUpSatisfied, String reason,
                               Instant grantedEffectiveFrom, Instant grantedExpiresAt,
                               Instant decidedAt, String correlationId) {
+    }
+
+    public record CurrentRisk(String causeCode, String severity, UUID storeId,
+                              UUID platformListingVariantId, String fulfillmentModeCode,
+                              UUID productVariantId, BigDecimal profitAtRiskAmount,
+                              String profitAtRiskCurrency, String riskDigest,
+                              String acceptedRiskDigest) {
     }
 }

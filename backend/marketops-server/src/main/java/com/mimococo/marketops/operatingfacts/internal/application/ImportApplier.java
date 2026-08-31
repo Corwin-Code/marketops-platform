@@ -149,7 +149,15 @@ public class ImportApplier {
                 observedAt,
                 integer(values, "quantityOnHand"),
                 values.has("quantityReserved")
-                        ? integer(values, "quantityReserved") : null);
+                        ? integer(values, "quantityReserved") : null,
+                values.has("quantityQualityLocked")
+                        ? integer(values, "quantityQualityLocked") : null,
+                values.has("quantityDamaged") ? integer(values, "quantityDamaged") : null,
+                values.has("quantityWrittenOff")
+                        ? integer(values, "quantityWrittenOff") : null,
+                values.has("sellable") ? text(values, "sellable", null) : null,
+                values.has("returnReentryId")
+                        ? UUID.fromString(text(values, "returnReentryId", null)) : null);
         return 1;
     }
 

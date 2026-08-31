@@ -117,6 +117,29 @@ class AvailabilityCoverageTest {
         assertThat(AvailabilityEvidenceGatherer.largestShare(Map.of(), 10)).isNull();
     }
 
+    @Test
+    @DisplayName("TC-COVER-008 company exposure is the union of disjoint channel intervals")
+    void disjointChannelExposureUsesTheUnion() {
+        List<AvailabilityObservation> firstHalf = List.of(
+                observation(END.minus(Duration.ofDays(7)), 10, "YES"),
+                observation(END.minus(Duration.ofDays(4)), 0, "YES"));
+        List<AvailabilityObservation> secondHalf = List.of(
+                observation(END.minus(Duration.ofDays(4)), 10, "YES"));
+
+        assertThat(AvailabilityEvidenceGatherer.unionObservedDays(
+                List.of(firstHalf, secondHalf), WEEK)).isEqualByComparingTo("7");
+    }
+
+    @Test
+    @DisplayName("TC-COVER-009 overlapping channels are not double-counted as exposure")
+    void overlappingChannelExposureIsCountedOnce() {
+        List<AvailabilityObservation> full = List.of(
+                observation(END.minus(Duration.ofDays(7)), 10, "YES"));
+
+        assertThat(AvailabilityEvidenceGatherer.unionObservedDays(
+                List.of(full, full), WEEK)).isEqualByComparingTo("7");
+    }
+
     private static AvailabilityObservation observation(Instant at, Integer units, String sellable) {
         return new AvailabilityObservation(at, units, sellable);
     }

@@ -46,6 +46,9 @@ public record CompanyObservation(
             int quantityOnHand,
             Integer quantityReserved,
             Integer quantityQualityLocked,
+            Integer quantityDamaged,
+            Integer quantityWrittenOff,
+            Sellability sellability,
             Instant observedAt,
             UUID provenanceId) {
 
@@ -54,6 +57,19 @@ public record CompanyObservation(
             if (quantityOnHand < 0) {
                 throw new IllegalArgumentException("quantityOnHand cannot be negative");
             }
+            Objects.requireNonNull(sellability, "sellability");
+            if (negative(quantityReserved) || negative(quantityQualityLocked)
+                    || negative(quantityDamaged) || negative(quantityWrittenOff)) {
+                throw new IllegalArgumentException("warehouse stock-state quantities cannot be negative");
+            }
+        }
+
+        /** Compatibility constructor for fully classified pre-quality fixtures. */
+        public WarehouseHolding(UUID warehouseId, int quantityOnHand, Integer quantityReserved,
+                                Integer quantityQualityLocked, Instant observedAt,
+                                UUID provenanceId) {
+            this(warehouseId, quantityOnHand, quantityReserved, quantityQualityLocked,
+                    0, 0, Sellability.SELLABLE, observedAt, provenanceId);
         }
 
         /**
@@ -67,13 +83,29 @@ public record CompanyObservation(
         public int available() {
             int reserved = quantityReserved == null ? 0 : quantityReserved;
             int locked = quantityQualityLocked == null ? 0 : quantityQualityLocked;
-            return Math.max(0, quantityOnHand - reserved - locked);
+            int damaged = quantityDamaged == null ? 0 : quantityDamaged;
+            int writtenOff = quantityWrittenOff == null ? 0 : quantityWrittenOff;
+            if (sellability != Sellability.SELLABLE) {
+                return 0;
+            }
+            return Math.max(0, quantityOnHand - reserved - locked - damaged - writtenOff);
+        }
+
+        /** Whether every material current-stock state was authoritatively supplied. */
+        public boolean stateComplete() {
+            return quantityReserved != null && quantityQualityLocked != null
+                    && quantityDamaged != null && quantityWrittenOff != null
+                    && sellability != Sellability.UNKNOWN;
         }
 
         /** Whether the holding is recent enough to be current supply. */
         public boolean freshAt(Instant asOf, long freshnessMaxMinutes) {
             return observedAt != null
                     && !observedAt.plusSeconds(freshnessMaxMinutes * 60L).isBefore(asOf);
+        }
+
+        private static boolean negative(Integer value) {
+            return value != null && value < 0;
         }
     }
 

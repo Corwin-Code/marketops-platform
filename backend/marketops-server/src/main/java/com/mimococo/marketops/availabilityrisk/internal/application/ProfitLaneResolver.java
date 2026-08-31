@@ -57,27 +57,31 @@ public class ProfitLaneResolver {
         Optional<MetricValueView> settled = metrics.current(
                 MetricCode.SETTLED_CONTRIBUTION_PROFIT, SubjectKind.PLATFORM_LISTING_VARIANT,
                 platformListingVariantId, MetricWindow.D30);
-        Optional<ProfitAssessment> fromSettled = assess(settled, asOf,
-                ProfitLane.CONFIRMED_ELIGIBLE, "fresh complete positive settled contribution profit");
-        if (fromSettled.isPresent()) {
-            return fromSettled.get();
+        AuthorityResult settledResult = assess(settled, asOf,
+                ProfitLane.CONFIRMED_ELIGIBLE,
+                "fresh complete positive settled contribution profit");
+        if (settledResult.decisive()) {
+            return settledResult.assessment();
         }
 
+        // Operational evidence is a fallback only when the settled authority
+        // genuinely has no applicable value. A current settled loss is a
+        // business answer, not an invitation to ask a weaker authority.
         Optional<MetricValueView> operational = metrics.current(
                 MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT, SubjectKind.PLATFORM_LISTING_VARIANT,
                 platformListingVariantId, MetricWindow.D30);
-        Optional<ProfitAssessment> fromOperational = assess(operational, asOf,
+        AuthorityResult operationalResult = assess(operational, asOf,
                 ProfitLane.OPERATIONAL_ELIGIBLE,
                 "settled profit unavailable; fresh complete positive operational profit");
-        if (fromOperational.isPresent()) {
-            return fromOperational.get();
+        if (operationalResult.decisive()) {
+            return operationalResult.assessment();
         }
 
         // Neither authority produced an eligible answer. Say which of the two
         // failure shapes it was, because they route to different people: a
         // stale or conflicted figure is a data repair, a confidently negative
         // one is a commercial decision.
-        MetricValueView candidate = settled.or(() -> operational).orElse(null);
+        MetricValueView candidate = operational.orElse(null);
         if (candidate == null) {
             return ProfitAssessment.unknown("no profit authority published a value");
         }
@@ -107,28 +111,44 @@ public class ProfitLaneResolver {
      * It is still ranked — hiding a real risk because its profit is estimated
      * would be worse — but it is visibly marked as an estimate.
      */
-    private Optional<ProfitAssessment> assess(Optional<MetricValueView> value, Instant asOf,
-                                              ProfitLane lane, String reason) {
+    private AuthorityResult assess(Optional<MetricValueView> value, Instant asOf,
+                                   ProfitLane lane, String reason) {
         if (value.isEmpty()) {
-            return Optional.empty();
+            return AuthorityResult.unavailable();
         }
         MetricValueView metric = value.get();
         if (metric.valueState() != ValueState.AVAILABLE || metric.numericValue() == null) {
-            return Optional.empty();
+            return AuthorityResult.unavailable();
         }
         if (!fresh(metric, asOf) || blocked(metric.confidenceState())) {
-            return Optional.empty();
+            return AuthorityResult.decisive(new ProfitAssessment(
+                    ProfitLane.PROFIT_DATA_BLOCKED, null, null, metric.metricValueId(),
+                    "profit evidence is stale, incomplete or conflicted"));
         }
         if (metric.numericValue().signum() <= 0) {
-            return Optional.empty();
+            return AuthorityResult.decisive(new ProfitAssessment(ProfitLane.NOT_PROFITABLE,
+                    metric.numericValue(), metric.currencyCode(), metric.metricValueId(),
+                    "fresh complete profit is zero or negative"));
         }
         if (metric.estimated() || metric.confidenceState() == ConfidenceState.ESTIMATED_EXPLAINED) {
-            return Optional.of(new ProfitAssessment(ProfitLane.PROVISIONAL, metric.numericValue(),
+            return AuthorityResult.decisive(new ProfitAssessment(
+                    ProfitLane.PROVISIONAL, metric.numericValue(),
                     metric.currencyCode(), metric.metricValueId(),
                     "positive only through an explicit estimate"));
         }
-        return Optional.of(new ProfitAssessment(lane, metric.numericValue(),
+        return AuthorityResult.decisive(new ProfitAssessment(lane, metric.numericValue(),
                 metric.currencyCode(), metric.metricValueId(), reason));
+    }
+
+    /** Typed authority outcome: unavailable may fall through; every other answer is final. */
+    private record AuthorityResult(boolean decisive, ProfitAssessment assessment) {
+        static AuthorityResult unavailable() {
+            return new AuthorityResult(false, null);
+        }
+
+        static AuthorityResult decisive(ProfitAssessment assessment) {
+            return new AuthorityResult(true, assessment);
+        }
     }
 
     private boolean fresh(MetricValueView metric, Instant asOf) {

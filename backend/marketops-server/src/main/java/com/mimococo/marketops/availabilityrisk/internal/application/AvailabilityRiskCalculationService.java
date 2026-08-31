@@ -15,6 +15,9 @@ import com.mimococo.marketops.availabilityrisk.internal.domain.DemandWindowEvide
 import com.mimococo.marketops.availabilityrisk.internal.domain.InboundConsignment;
 import com.mimococo.marketops.availabilityrisk.internal.domain.LeadTimeResolution;
 import com.mimococo.marketops.availabilityrisk.internal.domain.PriorityPolicy;
+import com.mimococo.marketops.availabilityrisk.internal.domain.PriorityPolicyVersion;
+import com.mimococo.marketops.availabilityrisk.internal.domain.ReturnQualityPolicyVersion;
+import com.mimococo.marketops.availabilityrisk.internal.domain.ReturnQualityAssessment;
 import com.mimococo.marketops.availabilityrisk.internal.domain.ProfitAssessment;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityPolicyRepository;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityProjectionRepository;
@@ -79,14 +82,24 @@ public class AvailabilityRiskCalculationService {
         LeadTimeResolution leadTime = policies.resolveLeadTime(
                 organizationId, productVariantId, null, null, null, asOf);
 
-        if (demandPolicy.isEmpty()) {
-            return blockedByMissingDemandPolicy(organizationId, productVariantId, asOf, leadTime);
-        }
-        DemandPolicySettings demandSettings = demandPolicy.get();
-        long freshnessMinutes = demandSettings.stockFreshnessMax().toMinutes();
+        DemandPolicySettings demandSettings = demandPolicy.orElse(null);
+        // Demand selection and stock freshness are independent policy effects.
+        // A cancelled demand selector must not erase the approved freshness
+        // boundary that applied to an exact channel observation in that same
+        // effective interval. With no declared boundary at all, zero minutes
+        // remains fail-closed rather than inventing a TTL.
+        long freshnessMinutes = demandSettings == null
+                ? policies.resolveStockFreshnessMax(organizationId, asOf)
+                        .map(java.time.Duration::toMinutes).orElse(0L)
+                : demandSettings.stockFreshnessMax().toMinutes();
 
+        PriorityPolicyVersion priority = policies.resolvePriorityPolicy(organizationId, asOf)
+                .orElse(null);
+        ReturnQualityPolicyVersion returnQuality = policies
+                .resolveReturnQualityPolicy(organizationId, asOf).orElse(null);
         AvailabilityPolicySet policySet = new AvailabilityPolicySet(leadTime, demandSettings,
-                policies.resolveActivationPolicy(organizationId, asOf).orElse(null));
+                policies.resolveActivationPolicy(organizationId, asOf).orElse(null), priority,
+                returnQuality);
 
         List<AvailabilityEvidenceGatherer.ChannelSubject> subjects =
                 evidence.channelSubjects(productVariantId, asOf);
@@ -94,28 +107,42 @@ public class AvailabilityRiskCalculationService {
 
         for (AvailabilityEvidenceGatherer.ChannelSubject subject : subjects) {
             UUID listingVariantId = subject.observation().platformListingVariantId();
+            long modesForListing = subjects.stream()
+                    .filter(candidate -> candidate.observation().platformListingVariantId()
+                            .equals(listingVariantId))
+                    .count();
+            boolean modeAttributable = modesForListing == 1
+                    && !"UNKNOWN".equals(subject.observation().fulfillmentModeCode());
             List<DemandWindowEvidence> windows =
-                    evidence.channelDemandWindows(listingVariantId, asOf);
-            DemandDecision demand = DemandPolicyEngine.decide(windows, demandSettings,
-                    carriedForward(ChildKind.CHANNEL, organizationId, productVariantId,
-                            listingVariantId, subject.observation().fulfillmentModeCode()),
-                    asOf);
+                    evidence.channelDemandWindows(listingVariantId,
+                            subject.observation().fulfillmentModeCode(), modeAttributable, asOf);
+            DemandDecision demand = demandSettings == null
+                    ? missingDemandPolicy()
+                    : DemandPolicyEngine.decide(windows, demandSettings,
+                            carriedForward(ChildKind.CHANNEL, organizationId, productVariantId,
+                                    listingVariantId,
+                                    subject.observation().fulfillmentModeCode()), asOf);
             ProfitAssessment assessment = profit.resolve(listingVariantId, asOf);
             ChildRisk risk = ChannelRiskCalculator.calculate(subject.observation(), demand,
                     leadTime, assessment, freshnessMinutes, asOf);
+            ReturnQualityAssessment quality = evidence.returnQuality(
+                    listingVariantId, returnQuality, asOf);
+            if (quality.state() != ReturnQualityAssessment.State.CLEAR) {
+                risk = risk.qualityReview(quality.blockerCode(),
+                        quality.state() == ReturnQualityAssessment.State.POLICY_BLOCKED);
+            }
+            risk = priority == null ? risk.withBlocker("PRIORITY_POLICY_UNRESOLVED") : risk;
             children.add(new VariantRisk.ScoredChild(risk, subject,
-                    PriorityPolicy.rank(risk, DEFAULT_LIFECYCLE_WEIGHT), windows));
+                    ranking(risk, priority), windows));
         }
 
-        List<UUID> listingVariantIds = subjects.stream()
-                .map(subject -> subject.observation().platformListingVariantId())
-                .distinct()
-                .toList();
         List<DemandWindowEvidence> companyWindows =
-                evidence.companyDemandWindows(listingVariantIds, asOf);
-        DemandDecision companyDemand = DemandPolicyEngine.decide(companyWindows, demandSettings,
-                carriedForward(ChildKind.COMPANY, organizationId, productVariantId, null, null),
-                asOf);
+                evidence.companyDemandWindows(subjects, asOf);
+        DemandDecision companyDemand = demandSettings == null
+                ? missingDemandPolicy()
+                : DemandPolicyEngine.decide(companyWindows, demandSettings,
+                        carriedForward(ChildKind.COMPANY, organizationId, productVariantId,
+                                null, null), asOf);
         List<InboundConsignment> consignments =
                 inbound.currentFor(organizationId, productVariantId);
         CompanyObservation companyObservation = evidence.companyObservation(
@@ -126,8 +153,10 @@ public class AvailabilityRiskCalculationService {
         ProfitAssessment companyProfit = strongestProfit(children);
         ChildRisk companyRisk = CompanyRiskCalculator.calculate(companyObservation, companyDemand,
                 leadTime, companyProfit, freshnessMinutes, asOf);
+        companyRisk = priority == null
+                ? companyRisk.withBlocker("PRIORITY_POLICY_UNRESOLVED") : companyRisk;
         children.add(new VariantRisk.ScoredChild(companyRisk, null,
-                PriorityPolicy.rank(companyRisk, DEFAULT_LIFECYCLE_WEIGHT), companyWindows));
+                ranking(companyRisk, priority), companyWindows));
 
         return new VariantRisk(organizationId, productVariantId, asOf, policySet,
                 List.copyOf(children));
@@ -140,30 +169,18 @@ public class AvailabilityRiskCalculationService {
      * windows cannot be judged, and reporting per-channel lanes derived from an
      * unversioned rule is exactly what the Contract forbids.
      */
-    private VariantRisk blockedByMissingDemandPolicy(UUID organizationId, UUID productVariantId,
-                                                     Instant asOf, LeadTimeResolution leadTime) {
-        DemandPolicySettings placeholder = new DemandPolicySettings(
-                new UUID(0, 0), 0, 1, BigDecimal.valueOf(2), BigDecimal.valueOf(0.5),
-                BigDecimal.ONE, BigDecimal.ONE, Duration.ZERO, Duration.ofMinutes(1));
-        DemandDecision blocked = new DemandDecision(null, null,
+    private static DemandDecision missingDemandPolicy() {
+        return new DemandDecision(null, null,
                 "no active demand-observation policy version is in force",
                 com.mimococo.marketops.availabilityrisk.RiskEvidenceState.POLICY_BLOCKED,
                 com.mimococo.marketops.availabilityrisk.RiskConfidence.UNUSABLE,
                 List.of(), null, null);
-        ChildRisk risk = new ChildRisk(ChildKind.COMPANY,
-                com.mimococo.marketops.availabilityrisk.AvailabilityLane.REVIEW,
-                com.mimococo.marketops.availabilityrisk.RiskEvidenceState.POLICY_BLOCKED,
-                com.mimococo.marketops.availabilityrisk.RiskConfidence.UNUSABLE,
-                com.mimococo.marketops.availabilityrisk.RiskCause.DEMAND_POLICY_MISSING,
-                com.mimococo.marketops.availabilityrisk.internal.domain.ProvenSupply.none(),
-                blocked, leadTime, ProfitAssessment.unknown("not evaluated without a demand policy"),
-                null, null,
-                com.mimococo.marketops.availabilityrisk.internal.domain.ConservativeProof.none(),
-                List.of("DEMAND_POLICY_UNRESOLVED"));
-        return new VariantRisk(organizationId, productVariantId, asOf,
-                new AvailabilityPolicySet(leadTime, placeholder, null),
-                List.of(new VariantRisk.ScoredChild(risk, null,
-                        PriorityPolicy.rank(risk, DEFAULT_LIFECYCLE_WEIGHT), List.of())));
+    }
+
+    private static PriorityPolicy.Ranking ranking(ChildRisk risk,
+                                                  PriorityPolicyVersion priority) {
+        return priority == null ? PriorityPolicy.unranked(risk)
+                : PriorityPolicy.rank(risk, DEFAULT_LIFECYCLE_WEIGHT, priority);
     }
 
     /**

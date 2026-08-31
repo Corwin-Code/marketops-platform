@@ -52,19 +52,23 @@ class AvailabilityQueueConsoleController {
                                      @RequestParam(required = false) String lane,
                                      @RequestParam(defaultValue = "50") int limit,
                                      @RequestParam(defaultValue = "0") int offset) {
-        authorization.require(actor, ActionScopeCode.AVAILABILITY_VIEW,
-                ResourceScope.organization(actor.organizationId()));
         List<UUID> stores =
                 authorization.permittedStoreIds(actor, ActionScopeCode.AVAILABILITY_VIEW);
-        return risks.queue(actor.organizationId(), stores, lane, limit, offset);
+        List<UUID> products = authorization.permittedProductVariantIds(
+                actor, ActionScopeCode.AVAILABILITY_VIEW);
+        return risks.queue(actor.organizationId(), stores, products, lane, limit, offset);
     }
 
     /** One grouped card with every child, factor and window behind it. */
     @GetMapping("/cards/{productVariantId}")
     AvailabilityCardView card(AuthenticatedActor actor, @PathVariable UUID productVariantId) {
         authorization.require(actor, ActionScopeCode.AVAILABILITY_VIEW,
-                ResourceScope.organization(actor.organizationId()));
-        return risks.card(actor.organizationId(), productVariantId)
+                ResourceScope.productVariant(productVariantId));
+        List<UUID> stores = authorization.permittedStoreIds(
+                actor, ActionScopeCode.AVAILABILITY_VIEW);
+        List<UUID> products = authorization.permittedProductVariantIds(
+                actor, ActionScopeCode.AVAILABILITY_VIEW);
+        return risks.card(actor.organizationId(), productVariantId, stores, products)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
     }
 }

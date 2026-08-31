@@ -197,8 +197,10 @@ public final class DemandPolicyEngine {
                                            DemandPolicySettings settings,
                                            CarriedForwardDemand lastEligible,
                                            Instant now) {
+        boolean allCensored = verdicts.values().stream()
+                .allMatch(verdict -> verdict == WindowEligibility.CENSORED);
         boolean censoredSomewhere = verdicts.containsValue(WindowEligibility.CENSORED);
-        if (censoredSomewhere && lastEligible != null) {
+        if (allCensored && lastEligible != null) {
             Instant expiry = lastEligible.observedAt().plus(settings.carryForwardMax());
             if (now.isBefore(expiry)) {
                 return new DemandDecision(lastEligible.rate(), lastEligible.window(),
@@ -212,8 +214,10 @@ public final class DemandPolicyEngine {
                     List.copyOf(evidence), lastEligible.observedAt(), expiry);
         }
         String reason;
-        if (censoredSomewhere) {
+        if (allCensored) {
             reason = "every recent window is materially censored and nothing eligible was ever observed";
+        } else if (censoredSomewhere) {
+            reason = "censoring is mixed with another ineligible state; carry-forward is forbidden";
         } else if (verdicts.containsValue(WindowEligibility.OUTLIER_REVIEW)) {
             reason = "one day dominates every window; an unexplained outlier needs review";
         } else if (verdicts.containsValue(WindowEligibility.LOW_SAMPLE)) {

@@ -7,6 +7,8 @@ import com.mimococo.marketops.availabilityrisk.internal.domain.InboundConsignmen
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandWindowEvidence;
 import com.mimococo.marketops.availabilityrisk.internal.domain.Sellability;
 import com.mimococo.marketops.availabilityrisk.internal.domain.SupplyDistinctness;
+import com.mimococo.marketops.availabilityrisk.internal.domain.ReturnQualityAssessment;
+import com.mimococo.marketops.availabilityrisk.internal.domain.ReturnQualityPolicyVersion;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityPolicyRepository;
 import com.mimococo.marketops.operatingfacts.AvailabilityObservation;
 import com.mimococo.marketops.operatingfacts.DailySaleTotal;
@@ -17,6 +19,7 @@ import com.mimococo.marketops.operatingfacts.SalesTotals;
 import com.mimococo.marketops.operatingfacts.SellabilitySnapshot;
 import com.mimococo.marketops.operatingfacts.StockSnapshot;
 import com.mimococo.marketops.operatingfacts.WarehouseStockSnapshot;
+import com.mimococo.marketops.operatingfacts.ReturnTotals;
 import com.mimococo.marketops.productlisting.ListingIdentityDirectory;
 import com.mimococo.marketops.productlisting.ListingVariantContext;
 import java.math.BigDecimal;
@@ -124,7 +127,9 @@ public class AvailabilityEvidenceGatherer {
         for (WarehouseStockSnapshot snapshot
                 : facts.internalStockByWarehouse(productVariantId, asOf)) {
             warehouses.add(new CompanyObservation.WarehouseHolding(snapshot.warehouseId(),
-                    snapshot.quantityOnHand(), snapshot.quantityReserved(), null,
+                    snapshot.quantityOnHand(), snapshot.quantityReserved(),
+                    snapshot.quantityQualityLocked(), snapshot.quantityDamaged(),
+                    snapshot.quantityWrittenOff(), warehouseSellability(snapshot.sellable()),
                     snapshot.observedAt(), snapshot.provenanceId()));
         }
 
@@ -156,17 +161,63 @@ public class AvailabilityEvidenceGatherer {
      * derived from the merged stock and sellability timeline rather than
      * assumed from the window's length.
      */
-    public List<DemandWindowEvidence> channelDemandWindows(UUID listingVariantId, Instant asOf) {
+    public List<DemandWindowEvidence> channelDemandWindows(UUID listingVariantId,
+                                                           String fulfillmentModeCode,
+                                                           boolean modeAttributable,
+                                                           Instant asOf) {
         List<DemandWindowEvidence> evidence = new ArrayList<>();
         for (DemandWindow window : DemandWindow.values()) {
             FactWindow factWindow = FactWindow.endingAt(asOf, Duration.ofDays(window.days()));
+            if (!modeAttributable) {
+                evidence.add(new DemandWindowEvidence(window, factWindow.periodStart(),
+                        factWindow.periodEnd(), null, BigDecimal.ZERO,
+                        DemandWindowEvidence.CensoringReason.SOURCE_STALE, null));
+                continue;
+            }
             SalesTotals sales = facts.sales(listingVariantId, SaleStage.COMPLETED, null, factWindow);
             List<AvailabilityObservation> timeline =
-                    facts.availabilityObservations(listingVariantId, factWindow);
+                    facts.availabilityObservations(listingVariantId, fulfillmentModeCode,
+                            factWindow);
             List<DailySaleTotal> daily = facts.dailyCompletedUnits(listingVariantId, factWindow);
             evidence.add(build(window, factWindow, sales, timeline, daily));
         }
         return List.copyOf(evidence);
+    }
+
+    /** Retained/return/QC guardrail for one exact listing. */
+    public ReturnQualityAssessment returnQuality(UUID listingVariantId,
+                                                 ReturnQualityPolicyVersion policy,
+                                                 Instant asOf) {
+        if (policy == null) {
+            return ReturnQualityAssessment.blocked("RETURN_QUALITY_POLICY_UNRESOLVED", true);
+        }
+        FactWindow window = FactWindow.endingAt(asOf, Duration.ofDays(30));
+        SalesTotals completed = facts.sales(listingVariantId, SaleStage.COMPLETED, null, window);
+        SalesTotals retained = facts.sales(listingVariantId, SaleStage.RETAINED, 30, window);
+        ReturnTotals returns = facts.returns(listingVariantId, window);
+        if (!completed.available() || !retained.available() || !returns.available()) {
+            return ReturnQualityAssessment.blocked("RETURN_QUALITY_EVIDENCE_UNRESOLVED", false);
+        }
+        if (completed.units() <= 0) {
+            return ReturnQualityAssessment.clear();
+        }
+        BigDecimal completedUnits = BigDecimal.valueOf(completed.units());
+        BigDecimal returnRatio = BigDecimal.valueOf(returns.units())
+                .divide(completedUnits, RATIO);
+        BigDecimal retentionRatio = BigDecimal.valueOf(retained.units())
+                .divide(completedUnits, RATIO);
+        long defects = returns.unitsByReason().getOrDefault("QUALITY", 0L)
+                + returns.unitsByReason().getOrDefault("DAMAGED_IN_TRANSIT", 0L)
+                + returns.unitsByReason().getOrDefault("NOT_AS_DESCRIBED", 0L);
+        BigDecimal defectRatio = BigDecimal.valueOf(defects).divide(completedUnits, RATIO);
+        if (defectRatio.compareTo(policy.maximumDefectReturnRatio()) > 0) {
+            return ReturnQualityAssessment.review("SUPPLIER_OR_PRODUCT_DEFECT_RATE_HIGH");
+        }
+        if (returnRatio.compareTo(policy.maximumReturnRatio()) > 0
+                || retentionRatio.compareTo(policy.minimumRetentionRatio()) < 0) {
+            return ReturnQualityAssessment.review("RETURN_OR_RETENTION_GUARDRAIL_BREACHED");
+        }
+        return ReturnQualityAssessment.clear();
     }
 
     /**
@@ -176,14 +227,16 @@ public class AvailabilityEvidenceGatherer {
      * channel: the company can sell a unit through whichever listing is
      * available, so the best-covered channel is the honest denominator.
      */
-    public List<DemandWindowEvidence> companyDemandWindows(List<UUID> listingVariantIds,
+    public List<DemandWindowEvidence> companyDemandWindows(List<ChannelSubject> channels,
                                                            Instant asOf) {
+        List<UUID> listingVariantIds = channels.stream()
+                .map(channel -> channel.observation().platformListingVariantId())
+                .distinct().toList();
         List<DemandWindowEvidence> evidence = new ArrayList<>();
         for (DemandWindow window : DemandWindow.values()) {
             FactWindow factWindow = FactWindow.endingAt(asOf, Duration.ofDays(window.days()));
             Integer units = null;
-            BigDecimal bestObservedDays = BigDecimal.ZERO;
-            List<AvailabilityObservation> bestTimeline = List.of();
+            List<List<AvailabilityObservation>> timelines = new ArrayList<>();
             Map<java.time.LocalDate, Long> byDay = new HashMap<>();
 
             for (UUID listingVariantId : listingVariantIds) {
@@ -192,25 +245,26 @@ public class AvailabilityEvidenceGatherer {
                 if (sales.evidence().present()) {
                     units = (units == null ? 0 : units) + (int) sales.units();
                 }
-                List<AvailabilityObservation> timeline =
-                        facts.availabilityObservations(listingVariantId, factWindow);
-                BigDecimal observed = observedDays(timeline, factWindow);
-                if (observed.compareTo(bestObservedDays) > 0 || bestTimeline.isEmpty()) {
-                    bestObservedDays = observed.max(bestObservedDays);
-                    bestTimeline = timeline;
-                }
                 for (DailySaleTotal day : facts.dailyCompletedUnits(listingVariantId, factWindow)) {
                     byDay.merge(day.day(), day.completedUnits(), Long::sum);
                 }
             }
-            // The reason is derived once, from the best coverage any channel
-            // achieved. Deriving it inside the loop left a window that nothing
-            // could be observed in looking fully observed.
+            for (ChannelSubject channel : channels) {
+                ChannelObservation observation = channel.observation();
+                if (!"UNKNOWN".equals(observation.fulfillmentModeCode())) {
+                    timelines.add(facts.availabilityObservations(
+                            observation.platformListingVariantId(),
+                            observation.fulfillmentModeCode(), factWindow));
+                }
+            }
+            BigDecimal unionObservedDays = unionObservedDays(timelines, factWindow);
+            List<AvailabilityObservation> allObservations = timelines.stream()
+                    .flatMap(List::stream).toList();
             DemandWindowEvidence.CensoringReason reason = listingVariantIds.isEmpty()
                     ? DemandWindowEvidence.CensoringReason.SOURCE_STALE
-                    : censoringReason(bestTimeline, bestObservedDays, factWindow);
+                    : censoringReason(allObservations, unionObservedDays, factWindow);
             evidence.add(new DemandWindowEvidence(window, factWindow.periodStart(),
-                    factWindow.periodEnd(), units, bestObservedDays, reason,
+                    factWindow.periodEnd(), units, unionObservedDays, reason,
                     largestShare(byDay, units)));
         }
         return List.copyOf(evidence);
@@ -262,6 +316,54 @@ public class AvailabilityEvidenceGatherer {
         return BigDecimal.valueOf(observableMinutes).divide(MINUTES_PER_DAY, RATIO);
     }
 
+    /** Duration of the union of saleable intervals across every channel/mode. */
+    static BigDecimal unionObservedDays(List<List<AvailabilityObservation>> timelines,
+                                        FactWindow window) {
+        List<TimeInterval> intervals = new ArrayList<>();
+        for (List<AvailabilityObservation> timeline : timelines) {
+            for (int index = 0; index < timeline.size(); index++) {
+                AvailabilityObservation current = timeline.get(index);
+                if (current.observedAt() == null || !current.saleable()) {
+                    continue;
+                }
+                Instant end = index + 1 < timeline.size()
+                        ? timeline.get(index + 1).observedAt() : window.periodEnd();
+                Instant start = current.observedAt().isBefore(window.periodStart())
+                        ? window.periodStart() : current.observedAt();
+                if (end != null && end.isAfter(start)) {
+                    intervals.add(new TimeInterval(start,
+                            end.isAfter(window.periodEnd()) ? window.periodEnd() : end));
+                }
+            }
+        }
+        intervals.sort(java.util.Comparator.comparing(TimeInterval::start)
+                .thenComparing(TimeInterval::end));
+        long minutes = 0;
+        Instant start = null;
+        Instant end = null;
+        for (TimeInterval interval : intervals) {
+            if (start == null) {
+                start = interval.start();
+                end = interval.end();
+            } else if (!interval.start().isAfter(end)) {
+                if (interval.end().isAfter(end)) {
+                    end = interval.end();
+                }
+            } else {
+                minutes += Duration.between(start, end).toMinutes();
+                start = interval.start();
+                end = interval.end();
+            }
+        }
+        if (start != null) {
+            minutes += Duration.between(start, end).toMinutes();
+        }
+        return BigDecimal.valueOf(minutes).divide(MINUTES_PER_DAY, RATIO);
+    }
+
+    private record TimeInterval(Instant start, Instant end) {
+    }
+
     /** Why observation was incomplete, or {@code null} when it was not. */
     static DemandWindowEvidence.CensoringReason censoringReason(
             List<AvailabilityObservation> timeline, BigDecimal observed, FactWindow window) {
@@ -301,6 +403,17 @@ public class AvailabilityEvidenceGatherer {
             return Sellability.UNKNOWN;
         }
         return switch (health.sellable()) {
+            case "YES" -> Sellability.SELLABLE;
+            case "NO" -> Sellability.NOT_SELLABLE;
+            default -> Sellability.UNKNOWN;
+        };
+    }
+
+    private static Sellability warehouseSellability(String sellable) {
+        if (sellable == null) {
+            return Sellability.UNKNOWN;
+        }
+        return switch (sellable) {
             case "YES" -> Sellability.SELLABLE;
             case "NO" -> Sellability.NOT_SELLABLE;
             default -> Sellability.UNKNOWN;

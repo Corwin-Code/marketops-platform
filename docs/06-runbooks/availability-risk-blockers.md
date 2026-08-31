@@ -2,8 +2,8 @@
 
 An availability card can sit in the queue without naming a shortage. That is the
 system saying it cannot answer, and the answer is a repair rather than a
-replenishment. This page covers the five states an operator meets and what each
-one needs.
+replenishment. This page covers the blocked and degraded states an operator
+meets and what each one needs.
 
 The rule underneath all of them: a company answer never becomes safe by
 default. When a material input is missing the card stays visible and stays
@@ -70,6 +70,21 @@ either.
 Resolve it through the cost and finance-input path that owns the missing
 component. The availability queue does not estimate profit to fill the gap.
 
+## Return quality is blocked or under review
+
+The company child carries `RETURN_QUALITY_EVIDENCE_UNRESOLVED` when completed,
+retained, return or reason-coded QC evidence is absent. It carries
+`SUPPLIER_OR_PRODUCT_DEFECT_RATE_HIGH` or
+`RETURN_OR_RETENTION_GUARDRAIL_BREACHED` when fresh evidence breaches the
+effective return-quality policy. Neither state can be cleared by treating goods
+in transport or awaiting QC as available supply.
+
+Repair the missing evidence or investigate the supplier/product defect. A
+returned unit becomes supply only after the append-only return ledger reaches
+`REENTERED_AVAILABLE` with a `RESELLABLE` disposition and a later warehouse
+snapshot links that exact transition. Rejected or written-off units never
+re-enter availability.
+
 ## A case that is verifying and not closing
 
 Nothing is stuck. A case stays in verification until the cause it was raised for
@@ -100,6 +115,13 @@ and running in this environment, look for a sweep stuck in `RUNNING` (only one
 per organization is allowed, and a process that died holding one blocks the
 next), and close it out before triggering a fresh sweep.
 
+A completed run with `state = FAILED` and `failed_variant_count > 0` is a
+partial reconciliation, not a successful hourly safety net. Read
+`last_product_variant_id` to confirm traversal progress, inspect the logged
+variant identifiers, repair those variants and run reconciliation again. Do not
+close pending requests for failed variants; the worker deliberately repairs
+only successful ones.
+
 `RECALCULATION_BACKLOG_BEYOND_OBLIGATION` — the oldest unfinished recalculation
 has been waiting since its fact was accepted for longer than the response
 obligation allows. Read the depth and the age together: a thousand requests
@@ -129,11 +151,11 @@ incident: the trigger is recoverable and the sweep is what recovers it.
 ## An acceptance that should no longer hold
 
 Expiry is automatic: the sweep ends the acceptance and reopens the same case
-with its journal intact. Everything else is a decision somebody makes — a
-materiality increase, a cause or scope change, an evidence conflict, a lost
-authority, or the same condition being accepted too often. Invalidating for a
-governance failure escalates the case as well as reopening it, because a
-governance failure needs a higher authority than the one that let it happen.
+with its journal intact. The sweep also revalidates every active acceptance
+against current materiality policy, cause, scope, risk-evidence fingerprint and
+approving authority. A mismatch invalidates automatically; governance failures
+escalate the case as well as reopening it, because they need a higher authority
+than the one that let them happen.
 
 No acceptance can be extended by editing it. A new period is a new request,
 sized again by the materiality version in force at the time, and refused if the

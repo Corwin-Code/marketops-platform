@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-08-31
+as_of: 2026-09-01
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -30,16 +30,22 @@ slice_v1_001_amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db
 active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
 active_gate: SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION
 authorization: FULL_SCOPE_IMPLEMENTATION
-slice_v1_002_implementation_state: IMPLEMENTATION_IN_PROGRESS
-slice_v1_002_branch: claude/slice-v1-002-stockout-u48w8w
+slice_v1_002_implementation_state: ROOT_CAUSE_REWORK_VERIFIED_LOCAL
+slice_v1_002_branch: fix/SLICE-V1-002-root-cause-rework-r1
+slice_v1_002_reviewed_source_head: c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6
+slice_v1_002_reviewed_source_tree: c94341232b5fa67b5c40a1e6be121a7696e748c4
+slice_v1_002_frozen_findings_sha256: 60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f799879ebcf94
+slice_v1_002_finding_count: 18
+slice_v1_002_engineering_findings_addressed: 18_OF_18_PENDING_INDEPENDENT_CLOSURE_VERIFICATION
 slice_v1_002_controller_verdict: NOT_CLAIMED
 slice_v1_002_owner_formal_closure: NOT_CLAIMED
-slice_v1_002_remote_publication: NOT_CLAIMED
+slice_v1_002_remote_publication: CODEX_DRAFT_PR_TRANSPORT_PENDING
 slice_v1_002_controlled_write_target: NONE_IN_THIS_SLICE
 slice_v1_002_real_provider_calls: NONE
 slice_v1_002_as_built_design: docs/02-architecture/designs/SLICE-V1-002-design.md
 slice_v1_002_acceptance_status: docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md
 slice_v1_002_executable_evidence: docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md
+slice_v1_002_root_cause_rework_evidence: docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md
 slice_v1_002_deferred_release_register: docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json
 accepted_contract_mutation: PROHIBITED_APPEND_ONLY_AMENDMENT_REQUIRED
 execution_envelope: EXECUTION_ENVELOPE_V1
@@ -126,8 +132,8 @@ slice_v1_001_as_built_design: docs/02-architecture/designs/SLICE-V1-001-design.m
 slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
-next_authorized_actor: Claude Designer and Initial Full Implementation Agent
-next_action: SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION
+next_authorized_actor: Codex Rework / Fix / Verification Agent
+next_action: VERIFY_LOCAL_PUBLISH_DRAFT_PR_AND_WAIT_REMOTE_CHECKS
 slice_v1_001_handoff_pending: CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
@@ -400,24 +406,31 @@ Every row remains `OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001`; engineering
 fixtures cannot be promoted to real-provider evidence. `OPEN_QUESTIONS.md`
 continues to govern other external product/configuration questions.
 
-## SLICE-V1-002 implementation state
+## SLICE-V1-002 root-cause rework state
 
-The Slice is under implementation on branch
-`claude/slice-v1-002-stockout-u48w8w` and is not closed. No Controller verdict,
-Owner Formal Closure, remote publication or merge is claimed. Its entry points
-are:
+The exact one-shot Deep Review source was Head
+`c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6`, tree
+`c94341232b5fa67b5c40a1e6be121a7696e748c4`. Its 18-item Frozen Finding Set is
+bound at SHA-256
+`60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f799879ebcf94`.
+The coherent root-cause rework is locally verified on branch
+`fix/SLICE-V1-002-root-cause-rework-r1`; all 18 findings have an implemented
+engineering disposition, pending independent closure verification. No
+Controller verdict, Owner Formal Closure, merge, deployment, provider call or
+production enablement is claimed. Codex Draft-PR transport is the next bounded
+operation. Its entry points are:
 
 ```text
 docs/02-architecture/designs/SLICE-V1-002-design.md
 docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md
 docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md
+docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md
 docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json
 ```
 
 The acceptance status is an honest per-criterion record rather than a closure
-claim: a criterion is verified only where a named, currently passing test
-asserts it. The Slice adds forward migrations V0030 through V0032; V0001–V0029
-remain byte-identical.
+claim: a criterion is verified only where named evidence asserts it. The Slice
+adds forward migrations V0030 through V0034; V0001–V0029 remain byte-identical.
 
 The Contract's non-goals are absent by construction and checked rather than
 asserted. There is no replenishment quantity or order date, no purchase

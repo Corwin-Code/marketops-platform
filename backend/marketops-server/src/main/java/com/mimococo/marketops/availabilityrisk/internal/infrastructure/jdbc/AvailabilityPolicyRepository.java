@@ -4,6 +4,8 @@ import com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicySetti
 import com.mimococo.marketops.availabilityrisk.internal.domain.LeadTimeResolution;
 import com.mimococo.marketops.availabilityrisk.internal.domain.SupplyDistinctness;
 import com.mimococo.marketops.availabilityrisk.internal.domain.WorkActivationPolicy;
+import com.mimococo.marketops.availabilityrisk.internal.domain.PriorityPolicyVersion;
+import com.mimococo.marketops.availabilityrisk.internal.domain.ReturnQualityPolicyVersion;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
@@ -47,7 +49,7 @@ public class AvailabilityPolicyRepository {
                                policy.lead_time_days_max, policy.safety_days
                           FROM core.lead_time_safety_policy AS policy
                          WHERE policy.organization_id = :organizationId
-                           AND policy.status = 'ACTIVE'
+                           AND policy.status IN ('ACTIVE', 'RETIRED')
                            AND policy.effective_from <= :asOf
                            AND (policy.effective_to IS NULL OR policy.effective_to > :asOf)
                            AND (
@@ -93,7 +95,7 @@ public class AvailabilityPolicyRepository {
                                policy.carry_forward_max_days, policy.stock_freshness_max_minutes
                           FROM core.demand_observation_policy AS policy
                          WHERE policy.organization_id = :organizationId
-                           AND policy.status = 'ACTIVE'
+                           AND policy.status IN ('ACTIVE', 'RETIRED')
                            AND policy.effective_from <= :asOf
                            AND (policy.effective_to IS NULL OR policy.effective_to > :asOf)
                          LIMIT 1
@@ -114,6 +116,33 @@ public class AvailabilityPolicyRepository {
     }
 
     /**
+     * The separately usable stock-freshness control declared for this instant.
+     *
+     * <p>A demand version can be cancelled as a demand-selection authority
+     * without retroactively making stock observed during its effective interval
+     * timeless. Reading only this one field preserves the approved freshness
+     * boundary while the demand decision itself remains policy-blocked. The
+     * interval is still mandatory, so an expired version never revives stale
+     * stock and absence never becomes an implementation default.
+     */
+    public Optional<Duration> resolveStockFreshnessMax(UUID organizationId, Instant asOf) {
+        return jdbc.sql("""
+                        SELECT stock_freshness_max_minutes
+                          FROM core.demand_observation_policy
+                         WHERE organization_id = :organizationId
+                           AND effective_from <= :asOf
+                           AND (effective_to IS NULL OR effective_to > :asOf)
+                         ORDER BY effective_from DESC, policy_version DESC
+                         LIMIT 1
+                        """)
+                .param("organizationId", organizationId)
+                .param("asOf", Timestamp.from(asOf))
+                .query((rows, rowNumber) -> Duration.ofMinutes(
+                        rows.getInt("stock_freshness_max_minutes")))
+                .optional();
+    }
+
+    /**
      * The work-activation policy in force, or empty when none is.
      *
      * <p>Empty is not a permissive default. A calculation that finds no version
@@ -130,7 +159,7 @@ public class AvailabilityPolicyRepository {
                                policy.verification_window_minutes
                           FROM core.work_activation_policy AS policy
                          WHERE policy.organization_id = :organizationId
-                           AND policy.status = 'ACTIVE'
+                           AND policy.status IN ('ACTIVE', 'RETIRED')
                            AND policy.effective_from <= :asOf
                            AND (policy.effective_to IS NULL OR policy.effective_to > :asOf)
                          LIMIT 1
@@ -149,6 +178,53 @@ public class AvailabilityPolicyRepository {
                 .optional();
     }
 
+    /** The exact queue-ordering authority in force. Absence blocks commercial ranking. */
+    public Optional<PriorityPolicyVersion> resolvePriorityPolicy(UUID organizationId,
+                                                                 Instant asOf) {
+        return jdbc.sql("""
+                        SELECT id, policy_version, time_weight, profit_weight,
+                               velocity_weight, lifecycle_weight, confidence_weight
+                          FROM core.availability_priority_policy
+                         WHERE organization_id = :organizationId
+                           AND status IN ('ACTIVE', 'RETIRED')
+                           AND effective_from <= :asOf
+                           AND (effective_to IS NULL OR effective_to > :asOf)
+                         ORDER BY effective_from DESC
+                         LIMIT 1
+                        """)
+                .param("organizationId", organizationId)
+                .param("asOf", Timestamp.from(asOf))
+                .query((rows, rowNumber) -> new PriorityPolicyVersion(
+                        rows.getObject("id", UUID.class), rows.getInt("policy_version"),
+                        rows.getBigDecimal("time_weight"), rows.getBigDecimal("profit_weight"),
+                        rows.getBigDecimal("velocity_weight"),
+                        rows.getBigDecimal("lifecycle_weight"),
+                        rows.getBigDecimal("confidence_weight")))
+                .optional();
+    }
+
+    public Optional<ReturnQualityPolicyVersion> resolveReturnQualityPolicy(UUID organizationId,
+                                                                           Instant asOf) {
+        return jdbc.sql("""
+                        SELECT id, policy_version, maximum_return_ratio,
+                               minimum_retention_ratio, maximum_defect_return_ratio
+                          FROM core.return_quality_policy
+                         WHERE organization_id = :organizationId
+                           AND status IN ('ACTIVE', 'RETIRED')
+                           AND effective_from <= :asOf
+                           AND (effective_to IS NULL OR effective_to > :asOf)
+                         ORDER BY effective_from DESC LIMIT 1
+                        """)
+                .param("organizationId", organizationId)
+                .param("asOf", Timestamp.from(asOf))
+                .query((rows, number) -> new ReturnQualityPolicyVersion(
+                        rows.getObject("id", UUID.class), rows.getInt("policy_version"),
+                        rows.getBigDecimal("maximum_return_ratio"),
+                        rows.getBigDecimal("minimum_retention_ratio"),
+                        rows.getBigDecimal("maximum_defect_return_ratio")))
+                .optional();
+    }
+
     /**
      * How each store and mode's platform stock relates to internal stock.
      *
@@ -163,7 +239,7 @@ public class AvailabilityPolicyRepository {
                                declaration.distinctness, declaration.mirrored_warehouse_id
                           FROM core.supply_ownership_declaration AS declaration
                          WHERE declaration.organization_id = :organizationId
-                           AND declaration.status = 'ACTIVE'
+                           AND declaration.status IN ('ACTIVE', 'RETIRED')
                            AND declaration.effective_from <= :asOf
                            AND (declaration.effective_to IS NULL OR declaration.effective_to > :asOf)
                         """)

@@ -307,6 +307,62 @@ class AvailabilityRiskSchemaIT extends PostgresContainerSupport {
         }
     }
 
+    @Test
+    @DisplayName("TC-AVAIL-DB-011 exception case child and actor must belong to one tenant graph")
+    void exceptionRelationshipsCannotBeSpliced() throws SQLException {
+        try (Connection connection = asMigrationRole(CONTAINER);
+             Statement statement = connection.createStatement()) {
+            UUID firstChild = UUID.randomUUID();
+            UUID secondChild = UUID.randomUUID();
+            UUID firstCase = UUID.randomUUID();
+            UUID policyId = insertActivationPolicy(connection);
+            statement.executeUpdate(child(firstChild, "COMPANY", "HIGH", "CONFIRMED", "{}"));
+            statement.executeUpdate(child(secondChild, "COMPANY", "HIGH", "CONFIRMED", "{}"));
+            insertCase(connection, firstCase, firstChild, policyId,
+                    "RELATION|" + UUID.randomUUID(), "OPEN");
+
+            assertThatThrownBy(() -> statement.executeUpdate(exceptionInsert(
+                    UUID.randomUUID(), firstCase, secondChild, OWNER)))
+                    .as("a child from another case cannot be spliced into an exception")
+                    .satisfies(thrown -> assertThat(carriesSqlState(thrown,
+                            FOREIGN_KEY_VIOLATION)).isTrue());
+
+            UUID otherOrganization = UUID.randomUUID();
+            UUID otherActor = UUID.randomUUID();
+            statement.executeUpdate("""
+                    INSERT INTO core.organization (id, code, display_name, status,
+                            created_at, updated_at)
+                    VALUES ('%s', 'other-%s', 'Other', 'ACTIVE', now(), now());
+                    INSERT INTO iam.user_account (id, organization_id, identity_provider_id,
+                            external_subject, display_name, status, credentials_valid_from,
+                            created_at, updated_at)
+                    VALUES ('%s', '%s', '%s', 'other-%s', 'Other actor', 'ACTIVE', now(),
+                            now(), now());
+                    """.formatted(otherOrganization,
+                    otherOrganization.toString().substring(0, 8), otherActor,
+                    otherOrganization, PROVIDER, otherActor));
+            assertThatThrownBy(() -> statement.executeUpdate(exceptionInsert(
+                    UUID.randomUUID(), firstCase, firstChild, otherActor)))
+                    .as("a requester from another organization cannot be attributed")
+                    .satisfies(thrown -> assertThat(carriesSqlState(thrown,
+                            FOREIGN_KEY_VIOLATION)).isTrue());
+        }
+    }
+
+    private String exceptionInsert(UUID id, UUID caseId, UUID childId, UUID requesterId) {
+        return """
+                INSERT INTO ops.availability_accepted_exception (id, organization_id, case_id,
+                        child_id, cause_code, scope_kind, scope_reference, reason_code,
+                        rationale, expected_consequence, evidence_reference,
+                        requested_by_user_id, requested_at, decision_owner_role_code,
+                        required_authority_level, state, created_at, updated_at)
+                VALUES ('%s', '%s', '%s', '%s', 'COMPANY_SUPPLY_SHORT', 'CHILD', '%s',
+                        'SEASONAL_PAUSE', 'bounded pause', 'temporary unmet demand',
+                        'ev://exception', '%s', now(), 'OPS_LEAD', 'OPS_LEAD', 'REQUESTED',
+                        now(), now());
+                """.formatted(id, ORGANIZATION, caseId, childId, childId, requesterId);
+    }
+
     private void insertOrganizationPolicy(Connection connection, UUID id, String from, String to)
             throws SQLException {
         try (Statement statement = connection.createStatement()) {
@@ -316,8 +372,13 @@ class AvailabilityRiskSchemaIT extends PostgresContainerSupport {
                             owner_user_id, reason, evidence_reference, last_reviewed_at,
                             effective_from, effective_to, status, policy_version, created_at)
                     VALUES ('%s', '%s', 'ORGANIZATION', 3, 10, 14, 7, '%s', 'baseline', 'ev://1',
-                            now(), %s, %s, 'ACTIVE', 1, now());
-                    """.formatted(id, ORGANIZATION, OWNER, from, to == null ? "NULL" : to));
+                            now(), %s, %s, 'ACTIVE',
+                            (SELECT coalesce(max(policy_version), 0) + 1
+                               FROM core.lead_time_safety_policy
+                              WHERE organization_id = '%s'
+                                AND scope_key = 'ORGANIZATION|-|-|-|-'), now());
+                    """.formatted(id, ORGANIZATION, OWNER, from, to == null ? "NULL" : to,
+                    ORGANIZATION));
         }
     }
 
@@ -335,8 +396,11 @@ class AvailabilityRiskSchemaIT extends PostgresContainerSupport {
                             reason, evidence_reference, effective_from, status, policy_version,
                             created_at)
                     VALUES ('%s', '%s', 2, 60, 240, 480, 2880, 1440, '%s', 'baseline', 'ev://2',
-                            now(), 'ACTIVE', 1, now());
-                    """.formatted(id, ORGANIZATION, OWNER));
+                            now(), 'ACTIVE',
+                            (SELECT coalesce(max(policy_version), 0) + 1
+                               FROM core.work_activation_policy
+                              WHERE organization_id = '%s'), now());
+                    """.formatted(id, ORGANIZATION, OWNER, ORGANIZATION));
         }
         return id;
     }

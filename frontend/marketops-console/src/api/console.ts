@@ -103,6 +103,62 @@ export interface AvailabilityCard {
   readonly children: readonly AvailabilityChild[];
 }
 
+/** Current append-only state of one governed inbound claim. */
+export interface InboundAttestation {
+  readonly id: string;
+  readonly productVariantId: string;
+  readonly externalReference: string;
+  readonly versionId: string;
+  readonly versionNo: number;
+  readonly quantity: number;
+  readonly expectedArrivalFrom: string;
+  readonly expectedArrivalTo: string;
+  readonly businessStatus: string;
+  readonly evidenceReference: string;
+  readonly lastVerifiedAt: string;
+}
+
+/** Identity returned after an effective-dated policy publication. */
+export interface ManagedAvailabilityPolicy {
+  readonly id: string;
+  readonly kind: string;
+  readonly version: number;
+  readonly scopeReference: string;
+  readonly effectiveFrom: string;
+  readonly effectiveTo: string | null;
+  readonly status: string;
+}
+
+export interface InboundAttestationDraft {
+  readonly productVariantId: string;
+  readonly externalReference: string;
+  readonly quantity: number;
+  readonly expectedArrivalFrom: string;
+  readonly expectedArrivalTo: string;
+  readonly businessStatus: string;
+  readonly evidenceReference: string;
+  readonly sourceTime: string;
+  readonly reason: string;
+}
+
+export interface LeadTimePolicyDraft {
+  readonly scopeKind: string;
+  readonly productVariantId: string | null;
+  readonly supplierCode: string | null;
+  readonly routeCode: string | null;
+  readonly categoryCode: string | null;
+  readonly leadTimeDaysMin: number;
+  readonly leadTimeDaysMax: number;
+  readonly safetyDays: number;
+  readonly reason: string;
+  readonly evidenceReference: string;
+  readonly lastReviewedAt: string;
+  readonly effectiveFrom: string;
+  readonly effectiveTo: string | null;
+  readonly fallbackOfId: string | null;
+  readonly supersedesPolicyId: string | null;
+}
+
 /** One subject on the daily work list. */
 export interface PrioritySubject {
   readonly subjectId: string;
@@ -1281,19 +1337,169 @@ export function recordCaseAction(
   );
 }
 
-/** Record what a fresh cause-specific observation showed. */
-export function observeCaseVerification(
+function parseInboundAttestation(body: unknown): InboundAttestation | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const id = text(body, 'id');
+  const productVariantId = text(body, 'productVariantId');
+  const externalReference = text(body, 'externalReference');
+  const versionId = text(body, 'versionId');
+  const expectedArrivalFrom = text(body, 'expectedArrivalFrom');
+  const expectedArrivalTo = text(body, 'expectedArrivalTo');
+  const businessStatus = text(body, 'businessStatus');
+  const evidenceReference = text(body, 'evidenceReference');
+  const lastVerifiedAt = text(body, 'lastVerifiedAt');
+  if (
+    id === undefined ||
+    productVariantId === undefined ||
+    externalReference === undefined ||
+    versionId === undefined ||
+    expectedArrivalFrom === undefined ||
+    expectedArrivalTo === undefined ||
+    businessStatus === undefined ||
+    evidenceReference === undefined ||
+    lastVerifiedAt === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    id,
+    productVariantId,
+    externalReference,
+    versionId,
+    versionNo: integer(body, 'versionNo'),
+    quantity: integer(body, 'quantity'),
+    expectedArrivalFrom,
+    expectedArrivalTo,
+    businessStatus,
+    evidenceReference,
+    lastVerifiedAt,
+  };
+}
+
+function parseManagedAvailabilityPolicy(body: unknown): ManagedAvailabilityPolicy | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const id = text(body, 'id');
+  const kind = text(body, 'kind');
+  const scopeReference = text(body, 'scopeReference');
+  const effectiveFrom = text(body, 'effectiveFrom');
+  const status = text(body, 'status');
+  if (
+    id === undefined ||
+    kind === undefined ||
+    scopeReference === undefined ||
+    effectiveFrom === undefined ||
+    status === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    id,
+    kind,
+    version: integer(body, 'version'),
+    scopeReference,
+    effectiveFrom,
+    effectiveTo: optionalText(body, 'effectiveTo'),
+    status,
+  };
+}
+
+/** Create the first attributable version of an inbound claim. */
+export function createInboundAttestation(
   context: ConsoleRequest,
-  caseId: string,
-  verificationKind: string,
-  outcome: string,
-  reason: string,
-): Promise<ConsoleOutcome<AvailabilityCase>> {
+  draft: InboundAttestationDraft,
+): Promise<ConsoleOutcome<InboundAttestation>> {
+  return request(context, '/api/v1/console/availability/inbound', parseInboundAttestation, {
+    method: 'POST',
+    body: JSON.stringify(draft),
+  });
+}
+
+export function fetchInboundAttestation(
+  context: ConsoleRequest,
+  attestationId: string,
+): Promise<ConsoleOutcome<InboundAttestation>> {
   return request(
     context,
-    `/api/v1/console/availability/cases/${encodeURIComponent(caseId)}/verification`,
-    parseAvailabilityCase,
-    { method: 'POST', body: JSON.stringify({ verificationKind, outcome, reason }) },
+    `/api/v1/console/availability/inbound/${encodeURIComponent(attestationId)}`,
+    parseInboundAttestation,
+  );
+}
+
+/** Append a corrected inbound version; the external identity is immutable. */
+export function amendInboundAttestation(
+  context: ConsoleRequest,
+  attestationId: string,
+  body: Omit<InboundAttestationDraft, 'productVariantId' | 'externalReference'> & {
+    readonly expectedVersion: number;
+  },
+): Promise<ConsoleOutcome<InboundAttestation>> {
+  return request(
+    context,
+    `/api/v1/console/availability/inbound/${encodeURIComponent(attestationId)}/amend`,
+    parseInboundAttestation,
+    { method: 'POST', body: JSON.stringify(body) },
+  );
+}
+
+export function cancelInboundAttestation(
+  context: ConsoleRequest,
+  attestationId: string,
+  expectedVersion: number,
+  evidenceReference: string,
+  reason: string,
+): Promise<ConsoleOutcome<InboundAttestation>> {
+  return request(
+    context,
+    `/api/v1/console/availability/inbound/${encodeURIComponent(attestationId)}/cancel`,
+    parseInboundAttestation,
+    { method: 'POST', body: JSON.stringify({ expectedVersion, evidenceReference, reason }) },
+  );
+}
+
+export function reverifyInboundAttestation(
+  context: ConsoleRequest,
+  attestationId: string,
+  expectedVersion: number,
+  evidenceReference: string,
+  reason: string,
+): Promise<ConsoleOutcome<InboundAttestation>> {
+  return request(
+    context,
+    `/api/v1/console/availability/inbound/${encodeURIComponent(attestationId)}/reverify`,
+    parseInboundAttestation,
+    { method: 'POST', body: JSON.stringify({ expectedVersion, evidenceReference, reason }) },
+  );
+}
+
+/** Publish or supersede an attributable lead-time/safety authority. */
+export function publishLeadTimePolicy(
+  context: ConsoleRequest,
+  draft: LeadTimePolicyDraft,
+): Promise<ConsoleOutcome<ManagedAvailabilityPolicy>> {
+  return request(
+    context,
+    '/api/v1/console/availability/policies/lead-time',
+    parseManagedAvailabilityPolicy,
+    { method: 'POST', body: JSON.stringify(draft) },
+  );
+}
+
+export function retireAvailabilityPolicy(
+  context: ConsoleRequest,
+  kind: string,
+  policyId: string,
+  reason: string,
+  evidenceReference: string,
+): Promise<ConsoleOutcome<ManagedAvailabilityPolicy>> {
+  return request(
+    context,
+    `/api/v1/console/availability/policies/${encodeURIComponent(kind)}/${encodeURIComponent(policyId)}/retire`,
+    parseManagedAvailabilityPolicy,
+    { method: 'POST', body: JSON.stringify({ reason, evidenceReference }) },
   );
 }
 

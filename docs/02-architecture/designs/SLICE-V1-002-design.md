@@ -11,6 +11,9 @@ owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-002-CONTRACT-ACCEPTAN
 owner_acceptance_evidence_sha256: 4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e
 source_protected_main: 8a7076877374391cf851481c023dfb0e621ab712
 source_protected_main_tree: b87ec67d0242eb86e15698ab95430c37f0fe4328
+root_cause_rework_source_head: c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6
+root_cause_rework_source_tree: c94341232b5fa67b5c40a1e6be121a7696e748c4
+frozen_finding_set_sha256: 60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f799879ebcf94
 design_state: EVOLVING_WITH_IMPLEMENTATION
 controlled_write_target: NONE_IN_THIS_SLICE
 production_write_enabled: false
@@ -108,13 +111,15 @@ recalculation. Inbound never becomes current on-hand.
 
 ### 2.6 Every policy is versioned, effective-dated and fails closed
 
-Lead-time/safety, demand-window selection, work activation, priority and
-exception materiality are all versioned policies resolved by exact scoped
-fallback. Missing, expired, overlapping or conflicting policy never degrades to
-a zero or to an implementation default; it produces `POLICY_BLOCKED`. Effective
-periods are enforced by PostgreSQL `EXCLUDE USING gist` no-overlap constraints
-on the active rows, the same mechanism `core.cost_version` already uses, so two
-overlapping active versions cannot exist even under concurrency.
+Lead-time/safety, demand-window selection, work activation, queue priority,
+return quality, supply ownership and exception materiality are all versioned,
+effective-dated authorities resolved by exact scope. Missing, expired,
+overlapping or conflicting policy never degrades to zero or an implementation
+default; the affected decision blocks. Effective periods are enforced by
+PostgreSQL `EXCLUDE USING gist` no-overlap constraints on active rows, the same
+mechanism `core.cost_version` already uses, so two overlapping active versions
+cannot exist even under concurrency. Publication, retirement and cancellation
+are attributable, audited and enqueue the affected portfolio for recalculation.
 
 ### 2.7 Zero sales is not evidence of zero demand
 
@@ -303,6 +308,25 @@ least as recent. A hundred observations in a minute are one recalculation, and
 the earliest accepted instant wins so a later fact cannot restart a clock that
 is already running.
 
+### 2.17 Frozen Deep Review findings close through one forward authority
+
+V0034 closes the one-shot Frozen Finding Set without changing V0001–V0033. The
+accepted-fact cursor is now the total tuple `(ingestion_time, provenance_id,
+item_key)` and starts with deterministic backfill, so equal timestamps, restart
+and page boundaries cannot drop facts. Full reconciliation is keyset-paged to
+exhaustion, isolates a failing variant, records durable page progress and repairs
+only variants that actually succeeded.
+
+The same migration and service layer add the controls that the first
+implementation could not infer safely: Product as an independent IAM scope;
+live reserved/QC/damaged/written-off/sellable stock state; an append-only return
+transport/QC/re-entry ledger; governed priority and return-quality policy;
+relational tenant binding for cases, children, exceptions and human actors; and
+automatic accepted-exception revalidation when evidence, cause, scope,
+materiality policy or approving authority changes. The console has no endpoint
+that can declare outcome success: only the recalculation-owned observation path
+can do that.
+
 ## 5. Schema, V0030 onward
 
 Applied migrations V0001–V0029 are untouched. New work is forward-only. Every
@@ -335,8 +359,8 @@ Concretely:
 - the accountable-case authority: a published intake port taking plain
   identifiers, cause-idempotent activation whose duplicate is caught by the
   database rather than by a check two threads can both pass, and a state
-  machine with no path from a recorded action to success or from a closed case
-  back to a live one;
+  machine with no path from a recorded action to success and only calculated
+  regression or exception invalidation able to reopen the same closed case;
 - the read surface: a scope-narrowing console API and the Stockout &
   Availability queue screen, where a child's evidence tone is a separate
   attribute from its lane so a provisional critical cannot be styled as a
@@ -362,6 +386,12 @@ Concretely:
   position, the targeted worker with its response evidence, and the hourly sweep
   that repairs what targeting missed, expires lapsed acceptances and counts
   inbound that has stopped being supply;
+- V0034 and the Frozen Finding Set closure: total accepted-fact cursor and
+  startup backfill; unbounded keyset-paged reconciliation with per-variant
+  isolation, durable progress and abandoned-run recovery; Product-scoped reads and mutations; live warehouse QC/damage/
+  write-off/sellability; returned-goods quality guardrail and attributable
+  ledger re-entry; governed inbound and policy lifecycle APIs; policy-derived
+  priority digest; and automatic accepted-exception revalidation;
 - the loop's own health as named operator incidents rather than quiet counters;
 - the accountable-work surface: the case queue, journal, action, verification,
   escalation and exception routes, each behind the grant it actually needs, and
@@ -369,10 +399,12 @@ Concretely:
   means "seen".
 
 The [acceptance status](../../07-phase-evidence/SLICE-V1-002/acceptance-status.md)
-records exactly which criteria remain partial and why. The largest are load
-evidence at the declared acceptance capacity, automatic detection of governance
-drift on an active acceptance, and the product surface outside this Slice's
-availability question.
+records exactly which criteria remain partial and why. The declared 5,000-
+variant profile now has real-PostgreSQL keyset traversal evidence and a complete
+five-page worker capacity test, while automatic governance-drift detection,
+restart recovery and the return-quality/re-entry product path are executable.
+Independent Controller Final Closure remains the only authority for
+`S2-AC-100`.
 
 ## 7. What this design does not do
 

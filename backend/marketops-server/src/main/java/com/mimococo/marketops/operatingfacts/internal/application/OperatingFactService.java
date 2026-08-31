@@ -286,7 +286,9 @@ public class OperatingFactService implements OperatingFactQuery {
                                                                  Instant asOf) {
         return facts.internalStockByWarehouse(productVariantId, asOf).stream()
                 .map(row -> new WarehouseStockSnapshot(row.warehouseId(), row.quantityOnHand(),
-                        row.quantityReserved(), row.observedAt(), row.provenanceId()))
+                        row.quantityReserved(), row.quantityQualityLocked(),
+                        row.quantityDamaged(), row.quantityWrittenOff(), row.sellable(),
+                        row.observedAt(), row.provenanceId()))
                 .toList();
     }
 
@@ -307,9 +309,11 @@ public class OperatingFactService implements OperatingFactQuery {
     @Override
     @Transactional(readOnly = true)
     public List<AvailabilityObservation> availabilityObservations(UUID platformListingVariantId,
+                                                                  String fulfillmentModeCode,
                                                                   FactWindow window) {
         List<FactQueryRepository.AvailabilityRow> rows = facts.availabilityObservations(
-                platformListingVariantId, window.periodStart(), window.periodEnd());
+                platformListingVariantId, fulfillmentModeCode,
+                window.periodStart(), window.periodEnd());
         List<AvailabilityObservation> timeline = new java.util.ArrayList<>(rows.size());
         Integer units = null;
         String sellable = null;
@@ -328,11 +332,12 @@ public class OperatingFactService implements OperatingFactQuery {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AcceptedFactChange> factsAcceptedSince(Instant cursor, int limit) {
-        return facts.factsAcceptedSince(cursor, Math.clamp(limit, 1, 5000)).stream()
+    public List<AcceptedFactChange> factsAcceptedAfter(
+            com.mimococo.marketops.operatingfacts.AcceptedFactCursor cursor, int limit) {
+        return facts.factsAcceptedAfter(cursor, Math.clamp(limit, 1, 5000)).stream()
                 .map(row -> new AcceptedFactChange(row.provenanceId(), row.organizationId(),
                         row.platformListingVariantId(), row.productVariantId(),
-                        row.triggerClass(), row.ingestionTime(), row.sourceTime()))
+                        row.triggerClass(), row.itemKey(), row.ingestionTime(), row.sourceTime()))
                 .toList();
     }
 

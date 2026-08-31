@@ -104,6 +104,14 @@ public record InboundConsignment(
         return !lastVerifiedAt.plusSeconds(freshnessMaxMinutes * 60L).isBefore(asOf);
     }
 
+    /**
+     * The conservative instant at which eligible units may enter a projection.
+     * The latest edge is used because no accepted evidence proves earlier arrival.
+     */
+    public Instant conservativeArrivalAt() {
+        return expectedArrivalTo;
+    }
+
     /** Why this consignment was refused at {@code asOf}, for the evidence trail. */
     public SupplyComponent.ExclusionReason exclusionAt(Instant asOf, Instant horizonEnd,
                                                        long freshnessMaxMinutes) {

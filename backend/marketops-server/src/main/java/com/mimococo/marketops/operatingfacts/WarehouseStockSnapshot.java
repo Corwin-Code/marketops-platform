@@ -20,5 +20,7 @@ import java.util.UUID;
  */
 public record WarehouseStockSnapshot(
         UUID warehouseId, int quantityOnHand, Integer quantityReserved,
+        Integer quantityQualityLocked, Integer quantityDamaged, Integer quantityWrittenOff,
+        String sellable,
         Instant observedAt, UUID provenanceId) {
 }

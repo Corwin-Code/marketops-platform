@@ -181,7 +181,8 @@ public class AvailabilityProjectionWriter {
     private AvailabilityProjectionRepository.DemandWindowRow demandWindowRow(
             VariantRisk risk, UUID childId, UUID calculationId, DemandWindowEvidence window,
             ChildRisk child, UUID id) {
-        boolean sufficient = window.completedUnits() != null
+        boolean sufficient = risk.policies().demand() != null
+                && window.completedUnits() != null
                 && window.completedUnits() >= risk.policies().demand().minimumSampleUnits();
         String eligibility = eligibilityOf(window, risk, sufficient);
         return new AvailabilityProjectionRepository.DemandWindowRow(id, childId,
@@ -196,6 +197,9 @@ public class AvailabilityProjectionWriter {
     private String eligibilityOf(DemandWindowEvidence window, VariantRisk risk,
                                  boolean sufficient) {
         if (!window.observed()) {
+            return DemandPolicyEngine.WindowEligibility.DATA_BLOCKED.name();
+        }
+        if (risk.policies().demand() == null) {
             return DemandPolicyEngine.WindowEligibility.DATA_BLOCKED.name();
         }
         if (window.coverageRatio().compareTo(risk.policies().demand().minimumCoverageRatio()) < 0) {
@@ -232,8 +236,10 @@ public class AvailabilityProjectionWriter {
                 continue;
             }
             written.add(key);
+            boolean inbound = component.source() == SupplyComponent.Source.ELIGIBLE_INBOUND;
             projection.insertEvidence(ids.newId(), childId, risk.organizationId(), calculationId,
-                    evidenceRole(component), component.provenanceId(), null, null, null,
+                    evidenceRole(component), inbound ? null : component.provenanceId(), null,
+                    null, inbound ? component.provenanceId() : null,
                     component.observedAt(),
                     component.counted()
                             ? "counted towards proven supply"
@@ -249,9 +255,24 @@ public class AvailabilityProjectionWriter {
                     "LEAD_TIME_POLICY", null, null, child.leadTime().policyId(), null, null,
                     "lead time and safety resolved at scope " + child.leadTime().scopeKind());
         }
-        projection.insertEvidence(ids.newId(), childId, risk.organizationId(), calculationId,
-                "DEMAND_POLICY", null, null, risk.policies().demand().policyId(), null, null,
-                "demand window selection: " + child.demand().reason());
+        if (risk.policies().demand() != null) {
+            projection.insertEvidence(ids.newId(), childId, risk.organizationId(), calculationId,
+                    "DEMAND_POLICY", null, null, risk.policies().demand().policyId(), null, null,
+                    "demand window selection: " + child.demand().reason());
+        }
+        if (risk.policies().priority() != null) {
+            projection.insertEvidence(ids.newId(), childId, risk.organizationId(), calculationId,
+                    "PRIORITY_POLICY", null, null, risk.policies().priority().policyId(),
+                    null, null, "queue ordering policy version "
+                            + risk.policies().priority().policyVersion());
+        }
+        if (risk.policies().returnQuality() != null) {
+            projection.insertEvidence(ids.newId(), childId, risk.organizationId(), calculationId,
+                    "RETURN_QUALITY_POLICY", null, null,
+                    risk.policies().returnQuality().policyId(), null, null,
+                    "return and retention guardrail version "
+                            + risk.policies().returnQuality().policyVersion());
+        }
     }
 
     private static String evidenceRole(SupplyComponent component) {

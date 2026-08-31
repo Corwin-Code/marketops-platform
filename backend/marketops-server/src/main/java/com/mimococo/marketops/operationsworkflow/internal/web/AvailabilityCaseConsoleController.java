@@ -5,12 +5,12 @@ import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.BusinessRoleCode;
 import com.mimococo.marketops.identityaccess.ResourceScope;
+import com.mimococo.marketops.identityaccess.OwnedResource;
 import com.mimococo.marketops.operationsworkflow.AcceptedExceptionView;
 import com.mimococo.marketops.operationsworkflow.AvailabilityCaseIntake;
 import com.mimococo.marketops.operationsworkflow.AvailabilityCaseView;
 import com.mimococo.marketops.operationsworkflow.AvailabilityExceptionGovernance;
 import com.mimococo.marketops.operationsworkflow.CaseActionKind;
-import com.mimococo.marketops.operationsworkflow.CaseVerificationOutcome;
 import com.mimococo.marketops.operationsworkflow.ExceptionReasonCode;
 import com.mimococo.marketops.operationsworkflow.ExceptionScopeKind;
 import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.AvailabilityCaseRepository;
@@ -76,9 +76,15 @@ class AvailabilityCaseConsoleController {
                                      @RequestParam(required = false) UUID assigneeUserId,
                                      @RequestParam(defaultValue = "true") boolean liveOnly,
                                      @RequestParam(defaultValue = "50") int limit) {
-        authorization.require(actor, ActionScopeCode.AVAILABILITY_VIEW,
-                ResourceScope.organization(actor.organizationId()));
+        List<UUID> stores = authorization.permittedStoreIds(
+                actor, ActionScopeCode.AVAILABILITY_VIEW);
+        List<UUID> products = authorization.permittedProductVariantIds(
+                actor, ActionScopeCode.AVAILABILITY_VIEW);
+        if (stores.isEmpty() && products.isEmpty()) {
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
         return caseReads.queue(actor.organizationId(), liveOnly, assigneeUserId,
+                stores.toArray(UUID[]::new), products.toArray(UUID[]::new),
                 Math.clamp(limit, 1, 200));
     }
 
@@ -117,17 +123,6 @@ class AvailabilityCaseConsoleController {
                 request.actionKind(), request.evidenceReference(), request.reason());
     }
 
-    /** Record what a fresh cause-specific observation showed. */
-    @PostMapping(value = "/cases/{caseId}/verification",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    AvailabilityCaseView observeVerification(AuthenticatedActor actor, @PathVariable UUID caseId,
-                                             @Valid @RequestBody VerificationRequest request) {
-        actionable(actor, caseId);
-        return cases.observeVerification(caseId, request.verificationKind(), request.outcome(),
-                request.observedAt() == null ? clock.instant() : request.observedAt(),
-                request.reason());
-    }
-
     /** Raise a case to a higher authority under policy. */
     @PostMapping(value = "/cases/{caseId}/escalation", produces = MediaType.APPLICATION_JSON_VALUE)
     AvailabilityCaseView escalate(AuthenticatedActor actor, @PathVariable UUID caseId,
@@ -149,8 +144,8 @@ class AvailabilityCaseConsoleController {
     AcceptedExceptionView requestException(AuthenticatedActor actor, @PathVariable UUID caseId,
                                            @Valid @RequestBody ExceptionRequestBody request) {
         AvailabilityCaseView governed = readable(actor, caseId);
-        authorization.require(actor, ActionScopeCode.AVAILABILITY_EXCEPTION_REQUEST,
-                ResourceScope.organization(actor.organizationId()));
+        authorization.requireOwned(actor, ActionScopeCode.AVAILABILITY_EXCEPTION_REQUEST,
+                new OwnedResource(OwnedResource.Kind.AVAILABILITY_CASE, caseId));
         return exceptions.request(new AvailabilityExceptionGovernance.ExceptionRequest(
                 actor.organizationId(), caseId, governed.childId(), governed.causeCode(),
                 governed.severity(), request.scopeKind(), request.scopeReference(),
@@ -174,8 +169,8 @@ class AvailabilityCaseConsoleController {
     AcceptedExceptionView decideException(AuthenticatedActor actor,
                                           @PathVariable UUID exceptionId,
                                           @Valid @RequestBody DecisionRequestBody request) {
-        authorization.require(actor, ActionScopeCode.AVAILABILITY_EXCEPTION_APPROVE,
-                ResourceScope.organization(actor.organizationId()));
+        authorization.requireOwned(actor, ActionScopeCode.AVAILABILITY_EXCEPTION_APPROVE,
+                new OwnedResource(OwnedResource.Kind.AVAILABILITY_EXCEPTION, exceptionId));
         return exceptions.decide(new AvailabilityExceptionGovernance.ExceptionDecision(
                 exceptionId, request.approved(), actor.userId(), decidingRole(actor),
                 request.delegationReference(), actor.authenticatedAt(), true, request.reason(),
@@ -245,15 +240,17 @@ class AvailabilityCaseConsoleController {
     }
 
     private AvailabilityCaseView readable(AuthenticatedActor actor, UUID caseId) {
-        authorization.require(actor, ActionScopeCode.AVAILABILITY_VIEW,
-                ResourceScope.organization(actor.organizationId()));
-        return owned(actor, caseId);
+        AvailabilityCaseView governed = owned(actor, caseId);
+        authorization.requireOwned(actor, ActionScopeCode.AVAILABILITY_VIEW,
+                new OwnedResource(OwnedResource.Kind.AVAILABILITY_CASE, caseId));
+        return governed;
     }
 
     private AvailabilityCaseView actionable(AuthenticatedActor actor, UUID caseId) {
-        authorization.require(actor, ActionScopeCode.AVAILABILITY_TASK_ACT,
-                ResourceScope.organization(actor.organizationId()));
-        return owned(actor, caseId);
+        AvailabilityCaseView governed = owned(actor, caseId);
+        authorization.requireOwned(actor, ActionScopeCode.AVAILABILITY_TASK_ACT,
+                new OwnedResource(OwnedResource.Kind.AVAILABILITY_CASE, caseId));
+        return governed;
     }
 
     /**
@@ -273,12 +270,6 @@ class AvailabilityCaseConsoleController {
     record ActionRequest(@NotNull CaseActionKind actionKind,
                          @NotBlank String evidenceReference,
                          @NotBlank String reason) {
-    }
-
-    record VerificationRequest(@NotBlank String verificationKind,
-                               @NotNull CaseVerificationOutcome outcome,
-                               Instant observedAt,
-                               @NotBlank String reason) {
     }
 
     record ReasonRequest(@NotBlank String reason) {

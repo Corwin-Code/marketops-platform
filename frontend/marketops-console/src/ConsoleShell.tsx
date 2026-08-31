@@ -5,6 +5,7 @@ import { SubjectDiagnosisView } from './diagnosis/SubjectDiagnosisView';
 import { DiagnosticExportPanel } from './diagnosis/DiagnosticExportPanel';
 import { AvailabilityCases } from './availability/AvailabilityCases';
 import { AvailabilityQueue } from './availability/AvailabilityQueue';
+import { AvailabilityAuthorityPanel } from './availability/AvailabilityAuthorityPanel';
 import { PriorityQueue } from './queue/PriorityQueue';
 import { RecommendationReview } from './workflow/RecommendationReview';
 import type { Session } from './session/session';
@@ -84,6 +85,8 @@ export function ConsoleShell({
       {view.name === 'queue' && <AvailabilityQueue context={context} />}
 
       {view.name === 'queue' && <AvailabilityCases context={context} />}
+
+      {view.name === 'queue' && <AvailabilityAuthorityPanel context={context} />}
 
       {view.name === 'queue' && (
         <PriorityQueue

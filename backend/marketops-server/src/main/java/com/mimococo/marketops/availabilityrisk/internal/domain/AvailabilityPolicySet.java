@@ -22,11 +22,12 @@ import java.util.UUID;
 public record AvailabilityPolicySet(
         LeadTimeResolution leadTime,
         DemandPolicySettings demand,
-        WorkActivationPolicy activation) {
+        WorkActivationPolicy activation,
+        PriorityPolicyVersion priority,
+        ReturnQualityPolicyVersion returnQuality) {
 
     public AvailabilityPolicySet {
         Objects.requireNonNull(leadTime, "leadTime");
-        Objects.requireNonNull(demand, "demand");
     }
 
     /** The work-activation version's identity, or {@code null} when none is in force. */
@@ -37,6 +38,14 @@ public record AvailabilityPolicySet(
     /** The work-activation version number, or {@code null} when none is in force. */
     public Integer activationPolicyVersion() {
         return activation == null ? null : activation.policyVersion();
+    }
+
+    public UUID priorityPolicyId() {
+        return priority == null ? null : priority.policyId();
+    }
+
+    public Integer priorityPolicyVersion() {
+        return priority == null ? null : priority.policyVersion();
     }
 
     /**
@@ -52,10 +61,15 @@ public record AvailabilityPolicySet(
         StringBuilder material = new StringBuilder()
                 .append("leadTime=").append(leadTime.policyId()).append(':')
                 .append(leadTime.policyVersion()).append('|')
-                .append("demand=").append(demand.policyId()).append(':')
-                .append(demand.policyVersion()).append('|')
+                .append("demand=").append(demand == null ? null : demand.policyId()).append(':')
+                .append(demand == null ? null : demand.policyVersion()).append('|')
                 .append("activation=").append(activationPolicyId()).append(':')
-                .append(activationPolicyVersion());
+                .append(activationPolicyVersion()).append('|')
+                .append("priority=").append(priorityPolicyId()).append(':')
+                .append(priorityPolicyVersion()).append('|')
+                .append("returnQuality=")
+                .append(returnQuality == null ? null : returnQuality.policyId()).append(':')
+                .append(returnQuality == null ? null : returnQuality.policyVersion());
         try {
             byte[] digest = MessageDigest.getInstance("SHA-256")
                     .digest(material.toString().getBytes(StandardCharsets.UTF_8));

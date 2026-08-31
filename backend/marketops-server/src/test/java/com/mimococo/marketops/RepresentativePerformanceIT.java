@@ -66,6 +66,7 @@ class RepresentativePerformanceIT {
     @Autowired com.mimococo.marketops.analyticsdecision.internal.application.DiagnosticExportService exports;
     @Autowired com.mimococo.marketops.analyticsdecision.internal.application.DiagnosticExportWorker exportWorker;
     @Autowired com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort objectStorage;
+    @Autowired com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityRecalculationRepository availabilityQueue;
 
     @DynamicPropertySource
     static void database(DynamicPropertyRegistry registry) {
@@ -127,6 +128,7 @@ class RepresentativePerformanceIT {
             assertThat(jdbc.sql("SELECT count(*) FROM ops.price_command").query(Integer.class).single()).isZero();
             assertThat(jdbc.sql("SELECT count(*) FROM platform.platform_capability WHERE verification_state='VERIFIED'")
                     .query(Integer.class).single()).isZero();
+            verifyAvailabilityPortfolioEnumeration(report);
 
             Instant now = Instant.now();
             var actor = new AuthenticatedActor(id("user"),id("org"),id("provider"),"https://performance.fixture.invalid",
@@ -277,6 +279,36 @@ class RepresentativePerformanceIT {
                 "migrationsAppliedAfterRestore",validation.migrationsApplied(),"objectsVerified",contents.size(),
                 "elapsedMillis",restoreMillis,"primaryObjectLossRefused",true,"exactBytesRestored",true,
                 "productionPitrOrFailoverVerified",false));
+    }
+
+    /** Real PostgreSQL keyset traversal over the declared 5,000-variant profile. */
+    private void verifyAvailabilityPortfolioEnumeration(Map<String, Object> report) {
+        long started = System.nanoTime();
+        UUID organization = id("org");
+        UUID after = null;
+        int pages = 0;
+        int variants = 0;
+        while (true) {
+            List<UUID> page = availabilityQueue.variantsToReconcile(
+                    organization, Instant.now(), after, 1_000);
+            if (page.isEmpty()) {
+                break;
+            }
+            pages++;
+            variants += page.size();
+            after = page.getLast();
+        }
+        long elapsedMillis = (System.nanoTime() - started) / 1_000_000;
+        assertThat(variants).isEqualTo(5_000);
+        assertThat(pages).isEqualTo(5);
+        assertThat(elapsedMillis).isLessThan(30_000);
+        report.put("availabilityPortfolioEnumeration", Map.of(
+                "status", "PASS",
+                "variants", variants,
+                "databasePages", pages,
+                "elapsedMillis", elapsedMillis,
+                "sweepCadenceMillis", 3_600_000,
+                "enumerationBudgetMillis", 30_000));
     }
 
     private static Path temporaryDirectory(String prefix) {

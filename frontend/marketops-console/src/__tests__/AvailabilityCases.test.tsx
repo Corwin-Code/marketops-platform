@@ -131,17 +131,14 @@ describe('availability cases', () => {
     expect(typeof body === 'string' ? body : '').toContain('ev://purchase-order/1');
   });
 
-  it('TC-UI-CASE-006 never offers a control that closes a case without an observation', async () => {
+  it('TC-UI-CASE-006 verification is automatic and has no public mutation control', async () => {
     const { fetchImpl } = router({ '/cases?': [OPEN_CASE] });
     render(<AvailabilityCases context={context(fetchImpl)} now={NOW} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('verification-outcome')).toBeInTheDocument();
+      expect(screen.getByTestId('case-action-form')).toBeInTheDocument();
     });
-    const outcomes = Array.from(
-      screen.getByTestId('verification-outcome').querySelectorAll('option'),
-    ).map((option) => option.getAttribute('value'));
-    expect(outcomes).toEqual(['VERIFIED', 'CONTINUING', 'FAILED', 'REGRESSED']);
+    expect(screen.queryByTestId('case-verification-form')).toBeNull();
     expect(screen.queryByText(/^close$/i)).toBeNull();
   });
 

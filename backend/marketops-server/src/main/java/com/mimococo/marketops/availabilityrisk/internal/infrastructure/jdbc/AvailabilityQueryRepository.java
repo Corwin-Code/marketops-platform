@@ -40,29 +40,51 @@ public class AvailabilityQueryRepository {
      * viewer holds only one store would hide the shortage that explains the
      * empty shelf they can see.
      */
-    public List<CardRow> queue(UUID organizationId, UUID[] permittedStoreIds, String laneFilter,
+    public List<CardRow> queue(UUID organizationId, UUID[] permittedStoreIds,
+                               UUID[] permittedProductVariantIds, String laneFilter,
                                int limit, int offset) {
         return jdbc.sql("""
                         SELECT card.id, card.product_variant_id, variant.sku_code,
-                               variant.display_name, card.lane, card.triggering_child_id,
-                               card.rank_score, card.policy_version_digest, card.as_of,
+                               variant.display_name, visible.lane,
+                               CASE WHEN visible.lane = 'HEALTHY' THEN NULL
+                                    ELSE visible.child_id END AS triggering_child_id,
+                               visible.rank_score, card.policy_version_digest, card.as_of,
                                card.calculated_at
                           FROM mart.availability_risk_card AS card
                           JOIN core.product_variant AS variant
                             ON variant.id = card.product_variant_id
                            AND variant.organization_id = card.organization_id
-                         WHERE card.organization_id = :organizationId
-                           AND (CAST(:laneFilter AS text) IS NULL OR card.lane = :laneFilter)
-                           AND EXISTS (
-                               SELECT 1 FROM mart.availability_risk_child AS child
+                          JOIN LATERAL (
+                               SELECT child.id AS child_id, child.lane,
+                                      (CASE child.lane
+                                         WHEN 'CRITICAL' THEN 300000
+                                         WHEN 'HIGH' THEN 200000
+                                         WHEN 'REVIEW' THEN 200000
+                                         WHEN 'UNRESOLVED' THEN 200000
+                                         WHEN 'WATCH' THEN 100000 ELSE 0 END
+                                       + LEAST(99999, GREATEST(0,
+                                           coalesce(sum(factor.contribution), 0)))) AS rank_score
+                                 FROM mart.availability_risk_child AS child
+                                 LEFT JOIN mart.availability_risk_factor AS factor
+                                   ON factor.calculation_id = child.calculation_id
+                                  AND factor.organization_id = child.organization_id
                                 WHERE child.card_id = card.id
+                                  AND child.organization_id = card.organization_id
                                   AND (child.child_kind = 'COMPANY'
-                                       OR child.store_id = ANY (:permittedStoreIds)))
-                         ORDER BY card.rank_score DESC, variant.sku_code
+                                       OR child.store_id = ANY (:permittedStoreIds))
+                                GROUP BY child.id, child.lane
+                                ORDER BY rank_score DESC, child.id
+                                LIMIT 1
+                          ) AS visible ON true
+                         WHERE card.organization_id = :organizationId
+                           AND card.product_variant_id = ANY (:permittedProductVariantIds)
+                           AND (CAST(:laneFilter AS text) IS NULL OR visible.lane = :laneFilter)
+                         ORDER BY visible.rank_score DESC, variant.sku_code
                          LIMIT :limit OFFSET :offset
                         """)
                 .param("organizationId", organizationId)
                 .param("permittedStoreIds", permittedStoreIds)
+                .param("permittedProductVariantIds", permittedProductVariantIds)
                 .param("laneFilter", laneFilter)
                 .param("limit", limit)
                 .param("offset", offset)
@@ -71,21 +93,50 @@ public class AvailabilityQueryRepository {
     }
 
     /** One card by internal variant. */
-    public java.util.Optional<CardRow> card(UUID organizationId, UUID productVariantId) {
+    public java.util.Optional<CardRow> card(UUID organizationId, UUID productVariantId,
+                                            UUID[] permittedStoreIds,
+                                            UUID[] permittedProductVariantIds) {
         return jdbc.sql("""
                         SELECT card.id, card.product_variant_id, variant.sku_code,
-                               variant.display_name, card.lane, card.triggering_child_id,
-                               card.rank_score, card.policy_version_digest, card.as_of,
+                               variant.display_name, visible.lane,
+                               CASE WHEN visible.lane = 'HEALTHY' THEN NULL
+                                    ELSE visible.child_id END AS triggering_child_id,
+                               visible.rank_score, card.policy_version_digest, card.as_of,
                                card.calculated_at
                           FROM mart.availability_risk_card AS card
                           JOIN core.product_variant AS variant
                             ON variant.id = card.product_variant_id
                            AND variant.organization_id = card.organization_id
+                          JOIN LATERAL (
+                               SELECT child.id AS child_id, child.lane,
+                                      (CASE child.lane
+                                         WHEN 'CRITICAL' THEN 300000
+                                         WHEN 'HIGH' THEN 200000
+                                         WHEN 'REVIEW' THEN 200000
+                                         WHEN 'UNRESOLVED' THEN 200000
+                                         WHEN 'WATCH' THEN 100000 ELSE 0 END
+                                       + LEAST(99999, GREATEST(0,
+                                           coalesce(sum(factor.contribution), 0)))) AS rank_score
+                                 FROM mart.availability_risk_child AS child
+                                 LEFT JOIN mart.availability_risk_factor AS factor
+                                   ON factor.calculation_id = child.calculation_id
+                                  AND factor.organization_id = child.organization_id
+                                WHERE child.card_id = card.id
+                                  AND child.organization_id = card.organization_id
+                                  AND (child.child_kind = 'COMPANY'
+                                       OR child.store_id = ANY (:permittedStoreIds))
+                                GROUP BY child.id, child.lane
+                                ORDER BY rank_score DESC, child.id
+                                LIMIT 1
+                          ) AS visible ON true
                          WHERE card.organization_id = :organizationId
                            AND card.product_variant_id = :productVariantId
+                           AND card.product_variant_id = ANY (:permittedProductVariantIds)
                         """)
                 .param("organizationId", organizationId)
                 .param("productVariantId", productVariantId)
+                .param("permittedStoreIds", permittedStoreIds)
+                .param("permittedProductVariantIds", permittedProductVariantIds)
                 .query(AvailabilityQueryRepository::mapCard)
                 .optional();
     }
@@ -118,16 +169,13 @@ public class AvailabilityQueryRepository {
                            AND account.organization_id = store.organization_id
                          WHERE child.organization_id = :organizationId
                            AND child.card_id = ANY (:cardIds)
-                           AND (:unscoped
-                                OR child.child_kind = 'COMPANY'
+                           AND (child.child_kind = 'COMPANY'
                                 OR child.store_id = ANY (:permittedStoreIds))
                          ORDER BY child.child_kind, child.fulfillment_mode_code, child.id
                         """)
                 .param("organizationId", organizationId)
                 .param("cardIds", cardIds)
-                .param("unscoped", permittedStoreIds == null)
-                .param("permittedStoreIds",
-                        permittedStoreIds == null ? new UUID[0] : permittedStoreIds)
+                .param("permittedStoreIds", permittedStoreIds)
                 .query(AvailabilityQueryRepository::mapChild)
                 .list();
     }

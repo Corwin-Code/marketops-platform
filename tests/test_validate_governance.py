@@ -3012,7 +3012,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
     def test_rework_identity_phase_and_actor_cannot_drift(self) -> None:
         mutations = (
             (
-                "next_authorized_actor: Claude Designer and Initial Full Implementation Agent",
+                "next_authorized_actor: Codex Rework / Fix / Verification Agent",
                 "next_authorized_actor: SOMEBODY_ELSE",
             ),
             (

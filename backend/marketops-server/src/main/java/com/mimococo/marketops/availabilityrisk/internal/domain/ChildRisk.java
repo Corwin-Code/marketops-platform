@@ -77,4 +77,32 @@ public record ChildRisk(
     public boolean actionable() {
         return cause.actionable();
     }
+
+    /** Preserve the independently calculated result while exposing a policy blocker. */
+    public ChildRisk withBlocker(String blockerCode) {
+        if (blockerCodes.contains(blockerCode)) {
+            return this;
+        }
+        java.util.ArrayList<String> blockers = new java.util.ArrayList<>(blockerCodes);
+        blockers.add(blockerCode);
+        return new ChildRisk(kind, lane, evidenceState, confidence, cause, supply, demand,
+                leadTime, profit, daysOfCover, projectedStockoutAt, proof,
+                List.copyOf(blockers));
+    }
+
+    /** Route a non-critical risk into the return/quality review lane. */
+    public ChildRisk qualityReview(String blockerCode, boolean policyBlocked) {
+        if (lane == AvailabilityLane.CRITICAL) {
+            return withBlocker(blockerCode);
+        }
+        java.util.ArrayList<String> blockers = new java.util.ArrayList<>(blockerCodes);
+        if (!blockers.contains(blockerCode)) {
+            blockers.add(blockerCode);
+        }
+        return new ChildRisk(kind, AvailabilityLane.REVIEW,
+                policyBlocked ? RiskEvidenceState.POLICY_BLOCKED : RiskEvidenceState.DATA_BLOCKED,
+                RiskConfidence.UNUSABLE, RiskCause.RETURN_QUALITY_REVIEW, supply, demand,
+                leadTime, profit, daysOfCover, projectedStockoutAt, ConservativeProof.none(),
+                List.copyOf(blockers));
+    }
 }

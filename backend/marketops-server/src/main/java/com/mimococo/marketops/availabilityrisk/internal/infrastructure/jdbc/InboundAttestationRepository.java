@@ -4,6 +4,7 @@ import com.mimococo.marketops.availabilityrisk.internal.domain.InboundConsignmen
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -151,6 +152,39 @@ public class InboundAttestationRepository {
                 .single();
     }
 
+    /** Header and current version, resolved together for ownership and optimistic mutation. */
+    public Optional<CurrentAttestation> findCurrent(UUID attestationId) {
+        return jdbc.sql("""
+                        SELECT claim.organization_id, claim.product_variant_id,
+                               claim.external_reference, version.id AS version_id,
+                               version.version_no, version.quantity,
+                               version.expected_arrival_from, version.expected_arrival_to,
+                               version.business_status, version.evidence_reference,
+                               version.last_verified_at
+                          FROM core.inbound_supply_attestation claim
+                          JOIN LATERAL (
+                               SELECT one.*
+                                 FROM core.inbound_supply_attestation_version one
+                                WHERE one.attestation_id = claim.id
+                                ORDER BY one.version_no DESC LIMIT 1
+                          ) version ON true
+                         WHERE claim.id = :attestationId
+                        """)
+                .param("attestationId", attestationId)
+                .query((rows, number) -> new CurrentAttestation(attestationId,
+                        rows.getObject("organization_id", UUID.class),
+                        rows.getObject("product_variant_id", UUID.class),
+                        rows.getString("external_reference"),
+                        rows.getObject("version_id", UUID.class), rows.getInt("version_no"),
+                        rows.getInt("quantity"),
+                        rows.getTimestamp("expected_arrival_from").toInstant(),
+                        rows.getTimestamp("expected_arrival_to").toInstant(),
+                        rows.getString("business_status"),
+                        rows.getString("evidence_reference"),
+                        rows.getTimestamp("last_verified_at").toInstant()))
+                .optional();
+    }
+
     /** One attested state to append. */
     public record InboundVersion(
             UUID id, UUID attestationId, UUID organizationId, int versionNo, int quantity,
@@ -158,5 +192,12 @@ public class InboundAttestationRepository {
             String changeKind, String evidenceReference, Instant sourceTime,
             Instant lastVerifiedAt, UUID attestedByUserId, String reason,
             UUID supersedesVersionId, Instant recordedAt) {
+    }
+
+    public record CurrentAttestation(UUID id, UUID organizationId, UUID productVariantId,
+                                     String externalReference, UUID versionId, int versionNo,
+                                     int quantity, Instant expectedArrivalFrom,
+                                     Instant expectedArrivalTo, String businessStatus,
+                                     String evidenceReference, Instant lastVerifiedAt) {
     }
 }

@@ -1,6 +1,7 @@
 package com.mimococo.marketops;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.mimococo.marketops.availabilityrisk.AvailabilityLane;
 import com.mimococo.marketops.availabilityrisk.ChildKind;
@@ -11,8 +12,12 @@ import com.mimococo.marketops.availabilityrisk.AvailabilityCardView;
 import com.mimococo.marketops.availabilityrisk.AvailabilityChildView;
 import com.mimococo.marketops.availabilityrisk.AvailabilityRiskQuery;
 import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityProjectionWriter;
+import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityPolicyManagementService;
 import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityRiskCalculationService;
+import com.mimococo.marketops.availabilityrisk.internal.application.InboundAttestationService;
 import com.mimococo.marketops.availabilityrisk.internal.application.VariantRisk;
+import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityPolicyManagementRepository.PolicyKind;
+import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityPolicyManagementRepository.PriorityDraft;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -63,6 +68,8 @@ class AvailabilityRiskFlowIT {
             UUID.fromString("bbbb0000-0000-0000-0000-000000000009");
     private static final UUID PROVIDER = UUID.fromString("bbbb0000-0000-0000-0000-00000000000a");
     private static final UUID USER = UUID.fromString("bbbb0000-0000-0000-0000-00000000000b");
+    private static final UUID PLATFORM_PROVENANCE =
+            UUID.fromString("bbbb0000-0000-0000-0000-00000000000c");
 
     private static JdbcClient seed;
 
@@ -74,6 +81,12 @@ class AvailabilityRiskFlowIT {
 
     @Autowired
     private AvailabilityRiskQuery risks;
+
+    @Autowired
+    private AvailabilityPolicyManagementService policyManagement;
+
+    @Autowired
+    private InboundAttestationService inboundManagement;
 
     @Autowired
     private JdbcClient jdbc;
@@ -263,7 +276,7 @@ class AvailabilityRiskFlowIT {
     @DisplayName("TC-AVAIL-FLOW-007 the queue reads back the card with both children and its evidence")
     void queueReadsBackTheCard() {
         List<AvailabilityCardView> queue =
-                risks.queue(ORGANIZATION, List.of(STORE), null, 50, 0);
+                risks.queue(ORGANIZATION, List.of(STORE), List.of(VARIANT), null, 50, 0);
 
         assertThat(queue).hasSize(1);
         AvailabilityCardView card = queue.get(0);
@@ -299,7 +312,7 @@ class AvailabilityRiskFlowIT {
     @Order(8)
     @DisplayName("TC-AVAIL-FLOW-008 an empty store scope returns an empty queue, not every card")
     void anEmptyScopeReturnsNothing() {
-        assertThat(risks.queue(ORGANIZATION, List.of(), null, 50, 0))
+        assertThat(risks.queue(ORGANIZATION, List.of(), List.of(VARIANT), null, 50, 0))
                 .as("an empty grant is a denial, never an absence of filtering")
                 .allSatisfy(card -> assertThat(card.children())
                         .allSatisfy(child -> assertThat(child.childKind())
@@ -310,8 +323,114 @@ class AvailabilityRiskFlowIT {
     @Order(9)
     @DisplayName("TC-AVAIL-FLOW-009 a lane filter narrows rather than reorders")
     void laneFilterNarrows() {
-        assertThat(risks.queue(ORGANIZATION, List.of(STORE), "CRITICAL", 50, 0)).hasSize(1);
-        assertThat(risks.queue(ORGANIZATION, List.of(STORE), "HEALTHY", 50, 0)).isEmpty();
+        assertThat(risks.queue(ORGANIZATION, List.of(STORE), List.of(VARIANT),
+                "CRITICAL", 50, 0)).hasSize(1);
+        assertThat(risks.queue(ORGANIZATION, List.of(STORE), List.of(VARIANT),
+                "HEALTHY", 50, 0)).isEmpty();
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("TC-AVAIL-FLOW-010 missing demand policy cannot suppress exact channel stockout")
+    void missingDemandPolicyDoesNotSuppressExactStockout() {
+        sql("UPDATE core.demand_observation_policy SET status = 'CANCELLED'"
+                + " WHERE organization_id = '" + ORGANIZATION + "'");
+
+        VariantRisk risk = calculation.calculate(ORGANIZATION, VARIANT, AS_OF);
+        VariantRisk.ScoredChild channel = childOf(risk, ChildKind.CHANNEL);
+
+        assertThat(channel.risk().lane()).isEqualTo(AvailabilityLane.CRITICAL);
+        assertThat(channel.risk().cause()).isEqualTo(RiskCause.CHANNEL_OUT_OF_STOCK);
+        assertThat(channel.risk().evidenceState()).isEqualTo(RiskEvidenceState.CONFIRMED);
+        assertThat(channel.risk().demand().evidenceState())
+                .isEqualTo(RiskEvidenceState.POLICY_BLOCKED);
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("TC-AVAIL-FLOW-011 policy publication is versioned, immutable and retireable")
+    void governedPolicyLifecycle() {
+        UUID current = jdbc.sql("""
+                        SELECT id FROM core.availability_priority_policy
+                         WHERE organization_id = :organizationId AND status = 'ACTIVE'
+                        """).param("organizationId", ORGANIZATION).query(UUID.class).single();
+        Instant effectiveFrom = Instant.now().plusSeconds(30);
+        var published = policyManagement.publishPriority(USER,
+                new PriorityDraft(ORGANIZATION, new java.math.BigDecimal("500"),
+                        new java.math.BigDecimal("7"), new java.math.BigDecimal("25"),
+                        new java.math.BigDecimal("30"), new java.math.BigDecimal("-12"),
+                        "approved queue-order revision", "ev://ops/priority-v2",
+                        effectiveFrom, null, current));
+
+        assertThat(published.version()).isEqualTo(2);
+        assertThatThrownBy(() -> jdbc.sql("""
+                        UPDATE core.availability_priority_policy SET time_weight = 999
+                         WHERE id = :policyId
+                        """).param("policyId", published.id()).update())
+                .as("a published policy version cannot be edited in place")
+                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+
+        var cancelled = policyManagement.retire(PolicyKind.PRIORITY, published.id(),
+                ORGANIZATION, USER, "future version withdrawn", "ev://ops/withdrawal");
+        assertThat(cancelled.status()).isEqualTo("CANCELLED");
+        assertThat(jdbc.sql("""
+                        SELECT count(*) FROM ops.metadata_audit_event
+                         WHERE entity_type = 'availability_policy'
+                           AND entity_id = :policyId
+                        """).param("policyId", published.id()).query(Integer.class).single())
+                .isEqualTo(2);
+    }
+
+    @Test
+    @Order(12)
+    @DisplayName("TC-AVAIL-FLOW-012 inbound create amend reverify and cancel stay append-only")
+    void governedInboundLifecycle() {
+        Instant now = Instant.now();
+        int workBefore = recalculationWorkTokens();
+        var created = inboundManagement.create(ORGANIZATION, VARIANT, USER,
+                new InboundAttestationService.Draft("PO-FLOW-1", 25,
+                        now.plus(Duration.ofDays(1)), now.plus(Duration.ofDays(2)),
+                        "SUPPLIER_CONFIRMED", "ev://po/confirmation", now,
+                        "supplier confirmation"));
+        var amended = inboundManagement.amend(created.id(), ORGANIZATION, USER, 1,
+                new InboundAttestationService.Draft("PO-FLOW-1", 30,
+                        now.plus(Duration.ofDays(1)), now.plus(Duration.ofDays(3)),
+                        "IN_TRANSIT", "ev://po/shipment", now.plusSeconds(1),
+                        "carrier departure"));
+        var verified = inboundManagement.reverify(created.id(), ORGANIZATION, USER, 2,
+                "ev://po/carrier-check", "carrier status rechecked");
+        var cancelled = inboundManagement.cancel(created.id(), ORGANIZATION, USER, 3,
+                "buyer cancelled purchase order", "ev://po/cancellation");
+
+        assertThat(amended.versionNo()).isEqualTo(2);
+        assertThat(verified.versionNo()).isEqualTo(3);
+        assertThat(cancelled.versionNo()).isEqualTo(4);
+        assertThat(cancelled.businessStatus()).isEqualTo("CANCELLED");
+        assertThat(jdbc.sql("""
+                        SELECT string_agg(change_kind, ',' ORDER BY version_no)
+                          FROM core.inbound_supply_attestation_version
+                         WHERE attestation_id = :attestationId
+                        """).param("attestationId", created.id()).query(String.class).single())
+                .isEqualTo("CREATE,AMEND,REVERIFY,CANCEL");
+        assertThat(recalculationWorkTokens() - workBefore)
+                .as("every accepted inbound version invalidates the availability projection")
+                .isEqualTo(4);
+        assertThat(jdbc.sql("""
+                        SELECT count(*) FROM ops.metadata_audit_event
+                         WHERE entity_type = 'inbound_supply_attestation'
+                           AND entity_id = :attestationId
+                        """).param("attestationId", created.id())
+                .query(Integer.class).single()).isEqualTo(4);
+    }
+
+    private int recalculationWorkTokens() {
+        return jdbc.sql("""
+                        SELECT coalesce(sum(version), 0) + count(*)
+                          FROM ops.availability_recalculation_request
+                         WHERE organization_id = :organizationId
+                           AND product_variant_id = :variantId
+                        """).param("organizationId", ORGANIZATION).param("variantId", VARIANT)
+                .query(Long.class).single().intValue();
     }
 
     private void seedIdentity() {
@@ -364,6 +483,15 @@ class AvailabilityRiskFlowIT {
                         'agreed activation policy', 'ev://ops/activation',
                         now() - interval '10 days', 'ACTIVE', 1, now())
                 """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
+        sql("""
+                INSERT INTO core.availability_priority_policy (id, organization_id,
+                        policy_version, time_weight, profit_weight, velocity_weight,
+                        lifecycle_weight, confidence_weight, owner_user_id, reason,
+                        evidence_reference, effective_from, status, created_at)
+                VALUES ('%s', '%s', 1, 400, 5, 20, 25, -10, '%s',
+                        'agreed availability ordering', 'ev://ops/availability-priority',
+                        now() - interval '10 days', 'ACTIVE', now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
     }
 
     /**
@@ -375,15 +503,16 @@ class AvailabilityRiskFlowIT {
      */
     private void seedFacts() {
         UUID internalProvenance = UUID.randomUUID();
-        UUID platformProvenance = UUID.randomUUID();
         provenance(internalProvenance, "INTERNAL_IMPORT");
-        provenance(platformProvenance, "MANUAL_ENTRY");
+        provenance(PLATFORM_PROVENANCE, "MANUAL_ENTRY");
 
         sql("""
                 INSERT INTO core.internal_stock_snapshot (id, organization_id, provenance_id,
                         warehouse_id, product_variant_id, source_fact_key, observed_at,
-                        quantity_on_hand, quantity_reserved)
-                VALUES ('%s', '%s', '%s', '%s', '%s', 'avail-internal-1', '%s', 40, 0)
+                        quantity_on_hand, quantity_reserved, quantity_quality_locked,
+                        quantity_damaged, quantity_written_off, sellable)
+                VALUES ('%s', '%s', '%s', '%s', '%s', 'avail-internal-1', '%s',
+                        40, 0, 0, 0, 0, 'YES')
                 """.formatted(UUID.randomUUID(), ORGANIZATION, internalProvenance, WAREHOUSE,
                 VARIANT, FRESH));
         sql("""
@@ -392,13 +521,15 @@ class AvailabilityRiskFlowIT {
                         observed_at, available_quantity, reserved_quantity)
                 VALUES ('%s', '%s', '%s', '%s', 'MARKETPLACE_FULFILLED', 'avail-stock-1', '%s',
                         0, 0)
-                """.formatted(UUID.randomUUID(), ORGANIZATION, platformProvenance, LISTING_VARIANT,
+                """.formatted(UUID.randomUUID(), ORGANIZATION, PLATFORM_PROVENANCE,
+                LISTING_VARIANT,
                 FRESH));
         sql("""
                 INSERT INTO core.listing_health_observation (id, organization_id, provenance_id,
                         platform_listing_variant_id, source_fact_key, observed_at, sellable)
                 VALUES ('%s', '%s', '%s', '%s', 'avail-health-1', '%s', 'YES')
-                """.formatted(UUID.randomUUID(), ORGANIZATION, platformProvenance, LISTING_VARIANT,
+                """.formatted(UUID.randomUUID(), ORGANIZATION, PLATFORM_PROVENANCE,
+                LISTING_VARIANT,
                 FRESH));
 
         // Thirty days of steady sales: six a day, comfortably above the policy

@@ -17,6 +17,11 @@ import org.junit.jupiter.api.Test;
 
 class PriorityPolicyTest {
 
+    private static final PriorityPolicyVersion POLICY = new PriorityPolicyVersion(
+            UUID.fromString("00000000-0000-0000-0000-0000000000c1"), 1,
+            BigDecimal.valueOf(400), BigDecimal.valueOf(300), BigDecimal.valueOf(200),
+            BigDecimal.valueOf(100), BigDecimal.valueOf(-150));
+
     @Test
     @DisplayName("TC-RANK-001 a critical card cannot be overtaken by a more valuable high one")
     void criticalOutranksAnyCommerciallyRicherHigh() {
@@ -25,15 +30,16 @@ class PriorityPolicyTest {
 
         assertThat(critical.lane()).isEqualTo(AvailabilityLane.CRITICAL);
         assertThat(high.lane()).isEqualTo(AvailabilityLane.HIGH);
-        assertThat(PriorityPolicy.rank(critical, BigDecimal.ONE).score())
-                .isGreaterThan(PriorityPolicy.rank(high, BigDecimal.ONE).score());
+        assertThat(PriorityPolicy.rank(critical, BigDecimal.ONE, POLICY).score())
+                .isGreaterThan(PriorityPolicy.rank(high, BigDecimal.ONE, POLICY).score());
     }
 
     @Test
     @DisplayName("TC-RANK-002 every permitted factor is exposed with its own contribution")
     void allFactorsAreVisible() {
         PriorityPolicy.Ranking ranking =
-                PriorityPolicy.rank(channelRisk(100, "10", "120.0000"), new BigDecimal("0.5"));
+                PriorityPolicy.rank(channelRisk(100, "10", "120.0000"),
+                        new BigDecimal("0.5"), POLICY);
 
         assertThat(ranking.factors()).extracting(RankFactor::code)
                 .containsExactlyInAnyOrder(RankFactor.Code.values());
@@ -45,7 +51,7 @@ class PriorityPolicyTest {
     @DisplayName("TC-RANK-003 confidence lowers commercial order but never the lane band")
     void confidencePenaltyStaysInsideItsBand() {
         ChildRisk confident = channelRisk(60, "10", "500.0000");
-        PriorityPolicy.Ranking ranking = PriorityPolicy.rank(confident, BigDecimal.ONE);
+        PriorityPolicy.Ranking ranking = PriorityPolicy.rank(confident, BigDecimal.ONE, POLICY);
 
         BigDecimal band = PriorityPolicy.LANE_BAND
                 .multiply(BigDecimal.valueOf(PriorityPolicy.band(AvailabilityLane.CRITICAL)));
@@ -66,8 +72,8 @@ class PriorityPolicyTest {
     @DisplayName("TC-RANK-005 ranking the same risk twice produces the same score")
     void rankingIsDeterministic() {
         ChildRisk risk = channelRisk(100, "10", "120.0000");
-        assertThat(PriorityPolicy.rank(risk, BigDecimal.ONE).score())
-                .isEqualByComparingTo(PriorityPolicy.rank(risk, BigDecimal.ONE).score());
+        assertThat(PriorityPolicy.rank(risk, BigDecimal.ONE, POLICY).score())
+                .isEqualByComparingTo(PriorityPolicy.rank(risk, BigDecimal.ONE, POLICY).score());
     }
 
     private ChildRisk channelRisk(int units, String perDay, String profitPerUnit) {

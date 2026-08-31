@@ -104,6 +104,7 @@ public interface OperatingFactQuery {
      * tell an empty week from an unobservable one.
      */
     List<AvailabilityObservation> availabilityObservations(UUID platformListingVariantId,
+                                                           String fulfillmentModeCode,
                                                            FactWindow window);
 
     /**
@@ -114,7 +115,7 @@ public interface OperatingFactQuery {
      * instant the fact was accepted, which is where a response-time obligation
      * starts counting.
      */
-    List<AcceptedFactChange> factsAcceptedSince(Instant cursor, int limit);
+    List<AcceptedFactChange> factsAcceptedAfter(AcceptedFactCursor cursor, int limit);
 
     /**
      * Listing variants on one store that any source reported activity for

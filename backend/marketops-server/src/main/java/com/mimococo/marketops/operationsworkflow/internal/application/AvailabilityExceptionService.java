@@ -75,6 +75,11 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
         validate(request);
         AvailabilityCaseView governed = cases.find(request.caseId())
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        if (!governed.organizationId().equals(request.organizationId())
+                || !governed.childId().equals(request.childId())
+                || !governed.causeCode().equals(request.causeCode())) {
+            throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
+        }
         if (!governed.live()) {
             // A finished case has nothing left to accept, and recording an
             // acceptance against one would suggest a risk is being carried that
@@ -235,6 +240,73 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
             ended.add(find(expiring.id()));
         }
         return List.copyOf(ended);
+    }
+
+    @Override
+    @Transactional
+    public List<AcceptedExceptionView> revalidateActive(UUID organizationId, Instant at) {
+        List<AcceptedExceptionView> invalidated = new ArrayList<>();
+        Optional<ExceptionMaterialityPolicy> livePolicy =
+                exceptions.resolveMateriality(organizationId, at);
+        for (AcceptedExceptionView accepted : exceptions.active(organizationId, at)) {
+            InvalidationCause cause = invalidationCause(accepted, livePolicy.orElse(null), at);
+            if (cause != null) {
+                invalidated.add(invalidate(accepted.id(), cause,
+                        "automatic re-evaluation against current risk and authority", at));
+            }
+        }
+        return List.copyOf(invalidated);
+    }
+
+    private InvalidationCause invalidationCause(AcceptedExceptionView accepted,
+                                                ExceptionMaterialityPolicy livePolicy,
+                                                Instant at) {
+        if (livePolicy == null || !livePolicy.policyId().equals(accepted.materialityPolicyId())) {
+            return InvalidationCause.GOVERNING_POLICY_CHANGED;
+        }
+        AvailabilityExceptionRepository.CurrentRisk current =
+                exceptions.currentRisk(accepted.id()).orElse(null);
+        if (current == null || !accepted.causeCode().equals(current.causeCode())) {
+            return InvalidationCause.CAUSE_CHANGED;
+        }
+        if (!scopeStillMatches(accepted, current)) {
+            return InvalidationCause.SCOPE_CHANGED;
+        }
+        if (current.acceptedRiskDigest() == null
+                || !current.acceptedRiskDigest().equals(current.riskDigest())) {
+            return InvalidationCause.EVIDENCE_CONFLICT;
+        }
+        if (!exceptions.approvalAuthorityLive(accepted.id(), at)) {
+            return InvalidationCause.AUTHORITY_LOST;
+        }
+        ExceptionAuthorityLevel nowRequired = livePolicy.requiredAuthority(current.severity(),
+                accepted.occurrenceCount(), current.profitAtRiskAmount(),
+                current.profitAtRiskCurrency(), accepted.effectiveFrom(), accepted.expiresAt());
+        if (!accepted.requiredAuthority().satisfies(nowRequired)) {
+            return accepted.occurrenceCount() > 1
+                    ? InvalidationCause.REPEATED_CONDITION
+                    : InvalidationCause.MATERIALITY_INCREASED;
+        }
+        if (accepted.consequenceAmount() != null && current.profitAtRiskAmount() != null
+                && java.util.Objects.equals(accepted.consequenceCurrency(),
+                        current.profitAtRiskCurrency())
+                && current.profitAtRiskAmount().compareTo(accepted.consequenceAmount()) > 0) {
+            return InvalidationCause.MATERIALITY_INCREASED;
+        }
+        return null;
+    }
+
+    private static boolean scopeStillMatches(AcceptedExceptionView accepted,
+                                             AvailabilityExceptionRepository.CurrentRisk current) {
+        String reference = accepted.scopeReference();
+        return switch (accepted.scopeKind()) {
+            case CHILD -> current != null && accepted.childId().toString().equals(reference);
+            case VARIANT -> current.productVariantId().toString().equals(reference);
+            case STORE -> current.storeId() != null && current.storeId().toString().equals(reference);
+            case CHANNEL -> current.platformListingVariantId() != null
+                    && (current.platformListingVariantId() + "|" + current.fulfillmentModeCode())
+                    .equals(reference);
+        };
     }
 
     @Override

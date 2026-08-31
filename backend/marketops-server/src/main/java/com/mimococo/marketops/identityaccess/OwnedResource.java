@@ -17,6 +17,7 @@ public record OwnedResource(Kind kind, UUID id, UUID expectedStoreId) {
     /** Closed object inventory; these are authorization targets, not new grant types. */
     public enum Kind {
         LISTING_VARIANT, PROVENANCE, IMPORT_BATCH, AI_INVOCATION, WORK_TASK,
-        RECOMMENDATION, MAPPING_CANDIDATE, MAPPING_CONFLICT
+        RECOMMENDATION, MAPPING_CANDIDATE, MAPPING_CONFLICT,
+        AVAILABILITY_CASE, AVAILABILITY_RISK_CHILD, AVAILABILITY_EXCEPTION
     }
 }

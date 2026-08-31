@@ -6,6 +6,8 @@ import com.mimococo.marketops.availabilityrisk.RiskCause;
 import com.mimococo.marketops.availabilityrisk.RiskConfidence;
 import com.mimococo.marketops.availabilityrisk.RiskEvidenceState;
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ import java.util.List;
  * the whole product dishonest.
  */
 public final class CompanyRiskCalculator {
+
+    private static final MathContext PROJECTION = new MathContext(12, RoundingMode.HALF_UP);
 
     private CompanyRiskCalculator() {
     }
@@ -82,16 +86,26 @@ public final class CompanyRiskCalculator {
                         holding.provenanceId(), holding.observedAt()));
                 continue;
             }
-            int available = holding.available();
-            int withheld = holding.quantityOnHand() - available;
-            if (withheld > 0) {
-                // Reserved and quality-locked units are known and correctly
-                // excluded, so they are recorded without undermining the total.
+            if (!holding.stateComplete()) {
                 components.add(SupplyComponent.excluded(
-                        SupplyComponent.Source.INTERNAL_WAREHOUSE, withheld,
-                        holding.quantityReserved() != null && holding.quantityReserved() > 0
-                                ? SupplyComponent.ExclusionReason.RESERVED
-                                : SupplyComponent.ExclusionReason.NOT_SELLABLE,
+                        SupplyComponent.Source.INTERNAL_WAREHOUSE, holding.quantityOnHand(),
+                        SupplyComponent.ExclusionReason.STOCK_STATE_NOT_REPORTED,
+                        holding.provenanceId(), holding.observedAt()));
+                continue;
+            }
+            int available = holding.available();
+            recordWithheld(components, holding, holding.quantityReserved(),
+                    SupplyComponent.ExclusionReason.RESERVED);
+            recordWithheld(components, holding, holding.quantityQualityLocked(),
+                    SupplyComponent.ExclusionReason.NOT_SELLABLE);
+            recordWithheld(components, holding, holding.quantityDamaged(),
+                    SupplyComponent.ExclusionReason.DAMAGED);
+            recordWithheld(components, holding, holding.quantityWrittenOff(),
+                    SupplyComponent.ExclusionReason.WRITTEN_OFF);
+            if (holding.sellability() == Sellability.NOT_SELLABLE && holding.quantityOnHand() > 0) {
+                components.add(SupplyComponent.excluded(
+                        SupplyComponent.Source.INTERNAL_WAREHOUSE, holding.quantityOnHand(),
+                        SupplyComponent.ExclusionReason.NOT_SELLABLE,
                         holding.provenanceId(), holding.observedAt()));
             }
             components.add(SupplyComponent.counted(SupplyComponent.Source.INTERNAL_WAREHOUSE,
@@ -136,13 +150,17 @@ public final class CompanyRiskCalculator {
 
         for (InboundConsignment consignment : observation.inbound()) {
             if (consignment.eligibleAt(asOf, horizonEnd, freshnessMaxMinutes)) {
-                components.add(SupplyComponent.counted(SupplyComponent.Source.ELIGIBLE_INBOUND,
-                        consignment.quantity(), null, consignment.lastVerifiedAt()));
+                // An eligible claim is attributable future supply, not current
+                // on-hand. It is applied by projectStockout at the conservative
+                // latest edge of its arrival window.
+                components.add(SupplyComponent.excluded(SupplyComponent.Source.ELIGIBLE_INBOUND,
+                        consignment.quantity(), SupplyComponent.ExclusionReason.SCHEDULED_FUTURE,
+                        consignment.attestationVersionId(), consignment.lastVerifiedAt()));
             } else {
                 components.add(SupplyComponent.excluded(SupplyComponent.Source.ELIGIBLE_INBOUND,
                         consignment.quantity(),
                         consignment.exclusionAt(asOf, horizonEnd, freshnessMaxMinutes),
-                        null, consignment.lastVerifiedAt()));
+                        consignment.attestationVersionId(), consignment.lastVerifiedAt()));
             }
         }
 
@@ -171,9 +189,10 @@ public final class CompanyRiskCalculator {
                     List.copyOf(blockers));
         }
 
-        BigDecimal cover = ChannelRiskCalculator.coverDays(supply.provenUnits(), demand.selectedRate());
+        Instant stockoutAt = projectStockout(supply.provenUnits(), observation.inbound(),
+                demand.selectedRate(), asOf, horizonEnd, freshnessMaxMinutes);
+        BigDecimal cover = daysBetween(asOf, stockoutAt);
         AvailabilityLane lowerBoundLane = LaneThresholds.laneFor(cover, leadTime);
-        Instant stockoutAt = LaneThresholds.stockoutAt(cover, asOf);
 
         if (complete && supply.present()) {
             RiskCause cause = lowerBoundLane == AvailabilityLane.HEALTHY
@@ -210,6 +229,64 @@ public final class CompanyRiskCalculator {
                 RiskEvidenceState.DATA_BLOCKED, RiskConfidence.UNUSABLE,
                 dataCause(supply), supply, demand, leadTime, profit, cover, stockoutAt,
                 ConservativeProof.none(), List.copyOf(blockers));
+    }
+
+    /** Record one known, deliberately unavailable warehouse quantity. */
+    private static void recordWithheld(List<SupplyComponent> components,
+                                       CompanyObservation.WarehouseHolding holding,
+                                       Integer units,
+                                       SupplyComponent.ExclusionReason reason) {
+        if (units != null && units > 0) {
+            components.add(SupplyComponent.excluded(SupplyComponent.Source.INTERNAL_WAREHOUSE,
+                    units, reason, holding.provenanceId(), holding.observedAt()));
+        }
+    }
+
+    /**
+     * First depletion instant under a piecewise-constant supply schedule.
+     * Eligible inbound enters only at its conservative latest arrival time.
+     */
+    static Instant projectStockout(int currentUnits, List<InboundConsignment> inbound,
+                                   BigDecimal dailyRate, Instant asOf, Instant horizonEnd,
+                                   long freshnessMaxMinutes) {
+        if (dailyRate == null || dailyRate.signum() <= 0) {
+            return null;
+        }
+        BigDecimal remaining = BigDecimal.valueOf(currentUnits);
+        Instant cursor = asOf;
+        List<InboundConsignment> scheduled = inbound.stream()
+                .filter(item -> item.eligibleAt(asOf, horizonEnd, freshnessMaxMinutes))
+                .sorted(java.util.Comparator.comparing(InboundConsignment::conservativeArrivalAt)
+                        .thenComparing(InboundConsignment::attestationVersionId))
+                .toList();
+        for (InboundConsignment item : scheduled) {
+            Instant arrival = item.conservativeArrivalAt().isBefore(cursor)
+                    ? cursor : item.conservativeArrivalAt();
+            BigDecimal intervalDays = secondsBetween(cursor, arrival);
+            BigDecimal required = dailyRate.multiply(intervalDays, PROJECTION);
+            if (remaining.compareTo(required) < 0) {
+                return plusDays(cursor, remaining.divide(dailyRate, PROJECTION));
+            }
+            remaining = remaining.subtract(required, PROJECTION)
+                    .add(BigDecimal.valueOf(item.quantity()), PROJECTION);
+            cursor = arrival;
+        }
+        return plusDays(cursor, remaining.divide(dailyRate, PROJECTION));
+    }
+
+    private static BigDecimal daysBetween(Instant from, Instant to) {
+        return to == null ? null : secondsBetween(from, to).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private static BigDecimal secondsBetween(Instant from, Instant to) {
+        BigDecimal seconds = BigDecimal.valueOf(Duration.between(from, to).toMillis())
+                .divide(BigDecimal.valueOf(1000), PROJECTION);
+        return seconds.divide(BigDecimal.valueOf(86_400), PROJECTION);
+    }
+
+    private static Instant plusDays(Instant instant, BigDecimal days) {
+        BigDecimal nanos = days.multiply(BigDecimal.valueOf(86_400_000_000_000L), PROJECTION);
+        return instant.plusNanos(nanos.setScale(0, RoundingMode.HALF_UP).longValueExact());
     }
 
     /**

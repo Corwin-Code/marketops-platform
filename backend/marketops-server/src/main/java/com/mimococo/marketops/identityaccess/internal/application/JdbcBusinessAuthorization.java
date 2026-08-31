@@ -109,9 +109,14 @@ public class JdbcBusinessAuthorization implements BusinessAuthorization {
                     AuthorizationVerdict.RESOURCE_NOT_IN_SCOPE);
             throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
         }
-        require(actor, action, owner.get().storeId() == null
-                ? ResourceScope.organization(owner.get().organizationId())
-                : ResourceScope.store(owner.get().storeId()));
+        if (owner.get().productVariantId() != null) {
+            require(actor, action, ResourceScope.productVariant(owner.get().productVariantId()));
+        }
+        if (owner.get().storeId() != null) {
+            require(actor, action, ResourceScope.store(owner.get().storeId()));
+        } else if (owner.get().productVariantId() == null) {
+            require(actor, action, ResourceScope.organization(owner.get().organizationId()));
+        }
     }
 
     @Override
@@ -126,6 +131,21 @@ public class JdbcBusinessAuthorization implements BusinessAuthorization {
             return List.of();
         }
         return authorization.permittedStoreIds(actor.userId(), action, clock.instant());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UUID> permittedProductVariantIds(AuthenticatedActor actor,
+                                                 ActionScopeCode action) {
+        Instant now = clock.instant();
+        if (!authorization.rolesGrantAction(authorization.liveRoles(actor.userId(), now), action)) {
+            return List.of();
+        }
+        Optional<UserProfile> profile = profiles.findById(actor.userId());
+        if (profile.isEmpty() || !profile.get().isActive()) {
+            return List.of();
+        }
+        return authorization.permittedProductVariantIds(actor.userId(), action, now);
     }
 
     /** The stable error a refusal is answered with. */

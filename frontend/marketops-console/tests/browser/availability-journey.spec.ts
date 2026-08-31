@@ -78,4 +78,34 @@ test('TC-BROWSER-014 stockout queue, accountable case and structured action', as
 
   await accountable.getByTestId('case-load-journal').click();
   await expect(accountable.getByTestId('case-journal')).toContainText('ACTION_RECORDED');
+
+  // The fixture driver is test-classpath-only. It feeds the workflow authority
+  // a calculated improvement observation, then a returning calculated risk and
+  // a governed exception request; no public route can name success.
+  const returned = await page.request.post(
+    'http://127.0.0.1:8082/availability/reopen-and-exception',
+    { headers: { 'X-Fixture-Driver': 'browser-test' } },
+  );
+  const returnedBody = await returned.text();
+  expect(returned.ok(), returnedBody).toBe(true);
+  expect(JSON.parse(returnedBody)).toMatchObject({
+    caseState: 'REOPENED',
+    reopenCount: 1,
+    exceptionState: 'REQUESTED',
+  });
+
+  await page.reload();
+  await page.getByRole('button', { name: 'Continue to sign in' }).click();
+  const reopened = page
+    .getByLabel('Availability cases')
+    .getByTestId('availability-case')
+    .filter({ hasText: 'Channel has nothing available' })
+    .first();
+  await expect(reopened.getByTestId('case-state')).toHaveText('Reopened');
+  await expect(reopened.getByTestId('case-reopens')).toHaveText('1');
+  await reopened.getByTestId('case-load-journal').click();
+  await expect(reopened.getByTestId('case-journal')).toContainText('VERIFICATION_OBSERVED');
+  await expect(reopened.getByTestId('case-journal')).toContainText('REOPENED');
+  await expect(reopened.getByTestId('case-exceptions')).toContainText('Requested');
+  await expect(reopened.getByTestId('exception-authority')).toContainText('RISK_AUTHORITY');
 });

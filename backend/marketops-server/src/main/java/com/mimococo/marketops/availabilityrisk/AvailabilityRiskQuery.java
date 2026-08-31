@@ -21,8 +21,11 @@ public interface AvailabilityRiskQuery {
      * empty grant is a denial, never an absence of filtering.
      */
     List<AvailabilityCardView> queue(UUID organizationId, List<UUID> permittedStoreIds,
+                                     List<UUID> permittedProductVariantIds,
                                      String laneFilter, int limit, int offset);
 
     /** One card with every child, factor and window behind it. */
-    Optional<AvailabilityCardView> card(UUID organizationId, UUID productVariantId);
+    Optional<AvailabilityCardView> card(UUID organizationId, UUID productVariantId,
+                                        List<UUID> permittedStoreIds,
+                                        List<UUID> permittedProductVariantIds);
 }

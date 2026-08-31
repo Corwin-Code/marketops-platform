@@ -334,15 +334,20 @@ public class FactWriteRepository {
     public void insertInternalStock(UUID id, UUID organizationId, UUID provenanceId,
                                     UUID warehouseId, UUID productVariantId,
                                     String sourceFactKey, Instant observedAt,
-                                    int quantityOnHand, Integer quantityReserved) {
+                                    int quantityOnHand, Integer quantityReserved,
+                                    Integer quantityQualityLocked, Integer quantityDamaged,
+                                    Integer quantityWrittenOff, String sellable,
+                                    UUID returnReentryId) {
         jdbc.sql("""
                         INSERT INTO core.internal_stock_snapshot (
                             id, organization_id, provenance_id, warehouse_id,
                             product_variant_id, source_fact_key, observed_at,
-                            quantity_on_hand, quantity_reserved)
+                            quantity_on_hand, quantity_reserved, quantity_quality_locked,
+                            quantity_damaged, quantity_written_off, sellable, return_reentry_id)
                         VALUES (:id, :organizationId, :provenanceId, :warehouseId,
                             :productVariantId, :sourceFactKey, :observedAt,
-                            :quantityOnHand, :quantityReserved)
+                            :quantityOnHand, :quantityReserved, :quantityQualityLocked,
+                            :quantityDamaged, :quantityWrittenOff, :sellable, :returnReentryId)
                         ON CONFLICT (organization_id, source_fact_key) DO NOTHING
                         """)
                 .param("id", id)
@@ -354,6 +359,11 @@ public class FactWriteRepository {
                 .param("observedAt", Timestamp.from(observedAt))
                 .param("quantityOnHand", quantityOnHand)
                 .param("quantityReserved", quantityReserved)
+                .param("quantityQualityLocked", quantityQualityLocked)
+                .param("quantityDamaged", quantityDamaged)
+                .param("quantityWrittenOff", quantityWrittenOff)
+                .param("sellable", sellable)
+                .param("returnReentryId", returnReentryId)
                 .update();
     }
 

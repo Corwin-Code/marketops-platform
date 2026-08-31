@@ -21,5 +21,6 @@ public record ScopeChain(
         UUID legalEntityId,
         UUID marketplaceAccountId,
         UUID storeId,
-        UUID warehouseId) {
+        UUID warehouseId,
+        UUID productVariantId) {
 }

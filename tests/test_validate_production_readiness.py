@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import json
 import unittest
+from pathlib import Path
 
 from scripts.validate_production_readiness import (
     APPROVED_MIGRATIONS,
+    approved_index_replacement,
     DEFERRED_ACCEPTANCE_IDS,
     DEFERRED_EVIDENCE_REGISTER,
     HASH_PINNED_DOC_PATHS,
@@ -262,7 +264,10 @@ class RepositoryContractPatternTests(unittest.TestCase):
         for token, claimed in (
             ("slice_v1_002_controller_verdict: NOT_CLAIMED", "PASS"),
             ("slice_v1_002_owner_formal_closure: NOT_CLAIMED", "HUMAN_OWNER_ACCEPTED"),
-            ("slice_v1_002_remote_publication: NOT_CLAIMED", "MERGED"),
+            (
+                "slice_v1_002_remote_publication: CODEX_DRAFT_PR_TRANSPORT_PENDING",
+                "MERGED",
+            ),
         ):
             with self.subTest(token=token):
                 field = token.split(":", 1)[0]
@@ -522,6 +527,7 @@ class MigrationContractTests(unittest.TestCase):
                 "V0031__track_sustained_availability_lane.sql",
                 "V0032__create_availability_fact_feed_cursor.sql",
                 "V0033__track_case_improvement_observation.sql",
+                "V0034__close_availability_deep_review_findings.sql",
             ),
             APPROVED_MIGRATIONS,
         )
@@ -550,6 +556,16 @@ class MigrationContractTests(unittest.TestCase):
         ):
             with self.subTest(statement=statement):
                 self.assertIsNone(DESTRUCTIVE_MIGRATION_STATEMENT.search(statement))
+
+    def test_the_product_scope_index_replacement_is_narrowly_approved(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        path = root / "backend/marketops-server/src/main/resources/db/migration/V0034__close_availability_deep_review_findings.sql"
+        text = path.read_text(encoding="utf-8")
+        line = "DROP INDEX iam.user_scope_grant_active_uq;"
+
+        self.assertTrue(approved_index_replacement(path, text, line))
+        self.assertFalse(approved_index_replacement(path.with_name("V9999__unsafe.sql"), text, line))
+        self.assertFalse(approved_index_replacement(path, text.replace("product_variant_ref_id", "omitted"), line))
 
 
 class CommentExtractionTests(unittest.TestCase):

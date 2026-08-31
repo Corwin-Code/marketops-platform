@@ -57,9 +57,23 @@ public class AvailabilityCaseRepository {
      * raised would put a week-old WATCH above a CRITICAL raised this morning.
      */
     public List<AvailabilityCaseView> queue(UUID organizationId, boolean liveOnly,
-                                            UUID assigneeUserId, int limit) {
+                                            UUID assigneeUserId, UUID[] permittedStoreIds,
+                                            UUID[] permittedProductVariantIds, int limit) {
         return jdbc.sql(SELECT + """
                          WHERE organization_id = :organizationId
+                           AND EXISTS (
+                               SELECT 1
+                                 FROM mart.availability_risk_child scoped_child
+                                 JOIN mart.availability_risk_card scoped_card
+                                   ON scoped_card.id = scoped_child.card_id
+                                  AND scoped_card.organization_id = scoped_child.organization_id
+                                WHERE scoped_child.id = ops.availability_case.child_id
+                                  AND scoped_child.organization_id
+                                      = ops.availability_case.organization_id
+                                  AND scoped_card.product_variant_id
+                                      = ANY (:permittedProductVariantIds)
+                                  AND (scoped_child.child_kind = 'COMPANY'
+                                       OR scoped_child.store_id = ANY (:permittedStoreIds)))
                            AND (:liveOnly = FALSE
                                 OR state NOT IN ('VERIFIED_SUCCESS', 'CANCELLED'))
                            AND (CAST(:assigneeUserId AS uuid) IS NULL
@@ -77,6 +91,8 @@ public class AvailabilityCaseRepository {
                 .param("organizationId", organizationId)
                 .param("liveOnly", liveOnly)
                 .param("assigneeUserId", assigneeUserId)
+                .param("permittedStoreIds", permittedStoreIds)
+                .param("permittedProductVariantIds", permittedProductVariantIds)
                 .param("limit", limit)
                 .query(AvailabilityCaseRepository::map)
                 .list();

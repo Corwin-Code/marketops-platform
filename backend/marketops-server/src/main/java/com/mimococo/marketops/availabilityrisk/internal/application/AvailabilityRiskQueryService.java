@@ -48,18 +48,24 @@ public class AvailabilityRiskQueryService implements AvailabilityRiskQuery {
     @Override
     @Transactional(readOnly = true)
     public List<AvailabilityCardView> queue(UUID organizationId, List<UUID> permittedStoreIds,
+                                            List<UUID> permittedProductVariantIds,
                                             String laneFilter, int limit, int offset) {
         UUID[] stores = permittedStoreIds.toArray(UUID[]::new);
+        UUID[] products = permittedProductVariantIds.toArray(UUID[]::new);
         List<AvailabilityQueryRepository.CardRow> cards = queries.queue(organizationId, stores,
-                laneFilter, Math.clamp(limit, 1, MAX_PAGE), Math.max(0, offset));
+                products, laneFilter, Math.clamp(limit, 1, MAX_PAGE), Math.max(0, offset));
         return assemble(organizationId, cards, stores);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<AvailabilityCardView> card(UUID organizationId, UUID productVariantId) {
-        return queries.card(organizationId, productVariantId)
-                .map(row -> assemble(organizationId, List.of(row), null).get(0));
+    public Optional<AvailabilityCardView> card(UUID organizationId, UUID productVariantId,
+                                               List<UUID> permittedStoreIds,
+                                               List<UUID> permittedProductVariantIds) {
+        UUID[] stores = permittedStoreIds.toArray(UUID[]::new);
+        UUID[] products = permittedProductVariantIds.toArray(UUID[]::new);
+        return queries.card(organizationId, productVariantId, stores, products)
+                .map(row -> assemble(organizationId, List.of(row), stores).get(0));
     }
 
     /**
@@ -141,7 +147,7 @@ public class AvailabilityRiskQueryService implements AvailabilityRiskQuery {
         }
         List<String> labels = new ArrayList<>(terms.size());
         for (JsonNode term : terms) {
-            String label = term.path("label").asText("");
+            String label = term.path("label").asString("");
             if (!label.isBlank()) {
                 labels.add(label);
             }

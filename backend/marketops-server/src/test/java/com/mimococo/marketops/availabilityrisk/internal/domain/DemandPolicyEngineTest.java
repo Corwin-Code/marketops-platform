@@ -121,6 +121,24 @@ class DemandPolicyEngineTest {
     }
 
     @Test
+    @DisplayName("TC-DEMAND-006A one censored window cannot carry across mixed defects")
+    void mixedCensoringAndLowSampleDoesNotCarryForward() {
+        CarriedForwardDemand last = new CarriedForwardDemand(
+                new BigDecimal("9"), DemandWindow.D30, NOW.minus(Duration.ofDays(3)));
+
+        DemandDecision decision = DemandPolicyEngine.decide(
+                List.of(censored(DemandWindow.D7, 0, 0.5,
+                                DemandWindowEvidence.CensoringReason.NOT_SELLABLE),
+                        observed(DemandWindow.D14, 1),
+                        observed(DemandWindow.D30, 2)),
+                policy(), last, NOW);
+
+        assertThat(decision.selectedRate()).isNull();
+        assertThat(decision.evidenceState()).isEqualTo(RiskEvidenceState.DATA_BLOCKED);
+        assertThat(decision.reason()).contains("mixed").contains("forbidden");
+    }
+
+    @Test
     @DisplayName("TC-DEMAND-007 an expired carry-forward blocks rather than returning zero")
     void expiredCarryForwardBlocks() {
         CarriedForwardDemand stale = new CarriedForwardDemand(

@@ -21,6 +21,7 @@ import java.util.UUID;
  * @param platformListingVariantId the listing variant affected, or {@code null}
  * @param productVariantId the internal variant affected, or {@code null}
  * @param triggerClass which kind of evidence changed
+ * @param itemKey stable total-order key for the individual accepted fact
  * @param factAcceptedAt when the fact entered the system
  * @param sourceTime when the source considered it true, or {@code null}
  */
@@ -30,6 +31,12 @@ public record AcceptedFactChange(
         UUID platformListingVariantId,
         UUID productVariantId,
         String triggerClass,
+        String itemKey,
         Instant factAcceptedAt,
         Instant sourceTime) {
+
+    /** The complete feed key of this accepted item. */
+    public AcceptedFactCursor cursor() {
+        return new AcceptedFactCursor(factAcceptedAt, provenanceId, itemKey);
+    }
 }

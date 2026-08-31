@@ -770,6 +770,24 @@ class AvailabilityCaseLifecycleIT {
                         'agreed activation policy', 'ev://ops/activation',
                         now() - interval '10 days', 'ACTIVE', 1, now())
                 """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
+        sql("""
+                INSERT INTO core.availability_priority_policy (id, organization_id,
+                        policy_version, time_weight, profit_weight, velocity_weight,
+                        lifecycle_weight, confidence_weight, owner_user_id, reason,
+                        evidence_reference, effective_from, status, created_at)
+                VALUES ('%s', '%s', 1, 400, 5, 20, 25, -10, '%s',
+                        'agreed availability ordering', 'ev://ops/availability-priority',
+                        now() - interval '10 days', 'ACTIVE', now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
+        sql("""
+                INSERT INTO core.return_quality_policy (id, organization_id, policy_version,
+                        maximum_return_ratio, minimum_retention_ratio,
+                        maximum_defect_return_ratio, owner_user_id, reason,
+                        evidence_reference, effective_from, status, created_at)
+                VALUES ('%s', '%s', 1, 0.25, 0.80, 0.10, '%s',
+                        'agreed return and retention guardrail', 'ev://ops/return-quality',
+                        now() - interval '10 days', 'ACTIVE', now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
     }
 
     /**
@@ -790,8 +808,10 @@ class AvailabilityCaseLifecycleIT {
         sql("""
                 INSERT INTO core.internal_stock_snapshot (id, organization_id, provenance_id,
                         warehouse_id, product_variant_id, source_fact_key, observed_at,
-                        quantity_on_hand, quantity_reserved)
-                VALUES ('%s', '%s', '%s', '%s', '%s', 'case-internal-1', '%s', 300, 0)
+                        quantity_on_hand, quantity_reserved, quantity_quality_locked,
+                        quantity_damaged, quantity_written_off, sellable)
+                VALUES ('%s', '%s', '%s', '%s', '%s', 'case-internal-1', '%s',
+                        300, 0, 0, 0, 0, 'YES')
                 """.formatted(UUID.randomUUID(), ORGANIZATION, internalProvenance, WAREHOUSE,
                 VARIANT, FRESH));
 
@@ -821,7 +841,30 @@ class AvailabilityCaseLifecycleIT {
                     """.formatted(UUID.randomUUID(), ORGANIZATION, saleProvenance, STORE,
                     LISTING_VARIANT, day, day, AS_OF.minus(Duration.ofDays(day))
                             .minus(Duration.ofHours(1))));
+            sql("""
+                    INSERT INTO ledger.sales_fact (id, organization_id, provenance_id, store_id,
+                            platform_listing_variant_id, source_fact_key, native_order_key,
+                            occurred_at, sale_stage, retention_window_days, quantity,
+                            currency_code, gross_amount, discount_amount, net_amount)
+                    VALUES ('%s', '%s', '%s', '%s', '%s', 'case-retained-%d',
+                            'case-order-%d', '%s', 'RETAINED', 30, 6, 'RUB',
+                            6000.0000, 0.0000, 6000.0000)
+                    """.formatted(UUID.randomUUID(), ORGANIZATION, saleProvenance, STORE,
+                    LISTING_VARIANT, day, day, AS_OF.minus(Duration.ofDays(day))
+                            .minus(Duration.ofHours(1))));
         }
+        UUID returnProvenance = UUID.randomUUID();
+        provenance(returnProvenance);
+        sql("""
+                INSERT INTO ledger.return_fact (id, organization_id, provenance_id, store_id,
+                        platform_listing_variant_id, source_fact_key, native_return_key,
+                        native_order_key, return_kind, reason_category, occurred_at, quantity,
+                        currency_code, refund_amount, loss_amount)
+                VALUES ('%s', '%s', '%s', '%s', '%s', 'case-return-1', 'case-return-1',
+                        'case-order-1', 'POST_DELIVERY_RETURN', 'CUSTOMER_CHANGED_MIND',
+                        '%s', 1, 'RUB', 1000.0000, 0.0000)
+                """.formatted(UUID.randomUUID(), ORGANIZATION, returnProvenance, STORE,
+                LISTING_VARIANT, AS_OF.minus(Duration.ofDays(1))));
     }
 
     /** One published stock observation for the exact listing and mode. */

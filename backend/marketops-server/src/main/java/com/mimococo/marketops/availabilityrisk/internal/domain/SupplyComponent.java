@@ -67,6 +67,14 @@ public record SupplyComponent(
         RESERVED,
         /** Units are held in quality control or written off. */
         NOT_SELLABLE,
+        /** The source did not publish every material stock-state dimension. */
+        STOCK_STATE_NOT_REPORTED,
+        /** Units are damaged and cannot be treated as saleable inventory. */
+        DAMAGED,
+        /** Units have been written off by the inventory ledger. */
+        WRITTEN_OFF,
+        /** Eligible inbound is future supply and is applied only at its latest arrival time. */
+        SCHEDULED_FUTURE,
         /** Two attributable sources disagree about the quantity. */
         CONFLICTING_SOURCES,
         /** The inbound window falls outside the coverage horizon. */
@@ -98,7 +106,7 @@ public record SupplyComponent(
     public boolean underminesCompleteness() {
         return !counted && switch (reason) {
             case OWNERSHIP_NOT_DECLARED, STALE_OBSERVATION, QUANTITY_NOT_REPORTED,
-                 CONFLICTING_SOURCES -> true;
+                 STOCK_STATE_NOT_REPORTED, CONFLICTING_SOURCES -> true;
             default -> false;
         };
     }

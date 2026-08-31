@@ -66,7 +66,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0030__create_availability_risk_policy_inbound_and_case.sql",
             "V0031__track_sustained_availability_lane.sql",
             "V0032__create_availability_fact_feed_cursor.sql",
-            "V0033__track_case_improvement_observation.sql");
+            "V0033__track_case_improvement_observation.sql",
+            "V0034__close_availability_deep_review_findings.sql");
 
     private static PostgreSQLContainer container;
 
@@ -129,6 +130,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                             + " ORDER BY 1");
 
             assertThat(tables).containsExactly(
+                    "core.availability_priority_policy",
                     "core.cost_version",
                     "core.demand_observation_policy",
                     "core.economics_projection_component",
@@ -158,6 +160,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "core.product",
                     "core.product_barcode",
                     "core.product_variant",
+                    "core.return_quality_policy",
                     "core.source_feed_watermark",
                     "core.store",
                     "core.store_fulfillment_declaration",
@@ -180,6 +183,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ledger.ad_spend_fact",
                     "ledger.finance_fee_fact",
                     "ledger.return_fact",
+                    "ledger.return_inventory_transition",
                     "ledger.sales_fact",
                     "mart.availability_risk_card",
                     "mart.availability_risk_child",

@@ -26,12 +26,6 @@ public final class PriorityPolicy {
     static final BigDecimal LANE_BAND = BigDecimal.valueOf(100_000);
 
     private static final MathContext CONTEXT = new MathContext(12, RoundingMode.HALF_UP);
-    private static final BigDecimal TIME_WEIGHT = BigDecimal.valueOf(400);
-    private static final BigDecimal PROFIT_WEIGHT = BigDecimal.valueOf(300);
-    private static final BigDecimal VELOCITY_WEIGHT = BigDecimal.valueOf(200);
-    private static final BigDecimal LIFECYCLE_WEIGHT = BigDecimal.valueOf(100);
-    private static final BigDecimal CONFIDENCE_WEIGHT = BigDecimal.valueOf(-150);
-
     private PriorityPolicy() {
     }
 
@@ -45,16 +39,18 @@ public final class PriorityPolicy {
      * @param risk the calculated child
      * @param lifecycleWeight the Owner-approved lifecycle multiplier, 0..1
      */
-    public static Ranking rank(ChildRisk risk, BigDecimal lifecycleWeight) {
+    public static Ranking rank(ChildRisk risk, BigDecimal lifecycleWeight,
+                               PriorityPolicyVersion policy) {
+        java.util.Objects.requireNonNull(policy, "policy");
         List<RankFactor> factors = new ArrayList<>();
         BigDecimal commercial = BigDecimal.ZERO;
 
         BigDecimal cover = risk.daysOfCover();
         BigDecimal timeValue = cover == null ? BigDecimal.ZERO
                 : BigDecimal.ONE.divide(BigDecimal.ONE.add(cover), CONTEXT);
-        BigDecimal timeContribution = timeValue.multiply(TIME_WEIGHT, CONTEXT);
+        BigDecimal timeContribution = timeValue.multiply(policy.timeWeight(), CONTEXT);
         factors.add(new RankFactor(RankFactor.Code.TIME_TO_STOCKOUT,
-                cover == null ? BigDecimal.ZERO : cover, TIME_WEIGHT, timeContribution,
+                cover == null ? BigDecimal.ZERO : cover, policy.timeWeight(), timeContribution,
                 cover == null ? "no projected stockout for this cover"
                         : "runs out in " + cover.setScale(1, RoundingMode.HALF_UP) + " days"));
         commercial = commercial.add(timeContribution);
@@ -66,33 +62,36 @@ public final class PriorityPolicy {
                                         risk.leadTime().resolved()
                                                 ? risk.leadTime().coverageHorizonDays() : 1))));
         BigDecimal exposureValue = exposure == null ? BigDecimal.ZERO : exposure;
-        BigDecimal profitContribution = normalise(exposureValue).multiply(PROFIT_WEIGHT, CONTEXT);
+        BigDecimal profitContribution = normalise(exposureValue)
+                .multiply(policy.profitWeight(), CONTEXT);
         factors.add(new RankFactor(RankFactor.Code.CONTRIBUTION_PROFIT_AT_RISK,
-                exposureValue, PROFIT_WEIGHT, profitContribution,
+                exposureValue, policy.profitWeight(), profitContribution,
                 exposure == null ? "profit at risk is not known for this lane"
                         : "contribution profit exposed over the coverage horizon"));
         commercial = commercial.add(profitContribution);
 
         BigDecimal velocity = risk.demand().selectedRate() == null
                 ? BigDecimal.ZERO : risk.demand().selectedRate();
-        BigDecimal velocityContribution = normalise(velocity).multiply(VELOCITY_WEIGHT, CONTEXT);
-        factors.add(new RankFactor(RankFactor.Code.SALES_VELOCITY, velocity, VELOCITY_WEIGHT,
+        BigDecimal velocityContribution = normalise(velocity)
+                .multiply(policy.velocityWeight(), CONTEXT);
+        factors.add(new RankFactor(RankFactor.Code.SALES_VELOCITY, velocity,
+                policy.velocityWeight(),
                 velocityContribution, "observed units per day from "
                 + (risk.demand().selectedWindow() == null ? "no eligible window"
                         : risk.demand().selectedWindow().name())));
         commercial = commercial.add(velocityContribution);
 
         BigDecimal lifecycle = lifecycleWeight == null ? BigDecimal.ZERO : lifecycleWeight;
-        BigDecimal lifecycleContribution = lifecycle.multiply(LIFECYCLE_WEIGHT, CONTEXT);
+        BigDecimal lifecycleContribution = lifecycle.multiply(policy.lifecycleWeight(), CONTEXT);
         factors.add(new RankFactor(RankFactor.Code.LIFECYCLE_STRATEGY, lifecycle,
-                LIFECYCLE_WEIGHT, lifecycleContribution,
+                policy.lifecycleWeight(), lifecycleContribution,
                 "Owner-approved lifecycle weight for this variant"));
         commercial = commercial.add(lifecycleContribution);
 
         BigDecimal penaltyValue = BigDecimal.valueOf(risk.confidence().penaltyRank());
-        BigDecimal penaltyContribution = penaltyValue.multiply(CONFIDENCE_WEIGHT, CONTEXT);
+        BigDecimal penaltyContribution = penaltyValue.multiply(policy.confidenceWeight(), CONTEXT);
         factors.add(new RankFactor(RankFactor.Code.CONFIDENCE_PENALTY, penaltyValue,
-                CONFIDENCE_WEIGHT, penaltyContribution,
+                policy.confidenceWeight(), penaltyContribution,
                 "confidence " + risk.confidence().name() + " reduces commercial ordering only"));
         commercial = commercial.add(penaltyContribution);
 
@@ -101,6 +100,12 @@ public final class PriorityPolicy {
         BigDecimal clamped = commercial.max(BigDecimal.ZERO).min(LANE_BAND.subtract(BigDecimal.ONE));
         BigDecimal score = LANE_BAND.multiply(BigDecimal.valueOf(band(risk.lane()))).add(clamped);
         return new Ranking(score.setScale(4, RoundingMode.HALF_UP), List.copyOf(factors));
+    }
+
+    /** Severity-only ordering used when the rank authority is absent; no weight is invented. */
+    public static Ranking unranked(ChildRisk risk) {
+        return new Ranking(LANE_BAND.multiply(BigDecimal.valueOf(band(risk.lane())))
+                .setScale(4, RoundingMode.HALF_UP), List.of());
     }
 
     /**

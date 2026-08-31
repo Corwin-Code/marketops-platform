@@ -506,7 +506,9 @@ public class FactQueryRepository {
         return jdbc.sql("""
                         SELECT DISTINCT ON (snapshot.warehouse_id)
                                snapshot.warehouse_id, snapshot.quantity_on_hand,
-                               snapshot.quantity_reserved, snapshot.observed_at,
+                               snapshot.quantity_reserved, snapshot.quantity_quality_locked,
+                               snapshot.quantity_damaged, snapshot.quantity_written_off,
+                               snapshot.sellable, snapshot.observed_at,
                                snapshot.provenance_id
                           FROM core.internal_stock_snapshot AS snapshot
                          WHERE snapshot.product_variant_id = :productVariantId
@@ -520,6 +522,10 @@ public class FactQueryRepository {
                         rows.getObject("warehouse_id", UUID.class),
                         rows.getInt("quantity_on_hand"),
                         integerOrNull(rows, "quantity_reserved"),
+                        integerOrNull(rows, "quantity_quality_locked"),
+                        integerOrNull(rows, "quantity_damaged"),
+                        integerOrNull(rows, "quantity_written_off"),
+                        rows.getString("sellable"),
                         instantOrNull(rows, "observed_at"),
                         rows.getObject("provenance_id", UUID.class)))
                 .list();
@@ -534,14 +540,53 @@ public class FactQueryRepository {
      * sale was actually possible in.
      */
     public List<AvailabilityRow> availabilityObservations(UUID listingVariantId,
+                                                          String fulfillmentModeCode,
                                                           Instant from,
                                                           Instant to) {
         return jdbc.sql("""
+                        SELECT accepted.observed_at, accepted.available_quantity,
+                               accepted.sellable
+                          FROM (
+                        SELECT CAST(:from AS timestamptz) AS observed_at,
+                               seed.available_quantity,
+                               CAST(NULL AS text) AS sellable,
+                               0 AS event_order
+                          FROM LATERAL (
+                               SELECT stock.available_quantity
+                                 FROM core.listing_stock_observation AS stock
+                                WHERE stock.platform_listing_variant_id = :listingVariantId
+                                  AND stock.fulfillment_mode_code = :fulfillmentModeCode
+                                  AND stock.observed_at < :from
+                                  AND NOT EXISTS (
+                                      SELECT 1 FROM core.listing_stock_observation AS newer
+                                       WHERE newer.supersedes_fact_id = stock.id)
+                                ORDER BY stock.observed_at DESC, stock.id DESC
+                                LIMIT 1
+                          ) AS seed
+                        UNION ALL
+                        SELECT CAST(:from AS timestamptz) AS observed_at,
+                               CAST(NULL AS integer) AS available_quantity,
+                               seed.sellable,
+                               1 AS event_order
+                          FROM LATERAL (
+                               SELECT health.sellable
+                                 FROM core.listing_health_observation AS health
+                                WHERE health.platform_listing_variant_id = :listingVariantId
+                                  AND health.observed_at < :from
+                                  AND NOT EXISTS (
+                                      SELECT 1 FROM core.listing_health_observation AS newer
+                                       WHERE newer.supersedes_fact_id = health.id)
+                                ORDER BY health.observed_at DESC, health.id DESC
+                                LIMIT 1
+                          ) AS seed
+                        UNION ALL
                         SELECT stock.observed_at,
                                stock.available_quantity,
-                               CAST(NULL AS text) AS sellable
+                               CAST(NULL AS text) AS sellable,
+                               0 AS event_order
                           FROM core.listing_stock_observation AS stock
                          WHERE stock.platform_listing_variant_id = :listingVariantId
+                           AND stock.fulfillment_mode_code = :fulfillmentModeCode
                            AND stock.observed_at >= :from
                            AND stock.observed_at < :to
                            AND NOT EXISTS (
@@ -550,7 +595,8 @@ public class FactQueryRepository {
                          UNION ALL
                         SELECT health.observed_at,
                                CAST(NULL AS integer) AS available_quantity,
-                               health.sellable
+                               health.sellable,
+                               1 AS event_order
                           FROM core.listing_health_observation AS health
                          WHERE health.platform_listing_variant_id = :listingVariantId
                            AND health.observed_at >= :from
@@ -558,9 +604,11 @@ public class FactQueryRepository {
                            AND NOT EXISTS (
                                SELECT 1 FROM core.listing_health_observation AS newer
                                 WHERE newer.supersedes_fact_id = health.id)
-                         ORDER BY 1
+                          ) AS accepted
+                         ORDER BY accepted.observed_at, accepted.event_order
                         """)
                 .param("listingVariantId", listingVariantId)
+                .param("fulfillmentModeCode", fulfillmentModeCode)
                 .param("from", Timestamp.from(from))
                 .param("to", Timestamp.from(to))
                 .query((rows, rowNumber) -> new AvailabilityRow(
@@ -577,60 +625,75 @@ public class FactQueryRepository {
      * subject each kind resolves to. A caller recalculating a variant needs the
      * subject, not the provenance.
      */
-    public List<AcceptedFactRow> factsAcceptedSince(Instant cursor, int limit) {
+    public List<AcceptedFactRow> factsAcceptedAfter(
+            com.mimococo.marketops.operatingfacts.AcceptedFactCursor cursor, int limit) {
         return jdbc.sql("""
-                        SELECT * FROM (
+                        SELECT accepted.* FROM (
                             SELECT provenance.id AS provenance_id,
                                    provenance.organization_id,
                                    stock.platform_listing_variant_id,
                                    CAST(NULL AS uuid) AS product_variant_id,
                                    'STOCK_OR_SELLABILITY' AS trigger_class,
-                                   provenance.ingestion_time, provenance.source_time
+                                   provenance.ingestion_time, provenance.source_time,
+                                   'LISTING_STOCK|' || stock.id
+                                       AS item_key
                               FROM core.fact_provenance AS provenance
                               JOIN core.listing_stock_observation AS stock
                                 ON stock.provenance_id = provenance.id
-                             WHERE provenance.ingestion_time >= :cursor
                              UNION ALL
                             SELECT provenance.id, provenance.organization_id,
                                    health.platform_listing_variant_id, CAST(NULL AS uuid),
                                    'STOCK_OR_SELLABILITY',
-                                   provenance.ingestion_time, provenance.source_time
+                                   provenance.ingestion_time, provenance.source_time,
+                                   'LISTING_HEALTH|' || health.id
                               FROM core.fact_provenance AS provenance
                               JOIN core.listing_health_observation AS health
                                 ON health.provenance_id = provenance.id
-                             WHERE provenance.ingestion_time >= :cursor
                              UNION ALL
                             SELECT provenance.id, provenance.organization_id,
                                    sale.platform_listing_variant_id, CAST(NULL AS uuid),
                                    'SALES_EVIDENCE',
-                                   provenance.ingestion_time, provenance.source_time
+                                   provenance.ingestion_time, provenance.source_time,
+                                   'SALES|' || sale.id
                               FROM core.fact_provenance AS provenance
                               JOIN ledger.sales_fact AS sale
                                 ON sale.provenance_id = provenance.id
-                             WHERE provenance.ingestion_time >= :cursor
                              UNION ALL
                             SELECT provenance.id, provenance.organization_id,
                                    returned.platform_listing_variant_id, CAST(NULL AS uuid),
                                    'RETURN_EVIDENCE',
-                                   provenance.ingestion_time, provenance.source_time
+                                   provenance.ingestion_time, provenance.source_time,
+                                   'RETURN|' || returned.id
                               FROM core.fact_provenance AS provenance
                               JOIN ledger.return_fact AS returned
                                 ON returned.provenance_id = provenance.id
-                             WHERE provenance.ingestion_time >= :cursor
+                             UNION ALL
+                            SELECT transition.id, transition.organization_id,
+                                   CAST(NULL AS uuid), transition.product_variant_id,
+                                   'RETURN_EVIDENCE', transition.recorded_at,
+                                   transition.occurred_at,
+                                   'RETURN_TRANSITION|' || transition.id
+                              FROM ledger.return_inventory_transition AS transition
                              UNION ALL
                             SELECT provenance.id, provenance.organization_id,
                                    CAST(NULL AS uuid), snapshot.product_variant_id,
                                    'STOCK_OR_SELLABILITY',
-                                   provenance.ingestion_time, provenance.source_time
+                                   provenance.ingestion_time, provenance.source_time,
+                                   'INTERNAL_STOCK|' || snapshot.id
                               FROM core.fact_provenance AS provenance
                               JOIN core.internal_stock_snapshot AS snapshot
                                 ON snapshot.provenance_id = provenance.id
-                             WHERE provenance.ingestion_time >= :cursor
                         ) AS accepted
+                         WHERE (accepted.ingestion_time, accepted.provenance_id,
+                                accepted.item_key)
+                               > (:cursorTime, :cursorProvenanceId, :cursorItemKey)
                          ORDER BY accepted.ingestion_time, accepted.provenance_id
+                                , accepted.item_key
                          LIMIT :limit
                         """)
-                .param("cursor", Timestamp.from(cursor))
+                .param("cursorTime", Timestamp.from(cursor.ingestionTime()))
+                .param("cursorProvenanceId", cursor.provenanceId())
+                .param("cursorItemKey", cursor.itemKey())
                 .param("limit", limit)
                 .query((rows, rowNumber) -> new AcceptedFactRow(
                         rows.getObject("provenance_id", UUID.class),
@@ -638,6 +701,7 @@ public class FactQueryRepository {
                         rows.getObject("platform_listing_variant_id", UUID.class),
                         rows.getObject("product_variant_id", UUID.class),
                         rows.getString("trigger_class"),
+                        rows.getString("item_key"),
                         instantOrNull(rows, "ingestion_time"),
                         instantOrNull(rows, "source_time")))
                 .list();
@@ -786,6 +850,8 @@ public class FactQueryRepository {
     /** The latest snapshot of one warehouse. */
     public record WarehouseStockRow(
             UUID warehouseId, int quantityOnHand, Integer quantityReserved,
+            Integer quantityQualityLocked, Integer quantityDamaged,
+            Integer quantityWrittenOff, String sellable,
             Instant observedAt, UUID provenanceId) {
     }
 
@@ -796,7 +862,8 @@ public class FactQueryRepository {
     /** One accepted fact, with the subject it makes stale. */
     public record AcceptedFactRow(
             UUID provenanceId, UUID organizationId, UUID platformListingVariantId,
-            UUID productVariantId, String triggerClass, Instant ingestionTime, Instant sourceTime) {
+            UUID productVariantId, String triggerClass, String itemKey,
+            Instant ingestionTime, Instant sourceTime) {
     }
 
     /** Internal stock summed across warehouses. */

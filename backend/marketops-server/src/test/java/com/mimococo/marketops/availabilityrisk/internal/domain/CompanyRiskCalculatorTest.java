@@ -119,16 +119,66 @@ class CompanyRiskCalculatorTest {
     }
 
     @Test
-    @DisplayName("TC-COMPANY-007 confirmed inbound inside the horizon reduces risk")
-    void eligibleInboundReducesRisk() {
+    @DisplayName("TC-COMPANY-006A a missing live stock-state dimension fails closed")
+    void missingQualityDamageOrSellabilityStateCannotProduceSafety() {
+        CompanyObservation.WarehouseHolding incomplete =
+                new CompanyObservation.WarehouseHolding(RiskFixtures.WAREHOUSE, 400, 0,
+                        null, 0, 0, Sellability.SELLABLE, FRESH,
+                        java.util.UUID.fromString("00000000-0000-0000-0000-0000000000c2"));
+
+        ChildRisk risk = calculate(new CompanyObservation(VARIANT,
+                List.of(incomplete), List.of(), List.of()), demand("10"));
+
+        assertThat(risk.supply().provenUnits()).isZero();
+        assertThat(risk.supply().complete()).isFalse();
+        assertThat(risk.lane()).isNotEqualTo(AvailabilityLane.HEALTHY);
+        assertThat(risk.blockerCodes()).contains("COMPANY_SUPPLY_STOCK_STATE_NOT_REPORTED");
+    }
+
+    @Test
+    @DisplayName("TC-COMPANY-006B damaged and written-off units never enter available supply")
+    void damagedAndWrittenOffUnitsAreExcluded() {
+        CompanyObservation.WarehouseHolding classified =
+                new CompanyObservation.WarehouseHolding(RiskFixtures.WAREHOUSE, 400, 10,
+                        20, 100, 70, Sellability.SELLABLE, FRESH,
+                        java.util.UUID.fromString("00000000-0000-0000-0000-0000000000c2"));
+
+        ChildRisk risk = calculate(new CompanyObservation(VARIANT,
+                List.of(classified), List.of(), List.of()), demand("10"));
+
+        assertThat(risk.supply().provenUnits()).isEqualTo(200);
+        assertThat(risk.supply().excluded()).extracting(SupplyComponent::reason)
+                .contains(SupplyComponent.ExclusionReason.DAMAGED,
+                        SupplyComponent.ExclusionReason.WRITTEN_OFF);
+    }
+
+    @Test
+    @DisplayName("TC-COMPANY-007 inbound after depletion cannot manufacture present safety")
+    void inboundAfterDepletionPreservesThePreArrivalGap() {
         ChildRisk risk = calculate(new CompanyObservation(VARIANT,
                 List.of(warehouse(50, 0, 0, FRESH)), List.of(),
                 List.of(inbound(300, NOW.plus(Duration.ofDays(5)), NOW.plus(Duration.ofDays(9)),
                         InboundConsignment.Status.SUPPLIER_CONFIRMED, FRESH))),
                 demand("10"));
 
-        assertThat(risk.supply().provenUnits()).isEqualTo(350);
+        assertThat(risk.supply().provenUnits()).isEqualTo(50);
+        assertThat(risk.lane()).isEqualTo(AvailabilityLane.CRITICAL);
+        assertThat(risk.projectedStockoutAt()).isEqualTo(NOW.plus(Duration.ofDays(5)));
+        assertThat(risk.supply().excluded()).anyMatch(component -> component.reason()
+                == SupplyComponent.ExclusionReason.SCHEDULED_FUTURE);
+    }
+
+    @Test
+    @DisplayName("TC-COMPANY-007A inbound before depletion extends the time-phased projection")
+    void inboundBeforeDepletionMayReduceRisk() {
+        ChildRisk risk = calculate(new CompanyObservation(VARIANT,
+                List.of(warehouse(100, 0, 0, FRESH)), List.of(),
+                List.of(inbound(300, NOW.plus(Duration.ofDays(2)), NOW.plus(Duration.ofDays(4)),
+                        InboundConsignment.Status.IN_TRANSIT, FRESH))), demand("10"));
+
+        assertThat(risk.supply().provenUnits()).isEqualTo(100);
         assertThat(risk.lane()).isEqualTo(AvailabilityLane.HEALTHY);
+        assertThat(risk.projectedStockoutAt()).isEqualTo(NOW.plus(Duration.ofDays(40)));
     }
 
     @Test

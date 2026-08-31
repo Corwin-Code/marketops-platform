@@ -82,7 +82,7 @@ public class AvailabilityRecalculationScheduler {
     }
 
     /** Reconcile every organization's whole portfolio, and report what it cost. */
-    @Scheduled(initialDelay = SWEEP_INITIAL_DELAY_MILLIS, fixedDelay = SWEEP_INTERVAL_MILLIS)
+    @Scheduled(initialDelay = SWEEP_INITIAL_DELAY_MILLIS, fixedRate = SWEEP_INTERVAL_MILLIS)
     public void reconcileEveryPortfolio() {
         for (UUID organizationId : queue.activeOrganizations()) {
             reconciliation.sweep(organizationId, "SCHEDULED")

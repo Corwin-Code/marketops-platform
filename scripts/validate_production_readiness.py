@@ -128,6 +128,7 @@ APPROVED_MIGRATIONS = (
     "V0031__track_sustained_availability_lane.sql",
     "V0032__create_availability_fact_feed_cursor.sql",
     "V0033__track_case_improvement_observation.sql",
+    "V0034__close_availability_deep_review_findings.sql",
 )
 
 DEFERRED_EVIDENCE_REGISTER = (
@@ -168,6 +169,24 @@ DESTRUCTIVE_MIGRATION_STATEMENT = re.compile(
     r"^\s*(?:DROP\s+(?:SCHEMA|TABLE|INDEX|ROLE)|TRUNCATE\b|DELETE\s+FROM)",
     re.IGNORECASE,
 )
+
+
+def approved_index_replacement(path: Path, text: str, line: str) -> bool:
+    """Allow one exact non-data index replacement whose old shape is unsafe.
+
+    The old active-grant uniqueness key predates Product scope. Keeping it would
+    collapse every Product grant for one user/action into one row. This narrow
+    exception requires the exact V0034 file, exact old index, and the complete
+    replacement key; it does not permit a table/row/schema drop or arbitrary
+    index retirement.
+    """
+    return (
+        path.name == "V0034__close_availability_deep_review_findings.sql"
+        and line.strip().upper() == "DROP INDEX IAM.USER_SCOPE_GRANT_ACTIVE_UQ;"
+        and "CREATE UNIQUE INDEX user_scope_grant_active_uq" in text
+        and "warehouse_ref_id,\n        product_variant_ref_id)" in text
+        and "NULLS NOT DISTINCT\n    WHERE status = 'ACTIVE';" in text
+    )
 
 # The files that define these rules necessarily contain every pattern the rules
 # search for. They are the rule definition, not a subject of it. Both exclusion
@@ -376,10 +395,17 @@ COMPLETION_STATE_TOKENS = (
     "active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN",
     "active_gate: SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION",
     "authorization: FULL_SCOPE_IMPLEMENTATION",
-    "slice_v1_002_implementation_state: IMPLEMENTATION_IN_PROGRESS",
+    "slice_v1_002_implementation_state: ROOT_CAUSE_REWORK_VERIFIED_LOCAL",
+    "slice_v1_002_branch: fix/SLICE-V1-002-root-cause-rework-r1",
+    "slice_v1_002_reviewed_source_head: c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6",
+    "slice_v1_002_reviewed_source_tree: c94341232b5fa67b5c40a1e6be121a7696e748c4",
+    "slice_v1_002_frozen_findings_sha256: "
+    "60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f799879ebcf94",
+    "slice_v1_002_engineering_findings_addressed: "
+    "18_OF_18_PENDING_INDEPENDENT_CLOSURE_VERIFICATION",
     "slice_v1_002_controller_verdict: NOT_CLAIMED",
     "slice_v1_002_owner_formal_closure: NOT_CLAIMED",
-    "slice_v1_002_remote_publication: NOT_CLAIMED",
+    "slice_v1_002_remote_publication: CODEX_DRAFT_PR_TRANSPORT_PENDING",
     "slice_v1_002_controlled_write_target: NONE_IN_THIS_SLICE",
     "slice_v1_002_real_provider_calls: NONE",
     "slice_v1_001_controller_final_gate: PASS_R2_ENGINEERING_FINAL_GATE",
@@ -396,7 +422,7 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_001_snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e84823ddedf30aab2e3",
     "slice_v1_001_owner_acceptance_comment: 5469935477",
     "slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33",
-    "next_action: SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION",
+    "next_action: VERIFY_LOCAL_PUBLISH_DRAFT_PR_AND_WAIT_REMOTE_CHECKS",
     "production_write_enabled: false",
     "bounded_real_write_verification_authorization: NONE",
     "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",
@@ -1317,6 +1343,8 @@ def check_compromise_retirement(report: Report, files: list[Path]) -> None:
                 if stripped.startswith("--"):
                     continue
                 if DESTRUCTIVE_MIGRATION_STATEMENT.search(line):
+                    if approved_index_replacement(path, text, line):
+                        continue
                     report.add(
                         rule, path, number,
                         f"destructive statement in a metadata migration: {line.strip()[:80]}",

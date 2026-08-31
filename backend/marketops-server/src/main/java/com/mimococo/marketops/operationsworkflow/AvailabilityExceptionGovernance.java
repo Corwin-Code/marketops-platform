@@ -54,6 +54,9 @@ public interface AvailabilityExceptionGovernance {
     /** End every acceptance whose granted period has run out. */
     List<AcceptedExceptionView> expireDue(UUID organizationId, Instant at);
 
+    /** Re-evaluate every active acceptance against current risk, policy and authority. */
+    List<AcceptedExceptionView> revalidateActive(UUID organizationId, Instant at);
+
     /** The acceptance occupying one cause and scope, when one exists. */
     Optional<AcceptedExceptionView> occupying(UUID organizationId, UUID childId, String causeCode,
                                               ExceptionScopeKind scopeKind, String scopeReference);

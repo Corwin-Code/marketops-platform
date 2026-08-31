@@ -3,7 +3,6 @@ import {
   fetchAvailabilityCases,
   fetchCaseExceptions,
   fetchCaseJournal,
-  observeCaseVerification,
   recordCaseAction,
 } from '../api/console';
 import type {
@@ -164,7 +163,6 @@ function CaseRow({
         </dl>
 
         <ActionForm context={context} caseId={governed.id} onChanged={onChanged} />
-        <VerificationForm context={context} caseId={governed.id} onChanged={onChanged} />
 
         <button
           type="button"
@@ -292,81 +290,6 @@ function ActionForm({
         Record action
       </button>
       {problem === undefined ? null : <p data-testid="action-problem">{problem}</p>}
-    </form>
-  );
-}
-
-/**
- * Record what a fresh cause-specific observation showed.
- *
- * Four outcomes rather than two, and none of them is a "close" button. Whether
- * the risk actually improved is an observation somebody makes, and offering a
- * shortcut past it would make the second stage decorative.
- */
-function VerificationForm({
-  context,
-  caseId,
-  onChanged,
-}: {
-  readonly context: ConsoleRequest;
-  readonly caseId: string;
-  readonly onChanged: () => void;
-}): React.JSX.Element {
-  const [outcome, setOutcome] = useState('CONTINUING');
-  const [reason, setReason] = useState('');
-  const [problem, setProblem] = useState<string | undefined>(undefined);
-
-  return (
-    <form
-      data-testid="case-verification-form"
-      onSubmit={(event) => {
-        event.preventDefault();
-        if (reason.trim() === '') {
-          setProblem('An observation needs to say what was seen.');
-          return;
-        }
-        setProblem(undefined);
-        void observeCaseVerification(context, caseId, 'SOURCE_RECOVERED', outcome, reason).then(
-          (answer) => {
-            if (answer.ok) {
-              setReason('');
-              onChanged();
-            } else {
-              setProblem(`The observation was refused (${answer.failure.kind}).`);
-            }
-          },
-        );
-      }}
-    >
-      <label>
-        Observed outcome
-        <select
-          data-testid="verification-outcome"
-          value={outcome}
-          onChange={(event) => {
-            setOutcome(event.target.value);
-          }}
-        >
-          <option value="VERIFIED">The risk improved and held</option>
-          <option value="CONTINUING">Not enough of the window has elapsed</option>
-          <option value="FAILED">The action did not improve the risk</option>
-          <option value="REGRESSED">The risk had improved and has returned</option>
-        </select>
-      </label>
-      <label>
-        What was observed
-        <input
-          data-testid="verification-reason"
-          value={reason}
-          onChange={(event) => {
-            setReason(event.target.value);
-          }}
-        />
-      </label>
-      <button type="submit" data-testid="verification-submit">
-        Record observation
-      </button>
-      {problem === undefined ? null : <p data-testid="verification-problem">{problem}</p>}
     </form>
   );
 }

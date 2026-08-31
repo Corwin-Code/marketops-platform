@@ -79,6 +79,8 @@ class AvailabilityConsoleAuthorizationIT {
     private static final UUID CASE_ID = UUID.fromString("eeee0000-0000-0000-0000-00000000000a");
     private static final UUID OTHER_CASE_ID =
             UUID.fromString("eeee0000-0000-0000-0000-00000000000b");
+    private static final UUID SIBLING_CASE_ID =
+            UUID.fromString("eeee0000-0000-0000-0000-00000000000c");
 
     @Autowired MockMvc mvc;
     @Autowired JdbcClient jdbc;
@@ -87,6 +89,8 @@ class AvailabilityConsoleAuthorizationIT {
 
     private UUID providerId;
     private UUID userId;
+    private UUID primaryVariantId;
+    private UUID siblingVariantId;
     private String subject;
     private UserScopeGrantRecord viewGrant;
 
@@ -105,7 +109,8 @@ class AvailabilityConsoleAuthorizationIT {
 
     @BeforeAll
     void provisionOperatingGraphAndPerson() {
-        seedOrganization(ORGANIZATION, "console-acme", CASE_ID);
+        primaryVariantId = seedOrganization(ORGANIZATION, "console-acme", CASE_ID);
+        siblingVariantId = seedAdditionalCase(ORGANIZATION, "console-sibling", SIBLING_CASE_ID);
         seedOrganization(OTHER_ORGANIZATION, "console-other", OTHER_CASE_ID);
 
         var provider = providers.register(OPERATOR, "availability-console-provider",
@@ -237,10 +242,31 @@ class AvailabilityConsoleAuthorizationIT {
     void approvingNeedsARecentAuthentication() throws Exception {
         users.grantScope(OPERATOR, userId, ActionScopeCode.AVAILABILITY_EXCEPTION_APPROVE,
                 ResourceScopeType.ORGANIZATION, ORGANIZATION, null);
+        UUID exceptionId = UUID.randomUUID();
+        jdbc.sql("""
+                        INSERT INTO ops.availability_accepted_exception
+                            (id, organization_id, case_id, child_id, cause_code, scope_kind,
+                             scope_reference, reason_code, rationale, expected_consequence,
+                             evidence_reference, requested_by_user_id, requested_at,
+                             decision_owner_role_code, required_authority_level, state,
+                             effective_from, expires_at, review_at, occurrence_count,
+                             created_at, updated_at)
+                        SELECT :exceptionId, availability_case.organization_id,
+                               availability_case.id, availability_case.child_id,
+                               availability_case.cause_code, 'CHILD',
+                               availability_case.child_id::text, 'SEASONAL_PAUSE',
+                               'bounded seasonal pause', 'temporary unmet demand',
+                               'ev://commercial/seasonal-plan', :userId, now(), 'OWNER',
+                               'RISK_AUTHORITY', 'REQUESTED', now(), now() + interval '7 days',
+                               now() + interval '3 days', 1, now(), now()
+                          FROM ops.availability_case availability_case
+                         WHERE availability_case.id = :caseId
+                        """).param("exceptionId", exceptionId).param("userId", userId)
+                .param("caseId", CASE_ID).update();
 
         String stale = sign(claims().claim("auth_time",
                 Instant.now().minusSeconds(7200).getEpochSecond()));
-        mvc.perform(post("/api/v1/console/availability/exceptions/" + UUID.randomUUID()
+        mvc.perform(post("/api/v1/console/availability/exceptions/" + exceptionId
                         + "/decision")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + stale)
                         .header(HttpHeaders.ORIGIN, "http://127.0.0.1:5173")
@@ -264,6 +290,96 @@ class AvailabilityConsoleAuthorizationIT {
                 .andExpect(jsonPath("$.title").value("RESOURCE_SCOPE_DENIED"));
     }
 
+    @Test
+    @Order(11)
+    @DisplayName("TC-CONSOLE-011 product scope filters the queue and direct case reads")
+    void productScopeIsAppliedToEveryRead() throws Exception {
+        users.grantScope(OPERATOR, userId, ActionScopeCode.AVAILABILITY_VIEW,
+                ResourceScopeType.PRODUCT_VARIANT, primaryVariantId, null);
+
+        mvc.perform(get(QUEUE).header(HttpHeaders.AUTHORIZATION, bearer()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.id=='" + CASE_ID + "')]").exists())
+                .andExpect(jsonPath("$[?(@.id=='" + SIBLING_CASE_ID + "')]").doesNotExist());
+        mvc.perform(get(QUEUE + "/" + CASE_ID).header(HttpHeaders.AUTHORIZATION, bearer()))
+                .andExpect(status().isOk());
+        mvc.perform(get(QUEUE + "/" + SIBLING_CASE_ID)
+                        .header(HttpHeaders.AUTHORIZATION, bearer()))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.title").value("RESOURCE_SCOPE_DENIED"));
+    }
+
+    @Test
+    @Order(12)
+    @DisplayName("TC-CONSOLE-012 no route can manually declare a case verified")
+    void manualVerificationRouteDoesNotExist() throws Exception {
+        mvc.perform(post(QUEUE + "/" + CASE_ID + "/verification")
+                        .header(HttpHeaders.AUTHORIZATION, bearer())
+                        .header(HttpHeaders.ORIGIN, "http://127.0.0.1:5173")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"verified\":true}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(13)
+    @DisplayName("TC-CONSOLE-013 availability policy changes require fresh step-up authentication")
+    void policyMutationRequiresStepUp() throws Exception {
+        users.grantScope(OPERATOR, userId, ActionScopeCode.SUPPLY_POLICY_MANAGE,
+                ResourceScopeType.ORGANIZATION, ORGANIZATION, null);
+        String stale = sign(claims().claim("auth_time",
+                Instant.now().minusSeconds(7200).getEpochSecond()));
+        Instant effectiveFrom = Instant.now().plusSeconds(60);
+
+        mvc.perform(post("/api/v1/console/availability/policies/priority")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + stale)
+                        .header(HttpHeaders.ORIGIN, "http://127.0.0.1:5173")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"timeWeight":400,"profitWeight":5,"velocityWeight":20,
+                                 "lifecycleWeight":25,"confidenceWeight":-10,
+                                 "reason":"approved priority policy",
+                                 "evidenceReference":"ev://ops/priority",
+                                 "effectiveFrom":"%s"}
+                                """.formatted(effectiveFrom)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.title").value("STEP_UP_REQUIRED"));
+    }
+
+    @Test
+    @Order(14)
+    @DisplayName("TC-CONSOLE-014 inbound attestation is confined to the granted product")
+    void inboundAttestationNeedsTheExactProductGrant() throws Exception {
+        users.grantScope(OPERATOR, userId, ActionScopeCode.INBOUND_ATTEST,
+                ResourceScopeType.PRODUCT_VARIANT, primaryVariantId, null);
+        Instant now = Instant.now();
+        String body = """
+                {"productVariantId":"%s","externalReference":"PO-AUTH-1","quantity":12,
+                 "expectedArrivalFrom":"%s","expectedArrivalTo":"%s",
+                 "businessStatus":"SUPPLIER_CONFIRMED",
+                 "evidenceReference":"ev://po/auth","sourceTime":"%s",
+                 "reason":"confirmed purchase order"}
+                """;
+
+        mvc.perform(post("/api/v1/console/availability/inbound")
+                        .header(HttpHeaders.AUTHORIZATION, bearer())
+                        .header(HttpHeaders.ORIGIN, "http://127.0.0.1:5173")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body.formatted(siblingVariantId, now.plusSeconds(3600),
+                                now.plusSeconds(7200), now)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.title").value("RESOURCE_SCOPE_DENIED"));
+        mvc.perform(post("/api/v1/console/availability/inbound")
+                        .header(HttpHeaders.AUTHORIZATION, bearer())
+                        .header(HttpHeaders.ORIGIN, "http://127.0.0.1:5173")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body.formatted(primaryVariantId, now.plusSeconds(3600),
+                                now.plusSeconds(7200), now)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.productVariantId").value(primaryVariantId.toString()))
+                .andExpect(jsonPath("$.versionNo").value(1));
+    }
+
     /**
      * One organization with a card, a company child and a live case.
      *
@@ -272,7 +388,7 @@ class AvailabilityConsoleAuthorizationIT {
      * them, and one that did would be testing the calculator through a
      * controller.
      */
-    private void seedOrganization(UUID organizationId, String code, UUID caseId) {
+    private UUID seedOrganization(UUID organizationId, String code, UUID caseId) {
         UUID productId = UUID.randomUUID();
         UUID variantId = UUID.randomUUID();
         UUID cardId = UUID.randomUUID();
@@ -348,6 +464,63 @@ class AvailabilityConsoleAuthorizationIT {
                 """, "id", caseId, "organizationId", organizationId, "cardId", cardId,
                 "childId", childId, "causeKey", "COMPANY:" + variantId + ":COMPANY_SUPPLY_SHORT",
                 "policyId", activationPolicy);
+        return variantId;
+    }
+
+    private UUID seedAdditionalCase(UUID organizationId, String code, UUID caseId) {
+        UUID productId = UUID.randomUUID();
+        UUID variantId = UUID.randomUUID();
+        UUID cardId = UUID.randomUUID();
+        UUID childId = UUID.randomUUID();
+        UUID activationPolicy = jdbc.sql("""
+                        SELECT id FROM core.work_activation_policy
+                         WHERE organization_id = :organizationId
+                         ORDER BY policy_version DESC LIMIT 1
+                        """).param("organizationId", organizationId).query(UUID.class).single();
+        update("""
+                INSERT INTO core.product (id, organization_id, code, display_name, status,
+                        created_at, updated_at)
+                VALUES (:id, :organizationId, :code, 'Sibling product', 'ACTIVE', now(), now())
+                """, "id", productId, "organizationId", organizationId, "code", code);
+        update("""
+                INSERT INTO core.product_variant (id, organization_id, product_id, sku_code,
+                        display_name, status, created_at, updated_at)
+                VALUES (:id, :organizationId, :productId, :sku, 'Sibling variant', 'ACTIVE',
+                        now(), now())
+                """, "id", variantId, "organizationId", organizationId,
+                "productId", productId, "sku", code + "-variant");
+        update("""
+                INSERT INTO mart.availability_risk_card (id, organization_id, product_variant_id,
+                        lane, triggering_child_id, rank_score, policy_version_digest, as_of,
+                        calculated_at, calculation_kind, created_at, updated_at)
+                VALUES (:id, :organizationId, :variantId, 'HIGH', :childId, 200000.0000,
+                        repeat('b', 64), now(), now(), 'TARGETED', now(), now())
+                """, "id", cardId, "organizationId", organizationId, "variantId", variantId,
+                "childId", childId);
+        update("""
+                INSERT INTO mart.availability_risk_child (id, card_id, organization_id,
+                        child_kind, lane, evidence_state, confidence_state, cause_code,
+                        profit_lane, demand_selection_reason, conservative_proof,
+                        calculation_id, calculated_at, created_at, updated_at)
+                VALUES (:id, :cardId, :organizationId, 'COMPANY', 'HIGH', 'CONFIRMED', 'HIGH',
+                        'COMPANY_SUPPLY_SHORT', 'CONFIRMED_ELIGIBLE', 'stable baseline',
+                        '{}'::jsonb, :calcId, now(), now(), now())
+                """, "id", childId, "cardId", cardId, "organizationId", organizationId,
+                "calcId", UUID.randomUUID());
+        update("""
+                INSERT INTO ops.availability_case (id, organization_id, card_id, child_id,
+                        cause_code, cause_key, child_kind, severity, state,
+                        accountable_role_code, action_due_at, outcome_due_at,
+                        activation_policy_id, first_activated_at, last_evidence_at,
+                        correlation_id, created_at, updated_at)
+                VALUES (:id, :organizationId, :cardId, :childId, 'COMPANY_SUPPLY_SHORT',
+                        :causeKey, 'COMPANY', 'HIGH', 'OPEN', 'PRODUCT_PROCUREMENT',
+                        now() + interval '4 hours', now() + interval '2 days', :policyId,
+                        now(), now(), 'console-sibling', now(), now())
+                """, "id", caseId, "organizationId", organizationId, "cardId", cardId,
+                "childId", childId, "causeKey",
+                "COMPANY:" + variantId + ":COMPANY_SUPPLY_SHORT", "policyId", activationPolicy);
+        return variantId;
     }
 
     private UUID seedProvider(String code) {

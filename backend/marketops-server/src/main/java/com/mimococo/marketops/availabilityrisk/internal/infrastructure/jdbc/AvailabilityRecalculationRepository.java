@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import com.mimococo.marketops.operatingfacts.AcceptedFactCursor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -30,33 +31,38 @@ public class AvailabilityRecalculationRepository {
     }
 
     /** Where the feed has been read to, when it has been read at all. */
-    public Optional<Instant> cursorPosition() {
+    public Optional<AcceptedFactCursor> cursorPosition() {
         return jdbc.sql("""
-                        SELECT position_at FROM ops.availability_fact_cursor
+                        SELECT position_at, position_provenance_id, position_item_key
+                          FROM ops.availability_fact_cursor
                          WHERE feed_code = :feed
                         """)
                 .param("feed", ACCEPTED_FACT_FEED)
-                .query((rows, rowNumber) -> rows.getTimestamp("position_at").toInstant())
+                .query((rows, rowNumber) -> new AcceptedFactCursor(
+                        rows.getTimestamp("position_at").toInstant(),
+                        rows.getObject("position_provenance_id", UUID.class),
+                        rows.getString("position_item_key")))
                 .optional();
     }
 
     /**
      * Start the feed at an instant, unless it has already started.
      *
-     * <p>A fresh installation starts at now rather than at the beginning of
-     * time: recalculating every fact ever accepted would take longer than the
-     * first hourly sweep that covers the same ground anyway. The insert is
-     * conditional so two workers starting together produce one position.
+     * <p>A fresh installation starts at the caller's explicit backfill point.
+     * The insert is conditional so two workers starting together produce one
+     * position, and neither can silently skip facts accepted before startup.
      */
     public void startCursor(Instant at) {
         jdbc.sql("""
                         INSERT INTO ops.availability_fact_cursor
-                            (feed_code, position_at, last_scanned_at, scanned_count)
-                        VALUES (:feed, :at, :at, 0)
+                            (feed_code, position_at, position_provenance_id, position_item_key,
+                             last_scanned_at, scanned_count)
+                        VALUES (:feed, :at, :beforeAny, '', :at, 0)
                         ON CONFLICT (feed_code) DO NOTHING
                         """)
                 .param("feed", ACCEPTED_FACT_FEED)
                 .param("at", Timestamp.from(at))
+                .param("beforeAny", AcceptedFactCursor.BEFORE_ANY_PROVENANCE)
                 .update();
     }
 
@@ -67,18 +73,23 @@ public class AvailabilityRecalculationRepository {
      * cannot rewind a position another worker has already advanced past, and a
      * rewind would replay facts that were already answered.
      */
-    public void advanceCursor(Instant position, Instant scannedAt, int scanned) {
+    public void advanceCursor(AcceptedFactCursor position, Instant scannedAt, int scanned) {
         jdbc.sql("""
                         UPDATE ops.availability_fact_cursor
-                           SET position_at = :position,
+                           SET position_at = :positionAt,
+                               position_provenance_id = :positionProvenanceId,
+                               position_item_key = :positionItemKey,
                                last_scanned_at = :scannedAt,
                                scanned_count = scanned_count + :scanned,
                                version = version + 1
                          WHERE feed_code = :feed
-                           AND position_at <= :position
+                           AND (position_at, position_provenance_id, position_item_key)
+                               <= (:positionAt, :positionProvenanceId, :positionItemKey)
                         """)
                 .param("feed", ACCEPTED_FACT_FEED)
-                .param("position", Timestamp.from(position))
+                .param("positionAt", Timestamp.from(position.ingestionTime()))
+                .param("positionProvenanceId", position.provenanceId())
+                .param("positionItemKey", position.itemKey())
                 .param("scannedAt", Timestamp.from(scannedAt))
                 .param("scanned", scanned)
                 .update();
@@ -262,6 +273,31 @@ public class AvailabilityRecalculationRepository {
                 .update();
     }
 
+    /**
+     * Fail an interrupted sweep once it has exceeded the hourly operating envelope.
+     *
+     * <p>A process can disappear after writing durable progress but before it
+     * writes completion. Leaving that row {@code RUNNING} forever would make
+     * the uniqueness guard suppress every later hourly repair. The next worker
+     * therefore closes only runs older than the complete cadence, preserving
+     * both their last keyset position and the fact that they never completed.
+     */
+    public int failAbandonedRuns(UUID organizationId, Instant abandonedBefore,
+                                 Instant detectedAt) {
+        return jdbc.sql("""
+                        UPDATE ops.availability_reconciliation_run
+                           SET state = 'FAILED', failure_code = 'WORKER_INTERRUPTED',
+                               completed_at = :detectedAt
+                         WHERE organization_id = :organizationId
+                           AND state = 'RUNNING'
+                           AND started_at <= :abandonedBefore
+                        """)
+                .param("organizationId", organizationId)
+                .param("abandonedBefore", Timestamp.from(abandonedBefore))
+                .param("detectedAt", Timestamp.from(detectedAt))
+                .update();
+    }
+
     /** Close a sweep with what it actually did. */
     public void finishRun(RunOutcome outcome) {
         jdbc.sql("""
@@ -269,6 +305,7 @@ public class AvailabilityRecalculationRepository {
                            SET state = :state, variant_count = :variantCount,
                                changed_card_count = :changedCount,
                                repaired_count = :repairedCount,
+                               failed_variant_count = :failedCount,
                                expired_inbound_count = :expiredInbound,
                                expired_exception_count = :expiredException,
                                failure_code = :failureCode, completed_at = :completedAt
@@ -278,6 +315,7 @@ public class AvailabilityRecalculationRepository {
                 .param("variantCount", outcome.variantCount())
                 .param("changedCount", outcome.changedCardCount())
                 .param("repairedCount", outcome.repairedCount())
+                .param("failedCount", outcome.failedVariantCount())
                 .param("expiredInbound", outcome.expiredInboundCount())
                 .param("expiredException", outcome.expiredExceptionCount())
                 .param("failureCode", outcome.failureCode())
@@ -332,7 +370,8 @@ public class AvailabilityRecalculationRepository {
      * catalogue: a variant nobody lists has no availability question, and
      * sweeping it would spend the hour's budget on rows with no answer.
      */
-    public List<UUID> variantsToReconcile(UUID organizationId, Instant asOf, int limit) {
+    public List<UUID> variantsToReconcile(UUID organizationId, Instant asOf,
+                                          UUID afterVariantId, int limit) {
         return jdbc.sql("""
                         SELECT DISTINCT mapping.product_variant_id
                           FROM core.listing_mapping AS mapping
@@ -340,14 +379,33 @@ public class AvailabilityRecalculationRepository {
                            AND mapping.status = 'ACTIVE'
                            AND mapping.effective_from <= :asOf
                            AND (mapping.effective_to IS NULL OR mapping.effective_to > :asOf)
+                           AND (CAST(:afterVariantId AS uuid) IS NULL
+                                OR mapping.product_variant_id > :afterVariantId)
                          ORDER BY 1
                          LIMIT :limit
                         """)
                 .param("organizationId", organizationId)
                 .param("asOf", Timestamp.from(asOf))
+                .param("afterVariantId", afterVariantId)
                 .param("limit", limit)
                 .query(UUID.class)
                 .list();
+    }
+
+    /** Persist progress after each page so interruption cannot look like completion. */
+    public void recordRunProgress(UUID runId, UUID lastVariantId, int visited, int changed,
+                                  int failures) {
+        jdbc.sql("""
+                        UPDATE ops.availability_reconciliation_run
+                           SET last_product_variant_id = :lastVariantId,
+                               variant_count = :visited,
+                               changed_card_count = :changed,
+                               failed_variant_count = :failures
+                         WHERE id = :runId AND state = 'RUNNING'
+                        """)
+                .param("runId", runId).param("lastVariantId", lastVariantId)
+                .param("visited", visited).param("changed", changed)
+                .param("failures", failures).update();
     }
 
     /**
@@ -523,6 +581,7 @@ public class AvailabilityRecalculationRepository {
      */
     public record RunOutcome(UUID runId, String state, Integer variantCount,
                              Integer changedCardCount, Integer repairedCount,
+                             Integer failedVariantCount,
                              Integer expiredInboundCount, Integer expiredExceptionCount,
                              String failureCode, Instant completedAt) {
     }
