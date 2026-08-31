@@ -538,8 +538,11 @@ class AvailabilityConsoleAuthorizationIT {
     }
 
     private void update(String statement, Object... namedValues) {
+        if ((namedValues.length & 1) != 0) {
+            throw new IllegalArgumentException("named values must be supplied in name/value pairs");
+        }
         var call = jdbc.sql(statement);
-        for (int index = 0; index < namedValues.length; index += 2) {
+        for (int index = 0; index + 1 < namedValues.length; index += 2) {
             call = call.param((String) namedValues[index], namedValues[index + 1]);
         }
         call.update();

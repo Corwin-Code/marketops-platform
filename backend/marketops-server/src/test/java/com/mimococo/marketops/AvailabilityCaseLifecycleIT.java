@@ -330,6 +330,8 @@ class AvailabilityCaseLifecycleIT {
                 .as("the ordinary risk stays exactly as active as it was")
                 .isEqualTo(AvailabilityCaseState.ESCALATED);
 
+        assertThatThrownBy(() -> exceptions.withdraw(requested.id(), " ", AS_OF))
+                .isInstanceOf(OperationRejectedException.class);
         assertThat(exceptions.withdraw(requested.id(), "resubmitted once policy was published",
                 AS_OF).state()).isEqualTo(AcceptedExceptionState.WITHDRAWN);
     }

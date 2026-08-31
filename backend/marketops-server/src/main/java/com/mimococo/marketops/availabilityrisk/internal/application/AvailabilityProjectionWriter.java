@@ -97,7 +97,7 @@ public class AvailabilityProjectionWriter {
             }
             for (DemandWindowEvidence window : scored.windows()) {
                 projection.insertDemandWindow(demandWindowRow(risk, childId, calculationId, window,
-                        scored.risk(), ids.newId()));
+                        ids.newId()));
             }
             writeEvidence(risk, childId, calculationId, scored);
             written.add(new WrittenChild(childId, scored, run.cycles(), run.since()));
@@ -180,7 +180,7 @@ public class AvailabilityProjectionWriter {
 
     private AvailabilityProjectionRepository.DemandWindowRow demandWindowRow(
             VariantRisk risk, UUID childId, UUID calculationId, DemandWindowEvidence window,
-            ChildRisk child, UUID id) {
+            UUID id) {
         boolean sufficient = risk.policies().demand() != null
                 && window.completedUnits() != null
                 && window.completedUnits() >= risk.policies().demand().minimumSampleUnits();

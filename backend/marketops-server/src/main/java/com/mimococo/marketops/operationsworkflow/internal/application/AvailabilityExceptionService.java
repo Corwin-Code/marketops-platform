@@ -93,7 +93,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
         if (policy.isEmpty()) {
             store(id, request, ExceptionAuthorityLevel.RISK_AUTHORITY,
                     AcceptedExceptionState.AUTHORITY_BLOCKED, null, null, 1);
-            recordAudit(request.organizationId(), id, AuditAction.CREATE,
+            recordAudit(id, AuditAction.CREATE,
                     request.requestedByUserId().toString(),
                     Map.of("state", new FieldChange(null,
                             AcceptedExceptionState.AUTHORITY_BLOCKED.name())));
@@ -112,7 +112,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
 
         store(id, request, required, AcceptedExceptionState.REQUESTED, sizing.policyId(),
                 sizing.policyVersion(), occurrence);
-        recordAudit(request.organizationId(), id, AuditAction.CREATE,
+        recordAudit(id, AuditAction.CREATE,
                 request.requestedByUserId().toString(),
                 Map.of("state", new FieldChange(null, AcceptedExceptionState.REQUESTED.name()),
                         "requiredAuthority", new FieldChange(null, required.name())));
@@ -156,7 +156,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
             exceptions.insertDecision(decisionRow(existing, decision, "REJECTED", required,
                     requesterIsApprover, separationRequired, null, null));
             exceptions.setState(existing.id(), AcceptedExceptionState.REJECTED, decision.at());
-            recordAudit(existing.organizationId(), existing.id(), AuditAction.STATUS_CHANGE,
+            recordAudit(existing.id(), AuditAction.STATUS_CHANGE,
                     decision.decidedByUserId().toString(),
                     Map.of("state", new FieldChange(existing.state().name(),
                             AcceptedExceptionState.REJECTED.name())));
@@ -186,7 +186,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
         caseService.acceptRisk(existing.caseId(),
                 "accepted risk " + existing.reasonCode() + " granted until " + existing.expiresAt(),
                 decision.at());
-        recordAudit(existing.organizationId(), existing.id(), AuditAction.STATUS_CHANGE,
+        recordAudit(existing.id(), AuditAction.STATUS_CHANGE,
                 decision.decidedByUserId().toString(),
                 Map.of("state", new FieldChange(existing.state().name(),
                         AcceptedExceptionState.ACTIVE.name())));
@@ -197,15 +197,19 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
     @Transactional
     public AcceptedExceptionView withdraw(UUID exceptionId, String reason, Instant at) {
         AcceptedExceptionView existing = find(exceptionId);
+        if (blank(reason)) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
         if (existing.state() != AcceptedExceptionState.REQUESTED
                 && existing.state() != AcceptedExceptionState.AUTHORITY_BLOCKED) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
         }
         exceptions.setState(exceptionId, AcceptedExceptionState.WITHDRAWN, at);
-        recordAudit(existing.organizationId(), exceptionId, AuditAction.STATUS_CHANGE,
+        recordAudit(exceptionId, AuditAction.STATUS_CHANGE,
                 existing.requestedByUserId().toString(),
                 Map.of("state", new FieldChange(existing.state().name(),
-                        AcceptedExceptionState.WITHDRAWN.name())));
+                                AcceptedExceptionState.WITHDRAWN.name()),
+                        "withdrawalReason", new FieldChange(null, reason)));
         return find(exceptionId);
     }
 
@@ -300,7 +304,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
                                              AvailabilityExceptionRepository.CurrentRisk current) {
         String reference = accepted.scopeReference();
         return switch (accepted.scopeKind()) {
-            case CHILD -> current != null && accepted.childId().toString().equals(reference);
+            case CHILD -> accepted.childId().toString().equals(reference);
             case VARIANT -> current.productVariantId().toString().equals(reference);
             case STORE -> current.storeId() != null && current.storeId().toString().equals(reference);
             case CHANNEL -> current.platformListingVariantId() != null
@@ -338,7 +342,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
                 .AvailabilityCaseState.ACCEPTED_RISK) {
             caseService.reopenFromException(existing.caseId(), reason, at);
         }
-        recordAudit(existing.organizationId(), existing.id(), AuditAction.STATUS_CHANGE,
+        recordAudit(existing.id(), AuditAction.STATUS_CHANGE,
                 "availability-exception-governance",
                 Map.of("state", new FieldChange(existing.state().name(), state.name())));
     }
@@ -358,7 +362,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
                 existing.requestedByUserId().equals(decision.decidedByUserId()),
                 separationRequired, null, null));
         exceptions.setState(existing.id(), AcceptedExceptionState.AUTHORITY_BLOCKED, decision.at());
-        recordAudit(existing.organizationId(), existing.id(), AuditAction.STATUS_CHANGE,
+        recordAudit(existing.id(), AuditAction.STATUS_CHANGE,
                 decision.decidedByUserId().toString(),
                 Map.of("state", new FieldChange(existing.state().name(),
                         AcceptedExceptionState.AUTHORITY_BLOCKED.name())));
@@ -432,8 +436,8 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
         }
     }
 
-    private void recordAudit(UUID organizationId, UUID exceptionId, AuditAction action,
-                             String actorId, Map<String, FieldChange> changes) {
+    private void recordAudit(UUID exceptionId, AuditAction action, String actorId,
+                             Map<String, FieldChange> changes) {
         audit.recordChange(new MetadataAuditChange(AuditSourceDomain.OPERATIONS_WORKFLOW,
                 actorId, action, "availability_accepted_exception", exceptionId, null,
                 changes, "accepted risk governance", null));

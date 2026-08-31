@@ -503,8 +503,8 @@ class AvailabilityRiskFlowIT {
      */
     private void seedFacts() {
         UUID internalProvenance = UUID.randomUUID();
-        provenance(internalProvenance, "INTERNAL_IMPORT");
-        provenance(PLATFORM_PROVENANCE, "MANUAL_ENTRY");
+        provenance(internalProvenance);
+        provenance(PLATFORM_PROVENANCE);
 
         sql("""
                 INSERT INTO core.internal_stock_snapshot (id, organization_id, provenance_id,
@@ -536,7 +536,7 @@ class AvailabilityRiskFlowIT {
         // minimum sample and with no single day dominating.
         for (int day = 1; day <= 30; day++) {
             UUID saleProvenance = UUID.randomUUID();
-            provenance(saleProvenance, "MARKETPLACE_RAW_LIKE");
+            provenance(saleProvenance);
             sql("""
                     INSERT INTO ledger.sales_fact (id, organization_id, provenance_id, store_id,
                             platform_listing_variant_id, source_fact_key, native_order_key,
@@ -557,7 +557,7 @@ class AvailabilityRiskFlowIT {
      * fixture does not produce, so seeded facts are recorded as manual entry.
      * That is honest: no marketplace was contacted.
      */
-    private void provenance(UUID id, String kindHint) {
+    private void provenance(UUID id) {
         sql("""
                 INSERT INTO core.fact_provenance (id, organization_id, source_kind, source_time,
                         ingestion_time, recorded_by_user_id, evidence_note)

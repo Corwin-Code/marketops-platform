@@ -113,8 +113,7 @@ public record InboundConsignment(
     }
 
     /** Why this consignment was refused at {@code asOf}, for the evidence trail. */
-    public SupplyComponent.ExclusionReason exclusionAt(Instant asOf, Instant horizonEnd,
-                                                       long freshnessMaxMinutes) {
+    public SupplyComponent.ExclusionReason exclusionAt(Instant asOf, Instant horizonEnd) {
         if (!businessStatus.mayReduceRisk()) {
             return SupplyComponent.ExclusionReason.INELIGIBLE_STATUS;
         }

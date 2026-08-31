@@ -96,7 +96,7 @@ public final class DemandPolicyEngine {
                 reason = "sustained recent deceleration: D7 falls below D14 beyond the policy ratio";
             }
             case CONFLICTED -> {
-                return conflicted(evidence, settings);
+                return conflicted(evidence);
             }
             default -> {
                 selected = baseline;
@@ -177,8 +177,7 @@ public final class DemandPolicyEngine {
         return WindowEligibility.ELIGIBLE;
     }
 
-    private static DemandDecision conflicted(List<DemandWindowEvidence> evidence,
-                                             DemandPolicySettings settings) {
+    private static DemandDecision conflicted(List<DemandWindowEvidence> evidence) {
         return new DemandDecision(null, null,
                 "window conflict: a large recent step is not sustained across the longer window",
                 RiskEvidenceState.CONFLICTED, RiskConfidence.UNUSABLE,

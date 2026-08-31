@@ -159,7 +159,7 @@ public final class CompanyRiskCalculator {
             } else {
                 components.add(SupplyComponent.excluded(SupplyComponent.Source.ELIGIBLE_INBOUND,
                         consignment.quantity(),
-                        consignment.exclusionAt(asOf, horizonEnd, freshnessMaxMinutes),
+                        consignment.exclusionAt(asOf, horizonEnd),
                         consignment.attestationVersionId(), consignment.lastVerifiedAt()));
             }
         }

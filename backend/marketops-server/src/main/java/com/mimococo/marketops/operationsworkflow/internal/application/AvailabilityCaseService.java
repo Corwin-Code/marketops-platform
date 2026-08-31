@@ -81,7 +81,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
         cases.appendEvent(event(id, request.organizationId(), "ACTIVATED", null, "OPEN",
                 "cause " + request.causeCode() + " activated at severity " + request.severity(),
                 request.correlationId(), request.at()));
-        record(request.organizationId(), id, AuditAction.CREATE, "availability-risk-calculation",
+        record(id, AuditAction.CREATE, "availability-risk-calculation",
                 Map.of("state", new com.mimococo.marketops.adminobservability.audit.FieldChange(
                         null, "OPEN")));
         return cases.find(id).orElseThrow();
@@ -119,7 +119,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
                 "case-" + caseId, now));
         cases.transition(new AvailabilityCaseRepository.Transition(caseId,
                 AvailabilityCaseState.VERIFYING, now, now, null, null, null, null, 0, 0, now));
-        record(existing.organizationId(), caseId, AuditAction.STATUS_CHANGE,
+        record(caseId, AuditAction.STATUS_CHANGE,
                 actorUserId.toString(),
                 Map.of("state", new com.mimococo.marketops.adminobservability.audit.FieldChange(
                         existing.state().name(), AvailabilityCaseState.VERIFYING.name())));
@@ -161,7 +161,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
         cases.appendEvent(event(caseId, existing.organizationId(),
                 verified ? "VERIFIED_SUCCESS" : next.name(), existing.state().name(),
                 next.name(), reason, "case-" + caseId, now));
-        record(existing.organizationId(), caseId, AuditAction.STATUS_CHANGE,
+        record(caseId, AuditAction.STATUS_CHANGE,
                 "availability-outcome-verification",
                 Map.of("state", new com.mimococo.marketops.adminobservability.audit.FieldChange(
                         existing.state().name(), next.name())));
@@ -265,7 +265,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
         cases.appendEvent(event(caseId, existing.organizationId(), "REOPENED",
                 existing.state().name(), AvailabilityCaseState.REOPENED.name(), reason,
                 "case-" + caseId, at));
-        record(existing.organizationId(), caseId, AuditAction.STATUS_CHANGE,
+        record(caseId, AuditAction.STATUS_CHANGE,
                 "availability-risk-calculation",
                 Map.of("state", new com.mimococo.marketops.adminobservability.audit.FieldChange(
                         existing.state().name(), AvailabilityCaseState.REOPENED.name())));
@@ -285,7 +285,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
         cases.appendEvent(event(caseId, existing.organizationId(), "ESCALATED",
                 existing.state().name(), AvailabilityCaseState.ESCALATED.name(), reason,
                 "case-" + caseId, at));
-        record(existing.organizationId(), caseId, AuditAction.STATUS_CHANGE,
+        record(caseId, AuditAction.STATUS_CHANGE,
                 "availability-escalation-policy",
                 Map.of("escalationLevel",
                         new com.mimococo.marketops.adminobservability.audit.FieldChange(
@@ -323,7 +323,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
         cases.appendEvent(event(caseId, existing.organizationId(), "EXCEPTION_APPLIED",
                 existing.state().name(), AvailabilityCaseState.ACCEPTED_RISK.name(), reason,
                 "case-" + caseId, at));
-        record(existing.organizationId(), caseId, AuditAction.STATUS_CHANGE,
+        record(caseId, AuditAction.STATUS_CHANGE,
                 "availability-exception-governance",
                 Map.of("state", new com.mimococo.marketops.adminobservability.audit.FieldChange(
                         existing.state().name(), AvailabilityCaseState.ACCEPTED_RISK.name())));
@@ -346,7 +346,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
         cases.appendEvent(event(caseId, existing.organizationId(), "EXCEPTION_INVALIDATED",
                 existing.state().name(), AvailabilityCaseState.REOPENED.name(), reason,
                 "case-" + caseId, at));
-        record(existing.organizationId(), caseId, AuditAction.STATUS_CHANGE,
+        record(caseId, AuditAction.STATUS_CHANGE,
                 "availability-exception-governance",
                 Map.of("state", new com.mimococo.marketops.adminobservability.audit.FieldChange(
                         existing.state().name(), AvailabilityCaseState.REOPENED.name())));
@@ -400,7 +400,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
      * activation to a person would be a fabricated attribution, which the audit
      * contract refuses on principle.
      */
-    private void record(UUID organizationId, UUID caseId, AuditAction action, String actorId,
+    private void record(UUID caseId, AuditAction action, String actorId,
                         Map<String, com.mimococo.marketops.adminobservability.audit.FieldChange>
                                 changes) {
         audit.recordChange(new MetadataAuditChange(AuditSourceDomain.OPERATIONS_WORKFLOW,
