@@ -17,18 +17,26 @@ import java.util.UUID;
  *
  * @param leadTime the resolved lead-time and safety policy
  * @param demand the demand-observation policy version in force
- * @param activationPolicyId the work-activation version in force, or {@code null}
- * @param activationPolicyVersion its version number, or {@code null}
+ * @param activation the work-activation version in force, or {@code null}
  */
 public record AvailabilityPolicySet(
         LeadTimeResolution leadTime,
         DemandPolicySettings demand,
-        UUID activationPolicyId,
-        Integer activationPolicyVersion) {
+        WorkActivationPolicy activation) {
 
     public AvailabilityPolicySet {
         Objects.requireNonNull(leadTime, "leadTime");
         Objects.requireNonNull(demand, "demand");
+    }
+
+    /** The work-activation version's identity, or {@code null} when none is in force. */
+    public UUID activationPolicyId() {
+        return activation == null ? null : activation.policyId();
+    }
+
+    /** The work-activation version number, or {@code null} when none is in force. */
+    public Integer activationPolicyVersion() {
+        return activation == null ? null : activation.policyVersion();
     }
 
     /**
@@ -46,8 +54,8 @@ public record AvailabilityPolicySet(
                 .append(leadTime.policyVersion()).append('|')
                 .append("demand=").append(demand.policyId()).append(':')
                 .append(demand.policyVersion()).append('|')
-                .append("activation=").append(activationPolicyId).append(':')
-                .append(activationPolicyVersion);
+                .append("activation=").append(activationPolicyId()).append(':')
+                .append(activationPolicyVersion());
         try {
             byte[] digest = MessageDigest.getInstance("SHA-256")
                     .digest(material.toString().getBytes(StandardCharsets.UTF_8));

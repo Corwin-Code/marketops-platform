@@ -114,6 +114,7 @@ public class AvailabilityProjectionRepository {
                              projected_stockout_at, profit_lane, profit_at_risk_amount,
                              profit_at_risk_currency, demand_selection_reason,
                              conservative_proof, blocker_codes, calculation_id, calculated_at,
+                             sustained_lane, sustained_cycles, sustained_since,
                              created_at, updated_at)
                         VALUES (:id, :cardId, :organizationId, :childKind, :storeId,
                                 :listingVariantId, :fulfillmentModeCode, :lane, :evidenceState,
@@ -121,7 +122,8 @@ public class AvailabilityProjectionRepository {
                                 :daysOfCover, :horizonDays, :stockoutAt, :profitLane,
                                 :profitAmount, :profitCurrency, :demandReason,
                                 CAST(:proof AS jsonb), :blockerCodes, :calculationId,
-                                :calculatedAt, :calculatedAt, :calculatedAt)
+                                :calculatedAt, :sustainedLane, :sustainedCycles, :sustainedSince,
+                                :calculatedAt, :calculatedAt)
                         ON CONFLICT %s DO UPDATE
                            SET lane = excluded.lane,
                                evidence_state = excluded.evidence_state,
@@ -140,6 +142,9 @@ public class AvailabilityProjectionRepository {
                                blocker_codes = excluded.blocker_codes,
                                calculation_id = excluded.calculation_id,
                                calculated_at = excluded.calculated_at,
+                               sustained_lane = excluded.sustained_lane,
+                               sustained_cycles = excluded.sustained_cycles,
+                               sustained_since = excluded.sustained_since,
                                updated_at = excluded.updated_at,
                                version = mart.availability_risk_child.version + 1
                         """.formatted(conflict))
@@ -168,42 +173,51 @@ public class AvailabilityProjectionRepository {
                 .param("blockerCodes", child.blockerCodes())
                 .param("calculationId", child.calculationId())
                 .param("calculatedAt", Timestamp.from(child.calculatedAt()))
+                .param("sustainedLane", child.sustainedLane())
+                .param("sustainedCycles", child.sustainedCycles())
+                .param("sustainedSince", child.sustainedSince() == null
+                        ? null : Timestamp.from(child.sustainedSince()))
                 .update();
         return findChildId(child).orElseThrow();
     }
 
     /**
-     * The identity a child already has, when it has one.
+     * What a child already is, when it already exists.
      *
      * <p>Resolved before the card is written, because the card must name its
      * triggering child at the moment it is inserted: the constraint that a
      * non-healthy card discloses which child produced its lane admits no
      * window in which it does not.
+     *
+     * <p>The sustained run comes back with it, because deciding whether a HIGH
+     * has held long enough to become work needs the run this calculation is
+     * either continuing or breaking.
      */
-    public Optional<UUID> resolveChildId(ChildKind kind, UUID cardId,
-                                         UUID platformListingVariantId,
-                                         String fulfillmentModeCode) {
-        if (kind == ChildKind.CHANNEL) {
-            return jdbc.sql("""
-                            SELECT id FROM mart.availability_risk_child
-                             WHERE child_kind = 'CHANNEL'
-                               AND platform_listing_variant_id = :listingVariantId
-                               AND fulfillment_mode_code = :fulfillmentModeCode
-                            """)
-                    .param("listingVariantId", platformListingVariantId)
-                    .param("fulfillmentModeCode", fulfillmentModeCode)
-                    .query(UUID.class)
-                    .optional();
-        }
-        if (cardId == null) {
+    public Optional<ExistingChild> resolveChild(ChildKind kind, UUID cardId,
+                                                UUID platformListingVariantId,
+                                                String fulfillmentModeCode) {
+        String predicate = kind == ChildKind.CHANNEL
+                ? "child_kind = 'CHANNEL' AND platform_listing_variant_id = :listingVariantId"
+                        + " AND fulfillment_mode_code = :fulfillmentModeCode"
+                : "child_kind = 'COMPANY' AND card_id = :cardId";
+        if (kind == ChildKind.COMPANY && cardId == null) {
             return Optional.empty();
         }
         return jdbc.sql("""
-                        SELECT id FROM mart.availability_risk_child
-                         WHERE child_kind = 'COMPANY' AND card_id = :cardId
-                        """)
+                        SELECT id, lane, sustained_lane, sustained_cycles, sustained_since
+                          FROM mart.availability_risk_child
+                         WHERE %s
+                        """.formatted(predicate))
+                .param("listingVariantId", platformListingVariantId)
+                .param("fulfillmentModeCode", fulfillmentModeCode)
                 .param("cardId", cardId)
-                .query(UUID.class)
+                .query((rows, rowNumber) -> new ExistingChild(
+                        rows.getObject("id", UUID.class),
+                        rows.getString("lane"),
+                        rows.getString("sustained_lane"),
+                        rows.getInt("sustained_cycles"),
+                        rows.getTimestamp("sustained_since") == null
+                                ? null : rows.getTimestamp("sustained_since").toInstant()))
                 .optional();
     }
 
@@ -380,7 +394,21 @@ public class AvailabilityProjectionRepository {
                            Instant projectedStockoutAt, String profitLane,
                            BigDecimal profitAtRiskAmount, String profitAtRiskCurrency,
                            String demandSelectionReason, String conservativeProof,
-                           String[] blockerCodes, UUID calculationId, Instant calculatedAt) {
+                           String[] blockerCodes, UUID calculationId, Instant calculatedAt,
+                           String sustainedLane, int sustainedCycles, Instant sustainedSince) {
+    }
+
+    /**
+     * A child that already exists, and the run of evaluations behind it.
+     *
+     * @param id its identity
+     * @param lane the lane it currently carries
+     * @param sustainedLane the lane that has been repeating, or {@code null}
+     * @param sustainedCycles how many consecutive calculations produced it
+     * @param sustainedSince when the run started, or {@code null}
+     */
+    public record ExistingChild(UUID id, String lane, String sustainedLane, int sustainedCycles,
+                                Instant sustainedSince) {
     }
 
     /** One demand window's coverage evidence to write. */

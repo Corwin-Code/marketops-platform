@@ -222,7 +222,7 @@ class AvailabilityRiskFlowIT {
     @DisplayName("TC-AVAIL-FLOW-005 writing the projection records the card, children and evidence")
     void projectionIsWritten() {
         VariantRisk risk = calculation.calculate(ORGANIZATION, VARIANT, AS_OF);
-        UUID cardId = writer.write(risk, "TARGETED", null);
+        UUID cardId = writer.write(risk, "TARGETED", null).cardId();
 
         assertThat(count("SELECT count(*) FROM mart.availability_risk_card WHERE id = '"
                 + cardId + "'")).isEqualTo(1);

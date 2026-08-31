@@ -85,12 +85,8 @@ public class AvailabilityRiskCalculationService {
         DemandPolicySettings demandSettings = demandPolicy.get();
         long freshnessMinutes = demandSettings.stockFreshnessMax().toMinutes();
 
-        Optional<AvailabilityPolicyRepository.ActivationRow> activation =
-                policies.resolveActivationPolicy(organizationId, asOf);
         AvailabilityPolicySet policySet = new AvailabilityPolicySet(leadTime, demandSettings,
-                activation.map(AvailabilityPolicyRepository.ActivationRow::id).orElse(null),
-                activation.map(AvailabilityPolicyRepository.ActivationRow::policyVersion)
-                        .orElse(null));
+                policies.resolveActivationPolicy(organizationId, asOf).orElse(null));
 
         List<AvailabilityEvidenceGatherer.ChannelSubject> subjects =
                 evidence.channelSubjects(productVariantId, asOf);
@@ -165,7 +161,7 @@ public class AvailabilityRiskCalculationService {
                 com.mimococo.marketops.availabilityrisk.internal.domain.ConservativeProof.none(),
                 List.of("DEMAND_POLICY_UNRESOLVED"));
         return new VariantRisk(organizationId, productVariantId, asOf,
-                new AvailabilityPolicySet(leadTime, placeholder, null, null),
+                new AvailabilityPolicySet(leadTime, placeholder, null),
                 List.of(new VariantRisk.ScoredChild(risk, null,
                         PriorityPolicy.rank(risk, DEFAULT_LIFECYCLE_WEIGHT), List.of())));
     }

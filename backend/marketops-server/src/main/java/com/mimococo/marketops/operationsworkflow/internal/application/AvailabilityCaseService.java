@@ -214,6 +214,59 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
     }
 
     /**
+     * Put a case under a governed acceptance.
+     *
+     * <p>Not on {@link AvailabilityCaseIntake}, because a calculation must never
+     * be able to reach it: accepting a risk is a business decision taken by a
+     * named person under a versioned policy, and the only caller is the
+     * exception governance that enforces both.
+     *
+     * <p>The case is disposed of, not closed. It never reaches
+     * {@code VERIFIED_SUCCESS} this way and the calculated risk it points at is
+     * unchanged, which is what keeps an acceptance from becoming a way to make
+     * a red card green.
+     */
+    @Transactional
+    public AvailabilityCaseView acceptRisk(UUID caseId, String reason, Instant at) {
+        AvailabilityCaseView existing = require(caseId);
+        requireTransition(existing, AvailabilityCaseState.ACCEPTED_RISK);
+        cases.transition(new AvailabilityCaseRepository.Transition(caseId,
+                AvailabilityCaseState.ACCEPTED_RISK, null, null, null, null, null, null,
+                0, 0, at));
+        cases.appendEvent(event(caseId, existing.organizationId(), "EXCEPTION_APPLIED",
+                existing.state().name(), AvailabilityCaseState.ACCEPTED_RISK.name(), reason,
+                "case-" + caseId, at));
+        record(existing.organizationId(), caseId, AuditAction.STATUS_CHANGE,
+                "availability-exception-governance",
+                Map.of("state", new com.mimococo.marketops.adminobservability.audit.FieldChange(
+                        existing.state().name(), AvailabilityCaseState.ACCEPTED_RISK.name())));
+        return cases.find(caseId).orElseThrow();
+    }
+
+    /**
+     * Return a case from acceptance to somebody, with its history.
+     *
+     * <p>Separate from {@link #reopen} only in the event it journals: a reader
+     * reviewing why an acceptance failed needs to see that this reopen was an
+     * invalidation rather than a returning risk.
+     */
+    @Transactional
+    public AvailabilityCaseView reopenFromException(UUID caseId, String reason, Instant at) {
+        AvailabilityCaseView existing = require(caseId);
+        requireTransition(existing, AvailabilityCaseState.REOPENED);
+        cases.transition(new AvailabilityCaseRepository.Transition(caseId,
+                AvailabilityCaseState.REOPENED, null, null, null, null, null, null, 1, 0, at));
+        cases.appendEvent(event(caseId, existing.organizationId(), "EXCEPTION_INVALIDATED",
+                existing.state().name(), AvailabilityCaseState.REOPENED.name(), reason,
+                "case-" + caseId, at));
+        record(existing.organizationId(), caseId, AuditAction.STATUS_CHANGE,
+                "availability-exception-governance",
+                Map.of("state", new com.mimococo.marketops.adminobservability.audit.FieldChange(
+                        existing.state().name(), AvailabilityCaseState.REOPENED.name())));
+        return cases.find(caseId).orElseThrow();
+    }
+
+    /**
      * Append what the latest calculation established to a case already open.
      *
      * <p>Severity may move under policy and the action deadline moves with it,

@@ -47,10 +47,10 @@ public class AvailabilityProjectionWriter {
      * @param risk the calculated result
      * @param calculationKind {@code TARGETED} or {@code RECONCILIATION}
      * @param reconciliationRunId the sweep that produced it, or {@code null}
-     * @return the card identity
+     * @return the card, its children and the run each child is now on
      */
     @Transactional
-    public UUID write(VariantRisk risk, String calculationKind, UUID reconciliationRunId) {
+    public WrittenCard write(VariantRisk risk, String calculationKind, UUID reconciliationRunId) {
         var calculatedAt = clock.instant();
         UUID existingCardId = projection
                 .findCardId(risk.organizationId(), risk.productVariantId())
@@ -59,21 +59,24 @@ public class AvailabilityProjectionWriter {
         // Every child's identity is settled first. A non-healthy card has to
         // name the child that produced its lane in the same statement that
         // creates it, so the identities cannot be discovered afterwards.
-        Map<VariantRisk.ScoredChild, UUID> childIds = new LinkedHashMap<>();
+        //
+        // The run each child was on is read in the same pass, because deciding
+        // whether it continues or breaks needs the state before this write
+        // overwrites it.
+        Map<VariantRisk.ScoredChild, SustainedRun> runs = new LinkedHashMap<>();
         for (VariantRisk.ScoredChild scored : risk.children()) {
             var subject = scored.subject();
-            UUID resolved = projection.resolveChildId(scored.risk().kind(), existingCardId,
-                            subject == null ? null : subject.observation().platformListingVariantId(),
-                            subject == null ? null : subject.observation().fulfillmentModeCode())
-                    .orElseGet(ids::newId);
-            childIds.put(scored, resolved);
+            var existing = projection.resolveChild(scored.risk().kind(), existingCardId,
+                    subject == null ? null : subject.observation().platformListingVariantId(),
+                    subject == null ? null : subject.observation().fulfillmentModeCode());
+            runs.put(scored, continueRun(existing.orElse(null), scored, calculatedAt));
         }
 
         VariantRisk.ScoredChild trigger = risk.triggeringChild();
         UUID triggeringChildId =
                 risk.parentLane() == com.mimococo.marketops.availabilityrisk.AvailabilityLane.HEALTHY
                         ? null
-                        : childIds.get(trigger);
+                        : runs.get(trigger).childId();
 
         UUID cardId = projection.upsertCard(new AvailabilityProjectionRepository.CardRow(
                 existingCardId == null ? ids.newId() : existingCardId, risk.organizationId(),
@@ -81,10 +84,12 @@ public class AvailabilityProjectionWriter {
                 risk.rankScore(), risk.policies().versionDigest(), risk.asOf(), calculatedAt,
                 calculationKind, reconciliationRunId));
 
+        List<WrittenChild> written = new ArrayList<>();
         for (VariantRisk.ScoredChild scored : risk.children()) {
             UUID calculationId = ids.newId();
+            SustainedRun run = runs.get(scored);
             UUID childId = projection.upsertChild(childRow(risk, cardId, scored, calculationId,
-                    calculatedAt, childIds.get(scored)));
+                    calculatedAt, run));
             for (RankFactor factor : scored.ranking().factors()) {
                 projection.insertFactor(ids.newId(), childId, risk.organizationId(), calculationId,
                         factor.code().name(), factor.value(), factor.weight(),
@@ -95,17 +100,40 @@ public class AvailabilityProjectionWriter {
                         scored.risk(), ids.newId()));
             }
             writeEvidence(risk, childId, calculationId, scored);
+            written.add(new WrittenChild(childId, scored, run.cycles(), run.since()));
         }
-        return cardId;
+        return new WrittenCard(cardId, risk.parentLane(), List.copyOf(written));
+    }
+
+    /**
+     * Extend or restart the run of evaluations behind one child.
+     *
+     * <p>An unchanged lane extends the run and keeps its original start; any
+     * other lane starts a new run of one. The count is what separates a HIGH
+     * that has held from a HIGH that appeared in this cycle, and the two
+     * deserve different treatment: activating on the first sighting fills the
+     * queue with risks that resolve themselves before anyone opens them.
+     */
+    private SustainedRun continueRun(AvailabilityProjectionRepository.ExistingChild existing,
+                                     VariantRisk.ScoredChild scored, java.time.Instant at) {
+        String lane = scored.risk().lane().name();
+        if (existing == null) {
+            return new SustainedRun(ids.newId(), lane, 1, at);
+        }
+        if (lane.equals(existing.sustainedLane())) {
+            return new SustainedRun(existing.id(), lane, existing.sustainedCycles() + 1,
+                    existing.sustainedSince() == null ? at : existing.sustainedSince());
+        }
+        return new SustainedRun(existing.id(), lane, 1, at);
     }
 
     private AvailabilityProjectionRepository.ChildRow childRow(
             VariantRisk risk, UUID cardId, VariantRisk.ScoredChild scored, UUID calculationId,
-            java.time.Instant calculatedAt, UUID childId) {
+            java.time.Instant calculatedAt, SustainedRun run) {
         ChildRisk child = scored.risk();
         var subject = scored.subject();
         return new AvailabilityProjectionRepository.ChildRow(
-                childId, cardId, risk.organizationId(), child.kind(),
+                run.childId(), cardId, risk.organizationId(), child.kind(),
                 subject == null ? null : subject.observation().storeId(),
                 subject == null ? null : subject.observation().platformListingVariantId(),
                 subject == null ? null : subject.observation().fulfillmentModeCode(),
@@ -117,8 +145,9 @@ public class AvailabilityProjectionWriter {
                 child.leadTime().resolved() ? child.leadTime().coverageHorizonDays() : null,
                 child.projectedStockoutAt(), child.profit().lane().name(),
                 child.profit().perUnitAmount(), child.profit().currencyCode(),
-                child.demand().reason(), proofJson(child), 
-                child.blockerCodes().toArray(String[]::new), calculationId, calculatedAt);
+                child.demand().reason(), proofJson(child),
+                child.blockerCodes().toArray(String[]::new), calculationId, calculatedAt,
+                run.lane(), run.cycles(), run.since());
     }
 
     /**
@@ -240,5 +269,38 @@ public class AvailabilityProjectionWriter {
     /** Whether a child is a channel child, for callers deciding how to render it. */
     static boolean channel(ChildKind kind) {
         return kind == ChildKind.CHANNEL;
+    }
+
+    /**
+     * What was written for one variant.
+     *
+     * <p>Returned rather than re-read because activation needs the child
+     * identities and their runs, and re-reading them would let a concurrent
+     * calculation substitute a different generation between the write and the
+     * decision taken on it.
+     *
+     * @param cardId the card
+     * @param lane the card's lane
+     * @param children every child written, in calculation order
+     */
+    public record WrittenCard(UUID cardId,
+                              com.mimococo.marketops.availabilityrisk.AvailabilityLane lane,
+                              List<WrittenChild> children) {
+    }
+
+    /**
+     * One written child and the run it is now on.
+     *
+     * @param childId the child
+     * @param scored the calculated child it was written from
+     * @param sustainedCycles consecutive calculations that produced this lane
+     * @param sustainedSince when the run started
+     */
+    public record WrittenChild(UUID childId, VariantRisk.ScoredChild scored, int sustainedCycles,
+                               java.time.Instant sustainedSince) {
+    }
+
+    /** A child identity and the lane run being carried into this write. */
+    private record SustainedRun(UUID childId, String lane, int cycles, java.time.Instant since) {
     }
 }

@@ -3,6 +3,7 @@ package com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc;
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicySettings;
 import com.mimococo.marketops.availabilityrisk.internal.domain.LeadTimeResolution;
 import com.mimococo.marketops.availabilityrisk.internal.domain.SupplyDistinctness;
+import com.mimococo.marketops.availabilityrisk.internal.domain.WorkActivationPolicy;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
@@ -112,8 +113,16 @@ public class AvailabilityPolicyRepository {
                 .optional();
     }
 
-    /** The work-activation policy in force, or empty when none is. */
-    public Optional<ActivationRow> resolveActivationPolicy(UUID organizationId, Instant asOf) {
+    /**
+     * The work-activation policy in force, or empty when none is.
+     *
+     * <p>Empty is not a permissive default. A calculation that finds no version
+     * records the risk and raises nothing, because activating work under an
+     * unpublished rule would attribute a deadline to an organization that never
+     * agreed to it.
+     */
+    public Optional<WorkActivationPolicy> resolveActivationPolicy(UUID organizationId,
+                                                                  Instant asOf) {
         return jdbc.sql("""
                         SELECT policy.id, policy.policy_version, policy.high_sustained_cycles,
                                policy.critical_action_sla_minutes, policy.high_action_sla_minutes,
@@ -128,15 +137,15 @@ public class AvailabilityPolicyRepository {
                         """)
                 .param("organizationId", organizationId)
                 .param("asOf", Timestamp.from(asOf))
-                .query((rows, rowNumber) -> new ActivationRow(
+                .query((rows, rowNumber) -> new WorkActivationPolicy(
                         rows.getObject("id", UUID.class),
                         rows.getInt("policy_version"),
                         rows.getInt("high_sustained_cycles"),
-                        rows.getInt("critical_action_sla_minutes"),
-                        rows.getInt("high_action_sla_minutes"),
-                        rows.getInt("blocker_action_sla_minutes"),
-                        rows.getInt("outcome_sla_minutes"),
-                        rows.getInt("verification_window_minutes")))
+                        Duration.ofMinutes(rows.getInt("critical_action_sla_minutes")),
+                        Duration.ofMinutes(rows.getInt("high_action_sla_minutes")),
+                        Duration.ofMinutes(rows.getInt("blocker_action_sla_minutes")),
+                        Duration.ofMinutes(rows.getInt("outcome_sla_minutes")),
+                        Duration.ofMinutes(rows.getInt("verification_window_minutes"))))
                 .optional();
     }
 
@@ -171,13 +180,6 @@ public class AvailabilityPolicyRepository {
     /** A resolved lead-time row. */
     public record LeadTimeRow(UUID id, int policyVersion, String scopeKind,
                               int leadTimeDaysMax, int safetyDays) {
-    }
-
-    /** A resolved work-activation row. */
-    public record ActivationRow(UUID id, int policyVersion, int highSustainedCycles,
-                                int criticalActionSlaMinutes, int highActionSlaMinutes,
-                                int blockerActionSlaMinutes, int outcomeSlaMinutes,
-                                int verificationWindowMinutes) {
     }
 
     /** One store and mode's declared relationship to internal stock. */
