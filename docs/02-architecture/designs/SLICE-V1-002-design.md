@@ -235,7 +235,35 @@ narrowest grant that the table's semantics allow — append-only evidence gets
 `SELECT, INSERT`; state-carrying rows get `SELECT, INSERT, UPDATE`; nothing gets
 `DELETE`.
 
-## 6. What this design does not do
+## 6. What exists at this checkpoint
+
+The calculation core is complete and proven; the operating surface around it is
+not yet built. Concretely, the following are implemented and tested:
+
+- `availabilityrisk` registered as the eleventh Spring Modulith module, passing
+  every boundary, authority and rule-sensitivity check;
+- V0030: nineteen tables carrying the policies, the attestation, the projection,
+  the queue, the reconciliation run, the SLO observation, the cause-keyed case
+  and the accepted exception, with the fail-closed rules as constraints;
+- the Contract's accountable roles and six action scopes, seeded and pinned;
+- the deterministic demand policy, the two risk calculators, the policy-derived
+  lane thresholds and the lexicographic rank;
+- the published fact reads the calculation needs — sellability, per-warehouse
+  internal stock, the merged availability timeline, per-day completed units and
+  the accepted-fact change feed;
+- policy resolution by exact scoped fallback, the evidence gatherer, the
+  calculation service and the projection writer;
+- the end-to-end loop from seeded facts to a written card with two children,
+  including the equality of the targeted and sweep paths.
+
+The following are designed above but not yet implemented: case activation and
+the two-stage action and verification lifecycle, accepted-exception governance
+and approval escalation, the targeted and hourly workers with their SLO
+evidence, and the console API, queue UI and browser journey. The
+[acceptance status](../../07-phase-evidence/SLICE-V1-002/acceptance-status.md)
+records exactly which criteria that leaves unproven.
+
+## 7. What this design does not do
 
 It implements no replenishment quantity or date, no purchase or supplier
 execution, no receiving or WMS workflow, no Dead Stock / Ageing / Slow-moving /

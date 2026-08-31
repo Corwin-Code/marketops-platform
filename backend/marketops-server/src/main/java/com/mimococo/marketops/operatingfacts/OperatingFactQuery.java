@@ -40,6 +40,16 @@ public interface OperatingFactQuery {
                       Integer retentionWindowDays,
                       FactWindow window);
 
+    /**
+     * Completed units per day across a window, oldest first.
+     *
+     * <p>Days on which nothing completed are absent rather than zero-valued:
+     * the caller distinguishes an unobservable day from a quiet one using the
+     * availability timeline, and a manufactured zero here would erase that
+     * distinction before it could be made.
+     */
+    List<DailySaleTotal> dailyCompletedUnits(UUID platformListingVariantId, FactWindow window);
+
     /** Returns over a window, with their reason mix. */
     ReturnTotals returns(UUID platformListingVariantId, FactWindow window);
 

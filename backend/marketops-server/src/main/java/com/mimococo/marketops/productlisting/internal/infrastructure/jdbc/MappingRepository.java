@@ -215,6 +215,24 @@ public class MappingRepository {
         return Map.copyOf(resolved);
     }
 
+    /** The listing variants one internal variant is mapped to at an instant. */
+    public List<UUID> listingVariantsFor(UUID productVariantId, Instant at) {
+        return jdbc.sql("""
+                        SELECT platform_listing_variant_id
+                          FROM core.listing_mapping
+                         WHERE product_variant_id = :productVariantId
+                           AND status = 'ACTIVE'
+                           AND effective_from <= :at
+                           AND (effective_to IS NULL OR effective_to > :at)
+                         ORDER BY platform_listing_variant_id
+                        """)
+                .param("productVariantId", productVariantId)
+                .param("at", Timestamp.from(at))
+                .query((rows, rowNumber) ->
+                        rows.getObject("platform_listing_variant_id", UUID.class))
+                .list();
+    }
+
     /** The mapping history of one listing variant, newest interval first. */
     public List<ListingMapping> mappingHistory(UUID platformListingVariantId) {
         return jdbc.sql("""

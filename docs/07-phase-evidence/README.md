@@ -60,3 +60,18 @@ comment `5469802650` passed the exact post-merge bookkeeping packet, and Human
 Owner comment `5469935477` issued Formal Closure over the frozen Snapshot.
 Production readiness remains deferred to `RELEASE-V1-001`; every deferred row
 remains production-blocking and `production_write_enabled` remains `false`.
+
+## SLICE-V1-002 implementation record
+
+The Slice is under implementation and is not closed. Its entry points are:
+
+- [`acceptance-status.md`](SLICE-V1-002/acceptance-status.md) — the hundred
+  `S2-AC-*` criteria with a per-criterion verification or gap;
+- [`executable-evidence.md`](SLICE-V1-002/executable-evidence.md) — the exact
+  commands run and the results observed;
+- [`deferred-release-register.json`](SLICE-V1-002/deferred-release-register.json)
+  — the ten `S2-REL-*` obligations, each production-blocking.
+
+No Controller verdict, Owner closure, remote publication or merge is claimed.
+The Slice has no controlled write target, no provider call exists in its
+execution path, and `production_write_enabled` remains `false`.

@@ -4,6 +4,7 @@ import com.mimococo.marketops.operatingfacts.AcceptedFactChange;
 import com.mimococo.marketops.operatingfacts.AdvertisingTotals;
 import com.mimococo.marketops.operatingfacts.AvailabilityObservation;
 import com.mimococo.marketops.operatingfacts.CostSnapshot;
+import com.mimococo.marketops.operatingfacts.DailySaleTotal;
 import com.mimococo.marketops.operatingfacts.FactEvidence;
 import com.mimococo.marketops.operatingfacts.FactWindow;
 import com.mimococo.marketops.operatingfacts.FeeTotals;
@@ -258,6 +259,16 @@ public class OperatingFactService implements OperatingFactQuery {
     public List<UUID> listingVariantsWithActivity(UUID storeId, FactWindow window, int limit) {
         return facts.listingVariantsWithActivity(
                 storeId, window.periodStart(), window.periodEnd(), Math.clamp(limit, 1, 5000));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DailySaleTotal> dailyCompletedUnits(UUID platformListingVariantId,
+                                                    FactWindow window) {
+        return facts.dailyCompletedUnits(platformListingVariantId,
+                        window.periodStart(), window.periodEnd()).stream()
+                .map(row -> new DailySaleTotal(row.day(), row.completedUnits()))
+                .toList();
     }
 
     @Override

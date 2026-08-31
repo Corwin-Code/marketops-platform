@@ -445,6 +445,32 @@ public class FactQueryRepository {
                 .optional();
     }
 
+    /** Completed units per day across a window, oldest first. */
+    public List<DailySaleRow> dailyCompletedUnits(UUID listingVariantId, Instant from, Instant to) {
+        return jdbc.sql("""
+                        SELECT CAST(date_trunc('day', sale.occurred_at AT TIME ZONE 'UTC')
+                                    AS date) AS sale_day,
+                               sum(sale.quantity) AS completed_units
+                          FROM ledger.sales_fact AS sale
+                         WHERE sale.platform_listing_variant_id = :listingVariantId
+                           AND sale.sale_stage = 'COMPLETED'
+                           AND sale.occurred_at >= :from
+                           AND sale.occurred_at < :to
+                           AND NOT EXISTS (
+                               SELECT 1 FROM ledger.sales_fact AS newer
+                                WHERE newer.supersedes_fact_id = sale.id)
+                         GROUP BY 1
+                         ORDER BY 1
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("from", Timestamp.from(from))
+                .param("to", Timestamp.from(to))
+                .query((rows, rowNumber) -> new DailySaleRow(
+                        rows.getObject("sale_day", java.time.LocalDate.class),
+                        rows.getLong("completed_units")))
+                .list();
+    }
+
     /** The most recent sellability statement before an exclusive instant. */
     public Optional<SellabilityRow> latestSellability(UUID listingVariantId, Instant asOf) {
         return jdbc.sql("""
@@ -746,6 +772,10 @@ public class FactQueryRepository {
             UUID id, String inputCode, String valueKind, BigDecimal rateValue,
             BigDecimal amountValue, String currencyCode, Instant effectiveFrom,
             UUID provenanceId) {
+    }
+
+    /** Completed units on one day. */
+    public record DailySaleRow(java.time.LocalDate day, long completedUnits) {
     }
 
     /** The latest sellability statement about a listing variant. */
