@@ -3,7 +3,7 @@
 ```yaml
 document_type: production_assurance_contract
 product_version: V1
-active_slice: SLICE-V1-001
+active_slice: SLICE-V1-002
 review_style: RISK_DRIVEN
 quality_policy: PRODUCTION_GRADE_NO_COMPROMISE
 ```
@@ -81,6 +81,40 @@ The original Maker evidence assessment is preserved at the reviewed PR Head.
 Local evidence does not replace REAL_EXT, Owner approval, Gate EV or Gate E.
 R1/C3 receipts remain historical. The R2 final handoff, protected Ruleset proof,
 Controller PASS and actual SQUASH identity are the current engineering record.
+
+## 2c. SLICE-V1-002 implementation evidence state
+
+```yaml
+assessed_at: 2026-08-31
+slice: SLICE-V1-002
+contract_sha256: d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e
+implementation_state: MANDATORY_PRODUCT_PATH_IMPLEMENTED
+controller_verdict: NOT_CLAIMED
+owner_formal_closure: NOT_CLAIMED
+remote_publication: NOT_CLAIMED
+controlled_write_target: NONE_IN_THIS_SLICE
+real_provider_calls: NONE
+deployment: NOT_EXECUTED
+gate_ev: NOT_AUTHORIZED
+gate_e: NOT_AUTHORIZED
+pilot: NOT_AUTHORIZED
+production_write_enabled: false
+detail: docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md
+executable_evidence: docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md
+deferred_release: docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json
+```
+
+The Slice carries no controlled-write target at all, so Gate EV and Gate E have
+nothing here to authorize and no write-evidence row exists to fill. What this
+Slice must instead prove is that a calculated risk becomes accountable work and
+that the work is verified rather than merely reported: the two-stage action and
+outcome distinction, the one-case-per-cause rule under concurrency and replay,
+the fail-closed company answer, and the response obligation measured from the
+fact rather than from the worker.
+
+The evidence classes below apply unchanged. Fixture and in-memory results
+remain fixture results; nothing in this Slice's record is offered as real
+provider, production release or business outcome evidence.
 
 ## 2b. Supplemental R2 mutation-sensitive matrix
 

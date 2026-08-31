@@ -4162,6 +4162,9 @@ SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS = {
         "owner_acceptance_comment: 5469935477",
     ),
     "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md": (
+        "## 2c. SLICE-V1-002 implementation evidence state",
+        "implementation_state: MANDATORY_PRODUCT_PATH_IMPLEMENTED",
+        "controlled_write_target: NONE_IN_THIS_SLICE",
         "controller_verdict: PASS_R2_ENGINEERING_FINAL_GATE",
         "actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b",
         "engineering_implementation: ENGINEERING_IMPLEMENTATION_CLOSED",
