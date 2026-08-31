@@ -3,6 +3,7 @@ import type { ConsoleRequest, Recommendation } from './api/console';
 import { CommandTimeline } from './commands/CommandTimeline';
 import { SubjectDiagnosisView } from './diagnosis/SubjectDiagnosisView';
 import { DiagnosticExportPanel } from './diagnosis/DiagnosticExportPanel';
+import { AvailabilityQueue } from './availability/AvailabilityQueue';
 import { PriorityQueue } from './queue/PriorityQueue';
 import { RecommendationReview } from './workflow/RecommendationReview';
 import type { Session } from './session/session';
@@ -78,6 +79,8 @@ export function ConsoleShell({
       {view.name === 'queue' && (
         <DiagnosticExportPanel key={storeId} context={context} storeId={storeId} />
       )}
+
+      {view.name === 'queue' && <AvailabilityQueue context={context} />}
 
       {view.name === 'queue' && (
         <PriorityQueue

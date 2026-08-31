@@ -254,12 +254,21 @@ not yet built. Concretely, the following are implemented and tested:
 - policy resolution by exact scoped fallback, the evidence gatherer, the
   calculation service and the projection writer;
 - the end-to-end loop from seeded facts to a written card with two children,
-  including the equality of the targeted and sweep paths.
+  including the equality of the targeted and sweep paths;
+- the accountable-case authority: a published intake port taking plain
+  identifiers, cause-idempotent activation whose duplicate is caught by the
+  database rather than by a check two threads can both pass, and a state
+  machine with no path from a recorded action to success or from a closed case
+  back to a live one;
+- the read surface: a scope-narrowing console API and the Stockout &
+  Availability queue screen, where a child's evidence tone is a separate
+  attribute from its lane so a provisional critical cannot be styled as a
+  confirmed one.
 
-The following are designed above but not yet implemented: case activation and
-the two-stage action and verification lifecycle, accepted-exception governance
-and approval escalation, the targeted and hourly workers with their SLO
-evidence, and the console API, queue UI and browser journey. The
+The following are designed above but not yet implemented: the wiring that turns
+a calculated cause into an activated case, including the sustained-HIGH rule;
+accepted-exception governance and approval escalation; the targeted and hourly
+workers with their SLO evidence; and the browser journey over the queue. The
 [acceptance status](../../07-phase-evidence/SLICE-V1-002/acceptance-status.md)
 records exactly which criteria that leaves unproven.
 

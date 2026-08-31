@@ -61,14 +61,28 @@ The database evidence is real PostgreSQL, not an in-memory substitute.
 | `./mvnw -B -ntp -Dit.test='ControlEpochTriggerIT' verify` | 11 passed | no epoch trigger on a `NO_ROUTE` table |
 | `./mvnw -B -ntp -Dit.test='DatabasePrivilegeIT' verify` | 11 passed | least-privilege grants unchanged |
 | `./mvnw -B -ntp -Dit.test='AvailabilityRiskSchemaIT' verify` | 10 passed | ten refusals the schema must make, against PostgreSQL 18.4 |
-| `./mvnw -B -ntp -Dit.test='AvailabilityRiskFlowIT' verify` | 6 passed | the loop end to end, including targeted-versus-sweep equality |
+| `./mvnw -B -ntp -Dit.test='AvailabilityRiskFlowIT' verify` | 9 passed | the loop end to end, including targeted-versus-sweep equality and the console read path |
+| `./mvnw -B -ntp -Dtest='AvailabilityCaseStateTest' test` | 24 passed | the case-lifecycle distinctions that must not collapse |
+| `./mvnw -B -ntp -Dtest='AvailabilityCoverageTest' test` | 7 passed | the observable-days arithmetic the censoring rule rests on |
 | `./mvnw -B -ntp -Dtest='com.mimococo.marketops.operatingfacts.**' test` | 148 passed | the extended fact authority, unchanged behaviour |
+| `./mvnw -B -ntp clean verify` | 960 unit passed; 407 integration, 1 pre-existing failure | the complete backend suite |
 | `python3 scripts/validate_governance.py` | passed | canonical governance contract |
 | `python3 scripts/validate_production_readiness.py` | passed over 1642 files | TC-GLOBAL-001 through TC-GLOBAL-004 |
 | `python3 -m unittest discover -s tests -p 'test_*.py'` | 383 passed | governance tooling, including the V0030 migration registration |
 | `npm run lint && npm run format:check && npm run typecheck` | clean | frontend static checks, unchanged |
-| `npm run test:ci` | 196 passed | frontend suite, unchanged |
+| `npm run test:ci` | 209 passed | frontend suite including thirteen availability-surface tests |
 | `npm run build && npm run verify:bundle` | passed | bundle isolation |
+
+## Coverage
+
+The JaCoCo gate is bundle-wide LINE 0.80 and BRANCH 0.70. Measured over the
+merged unit and integration run:
+
+| Measure | Observed | Gate |
+| --- | ---: | ---: |
+| Line | 0.8491 | 0.80 |
+| Branch | 0.7166 | 0.70 |
+| Line, `availabilityrisk` only | 0.8614 | — |
 
 ## What the database refuses
 
@@ -108,6 +122,11 @@ than coincidental. Both runs also produce the same policy-version digest.
   daemon-level registry mirror, so the digest-pinned image references in the
   existing tests resolve unchanged. No test source, image name or pinned digest
   was modified.
-- No performance, SLO, fault-injection, browser or end-to-end operator evidence
-  exists yet, because the workers and the operating surface those would exercise
-  are not yet implemented.
+- No performance, SLO, fault-injection or browser evidence exists yet, because
+  the workers and the browser journey those would exercise are not yet
+  implemented. `RepresentativePerformanceIT` continues to pass unchanged; it
+  measures the SLICE-V1-001 surface and makes no availability claim.
+- The console surface is proven at the service boundary rather than over HTTP.
+  TC-AVAIL-FLOW-007 through TC-AVAIL-FLOW-009 assert the read path, its scope
+  narrowing and its lane filter; no test yet drives the endpoint with a bearer
+  token, so horizontal-escalation evidence over HTTP remains outstanding.

@@ -7,6 +7,9 @@ import com.mimococo.marketops.availabilityrisk.ChildKind;
 import com.mimococo.marketops.availabilityrisk.ProfitLane;
 import com.mimococo.marketops.availabilityrisk.RiskCause;
 import com.mimococo.marketops.availabilityrisk.RiskEvidenceState;
+import com.mimococo.marketops.availabilityrisk.AvailabilityCardView;
+import com.mimococo.marketops.availabilityrisk.AvailabilityChildView;
+import com.mimococo.marketops.availabilityrisk.AvailabilityRiskQuery;
 import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityProjectionWriter;
 import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityRiskCalculationService;
 import com.mimococo.marketops.availabilityrisk.internal.application.VariantRisk;
@@ -68,6 +71,9 @@ class AvailabilityRiskFlowIT {
 
     @Autowired
     private AvailabilityProjectionWriter writer;
+
+    @Autowired
+    private AvailabilityRiskQuery risks;
 
     @Autowired
     private JdbcClient jdbc;
@@ -250,6 +256,62 @@ class AvailabilityRiskFlowIT {
         // accumulate while the card stays single.
         assertThat(count("SELECT count(DISTINCT calculation_id)"
                 + " FROM mart.availability_risk_factor")).isGreaterThan(2);
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("TC-AVAIL-FLOW-007 the queue reads back the card with both children and its evidence")
+    void queueReadsBackTheCard() {
+        List<AvailabilityCardView> queue =
+                risks.queue(ORGANIZATION, List.of(STORE), null, 50, 0);
+
+        assertThat(queue).hasSize(1);
+        AvailabilityCardView card = queue.get(0);
+        assertThat(card.lane()).isEqualTo(AvailabilityLane.CRITICAL.name());
+        assertThat(card.skuCode()).isEqualTo("kettle-1l");
+        assertThat(card.triggeringChildId()).isNotNull();
+        assertThat(card.children()).hasSize(2);
+        assertThat(card.policyVersionDigest()).matches("[0-9a-f]{64}");
+
+        AvailabilityChildView channel = card.children().stream()
+                .filter(child -> child.childKind().equals(ChildKind.CHANNEL.name()))
+                .findFirst().orElseThrow();
+        assertThat(channel.platformCode()).isEqualTo("OZON");
+        assertThat(channel.fulfillmentModeCode()).isEqualTo("MARKETPLACE_FULFILLED");
+        assertThat(channel.lane()).isEqualTo(AvailabilityLane.CRITICAL.name());
+        assertThat(channel.evidenceState()).isEqualTo(RiskEvidenceState.CONFIRMED.name());
+        assertThat(channel.causeCode()).isEqualTo(RiskCause.CHANNEL_OUT_OF_STOCK.name());
+        // The reader gets the argument, the visible factors and the windows,
+        // not only a lane and a score.
+        assertThat(channel.conservativeProofTerms()).isNotEmpty();
+        assertThat(channel.rankFactors()).hasSize(5);
+        assertThat(channel.demandWindows()).hasSize(3);
+
+        AvailabilityChildView company = card.children().stream()
+                .filter(child -> child.childKind().equals(ChildKind.COMPANY.name()))
+                .findFirst().orElseThrow();
+        assertThat(company.platformCode()).isNull();
+        assertThat(company.lane()).isNotEqualTo(AvailabilityLane.HEALTHY.name());
+        assertThat(company.blockerCodes()).isNotEmpty();
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("TC-AVAIL-FLOW-008 an empty store scope returns an empty queue, not every card")
+    void anEmptyScopeReturnsNothing() {
+        assertThat(risks.queue(ORGANIZATION, List.of(), null, 50, 0))
+                .as("an empty grant is a denial, never an absence of filtering")
+                .allSatisfy(card -> assertThat(card.children())
+                        .allSatisfy(child -> assertThat(child.childKind())
+                                .isEqualTo(ChildKind.COMPANY.name())));
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("TC-AVAIL-FLOW-009 a lane filter narrows rather than reorders")
+    void laneFilterNarrows() {
+        assertThat(risks.queue(ORGANIZATION, List.of(STORE), "CRITICAL", 50, 0)).hasSize(1);
+        assertThat(risks.queue(ORGANIZATION, List.of(STORE), "HEALTHY", 50, 0)).isEmpty();
     }
 
     private void seedIdentity() {

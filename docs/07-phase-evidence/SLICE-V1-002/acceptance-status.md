@@ -29,8 +29,8 @@ production_write_enabled: false
 ## Interpretation
 
 This is an honest mid-implementation status, not a closure claim. The Slice is
-not finished: `39` of the hundred criteria are proven by a test that runs today,
-`16` are partially proven — the schema or the domain enforces the rule but the
+not finished: `43` of the hundred criteria are proven by a test that runs today,
+`17` are partially proven — the schema or the domain enforces the rule but the
 service, API or worker that completes the path is not yet written — and `45`
 have no implementation in this checkpoint at all.
 
@@ -53,7 +53,7 @@ browser journey over it.
 | `S2-AC-003` | `PARTIALLY_VERIFIED` | no Overstock, Allocation, Transfer, Advertising Intervention, replenishment-quantity or `STOCK_CHANGE` capability is implemented or claimed. | no such capability exists in code, but no dedicated absence test asserts it yet |
 | `S2-AC-004` | `EXECUTABLY_VERIFIED` | Shared Spine authorities are reused; architecture tests prevent a parallel ingestion, metric, policy, workflow or audit authority. | 65 architecture tests; ModulithArchitectureTest pins the module set including availabilityrisk |
 | `S2-AC-005` | `EXECUTABLY_VERIFIED` | conditional Design Gate remains untriggered or any later trigger is handled through the exact governance path rather than silently bypassed. | the Contract gate recorded NOT_TRIGGERED and no later trigger arose in this checkpoint |
-| `S2-AC-006` | `PARTIALLY_VERIFIED` | backend Organization/Platform/Store/Product/Data/Action Scope enforcement prevents horizontal and vertical access escalation. | the action scopes and role matrix are seeded and pinned by FlywayMigrationIT; no API surface exists yet to enforce them on a request |
+| `S2-AC-006` | `PARTIALLY_VERIFIED` | backend Organization/Platform/Store/Product/Data/Action Scope enforcement prevents horizontal and vertical access escalation. | the controller authorizes and then narrows the read by the same grant (TC-AVAIL-FLOW-008); no HTTP-level escalation test exists yet |
 | `S2-AC-007` | `NOT_IMPLEMENTED` | channel, company, data, policy, profit and quality Tasks route to the correct accountable role under versioned policy. | not implemented in this checkpoint |
 | `S2-AC-008` | `NOT_IMPLEMENTED` | missing or conflicting assignee/approver authority fails closed and remains operator-visible. | not implemented in this checkpoint |
 | `S2-AC-009` | `PARTIALLY_VERIFIED` | exception escalation enforces domain-lead, Ops Lead and Owner-designated Risk Authority boundaries, including requester separation for… | availability_exception_decision_separation_ck refuses a requester-approved material exception (TC-AVAIL-DB-006); the escalation service is not yet written |
@@ -61,9 +61,9 @@ browser journey over it.
 | `S2-AC-011` | `EXECUTABLY_VERIFIED` | one parent card exists per Organization + Internal Variant. | availability_risk_card_identity_uq; TC-AVAIL-FLOW-005, TC-AVAIL-FLOW-006 |
 | `S2-AC-012` | `EXECUTABLY_VERIFIED` | channel child identity includes exact Platform, Store/Account, Listing Variant and Fulfillment Mode. | availability_risk_child_identity_ck and availability_risk_child_channel_uq; TC-AVAIL-DB-006 |
 | `S2-AC-013` | `EXECUTABLY_VERIFIED` | company child is independently governed at Organization + Internal Variant. | availability_risk_child_company_uq; TC-AVAIL-FLOW-003 |
-| `S2-AC-014` | `NOT_IMPLEMENTED` | clearing one child cannot silently clear the other. | not implemented in this checkpoint |
-| `S2-AC-015` | `NOT_IMPLEMENTED` | parent lane and ordering expose the exact triggering child and policy version. | not implemented in this checkpoint |
-| `S2-AC-016` | `PARTIALLY_VERIFIED` | confirmed, operational, provisional, blocked, stale and carried-forward evidence are visually and API-semantically distinct. | the evidence states are distinct in the domain and the schema; no API or UI surface renders them yet |
+| `S2-AC-014` | `EXECUTABLY_VERIFIED` | clearing one child cannot silently clear the other. | children are separate rows with separate identities and lanes; TC-AVAIL-FLOW-007 |
+| `S2-AC-015` | `EXECUTABLY_VERIFIED` | parent lane and ordering expose the exact triggering child and policy version. | TC-AVAIL-FLOW-007 asserts the triggering child and the policy digest are both returned |
+| `S2-AC-016` | `EXECUTABLY_VERIFIED` | confirmed, operational, provisional, blocked, stale and carried-forward evidence are visually and API-semantically distinct. | TC-AVAIL-FLOW-007; TC-UI-004, TC-UI-010, TC-UI-011 prove the tones differ and an unrecognised state is never confirmed |
 | `S2-AC-017` | `EXECUTABLY_VERIFIED` | internal available supply correctly accounts for reservation, QC lock, damage/write-off and applicable sellability. | TC-COMPANY-006 |
 | `S2-AC-018` | `EXECUTABLY_VERIFIED` | FBS/seller-warehouse views that mirror internal stock are never double-counted. | TC-COMPANY-002 |
 | `S2-AC-019` | `EXECUTABLY_VERIFIED` | physically distinct company-owned platform stock counts only under attributable ownership and deduplication evidence. | TC-COMPANY-003 |
@@ -124,9 +124,9 @@ browser journey over it.
 | `S2-AC-074` | `NOT_IMPLEMENTED` | missed sweep, backlog or SLO breach becomes an operator-visible incident. | not implemented in this checkpoint |
 | `S2-AC-075` | `NOT_IMPLEMENTED` | all source/internal timing fields required by this Contract are queryable and included in evidence. | not implemented in this checkpoint |
 | `S2-AC-076` | `NOT_IMPLEMENTED` | late, reordered and expired facts produce deterministic, attributable recalculation without duplicate Case effects. | not implemented in this checkpoint |
-| `S2-AC-077` | `NOT_IMPLEMENTED` | structured queue, grouped card, evidence drill-through, Task and exception surfaces support the complete operating path. | not implemented in this checkpoint |
-| `S2-AC-078` | `NOT_IMPLEMENTED` | API filtering/pagination and frontend navigation inherit backend scope; platform DTO/SDK types do not leak into public business contracts. | not implemented in this checkpoint |
-| `S2-AC-079` | `NOT_IMPLEMENTED` | keyboard use, safe errors, UTC/internal time and Store-local display, UTF-8 and Russian text are verified. | not implemented in this checkpoint |
+| `S2-AC-077` | `PARTIALLY_VERIFIED` | structured queue, grouped card, evidence drill-through, Task and exception surfaces support the complete operating path. | queue, grouped card and evidence drill-through exist and read back (TC-AVAIL-FLOW-007, TC-UI-001); the task and exception surfaces do not |
+| `S2-AC-078` | `EXECUTABLY_VERIFIED` | API filtering/pagination and frontend navigation inherit backend scope; platform DTO/SDK types do not leak into public business contracts. | TC-AVAIL-FLOW-008 and TC-AVAIL-FLOW-009; no platform DTO appears in the published contract, enforced by TC-ARCH-007 |
+| `S2-AC-079` | `PARTIALLY_VERIFIED` | keyboard use, safe errors, UTC/internal time and Store-local display, UTF-8 and Russian text are verified. | TC-UI-002 proves Russian text renders intact and controls are focusable elements; no browser journey exists yet |
 | `S2-AC-080` | `NOT_IMPLEMENTED` | metrics/logs/traces cover targeted processing, sweep, backlog, dedup, verification, exception expiry and SLO. | not implemented in this checkpoint |
 | `S2-AC-081` | `NOT_IMPLEMENTED` | runbooks prove operator response to stale source, ownership conflict, policy blocker, backlog/SLO breach and failed reconciliation. | not implemented in this checkpoint |
 | `S2-AC-082` | `NOT_IMPLEMENTED` | Secret, Buyer PII, unsafe Raw and real Credentials are absent from Git, fixtures, logs, errors and client bundles. | not implemented in this checkpoint |
@@ -153,9 +153,9 @@ browser journey over it.
 
 | Status | Count |
 | --- | ---: |
-| `EXECUTABLY_VERIFIED` | 39 |
-| `PARTIALLY_VERIFIED` | 16 |
-| `NOT_IMPLEMENTED` | 45 |
+| `EXECUTABLY_VERIFIED` | 43 |
+| `PARTIALLY_VERIFIED` | 17 |
+| `NOT_IMPLEMENTED` | 40 |
 | Total | 100 |
 
 ## Deferred Release obligations

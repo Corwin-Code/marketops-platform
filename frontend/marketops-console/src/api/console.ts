@@ -35,6 +35,74 @@ export type ConsoleOutcome<T> =
   | { readonly ok: true; readonly value: T }
   | { readonly ok: false; readonly failure: ConsoleFailure };
 
+/** One visible reason a card sits where it does in the availability queue. */
+export interface AvailabilityRankFactor {
+  readonly factorCode: string;
+  readonly value: string | null;
+  readonly weight: string | null;
+  readonly contribution: string | null;
+  readonly displayNote: string;
+}
+
+/** One demand window and how much of it could actually be observed. */
+export interface AvailabilityDemandWindow {
+  readonly windowCode: string;
+  readonly periodStart: string;
+  readonly periodEnd: string;
+  readonly completedUnits: number | null;
+  readonly dailyRate: string | null;
+  readonly observedDays: string | null;
+  readonly coverageRatio: string | null;
+  readonly sampleSufficient: boolean;
+  readonly censored: boolean;
+  readonly censoringReason: string | null;
+  readonly outlierShare: string | null;
+  readonly eligibility: string;
+}
+
+/** One independently governed child risk. */
+export interface AvailabilityChild {
+  readonly id: string;
+  readonly childKind: 'CHANNEL' | 'COMPANY';
+  readonly platformCode: string | null;
+  readonly storeId: string | null;
+  readonly platformListingVariantId: string | null;
+  readonly fulfillmentModeCode: string | null;
+  readonly lane: string;
+  readonly evidenceState: string;
+  readonly confidenceState: string;
+  readonly causeCode: string;
+  readonly availableUnits: number | null;
+  readonly dailyDemandRate: string | null;
+  readonly daysOfCover: string | null;
+  readonly coverageHorizonDays: number | null;
+  readonly projectedStockoutAt: string | null;
+  readonly profitLane: string;
+  readonly profitAtRiskAmount: string | null;
+  readonly profitAtRiskCurrency: string | null;
+  readonly demandSelectionReason: string;
+  readonly conservativeProofTerms: readonly string[];
+  readonly blockerCodes: readonly string[];
+  readonly rankFactors: readonly AvailabilityRankFactor[];
+  readonly demandWindows: readonly AvailabilityDemandWindow[];
+  readonly calculatedAt: string;
+}
+
+/** One grouped Internal Variant card. */
+export interface AvailabilityCard {
+  readonly id: string;
+  readonly productVariantId: string;
+  readonly skuCode: string;
+  readonly displayName: string;
+  readonly lane: string;
+  readonly triggeringChildId: string | null;
+  readonly rankScore: string | null;
+  readonly policyVersionDigest: string;
+  readonly asOf: string;
+  readonly calculatedAt: string;
+  readonly children: readonly AvailabilityChild[];
+}
+
 /** One subject on the daily work list. */
 export interface PrioritySubject {
   readonly subjectId: string;
@@ -374,6 +442,172 @@ function decimal(source: Record<string, unknown>, key: string): string | null {
     return value;
   }
   return typeof value === 'number' ? String(value) : null;
+}
+
+function parseRankFactor(body: unknown): AvailabilityRankFactor | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const factorCode = text(body, 'factorCode');
+  const displayNote = text(body, 'displayNote');
+  if (factorCode === undefined || displayNote === undefined) {
+    return undefined;
+  }
+  return {
+    factorCode,
+    value: decimal(body, 'value'),
+    weight: decimal(body, 'weight'),
+    contribution: decimal(body, 'contribution'),
+    displayNote,
+  };
+}
+
+function parseDemandWindow(body: unknown): AvailabilityDemandWindow | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const windowCode = text(body, 'windowCode');
+  const periodStart = text(body, 'periodStart');
+  const periodEnd = text(body, 'periodEnd');
+  const eligibility = text(body, 'eligibility');
+  if (
+    windowCode === undefined ||
+    periodStart === undefined ||
+    periodEnd === undefined ||
+    eligibility === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    windowCode,
+    periodStart,
+    periodEnd,
+    completedUnits: optionalNumber(body, 'completedUnits'),
+    dailyRate: decimal(body, 'dailyRate'),
+    observedDays: decimal(body, 'observedDays'),
+    coverageRatio: decimal(body, 'coverageRatio'),
+    sampleSufficient: body.sampleSufficient === true,
+    censored: body.censored === true,
+    censoringReason: optionalText(body, 'censoringReason'),
+    outlierShare: decimal(body, 'outlierShare'),
+    eligibility,
+  };
+}
+
+/**
+ * Read one child risk.
+ *
+ * A child whose kind, lane or evidence state is missing is dropped rather than
+ * defaulted. A card that rendered an unknown evidence state as a confirmed one
+ * would be exactly the false safety the whole surface exists to prevent.
+ */
+function parseAvailabilityChild(body: unknown): AvailabilityChild | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const id = text(body, 'id');
+  const childKind = text(body, 'childKind');
+  const lane = text(body, 'lane');
+  const evidenceState = text(body, 'evidenceState');
+  const confidenceState = text(body, 'confidenceState');
+  const causeCode = text(body, 'causeCode');
+  const profitLane = text(body, 'profitLane');
+  const demandSelectionReason = text(body, 'demandSelectionReason');
+  const calculatedAt = text(body, 'calculatedAt');
+  if (
+    id === undefined ||
+    (childKind !== 'CHANNEL' && childKind !== 'COMPANY') ||
+    lane === undefined ||
+    evidenceState === undefined ||
+    confidenceState === undefined ||
+    causeCode === undefined ||
+    profitLane === undefined ||
+    demandSelectionReason === undefined ||
+    calculatedAt === undefined
+  ) {
+    return undefined;
+  }
+  const factors = Array.isArray(body.rankFactors)
+    ? body.rankFactors
+        .map(parseRankFactor)
+        .filter((factor): factor is AvailabilityRankFactor => factor !== undefined)
+    : [];
+  const windows = Array.isArray(body.demandWindows)
+    ? body.demandWindows
+        .map(parseDemandWindow)
+        .filter((window): window is AvailabilityDemandWindow => window !== undefined)
+    : [];
+  return {
+    id,
+    childKind,
+    platformCode: optionalText(body, 'platformCode'),
+    storeId: optionalText(body, 'storeId'),
+    platformListingVariantId: optionalText(body, 'platformListingVariantId'),
+    fulfillmentModeCode: optionalText(body, 'fulfillmentModeCode'),
+    lane,
+    evidenceState,
+    confidenceState,
+    causeCode,
+    availableUnits: optionalNumber(body, 'availableUnits'),
+    dailyDemandRate: decimal(body, 'dailyDemandRate'),
+    daysOfCover: decimal(body, 'daysOfCover'),
+    coverageHorizonDays: optionalNumber(body, 'coverageHorizonDays'),
+    projectedStockoutAt: optionalText(body, 'projectedStockoutAt'),
+    profitLane,
+    profitAtRiskAmount: decimal(body, 'profitAtRiskAmount'),
+    profitAtRiskCurrency: optionalText(body, 'profitAtRiskCurrency'),
+    demandSelectionReason,
+    conservativeProofTerms: textList(body, 'conservativeProofTerms'),
+    blockerCodes: textList(body, 'blockerCodes'),
+    rankFactors: factors,
+    demandWindows: windows,
+    calculatedAt,
+  };
+}
+
+/** Read one grouped card. */
+export function parseAvailabilityCard(body: unknown): AvailabilityCard | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const id = text(body, 'id');
+  const productVariantId = text(body, 'productVariantId');
+  const skuCode = text(body, 'skuCode');
+  const displayName = text(body, 'displayName');
+  const lane = text(body, 'lane');
+  const policyVersionDigest = text(body, 'policyVersionDigest');
+  const asOf = text(body, 'asOf');
+  const calculatedAt = text(body, 'calculatedAt');
+  if (
+    id === undefined ||
+    productVariantId === undefined ||
+    skuCode === undefined ||
+    displayName === undefined ||
+    lane === undefined ||
+    policyVersionDigest === undefined ||
+    asOf === undefined ||
+    calculatedAt === undefined
+  ) {
+    return undefined;
+  }
+  const children = Array.isArray(body.children)
+    ? body.children
+        .map(parseAvailabilityChild)
+        .filter((child): child is AvailabilityChild => child !== undefined)
+    : [];
+  return {
+    id,
+    productVariantId,
+    skuCode,
+    displayName,
+    lane,
+    triggeringChildId: optionalText(body, 'triggeringChildId'),
+    rankScore: decimal(body, 'rankScore'),
+    policyVersionDigest,
+    asOf,
+    calculatedAt,
+    children,
+  };
 }
 
 /** Read one subject from the priority queue. */
@@ -788,6 +1022,40 @@ function list<T>(parse: (body: unknown) => T | undefined) {
     Array.isArray(body)
       ? body.map(parse).filter((item): item is T => item !== undefined)
       : undefined;
+}
+
+/**
+ * The stockout and availability queue, most urgent first.
+ *
+ * The backend orders it and the console does not re-sort. The order is a
+ * deterministic figure with a published definition, and a console that
+ * re-ordered it would be presenting its own opinion as the product's.
+ */
+export function fetchAvailabilityQueue(
+  context: ConsoleRequest,
+  lane?: string,
+  limit = 50,
+  offset = 0,
+): Promise<ConsoleOutcome<readonly AvailabilityCard[]>> {
+  const laneFilter = lane === undefined ? '' : `lane=${encodeURIComponent(lane)}&`;
+  return request(
+    context,
+    `/api/v1/console/availability/queue?${laneFilter}limit=${String(limit)}` +
+      `&offset=${String(offset)}`,
+    list(parseAvailabilityCard),
+  );
+}
+
+/** One grouped card with every child, factor and window behind it. */
+export function fetchAvailabilityCard(
+  context: ConsoleRequest,
+  productVariantId: string,
+): Promise<ConsoleOutcome<AvailabilityCard>> {
+  return request(
+    context,
+    `/api/v1/console/availability/cards/${encodeURIComponent(productVariantId)}`,
+    parseAvailabilityCard,
+  );
 }
 
 /** The store's daily work list, most urgent first. */
