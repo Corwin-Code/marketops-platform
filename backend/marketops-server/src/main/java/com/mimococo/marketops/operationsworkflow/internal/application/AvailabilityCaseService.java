@@ -81,7 +81,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
         cases.appendEvent(event(id, request.organizationId(), "ACTIVATED", null, "OPEN",
                 "cause " + request.causeCode() + " activated at severity " + request.severity(),
                 request.correlationId(), request.at()));
-        record(request.organizationId(), id, AuditAction.CREATE,
+        record(request.organizationId(), id, AuditAction.CREATE, "availability-risk-calculation",
                 Map.of("state", new com.mimococo.marketops.adminobservability.audit.FieldChange(
                         null, "OPEN")));
         return cases.find(id).orElseThrow();
@@ -120,6 +120,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
         cases.transition(new AvailabilityCaseRepository.Transition(caseId,
                 AvailabilityCaseState.VERIFYING, now, now, null, null, null, null, 0, 0, now));
         record(existing.organizationId(), caseId, AuditAction.STATUS_CHANGE,
+                actorUserId.toString(),
                 Map.of("state", new com.mimococo.marketops.adminobservability.audit.FieldChange(
                         existing.state().name(), AvailabilityCaseState.VERIFYING.name())));
         return cases.find(caseId).orElseThrow();
@@ -161,6 +162,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
                 verified ? "VERIFIED_SUCCESS" : next.name(), existing.state().name(),
                 next.name(), reason, "case-" + caseId, now));
         record(existing.organizationId(), caseId, AuditAction.STATUS_CHANGE,
+                "availability-outcome-verification",
                 Map.of("state", new com.mimococo.marketops.adminobservability.audit.FieldChange(
                         existing.state().name(), next.name())));
         return cases.find(caseId).orElseThrow();
@@ -177,6 +179,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
                 existing.state().name(), AvailabilityCaseState.REOPENED.name(), reason,
                 "case-" + caseId, at));
         record(existing.organizationId(), caseId, AuditAction.STATUS_CHANGE,
+                "availability-risk-calculation",
                 Map.of("state", new com.mimococo.marketops.adminobservability.audit.FieldChange(
                         existing.state().name(), AvailabilityCaseState.REOPENED.name())));
         return cases.find(caseId).orElseThrow();
@@ -196,6 +199,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
                 existing.state().name(), AvailabilityCaseState.ESCALATED.name(), reason,
                 "case-" + caseId, at));
         record(existing.organizationId(), caseId, AuditAction.STATUS_CHANGE,
+                "availability-escalation-policy",
                 Map.of("escalationLevel",
                         new com.mimococo.marketops.adminobservability.audit.FieldChange(
                                 String.valueOf(existing.escalationLevel()),
@@ -248,11 +252,19 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
                 correlationId);
     }
 
-    private void record(UUID organizationId, UUID caseId, AuditAction action,
+    /**
+     * Journal one case movement.
+     *
+     * <p>The actor is the person when a person caused the movement and the
+     * calculating component when nothing human did. Attributing an automatic
+     * activation to a person would be a fabricated attribution, which the audit
+     * contract refuses on principle.
+     */
+    private void record(UUID organizationId, UUID caseId, AuditAction action, String actorId,
                         Map<String, com.mimococo.marketops.adminobservability.audit.FieldChange>
                                 changes) {
         audit.recordChange(new MetadataAuditChange(AuditSourceDomain.OPERATIONS_WORKFLOW,
-                "system", action, "availability_case", caseId, organizationId.toString(),
+                actorId, action, "availability_case", caseId, null,
                 changes, "availability case lifecycle", null));
     }
 

@@ -10,12 +10,14 @@ import com.mimococo.marketops.availabilityrisk.internal.domain.CompanyRiskCalcul
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandDecision;
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicyEngine;
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicySettings;
+import com.mimococo.marketops.availabilityrisk.internal.domain.DemandWindow;
 import com.mimococo.marketops.availabilityrisk.internal.domain.DemandWindowEvidence;
 import com.mimococo.marketops.availabilityrisk.internal.domain.InboundConsignment;
 import com.mimococo.marketops.availabilityrisk.internal.domain.LeadTimeResolution;
 import com.mimococo.marketops.availabilityrisk.internal.domain.PriorityPolicy;
 import com.mimococo.marketops.availabilityrisk.internal.domain.ProfitAssessment;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityPolicyRepository;
+import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityProjectionRepository;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.InboundAttestationRepository;
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -49,15 +51,18 @@ public class AvailabilityRiskCalculationService {
     private final AvailabilityPolicyRepository policies;
     private final InboundAttestationRepository inbound;
     private final ProfitLaneResolver profit;
+    private final AvailabilityProjectionRepository projection;
 
     public AvailabilityRiskCalculationService(AvailabilityEvidenceGatherer evidence,
                                               AvailabilityPolicyRepository policies,
                                               InboundAttestationRepository inbound,
-                                              ProfitLaneResolver profit) {
+                                              ProfitLaneResolver profit,
+                                              AvailabilityProjectionRepository projection) {
         this.evidence = evidence;
         this.policies = policies;
         this.inbound = inbound;
         this.profit = profit;
+        this.projection = projection;
     }
 
     /**
@@ -96,7 +101,9 @@ public class AvailabilityRiskCalculationService {
             List<DemandWindowEvidence> windows =
                     evidence.channelDemandWindows(listingVariantId, asOf);
             DemandDecision demand = DemandPolicyEngine.decide(windows, demandSettings,
-                    carriedForward(windows, demandSettings, asOf), asOf);
+                    carriedForward(ChildKind.CHANNEL, organizationId, productVariantId,
+                            listingVariantId, subject.observation().fulfillmentModeCode()),
+                    asOf);
             ProfitAssessment assessment = profit.resolve(listingVariantId, asOf);
             ChildRisk risk = ChannelRiskCalculator.calculate(subject.observation(), demand,
                     leadTime, assessment, freshnessMinutes, asOf);
@@ -111,7 +118,8 @@ public class AvailabilityRiskCalculationService {
         List<DemandWindowEvidence> companyWindows =
                 evidence.companyDemandWindows(listingVariantIds, asOf);
         DemandDecision companyDemand = DemandPolicyEngine.decide(companyWindows, demandSettings,
-                carriedForward(companyWindows, demandSettings, asOf), asOf);
+                carriedForward(ChildKind.COMPANY, organizationId, productVariantId, null, null),
+                asOf);
         List<InboundConsignment> consignments =
                 inbound.currentFor(organizationId, productVariantId);
         CompanyObservation companyObservation = evidence.companyObservation(
@@ -163,23 +171,20 @@ public class AvailabilityRiskCalculationService {
     }
 
     /**
-     * The last eligible demand answer, when one is present in the windows.
+     * The last eligible demand answer stored for this subject.
      *
-     * <p>Carry-forward looks at the longest window first: it is the one most
-     * likely to have been observable before the censoring began, and using the
-     * shortest would carry the noisiest figure forward.
+     * <p>It cannot come from the current windows: if one of those were
+     * eligible the policy would have selected it and carry-forward would never
+     * arise. It comes from what was stored the last time observation worked.
      */
-    private CarriedForwardDemand carriedForward(List<DemandWindowEvidence> windows,
-                                                DemandPolicySettings settings, Instant asOf) {
-        return windows.stream()
-                .filter(window -> window.observed() && !window.censored())
-                .filter(window -> window.completedUnits() >= settings.minimumSampleUnits())
-                // A window with no observable time has no rate to carry, whatever
-                // its unit count says.
-                .filter(window -> window.dailyRate() != null)
-                .max((left, right) -> Integer.compare(left.window().days(), right.window().days()))
-                .map(window -> new CarriedForwardDemand(window.dailyRate(), window.window(),
-                        window.periodEnd()))
+    private CarriedForwardDemand carriedForward(ChildKind childKind, UUID organizationId,
+                                                UUID productVariantId,
+                                                UUID platformListingVariantId,
+                                                String fulfillmentModeCode) {
+        return projection.lastEligibleDemand(organizationId, childKind, productVariantId,
+                        platformListingVariantId, fulfillmentModeCode)
+                .map(row -> new CarriedForwardDemand(row.dailyRate(),
+                        DemandWindow.valueOf(row.windowCode()), row.periodEnd()))
                 .orElse(null);
     }
 

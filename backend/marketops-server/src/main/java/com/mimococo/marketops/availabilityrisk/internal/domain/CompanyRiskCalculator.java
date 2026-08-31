@@ -100,6 +100,15 @@ public final class CompanyRiskCalculator {
 
         for (CompanyObservation.PlatformHolding holding : observation.platformHoldings()) {
             int units = holding.availableUnits() == null ? 0 : holding.availableUnits();
+            if (holding.distinctness() == SupplyDistinctness.MIRRORS_INTERNAL) {
+                // These units are the warehouse's own, already counted. Whether
+                // the platform published a quantity for them, and how fresh it
+                // is, changes nothing about company supply.
+                components.add(SupplyComponent.excluded(SupplyComponent.Source.PLATFORM_VISIBLE,
+                        units, SupplyComponent.ExclusionReason.MIRRORS_INTERNAL_STOCK,
+                        holding.provenanceId(), holding.observedAt()));
+                continue;
+            }
             if (holding.availableUnits() == null) {
                 components.add(SupplyComponent.excluded(SupplyComponent.Source.PLATFORM_VISIBLE,
                         0, SupplyComponent.ExclusionReason.QUANTITY_NOT_REPORTED,
@@ -113,10 +122,8 @@ public final class CompanyRiskCalculator {
                 continue;
             }
             switch (holding.distinctness()) {
-                case MIRRORS_INTERNAL -> components.add(SupplyComponent.excluded(
-                        SupplyComponent.Source.PLATFORM_VISIBLE, units,
-                        SupplyComponent.ExclusionReason.MIRRORS_INTERNAL_STOCK,
-                        holding.provenanceId(), holding.observedAt()));
+                case MIRRORS_INTERNAL -> throw new IllegalStateException(
+                        "a mirrored holding is handled before freshness");
                 case PHYSICALLY_DISTINCT -> components.add(SupplyComponent.counted(
                         SupplyComponent.Source.PLATFORM_VISIBLE, units,
                         holding.provenanceId(), holding.observedAt()));

@@ -52,9 +52,9 @@ The database evidence is real PostgreSQL, not an in-memory substitute.
 | --- | --- | --- |
 | `./mvnw -B -ntp -Dtest='DemandPolicyEngineTest' test` | 11 passed | deterministic D7/D14/D30 selection, censoring, carry-forward and its expiry |
 | `./mvnw -B -ntp -Dtest='ChannelRiskCalculatorTest' test` | 8 passed | channel independence, fresh-zero and unsellable escalation, staleness, policy-derived lanes |
-| `./mvnw -B -ntp -Dtest='CompanyRiskCalculatorTest' test` | 15 passed | fail-closed company answer, deduplication, inbound eligibility, conservative proof |
+| `./mvnw -B -ntp -Dtest='CompanyRiskCalculatorTest' test` | 17 passed | fail-closed company answer, deduplication, inbound eligibility, conservative proof |
 | `./mvnw -B -ntp -Dtest='PriorityPolicyTest' test` | 5 passed | lane band, visible factors, determinism |
-| `./mvnw -B -ntp -Dtest='NoFalseSafetyAdversarialTest' test` | 13 passed | the values a removed gate would produce cannot be constructed |
+| `./mvnw -B -ntp -Dtest='NoFalseSafetyAdversarialTest' test` | 14 passed | the values a removed gate would produce cannot be constructed |
 | `./mvnw -B -ntp -Dtest='*ArchitectureTest' test` | 65 passed | module, boundary, acquisition-authority and rule-sensitivity suites with the new module registered |
 | `./mvnw -B -ntp -Dit.test='FlywayMigrationIT' verify` | 11 passed | migration history, 132-table inventory, seeded role and action matrix |
 | `./mvnw -B -ntp -Dit.test='ControlBoundaryCompletenessIT' verify` | 10 passed | every new table registered in the route inventory |
@@ -65,7 +65,7 @@ The database evidence is real PostgreSQL, not an in-memory substitute.
 | `./mvnw -B -ntp -Dtest='AvailabilityCaseStateTest' test` | 24 passed | the case-lifecycle distinctions that must not collapse |
 | `./mvnw -B -ntp -Dtest='AvailabilityCoverageTest' test` | 7 passed | the observable-days arithmetic the censoring rule rests on |
 | `./mvnw -B -ntp -Dtest='com.mimococo.marketops.operatingfacts.**' test` | 148 passed | the extended fact authority, unchanged behaviour |
-| `./mvnw -B -ntp clean verify` | 960 unit passed; 407 integration, 1 pre-existing failure | the complete backend suite |
+| `./mvnw -B -ntp clean verify` | 960 unit passed; 410 integration, 1 pre-existing failure | the complete backend suite |
 | `python3 scripts/validate_governance.py` | passed | canonical governance contract |
 | `python3 scripts/validate_production_readiness.py` | passed over 1642 files | TC-GLOBAL-001 through TC-GLOBAL-004 |
 | `python3 -m unittest discover -s tests -p 'test_*.py'` | 383 passed | governance tooling, including the V0030 migration registration |
@@ -101,6 +101,21 @@ constraint that has never rejected anything is a comment:
 | `TC-AVAIL-DB-008` | a second pending recalculation for one variant |
 | `TC-AVAIL-DB-009` | any `DELETE` of case, event, decision, SLO or attestation history |
 | `TC-AVAIL-DB-010` | a free-text acknowledgement offered as a structured action |
+
+## Defects this work found and fixed
+
+Recorded rather than removed, because a review that cannot see what the tests
+caught cannot judge whether the tests are good enough.
+
+| Defect | How it surfaced |
+| --- | --- |
+| A company demand window nothing could be observed in kept a null censoring reason, so it looked fully observed | a null-rate failure in `AvailabilityRiskFlowIT` |
+| A carried-forward rate could be selected from a window with no observable time | the same failure |
+| The conservative proof was recovered by scanning for a quoted key; PostgreSQL renders jsonb with a space after the colon, so every proof came back empty | `TC-AVAIL-FLOW-007` |
+| Carry-forward looked for its candidate in the current windows, where by definition none is eligible, so it could never engage | adversarial reading of the diff; now reads stored history and is covered by `TC-DEMAND-006` and `TC-DEMAND-007` |
+| An unknown or stale platform quantity blocked a safe company answer even where the declaration already said those units were the warehouse's own | adversarial reading; `TC-COMPANY-016`, `TC-COMPANY-017` |
+| A demand rate near zero produced a cover whose projected stockout date overflowed the instant it was expressed as | adversarial reading; `TC-ADV-008` |
+| An automatic case activation was attributed to `system` with an organization identifier in the entity-code field | adversarial reading; attribution now names the component that acted |
 
 ## Targeted and sweep equivalence
 

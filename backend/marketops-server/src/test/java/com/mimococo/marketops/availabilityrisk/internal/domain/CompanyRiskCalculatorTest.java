@@ -232,6 +232,35 @@ class CompanyRiskCalculatorTest {
         assertThat(risk.blockerCodes()).contains("COMPANY_SUPPLY_NOT_OBSERVED");
     }
 
+    @Test
+    @DisplayName("TC-COMPANY-016 a mirrored holding with no quantity does not block a safe answer")
+    void mirroredHoldingWithoutQuantityDoesNotBlock() {
+        // The declaration already says these are the warehouse's own units.
+        // Whether the platform published a number for them changes nothing
+        // about company supply, so it must not make the answer unknowable.
+        ChildRisk risk = calculate(new CompanyObservation(VARIANT,
+                List.of(warehouse(400, 0, 0, FRESH)),
+                List.of(platform(null, SupplyDistinctness.MIRRORS_INTERNAL, FRESH)),
+                List.of()), demand("10"));
+
+        assertThat(risk.supply().complete()).isTrue();
+        assertThat(risk.supply().provenUnits()).isEqualTo(400);
+        assertThat(risk.lane()).isEqualTo(AvailabilityLane.HEALTHY);
+    }
+
+    @Test
+    @DisplayName("TC-COMPANY-017 a stale mirrored holding is still not a company shortfall")
+    void staleMirroredHoldingDoesNotBlock() {
+        ChildRisk risk = calculate(new CompanyObservation(VARIANT,
+                List.of(warehouse(400, 0, 0, FRESH)),
+                List.of(platform(120, SupplyDistinctness.MIRRORS_INTERNAL,
+                        NOW.minus(Duration.ofDays(5)))),
+                List.of()), demand("10"));
+
+        assertThat(risk.supply().complete()).isTrue();
+        assertThat(risk.lane()).isEqualTo(AvailabilityLane.HEALTHY);
+    }
+
     private ChildRisk calculate(CompanyObservation observation, DemandDecision demand) {
         return CompanyRiskCalculator.calculate(observation, demand, leadTime(), profit(),
                 FRESHNESS_MINUTES, NOW);

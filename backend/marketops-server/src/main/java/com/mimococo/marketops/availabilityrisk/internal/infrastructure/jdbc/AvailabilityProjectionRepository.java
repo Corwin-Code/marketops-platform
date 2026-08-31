@@ -302,6 +302,54 @@ public class AvailabilityProjectionRepository {
                 .update();
     }
 
+    /**
+     * The last demand answer that was eligible for one child subject.
+     *
+     * <p>Carry-forward needs a previously eligible answer, and a previously
+     * eligible answer is by definition not in the current windows: if one of
+     * those were eligible the policy would have selected it and carry-forward
+     * would not arise. It therefore comes from what was stored, keyed by the
+     * child's own identity so a channel carries its own history rather than
+     * the variant's.
+     */
+    public Optional<CarriedForwardRow> lastEligibleDemand(UUID organizationId,
+                                                          ChildKind childKind,
+                                                          UUID productVariantId,
+                                                          UUID platformListingVariantId,
+                                                          String fulfillmentModeCode) {
+        return jdbc.sql("""
+                        SELECT observation.daily_rate, observation.window_code,
+                               observation.period_end
+                          FROM mart.demand_window_observation AS observation
+                          JOIN mart.availability_risk_child AS child
+                            ON child.id = observation.child_id
+                           AND child.organization_id = observation.organization_id
+                          JOIN mart.availability_risk_card AS card
+                            ON card.id = child.card_id
+                           AND card.organization_id = child.organization_id
+                         WHERE observation.organization_id = :organizationId
+                           AND observation.eligibility = 'ELIGIBLE'
+                           AND observation.daily_rate IS NOT NULL
+                           AND child.child_kind = :childKind
+                           AND card.product_variant_id = :productVariantId
+                           AND (child.child_kind = 'COMPANY'
+                                OR (child.platform_listing_variant_id = :listingVariantId
+                                    AND child.fulfillment_mode_code = :fulfillmentModeCode))
+                         ORDER BY observation.period_end DESC, observation.window_code DESC
+                         LIMIT 1
+                        """)
+                .param("organizationId", organizationId)
+                .param("childKind", childKind.name())
+                .param("productVariantId", productVariantId)
+                .param("listingVariantId", platformListingVariantId)
+                .param("fulfillmentModeCode", fulfillmentModeCode)
+                .query((rows, rowNumber) -> new CarriedForwardRow(
+                        rows.getBigDecimal("daily_rate"),
+                        rows.getString("window_code"),
+                        rows.getTimestamp("period_end").toInstant()))
+                .optional();
+    }
+
     /** Children of one card, most severe first. */
     public List<UUID> childIds(UUID cardId) {
         return jdbc.sql("""
@@ -311,6 +359,10 @@ public class AvailabilityProjectionRepository {
                 .param("cardId", cardId)
                 .query(UUID.class)
                 .list();
+    }
+
+    /** The last eligible demand answer stored for a child subject. */
+    public record CarriedForwardRow(BigDecimal dailyRate, String windowCode, Instant periodEnd) {
     }
 
     /** The parent card to write. */

@@ -60,9 +60,24 @@ public final class LaneThresholds {
         return AvailabilityLane.HEALTHY;
     }
 
-    /** When cover runs out, or {@code null} when it does not. */
+    /**
+     * The maximum cover that is still a date rather than an abstraction.
+     *
+     * <p>A thousand years of cover is not a stockout date an operator can use,
+     * and computing one from a demand rate near zero overflows the instant it
+     * would be expressed as.
+     */
+    private static final BigDecimal MAX_PROJECTED_DAYS = BigDecimal.valueOf(365_000);
+
+    /**
+     * When cover runs out, or {@code null} when it does not run out usefully.
+     *
+     * <p>Returning {@code null} beyond the bound is honest: nothing is being
+     * asserted about a date that far away, and a clamped date would assert
+     * something false.
+     */
     public static Instant stockoutAt(BigDecimal coverDays, Instant asOf) {
-        if (coverDays == null) {
+        if (coverDays == null || coverDays.compareTo(MAX_PROJECTED_DAYS) > 0) {
             return null;
         }
         long seconds = coverDays.multiply(BigDecimal.valueOf(86400))

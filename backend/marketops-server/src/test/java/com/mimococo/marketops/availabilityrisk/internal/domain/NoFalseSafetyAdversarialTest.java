@@ -2,6 +2,7 @@ package com.mimococo.marketops.availabilityrisk.internal.domain;
 
 import static com.mimococo.marketops.availabilityrisk.internal.domain.RiskFixtures.NOW;
 import static com.mimococo.marketops.availabilityrisk.internal.domain.RiskFixtures.VARIANT;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.mimococo.marketops.availabilityrisk.AvailabilityLane;
@@ -83,6 +84,17 @@ class NoFalseSafetyAdversarialTest {
         assertThatThrownBy(() -> LaneThresholds.laneFor(java.math.BigDecimal.ONE,
                 LeadTimeResolution.blocked("none")))
                 .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    @DisplayName("TC-ADV-008 a cover too far out to be a date is not reported as one")
+    void anUnusableProjectionIsNotADate() {
+        // A demand rate near zero produces a cover measured in millennia. That
+        // is not a stockout date, and expressing it would overflow the instant.
+        java.math.BigDecimal millennia = java.math.BigDecimal.valueOf(400_000);
+        assertThat(LaneThresholds.stockoutAt(millennia, NOW)).isNull();
+        assertThat(LaneThresholds.stockoutAt(java.math.BigDecimal.valueOf(30), NOW))
+                .isEqualTo(NOW.plus(java.time.Duration.ofDays(30)));
     }
 
     private ChildRisk company(AvailabilityLane lane, RiskEvidenceState evidence,
