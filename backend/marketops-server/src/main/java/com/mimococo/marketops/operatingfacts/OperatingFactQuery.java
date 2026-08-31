@@ -69,6 +69,44 @@ public interface OperatingFactQuery {
     InternalStockSnapshot internalStock(UUID productVariantId, Instant asOf);
 
     /**
+     * Whether a source last said one listing variant could be bought.
+     *
+     * <p>Kept separate from {@link #latestStock} because the two answers can
+     * disagree: a blocked listing with stock is unavailable, and a sellable
+     * listing with nothing on it is unavailable for a different reason and a
+     * different owner.
+     */
+    java.util.Optional<SellabilitySnapshot> latestSellability(UUID platformListingVariantId,
+                                                              Instant asOf);
+
+    /**
+     * What each internal warehouse holds of one internal variant.
+     *
+     * <p>{@link #internalStock} sums these. A caller that has to decide whether
+     * a platform view mirrors a particular warehouse needs them apart.
+     */
+    List<WarehouseStockSnapshot> internalStockByWarehouse(UUID productVariantId, Instant asOf);
+
+    /**
+     * The record of whether one listing variant could sell across a window.
+     *
+     * <p>Returned oldest first. A caller reading a demand window needs this to
+     * tell an empty week from an unobservable one.
+     */
+    List<AvailabilityObservation> availabilityObservations(UUID platformListingVariantId,
+                                                           FactWindow window);
+
+    /**
+     * Facts accepted at or after an instant, oldest first.
+     *
+     * <p>The feed is pulled rather than pushed so that consuming a fact never
+     * makes the fact authority depend on its consumers. Each entry carries the
+     * instant the fact was accepted, which is where a response-time obligation
+     * starts counting.
+     */
+    List<AcceptedFactChange> factsAcceptedSince(Instant cursor, int limit);
+
+    /**
      * Listing variants on one store that any source reported activity for
      * inside a window.
      *

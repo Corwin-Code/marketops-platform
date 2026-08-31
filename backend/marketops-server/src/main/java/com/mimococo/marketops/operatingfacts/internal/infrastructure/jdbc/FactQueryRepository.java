@@ -445,6 +445,178 @@ public class FactQueryRepository {
                 .optional();
     }
 
+    /** The most recent sellability statement before an exclusive instant. */
+    public Optional<SellabilityRow> latestSellability(UUID listingVariantId, Instant asOf) {
+        return jdbc.sql("""
+                        SELECT health.observed_at, health.sellable,
+                               health.blocked_reason_native, health.provenance_id
+                          FROM core.listing_health_observation AS health
+                         WHERE health.platform_listing_variant_id = :listingVariantId
+                           AND health.observed_at < :asOf
+                           AND NOT EXISTS (
+                               SELECT 1 FROM core.listing_health_observation AS newer
+                                WHERE newer.supersedes_fact_id = health.id)
+                         ORDER BY health.observed_at DESC, health.id DESC
+                         LIMIT 1
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("asOf", Timestamp.from(asOf))
+                .query((rows, rowNumber) -> new SellabilityRow(
+                        instantOrNull(rows, "observed_at"),
+                        rows.getString("sellable"),
+                        rows.getString("blocked_reason_native"),
+                        rows.getObject("provenance_id", UUID.class)))
+                .optional();
+    }
+
+    /**
+     * The latest snapshot of each warehouse before an exclusive instant.
+     *
+     * <p>Deliberately unsummed. Deciding whether a platform view is the same
+     * goods as a warehouse holds is impossible once the warehouses have been
+     * added together.
+     */
+    public List<WarehouseStockRow> internalStockByWarehouse(UUID productVariantId, Instant asOf) {
+        return jdbc.sql("""
+                        SELECT DISTINCT ON (snapshot.warehouse_id)
+                               snapshot.warehouse_id, snapshot.quantity_on_hand,
+                               snapshot.quantity_reserved, snapshot.observed_at,
+                               snapshot.provenance_id
+                          FROM core.internal_stock_snapshot AS snapshot
+                         WHERE snapshot.product_variant_id = :productVariantId
+                           AND snapshot.observed_at < :asOf
+                         ORDER BY snapshot.warehouse_id, snapshot.observed_at DESC,
+                                  snapshot.id DESC
+                        """)
+                .param("productVariantId", productVariantId)
+                .param("asOf", Timestamp.from(asOf))
+                .query((rows, rowNumber) -> new WarehouseStockRow(
+                        rows.getObject("warehouse_id", UUID.class),
+                        rows.getInt("quantity_on_hand"),
+                        integerOrNull(rows, "quantity_reserved"),
+                        instantOrNull(rows, "observed_at"),
+                        rows.getObject("provenance_id", UUID.class)))
+                .list();
+    }
+
+    /**
+     * Stock and sellability observations across a window, oldest first.
+     *
+     * <p>Both kinds arrive in one ordered stream because the caller has to
+     * replay them together: a listing becomes unsellable at one instant and
+     * runs out at another, and only the merged sequence says which periods a
+     * sale was actually possible in.
+     */
+    public List<AvailabilityRow> availabilityObservations(UUID listingVariantId,
+                                                          Instant from,
+                                                          Instant to) {
+        return jdbc.sql("""
+                        SELECT stock.observed_at,
+                               stock.available_quantity,
+                               CAST(NULL AS text) AS sellable
+                          FROM core.listing_stock_observation AS stock
+                         WHERE stock.platform_listing_variant_id = :listingVariantId
+                           AND stock.observed_at >= :from
+                           AND stock.observed_at < :to
+                           AND NOT EXISTS (
+                               SELECT 1 FROM core.listing_stock_observation AS newer
+                                WHERE newer.supersedes_fact_id = stock.id)
+                         UNION ALL
+                        SELECT health.observed_at,
+                               CAST(NULL AS integer) AS available_quantity,
+                               health.sellable
+                          FROM core.listing_health_observation AS health
+                         WHERE health.platform_listing_variant_id = :listingVariantId
+                           AND health.observed_at >= :from
+                           AND health.observed_at < :to
+                           AND NOT EXISTS (
+                               SELECT 1 FROM core.listing_health_observation AS newer
+                                WHERE newer.supersedes_fact_id = health.id)
+                         ORDER BY 1
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("from", Timestamp.from(from))
+                .param("to", Timestamp.from(to))
+                .query((rows, rowNumber) -> new AvailabilityRow(
+                        instantOrNull(rows, "observed_at"),
+                        integerOrNull(rows, "available_quantity"),
+                        rows.getString("sellable")))
+                .list();
+    }
+
+    /**
+     * Facts accepted at or after an instant, oldest first.
+     *
+     * <p>One provenance row can back several facts, so the union carries the
+     * subject each kind resolves to. A caller recalculating a variant needs the
+     * subject, not the provenance.
+     */
+    public List<AcceptedFactRow> factsAcceptedSince(Instant cursor, int limit) {
+        return jdbc.sql("""
+                        SELECT * FROM (
+                            SELECT provenance.id AS provenance_id,
+                                   provenance.organization_id,
+                                   stock.platform_listing_variant_id,
+                                   CAST(NULL AS uuid) AS product_variant_id,
+                                   'STOCK_OR_SELLABILITY' AS trigger_class,
+                                   provenance.ingestion_time, provenance.source_time
+                              FROM core.fact_provenance AS provenance
+                              JOIN core.listing_stock_observation AS stock
+                                ON stock.provenance_id = provenance.id
+                             WHERE provenance.ingestion_time >= :cursor
+                             UNION ALL
+                            SELECT provenance.id, provenance.organization_id,
+                                   health.platform_listing_variant_id, CAST(NULL AS uuid),
+                                   'STOCK_OR_SELLABILITY',
+                                   provenance.ingestion_time, provenance.source_time
+                              FROM core.fact_provenance AS provenance
+                              JOIN core.listing_health_observation AS health
+                                ON health.provenance_id = provenance.id
+                             WHERE provenance.ingestion_time >= :cursor
+                             UNION ALL
+                            SELECT provenance.id, provenance.organization_id,
+                                   sale.platform_listing_variant_id, CAST(NULL AS uuid),
+                                   'SALES_EVIDENCE',
+                                   provenance.ingestion_time, provenance.source_time
+                              FROM core.fact_provenance AS provenance
+                              JOIN ledger.sales_fact AS sale
+                                ON sale.provenance_id = provenance.id
+                             WHERE provenance.ingestion_time >= :cursor
+                             UNION ALL
+                            SELECT provenance.id, provenance.organization_id,
+                                   returned.platform_listing_variant_id, CAST(NULL AS uuid),
+                                   'RETURN_EVIDENCE',
+                                   provenance.ingestion_time, provenance.source_time
+                              FROM core.fact_provenance AS provenance
+                              JOIN ledger.return_fact AS returned
+                                ON returned.provenance_id = provenance.id
+                             WHERE provenance.ingestion_time >= :cursor
+                             UNION ALL
+                            SELECT provenance.id, provenance.organization_id,
+                                   CAST(NULL AS uuid), snapshot.product_variant_id,
+                                   'STOCK_OR_SELLABILITY',
+                                   provenance.ingestion_time, provenance.source_time
+                              FROM core.fact_provenance AS provenance
+                              JOIN core.internal_stock_snapshot AS snapshot
+                                ON snapshot.provenance_id = provenance.id
+                             WHERE provenance.ingestion_time >= :cursor
+                        ) AS accepted
+                         ORDER BY accepted.ingestion_time, accepted.provenance_id
+                         LIMIT :limit
+                        """)
+                .param("cursor", Timestamp.from(cursor))
+                .param("limit", limit)
+                .query((rows, rowNumber) -> new AcceptedFactRow(
+                        rows.getObject("provenance_id", UUID.class),
+                        rows.getObject("organization_id", UUID.class),
+                        rows.getObject("platform_listing_variant_id", UUID.class),
+                        rows.getObject("product_variant_id", UUID.class),
+                        rows.getString("trigger_class"),
+                        instantOrNull(rows, "ingestion_time"),
+                        instantOrNull(rows, "source_time")))
+                .list();
+    }
+
     /**
      * Listing variants on one store that any source reported activity for.
      *
@@ -574,6 +746,27 @@ public class FactQueryRepository {
             UUID id, String inputCode, String valueKind, BigDecimal rateValue,
             BigDecimal amountValue, String currencyCode, Instant effectiveFrom,
             UUID provenanceId) {
+    }
+
+    /** The latest sellability statement about a listing variant. */
+    public record SellabilityRow(
+            Instant observedAt, String sellable, String blockedReason, UUID provenanceId) {
+    }
+
+    /** The latest snapshot of one warehouse. */
+    public record WarehouseStockRow(
+            UUID warehouseId, int quantityOnHand, Integer quantityReserved,
+            Instant observedAt, UUID provenanceId) {
+    }
+
+    /** One stock or sellability observation inside a window. */
+    public record AvailabilityRow(Instant observedAt, Integer availableQuantity, String sellable) {
+    }
+
+    /** One accepted fact, with the subject it makes stale. */
+    public record AcceptedFactRow(
+            UUID provenanceId, UUID organizationId, UUID platformListingVariantId,
+            UUID productVariantId, String triggerClass, Instant ingestionTime, Instant sourceTime) {
     }
 
     /** Internal stock summed across warehouses. */

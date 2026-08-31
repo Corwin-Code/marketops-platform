@@ -1,6 +1,8 @@
 package com.mimococo.marketops.operatingfacts.internal.application;
 
+import com.mimococo.marketops.operatingfacts.AcceptedFactChange;
 import com.mimococo.marketops.operatingfacts.AdvertisingTotals;
+import com.mimococo.marketops.operatingfacts.AvailabilityObservation;
 import com.mimococo.marketops.operatingfacts.CostSnapshot;
 import com.mimococo.marketops.operatingfacts.FactEvidence;
 import com.mimococo.marketops.operatingfacts.FactWindow;
@@ -12,8 +14,10 @@ import com.mimococo.marketops.operatingfacts.PriceSnapshot;
 import com.mimococo.marketops.operatingfacts.ReturnTotals;
 import com.mimococo.marketops.operatingfacts.SaleStage;
 import com.mimococo.marketops.operatingfacts.SalesTotals;
+import com.mimococo.marketops.operatingfacts.SellabilitySnapshot;
 import com.mimococo.marketops.operatingfacts.StockSnapshot;
 import com.mimococo.marketops.operatingfacts.TrafficTotals;
+import com.mimococo.marketops.operatingfacts.WarehouseStockSnapshot;
 import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.FactQueryRepository;
 import com.mimococo.marketops.shared.Money;
 import java.math.BigDecimal;
@@ -254,6 +258,71 @@ public class OperatingFactService implements OperatingFactQuery {
     public List<UUID> listingVariantsWithActivity(UUID storeId, FactWindow window, int limit) {
         return facts.listingVariantsWithActivity(
                 storeId, window.periodStart(), window.periodEnd(), Math.clamp(limit, 1, 5000));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<SellabilitySnapshot> latestSellability(UUID platformListingVariantId,
+                                                           Instant asOf) {
+        return facts.latestSellability(platformListingVariantId, asOf)
+                .map(row -> new SellabilitySnapshot(row.observedAt(), row.sellable(),
+                        row.blockedReason(), row.provenanceId()));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<WarehouseStockSnapshot> internalStockByWarehouse(UUID productVariantId,
+                                                                 Instant asOf) {
+        return facts.internalStockByWarehouse(productVariantId, asOf).stream()
+                .map(row -> new WarehouseStockSnapshot(row.warehouseId(), row.quantityOnHand(),
+                        row.quantityReserved(), row.observedAt(), row.provenanceId()))
+                .toList();
+    }
+
+    /**
+     * Merge the stock and sellability streams into one availability timeline.
+     *
+     * <p>Each source publishes only when its own value changes, so a stock
+     * observation says nothing about sellability and vice versa. Carrying the
+     * last stated value of the other dimension forward reconstructs what was
+     * actually true between publications; the alternative — treating an
+     * unstated dimension as unknown at every point — would make every window
+     * look unobservable.
+     *
+     * <p>Before either source has spoken the dimension stays {@code null} or
+     * {@code UNKNOWN}, because nothing has been stated yet and inventing a
+     * starting value would be inventing evidence.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<AvailabilityObservation> availabilityObservations(UUID platformListingVariantId,
+                                                                  FactWindow window) {
+        List<FactQueryRepository.AvailabilityRow> rows = facts.availabilityObservations(
+                platformListingVariantId, window.periodStart(), window.periodEnd());
+        List<AvailabilityObservation> timeline = new java.util.ArrayList<>(rows.size());
+        Integer units = null;
+        String sellable = null;
+        for (FactQueryRepository.AvailabilityRow row : rows) {
+            if (row.availableQuantity() != null) {
+                units = row.availableQuantity();
+            }
+            if (row.sellable() != null) {
+                sellable = row.sellable();
+            }
+            timeline.add(new AvailabilityObservation(row.observedAt(), units,
+                    sellable == null ? "UNKNOWN" : sellable));
+        }
+        return List.copyOf(timeline);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AcceptedFactChange> factsAcceptedSince(Instant cursor, int limit) {
+        return facts.factsAcceptedSince(cursor, Math.clamp(limit, 1, 5000)).stream()
+                .map(row -> new AcceptedFactChange(row.provenanceId(), row.organizationId(),
+                        row.platformListingVariantId(), row.productVariantId(),
+                        row.triggerClass(), row.ingestionTime(), row.sourceTime()))
+                .toList();
     }
 
     private static FactEvidence conflicted(List<FactQueryRepository.MoneyGroupRow> rows) {
