@@ -55,7 +55,7 @@ class ManagedProfileMigrationIT {
     @Test
     void pg17StandardAndManagedProfilesHaveCanonicalHistoryAndEquivalentApplicationSchemas() throws Exception {
         var standardResult = ManagedMigrationRunner.migrate(standard);
-        assertThat(standardResult.schemaVersion()).isEqualTo("0032");
+        assertThat(standardResult.schemaVersion()).isEqualTo("0033");
 
         // Missing provider extension is rejected after V0001 and before V0003.
         new JdbcTemplate(admin).execute("DROP EXTENSION pgcrypto");
@@ -122,7 +122,7 @@ class ManagedProfileMigrationIT {
         }
         var managedResult = ManagedMigrationRunner.migrateManaged(managed, attestation(), evidence, "ABSENT",
                 Instant.parse("2026-08-28T00:00:02Z"), "managed-positive-profile");
-        assertThat(managedResult.schemaVersion()).isEqualTo("0032");
+        assertThat(managedResult.schemaVersion()).isEqualTo("0033");
         assertThat(evidence).isRegularFile();
         Path retained = Path.of("target/managed-profile-evidence/bootstrap.json");
         Files.createDirectories(retained.getParent());
@@ -246,8 +246,8 @@ class ManagedProfileMigrationIT {
             assertThat(resumed.migrationsApplied()).isEqualTo(8);
             var upgraded=ManagedMigrationRunner.migrateManaged(managed,nextRelease,evidence,bootstrapHash,
                     Instant.parse("2026-08-28T00:03:02Z"),"managed-prior-release-upgrade");
-            assertThat(upgraded.schemaVersion()).isEqualTo("0032");
-            assertThat(upgraded.migrationsApplied()).isEqualTo(22);
+            assertThat(upgraded.schemaVersion()).isEqualTo("0033");
+            assertThat(upgraded.migrationsApplied()).isEqualTo(23);
             assertThat(ManagedMigrationEvidence.sha256(evidence)).isEqualTo(bootstrapHash);
             assertThat(catalogSignature(managed)).isEqualTo(catalogSignature(standard));
             assertThat(attempt(evidenceDirectory,"managed-prior-release-upgrade"))

@@ -1,7 +1,9 @@
 package com.mimococo.marketops.availabilityrisk.internal.application;
 
+import com.mimococo.marketops.operationsworkflow.AvailabilityCaseView;
 import com.mimococo.marketops.shared.IdGenerator;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,15 +34,18 @@ public class AvailabilityRiskRefreshService {
     private final AvailabilityRiskCalculationService calculation;
     private final AvailabilityProjectionWriter writer;
     private final AvailabilityCaseActivationService activation;
+    private final AvailabilityOutcomeVerificationService verification;
     private final IdGenerator ids;
 
     public AvailabilityRiskRefreshService(AvailabilityRiskCalculationService calculation,
                                           AvailabilityProjectionWriter writer,
                                           AvailabilityCaseActivationService activation,
+                                          AvailabilityOutcomeVerificationService verification,
                                           IdGenerator ids) {
         this.calculation = calculation;
         this.writer = writer;
         this.activation = activation;
+        this.verification = verification;
         this.ids = ids;
     }
 
@@ -69,7 +74,13 @@ public class AvailabilityRiskRefreshService {
                 + (reconciliationRunId == null ? ids.newId() : reconciliationRunId);
         AvailabilityCaseActivationService.ActivationResult raised =
                 activation.activate(risk, written, correlationId);
-        return new RefreshOutcome(risk, written, raised, correlationId);
+
+        // Verification runs after activation and on the same calculation, so a
+        // case raised a moment ago and a case waiting on an outcome are both
+        // answered by one reading of the evidence rather than by two that could
+        // disagree.
+        var verified = verification.observe(risk, written);
+        return new RefreshOutcome(risk, written, raised, verified, correlationId);
     }
 
     /**
@@ -78,11 +89,13 @@ public class AvailabilityRiskRefreshService {
      * @param risk what was calculated
      * @param written the card and children exactly as persisted
      * @param activation what was raised, refreshed or left alone
+     * @param verified every case this calculation reported an outcome for
      * @param correlationId the calculation run's own identity
      */
     public record RefreshOutcome(VariantRisk risk,
                                  AvailabilityProjectionWriter.WrittenCard written,
                                  AvailabilityCaseActivationService.ActivationResult activation,
+                                 List<AvailabilityCaseView> verified,
                                  String correlationId) {
     }
 }

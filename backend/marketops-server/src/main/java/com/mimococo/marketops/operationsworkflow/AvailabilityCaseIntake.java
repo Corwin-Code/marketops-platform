@@ -48,6 +48,37 @@ public interface AvailabilityCaseIntake {
                                              CaseVerificationOutcome outcome, Instant observedAt,
                                              String reason);
 
+    /**
+     * Every live case awaiting an outcome for one exact calculated child.
+     *
+     * <p>Keyed on the child rather than on the cause, because by the time a
+     * cause is repaired the recalculated child no longer carries it. Looking
+     * the case up by its current cause would find nothing precisely when the
+     * good news arrived, and the case would wait for a person forever.
+     */
+    java.util.List<AvailabilityCaseView> awaitingOutcome(UUID childId);
+
+    /**
+     * Record what a fresh recalculation showed about the cause itself.
+     *
+     * <p>The caller reports one fact — whether the cause-specific condition
+     * holds right now — and this authority decides what that means. Keeping the
+     * decision here is the point: "improved and held through the governed
+     * window" is a rule about time and about the case's own history, and a
+     * caller that could name the outcome directly could name success on the
+     * first good reading.
+     *
+     * @param caseId the case
+     * @param verificationKind what was observed
+     * @param conditionHolds whether the cause is repaired at this instant
+     * @param observedAt when the observation was made
+     * @param verificationWindow how long the improvement must hold to count
+     * @return the case, moved only if the observation moved it
+     */
+    AvailabilityCaseView observeCondition(UUID caseId, String verificationKind,
+                                          boolean conditionHolds, Instant observedAt,
+                                          java.time.Duration verificationWindow);
+
     /** Reopen the same case because the risk returned or its evidence expired. */
     AvailabilityCaseView reopen(UUID caseId, String reason, Instant at);
 

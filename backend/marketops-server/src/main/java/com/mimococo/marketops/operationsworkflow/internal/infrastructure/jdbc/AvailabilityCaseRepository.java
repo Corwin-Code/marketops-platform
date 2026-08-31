@@ -192,6 +192,47 @@ public class AvailabilityCaseRepository {
                 .update();
     }
 
+    /**
+     * Every live case an automatic observation of one child applies to.
+     *
+     * <p>Keyed on the child rather than on the cause, because by the time a
+     * cause is repaired the recalculated child no longer carries it. Looking
+     * the case up by its current cause would find nothing precisely when the
+     * good news arrived, and the case would wait for a person forever.
+     */
+    public List<AvailabilityCaseView> awaitingOutcome(UUID childId) {
+        return jdbc.sql(SELECT + """
+                         WHERE child_id = :childId
+                           AND state IN ('ACTION_RECORDED', 'VERIFYING')
+                         ORDER BY first_activated_at
+                        """)
+                .param("childId", childId)
+                .query(AvailabilityCaseRepository::map)
+                .list();
+    }
+
+    /**
+     * Record when the cause was first observed repaired, or that it no longer is.
+     *
+     * <p>Set once and cleared on regression. Overwriting it on every observation
+     * would restart the governed window each time the risk was looked at, and a
+     * window that never elapses can never verify anything.
+     */
+    public void markImprovement(UUID id, Instant firstSeenAt, Instant at) {
+        jdbc.sql("""
+                        UPDATE ops.availability_case
+                           SET improvement_first_seen_at = :firstSeenAt,
+                               last_evidence_at = :at,
+                               updated_at = :at,
+                               version = version + 1
+                         WHERE id = :id
+                        """)
+                .param("id", id)
+                .param("firstSeenAt", firstSeenAt == null ? null : Timestamp.from(firstSeenAt))
+                .param("at", Timestamp.from(at))
+                .update();
+    }
+
     /** Move a case to a new state, carrying the timestamps that state requires. */
     public void transition(Transition transition) {
         jdbc.sql("""
@@ -268,7 +309,8 @@ public class AvailabilityCaseRepository {
     private static final String SELECT = """
             SELECT id, organization_id, card_id, child_id, cause_code, cause_key, severity,
                    state, accountable_role_code, assignee_user_id, action_due_at, outcome_due_at,
-                   reopen_count, escalation_level, first_activated_at, last_evidence_at
+                   reopen_count, escalation_level, first_activated_at, last_evidence_at,
+                   improvement_first_seen_at
               FROM ops.availability_case
             """;
 
@@ -291,7 +333,10 @@ public class AvailabilityCaseRepository {
                 rows.getInt("reopen_count"),
                 rows.getInt("escalation_level"),
                 rows.getTimestamp("first_activated_at").toInstant(),
-                rows.getTimestamp("last_evidence_at").toInstant());
+                rows.getTimestamp("last_evidence_at").toInstant(),
+                rows.getTimestamp("improvement_first_seen_at") == null
+                        ? null
+                        : rows.getTimestamp("improvement_first_seen_at").toInstant());
     }
 
     /** A case to raise. */

@@ -127,6 +127,7 @@ APPROVED_MIGRATIONS = (
     "V0030__create_availability_risk_policy_inbound_and_case.sql",
     "V0031__track_sustained_availability_lane.sql",
     "V0032__create_availability_fact_feed_cursor.sql",
+    "V0033__track_case_improvement_observation.sql",
 )
 
 DEFERRED_EVIDENCE_REGISTER = (

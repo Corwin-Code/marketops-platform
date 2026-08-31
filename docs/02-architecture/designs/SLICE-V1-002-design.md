@@ -266,6 +266,30 @@ window. Reporting only the percentile would hide one recalculation that took an
 hour; reporting only the worst case would call a healthy system unhealthy after
 one slow afternoon.
 
+### 2.16 A case is closed by the calculation, not by a click
+
+The second stage asks whether the risk improved, and only a fresh reading of
+the same evidence can answer it. So the recalculation that raised a case is
+also what verifies it: it reports one fact — whether the cause-specific
+condition holds right now — and the workflow authority turns that into an
+outcome against the governed window.
+
+The division matters. A caller that could name the outcome directly could name
+success on the first good reading, and "improved" is not "improved and stayed
+improved". Keeping the window rule in the authority that owns the case means
+there is one place where success is decided.
+
+Cases are found by the child they were raised against rather than by their
+cause, because by the time a cause is repaired the recalculated child no longer
+carries it. A cause-keyed lookup would find nothing at exactly the moment the
+good news arrived.
+
+What counts as repaired depends on what was wrong. A shortage is repaired when
+the lane falls back below the activation band; a defect is repaired when the
+defect is gone and the evidence is usable again. Judging a repaired data source
+by the lane would refuse to close it while a real, correctly calculated shortage
+remained — which is a different case with a different owner.
+
 ### 2.15 A pulled feed needs a position that survives a restart
 
 Consuming a fact never makes the fact authority depend on its consumers, so the
@@ -328,6 +352,12 @@ Concretely:
   materiality version, requester separation enforced in the service and again in
   the database, a bounded and reviewable grant, and expiry or invalidation that
   returns the same case to somebody with its journal intact;
+- V0033 and automatic outcome verification: the calculation reports whether the
+  cause a case was raised for is repaired, the workflow authority turns that
+  into continued verification, a verified success once the improvement has held
+  through the governed window, a same-case reopen when it comes back, or a
+  failure once the outcome was actually due — and the window's start is stored
+  because it is not recoverable from anything else;
 - V0032 and the recalculation loop: the pulled accepted-fact feed with a durable
   position, the targeted worker with its response evidence, and the hourly sweep
   that repairs what targeting missed, expires lapsed acceptances and counts

@@ -26,6 +26,7 @@ import java.util.UUID;
  * @param escalationLevel how far it has been raised
  * @param firstActivatedAt when the cause was first raised
  * @param lastEvidenceAt when evidence was last appended
+ * @param improvementFirstSeenAt when the cause was first observed repaired, or {@code null}
  */
 public record AvailabilityCaseView(
         UUID id,
@@ -43,7 +44,8 @@ public record AvailabilityCaseView(
         int reopenCount,
         int escalationLevel,
         Instant firstActivatedAt,
-        Instant lastEvidenceAt) {
+        Instant lastEvidenceAt,
+        Instant improvementFirstSeenAt) {
 
     /** Whether the case is still somebody's work. */
     public boolean live() {

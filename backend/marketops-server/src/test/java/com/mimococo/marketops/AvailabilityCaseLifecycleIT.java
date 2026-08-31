@@ -517,6 +517,140 @@ class AvailabilityCaseLifecycleIT {
                 AS_OF);
     }
 
+    @Test
+    @Order(21)
+    @DisplayName("TC-CASE-021 an unrepaired cause keeps the case verifying rather than failing it")
+    void anUnrepairedCauseKeepsVerifying() {
+        AvailabilityCaseView governed = live(CHANNEL_CAUSE);
+        cases.recordAction(governed.id(), USER, "MARKETPLACE_OPERATOR",
+                CaseActionKind.CHANNEL_RESTORATION_REFERENCE, "ev://ozon/restock/2",
+                "replenishment bound to the listing");
+
+        var outcome = refresh.refresh(ORGANIZATION, VARIANT, AS_OF,
+                AvailabilityRiskRefreshService.RECONCILIATION, null);
+
+        assertThat(outcome.verified()).extracting(AvailabilityCaseView::id).contains(governed.id());
+        assertThat(live(CHANNEL_CAUSE).state()).isEqualTo(AvailabilityCaseState.VERIFYING);
+        assertThat(live(CHANNEL_CAUSE).improvementFirstSeenAt())
+                .as("nothing improved, so no governed window has started")
+                .isNull();
+    }
+
+    @Test
+    @Order(22)
+    @DisplayName("TC-CASE-022 a repaired cause starts the governed window without claiming success")
+    void arepairedCauseStartsTheWindow() {
+        restock(600, AS_OF.minus(Duration.ofMinutes(5)), 40);
+
+        refresh.refresh(ORGANIZATION, VARIANT, AS_OF, AvailabilityRiskRefreshService.TARGETED,
+                null);
+
+        AvailabilityCaseView governed = live(CHANNEL_CAUSE);
+        assertThat(governed.state())
+                .as("an improvement that has not held is not a verified outcome")
+                .isEqualTo(AvailabilityCaseState.VERIFYING);
+        assertThat(governed.improvementFirstSeenAt()).isEqualTo(AS_OF);
+    }
+
+    @Test
+    @Order(23)
+    @DisplayName("TC-CASE-023 a repaired cause that comes back reopens the same case")
+    void aRepairedCauseThatComesBackReopens() {
+        UUID caseId = live(CHANNEL_CAUSE).id();
+        int reopensBefore = live(CHANNEL_CAUSE).reopenCount();
+        restock(0, AS_OF.minus(Duration.ofMinutes(4)), 41);
+
+        refresh.refresh(ORGANIZATION, VARIANT, AS_OF.plus(Duration.ofMinutes(2)),
+                AvailabilityRiskRefreshService.TARGETED, null);
+
+        AvailabilityCaseView reopened = live(CHANNEL_CAUSE);
+        assertThat(reopened.id()).isEqualTo(caseId);
+        assertThat(reopened.state()).isEqualTo(AvailabilityCaseState.REOPENED);
+        assertThat(reopened.reopenCount()).isEqualTo(reopensBefore + 1);
+        assertThat(reopened.improvementFirstSeenAt())
+                .as("the window starts again from the next improvement, not from the old one")
+                .isNull();
+
+        // An empty shelf is a different cause from a short cover, so it is a
+        // different piece of work rather than a change of severity on this one.
+        assertThat(liveByChannelOutOfStock().id())
+                .as("a new cause raises its own case beside the reopened one")
+                .isNotEqualTo(caseId);
+    }
+
+    @Test
+    @Order(24)
+    @DisplayName("TC-CASE-024 an improvement that holds through the window verifies automatically")
+    void animprovementThatHoldsVerifies() {
+        UUID caseId = liveByChannelOutOfStock().id();
+        cases.recordAction(caseId, USER, "MARKETPLACE_OPERATOR",
+                CaseActionKind.CHANNEL_RESTORATION_REFERENCE, "ev://ozon/restock/3",
+                "the shelf was refilled");
+        restock(600, AS_OF.minus(Duration.ofMinutes(3)), 42);
+
+        // The first calculation sees the improvement and starts the window; the
+        // second, past it, is the one that may close the case.
+        refresh.refresh(ORGANIZATION, VARIANT, AS_OF.plus(Duration.ofMinutes(3)),
+                AvailabilityRiskRefreshService.TARGETED, null);
+        assertThat(string("SELECT lane || ':' || cause_code FROM mart.availability_risk_child"
+                + " WHERE child_kind = 'CHANNEL' AND organization_id = '" + ORGANIZATION + "'"))
+                .as("the restock has to have repaired the channel for anything to verify")
+                .isEqualTo("HEALTHY:NONE");
+        assertThat(state(caseId)).isEqualTo(AvailabilityCaseState.VERIFYING.name());
+        assertThat(string("SELECT coalesce(improvement_first_seen_at::text, 'none')"
+                + " FROM ops.availability_case WHERE id = '" + caseId + "'"))
+                .as("the governed window has to have started for anything to elapse")
+                .isNotEqualTo("none");
+
+        refresh.refresh(ORGANIZATION, VARIANT, AS_OF.plus(Duration.ofMinutes(9)),
+                AvailabilityRiskRefreshService.RECONCILIATION, null);
+
+        assertThat(state(caseId)).isEqualTo(AvailabilityCaseState.VERIFIED_SUCCESS.name());
+        assertThat(count("SELECT count(*) FROM ops.availability_case_event"
+                + " WHERE case_id = '" + caseId + "'"
+                + "   AND event_kind = 'VERIFICATION_OBSERVED'"
+                + "   AND verification_outcome = 'VERIFIED'")).isEqualTo(1);
+    }
+
+    @Test
+    @Order(25)
+    @DisplayName("TC-CASE-025 no case was closed by anything other than a fresh observation")
+    void nothingClosedWithoutAnObservation() {
+        assertThat(count("SELECT count(*) FROM ops.availability_case AS one"
+                + " WHERE one.organization_id = '" + ORGANIZATION + "'"
+                + "   AND one.state = 'VERIFIED_SUCCESS'"
+                + "   AND NOT EXISTS (SELECT 1 FROM ops.availability_case_event AS event"
+                + "                    WHERE event.case_id = one.id"
+                + "                      AND event.event_kind = 'VERIFICATION_OBSERVED'"
+                + "                      AND event.verification_outcome = 'VERIFIED')"))
+                .isZero();
+    }
+
+    /** The live case for the channel stockout cause, whichever generation it is. */
+    private AvailabilityCaseView liveByChannelOutOfStock() {
+        return cases.liveCase(ORGANIZATION, "CHANNEL:" + LISTING_VARIANT
+                + ":MARKETPLACE_FULFILLED:" + RiskCause.CHANNEL_OUT_OF_STOCK.name()).orElseThrow();
+    }
+
+    private String state(UUID caseId) {
+        return string("SELECT state FROM ops.availability_case WHERE id = '" + caseId + "'");
+    }
+
+    /** Publish a fresher stock reading for the same listing and mode. */
+    private void restock(int units, Instant at, int mark) {
+        UUID provenanceId = UUID.randomUUID();
+        provenance(provenanceId);
+        sellability(provenanceId, at.minusSeconds(1), mark);
+        sql("""
+                INSERT INTO core.listing_stock_observation (id, organization_id, provenance_id,
+                        platform_listing_variant_id, fulfillment_mode_code, source_fact_key,
+                        observed_at, available_quantity, reserved_quantity)
+                VALUES ('%s', '%s', '%s', '%s', 'MARKETPLACE_FULFILLED', 'case-stock-%d', '%s',
+                        %d, 0)
+                """.formatted(UUID.randomUUID(), ORGANIZATION, provenanceId, LISTING_VARIANT,
+                mark, at, units));
+    }
+
     private void seedTopology() {
         sql("""
                 INSERT INTO core.organization (id, code, display_name, status, created_at, updated_at)
@@ -626,7 +760,7 @@ class AvailabilityCaseLifecycleIT {
                         high_action_sla_minutes, blocker_action_sla_minutes, outcome_sla_minutes,
                         verification_window_minutes, owner_user_id, reason, evidence_reference,
                         effective_from, status, policy_version, created_at)
-                VALUES ('%s', '%s', 2, 60, 240, 480, 2880, 1440, '%s',
+                VALUES ('%s', '%s', 2, 60, 240, 480, 2880, 1, '%s',
                         'agreed activation policy', 'ev://ops/activation',
                         now() - interval '10 days', 'ACTIVE', 1, now())
                 """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
@@ -655,17 +789,18 @@ class AvailabilityCaseLifecycleIT {
                 """.formatted(UUID.randomUUID(), ORGANIZATION, internalProvenance, WAREHOUSE,
                 VARIANT, FRESH));
 
-        // The availability timeline has to span each window, because a demand
-        // rate is read against the days the listing could actually sell. One
-        // fresh observation would leave every window censored and the whole
-        // calculation blocked, which is correct behaviour but a different test.
-        int mark = 0;
-        for (Instant at : List.of(AS_OF.minus(Duration.ofDays(30)),
-                AS_OF.minus(Duration.ofDays(14)), AS_OF.minus(Duration.ofDays(7)), FRESH)) {
-            mark++;
-            sellability(platformProvenance, at, mark);
-            stock(platformProvenance, at.plusSeconds(1), mark);
+        // The availability timeline is published daily rather than only at the
+        // window edges. A window's coverage is counted from its first
+        // observation, so an edge-anchored timeline stops covering the window
+        // the moment the calculation instant moves at all — which is exactly
+        // what the outcome-verification tests below do.
+        for (int day = 30; day >= 1; day--) {
+            Instant at = AS_OF.minus(Duration.ofDays(day));
+            sellability(platformProvenance, at, day);
+            stock(platformProvenance, at.plusSeconds(1), day);
         }
+        sellability(platformProvenance, FRESH, 31);
+        stock(platformProvenance, FRESH.plusSeconds(1), 31);
 
         for (int day = 1; day <= 30; day++) {
             UUID saleProvenance = UUID.randomUUID();

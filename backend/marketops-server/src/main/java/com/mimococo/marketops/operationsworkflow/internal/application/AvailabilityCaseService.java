@@ -169,6 +169,82 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public java.util.List<AvailabilityCaseView> awaitingOutcome(UUID childId) {
+        return cases.awaitingOutcome(childId);
+    }
+
+    @Override
+    @Transactional
+    public AvailabilityCaseView observeCondition(UUID caseId, String verificationKind,
+                                                 boolean conditionHolds, Instant observedAt,
+                                                 Duration verificationWindow) {
+        AvailabilityCaseView existing = require(caseId);
+        if (existing.state() != AvailabilityCaseState.VERIFYING
+                && existing.state() != AvailabilityCaseState.ACTION_RECORDED) {
+            // Nothing is waiting on an outcome here. Recording one would be an
+            // observation about a case nobody is verifying.
+            return existing;
+        }
+
+        CaseVerificationOutcome outcome = outcomeOf(existing, conditionHolds, observedAt,
+                verificationWindow);
+        if (conditionHolds && existing.improvementFirstSeenAt() == null) {
+            cases.markImprovement(caseId, observedAt, clock.instant());
+        }
+        if (!conditionHolds && existing.improvementFirstSeenAt() != null) {
+            // The improvement is over. Clearing it means the governed window
+            // starts again from the next improvement rather than counting time
+            // during which the risk was back.
+            cases.markImprovement(caseId, null, clock.instant());
+        }
+        return observeVerification(caseId, verificationKind, outcome, observedAt,
+                reasonFor(outcome, conditionHolds, verificationWindow));
+    }
+
+    /**
+     * What a fresh reading of the cause means for the case.
+     *
+     * <p>Four answers, and none of them is reachable by the caller directly. An
+     * improvement that has not yet held for the governed window is not success;
+     * an improvement that has gone away is not a failure of the action but a
+     * regression of the risk; and a risk that has not improved is only a
+     * failure once the outcome was actually due.
+     */
+    private static CaseVerificationOutcome outcomeOf(AvailabilityCaseView existing,
+                                                     boolean conditionHolds, Instant observedAt,
+                                                     Duration verificationWindow) {
+        if (conditionHolds) {
+            Instant since = existing.improvementFirstSeenAt();
+            if (since == null) {
+                return CaseVerificationOutcome.CONTINUING;
+            }
+            return observedAt.isBefore(since.plus(verificationWindow))
+                    ? CaseVerificationOutcome.CONTINUING
+                    : CaseVerificationOutcome.VERIFIED;
+        }
+        if (existing.improvementFirstSeenAt() != null) {
+            return CaseVerificationOutcome.REGRESSED;
+        }
+        return existing.outcomeDueAt() != null && observedAt.isAfter(existing.outcomeDueAt())
+                ? CaseVerificationOutcome.FAILED
+                : CaseVerificationOutcome.CONTINUING;
+    }
+
+    private static String reasonFor(CaseVerificationOutcome outcome, boolean conditionHolds,
+                                    Duration verificationWindow) {
+        return switch (outcome) {
+            case VERIFIED -> "the cause stayed repaired through the governed window of "
+                    + verificationWindow.toMinutes() + " minutes";
+            case REGRESSED -> "the cause had been repaired and is present again";
+            case FAILED -> "the cause is still present past the outcome deadline";
+            case CONTINUING -> conditionHolds
+                    ? "the cause is repaired and the governed window has not elapsed"
+                    : "the cause is still present and the outcome is not yet due";
+        };
+    }
+
+    @Override
     @Transactional
     public AvailabilityCaseView reopen(UUID caseId, String reason, Instant at) {
         AvailabilityCaseView existing = require(caseId);

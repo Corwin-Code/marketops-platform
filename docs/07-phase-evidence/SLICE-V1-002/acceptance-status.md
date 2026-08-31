@@ -44,6 +44,12 @@ deduplicated accountable Case, evidence-backed action, automatic outcome
 verification, same-case reopen and escalation, the governed Accepted Exception,
 fact-triggered targeted recalculation and hourly full reconciliation.
 
+Outcome verification is automatic in the strict sense: the same calculation
+that raised a case reports whether its cause is repaired, the workflow
+authority decides what that means against the governed window, and a case
+closes without anybody clicking. If a person had to close it, the completion
+rate would measure clicking.
+
 What remains partial is named rather than glossed. Three kinds of gap account
 for nearly all of it:
 
@@ -122,9 +128,9 @@ here, because closure is not this document's to claim.
 | `S2-AC-054` | `EXECUTABLY_VERIFIED` | repeated recalculation updates one Case; concurrency and replay cannot duplicate it. | TC-CASE-003 and TC-LOOP-007 recalculate without duplicating; availability_case_live_cause_uq refuses the concurrent insert and the service re-reads (TC-AVAIL-DB-005) |
 | `S2-AC-055` | `EXECUTABLY_VERIFIED` | independently actionable causes with different owners may have separate, explicitly related Tasks. | TC-CASE-004; two owners, two clocks, one card |
 | `S2-AC-056` | `EXECUTABLY_VERIFIED` | free-text acknowledgement cannot satisfy the action stage. | TC-AVAIL-DB-010, TC-CASE-005, TC-CONSOLE-006 and TC-UI-CASE-003; the schema, the service, the API and the console each refuse it |
-| `S2-AC-057` | `EXECUTABLY_VERIFIED` | structured action evidence transitions to verification without claiming outcome success. | TC-CASE-006 and TC-CONSOLE-007; recording an action reaches VERIFYING and never VERIFIED_SUCCESS |
-| `S2-AC-058` | `EXECUTABLY_VERIFIED` | fresh cause-specific outcome evidence is required for verified success. | TC-CASE-007; CONTINUING keeps the outcome clock running and only VERIFIED closes |
-| `S2-AC-059` | `EXECUTABLY_VERIFIED` | ETA/evidence/policy/source/risk regression automatically reopens or escalates the same Case with history preserved. | TC-CASE-009 reopens the same case with its journal intact; TC-CASE-010 escalates it; TC-CASE-018 reopens it on expiry |
+| `S2-AC-057` | `EXECUTABLY_VERIFIED` | structured action evidence transitions to verification without claiming outcome success. | TC-CASE-006 and TC-CONSOLE-007; recording an action reaches VERIFYING and never VERIFIED_SUCCESS, and TC-CASE-021 proves an unrepaired cause keeps verifying rather than failing |
+| `S2-AC-058` | `EXECUTABLY_VERIFIED` | fresh cause-specific outcome evidence is required for verified success. | TC-CASE-007 for the recorded observation and TC-CASE-024 for the automatic one; the calculation itself reports whether the cause is repaired, the governed window has to elapse, and TC-CASE-025 proves no case reached success without a fresh observation. TC-OUTCOME-001 through TC-OUTCOME-005 fix what repaired means for a shortage and for a defect |
+| `S2-AC-059` | `EXECUTABLY_VERIFIED` | ETA/evidence/policy/source/risk regression automatically reopens or escalates the same Case with history preserved. | TC-CASE-023 reopens the same case automatically when a repaired cause returns; TC-CASE-009 and TC-CASE-010 cover the recorded path; TC-CASE-018 reopens it on expiry |
 | `S2-AC-060` | `EXECUTABLY_VERIFIED` | Action SLA and Outcome SLA are separately observable. | TC-CASE-011 and TC-CASE-004 assert the two deadlines separately; TC-UI-CASE-001 renders them apart |
 | `S2-AC-061` | `EXECUTABLY_VERIFIED` | exception preserves the calculated risk and uses an explicit accepted-risk disposition. | availability_accepted_exception has no path that alters a calculated lane; TC-AVAIL-DB-007 |
 | `S2-AC-062` | `EXECUTABLY_VERIFIED` | exception requires exact scope/cause, evidence, rationale, commercial consequence, owner, approver, period, review and policy version. | TC-CASE-013 records the full request under a published version; the service refuses a request missing any bound field |
@@ -151,7 +157,7 @@ here, because closure is not this document's to claim.
 | `S2-AC-083` | `EXECUTABLY_VERIFIED` | no real Provider call occurs in engineering tests or runtime evidence. | TC-NONGOAL-001 proves no write port is reachable from the module; the browser fixture replaces the price port and this Slice has none |
 | `S2-AC-084` | `EXECUTABLY_VERIFIED` | no stock-write Preview, Approval, Command, Adapter write, Readback or hidden manual target path exists. | TC-NONGOAL-001 and TC-NONGOAL-002; no stock command, outbox, adapter write or readback exists in the module or in any migration |
 | `S2-AC-085` | `EXECUTABLY_VERIFIED` | `production_write_enabled` is and remains `false`. | production_write_enabled: false is pinned by both validators and by the completion-state tokens their tests exercise |
-| `S2-AC-086` | `EXECUTABLY_VERIFIED` | applied migrations remain byte-identical; only forward migrations are added when required. | FlywayMigrationIT TC-DB-111 and TC-DB-113; V0001-V0029 unchanged, V0030 through V0032 are the only additions |
+| `S2-AC-086` | `EXECUTABLY_VERIFIED` | applied migrations remain byte-identical; only forward migrations are added when required. | FlywayMigrationIT TC-DB-111 and TC-DB-113; V0001-V0029 unchanged, V0030 through V0033 are the only additions |
 | `S2-AC-087` | `EXECUTABLY_VERIFIED` | clean install and protected-main upgrade paths pass against real PostgreSQL. | FlywayMigrationIT clean-install and upgrade cases against PostgreSQL 18.4 |
 | `S2-AC-088` | `PARTIALLY_VERIFIED` | restart, replay, concurrency and reconciliation cannot duplicate facts, cards, Cases, actions, exceptions or audit events. | TC-AVAIL-FLOW-006, TC-CASE-003 and TC-LOOP-003 prove recalculation and re-scan duplicate nothing; a worker restart mid-lease is not separately exercised |
 | `S2-AC-089` | `EXECUTABLY_VERIFIED` | append-only audit and historical policy/evidence versions survive rebuild and forward-fix. | no DELETE grant exists; TC-AVAIL-DB-009 |
