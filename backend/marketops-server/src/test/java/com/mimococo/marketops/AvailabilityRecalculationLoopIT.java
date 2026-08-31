@@ -41,6 +41,14 @@ import org.springframework.test.context.DynamicPropertySource;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AvailabilityRecalculationLoopIT {
 
+    /*
+     * The accepted-fact cursor and targeted queue are intentionally global.
+     * Isolate this ordered feed test so facts queued by another integration
+     * class cannot become extra pages or worker claims under suite reordering.
+     */
+    private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE =
+            TestDatabase.isolatedContainer();
+
     private static final UUID ORGANIZATION = UUID.fromString("dddd0000-0000-0000-0000-000000000001");
     private static final UUID LEGAL_ENTITY = UUID.fromString("dddd0000-0000-0000-0000-000000000002");
     private static final UUID ACCOUNT = UUID.fromString("dddd0000-0000-0000-0000-000000000003");
@@ -74,8 +82,7 @@ class AvailabilityRecalculationLoopIT {
 
     @DynamicPropertySource
     static void databaseProperties(DynamicPropertyRegistry registry) {
-        var container = TestDatabase.container();
-        registry.add("spring.datasource.url", container::getJdbcUrl);
+        registry.add("spring.datasource.url", DATABASE::getJdbcUrl);
         registry.add("spring.datasource.username", TestDatabase::applicationRole);
         registry.add("spring.datasource.password", TestDatabase::applicationPassword);
         registry.add("spring.flyway.user", TestDatabase::migrationRole);
@@ -84,8 +91,7 @@ class AvailabilityRecalculationLoopIT {
 
     @BeforeAll
     static void openSeedConnection() {
-        var container = TestDatabase.container();
-        var dataSource = new DriverManagerDataSource(container.getJdbcUrl(),
+        var dataSource = new DriverManagerDataSource(DATABASE.getJdbcUrl(),
                 TestDatabase.migrationRole(), TestDatabase.migrationPassword());
         seed = JdbcClient.create(dataSource);
     }
