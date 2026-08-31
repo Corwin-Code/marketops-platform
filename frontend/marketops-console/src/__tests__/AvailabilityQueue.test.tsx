@@ -179,6 +179,18 @@ describe('AvailabilityQueue', () => {
     expect(screen.queryAllByTestId('availability-child')).toHaveLength(0);
   });
 
+  it('TC-UI-013 stays silent when the session has ended rather than repeating it', async () => {
+    render(<AvailabilityQueue context={context(respondWith({}, 401))} />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Stockout and availability')).toHaveAttribute(
+        'data-state',
+        'signed-out',
+      );
+    });
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
   it('TC-UI-009 reports a refusal instead of an empty queue', async () => {
     render(<AvailabilityQueue context={context(respondWith({}, 403))} />);
 

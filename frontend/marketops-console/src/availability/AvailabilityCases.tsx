@@ -66,6 +66,17 @@ export function AvailabilityCases({
   useEffect(load, [load]);
 
   if (failure !== undefined) {
+    // A session that has ended is one condition about the whole session rather
+    // than about this panel. The session surface reports it once; every panel
+    // repeating the same sentence would tell an operator nothing new three
+    // times over and bury the one message that is about this panel.
+    if (failure.kind === 'unauthenticated') {
+      return (
+        <section aria-label="Availability cases" data-state="signed-out">
+          <h2>Accountable availability work</h2>
+        </section>
+      );
+    }
     return <QueueProblem failure={failure} />;
   }
   if (cases === undefined) {

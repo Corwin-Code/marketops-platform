@@ -180,6 +180,36 @@ describe('availability cases', () => {
     expect(screen.getByTestId('case-state')).toHaveTextContent('Accepted risk');
   });
 
+  it('TC-UI-CASE-013 a session that has ended is reported once, not once per panel', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve(new Response('{}', { status: 401 })),
+      ) as unknown as typeof fetch;
+    render(<AvailabilityCases context={context(fetchImpl)} now={NOW} />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Availability cases')).toHaveAttribute(
+        'data-state',
+        'signed-out',
+      );
+    });
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  it('TC-UI-CASE-014 a refusal about this panel is still reported on this panel', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve(new Response('{}', { status: 403 })),
+      ) as unknown as typeof fetch;
+    render(<AvailabilityCases context={context(fetchImpl)} now={NOW} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toBeTruthy();
+    });
+  });
+
   it('TC-UI-CASE-008 an empty case list is not presented as an empty queue', async () => {
     const { fetchImpl } = router({ '/cases?': [] });
     render(<AvailabilityCases context={context(fetchImpl)} now={NOW} />);

@@ -60,6 +60,17 @@ export function AvailabilityQueue({
   }, [context, lane]);
 
   if (failure !== undefined) {
+    // A session that has ended is one condition about the whole session rather
+    // than about this panel. The session surface reports it once; every panel
+    // repeating the same sentence would tell an operator nothing new three
+    // times over and bury the one message that is about this panel.
+    if (failure.kind === 'unauthenticated') {
+      return (
+        <section aria-label="Stockout and availability" data-state="signed-out">
+          <h2>Stockout &amp; availability</h2>
+        </section>
+      );
+    }
     return <QueueProblem failure={failure} />;
   }
   if (cards === undefined) {
