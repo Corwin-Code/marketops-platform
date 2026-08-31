@@ -70,6 +70,59 @@ either.
 Resolve it through the cost and finance-input path that owns the missing
 component. The availability queue does not estimate profit to fill the gap.
 
+## The queue has stopped being current
+
+The loop reports one of three named incidents. Each one means the queue an
+operator is trusting is behind, which is the only failure that makes every
+other page in this runbook misleading.
+
+`RECONCILIATION_SWEEP_OVERDUE` — no full portfolio reconciliation has completed
+inside its cadence and grace period. Targeted recalculation may still be
+running, so cards are not necessarily stale; what is lost is the safety net
+that repairs a dropped trigger. Check that the availability worker is enabled
+and running in this environment, look for a sweep stuck in `RUNNING` (only one
+per organization is allowed, and a process that died holding one blocks the
+next), and close it out before triggering a fresh sweep.
+
+`RECALCULATION_BACKLOG_BEYOND_OBLIGATION` — the oldest unfinished recalculation
+has been waiting since its fact was accepted for longer than the response
+obligation allows. Read the depth and the age together: a thousand requests
+queued a second ago are healthy and one queued an hour ago is not. Look for
+requests repeatedly attempted and failing; past the attempt bound they are
+abandoned so one permanently broken variant cannot occupy the queue, and the
+sweep still visits it.
+
+`CRITICAL_RESPONSE_HARD_BOUND_BREACHED` or
+`CRITICAL_RESPONSE_DISTRIBUTION_TARGET_MISSED` — the response evidence itself
+says the promise was not kept. The two latencies are recorded separately, so
+read them apart before acting: a large source latency is a marketplace
+publishing late and is not this system's incident, while a large internal
+latency is. Both are stored per recalculation and can be re-examined; neither
+is an aggregate that has already thrown away the detail.
+
+## A dropped trigger
+
+Nothing needs to be diagnosed. The sweep recalculates the portfolio and closes
+the requests it covered, which is what turns a lost trigger into a recovered
+one rather than a queue that never drains. Confirm the repair by reading the
+run's repaired count.
+
+If a trigger is dropped and the sweep is also overdue, treat the sweep as the
+incident: the trigger is recoverable and the sweep is what recovers it.
+
+## An acceptance that should no longer hold
+
+Expiry is automatic: the sweep ends the acceptance and reopens the same case
+with its journal intact. Everything else is a decision somebody makes — a
+materiality increase, a cause or scope change, an evidence conflict, a lost
+authority, or the same condition being accepted too often. Invalidating for a
+governance failure escalates the case as well as reopening it, because a
+governance failure needs a higher authority than the one that let it happen.
+
+No acceptance can be extended by editing it. A new period is a new request,
+sized again by the materiality version in force at the time, and refused if the
+requester is also its only approver where separation is required.
+
 ## What none of these do
 
 None of these states writes anything to a marketplace. This capability has no

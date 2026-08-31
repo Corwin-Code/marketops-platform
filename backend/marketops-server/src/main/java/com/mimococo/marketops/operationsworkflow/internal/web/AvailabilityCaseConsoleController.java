@@ -113,7 +113,7 @@ class AvailabilityCaseConsoleController {
     AvailabilityCaseView recordAction(AuthenticatedActor actor, @PathVariable UUID caseId,
                                       @Valid @RequestBody ActionRequest request) {
         AvailabilityCaseView governed = actionable(actor, caseId);
-        return cases.recordAction(caseId, actor.userId(), governed.accountableRoleCode(),
+        return cases.recordAction(caseId, actor.userId(), actingRole(actor, governed),
                 request.actionKind(), request.evidenceReference(), request.reason());
     }
 
@@ -181,6 +181,42 @@ class AvailabilityCaseConsoleController {
                 request.delegationReference(), actor.authenticatedAt(), true, request.reason(),
                 "exception-decision-" + exceptionId, clock.instant()));
     }
+
+    /**
+     * The role this person is actually acting as.
+     *
+     * <p>The case's accountable role only when they hold it. Recording the
+     * cause's owner as the actor's role for somebody who is not that owner
+     * would put a fabricated attribution in the journal, which is exactly what
+     * the journal exists to prevent — a data owner who repaired a mapping must
+     * not appear in the record as procurement.
+     */
+    private static String actingRole(AuthenticatedActor actor, AvailabilityCaseView governed) {
+        for (BusinessRoleCode role : BusinessRoleCode.values()) {
+            if (role.name().equals(governed.accountableRoleCode()) && actor.holds(role)) {
+                return role.name();
+            }
+        }
+        for (BusinessRoleCode role : ACTING_ROLES) {
+            if (actor.holds(role)) {
+                return role.name();
+            }
+        }
+        throw OperationRejectedException.of(ErrorCode.ACTION_NOT_PERMITTED);
+    }
+
+    /**
+     * The roles that may act on availability work, in the order they are read.
+     *
+     * <p>Fixed rather than derived so the journal is deterministic: one person
+     * holding two of these records the same role every time, and a review
+     * comparing two of their actions is comparing like with like.
+     */
+    private static final List<BusinessRoleCode> ACTING_ROLES = List.of(
+            BusinessRoleCode.MARKETPLACE_OPERATOR, BusinessRoleCode.PRODUCT_PROCUREMENT,
+            BusinessRoleCode.TECH_DATA, BusinessRoleCode.FINANCE_ANALYST,
+            BusinessRoleCode.OPS_LEAD, BusinessRoleCode.RISK_AUTHORITY,
+            BusinessRoleCode.OWNER, BusinessRoleCode.OPERATIONS);
 
     /**
      * The strongest acceptance authority this person holds.

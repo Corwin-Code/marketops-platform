@@ -96,10 +96,11 @@ public class AvailabilityCaseActivationService {
     /**
      * Append the latest evidence to a case the gate would not have raised.
      *
-     * <p>The deadlines come from the policy for the lane the case now carries,
-     * so a case that got worse gets the shorter clock. It never gets a longer
-     * one from this path: the activation the case was raised under already
-     * set its deadline, and the refresh reports severity rather than reprieve.
+     * <p>The severity moves and the deadlines do not. A case whose lane fell
+     * below the activation gate is still the same work, still due when it was
+     * always due; extending its deadline because the calculation softened
+     * would let a risk that keeps dipping in and out of the gate never come
+     * due at all.
      */
     private AvailabilityCaseView refresh(VariantRisk risk,
                                          AvailabilityProjectionWriter.WrittenCard written,

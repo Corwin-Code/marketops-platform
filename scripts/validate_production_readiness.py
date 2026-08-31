@@ -363,12 +363,24 @@ LOCAL_LOGGING_TOKENS = (
 
 COMPLETION_STATE_TOKENS = (
     "lifecycle_state: EXECUTING_V1",
-    "active_delivery_slice: SLICE-V1-001",
-    "active_slice_contract: docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
-    "active_slice_contract_sha256: 0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5",
+    "active_delivery_slice: SLICE-V1-002",
+    "active_slice_contract: docs/03-work-items/"
+    "SLICE-V1-002-stockout-availability-risk-and-accountable-response.md",
+    "active_slice_contract_sha256: "
+    "d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e",
+    "active_slice_contract_git_blob_sha1: 1caa50f1b33011f7d226c83654835401c00bde1e",
+    "active_slice_acceptance_evidence_sha256: "
+    "4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e",
+    "active_slice_amendment: NONE_ACCEPTED",
     "active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN",
-    "active_gate: SLICE_V1_001_FORMAL_CLOSURE_ACCEPTED",
-    "authorization: FINAL_REVIEW_ONLY",
+    "active_gate: SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION",
+    "authorization: FULL_SCOPE_IMPLEMENTATION",
+    "slice_v1_002_implementation_state: IMPLEMENTATION_IN_PROGRESS",
+    "slice_v1_002_controller_verdict: NOT_CLAIMED",
+    "slice_v1_002_owner_formal_closure: NOT_CLAIMED",
+    "slice_v1_002_remote_publication: NOT_CLAIMED",
+    "slice_v1_002_controlled_write_target: NONE_IN_THIS_SLICE",
+    "slice_v1_002_real_provider_calls: NONE",
     "slice_v1_001_controller_final_gate: PASS_R2_ENGINEERING_FINAL_GATE",
     "slice_v1_001_actual_squash_commit: d562b81f4f0271aa33a53b21ccaffc88b5610c0c",
     "slice_v1_001_actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b",
@@ -383,7 +395,7 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_001_snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e84823ddedf30aab2e3",
     "slice_v1_001_owner_acceptance_comment: 5469935477",
     "slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33",
-    "next_action: NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY",
+    "next_action: SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION",
     "production_write_enabled: false",
     "bounded_real_write_verification_authorization: NONE",
     "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",

@@ -133,7 +133,9 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
         if (policy.isEmpty()) {
             // The version that sized the request is gone. Nothing decides this
             // now, so the request goes back to blocked and the risk stays live.
-            return blockAuthority(existing, decision);
+            // Separation is recorded as required because nothing established
+            // that it was not: an unsized decision is not a lenient one.
+            return blockAuthority(existing, decision, true);
         }
         ExceptionMaterialityPolicy sizing = policy.get();
         ExceptionAuthorityLevel required = sizing.requiredAuthority(governed.severity(),
@@ -157,7 +159,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
         }
 
         if (!ExceptionAuthorityLevel.levelsFor(decision.decidedByRole()).contains(required)) {
-            return blockAuthority(existing, decision);
+            return blockAuthority(existing, decision, separationRequired);
         }
         if (separationRequired && requesterIsApprover) {
             // The database refuses this row too. Refusing it here as well gives
@@ -277,11 +279,12 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
      * for a week needs to see that somebody asked and no authority resolved.
      */
     private AcceptedExceptionView blockAuthority(AcceptedExceptionView existing,
-                                                 ExceptionDecision decision) {
+                                                 ExceptionDecision decision,
+                                                 boolean separationRequired) {
         exceptions.insertDecision(decisionRow(existing, decision, "AUTHORITY_BLOCKED",
                 existing.requiredAuthority(),
-                existing.requestedByUserId().equals(decision.decidedByUserId()), true,
-                null, null));
+                existing.requestedByUserId().equals(decision.decidedByUserId()),
+                separationRequired, null, null));
         exceptions.setState(existing.id(), AcceptedExceptionState.AUTHORITY_BLOCKED, decision.at());
         recordAudit(existing.organizationId(), existing.id(), AuditAction.STATUS_CHANGE,
                 decision.decidedByUserId().toString(),

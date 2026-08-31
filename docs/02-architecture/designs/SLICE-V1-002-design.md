@@ -219,12 +219,65 @@ appears:
   cannot vanish from the run.
 - `identityaccess` gains the Contract's named business roles and the new action
   scopes, with forward-only seeding of `iam.action_scope` and
-  `iam.business_role_action_scope`, plus new `OwnedResource.Kind` values.
+  `iam.business_role_action_scope`, plus new `OwnedResource.Kind` values. The
+  Owner sits with the Risk Authority they designate rather than below it:
+  granting a role an approval action it could never exercise would be a
+  contradiction in the reviewed matrix, and separation is enforced on identity
+  rather than on role, so it still binds them.
 - `operationsworkflow` gains the cause-keyed case identity, the two-stage
   action/verification lifecycle, reopen/escalation and the accepted-exception
   authority.
 - `adminobservability` gains the `AVAILABILITY_RISK` audit source domain, with
   the matching forward-only `CHECK` constraint widening.
+
+### 2.13 A run of evaluations is stored, because it cannot be recovered
+
+The activation policy distinguishes a HIGH that has held across several
+evaluations from one that appeared in the last cycle. That distinction is not
+recoverable from the projection: a rebuild writes the current answer, and the
+generations behind it record windows and factors, not lane runs. So the child
+carries the run it is on, the writer extends or restarts it, and a shape
+constraint refuses a count without the lane it counts.
+
+The alternative — activating on first sighting — fills the queue with work that
+resolves itself before anybody opens it. An operator who learns within a week
+that the queue cries wolf skims the CRITICAL rows along with the rest, and the
+whole product's value rests on those rows being trusted.
+
+A defect is exempt from that gate. A blocker is a blocker on its first sighting,
+and waiting for it to repeat would leave the calculation blind for exactly as
+long as the gate lasts.
+
+### 2.14 The response clock starts at the fact, not at the worker
+
+Latency is measured from the instant a fact was accepted rather than from the
+instant a worker noticed it. Measuring from the scan would make a backlog
+invisible, and a backlog is the one thing the clock exists to expose.
+
+Source latency and internal latency are separate columns because they are
+separate incidents with separate owners. A marketplace that publishes an hour
+late and a worker running an hour behind look identical in one combined number
+and need entirely different responses.
+
+Two bounds, not one. The hard bound is what no single recalculation may exceed
+and is evaluated per observation; the distribution target is what the product
+promises for the lane that matters most and can only be evaluated over a
+window. Reporting only the percentile would hide one recalculation that took an
+hour; reporting only the worst case would call a healthy system unhealthy after
+one slow afternoon.
+
+### 2.15 A pulled feed needs a position that survives a restart
+
+Consuming a fact never makes the fact authority depend on its consumers, so the
+change feed is pulled. A pulled feed needs a stored position: without one a
+worker either re-reads every fact ever accepted or starts silently from now and
+drops whatever arrived while it was down. V0032 adds it.
+
+Re-reading the feed boundary is a no-op rather than a loop, because a fact is
+enqueued only when its variant has not already been recalculated for one at
+least as recent. A hundred observations in a minute are one recalculation, and
+the earliest accepted instant wins so a later fact cannot restart a clock that
+is already running.
 
 ## 5. Schema, V0030 onward
 
@@ -235,10 +288,10 @@ narrowest grant that the table's semantics allow — append-only evidence gets
 `SELECT, INSERT`; state-carrying rows get `SELECT, INSERT, UPDATE`; nothing gets
 `DELETE`.
 
-## 6. What exists at this checkpoint
+## 6. What exists
 
-The calculation core is complete and proven; the operating surface around it is
-not yet built. Concretely, the following are implemented and tested:
+The complete mandatory product path is implemented and exercised end to end.
+Concretely:
 
 - `availabilityrisk` registered as the eleventh Spring Modulith module, passing
   every boundary, authority and rule-sensitivity check;
@@ -263,14 +316,33 @@ not yet built. Concretely, the following are implemented and tested:
 - the read surface: a scope-narrowing console API and the Stockout &
   Availability queue screen, where a child's evidence tone is a separate
   attribute from its lane so a provisional critical cannot be styled as a
-  confirmed one.
+  confirmed one;
+- V0031: the run of evaluations each child is on, which is what makes the
+  sustained-HIGH rule expressible at all;
+- the activation policy and the service that applies it — CRITICAL on the cycle
+  that found it, a blocker on its first sighting under its own clock, HIGH only
+  once sustained, WATCH never — with the cause key built from the subject's
+  business key so a projection rebuild cannot raise a second case for work
+  somebody already holds;
+- accepted-exception governance: proportional authority sized by a published
+  materiality version, requester separation enforced in the service and again in
+  the database, a bounded and reviewable grant, and expiry or invalidation that
+  returns the same case to somebody with its journal intact;
+- V0032 and the recalculation loop: the pulled accepted-fact feed with a durable
+  position, the targeted worker with its response evidence, and the hourly sweep
+  that repairs what targeting missed, expires lapsed acceptances and counts
+  inbound that has stopped being supply;
+- the loop's own health as named operator incidents rather than quiet counters;
+- the accountable-work surface: the case queue, journal, action, verification,
+  escalation and exception routes, each behind the grant it actually needs, and
+  the console panel that shows the two clocks apart and offers no control that
+  means "seen".
 
-The following are designed above but not yet implemented: the wiring that turns
-a calculated cause into an activated case, including the sustained-HIGH rule;
-accepted-exception governance and approval escalation; the targeted and hourly
-workers with their SLO evidence; and the browser journey over the queue. The
-[acceptance status](../../07-phase-evidence/SLICE-V1-002/acceptance-status.md)
-records exactly which criteria that leaves unproven.
+The [acceptance status](../../07-phase-evidence/SLICE-V1-002/acceptance-status.md)
+records exactly which criteria remain partial and why. The largest are load
+evidence at the declared acceptance capacity, automatic detection of governance
+drift on an active acceptance, and the product surface outside this Slice's
+availability question.
 
 ## 7. What this design does not do
 

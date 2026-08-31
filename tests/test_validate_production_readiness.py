@@ -246,14 +246,31 @@ class RepositoryContractPatternTests(unittest.TestCase):
 
         self.assertTrue(any("auto-commit: true" in violation for violation in violations))
 
-    def test_post_merge_state_cannot_reactivate_implementation_authority(self) -> None:
+    def test_a_closed_slice_cannot_be_reopened_by_the_next_one_starting(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)
         mutated = source.replace(
-            "authorization: FINAL_REVIEW_ONLY",
-            "authorization: FULL_SCOPE_IMPLEMENTATION",
+            "slice_v1_001_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+            "slice_v1_001_state: IMPLEMENTATION_IN_PROGRESS",
         )
         violations = contract_token_violations(mutated, required=COMPLETION_STATE_TOKENS)
-        self.assertTrue(any("FINAL_REVIEW_ONLY" in violation for violation in violations))
+        self.assertTrue(
+            any("CLOSED_ENGINEERING" in violation for violation in violations)
+        )
+
+    def test_the_active_slice_cannot_claim_a_verdict_it_does_not_have(self) -> None:
+        source = "\n".join(COMPLETION_STATE_TOKENS)
+        for token, claimed in (
+            ("slice_v1_002_controller_verdict: NOT_CLAIMED", "PASS"),
+            ("slice_v1_002_owner_formal_closure: NOT_CLAIMED", "HUMAN_OWNER_ACCEPTED"),
+            ("slice_v1_002_remote_publication: NOT_CLAIMED", "MERGED"),
+        ):
+            with self.subTest(token=token):
+                field = token.split(":", 1)[0]
+                mutated = source.replace(token, f"{field}: {claimed}")
+                violations = contract_token_violations(
+                    mutated, required=COMPLETION_STATE_TOKENS
+                )
+                self.assertTrue(any(field in violation for violation in violations))
 
     def test_post_merge_squash_identity_is_required(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)

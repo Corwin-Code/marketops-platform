@@ -122,9 +122,14 @@ payload, state or error semantics are symmetric.
 
 These capabilities are diagnosis/task-only in Slice 1 unless separately promoted.
 
+`STOCK_CHANGE` moved out of SLICE-V1-002 when that Contract was accepted. The
+Slice raises accountable work about availability and verifies its outcome; it
+writes no stock anywhere, has no Preview, Approval, Command, Outbox, Adapter or
+Readback for stock, and its absence is checked by test rather than asserted.
+
 | Capability | Intended Slice | Current release state |
 | --- | --- | --- |
-| `STOCK_CHANGE` | SLICE-V1-002 | DISABLED / UNVERIFIED |
+| `STOCK_CHANGE` | a later Slice; explicitly out of SLICE-V1-002 | DISABLED / UNVERIFIED |
 | `AD_BUDGET_CHANGE` | SLICE-V1-003 | DISABLED / UNVERIFIED |
 | `AD_BID_CHANGE` | SLICE-V1-003 | DISABLED / UNVERIFIED |
 | `AD_CAMPAIGN_STATE_CHANGE` | SLICE-V1-003 | DISABLED / UNVERIFIED |

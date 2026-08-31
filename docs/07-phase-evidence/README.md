@@ -63,7 +63,9 @@ remains production-blocking and `production_write_enabled` remains `false`.
 
 ## SLICE-V1-002 implementation record
 
-The Slice is under implementation and is not closed. Its entry points are:
+SLICE-V1-002 is the active Slice. Its complete mandatory product path is
+implemented and exercised end to end, and it is not closed. Its entry points
+are:
 
 - [`acceptance-status.md`](SLICE-V1-002/acceptance-status.md) — the hundred
   `S2-AC-*` criteria with a per-criterion verification or gap;
@@ -75,3 +77,10 @@ The Slice is under implementation and is not closed. Its entry points are:
 No Controller verdict, Owner closure, remote publication or merge is claimed.
 The Slice has no controlled write target, no provider call exists in its
 execution path, and `production_write_enabled` remains `false`.
+
+The acceptance status is deliberately not uniform. A criterion is verified only
+where a named, currently passing test asserts it, so the rows that remain
+partial name what is missing — load evidence at the declared acceptance
+capacity, automatic detection of governance drift on an active acceptance, and
+the product surface outside this Slice's availability question — rather than
+describing code that exists.

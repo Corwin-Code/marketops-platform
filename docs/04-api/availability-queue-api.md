@@ -7,19 +7,66 @@ from the stores that same grant permits. An empty grant produces an empty
 queue: the absence of a permitted store is a denial, not an absence of
 filtering.
 
-No endpoint here changes anything. This Slice has no controlled write target,
-so the surface is read-only by construction rather than by convention.
+No endpoint here writes to any marketplace. This Slice has no controlled write
+target, so nothing below has a Preview, Approval, Command, Outbox, Adapter or
+Readback: the routes that change state change the state of somebody's work,
+never the state of a platform.
 
 ## Resources
 
-| Method and path | Purpose | Query parameters |
+| Method and path | Purpose | Grant required |
 | --- | --- | --- |
-| `GET /queue` | The prioritised queue, most urgent first | `lane`, `limit`, `offset` |
-| `GET /cards/{productVariantId}` | One grouped card with every child behind it | — |
+| `GET /queue` | The prioritised queue, most urgent first | `AVAILABILITY_VIEW` |
+| `GET /cards/{productVariantId}` | One grouped card with every child behind it | `AVAILABILITY_VIEW` |
+| `GET /cases` | The organization's accountable availability work | `AVAILABILITY_VIEW` |
+| `GET /cases/{caseId}` | One case as it stands | `AVAILABILITY_VIEW` |
+| `GET /cases/{caseId}/journal` | Everything that ever happened to it | `AVAILABILITY_VIEW` |
+| `GET /cases/{caseId}/exceptions` | Every acceptance recorded against it | `AVAILABILITY_VIEW` |
+| `POST /cases/{caseId}/action` | Record accountable structured action | `AVAILABILITY_TASK_ACT` |
+| `POST /cases/{caseId}/verification` | Record a fresh cause-specific observation | `AVAILABILITY_TASK_ACT` |
+| `POST /cases/{caseId}/escalation` | Raise the case under policy | `AVAILABILITY_TASK_ACT` |
+| `POST /cases/{caseId}/exceptions` | Ask to accept a risk for a bounded period | `AVAILABILITY_EXCEPTION_REQUEST` |
+| `POST /exceptions/{exceptionId}/decision` | Decide one acceptance request | `AVAILABILITY_EXCEPTION_APPROVE` |
 
-`lane` filters rather than reorders. An operator narrowing to `CRITICAL` is
-asking a different question, not asking for the same list sorted differently.
-`limit` is clamped to two hundred.
+`GET /queue` accepts `lane`, `limit` and `offset`; `lane` filters rather than
+reorders, because an operator narrowing to `CRITICAL` is asking a different
+question rather than asking for the same list sorted differently. `GET /cases`
+accepts `assigneeUserId`, `liveOnly` and `limit`. Every `limit` is clamped to
+two hundred.
+
+Three different grants guard three different decisions. Reading the queue is
+not acting on it, and acting on it is not deciding that the business will live
+with the risk. `AVAILABILITY_EXCEPTION_APPROVE` is additionally a step-up
+action: holding the grant is not enough, and the person must have authenticated
+recently enough for their identity provider's recorded maximum authentication
+age.
+
+## Recording action
+
+The action route takes a named `actionKind` from a closed set and the
+`evidenceReference` of the artefact behind it. There is deliberately no field
+that means "looked at it": a free-text acknowledgement is refused by the
+request shape, by the service and by a database constraint, so the refusal does
+not depend on any one of them being correct.
+
+Recording an action moves the case to `VERIFYING`. It never moves it to
+success. Whether the business risk actually improved is a separate observation
+that has not been made yet, and the verification route is where it is made —
+with four outcomes, of which only `VERIFIED` closes the case.
+
+## Accepting a risk
+
+An acceptance disposes of a risk; it does not change it. The calculated lane,
+its evidence and its cause are untouched, no acceptance can produce a verified
+outcome, and every grant is bounded and reviewable — an acceptance without an
+expiry is not representable.
+
+How much authority a request needs is sized by the published materiality
+version in force: a bounded, non-repeated, immaterial acceptance sits with the
+domain lead, an ordinary one with the operations lead, and a critical, repeated
+or material one with the Owner-designated Risk Authority, who may not be the
+requester. With no materiality version in force the request is recorded as
+`AUTHORITY_BLOCKED` and the ordinary risk stays exactly as active as it was.
 
 ## What a card carries
 

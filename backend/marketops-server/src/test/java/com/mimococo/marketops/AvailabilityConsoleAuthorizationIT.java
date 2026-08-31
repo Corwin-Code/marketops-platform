@@ -1,5 +1,6 @@
 package com.mimococo.marketops;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -207,6 +208,15 @@ class AvailabilityConsoleAuthorizationIT {
                         .header(HttpHeaders.AUTHORIZATION, bearer()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.eventKind=='ACTION_RECORDED')]").exists());
+
+        // The journal records the role the person actually holds. This case is
+        // owned by procurement and this person is not procurement; recording
+        // them as its owner would be a fabricated attribution.
+        assertThat(jdbc.sql("SELECT actor_role_code FROM ops.availability_case_event"
+                        + " WHERE case_id = :caseId AND event_kind = 'ACTION_RECORDED'")
+                .param("caseId", CASE_ID).query(String.class).single())
+                .isEqualTo(BusinessRoleCode.OWNER.name())
+                .isNotEqualTo("PRODUCT_PROCUREMENT");
     }
 
     @Test
