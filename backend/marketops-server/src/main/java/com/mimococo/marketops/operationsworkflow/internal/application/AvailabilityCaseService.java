@@ -189,14 +189,25 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
 
         CaseVerificationOutcome outcome = outcomeOf(existing, conditionHolds, observedAt,
                 verificationWindow);
-        if (conditionHolds && existing.improvementFirstSeenAt() == null) {
+        boolean starting = conditionHolds && existing.improvementFirstSeenAt() == null;
+        boolean ending = !conditionHolds && existing.improvementFirstSeenAt() != null;
+        if (starting) {
             cases.markImprovement(caseId, observedAt, clock.instant());
         }
-        if (!conditionHolds && existing.improvementFirstSeenAt() != null) {
+        if (ending) {
             // The improvement is over. Clearing it means the governed window
             // starts again from the next improvement rather than counting time
             // during which the risk was back.
             cases.markImprovement(caseId, null, clock.instant());
+        }
+
+        // An observation that changes nothing is not appended. A variant can be
+        // recalculated many times a minute, and a journal that recorded every
+        // identical "still waiting" would grow without bound and bury the four
+        // entries a reviewer actually needs. The observations themselves are
+        // still evidenced: every recalculation writes its own latency row.
+        if (outcome == CaseVerificationOutcome.CONTINUING && !starting && !ending) {
+            return existing;
         }
         return observeVerification(caseId, verificationKind, outcome, observedAt,
                 reasonFor(outcome, conditionHolds, verificationWindow));

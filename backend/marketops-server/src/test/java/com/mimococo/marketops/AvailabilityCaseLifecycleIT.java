@@ -610,6 +610,12 @@ class AvailabilityCaseLifecycleIT {
                 + " WHERE case_id = '" + caseId + "'"
                 + "   AND event_kind = 'VERIFICATION_OBSERVED'"
                 + "   AND verification_outcome = 'VERIFIED'")).isEqualTo(1);
+        // Two observations: the improvement starting and the improvement
+        // holding. A journal that recorded every identical reading would grow
+        // with the recalculation rate and bury both.
+        assertThat(count("SELECT count(*) FROM ops.availability_case_event"
+                + " WHERE case_id = '" + caseId + "'"
+                + "   AND event_kind = 'VERIFICATION_OBSERVED'")).isEqualTo(2);
     }
 
     @Test
