@@ -4,6 +4,7 @@ import com.mimococo.marketops.operationsworkflow.AvailabilityCaseState;
 import com.mimococo.marketops.operationsworkflow.AvailabilityCaseView;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -45,6 +46,102 @@ public class AvailabilityCaseRepository {
                 .param("id", id)
                 .query(AvailabilityCaseRepository::map)
                 .optional();
+    }
+
+    /**
+     * The organization's accountable availability work, most urgent first.
+     *
+     * <p>Ordered by severity and then by the action deadline, because that is
+     * the order somebody would work it: the most serious first, and among
+     * equally serious the one running out of time. Sorting by when a case was
+     * raised would put a week-old WATCH above a CRITICAL raised this morning.
+     */
+    public List<AvailabilityCaseView> queue(UUID organizationId, boolean liveOnly,
+                                            UUID assigneeUserId, int limit) {
+        return jdbc.sql(SELECT + """
+                         WHERE organization_id = :organizationId
+                           AND (:liveOnly = FALSE
+                                OR state NOT IN ('VERIFIED_SUCCESS', 'CANCELLED'))
+                           AND (CAST(:assigneeUserId AS uuid) IS NULL
+                                OR assignee_user_id = :assigneeUserId)
+                         ORDER BY CASE severity
+                                      WHEN 'CRITICAL' THEN 0
+                                      WHEN 'UNRESOLVED' THEN 1
+                                      WHEN 'REVIEW' THEN 1
+                                      WHEN 'HIGH' THEN 2
+                                      ELSE 3
+                                  END,
+                                  action_due_at
+                         LIMIT :limit
+                        """)
+                .param("organizationId", organizationId)
+                .param("liveOnly", liveOnly)
+                .param("assigneeUserId", assigneeUserId)
+                .param("limit", limit)
+                .query(AvailabilityCaseRepository::map)
+                .list();
+    }
+
+    /** Every case raised from one card, newest evidence first. */
+    public List<AvailabilityCaseView> forCard(UUID cardId) {
+        return jdbc.sql(SELECT + " WHERE card_id = :cardId ORDER BY last_evidence_at DESC")
+                .param("cardId", cardId)
+                .query(AvailabilityCaseRepository::map)
+                .list();
+    }
+
+    /** Everything that ever happened to one case, oldest first. */
+    public List<CaseJournalEntry> journal(UUID caseId) {
+        return jdbc.sql("""
+                        SELECT sequence_no, event_kind, from_state, to_state, action_kind,
+                               verification_kind, verification_outcome, actor_user_id,
+                               actor_role_code, reason, evidence_reference, observed_at,
+                               occurred_at
+                          FROM ops.availability_case_event
+                         WHERE case_id = :caseId
+                         ORDER BY sequence_no
+                        """)
+                .param("caseId", caseId)
+                .query((rows, rowNumber) -> new CaseJournalEntry(
+                        rows.getInt("sequence_no"),
+                        rows.getString("event_kind"),
+                        rows.getString("from_state"),
+                        rows.getString("to_state"),
+                        rows.getString("action_kind"),
+                        rows.getString("verification_kind"),
+                        rows.getString("verification_outcome"),
+                        rows.getObject("actor_user_id", UUID.class),
+                        rows.getString("actor_role_code"),
+                        rows.getString("reason"),
+                        rows.getString("evidence_reference"),
+                        rows.getTimestamp("observed_at") == null
+                                ? null : rows.getTimestamp("observed_at").toInstant(),
+                        rows.getTimestamp("occurred_at").toInstant()))
+                .list();
+    }
+
+    /**
+     * One entry in a case's journal.
+     *
+     * @param sequenceNo its position in the case's history
+     * @param eventKind what happened
+     * @param fromState the state before, or {@code null}
+     * @param toState the state after, or {@code null}
+     * @param actionKind the structured action, or {@code null}
+     * @param verificationKind what was verified, or {@code null}
+     * @param verificationOutcome how the verification came out, or {@code null}
+     * @param actorUserId who did it, or {@code null} when nothing human did
+     * @param actorRoleCode the role they acted as, or {@code null}
+     * @param reason why
+     * @param evidenceReference the artefact behind it, or {@code null}
+     * @param observedAt when the evidence was observed, or {@code null}
+     * @param occurredAt when it happened
+     */
+    public record CaseJournalEntry(int sequenceNo, String eventKind, String fromState,
+                                   String toState, String actionKind, String verificationKind,
+                                   String verificationOutcome, UUID actorUserId,
+                                   String actorRoleCode, String reason, String evidenceReference,
+                                   Instant observedAt, Instant occurredAt) {
     }
 
     /** Raise a new case. */

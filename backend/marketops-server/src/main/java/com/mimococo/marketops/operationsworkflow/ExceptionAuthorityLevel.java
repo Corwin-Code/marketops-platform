@@ -43,10 +43,15 @@ public enum ExceptionAuthorityLevel {
      * <p>The mapping is deliberately narrow. A marketplace operator has no
      * acceptance authority at all: the person who reports a risk is not the
      * person who decides the business may live with it.
+     *
+     * <p>The Owner sits with the Risk Authority they designate rather than
+     * below it. Granting the Owner an approval action they could never exercise
+     * would be a contradiction in the reviewed matrix, and separation is
+     * enforced on identity rather than on role, so it still holds for them.
      */
     public static Set<ExceptionAuthorityLevel> levelsFor(BusinessRoleCode role) {
         return switch (role) {
-            case RISK_AUTHORITY -> Set.of(DOMAIN_LEAD, OPS_LEAD, RISK_AUTHORITY);
+            case RISK_AUTHORITY, OWNER -> Set.of(DOMAIN_LEAD, OPS_LEAD, RISK_AUTHORITY);
             case OPS_LEAD -> Set.of(DOMAIN_LEAD, OPS_LEAD);
             case PRODUCT_PROCUREMENT, TECH_DATA, FINANCE_ANALYST -> Set.of(DOMAIN_LEAD);
             default -> Set.of();

@@ -1046,6 +1046,257 @@ export function fetchAvailabilityQueue(
   );
 }
 
+/** One accountable availability case, as the console sees it. */
+export interface AvailabilityCase {
+  /** The case. */
+  readonly id: string;
+  /** The card it was raised from. */
+  readonly cardId: string;
+  /** The exact child that produced it. */
+  readonly childId: string;
+  /** Why somebody is needed. */
+  readonly causeCode: string;
+  /** The deduplication identity of the cause. */
+  readonly causeKey: string;
+  /** The lane that activated it. */
+  readonly severity: string;
+  /** Where it stands. */
+  readonly state: string;
+  /** The role accountable for the cause. */
+  readonly accountableRoleCode: string;
+  /** Who owns it, or null. */
+  readonly assigneeUserId: string | null;
+  /** When accountable action is due. */
+  readonly actionDueAt: string;
+  /** When fresh outcome evidence is due, or null. */
+  readonly outcomeDueAt: string | null;
+  /** How many times the same cause has returned. */
+  readonly reopenCount: number;
+  /** How far it has been raised. */
+  readonly escalationLevel: number;
+  /** When the cause was first raised. */
+  readonly firstActivatedAt: string;
+}
+
+/** One entry in a case's history. */
+export interface CaseJournalEntry {
+  /** Its position in the case's history. */
+  readonly sequenceNo: number;
+  /** What happened. */
+  readonly eventKind: string;
+  /** The state before, or null. */
+  readonly fromState: string | null;
+  /** The state after, or null. */
+  readonly toState: string | null;
+  /** The structured action, or null. */
+  readonly actionKind: string | null;
+  /** How a verification came out, or null. */
+  readonly verificationOutcome: string | null;
+  /** Why. */
+  readonly reason: string;
+  /** The artefact behind it, or null. */
+  readonly evidenceReference: string | null;
+  /** When it happened. */
+  readonly occurredAt: string;
+}
+
+/** One bounded, governed acceptance of a calculated risk. */
+export interface AcceptedException {
+  /** The acceptance. */
+  readonly id: string;
+  /** The cause being accepted. */
+  readonly causeCode: string;
+  /** The business reason. */
+  readonly reasonCode: string;
+  /** Where the request stands. */
+  readonly state: string;
+  /** How much authority the decision needs. */
+  readonly requiredAuthority: string;
+  /** When the grant starts, or null. */
+  readonly effectiveFrom: string | null;
+  /** When the grant ends, or null. */
+  readonly expiresAt: string | null;
+  /** When it must be reviewed, or null. */
+  readonly reviewAt: string | null;
+  /** Why it stopped being valid, or null. */
+  readonly invalidationReason: string | null;
+}
+
+function parseAvailabilityCase(body: unknown): AvailabilityCase | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const id = text(body, 'id');
+  const cardId = text(body, 'cardId');
+  const childId = text(body, 'childId');
+  const causeCode = text(body, 'causeCode');
+  const causeKey = text(body, 'causeKey');
+  const severity = text(body, 'severity');
+  const state = text(body, 'state');
+  const accountableRoleCode = text(body, 'accountableRoleCode');
+  const actionDueAt = text(body, 'actionDueAt');
+  const firstActivatedAt = text(body, 'firstActivatedAt');
+  if (
+    id === undefined ||
+    cardId === undefined ||
+    childId === undefined ||
+    causeCode === undefined ||
+    causeKey === undefined ||
+    severity === undefined ||
+    state === undefined ||
+    accountableRoleCode === undefined ||
+    actionDueAt === undefined ||
+    firstActivatedAt === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    id,
+    cardId,
+    childId,
+    causeCode,
+    causeKey,
+    severity,
+    state,
+    accountableRoleCode,
+    assigneeUserId: optionalText(body, 'assigneeUserId'),
+    actionDueAt,
+    outcomeDueAt: optionalText(body, 'outcomeDueAt'),
+    reopenCount: integer(body, 'reopenCount'),
+    escalationLevel: integer(body, 'escalationLevel'),
+    firstActivatedAt,
+  };
+}
+
+function parseJournalEntry(body: unknown): CaseJournalEntry | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const eventKind = text(body, 'eventKind');
+  const reason = text(body, 'reason');
+  const occurredAt = text(body, 'occurredAt');
+  if (eventKind === undefined || reason === undefined || occurredAt === undefined) {
+    return undefined;
+  }
+  return {
+    sequenceNo: integer(body, 'sequenceNo'),
+    eventKind,
+    fromState: optionalText(body, 'fromState'),
+    toState: optionalText(body, 'toState'),
+    actionKind: optionalText(body, 'actionKind'),
+    verificationOutcome: optionalText(body, 'verificationOutcome'),
+    reason,
+    evidenceReference: optionalText(body, 'evidenceReference'),
+    occurredAt,
+  };
+}
+
+function parseAcceptedException(body: unknown): AcceptedException | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const id = text(body, 'id');
+  const causeCode = text(body, 'causeCode');
+  const reasonCode = text(body, 'reasonCode');
+  const state = text(body, 'state');
+  const requiredAuthority = text(body, 'requiredAuthority');
+  if (
+    id === undefined ||
+    causeCode === undefined ||
+    reasonCode === undefined ||
+    state === undefined ||
+    requiredAuthority === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    id,
+    causeCode,
+    reasonCode,
+    state,
+    requiredAuthority,
+    effectiveFrom: optionalText(body, 'effectiveFrom'),
+    expiresAt: optionalText(body, 'expiresAt'),
+    reviewAt: optionalText(body, 'reviewAt'),
+    invalidationReason: optionalText(body, 'invalidationReason'),
+  };
+}
+
+/** The organization's accountable availability work, most urgent first. */
+export function fetchAvailabilityCases(
+  context: ConsoleRequest,
+  limit = 50,
+): Promise<ConsoleOutcome<readonly AvailabilityCase[]>> {
+  return request(
+    context,
+    `/api/v1/console/availability/cases?limit=${String(limit)}`,
+    list(parseAvailabilityCase),
+  );
+}
+
+/** Everything that ever happened to one case, oldest first. */
+export function fetchCaseJournal(
+  context: ConsoleRequest,
+  caseId: string,
+): Promise<ConsoleOutcome<readonly CaseJournalEntry[]>> {
+  return request(
+    context,
+    `/api/v1/console/availability/cases/${encodeURIComponent(caseId)}/journal`,
+    list(parseJournalEntry),
+  );
+}
+
+/** Every acceptance ever recorded against one case. */
+export function fetchCaseExceptions(
+  context: ConsoleRequest,
+  caseId: string,
+): Promise<ConsoleOutcome<readonly AcceptedException[]>> {
+  return request(
+    context,
+    `/api/v1/console/availability/cases/${encodeURIComponent(caseId)}/exceptions`,
+    list(parseAcceptedException),
+  );
+}
+
+/**
+ * Record accountable structured action.
+ *
+ * The call takes an action kind and the reference to the artefact behind it,
+ * and there is deliberately no shape it will accept that means "looked at it".
+ * A console that offered an acknowledgement button would be offering something
+ * the product refuses to treat as action.
+ */
+export function recordCaseAction(
+  context: ConsoleRequest,
+  caseId: string,
+  actionKind: string,
+  evidenceReference: string,
+  reason: string,
+): Promise<ConsoleOutcome<AvailabilityCase>> {
+  return request(
+    context,
+    `/api/v1/console/availability/cases/${encodeURIComponent(caseId)}/action`,
+    parseAvailabilityCase,
+    { method: 'POST', body: JSON.stringify({ actionKind, evidenceReference, reason }) },
+  );
+}
+
+/** Record what a fresh cause-specific observation showed. */
+export function observeCaseVerification(
+  context: ConsoleRequest,
+  caseId: string,
+  verificationKind: string,
+  outcome: string,
+  reason: string,
+): Promise<ConsoleOutcome<AvailabilityCase>> {
+  return request(
+    context,
+    `/api/v1/console/availability/cases/${encodeURIComponent(caseId)}/verification`,
+    parseAvailabilityCase,
+    { method: 'POST', body: JSON.stringify({ verificationKind, outcome, reason }) },
+  );
+}
+
 /** One grouped card with every child, factor and window behind it. */
 export function fetchAvailabilityCard(
   context: ConsoleRequest,

@@ -3,6 +3,7 @@ import type { ConsoleRequest, Recommendation } from './api/console';
 import { CommandTimeline } from './commands/CommandTimeline';
 import { SubjectDiagnosisView } from './diagnosis/SubjectDiagnosisView';
 import { DiagnosticExportPanel } from './diagnosis/DiagnosticExportPanel';
+import { AvailabilityCases } from './availability/AvailabilityCases';
 import { AvailabilityQueue } from './availability/AvailabilityQueue';
 import { PriorityQueue } from './queue/PriorityQueue';
 import { RecommendationReview } from './workflow/RecommendationReview';
@@ -81,6 +82,8 @@ export function ConsoleShell({
       )}
 
       {view.name === 'queue' && <AvailabilityQueue context={context} />}
+
+      {view.name === 'queue' && <AvailabilityCases context={context} />}
 
       {view.name === 'queue' && (
         <PriorityQueue

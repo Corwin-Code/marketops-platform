@@ -6,6 +6,7 @@ import com.mimococo.marketops.identityaccess.internal.web.BrowserSigningFixture;
 import com.mimococo.marketops.operationsworkflow.*;
 import com.mimococo.marketops.operationsworkflow.internal.application.*;
 import com.mimococo.marketops.analyticsdecision.MetricWindow;
+import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityRiskRefreshService;
 import com.mimococo.marketops.marketplaceintegration.internal.application.PriceCommandWorker;
 import com.mimococo.marketops.marketplaceintegration.port.PriceWritePort;
 import com.mimococo.marketops.marketplaceintegration.port.PriceWriteResult;
@@ -77,11 +78,14 @@ public final class BrowserFixtureApplication {
             Instant validFrom = Instant.now().minusSeconds(60);
             for (var action : List.of(ActionScopeCode.DIAGNOSTIC_VIEW, ActionScopeCode.EVIDENCE_VIEW,
                     ActionScopeCode.PRICE_CHANGE_APPROVE, ActionScopeCode.COMMERCIAL_POLICY_MANAGE,
-                    ActionScopeCode.RECOMMENDATION_MANAGE, ActionScopeCode.COMMAND_RESOLVE)) {
+                    ActionScopeCode.RECOMMENDATION_MANAGE, ActionScopeCode.COMMAND_RESOLVE,
+                    ActionScopeCode.AVAILABILITY_VIEW, ActionScopeCode.AVAILABILITY_TASK_ACT,
+                    ActionScopeCode.AVAILABILITY_EXCEPTION_REQUEST)) {
                 users.grantScope("synthetic-browser", graph.userId(), action,
                         ResourceScopeType.ORGANIZATION, graph.organizationId(), validFrom);
             }
             seedMetrics(fixture, graph);
+            UUID availabilityVariant = seedAvailability(context, fixture, graph);
             var actor = new AuthenticatedActor(graph.userId(), graph.organizationId(), graph.providerId(),
                     BrowserSigningFixture.ISSUER, "Synthetic Browser Operator", "synthetic-subject", "synthetic-session",
                     Instant.now(), Instant.now().plusSeconds(600), true, Set.of(BusinessRoleCode.OWNER));
@@ -113,7 +117,7 @@ public final class BrowserFixtureApplication {
                     if (!"GET".equals(exchange.getRequestMethod())) { exchange.sendResponseHeaders(405, -1); return; }
                     byte[] bytes = mapper.writeValueAsBytes(Map.of("accessToken", BrowserSigningFixture.token(subject),
                             "storeId", STORE, "subjectId", graph.subjectId(), "recommendationId", recommendation,
-                            "provenanceId", graph.provenanceId()));
+                            "provenanceId", graph.provenanceId(), "productVariantId", availabilityVariant));
                     exchange.getResponseHeaders().set("Content-Type", "application/json");
                     exchange.getResponseHeaders().set("Cache-Control", "no-store");
                     exchange.sendResponseHeaders(200, bytes.length); exchange.getResponseBody().write(bytes);
@@ -144,6 +148,78 @@ public final class BrowserFixtureApplication {
 
     private static CommercialPolicyService.LimitDraft rate(String code, String value) {
         return new CommercialPolicyService.LimitDraft(code, new BigDecimal(value), null, null, null);
+    }
+
+    /**
+     * Publish availability policy and facts, then run the real calculation.
+     *
+     * <p>The card and its cases are produced by the same service the worker
+     * calls rather than written directly, so the browser journey exercises the
+     * calculation, the projection and the activation policy instead of a
+     * hand-written row that happens to look like one.
+     */
+    private static UUID seedAvailability(org.springframework.context.ConfigurableApplicationContext context,
+                                          JdbcClient jdbc, PriceCommandFixture.SeedIds graph) {
+        UUID variant = jdbc.sql("""
+                SELECT product_variant_id FROM core.listing_mapping
+                 WHERE platform_listing_variant_id=:subject AND status='ACTIVE'
+                """).param("subject", graph.subjectId()).query(UUID.class).single();
+        UUID warehouse = jdbc.sql("SELECT id FROM core.warehouse WHERE organization_id=:org LIMIT 1")
+                .param("org", graph.organizationId()).query(UUID.class).optional().orElse(null);
+
+        jdbc.sql("""
+                INSERT INTO core.lead_time_safety_policy(id,organization_id,scope_kind,scope_precedence,
+                    lead_time_days_min,lead_time_days_max,safety_days,owner_user_id,reason,evidence_reference,
+                    last_reviewed_at,effective_from,status,policy_version,created_at)
+                VALUES(gen_random_uuid(),:org,'ORGANIZATION',3,10,14,7,:owner,'agreed replenishment lead time',
+                    'ev://procurement/lead-time',now(),now()-interval '10 days','ACTIVE',1,now())
+                """).param("org", graph.organizationId()).param("owner", graph.userId()).update();
+        jdbc.sql("""
+                INSERT INTO core.demand_observation_policy(id,organization_id,minimum_sample_units,
+                    acceleration_ratio,deceleration_ratio,outlier_share_ratio,minimum_coverage_ratio,
+                    carry_forward_max_days,stock_freshness_max_minutes,owner_user_id,reason,evidence_reference,
+                    effective_from,status,policy_version,created_at)
+                VALUES(gen_random_uuid(),:org,5,1.50,0.60,0.70,0.60,14,360,:owner,
+                    'agreed demand observation policy','ev://procurement/demand',
+                    now()-interval '10 days','ACTIVE',1,now())
+                """).param("org", graph.organizationId()).param("owner", graph.userId()).update();
+        jdbc.sql("""
+                INSERT INTO core.work_activation_policy(id,organization_id,high_sustained_cycles,
+                    critical_action_sla_minutes,high_action_sla_minutes,blocker_action_sla_minutes,
+                    outcome_sla_minutes,verification_window_minutes,owner_user_id,reason,evidence_reference,
+                    effective_from,status,policy_version,created_at)
+                VALUES(gen_random_uuid(),:org,2,60,240,480,2880,1440,:owner,'agreed activation policy',
+                    'ev://ops/activation',now()-interval '10 days','ACTIVE',1,now())
+                """).param("org", graph.organizationId()).param("owner", graph.userId()).update();
+
+        // A channel with nothing on it: critical before demand is even consulted.
+        jdbc.sql("""
+                INSERT INTO core.listing_stock_observation(id,organization_id,provenance_id,
+                    platform_listing_variant_id,fulfillment_mode_code,source_fact_key,observed_at,
+                    available_quantity,reserved_quantity)
+                VALUES(gen_random_uuid(),:org,:provenance,:subject,'MARKETPLACE_FULFILLED',
+                    'browser-availability-stock',now(),0,0)
+                """).param("org", graph.organizationId()).param("provenance", graph.provenanceId())
+                .param("subject", graph.subjectId()).update();
+        jdbc.sql("""
+                INSERT INTO core.listing_health_observation(id,organization_id,provenance_id,
+                    platform_listing_variant_id,source_fact_key,observed_at,sellable)
+                VALUES(gen_random_uuid(),:org,:provenance,:subject,'browser-availability-health',now(),'YES')
+                """).param("org", graph.organizationId()).param("provenance", graph.provenanceId())
+                .param("subject", graph.subjectId()).update();
+        if (warehouse != null) {
+            jdbc.sql("""
+                    INSERT INTO core.internal_stock_snapshot(id,organization_id,provenance_id,warehouse_id,
+                        product_variant_id,source_fact_key,observed_at,quantity_on_hand,quantity_reserved)
+                    VALUES(gen_random_uuid(),:org,:provenance,:warehouse,:variant,
+                        'browser-availability-internal',now(),40,0)
+                    """).param("org", graph.organizationId()).param("provenance", graph.provenanceId())
+                    .param("warehouse", warehouse).param("variant", variant).update();
+        }
+
+        context.getBean(AvailabilityRiskRefreshService.class).refresh(graph.organizationId(), variant,
+                Instant.now(), AvailabilityRiskRefreshService.TARGETED, null);
+        return variant;
     }
 
     private static void seedMetrics(JdbcClient jdbc, PriceCommandFixture.SeedIds graph) {
