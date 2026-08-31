@@ -60,8 +60,8 @@ class ModulithArchitectureTest {
                 .toList();
 
         assertThat(detected).containsExactly("adminobservability", "aicopilot",
-                "analyticsdecision", "identityaccess", "marketplaceintegration",
-                "operatingfacts", "operationsworkflow", "organizationaccount",
-                "productlisting", "shared");
+                "analyticsdecision", "availabilityrisk", "identityaccess",
+                "marketplaceintegration", "operatingfacts", "operationsworkflow",
+                "organizationaccount", "productlisting", "shared");
     }
 }
