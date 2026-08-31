@@ -29,8 +29,8 @@ production_write_enabled: false
 ## Interpretation
 
 This is an honest implementation status, not a closure claim. `76` of the
-hundred criteria are proven by a test that runs today, `18` are partially proven,
-and `6` have no implementation.
+hundred criteria are proven by a test that runs today, `19` are partially proven,
+and `5` have no implementation.
 
 A criterion is `EXECUTABLY_VERIFIED` only when a named, currently passing test
 asserts it. Nothing here is marked verified on the strength of code existing,
@@ -169,7 +169,7 @@ here, because closure is not this document's to claim.
 | `S2-AC-095` | `NOT_IMPLEMENTED` | performance evidence proves the internal SLOs and hourly sweep at the declared acceptance capacity. | not implemented in this checkpoint |
 | `S2-AC-096` | `PARTIALLY_VERIFIED` | fault injection proves missed-trigger recovery, worker restart, late evidence and SLO incident visibility. | TC-LOOP-006 injects a dropped trigger and proves the repair, and TC-LOOP-008 proves the concurrent-sweep refusal; worker restart and late evidence are not separately injected |
 | `S2-AC-097` | `PARTIALLY_VERIFIED` | Requirement/Owner Decision → Design → Code → Test → Evidence traceability is complete. | the as-built design maps every mandatory path and this document maps every criterion to its test; the Requirement-ID traceability rows are not yet extended |
-| `S2-AC-098` | `NOT_IMPLEMENTED` | full repository regression, governance validation, production- readiness validation and security scans pass with no threshold weakening. | not implemented in this checkpoint |
+| `S2-AC-098` | `PARTIALLY_VERIFIED` | full repository regression, governance validation, production- readiness validation and security scans pass with no threshold weakening. | the full backend regression ran clean apart from one pre-existing SLICE-V1-001 contention failure that passes 18/18 in isolation; both governance validators, 384 governance tests, the frontend suite and bundle isolation pass with no threshold weakened, and the JaCoCo gate is met at LINE 0.8600 and BRANCH 0.7240; no external security scan ran in this environment |
 | `S2-AC-099` | `EXECUTABLY_VERIFIED` | canonical docs, runbooks, evidence inventory and exact Git identity are synchronized in the same implementation. | CURRENT_STATE, the roadmap, the capability matrix, the design, this status, the executable evidence, the API contract and the runbook are updated in this same implementation |
 | `S2-AC-100` | `NOT_IMPLEMENTED` | no unresolved BLOCKER or MAJOR implementation finding remains at Final Closure Verification. | not implemented in this checkpoint |
 
@@ -178,8 +178,8 @@ here, because closure is not this document's to claim.
 | Status | Count |
 | --- | ---: |
 | `EXECUTABLY_VERIFIED` | 76 |
-| `PARTIALLY_VERIFIED` | 18 |
-| `NOT_IMPLEMENTED` | 6 |
+| `PARTIALLY_VERIFIED` | 19 |
+| `NOT_IMPLEMENTED` | 5 |
 | Total | 100 |
 
 ## Deferred Release obligations
