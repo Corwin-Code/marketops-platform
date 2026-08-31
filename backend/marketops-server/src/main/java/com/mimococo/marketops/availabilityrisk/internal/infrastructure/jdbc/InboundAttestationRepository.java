@@ -58,6 +58,37 @@ public class InboundAttestationRepository {
                 .list();
     }
 
+    /**
+     * How many inbound claims have stopped being supply.
+     *
+     * <p>Counted by the sweep so that "the inbound this risk depended on
+     * lapsed" is a number an operator can see rather than something only
+     * visible one variant at a time. A claim counts as lapsed when its latest
+     * version says it will not arrive, or when the window it promised has
+     * passed without one saying otherwise.
+     */
+    public int countLapsed(UUID organizationId, Instant asOf) {
+        Long count = jdbc.sql("""
+                        SELECT count(*) FROM (
+                            SELECT DISTINCT ON (version.attestation_id)
+                                   version.business_status, version.expected_arrival_to
+                              FROM core.inbound_supply_attestation_version AS version
+                              JOIN core.inbound_supply_attestation AS claim
+                                ON claim.id = version.attestation_id
+                               AND claim.organization_id = version.organization_id
+                             WHERE claim.organization_id = :organizationId
+                             ORDER BY version.attestation_id, version.version_no DESC
+                        ) AS latest
+                         WHERE latest.business_status IN
+                                   ('CANCELLED', 'OVERDUE', 'CONFLICTED', 'UNKNOWN')
+                            OR latest.expected_arrival_to < :asOf
+                        """)
+                .param("organizationId", organizationId)
+                .param("asOf", Timestamp.from(asOf))
+                .query(Long.class).single();
+        return count == null ? 0 : count.intValue();
+    }
+
     /** Create a claim's identity. Its state arrives as the first version. */
     public void insertClaim(UUID id, UUID organizationId, UUID productVariantId,
                             String externalReference, Instant createdAt) {

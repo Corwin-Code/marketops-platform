@@ -206,6 +206,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ops.availability_case",
                     "ops.availability_case_event",
                     "ops.availability_exception_decision",
+                    "ops.availability_fact_cursor",
                     "ops.availability_recalculation_request",
                     "ops.availability_reconciliation_run",
                     "ops.availability_slo_observation",
