@@ -38,6 +38,12 @@ public interface AvailabilityExceptionGovernance {
      */
     AcceptedExceptionView decide(ExceptionDecision decision);
 
+    /** Grant one exact, effective-dated decision role to one named user. */
+    AvailabilityExceptionDelegationView grantDelegation(ExceptionDelegationGrant grant);
+
+    /** Revoke one exact delegation while retaining the original grant. */
+    AvailabilityExceptionDelegationView revokeDelegation(ExceptionDelegationRevocation revocation);
+
     /** Withdraw a request nobody has decided yet. */
     AcceptedExceptionView withdraw(UUID exceptionId, String reason, Instant at);
 
@@ -164,6 +170,32 @@ public interface AvailabilityExceptionGovernance {
             String delegationReference,
             Instant authenticatedAt,
             boolean stepUpSatisfied,
+            String reason,
+            String correlationId,
+            Instant at) {
+    }
+
+    /** An attributable grant of bounded decision authority. */
+    record ExceptionDelegationGrant(
+            UUID organizationId,
+            String delegationReference,
+            UUID delegateUserId,
+            com.mimococo.marketops.identityaccess.BusinessRoleCode delegatedRole,
+            UUID grantedByUserId,
+            com.mimococo.marketops.identityaccess.BusinessRoleCode grantedByRole,
+            Instant effectiveFrom,
+            Instant effectiveTo,
+            String evidenceReference,
+            String correlationId,
+            Instant at) {
+    }
+
+    /** An attributable revocation of one exact grant. */
+    record ExceptionDelegationRevocation(
+            UUID organizationId,
+            String delegationReference,
+            UUID revokedByUserId,
+            com.mimococo.marketops.identityaccess.BusinessRoleCode revokedByRole,
             String reason,
             String correlationId,
             Instant at) {

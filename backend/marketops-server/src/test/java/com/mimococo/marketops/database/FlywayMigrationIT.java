@@ -67,7 +67,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0031__track_sustained_availability_lane.sql",
             "V0032__create_availability_fact_feed_cursor.sql",
             "V0033__track_case_improvement_observation.sql",
-            "V0034__close_availability_deep_review_findings.sql");
+            "V0034__close_availability_deep_review_findings.sql",
+            "V0035__close_availability_targeted_findings.sql");
 
     private static PostgreSQLContainer container;
 
@@ -184,6 +185,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ledger.finance_fee_fact",
                     "ledger.return_fact",
                     "ledger.return_inventory_transition",
+                    "ledger.return_quality_evidence_snapshot",
                     "ledger.sales_fact",
                     "mart.availability_risk_card",
                     "mart.availability_risk_child",
@@ -212,10 +214,12 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ops.availability_case",
                     "ops.availability_case_event",
                     "ops.availability_exception_decision",
+                    "ops.availability_exception_delegation",
                     "ops.availability_fact_cursor",
                     "ops.availability_recalculation_request",
                     "ops.availability_reconciliation_run",
                     "ops.availability_slo_observation",
+                    "ops.availability_trace_event",
                     "ops.commercial_policy",
                     "ops.commercial_policy_limit",
                     "ops.diagnostic_export",

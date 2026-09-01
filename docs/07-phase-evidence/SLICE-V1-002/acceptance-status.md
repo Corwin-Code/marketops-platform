@@ -34,10 +34,9 @@ production_write_enabled: false
 
 ## Interpretation
 
-This is an honest implementation status, not a closure claim. `95` of the
-hundred criteria are proven by a test that runs today, `4` are partially proven,
-and `1` remains reserved for independent closure rather than self-issued
-evidence.
+This is an honest implementation status, not a closure claim. `99` of the
+hundred criteria are proven by a test that runs today, and `1` remains reserved
+for independent closure rather than self-issued evidence.
 
 A criterion is `EXECUTABLY_VERIFIED` only when a named, currently passing test
 asserts it. Nothing here is marked verified on the strength of code existing,
@@ -57,16 +56,12 @@ authority decides what that means against the governed window, and a case
 closes without anybody clicking. If a person had to close it, the completion
 rate would measure clicking.
 
-What remains partial is named rather than glossed:
-
-- sensitive-operation audit is implemented and sampled but not every route's
-  row is independently asserted (`S2-AC-010`);
-- accepted-risk disposition is stateful, bounded and automatically invalidated,
-  but no separate numeric action-SLA pause counter is stored (`S2-AC-063`);
-- durable correlation, structured logs, health incidents and audit evidence are
-  asserted, while no distributed trace exporter is claimed (`S2-AC-080`);
-- every named incident has a runbook, but no human-executed operator drill is
-  represented as an automated fact (`S2-AC-081`).
+The four formerly partial criteria now have direct executable evidence:
+sensitive READ/mutation/delegation audit rows; persisted action-SLA
+pause/remainder/resume state; append-only relational trace continuity across
+targeted and reconciliation paths; and five isolated executable runbook drills.
+This does not claim an external trace exporter or a human production drill;
+neither is required to prove the local engineering controls.
 
 Draft PR #26 now has all 12 required contexts and aggregate CodeQL passing;
 `S2-AC-098` is therefore executably verified without changing a threshold.
@@ -93,7 +88,7 @@ self-claimed here.
 | `S2-AC-007` | `EXECUTABLY_VERIFIED` | channel, company, data, policy, profit and quality Tasks route to the correct accountable role under versioned policy. | RiskCause carries the accountable role and the activation service routes by it; TC-CASE-004 proves a channel cause and a company cause reach two different owners |
 | `S2-AC-008` | `EXECUTABLY_VERIFIED` | missing or conflicting assignee/approver authority fails closed and remains operator-visible. | TC-CASE-012 records an unsized acceptance as AUTHORITY_BLOCKED with the risk still active; TC-CASE-019 records an insufficient authority the same way; TC-EXC-007 proves a reporting role holds no acceptance authority |
 | `S2-AC-009` | `EXECUTABLY_VERIFIED` | exception escalation enforces domain-lead, Ops Lead and Owner-designated Risk Authority boundaries, including requester separation for… | TC-EXC-001 through TC-EXC-005 size the authority and the separation rule; TC-CASE-014 refuses the requester as sole approver in the service and availability_exception_decision_separation_ck refuses the row |
-| `S2-AC-010` | `PARTIALLY_VERIFIED` | all sensitive reads/mutations and delegation changes are attributable and audited. | every case and exception movement calls MetadataAuditRecorder with a named actor or component; no test yet asserts the resulting audit rows |
+| `S2-AC-010` | `EXECUTABLY_VERIFIED` | all sensitive reads/mutations and delegation changes are attributable and audited. | TC-CONSOLE-015 executes sensitive queue/case reads, structured mutation, delegation grant/use/revoke and asserts the resulting attributable `READ`, `STATUS_CHANGE`, `GRANT` and `REVOKE` audit rows |
 | `S2-AC-011` | `EXECUTABLY_VERIFIED` | one parent card exists per Organization + Internal Variant. | availability_risk_card_identity_uq; TC-AVAIL-FLOW-005, TC-AVAIL-FLOW-006 |
 | `S2-AC-012` | `EXECUTABLY_VERIFIED` | channel child identity includes exact Platform, Store/Account, Listing Variant and Fulfillment Mode. | availability_risk_child_identity_ck and availability_risk_child_channel_uq; TC-AVAIL-DB-006 |
 | `S2-AC-013` | `EXECUTABLY_VERIFIED` | company child is independently governed at Organization + Internal Variant. | availability_risk_child_company_uq; TC-AVAIL-FLOW-003 |
@@ -112,7 +107,7 @@ self-claimed here.
 | `S2-AC-026` | `EXECUTABLY_VERIFIED` | sustained recent acceleration changes the selected rate under transparent bounded policy; an isolated outlier cannot silently dominate. | TC-DEMAND-002, TC-DEMAND-003, TC-DEMAND-009 |
 | `S2-AC-027` | `EXECUTABLY_VERIFIED` | low sample, data gap, window conflict and unexplained outlier fail to explicit Review/Blocked states rather than zero. | TC-DEMAND-003, TC-DEMAND-008, TC-DEMAND-009, TC-DEMAND-010 |
 | `S2-AC-028` | `EXECUTABLY_VERIFIED` | Completed Sales are the primary operational demand stage. | the demand path reads only SaleStage.COMPLETED; TC-AVAIL-FLOW-002 |
-| `S2-AC-029` | `EXECUTABLY_VERIFIED` | Retained/Return/QC evidence acts as a distinct quality Guardrail. | TC-RETURN-QUALITY-001 through TC-RETURN-QUALITY-004 independently prove absent, defect-heavy, return/retention-breach and clear outcomes under versioned policy |
+| `S2-AC-029` | `EXECUTABLY_VERIFIED` | Retained/Return/QC evidence acts as a distinct quality Guardrail. | TC-RETURN-QUALITY-001 through TC-RETURN-QUALITY-008 distinguish no evidence, fresh complete zero-return evidence, stale, incomplete, conflicted, defect-heavy, breached and fresh-complete observed-return outcomes under versioned policy; the evidence snapshot is append-only and freshness-bound |
 | `S2-AC-030` | `EXECUTABLY_VERIFIED` | returned supply counts only after an attributable Inventory Ledger re-entry fact. | TC-FLOW-003 refuses direct transport→supply, requires AWAITING_QC→REENTERED_AVAILABLE/RESELLABLE and links the exact later warehouse snapshot; the V0034 trigger enforces the chain |
 | `S2-AC-031` | `EXECUTABLY_VERIFIED` | materially unavailable periods do not count as ordinary zero demand. | TC-DEMAND-005, TC-DEMAND-011 |
 | `S2-AC-032` | `EXECUTABLY_VERIFIED` | eligible-window selection remains deterministic and channel/company censoring remains distinguishable. | TC-DEMAND-001 through TC-DEMAND-005 |
@@ -146,8 +141,8 @@ self-claimed here.
 | `S2-AC-060` | `EXECUTABLY_VERIFIED` | Action SLA and Outcome SLA are separately observable. | TC-CASE-011 and TC-CASE-004 assert the two deadlines separately; TC-UI-CASE-001 renders them apart |
 | `S2-AC-061` | `EXECUTABLY_VERIFIED` | exception preserves the calculated risk and uses an explicit accepted-risk disposition. | availability_accepted_exception has no path that alters a calculated lane; TC-AVAIL-DB-007 |
 | `S2-AC-062` | `EXECUTABLY_VERIFIED` | exception requires exact scope/cause, evidence, rationale, commercial consequence, owner, approver, period, review and policy version. | TC-CASE-013 records the full request under a published version; the service refuses a request missing any bound field |
-| `S2-AC-063` | `PARTIALLY_VERIFIED` | ordinary action SLA may pause only while exception governance and expiry remain active. | an acceptance moves the case to ACCEPTED_RISK for exactly its granted period and expiry returns it (TC-CASE-016, TC-CASE-018); an explicit action-SLA pause counter is not implemented |
-| `S2-AC-064` | `EXECUTABLY_VERIFIED` | expiry, materiality/cause/scope change, authority loss, evidence conflict or repeat condition invalidates the exception. | TC-CASE-018 proves automatic expiry; TC-EXC-REVAL-001 through TC-EXC-REVAL-004 prove current evidence/policy/authority revalidation, automatic invalidation and escalation; the same typed evaluator covers cause, scope, repeat and materiality changes |
+| `S2-AC-063` | `EXECUTABLY_VERIFIED` | ordinary action SLA may pause only while exception governance and expiry remain active. | TC-CASE-016 and TC-CASE-018 assert persisted `action_sla_original_due_at`, `action_sla_paused_at` and exact remaining duration, preserve the original due time while accepted, then rebase and clear the pause fields on invalidation/expiry without breaking journal continuity |
+| `S2-AC-064` | `EXECUTABLY_VERIFIED` | expiry, materiality/cause/scope change, authority loss, evidence conflict or repeat condition invalidates the exception. | TC-CASE-018 proves automatic expiry; TC-EXC-REVAL-001 through TC-EXC-REVAL-010 cover cause, scope, severity, consequence, recurrence, direct/delegated authority, policy and evidence conflict; TC-CONSOLE-015 proves actual grant, delegated approval, revoke, automatic `AUTHORITY_LOST` invalidation and same-Case escalation end to end |
 | `S2-AC-065` | `EXECUTABLY_VERIFIED` | invalidation reopens/escalates the same Case. | TC-CASE-018; the same case reopens with its reopen count and first activation preserved |
 | `S2-AC-066` | `EXECUTABLY_VERIFIED` | no user can convert stale/conflicted evidence into a safe canonical result through an exception. | TC-CASE-016 proves the child's calculated lane is unchanged by a granted acceptance and no case reaches VERIFIED_SUCCESS through one |
 | `S2-AC-067` | `EXECUTABLY_VERIFIED` | no permanent hidden monitoring exclusion is introduced. | availability_accepted_exception_active_ck; TC-AVAIL-DB-007 |
@@ -163,35 +158,34 @@ self-claimed here.
 | `S2-AC-077` | `EXECUTABLY_VERIFIED` | structured queue, grouped card, evidence drill-through, Task and exception surfaces support the complete operating path. | queue, grouped card, evidence drill-through, case and exception surfaces all read back (TC-AVAIL-FLOW-007, TC-UI-001, TC-UI-CASE-001 through TC-UI-CASE-008, TC-CONSOLE-003) |
 | `S2-AC-078` | `EXECUTABLY_VERIFIED` | API filtering/pagination and frontend navigation inherit backend scope; platform DTO/SDK types do not leak into public business contracts. | TC-AVAIL-FLOW-008 and TC-AVAIL-FLOW-009; no platform DTO appears in the published contract, enforced by TC-ARCH-007 |
 | `S2-AC-079` | `EXECUTABLY_VERIFIED` | keyboard use, safe errors, UTC/internal time and Store-local display, UTF-8 and Russian text are verified. | TC-UI-002 renders Russian text intact; TC-BROWSER-014 drives the queue, the case and a structured action in a real browser through focusable controls |
-| `S2-AC-080` | `PARTIALLY_VERIFIED` | metrics/logs/traces cover targeted processing, sweep, backlog, dedup, verification, exception expiry and SLO. | structured log events cover the targeted pass, the sweep and every loop incident, and the SLO observations are queryable; distributed traces are not asserted |
-| `S2-AC-081` | `PARTIALLY_VERIFIED` | runbooks prove operator response to stale source, ownership conflict, policy blocker, backlog/SLO breach and failed reconciliation. | the runbook covers stale source, ownership conflict, policy blocker, backlog and SLO breach and failed reconciliation; no test asserts an operator followed it |
-| `S2-AC-082` | `EXECUTABLY_VERIFIED` | Secret, Buyer PII, unsafe Raw and real Credentials are absent from Git, fixtures, logs, errors and client bundles. | validate_production_readiness over 2526 files, the frontend bundle-isolation check and TC-BROWSER-010's built-bundle assertion |
+| `S2-AC-080` | `EXECUTABLY_VERIFIED` | metrics/logs/traces cover targeted processing, sweep, backlog, dedup, verification, exception expiry and SLO. | TC-LOOP-002 through TC-LOOP-011 assert append-only `ops.availability_trace_event` stages for dedup, calculation, projection, Case, automatic verification, SLO, sweep, backlog, expiry, completion/failure and recovery; RepresentativePerformanceIT proves parent/child correlation continuity for all 5,000 targeted and 5,000 reconciliation Variants |
+| `S2-AC-081` | `EXECUTABLY_VERIFIED` | runbooks prove operator response to stale source, ownership conflict, policy blocker, backlog/SLO breach and failed reconciliation. | AvailabilityRunbookConformanceTest parses and executes five isolated drills from the canonical runbook, asserting the stale-source, ownership-conflict, policy-blocker, backlog/SLO and failed-reconciliation detection/diagnosis/recovery/closure commands remain executable |
+| `S2-AC-082` | `EXECUTABLY_VERIFIED` | Secret, Buyer PII, unsafe Raw and real Credentials are absent from Git, fixtures, logs, errors and client bundles. | validate_production_readiness over 2,533 files, the frontend bundle-isolation check and TC-BROWSER-010's built-bundle assertion |
 | `S2-AC-083` | `EXECUTABLY_VERIFIED` | no real Provider call occurs in engineering tests or runtime evidence. | TC-NONGOAL-001 proves no write port is reachable from the module; the browser fixture replaces the price port and this Slice has none |
 | `S2-AC-084` | `EXECUTABLY_VERIFIED` | no stock-write Preview, Approval, Command, Adapter write, Readback or hidden manual target path exists. | TC-NONGOAL-001 and TC-NONGOAL-002; no stock command, outbox, adapter write or readback exists in the module or in any migration |
 | `S2-AC-085` | `EXECUTABLY_VERIFIED` | `production_write_enabled` is and remains `false`. | production_write_enabled: false is pinned by both validators and by the completion-state tokens their tests exercise |
-| `S2-AC-086` | `EXECUTABLY_VERIFIED` | applied migrations remain byte-identical; only forward migrations are added when required. | FlywayMigrationIT TC-DB-111 and TC-DB-113; V0001-V0033 unchanged and V0034 is the sole root-cause-rework migration |
+| `S2-AC-086` | `EXECUTABLY_VERIFIED` | applied migrations remain byte-identical; only forward migrations are added when required. | FlywayMigrationIT TC-DB-111 and TC-DB-113; V0001-V0033 remain unchanged, with forward-only V0034 and V0035 repairs declared in exact order |
 | `S2-AC-087` | `EXECUTABLY_VERIFIED` | clean install and protected-main upgrade paths pass against real PostgreSQL. | FlywayMigrationIT clean-install and upgrade cases against PostgreSQL 18.4 |
 | `S2-AC-088` | `EXECUTABLY_VERIFIED` | restart, replay, concurrency and reconciliation cannot duplicate facts, cards, Cases, actions, exceptions or audit events. | TC-AVAIL-FLOW-006, TC-CASE-003 and TC-LOOP-003 prove idempotent replay/concurrency; TC-LOOP-010 injects an abandoned partial run, records it failed, completes recovery and preserves the same two Cases |
 | `S2-AC-089` | `EXECUTABLY_VERIFIED` | append-only audit and historical policy/evidence versions survive rebuild and forward-fix. | no DELETE grant exists; TC-AVAIL-DB-009 |
 | `S2-AC-090` | `EXECUTABLY_VERIFIED` | unit/property tests cover calculations, policies and state invariants. | the domain suites cover demand selection, both calculators, rank, the activation policy, the materiality policy and the response bounds |
 | `S2-AC-091` | `EXECUTABLY_VERIFIED` | architecture tests enforce Shared Spine, module and no-write boundaries. | 65 architecture tests including the module, boundary and rule-sensitivity suites |
 | `S2-AC-092` | `EXECUTABLY_VERIFIED` | PostgreSQL integration tests cover concurrency, uniqueness, effective-time resolution, recalculation and migrations. | AvailabilityRiskSchemaIT, AvailabilityCaseLifecycleIT and AvailabilityRecalculationLoopIT cover uniqueness, effective-time resolution, the fail-closed constraints, recalculation and the migrations |
-| `S2-AC-093` | `EXECUTABLY_VERIFIED` | browser E2E covers queue → Task → action → verification → reopen/exception under role scope. | TC-BROWSER-014 drives the scoped queue and action, automatic calculated verification, same-case reopen and governed exception request through Chromium against the real local backend and V0034 PostgreSQL |
+| `S2-AC-093` | `EXECUTABLY_VERIFIED` | browser E2E covers queue → Task → action → verification → reopen/exception under role scope. | TC-BROWSER-014 drives the scoped queue and action, automatic calculated verification, same-case reopen and governed exception request through Chromium against the real local backend and V0035 PostgreSQL |
 | `S2-AC-094` | `EXECUTABLY_VERIFIED` | mutation/adversarial tests prove that removing a Gate, deduplication, expiry, scope or fail-closed condition causes test failure. | TC-ADV-001 through TC-ADV-007, TC-AVAIL-DB-001 through TC-AVAIL-DB-010 |
-| `S2-AC-095` | `EXECUTABLY_VERIFIED` | performance evidence proves the internal SLOs and hourly sweep at the declared acceptance capacity. | TC-TARGET-CAP-001, TC-RECON-003 and RepresentativePerformanceIT bind the 5,000-variant synthetic profile to targeted response observations, complete worker traversal and real-PostgreSQL keyset enumeration |
+| `S2-AC-095` | `EXECUTABLY_VERIFIED` | performance evidence proves the internal SLOs and hourly sweep at the declared acceptance capacity. | TC-TARGET-CAP-001, TC-RECON-003 and RepresentativePerformanceIT execute the actual targeted worker and full reconciliation over 5,000 Variants in real PostgreSQL, produce 5,000 cards, 10,000 children, 5,000 Cases/SLO rows, recover 50 dropped triggers and retain positive hourly margin; exact timings are recorded in `target/performance/representative-v1.json` |
 | `S2-AC-096` | `EXECUTABLY_VERIFIED` | fault injection proves missed-trigger recovery, worker restart, late evidence and SLO incident visibility. | TC-LOOP-006, TC-LOOP-008, TC-LOOP-009, TC-LOOP-010 and TC-LOOP-011 inject the dropped trigger, concurrent run, overdue incident, interrupted worker and late/reordered/stale fact paths |
-| `S2-AC-097` | `EXECUTABLY_VERIFIED` | Requirement/Owner Decision → Design → Code → Test → Evidence traceability is complete. | v1-traceability.csv contains OD-S2-001 through OD-S2-020; the as-built design maps the implementation; this document maps all 100 criteria; V0034-root-cause-rework-evidence.md maps every frozen finding to code and tests |
+| `S2-AC-097` | `EXECUTABLY_VERIFIED` | Requirement/Owner Decision → Design → Code → Test → Evidence traceability is complete. | v1-traceability.csv contains OD-S2-001 through OD-S2-020; the as-built design maps the implementation; this document maps all 100 criteria; V0034-root-cause-rework-evidence.md and r1-finding-closure.json map every frozen finding to code, tests and runtime evidence |
 | `S2-AC-098` | `EXECUTABLY_VERIFIED` | full repository regression, governance validation, production- readiness validation and security scans pass with no threshold weakening. | local backend/frontend/browser/governance/readiness/supply-chain gates pass without weakened thresholds; Draft PR #26 passes all 12 required contexts plus aggregate CodeQL after repairing every new security annotation and the global-feed integration isolation defect |
-| `S2-AC-099` | `EXECUTABLY_VERIFIED` | canonical docs, runbooks, evidence inventory and exact Git identity are synchronized in the same implementation. | CURRENT_STATE, the roadmap, the capability matrix, the design, this status, the executable evidence, the API contract and the runbook are updated in this same implementation |
-| `S2-AC-100` | `NOT_IMPLEMENTED` | no unresolved BLOCKER or MAJOR implementation finding remains at Final Closure Verification. | not implemented in this checkpoint |
+| `S2-AC-099` | `EXECUTABLY_VERIFIED` | canonical docs, runbooks, evidence inventory and exact Git identity are synchronized in the same implementation. | CURRENT_STATE, the roadmap, the capability matrix, the design, this status, executable evidence, r1 finding closure/handoff, the API contract and the executable runbook are synchronized in this implementation |
+| `S2-AC-100` | `RESERVED_FOR_CONTROLLER_FINAL_CLOSURE` | no unresolved BLOCKER or MAJOR implementation finding remains at Final Closure Verification. | reserved exclusively for the independent Controller; Codex does not self-pass Final Closure |
 
 ## Summary
 
 | Status | Count |
 | --- | ---: |
-| `EXECUTABLY_VERIFIED` | 95 |
-| `PARTIALLY_VERIFIED` | 4 |
-| `NOT_IMPLEMENTED` | 1 |
+| `EXECUTABLY_VERIFIED` | 99 |
+| `RESERVED_FOR_CONTROLLER_FINAL_CLOSURE` | 1 |
 | Total | 100 |
 
 ## Deferred Release obligations

@@ -317,6 +317,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
     public AvailabilityCaseView acceptRisk(UUID caseId, String reason, Instant at) {
         AvailabilityCaseView existing = require(caseId);
         requireTransition(existing, AvailabilityCaseState.ACCEPTED_RISK);
+        cases.pauseActionSla(caseId, at);
         cases.transition(new AvailabilityCaseRepository.Transition(caseId,
                 AvailabilityCaseState.ACCEPTED_RISK, null, null, null, null, null, null,
                 0, 0, at));
@@ -341,6 +342,7 @@ public class AvailabilityCaseService implements AvailabilityCaseIntake {
     public AvailabilityCaseView reopenFromException(UUID caseId, String reason, Instant at) {
         AvailabilityCaseView existing = require(caseId);
         requireTransition(existing, AvailabilityCaseState.REOPENED);
+        cases.resumeActionSla(caseId, at);
         cases.transition(new AvailabilityCaseRepository.Transition(caseId,
                 AvailabilityCaseState.REOPENED, null, null, null, null, null, null, 1, 0, at));
         cases.appendEvent(event(caseId, existing.organizationId(), "EXCEPTION_INVALIDATED",

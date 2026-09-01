@@ -207,12 +207,14 @@ public class AvailabilityPolicyRepository {
                                                                            Instant asOf) {
         return jdbc.sql("""
                         SELECT id, policy_version, maximum_return_ratio,
-                               minimum_retention_ratio, maximum_defect_return_ratio
+                               minimum_retention_ratio, maximum_defect_return_ratio,
+                               evidence_freshness_max_minutes
                           FROM core.return_quality_policy
                          WHERE organization_id = :organizationId
                            AND status IN ('ACTIVE', 'RETIRED')
                            AND effective_from <= :asOf
                            AND (effective_to IS NULL OR effective_to > :asOf)
+                           AND evidence_freshness_max_minutes IS NOT NULL
                          ORDER BY effective_from DESC LIMIT 1
                         """)
                 .param("organizationId", organizationId)
@@ -221,7 +223,8 @@ public class AvailabilityPolicyRepository {
                         rows.getObject("id", UUID.class), rows.getInt("policy_version"),
                         rows.getBigDecimal("maximum_return_ratio"),
                         rows.getBigDecimal("minimum_retention_ratio"),
-                        rows.getBigDecimal("maximum_defect_return_ratio")))
+                        rows.getBigDecimal("maximum_defect_return_ratio"),
+                        Duration.ofMinutes(rows.getInt("evidence_freshness_max_minutes"))))
                 .optional();
     }
 

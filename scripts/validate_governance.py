@@ -207,6 +207,9 @@ DR0003_REQUIRED_FILES = [
     "docs/02-architecture/designs/SLICE-V1-002-design.md",
     "docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md",
     "docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md",
+    "docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md",
+    "docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json",
+    "docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md",
     "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json",
     "docs/04-api/V1_CAPABILITY_MATRIX.md",
     "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md",
@@ -367,11 +370,17 @@ V1_ACTIVE_STATE = {
     "slice_v1_002_root_cause_rework_evidence": (
         "docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md"
     ),
+    "slice_v1_002_r1_finding_closure": (
+        "docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json"
+    ),
+    "slice_v1_002_r1_final_handoff": (
+        "docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md"
+    ),
     "slice_v1_002_deferred_release_register": (
         "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json"
     ),
-    "next_authorized_actor": "Independent Controller Final Closure Verification",
-    "next_action": "CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_DRAFT_PR_26",
+    "next_authorized_actor": "GPT-5.6 Pro Controller",
+    "next_action": "CONTROLLER_SLICE_V1_002_FINAL_CLOSURE_VERIFICATION",
     "slice_v1_001_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_001_rework_phase": "R2_FORMAL_CLOSURE_ACCEPTED",
     "slice_v1_001_pr": "22",

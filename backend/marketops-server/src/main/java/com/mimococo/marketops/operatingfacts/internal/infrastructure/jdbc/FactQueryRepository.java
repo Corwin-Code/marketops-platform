@@ -261,6 +261,48 @@ public class FactQueryRepository {
                 .list();
     }
 
+    /** Latest non-superseded authoritative coverage snapshot for one exact report window. */
+    public Optional<ReturnQualityEvidenceRow> returnQualityEvidence(
+            UUID listingVariantId, Instant from, Instant to, Instant asOf) {
+        return jdbc.sql("""
+                        SELECT report.id, report.completed_coverage,
+                               report.retained_coverage, report.return_coverage,
+                               report.qc_coverage, report.completed_source_updated_at,
+                               report.retained_source_updated_at,
+                               report.return_source_updated_at, report.qc_source_updated_at,
+                               report.evidence_reference, report.accepted_at
+                          FROM ledger.return_quality_evidence_snapshot AS report
+                         WHERE report.platform_listing_variant_id = :listingVariantId
+                           AND report.report_window_start <= :from
+                           AND report.report_window_end >= :to
+                           AND report.accepted_at <= :asOf
+                           AND NOT EXISTS (
+                               SELECT 1
+                                 FROM ledger.return_quality_evidence_snapshot AS successor
+                                WHERE successor.supersedes_snapshot_id = report.id
+                                  AND successor.accepted_at <= :asOf)
+                         ORDER BY report.accepted_at DESC, report.id DESC
+                         LIMIT 1
+                        """)
+                .param("listingVariantId", listingVariantId)
+                .param("from", Timestamp.from(from))
+                .param("to", Timestamp.from(to))
+                .param("asOf", Timestamp.from(asOf))
+                .query((rows, rowNumber) -> new ReturnQualityEvidenceRow(
+                        rows.getObject("id", UUID.class),
+                        rows.getString("completed_coverage"),
+                        rows.getString("retained_coverage"),
+                        rows.getString("return_coverage"),
+                        rows.getString("qc_coverage"),
+                        instantOrNull(rows, "completed_source_updated_at"),
+                        instantOrNull(rows, "retained_source_updated_at"),
+                        instantOrNull(rows, "return_source_updated_at"),
+                        instantOrNull(rows, "qc_source_updated_at"),
+                        rows.getString("evidence_reference"),
+                        instantOrNull(rows, "accepted_at")))
+                .optional();
+    }
+
     /** Platform charges over a window, one row per currency and category. */
     public List<FeeGroupRow> fees(UUID listingVariantId, Instant from, Instant to) {
         return jdbc.sql("""
@@ -810,6 +852,15 @@ public class FactQueryRepository {
 
     /** Returned units for one internal reason category. */
     public record ReasonCountRow(String reasonCategory, long quantity) {
+    }
+
+    /** One explicit completed/retained/return/QC report-coverage assertion. */
+    public record ReturnQualityEvidenceRow(
+            UUID id, String completedCoverage, String retainedCoverage,
+            String returnCoverage, String qcCoverage,
+            Instant completedSourceUpdatedAt, Instant retainedSourceUpdatedAt,
+            Instant returnSourceUpdatedAt, Instant qcSourceUpdatedAt,
+            String evidenceReference, Instant acceptedAt) {
     }
 
     /** A charge aggregate for one currency and category. */

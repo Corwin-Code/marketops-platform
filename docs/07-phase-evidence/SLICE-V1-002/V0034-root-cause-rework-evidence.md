@@ -1,4 +1,4 @@
-# SLICE-V1-002 V0034 root-cause rework evidence
+# SLICE-V1-002 V0034/V0035 root-cause rework evidence
 
 ```yaml
 document_type: root_cause_rework_evidence
@@ -31,7 +31,9 @@ finding set. It is an engineering disposition, not a Controller verdict or
 Owner closure. All runtime evidence is local, synthetic and isolated. No
 credential, Buyer PII, provider, shared database, deployment or production
 write entered the run. The accepted Contract and V0001–V0033 remain unchanged;
-V0034 is the sole forward schema repair.
+V0034 closes the frozen deep-review findings and V0035 is the forward-only
+targeted closure for audit, SLA, return evidence, delegation, trace and capacity
+controls found incomplete during final evidence hardening.
 
 ## Frozen finding disposition
 
@@ -42,19 +44,40 @@ V0034 is the sole forward schema repair.
 | `S2-F-003` | The accepted-fact position is the total tuple `(ingestion_time, provenance_id, item_key)` with explicit backfill start, monotonic persistence and idempotent enqueue. | `AvailabilityRecalculationLoopIT` `TC-LOOP-001`–`003`; V0034 cursor columns and uniqueness |
 | `S2-F-004` | Reconciliation is fixed-rate, keyset-paged to exhaustion, progress-recorded, item-failure-isolated and able to fail an abandoned run before the next recovery sweep. | `AvailabilityReconciliationWorkerTest` `TC-RECON-001`–`003`; `AvailabilityRecalculationLoopIT` `TC-LOOP-006`, `008`, `010`; `RepresentativePerformanceIT` 5,000-variant PostgreSQL traversal |
 | `S2-F-005` | Company demand uses the union of observable channel intervals and counts each attributable sale once. | `AvailabilityCoverageTest`; `DemandPolicyEngineTest`; `CompanyRiskCalculatorTest` |
-| `S2-F-006` | Organization, Store, Product, Data and Action scope are intersected for queue, cards, children, evidence and every mutation; the loaded owned resource is authorized. | `AvailabilityConsoleAuthorizationIT` 14 route/security cases; `AvailabilityRiskSchemaIT` `TC-AVAIL-DB-011` |
+| `S2-F-006` | Organization, Store, Product, Data and Action scope are intersected for queue, cards, children, evidence and every mutation; the loaded owned resource is authorized. | `AvailabilityConsoleAuthorizationIT` 15 route/security/audit cases; `AvailabilityRiskSchemaIT` `TC-AVAIL-DB-011` |
 | `S2-F-007` | The public manual-success route and console control are absent; only the automatic cause-specific observer can reach verified success. | `AvailabilityConsoleAuthorizationIT` removed-route refusal; `AvailabilityCaseLifecycleIT` `TC-CASE-021`–`025`; `TC-BROWSER-014` |
 | `S2-F-008` | Exception, case, child, requester and approver are service-validated and composite-FK-bound inside one organization graph. | `AvailabilityRiskSchemaIT` `TC-AVAIL-DB-006`, `011`; `AvailabilityCaseLifecycleIT` exception adversarial cases |
 | `S2-F-009` | Exact fresh channel zero is calculated before company-demand policy resolution, so a company blocker cannot suppress the channel stockout. | `AvailabilityRiskFlowIT` `TC-AVAIL-FLOW-010`; `ChannelRiskCalculatorTest` |
 | `S2-F-010` | Fulfillment-mode identity is carried through observations and cases, and availability/demand windows seed from the latest authoritative pre-window state. | `AvailabilityCoverageTest`; `DemandPolicyEngineTest`; `AvailabilityRiskFlowIT` |
 | `S2-F-011` | Carry-forward is eligible only when every candidate window is censored and the last eligible window remains inside its bound. | `DemandPolicyEngineTest` truth table and expiry cases |
 | `S2-F-012` | Live company supply subtracts reservations, QC lock, damage and write-off and requires current sellability authority. | `CompanyRiskCalculatorTest`; `AvailabilityRiskFlowIT`; V0034 intake fields |
-| `S2-F-013` | Versioned return-quality policy, retained/return/refusal assessment and append-only returned-stock re-entry transitions now form one governed path. | `ReturnQualityAssessmentTest`; `AvailabilityRiskFlowIT`; `AvailabilityRiskSchemaIT`; `ReturnInventoryTransitionService` |
+| `S2-F-013` | Versioned return-quality policy, append-only coverage snapshots, retained/return/refusal/QC assessment and append-only returned-stock re-entry transitions now form one governed path. | `ReturnQualityAssessmentTest` `TC-RETURN-QUALITY-001`–`008`; `AvailabilityRiskFlowIT`; `AvailabilityRiskSchemaIT`; `ReturnInventoryTransitionService` |
 | `S2-F-014` | Inbound create/amend/reverify/cancel and policy publish/retire flows are scoped application, API and UI capabilities with audit, effective time, optimistic conflict and recalculation. | `AvailabilityRiskFlowIT` `TC-AVAIL-FLOW-011`, `012`; `AvailabilityConsoleAuthorizationIT`; frontend authority-panel tests |
 | `S2-F-015` | Priority weights are effective-dated policy rows and their exact identity participates in projection/card digests. | `PriorityPolicyTest`; `AvailabilityRiskFlowIT`; V0034 priority policy |
-| `S2-F-016` | Every sweep revalidates active acceptances against materiality, cause, scope, authority, recurrence, evidence and policy identity and reopens the same case on invalidation. | `AvailabilityExceptionRevalidationTest` `TC-EXC-REVAL-001`–`004`; `AvailabilityCaseLifecycleIT` |
+| `S2-F-016` | Every sweep revalidates active acceptances against materiality, cause, scope, direct/delegated authority, recurrence, evidence and policy identity and reopens/escalates the same case on invalidation. | `AvailabilityExceptionRevalidationTest` `TC-EXC-REVAL-001`–`010`; `AvailabilityCaseLifecycleIT`; `TC-CONSOLE-015` actual grant/use/revoke/authority-loss path |
 | `S2-F-017` | Aggregate regression is deterministic; 5,000-variant pagination/cadence margin, abandoned-worker recovery, late/reordered/stale evidence, browser verification/reopen/exception, security/supply-chain gates and full traceability are part of the executable gate. | Final command ledger below; `TC-RECON-003`; `TC-LOOP-010`, `011`; `TC-BROWSER-014`; this traceability record |
 | `S2-F-018` | The reviewed Claude Head/tree remain immutable evidence; canonical state records the authority conflict and only Codex transports the exact rework branch to a new Draft PR. | `CURRENT_STATE.md`; exact source identity checks; Draft-PR handoff |
+
+## V0035 targeted evidence closure
+
+The final evidence audit found four criteria whose implementation existed only
+partially or whose assertion surface was insufficient. V0035 and its coherent
+application/test changes close them without changing the accepted product
+outcome:
+
+| Criterion | Added executable control | Evidence |
+| --- | --- | --- |
+| `S2-AC-010` | sensitive queue/case reads, mutations and delegation grant/revoke are attributable audit facts | `TC-CONSOLE-015`; `AuditAction.READ`; real `metadata_audit_event` rows |
+| `S2-AC-063` | exact action-SLA original due, pause instant, remaining duration and resume rebase are persisted | `TC-CASE-016`, `TC-CASE-018`; V0035 Case SLA fields/triggers |
+| `S2-AC-080` | append-only relational trace links dedup, targeted/sweep calculation, projection, Case, verification, expiry, backlog and SLO stages | `TC-LOOP-002`–`011`; `RepresentativePerformanceIT` 5,000 targeted plus 5,000 reconciliation trace chains |
+| `S2-AC-081` | each of the five incident runbook procedures is parsed and exercised as an isolated drill | `AvailabilityRunbookConformanceTest` 5/5 |
+
+The targeted capacity profile also exposed and closed two runtime defects that
+small fixtures could not reveal: nullable channel stock was accidentally
+unboxed in `AvailabilityProjectionWriter`, and successor anti-joins lacked
+indexes. V0035 adds partial successor indexes to the accepted-fact tables and
+return-quality snapshots; the actual 5,000-Variant worker/sweep profile is now
+the capacity authority recorded in `representative-v1.json`.
 
 ## Normative-to-executable traceability
 

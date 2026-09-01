@@ -36,6 +36,10 @@ import java.util.UUID;
  * @param invalidationReason why it stopped, or {@code null}
  * @param materialityPolicyId the version the decision was sized by, or {@code null}
  * @param occurrenceCount how many times this cause has been accepted in the lookback
+ * @param acceptedSeverity severity snapshot licensed by the approval, or {@code null}
+ * @param acceptedProfitAtRiskAmount calculated exposure licensed by it, or {@code null}
+ * @param acceptedProfitAtRiskCurrency currency of that exposure, or {@code null}
+ * @param acceptedCaseReopenCount the case recurrence count at approval, or {@code null}
  */
 public record AcceptedExceptionView(
         UUID id,
@@ -62,7 +66,11 @@ public record AcceptedExceptionView(
         Instant invalidatedAt,
         String invalidationReason,
         UUID materialityPolicyId,
-        int occurrenceCount) {
+        int occurrenceCount,
+        String acceptedSeverity,
+        BigDecimal acceptedProfitAtRiskAmount,
+        String acceptedProfitAtRiskCurrency,
+        Integer acceptedCaseReopenCount) {
 
     /**
      * Whether this acceptance is in force at an instant.

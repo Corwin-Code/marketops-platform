@@ -139,7 +139,7 @@ public class AvailabilityProjectionWriter {
                 subject == null ? null : subject.observation().fulfillmentModeCode(),
                 child.lane().name(), child.evidenceState().name(), child.confidence().name(),
                 child.cause().name(),
-                subject == null ? child.supply().provenUnits()
+                subject == null ? Integer.valueOf(child.supply().provenUnits())
                         : subject.observation().availableUnits(),
                 child.demand().selectedRate(), child.daysOfCover(),
                 child.leadTime().resolved() ? child.leadTime().coverageHorizonDays() : null,

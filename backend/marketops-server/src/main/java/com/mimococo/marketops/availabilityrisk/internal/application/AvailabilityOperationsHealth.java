@@ -54,6 +54,8 @@ public class AvailabilityOperationsHealth {
     public LoopHealth health(UUID organizationId) {
         Instant now = clock.instant();
         Optional<Instant> lastSweep = queue.lastCompletedRun(organizationId);
+        Optional<AvailabilityRecalculationRepository.LatestRun> latestRun =
+                queue.latestRun(organizationId);
         AvailabilityRecalculationRepository.Backlog backlog = queue.backlog(organizationId, now);
         AvailabilityRecalculationRepository.LatencySummary critical = queue.latencySummary(
                 organizationId, AvailabilityLane.CRITICAL.name(),
@@ -64,6 +66,9 @@ public class AvailabilityOperationsHealth {
                 || lastSweep.get().isBefore(now.minus(EXPECTED_SWEEP_INTERVAL).minus(SWEEP_GRACE));
         if (sweepOverdue) {
             incidents.add("RECONCILIATION_SWEEP_OVERDUE");
+        }
+        if (latestRun.filter(run -> "FAILED".equals(run.state())).isPresent()) {
+            incidents.add("RECONCILIATION_LAST_RUN_FAILED");
         }
         // The oldest waiting fact, not the queue depth: a thousand requests
         // queued a second ago are healthy, and one queued an hour ago is not.
@@ -80,6 +85,11 @@ public class AvailabilityOperationsHealth {
         }
 
         return new LoopHealth(organizationId, lastSweep.orElse(null), sweepOverdue,
+                latestRun.map(AvailabilityRecalculationRepository.LatestRun::state).orElse(null),
+                latestRun.map(AvailabilityRecalculationRepository.LatestRun::failureCode)
+                        .orElse(null),
+                latestRun.map(AvailabilityRecalculationRepository.LatestRun::failedVariantCount)
+                        .orElse(0),
                 backlog.pending(), backlog.oldestAge(), critical.observations(),
                 Duration.ofMillis(critical.p95LatencyMillis()),
                 Duration.ofMillis(critical.worstLatencyMillis()), critical.breaches(), targetMet,
@@ -92,6 +102,9 @@ public class AvailabilityOperationsHealth {
      * @param organizationId the organization
      * @param lastCompletedSweep when the portfolio was last fully reconciled
      * @param sweepOverdue whether the cadence has been missed
+     * @param latestRunState state of the newest attempt, or {@code null}
+     * @param latestRunFailureCode its failure code, or {@code null}
+     * @param latestRunFailedVariants variants it could not refresh
      * @param pendingRequests recalculations waiting
      * @param oldestPendingAge how long the oldest has waited since its fact
      * @param criticalObservations critical recalculations measured in the window
@@ -102,6 +115,8 @@ public class AvailabilityOperationsHealth {
      * @param incidents every operator-visible incident this state implies
      */
     public record LoopHealth(UUID organizationId, Instant lastCompletedSweep, boolean sweepOverdue,
+                             String latestRunState, String latestRunFailureCode,
+                             int latestRunFailedVariants,
                              int pendingRequests, Duration oldestPendingAge,
                              int criticalObservations, Duration criticalP95,
                              Duration criticalWorst, int criticalBreaches,

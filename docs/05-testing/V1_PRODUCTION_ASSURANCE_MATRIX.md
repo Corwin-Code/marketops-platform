@@ -109,6 +109,8 @@ production_write_enabled: false
 detail: docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md
 executable_evidence: docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md
 root_cause_rework_evidence: docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md
+r1_finding_closure: docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json
+r1_final_handoff: docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md
 deferred_release: docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json
 ```
 

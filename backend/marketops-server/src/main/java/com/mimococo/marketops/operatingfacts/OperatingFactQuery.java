@@ -1,6 +1,7 @@
 package com.mimococo.marketops.operatingfacts;
 
 import java.time.Instant;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -52,6 +53,19 @@ public interface OperatingFactQuery {
 
     /** Returns over a window, with their reason mix. */
     ReturnTotals returns(UUID platformListingVariantId, FactWindow window);
+
+    /**
+     * Explicit coverage/freshness authority for completed, retained, returns and QC.
+     *
+     * <p>The report must explicitly cover the entire requested window; an exact
+     * window or a declared complete superset is acceptable. Events inside D30 do
+     * not imply either coverage or freshness, and an absent report never becomes
+     * an authoritative zero.
+     */
+    ReturnQualityEvidence returnQualityEvidence(UUID platformListingVariantId,
+                                                FactWindow window,
+                                                Duration freshnessMaximum,
+                                                Instant asOf);
 
     /** Platform charges over a window. */
     FeeTotals fees(UUID platformListingVariantId, FactWindow window);

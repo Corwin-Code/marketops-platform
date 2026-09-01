@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessRoleCode;
 import com.mimococo.marketops.shared.Digest;
+import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorker;
+import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityTargetedWorker;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -67,6 +69,8 @@ class RepresentativePerformanceIT {
     @Autowired com.mimococo.marketops.analyticsdecision.internal.application.DiagnosticExportWorker exportWorker;
     @Autowired com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort objectStorage;
     @Autowired com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityRecalculationRepository availabilityQueue;
+    @Autowired AvailabilityTargetedWorker availabilityTargeted;
+    @Autowired AvailabilityReconciliationWorker availabilityReconciliation;
 
     @DynamicPropertySource
     static void database(DynamicPropertyRegistry registry) {
@@ -79,7 +83,7 @@ class RepresentativePerformanceIT {
     }
 
     @Test
-    @Timeout(600)
+    @Timeout(1800)
     void commonDiagnosticQueriesMeetTheBaselineOnTheDeclaredProfile() throws Throwable {
         Map<String,Object> report = new LinkedHashMap<>();
         report.put("classification","SYNTHETIC_LOCAL_PERFORMANCE_EVIDENCE");
@@ -129,6 +133,7 @@ class RepresentativePerformanceIT {
             assertThat(jdbc.sql("SELECT count(*) FROM platform.platform_capability WHERE verification_state='VERIFIED'")
                     .query(Integer.class).single()).isZero();
             verifyAvailabilityPortfolioEnumeration(report);
+            verifyActualAvailabilityRuntime(report);
 
             Instant now = Instant.now();
             var actor = new AuthenticatedActor(id("user"),id("org"),id("provider"),"https://performance.fixture.invalid",
@@ -309,6 +314,415 @@ class RepresentativePerformanceIT {
                 "elapsedMillis", elapsedMillis,
                 "sweepCadenceMillis", 3_600_000,
                 "enumerationBudgetMillis", 30_000));
+    }
+
+    /**
+     * Actual 5,000-variant availability path and recovery evidence.
+     *
+     * <p>This is intentionally not a mocked worker or an enumeration benchmark:
+     * every item reads accepted facts and policy, calculates channel/company
+     * risk, writes projection and Case state, and appends its SLO observation.
+     */
+    private void verifyActualAvailabilityRuntime(Map<String, Object> report) {
+        UUID organization = id("org");
+        seedAvailabilityRuntimeProfile();
+
+        long targetedStarted = System.nanoTime();
+        int processed = availabilityTargeted.runOnce(5_000);
+        long targetedMillis = (System.nanoTime() - targetedStarted) / 1_000_000;
+
+        assertThat(processed).isEqualTo(5_000);
+        assertThat(count("mart.availability_risk_card", organization)).isEqualTo(5_000);
+        assertThat(count("mart.availability_risk_child", organization)).isEqualTo(10_000);
+        assertThat(count("ops.availability_slo_observation", organization)).isEqualTo(5_000);
+        assertThat(jdbc.sql("""
+                        SELECT count(*) FROM ops.availability_recalculation_request
+                         WHERE organization_id = :organizationId
+                           AND state = 'COMPLETED' AND attempt_count = 1
+                        """).param("organizationId", organization)
+                .query(Long.class).single()).isEqualTo(5_000);
+        assertTargetedTraceContinuity(organization);
+
+        Map<String, Object> lanes = new LinkedHashMap<>();
+        report.put("availabilityLaneDiagnostic", Map.of(
+                "cards", jdbc.sql("""
+                                SELECT lane, count(*) AS variants
+                                  FROM mart.availability_risk_card
+                                 WHERE organization_id = :organizationId
+                                 GROUP BY lane ORDER BY lane
+                                """).param("organizationId", organization).query().listOfRows(),
+                "children", jdbc.sql("""
+                                SELECT child_kind, lane, count(*) AS children
+                                  FROM mart.availability_risk_child
+                                 WHERE organization_id = :organizationId
+                                 GROUP BY child_kind, lane ORDER BY child_kind, lane
+                                """).param("organizationId", organization).query().listOfRows()));
+        for (String lane : List.of("CRITICAL", "HIGH", "WATCH", "HEALTHY", "UNRESOLVED")) {
+            long cards = jdbc.sql("""
+                            SELECT count(*) FROM mart.availability_risk_card
+                             WHERE organization_id = :organizationId AND lane = :lane
+                            """).param("organizationId", organization).param("lane", lane)
+                    .query(Long.class).single();
+            assertThat(cards).as(lane).isEqualTo(1_000);
+            var summary = availabilityQueue.latencySummary(organization, lane,
+                    Instant.now().minusSeconds(3_600), Instant.now().plusSeconds(60));
+            long limit = "CRITICAL".equals(lane) ? 300_000L : 900_000L;
+            if ("CRITICAL".equals(lane)) {
+                assertThat(summary.p95LatencyMillis()).isLessThanOrEqualTo(limit);
+            }
+            assertThat(summary.worstLatencyMillis()).isLessThanOrEqualTo(limit);
+            lanes.put(lane, Map.of("cards", cards, "observations", summary.observations(),
+                    "p95Millis", summary.p95LatencyMillis(),
+                    "maxMillis", summary.worstLatencyMillis(),
+                    "breaches", summary.breaches(), "sloMillis", limit));
+        }
+
+        // A deliberately dropped targeted request is recovered only by the
+        // same real 5,000-variant sweep that establishes the hourly margin.
+        jdbc.sql("""
+                INSERT INTO ops.availability_recalculation_request
+                    (id, organization_id, product_variant_id, trigger_class,
+                     trigger_reference, fact_accepted_at, requested_at, state, correlation_id)
+                SELECT md5('availability-capacity/dropped/' || n)::uuid,
+                       md5('performance-v1/org')::uuid,
+                       md5('performance-v1/sku/' || n)::uuid,
+                       'MAPPING_OR_OWNERSHIP', NULL, now(), now(), 'PENDING',
+                       'availability-capacity-dropped-' || n
+                  FROM generate_series(1, 50) n
+                """).update();
+
+        long sweepStarted = System.nanoTime();
+        AvailabilityReconciliationWorker.SweepResult sweep =
+                availabilityReconciliation.sweep(organization, "RECOVERY").orElseThrow();
+        long sweepMillis = (System.nanoTime() - sweepStarted) / 1_000_000;
+        assertThat(sweep.completed()).isTrue();
+        assertThat(sweep.variantCount()).isEqualTo(5_000);
+        assertThat(sweep.failedVariantCount()).isZero();
+        assertThat(sweep.repairedCount()).isEqualTo(50);
+        assertThat(sweepMillis).isLessThanOrEqualTo(3_600_000L);
+        assertThat(jdbc.sql("""
+                        SELECT count(*) FROM ops.availability_recalculation_request
+                         WHERE organization_id = :organizationId
+                           AND state IN ('PENDING', 'LEASED', 'FAILED', 'ABANDONED')
+                        """).param("organizationId", organization)
+                .query(Long.class).single()).isZero();
+        assertReconciliationTraceContinuity(organization, sweep.runId());
+
+        Map<String, Object> capacity = new LinkedHashMap<>();
+        capacity.put("status", "PASS");
+        capacity.put("classification", "SYNTHETIC_LOCAL_ACTUAL_PATH_EVIDENCE");
+        capacity.put("mockedRefresh", false);
+        capacity.put("variants", 5_000);
+        capacity.put("targetedAcceptedFacts", 5_000);
+        capacity.put("targetedCompleted", processed);
+        capacity.put("targetedWallMillis", targetedMillis);
+        capacity.put("projectionCards", 5_000);
+        capacity.put("projectionChildren", 10_000);
+        capacity.put("caseRows", count("ops.availability_case", organization));
+        capacity.put("sloObservations", 5_000);
+        capacity.put("lanes", lanes);
+        capacity.put("databasePages", 5);
+        capacity.put("failedVariants", sweep.failedVariantCount());
+        capacity.put("retryAttemptsAboveOne", 0);
+        capacity.put("sweepVariants", sweep.variantCount());
+        capacity.put("sweepWallMillis", sweepMillis);
+        capacity.put("hourlyMarginMillis", 3_600_000L - sweepMillis);
+        capacity.put("droppedTriggers", 50);
+        capacity.put("droppedTriggersRecovered", sweep.repairedCount());
+        capacity.put("relationalTrace", Map.of(
+                "status", "PASS",
+                "targetedLinkedVariants", 5_000,
+                "reconciliationLinkedVariants", 5_000,
+                "sweepRunId", sweep.runId().toString()));
+        report.put("availabilityActualRuntime", capacity);
+    }
+
+    private void assertTargetedTraceContinuity(UUID organization) {
+        for (String stage : List.of("TARGETED_PROCESS_STARTED", "CALCULATION_STARTED",
+                "EVIDENCE_AND_RISK_CALCULATED", "PROJECTION_WRITTEN", "CASE_SYNCHRONIZED",
+                "AUTO_VERIFICATION", "SLO_RECORDED")) {
+            assertThat(traceCount(organization, stage)).as(stage).isEqualTo(5_000);
+        }
+        assertThat(jdbc.sql("""
+                        SELECT count(DISTINCT calculation.product_variant_id)
+                          FROM ops.availability_trace_event calculation
+                          JOIN ops.availability_trace_event process
+                            ON process.organization_id = calculation.organization_id
+                           AND process.product_variant_id = calculation.product_variant_id
+                           AND process.stage_code = 'TARGETED_PROCESS_STARTED'
+                           AND process.correlation_id = calculation.parent_correlation_id
+                          JOIN ops.availability_trace_event slo
+                            ON slo.organization_id = calculation.organization_id
+                           AND slo.product_variant_id = calculation.product_variant_id
+                           AND slo.stage_code = 'SLO_RECORDED'
+                           AND slo.correlation_id = calculation.correlation_id
+                           AND slo.parent_correlation_id = process.correlation_id
+                         WHERE calculation.organization_id = :organizationId
+                           AND calculation.stage_code = 'CALCULATION_STARTED'
+                           AND calculation.path_kind = 'TARGETED'
+                        """).param("organizationId", organization)
+                .query(Long.class).single()).isEqualTo(5_000);
+    }
+
+    private void assertReconciliationTraceContinuity(UUID organization, UUID runId) {
+        for (String stage : List.of("CALCULATION_STARTED", "EVIDENCE_AND_RISK_CALCULATED",
+                "PROJECTION_WRITTEN", "CASE_SYNCHRONIZED", "AUTO_VERIFICATION")) {
+            assertThat(jdbc.sql("""
+                            SELECT count(*) FROM ops.availability_trace_event
+                             WHERE organization_id = :organizationId
+                               AND path_kind = 'RECONCILIATION' AND stage_code = :stage
+                            """).param("organizationId", organization).param("stage", stage)
+                    .query(Long.class).single()).as(stage).isEqualTo(5_000);
+        }
+        String sweepCorrelation = "availability-sweep:" + runId;
+        assertThat(jdbc.sql("""
+                        SELECT count(DISTINCT correlation_id)
+                          FROM ops.availability_trace_event
+                         WHERE organization_id = :organizationId
+                           AND path_kind = 'RECONCILIATION'
+                           AND stage_code = 'CALCULATION_STARTED'
+                           AND parent_correlation_id = :sweepCorrelation
+                        """).param("organizationId", organization)
+                .param("sweepCorrelation", sweepCorrelation)
+                .query(Long.class).single()).isEqualTo(5_000);
+        assertThat(jdbc.sql("""
+                        SELECT count(*) FROM ops.availability_trace_event
+                         WHERE organization_id = :organizationId
+                           AND correlation_id = :sweepCorrelation
+                           AND stage_code IN ('SWEEP_STARTED', 'BACKLOG_SNAPSHOT',
+                                              'EXCEPTION_EXPIRY_REVALIDATION', 'SWEEP_COMPLETED')
+                        """).param("organizationId", organization)
+                .param("sweepCorrelation", sweepCorrelation)
+                .query(Long.class).single()).isEqualTo(4);
+    }
+
+    private long traceCount(UUID organization, String stage) {
+        return jdbc.sql("""
+                        SELECT count(*) FROM ops.availability_trace_event
+                         WHERE organization_id = :organizationId AND stage_code = :stage
+                           AND path_kind = 'TARGETED'
+                        """).param("organizationId", organization).param("stage", stage)
+                .query(Long.class).single();
+    }
+
+    private long count(String table, UUID organization) {
+        return jdbc.sql("SELECT count(*) FROM " + table
+                        + " WHERE organization_id = :organizationId")
+                .param("organizationId", organization).query(Long.class).single();
+    }
+
+    /** Bulk seed through production-owned tables; no projection or Case fixture is inserted. */
+    private void seedAvailabilityRuntimeProfile() {
+        jdbc.sql("""
+                INSERT INTO core.warehouse (id, organization_id, legal_entity_id, code,
+                        display_name, status, created_at, updated_at)
+                VALUES (md5('availability-capacity/warehouse')::uuid,
+                        md5('performance-v1/org')::uuid,
+                        md5('performance-v1/legal')::uuid, 'availability-capacity',
+                        'Synthetic capacity warehouse', 'ACTIVE', now(), now())
+                """).update();
+        jdbc.sql("""
+                INSERT INTO core.lead_time_safety_policy
+                    (id, organization_id, scope_kind, scope_precedence,
+                     lead_time_days_min, lead_time_days_max, safety_days,
+                     owner_user_id, reason, evidence_reference, last_reviewed_at,
+                     effective_from, status, policy_version, created_at)
+                VALUES (md5('availability-capacity/lead')::uuid,
+                        md5('performance-v1/org')::uuid, 'ORGANIZATION', 3,
+                        10, 14, 7, md5('performance-v1/user')::uuid,
+                        'synthetic actual-path capacity policy',
+                        'ev://availability-capacity/lead', now(), now() - interval '1 day',
+                        'ACTIVE', 1, now())
+                """).update();
+        jdbc.sql("""
+                INSERT INTO core.demand_observation_policy
+                    (id, organization_id, minimum_sample_units, acceleration_ratio,
+                     deceleration_ratio, outlier_share_ratio, minimum_coverage_ratio,
+                     carry_forward_max_days, stock_freshness_max_minutes, owner_user_id,
+                     reason, evidence_reference, effective_from, status,
+                     policy_version, created_at)
+                VALUES (md5('availability-capacity/demand')::uuid,
+                        md5('performance-v1/org')::uuid, 5, 1.50, 0.60, 0.70, 0.60,
+                        14, 60, md5('performance-v1/user')::uuid,
+                        'synthetic actual-path capacity policy',
+                        'ev://availability-capacity/demand', now() - interval '1 day',
+                        'ACTIVE', 1, now())
+                """).update();
+        jdbc.sql("""
+                INSERT INTO core.work_activation_policy
+                    (id, organization_id, high_sustained_cycles,
+                     critical_action_sla_minutes, high_action_sla_minutes,
+                     blocker_action_sla_minutes, outcome_sla_minutes,
+                     verification_window_minutes, owner_user_id, reason,
+                     evidence_reference, effective_from, status, policy_version, created_at)
+                VALUES (md5('availability-capacity/activation')::uuid,
+                        md5('performance-v1/org')::uuid, 1, 60, 240, 480, 2880, 1440,
+                        md5('performance-v1/user')::uuid,
+                        'synthetic actual-path capacity policy',
+                        'ev://availability-capacity/activation', now() - interval '1 day',
+                        'ACTIVE', 1, now())
+                """).update();
+        jdbc.sql("""
+                INSERT INTO core.availability_priority_policy
+                    (id, organization_id, policy_version, time_weight, profit_weight,
+                     velocity_weight, lifecycle_weight, confidence_weight, owner_user_id,
+                     reason, evidence_reference, effective_from, status, created_at)
+                VALUES (md5('availability-capacity/priority')::uuid,
+                        md5('performance-v1/org')::uuid, 1, 1, 1, 1, 1, -1,
+                        md5('performance-v1/user')::uuid,
+                        'synthetic actual-path capacity policy',
+                        'ev://availability-capacity/priority', now() - interval '1 day',
+                        'ACTIVE', now())
+                """).update();
+        jdbc.sql("""
+                INSERT INTO core.return_quality_policy
+                    (id, organization_id, policy_version, maximum_return_ratio,
+                     minimum_retention_ratio, maximum_defect_return_ratio,
+                     evidence_freshness_max_minutes, owner_user_id, reason,
+                     evidence_reference, effective_from, status, created_at)
+                VALUES (md5('availability-capacity/return-policy')::uuid,
+                        md5('performance-v1/org')::uuid, 1, 0.25, 0.80, 0.10, 1440,
+                        md5('performance-v1/user')::uuid,
+                        'synthetic actual-path capacity policy',
+                        'ev://availability-capacity/return-policy', now() - interval '1 day',
+                        'ACTIVE', now())
+                """).update();
+        jdbc.sql("""
+                INSERT INTO core.supply_ownership_declaration
+                    (id, organization_id, store_id, fulfillment_mode_code, distinctness,
+                     evidence_reference, declared_by_user_id, reason, effective_from,
+                     status, policy_version, created_at)
+                SELECT md5('availability-capacity/ownership/' || n)::uuid,
+                       md5('performance-v1/org')::uuid,
+                       md5('performance-v1/store/' || n)::uuid,
+                       'MARKETPLACE_FULFILLED', 'PHYSICALLY_DISTINCT',
+                       'ev://availability-capacity/ownership/' || n,
+                       md5('performance-v1/user')::uuid,
+                       'synthetic actual-path capacity declaration',
+                       now() - interval '1 day', 'ACTIVE', 1, now()
+                  FROM generate_series(1, 3) n
+                """).update();
+        jdbc.sql("""
+                INSERT INTO core.fact_provenance
+                    (id, organization_id, source_kind, source_time, ingestion_time,
+                     recorded_by_user_id, evidence_note)
+                SELECT md5('availability-capacity/provenance/' || n)::uuid,
+                       md5('performance-v1/org')::uuid, 'MANUAL_ENTRY',
+                       now() - interval '1 minute', now(),
+                       md5('performance-v1/user')::uuid,
+                       'SYNTHETIC_LOCAL_ACTUAL_PATH_EVIDENCE'
+                  FROM generate_series(1, 5000) n
+                """).update();
+        jdbc.sql("""
+                INSERT INTO core.internal_stock_snapshot
+                    (id, organization_id, provenance_id, warehouse_id, product_variant_id,
+                     source_fact_key, observed_at, quantity_on_hand, quantity_reserved,
+                     quantity_quality_locked, quantity_damaged, quantity_written_off, sellable)
+                SELECT md5('availability-capacity/internal/' || n)::uuid,
+                       md5('performance-v1/org')::uuid,
+                       md5('availability-capacity/provenance/' || n)::uuid,
+                       md5('availability-capacity/warehouse')::uuid,
+                       md5('performance-v1/sku/' || n)::uuid,
+                       'availability-capacity-internal-' || n, now() - interval '1 minute',
+                       100, 0, 0, 0, 0, 'YES'
+                  FROM generate_series(1, 5000) n
+                """).update();
+        jdbc.sql("""
+                INSERT INTO core.listing_stock_observation
+                    (id, organization_id, provenance_id, platform_listing_variant_id,
+                     fulfillment_mode_code, source_fact_key, observed_at,
+                     available_quantity, reserved_quantity)
+                SELECT md5('availability-capacity/stock/' || n || '/' || phase)::uuid,
+                       md5('performance-v1/org')::uuid,
+                       md5('availability-capacity/provenance/' || n)::uuid,
+                       md5('performance-v1/variant/' || n)::uuid,
+                       'MARKETPLACE_FULFILLED',
+                       'availability-capacity-stock-' || n || '-' || phase,
+                       CASE WHEN phase = 1 THEN now() - interval '31 days'
+                            ELSE now() - interval '1 minute' END,
+                       CASE n % 5 WHEN 0 THEN 0 WHEN 1 THEN 100 WHEN 2 THEN 130
+                            WHEN 3 THEN 220 ELSE NULL END, 0
+                  FROM generate_series(1, 5000) n CROSS JOIN generate_series(1, 2) phase
+                """).update();
+        jdbc.sql("""
+                INSERT INTO core.listing_health_observation
+                    (id, organization_id, provenance_id, platform_listing_variant_id,
+                     source_fact_key, observed_at, sellable)
+                SELECT md5('availability-capacity/health/' || n || '/' || phase)::uuid,
+                       md5('performance-v1/org')::uuid,
+                       md5('availability-capacity/provenance/' || n)::uuid,
+                       md5('performance-v1/variant/' || n)::uuid,
+                       'availability-capacity-health-' || n || '-' || phase,
+                       CASE WHEN phase = 1 THEN now() - interval '31 days'
+                            ELSE now() - interval '1 minute' END, 'YES'
+                  FROM generate_series(1, 5000) n CROSS JOIN generate_series(1, 2) phase
+                """).update();
+        jdbc.sql("""
+                INSERT INTO ledger.sales_fact
+                    (id, organization_id, provenance_id, platform_listing_variant_id,
+                     store_id, sale_stage, retention_window_days, source_fact_key,
+                     native_order_key, native_line_key, native_status, occurred_at,
+                     quantity, currency_code, gross_amount, discount_amount, net_amount)
+                SELECT md5('availability-capacity/completed/' || n || '/' || day)::uuid,
+                       md5('performance-v1/org')::uuid,
+                       md5('availability-capacity/provenance/' || n)::uuid,
+                       md5('performance-v1/variant/' || n)::uuid,
+                       md5('performance-v1/store/' || CASE WHEN n <= 4000 THEN 1
+                           WHEN n <= 4750 THEN 2 ELSE 3 END)::uuid,
+                       'COMPLETED', NULL,
+                       'availability-capacity-completed-' || n || '-' || day,
+                       'AVAIL-CAP-' || n || '-' || day, 'LINE-1', 'completed',
+                       now() - day * interval '1 day', 10, 'RUB', 1000, 0, 1000
+                  FROM generate_series(1, 5000) n CROSS JOIN generate_series(1, 5) day
+                """).update();
+        jdbc.sql("""
+                INSERT INTO ledger.sales_fact
+                    (id, organization_id, provenance_id, platform_listing_variant_id,
+                     store_id, sale_stage, retention_window_days, source_fact_key,
+                     native_order_key, native_line_key, native_status, occurred_at,
+                     quantity, currency_code, gross_amount, discount_amount, net_amount)
+                SELECT md5('availability-capacity/retained/' || n)::uuid,
+                       md5('performance-v1/org')::uuid,
+                       md5('availability-capacity/provenance/' || n)::uuid,
+                       md5('performance-v1/variant/' || n)::uuid,
+                       md5('performance-v1/store/' || CASE WHEN n <= 4000 THEN 1
+                           WHEN n <= 4750 THEN 2 ELSE 3 END)::uuid,
+                       'RETAINED', 30, 'availability-capacity-retained-' || n,
+                       'AVAIL-CAP-' || n, 'LINE-1', 'retained',
+                       now() - interval '1 day', 50, 'RUB', 5000, 0, 5000
+                  FROM generate_series(1, 5000) n
+                """).update();
+        jdbc.sql("""
+                INSERT INTO ledger.return_quality_evidence_snapshot
+                    (id, organization_id, platform_listing_variant_id,
+                     report_window_start, report_window_end, completed_coverage,
+                     retained_coverage, return_coverage, qc_coverage,
+                     completed_source_updated_at, retained_source_updated_at,
+                     return_source_updated_at, qc_source_updated_at,
+                     evidence_reference, accepted_at, correlation_id)
+                SELECT md5('availability-capacity/return-report/' || n)::uuid,
+                       md5('performance-v1/org')::uuid,
+                       md5('performance-v1/variant/' || n)::uuid,
+                       now() - interval '31 days', now() + interval '1 hour',
+                       'COMPLETE', 'COMPLETE', 'COMPLETE_ZERO', 'COMPLETE',
+                       now() - interval '1 minute', now() - interval '1 minute',
+                       now() - interval '1 minute', now() - interval '1 minute',
+                       'ev://availability-capacity/return-report/' || n,
+                       now(), 'availability-capacity-return-report-' || n
+                  FROM generate_series(1, 5000) n
+                """).update();
+        jdbc.sql("""
+                INSERT INTO ops.availability_recalculation_request
+                    (id, organization_id, product_variant_id, trigger_class,
+                     trigger_reference, fact_accepted_at, requested_at, state, correlation_id)
+                SELECT md5('availability-capacity/request/' || n)::uuid,
+                       md5('performance-v1/org')::uuid,
+                       md5('performance-v1/sku/' || n)::uuid,
+                       'STOCK_OR_SELLABILITY',
+                       md5('availability-capacity/provenance/' || n)::text,
+                       now(), now(), 'PENDING', 'availability-capacity-' || n
+                  FROM generate_series(1, 5000) n
+                """).update();
     }
 
     private static Path temporaryDirectory(String prefix) {

@@ -12,6 +12,8 @@ import com.mimococo.marketops.identityaccess.ResourceScopeType;
 import com.mimococo.marketops.identityaccess.internal.application.IdentityProviderService;
 import com.mimococo.marketops.identityaccess.internal.application.UserAdministrationService;
 import com.mimococo.marketops.identityaccess.internal.domain.UserScopeGrantRecord;
+import com.mimococo.marketops.operationsworkflow.AcceptedExceptionState;
+import com.mimococo.marketops.operationsworkflow.AvailabilityExceptionGovernance;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -86,12 +88,14 @@ class AvailabilityConsoleAuthorizationIT {
     @Autowired JdbcClient jdbc;
     @Autowired IdentityProviderService providers;
     @Autowired UserAdministrationService users;
+    @Autowired AvailabilityExceptionGovernance exceptionGovernance;
 
     private UUID providerId;
     private UUID userId;
     private UUID primaryVariantId;
     private UUID siblingVariantId;
     private String subject;
+    private String delegateSubject;
     private UserScopeGrantRecord viewGrant;
 
     @DynamicPropertySource
@@ -380,6 +384,111 @@ class AvailabilityConsoleAuthorizationIT {
                 .andExpect(jsonPath("$.versionNo").value(1));
     }
 
+    @Test
+    @Order(15)
+    @DisplayName("TC-CONSOLE-015 AC010 reads mutations and delegation are attributable")
+    void sensitiveRouteAuditAndBoundedDelegationAreExecutable() throws Exception {
+        delegateSubject = "availability-delegate-" + UUID.randomUUID();
+        UUID delegateId = users.provision(OPERATOR, ORGANIZATION, providerId,
+                delegateSubject, null, "Availability Delegate", null).id();
+        jdbc.sql("UPDATE iam.user_account SET credentials_valid_from = now() - interval '1 hour'"
+                        + " WHERE id = :id")
+                .param("id", delegateId).update();
+        users.assignRole(OPERATOR, delegateId, BusinessRoleCode.PRODUCT_PROCUREMENT, null);
+        users.grantScope(OPERATOR, delegateId, ActionScopeCode.AVAILABILITY_VIEW,
+                ResourceScopeType.ORGANIZATION, ORGANIZATION, null);
+
+        String reference = "delegation-" + UUID.randomUUID();
+        Instant effectiveFrom = Instant.now().minusSeconds(5);
+        Instant effectiveTo = Instant.now().plusSeconds(3600);
+        mvc.perform(post("/api/v1/console/availability/exception-delegations")
+                        .header(HttpHeaders.AUTHORIZATION, bearer())
+                        .header(HttpHeaders.ORIGIN, "http://127.0.0.1:5173")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"delegationReference":"%s","delegateUserId":"%s",
+                                 "delegatedRole":"RISK_AUTHORITY",
+                                 "effectiveFrom":"%s","effectiveTo":"%s",
+                                 "evidenceReference":"ev://owner/delegation"}
+                                """.formatted(reference, delegateId, effectiveFrom,
+                                effectiveTo)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.delegationReference").value(reference))
+                .andExpect(jsonPath("$.delegatedRole").value("RISK_AUTHORITY"));
+
+        UUID policyId = UUID.randomUUID();
+        update("""
+                INSERT INTO core.exception_materiality_policy
+                    (id, organization_id, currency_code, material_profit_at_risk,
+                     material_duration_days, repeat_occurrence_count, repeat_lookback_days,
+                     max_exception_days, owner_user_id, reason, evidence_reference,
+                     effective_from, status, policy_version, created_at)
+                VALUES (:id, :organizationId, 'RUB', 1000, 30, 3, 90, 365,
+                        :ownerId, 'delegation test policy', 'ev://owner/materiality',
+                        now() - interval '1 day', 'ACTIVE', 1, now())
+                """, "id", policyId, "organizationId", ORGANIZATION, "ownerId", userId);
+        UUID exceptionId = UUID.randomUUID();
+        update("""
+                INSERT INTO ops.availability_accepted_exception
+                    (id, organization_id, case_id, child_id, cause_code, scope_kind,
+                     scope_reference, reason_code, rationale, expected_consequence,
+                     evidence_reference, requested_by_user_id, requested_at,
+                     decision_owner_role_code, required_authority_level, state,
+                     effective_from, expires_at, review_at, materiality_policy_id,
+                     policy_version, occurrence_count, created_at, updated_at)
+                SELECT :exceptionId, governed.organization_id, governed.id, governed.child_id,
+                       governed.cause_code, 'CHILD', governed.child_id::text,
+                       'SEASONAL_PAUSE', 'bounded delegated approval',
+                       'temporary unmet demand', 'ev://commercial/delegated', :ownerId, now(),
+                       'RISK_AUTHORITY', 'RISK_AUTHORITY', 'REQUESTED', now(),
+                       now() + interval '7 days', now() + interval '3 days', :policyId, 1, 1,
+                       now(), now()
+                  FROM ops.availability_case governed WHERE governed.id = :caseId
+                """, "exceptionId", exceptionId, "ownerId", userId, "policyId", policyId,
+                "caseId", SIBLING_CASE_ID);
+
+        mvc.perform(post("/api/v1/console/availability/exceptions/" + exceptionId
+                        + "/decision")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(delegateSubject))
+                        .header(HttpHeaders.ORIGIN, "http://127.0.0.1:5173")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"approved":true,"delegationReference":"%s",
+                                 "reason":"delegated review of exact exposure"}
+                                """.formatted(reference)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.state").value("ACTIVE"));
+
+        mvc.perform(post("/api/v1/console/availability/exception-delegations/"
+                        + reference + "/revocation")
+                        .header(HttpHeaders.AUTHORIZATION, bearer())
+                        .header(HttpHeaders.ORIGIN, "http://127.0.0.1:5173")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"reason\":\"delegated review completed\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.revocationReason").value("delegated review completed"));
+
+        var invalidated = exceptionGovernance.revalidateActive(ORGANIZATION, Instant.now())
+                .stream().filter(view -> view.id().equals(exceptionId)).findFirst().orElseThrow();
+        assertThat(invalidated.state()).isEqualTo(AcceptedExceptionState.INVALIDATED);
+        assertThat(invalidated.invalidationReason()).startsWith("AUTHORITY_LOST:");
+        assertThat(jdbc.sql("SELECT state FROM ops.availability_case WHERE id = :id")
+                .param("id", SIBLING_CASE_ID).query(String.class).single())
+                .isEqualTo("ESCALATED");
+
+        assertThat(auditCount("READ", "availability_case_queue")).isPositive();
+        assertThat(auditCount("READ", "availability_case_journal")).isPositive();
+        assertThat(auditCount("STATUS_CHANGE", "availability_case")).isPositive();
+        assertThat(auditCount("GRANT", "availability_exception_delegation")).isEqualTo(1);
+        assertThat(auditCount("REVOKE", "availability_exception_delegation")).isEqualTo(1);
+        assertThat(jdbc.sql("""
+                        SELECT count(*) FROM ops.availability_exception_decision
+                         WHERE exception_id = :id AND delegation_reference = :reference
+                           AND decided_by_user_id = :delegateId
+                        """).param("id", exceptionId).param("reference", reference)
+                .param("delegateId", delegateId).query(Integer.class).single()).isEqualTo(1);
+    }
+
     /**
      * One organization with a card, a company child and a live case.
      *
@@ -548,6 +657,14 @@ class AvailabilityConsoleAuthorizationIT {
         call.update();
     }
 
+    private int auditCount(String action, String entityType) {
+        return jdbc.sql("""
+                        SELECT count(*) FROM ops.metadata_audit_event
+                         WHERE action = :action AND entity_type = :entityType
+                        """).param("action", action).param("entityType", entityType)
+                .query(Integer.class).single();
+    }
+
     private static String actionBody() {
         return """
                 {"actionKind":"INBOUND_EVIDENCE_BOUND",
@@ -571,14 +688,22 @@ class AvailabilityConsoleAuthorizationIT {
         return "Bearer " + sign(claims());
     }
 
+    private String bearer(String tokenSubject) throws JOSEException {
+        return "Bearer " + sign(claims(tokenSubject));
+    }
+
     private JWTClaimsSet.Builder claims() {
+        return claims(subject);
+    }
+
+    private JWTClaimsSet.Builder claims(String tokenSubject) {
         Instant now = Instant.now();
-        return new JWTClaimsSet.Builder().issuer(ISSUER).subject(subject).audience(AUDIENCE)
+        return new JWTClaimsSet.Builder().issuer(ISSUER).subject(tokenSubject).audience(AUDIENCE)
                 .issueTime(Date.from(now.minusSeconds(2)))
                 .expirationTime(Date.from(now.plusSeconds(600)))
                 .claim("auth_time", now.minusSeconds(5).getEpochSecond())
                 .claim("amr", List.of("pwd", "mfa"))
-                .claim("sid", "availability-session-" + subject);
+                .claim("sid", "availability-session-" + tokenSubject);
     }
 
     private static String sign(JWTClaimsSet.Builder claims) throws JOSEException {

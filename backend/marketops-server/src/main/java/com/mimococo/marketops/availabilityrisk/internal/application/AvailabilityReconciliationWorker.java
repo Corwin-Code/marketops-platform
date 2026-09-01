@@ -3,6 +3,7 @@ package com.mimococo.marketops.availabilityrisk.internal.application;
 import com.mimococo.marketops.availabilityrisk.AvailabilityLane;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityRecalculationRepository;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.InboundAttestationRepository;
+import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityTraceRepository;
 import com.mimococo.marketops.operationsworkflow.AvailabilityExceptionGovernance;
 import com.mimococo.marketops.shared.IdGenerator;
 import java.time.Clock;
@@ -51,18 +52,21 @@ public class AvailabilityReconciliationWorker {
     private final InboundAttestationRepository inbound;
     private final IdGenerator ids;
     private final Clock clock;
+    private final AvailabilityTraceRepository trace;
 
     public AvailabilityReconciliationWorker(AvailabilityRecalculationRepository queue,
                                             AvailabilityRiskRefreshService refresh,
                                             AvailabilityExceptionGovernance exceptions,
                                             InboundAttestationRepository inbound,
-                                            IdGenerator ids, Clock clock) {
+                                            IdGenerator ids, Clock clock,
+                                            AvailabilityTraceRepository trace) {
         this.queue = queue;
         this.refresh = refresh;
         this.exceptions = exceptions;
         this.inbound = inbound;
         this.ids = ids;
         this.clock = clock;
+        this.trace = trace;
     }
 
     /**
@@ -88,6 +92,13 @@ public class AvailabilityReconciliationWorker {
                     organizationId);
             return java.util.Optional.empty();
         }
+        trace.record(organizationId, null, "RECONCILIATION", "SWEEP_STARTED", "STARTED",
+                correlationId, null, runId.toString(), "{}", asOf);
+        var backlog = queue.backlog(organizationId, asOf);
+        trace.record(organizationId, null, "OPERATIONS", "BACKLOG_SNAPSHOT", "OBSERVED",
+                correlationId, null, runId.toString(),
+                "{\"pending\":" + backlog.pending() + ",\"oldestSeconds\":"
+                        + backlog.oldestAge().toSeconds() + "}", asOf);
 
         int changed = 0;
         int failures = 0;
@@ -104,7 +115,7 @@ public class AvailabilityReconciliationWorker {
                 visited.add(variantId);
                 after = variantId;
                 try {
-                    if (visit(organizationId, variantId, asOf, runId)) {
+                    if (visit(organizationId, variantId, asOf, runId, correlationId)) {
                         changed++;
                     }
                     successful.add(variantId);
@@ -121,11 +132,19 @@ public class AvailabilityReconciliationWorker {
         int repaired = queue.repairCoveredRequests(organizationId, successful, completedAt);
         int expiredExceptions = exceptions.expireDue(organizationId, completedAt).size();
         exceptions.revalidateActive(organizationId, completedAt);
+        trace.record(organizationId, null, "OPERATIONS",
+                "EXCEPTION_EXPIRY_REVALIDATION", "COMPLETED", correlationId, null,
+                runId.toString(), "{\"expired\":" + expiredExceptions + "}", completedAt);
         int lapsedInbound = inbound.countLapsed(organizationId, asOf);
         String state = failures == 0 ? "COMPLETED" : "FAILED";
         queue.finishRun(new AvailabilityRecalculationRepository.RunOutcome(runId, state,
                 visited.size(), changed, repaired, failures, lapsedInbound, expiredExceptions,
                 failures == 0 ? null : "VARIANT_REFRESH_FAILED", completedAt));
+        trace.record(organizationId, null, "RECONCILIATION",
+                failures == 0 ? "SWEEP_COMPLETED" : "SWEEP_FAILED",
+                failures == 0 ? "COMPLETED" : "FAILED", correlationId, null,
+                runId.toString(), "{\"variants\":" + visited.size()
+                        + ",\"failures\":" + failures + "}", completedAt);
         return java.util.Optional.of(new SweepResult(runId, failures == 0, visited.size(), changed,
                 repaired, lapsedInbound, expiredExceptions, failures));
     }
@@ -139,10 +158,12 @@ public class AvailabilityReconciliationWorker {
      *
      * @return whether the card's lane moved
      */
-    private boolean visit(UUID organizationId, UUID variantId, Instant asOf, UUID runId) {
+    private boolean visit(UUID organizationId, UUID variantId, Instant asOf, UUID runId,
+                          String parentCorrelationId) {
         AvailabilityLane before = lane(organizationId, variantId);
         AvailabilityRiskRefreshService.RefreshOutcome outcome = refresh.refresh(organizationId,
-                variantId, asOf, AvailabilityRiskRefreshService.RECONCILIATION, runId);
+                variantId, asOf, AvailabilityRiskRefreshService.RECONCILIATION, runId,
+                parentCorrelationId);
         return before != outcome.written().lane();
     }
 

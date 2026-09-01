@@ -2,6 +2,7 @@ package com.mimococo.marketops.availabilityrisk.internal.application;
 
 import com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilitySlo;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityRecalculationRepository;
+import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityTraceRepository;
 import com.mimococo.marketops.shared.IdGenerator;
 import java.time.Clock;
 import java.time.Duration;
@@ -44,14 +45,17 @@ public class AvailabilityTargetedWorker {
     private final AvailabilityRiskRefreshService refresh;
     private final IdGenerator ids;
     private final Clock clock;
+    private final AvailabilityTraceRepository trace;
 
     public AvailabilityTargetedWorker(AvailabilityRecalculationRepository queue,
                                       AvailabilityRiskRefreshService refresh,
-                                      IdGenerator ids, Clock clock) {
+                                      IdGenerator ids, Clock clock,
+                                      AvailabilityTraceRepository trace) {
         this.queue = queue;
         this.refresh = refresh;
         this.ids = ids;
         this.clock = clock;
+        this.trace = trace;
     }
 
     /**
@@ -85,13 +89,20 @@ public class AvailabilityTargetedWorker {
      */
     boolean process(AvailabilityRecalculationRepository.ClaimedRequest request) {
         Instant startedAt = clock.instant();
+        trace.record(request.organizationId(), request.productVariantId(),
+                AvailabilityRiskRefreshService.TARGETED, "TARGETED_PROCESS_STARTED", "STARTED",
+                request.correlationId(), null, request.id().toString(), "{}", startedAt);
         try {
             AvailabilityRiskRefreshService.RefreshOutcome outcome = refresh.refresh(
                     request.organizationId(), request.productVariantId(), startedAt,
-                    AvailabilityRiskRefreshService.TARGETED, null);
+                    AvailabilityRiskRefreshService.TARGETED, null, request.correlationId());
             Instant finishedAt = clock.instant();
             queue.finish(request.id(), "COMPLETED", null, finishedAt);
             recordLatency(request, outcome, finishedAt);
+            trace.record(request.organizationId(), request.productVariantId(),
+                    AvailabilityRiskRefreshService.TARGETED, "SLO_RECORDED", "COMPLETED",
+                    outcome.correlationId(), request.correlationId(), request.id().toString(),
+                    "{}", finishedAt);
             return true;
         } catch (RuntimeException failure) {
             // The reason is logged rather than stored: a failure code is a
@@ -101,6 +112,10 @@ public class AvailabilityTargetedWorker {
             queue.finish(request.id(),
                     request.attemptCount() >= MAX_ATTEMPTS ? "ABANDONED" : "FAILED",
                     "RECALCULATION_FAILED", clock.instant());
+            trace.record(request.organizationId(), request.productVariantId(),
+                    AvailabilityRiskRefreshService.TARGETED, "SLO_RECORDED", "FAILED",
+                    request.correlationId(), null, request.id().toString(), "{}",
+                    clock.instant());
             return false;
         }
     }

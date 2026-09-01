@@ -1,5 +1,9 @@
 package com.mimococo.marketops.availabilityrisk.internal.web;
 
+import com.mimococo.marketops.adminobservability.audit.AuditAction;
+import com.mimococo.marketops.adminobservability.audit.AuditSourceDomain;
+import com.mimococo.marketops.adminobservability.audit.MetadataAuditChange;
+import com.mimococo.marketops.adminobservability.audit.MetadataAuditRecorder;
 import com.mimococo.marketops.availabilityrisk.AvailabilityCardView;
 import com.mimococo.marketops.availabilityrisk.AvailabilityRiskQuery;
 import com.mimococo.marketops.identityaccess.ActionScopeCode;
@@ -10,7 +14,9 @@ import com.mimococo.marketops.shared.ConsoleApi;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.OperationRejectedException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,11 +39,14 @@ class AvailabilityQueueConsoleController {
 
     private final AvailabilityRiskQuery risks;
     private final BusinessAuthorization authorization;
+    private final MetadataAuditRecorder audit;
 
     AvailabilityQueueConsoleController(AvailabilityRiskQuery risks,
-                                       BusinessAuthorization authorization) {
+                                       BusinessAuthorization authorization,
+                                       MetadataAuditRecorder audit) {
         this.risks = risks;
         this.authorization = authorization;
+        this.audit = audit;
     }
 
     /**
@@ -48,6 +57,7 @@ class AvailabilityQueueConsoleController {
      * sorted differently.
      */
     @GetMapping("/queue")
+    @Transactional
     List<AvailabilityCardView> queue(AuthenticatedActor actor,
                                      @RequestParam(required = false) String lane,
                                      @RequestParam(defaultValue = "50") int limit,
@@ -56,11 +66,15 @@ class AvailabilityQueueConsoleController {
                 authorization.permittedStoreIds(actor, ActionScopeCode.AVAILABILITY_VIEW);
         List<UUID> products = authorization.permittedProductVariantIds(
                 actor, ActionScopeCode.AVAILABILITY_VIEW);
-        return risks.queue(actor.organizationId(), stores, products, lane, limit, offset);
+        List<AvailabilityCardView> result =
+                risks.queue(actor.organizationId(), stores, products, lane, limit, offset);
+        auditRead(actor, "availability_queue", actor.organizationId(), "queue");
+        return result;
     }
 
     /** One grouped card with every child, factor and window behind it. */
     @GetMapping("/cards/{productVariantId}")
+    @Transactional
     AvailabilityCardView card(AuthenticatedActor actor, @PathVariable UUID productVariantId) {
         authorization.require(actor, ActionScopeCode.AVAILABILITY_VIEW,
                 ResourceScope.productVariant(productVariantId));
@@ -68,7 +82,17 @@ class AvailabilityQueueConsoleController {
                 actor, ActionScopeCode.AVAILABILITY_VIEW);
         List<UUID> products = authorization.permittedProductVariantIds(
                 actor, ActionScopeCode.AVAILABILITY_VIEW);
-        return risks.card(actor.organizationId(), productVariantId, stores, products)
+        AvailabilityCardView result = risks.card(
+                        actor.organizationId(), productVariantId, stores, products)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        auditRead(actor, "availability_card", productVariantId, "card");
+        return result;
+    }
+
+    private void auditRead(AuthenticatedActor actor, String entityType,
+                           UUID entityId, String reason) {
+        audit.recordChange(new MetadataAuditChange(AuditSourceDomain.AVAILABILITY_RISK,
+                actor.userId().toString(), AuditAction.READ, entityType, entityId, null,
+                Map.of(), reason, null));
     }
 }

@@ -71,16 +71,20 @@ are:
   `S2-AC-*` criteria with a per-criterion verification or gap;
 - [`executable-evidence.md`](SLICE-V1-002/executable-evidence.md) — the exact
   commands run and the results observed;
+- [`V0034-root-cause-rework-evidence.md`](SLICE-V1-002/V0034-root-cause-rework-evidence.md)
+  and [`r1-finding-closure.json`](SLICE-V1-002/r1-finding-closure.json) — the
+  human- and machine-readable 18/18 frozen-finding disposition;
+- [`r1-final-handoff.md`](SLICE-V1-002/r1-final-handoff.md) — the bounded Codex
+  to Controller handoff and authority boundary;
 - [`deferred-release-register.json`](SLICE-V1-002/deferred-release-register.json)
   — the ten `S2-REL-*` obligations, each production-blocking.
 
-No Controller verdict, Owner closure, remote publication or merge is claimed.
-The Slice has no controlled write target, no provider call exists in its
-execution path, and `production_write_enabled` remains `false`.
+Draft PR #26 is the authorized remote publication. No Controller verdict,
+Owner closure or merge is claimed. The Slice has no controlled write target,
+no provider call exists in its execution path, and
+`production_write_enabled` remains `false`.
 
-The acceptance status is deliberately not uniform. A criterion is verified only
-where a named, currently passing test asserts it, so the rows that remain
-partial name what is missing — load evidence at the declared acceptance
-capacity, automatic detection of governance drift on an active acceptance, and
-the product surface outside this Slice's availability question — rather than
-describing code that exists.
+The acceptance status is deliberately evidence-bound. A criterion is verified
+only where a named, currently passing test asserts it: 99 are
+`EXECUTABLY_VERIFIED`, while `S2-AC-100` remains reserved exclusively for
+independent Controller Final Closure.

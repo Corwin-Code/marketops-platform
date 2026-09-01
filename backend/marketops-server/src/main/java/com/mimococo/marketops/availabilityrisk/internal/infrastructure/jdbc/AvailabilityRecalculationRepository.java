@@ -103,9 +103,9 @@ public class AvailabilityRecalculationRepository {
      * one the response obligation is judged against; a later fact must not be
      * able to restart a clock that has been running.
      *
-     * @return whether this fact created or moved pending work
+     * @return whether this fact created, coalesced into, or was suppressed by work
      */
-    public boolean enqueue(NewRequest request) {
+    public EnqueueOutcome enqueue(NewRequest request) {
         int coalesced = jdbc.sql("""
                         UPDATE ops.availability_recalculation_request
                            SET fact_accepted_at = LEAST(fact_accepted_at, :factAcceptedAt),
@@ -119,12 +119,12 @@ public class AvailabilityRecalculationRepository {
                 .param("factAcceptedAt", Timestamp.from(request.factAcceptedAt()))
                 .update();
         if (coalesced > 0) {
-            return true;
+            return EnqueueOutcome.COALESCED;
         }
         // Nothing pending. Insert unless this variant has already been
         // recalculated for a fact at least as recent, which is what makes
         // re-reading the feed boundary a no-op instead of a loop.
-        return jdbc.sql("""
+        boolean inserted = jdbc.sql("""
                         INSERT INTO ops.availability_recalculation_request
                             (id, organization_id, product_variant_id, trigger_class,
                              trigger_reference, fact_accepted_at, requested_at, state,
@@ -147,6 +147,7 @@ public class AvailabilityRecalculationRepository {
                 .param("requestedAt", Timestamp.from(request.requestedAt()))
                 .param("correlationId", request.correlationId())
                 .update() > 0;
+        return inserted ? EnqueueOutcome.CREATED : EnqueueOutcome.SUPPRESSED;
     }
 
     /**
@@ -334,6 +335,24 @@ public class AvailabilityRecalculationRepository {
                 .query((rows, rowNumber) -> rows.getTimestamp("completed_at"))
                 .optional()
                 .map(timestamp -> timestamp == null ? null : timestamp.toInstant());
+    }
+
+    /** The newest sweep attempt, whether it completed or failed. */
+    public Optional<LatestRun> latestRun(UUID organizationId) {
+        return jdbc.sql("""
+                        SELECT id, state, failed_variant_count, failure_code, completed_at
+                          FROM ops.availability_reconciliation_run
+                         WHERE organization_id = :organizationId
+                         ORDER BY started_at DESC, id DESC
+                         LIMIT 1
+                        """)
+                .param("organizationId", organizationId)
+                .query((rows, number) -> new LatestRun(
+                        rows.getObject("id", UUID.class), rows.getString("state"),
+                        rows.getInt("failed_variant_count"), rows.getString("failure_code"),
+                        rows.getTimestamp("completed_at") == null ? null
+                                : rows.getTimestamp("completed_at").toInstant()))
+                .optional();
     }
 
     /** Whether a sweep of this organization is already in flight. */
@@ -564,6 +583,18 @@ public class AvailabilityRecalculationRepository {
      * @param oldestAge how long the oldest has been waiting since its fact
      */
     public record Backlog(int pending, java.time.Duration oldestAge) {
+    }
+
+    /** Exact outcome of folding a fact into the per-variant queue. */
+    public enum EnqueueOutcome {
+        CREATED,
+        COALESCED,
+        SUPPRESSED
+    }
+
+    /** Newest reconciliation attempt and its explicit outcome. */
+    public record LatestRun(UUID id, String state, int failedVariantCount,
+                            String failureCode, Instant completedAt) {
     }
 
     /**

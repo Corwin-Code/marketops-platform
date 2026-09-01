@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import com.mimococo.marketops.availabilityrisk.AvailabilityLane;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityRecalculationRepository;
+import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityTraceRepository;
 import com.mimococo.marketops.shared.IdGenerator;
 import java.time.Clock;
 import java.time.Duration;
@@ -35,13 +36,14 @@ class AvailabilityTargetedWorkerCapacityTest {
     @Mock AvailabilityRecalculationRepository queue;
     @Mock AvailabilityRiskRefreshService refresh;
     @Mock IdGenerator ids;
+    @Mock AvailabilityTraceRepository trace;
 
     private AvailabilityTargetedWorker worker;
 
     @BeforeEach
     void setUp() {
         worker = new AvailabilityTargetedWorker(queue, refresh, ids,
-                Clock.fixed(NOW, ZoneOffset.UTC));
+                Clock.fixed(NOW, ZoneOffset.UTC), trace);
         when(ids.newId()).thenAnswer(invocation -> UUID.randomUUID());
     }
 
@@ -58,7 +60,7 @@ class AvailabilityTargetedWorkerCapacityTest {
         when(queue.claim(anyString(), eq(NOW.plus(Duration.ofMinutes(5))), eq(5_000), eq(NOW)))
                 .thenReturn(requests);
         when(refresh.refresh(eq(ORGANIZATION), org.mockito.ArgumentMatchers.any(), eq(NOW),
-                eq(AvailabilityRiskRefreshService.TARGETED), eq(null)))
+                eq(AvailabilityRiskRefreshService.TARGETED), eq(null), anyString()))
                 .thenReturn(new AvailabilityRiskRefreshService.RefreshOutcome(null,
                         new AvailabilityProjectionWriter.WrittenCard(
                                 UUID.randomUUID(), AvailabilityLane.CRITICAL, List.of()),

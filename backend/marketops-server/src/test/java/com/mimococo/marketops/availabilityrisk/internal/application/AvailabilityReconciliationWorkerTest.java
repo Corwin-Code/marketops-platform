@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.when;
 import com.mimococo.marketops.availabilityrisk.AvailabilityLane;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityRecalculationRepository;
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.InboundAttestationRepository;
+import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityTraceRepository;
 import com.mimococo.marketops.operationsworkflow.AvailabilityExceptionGovernance;
 import com.mimococo.marketops.shared.IdGenerator;
 import java.time.Clock;
@@ -42,17 +44,20 @@ class AvailabilityReconciliationWorkerTest {
     @Mock AvailabilityExceptionGovernance exceptions;
     @Mock InboundAttestationRepository inbound;
     @Mock IdGenerator ids;
+    @Mock AvailabilityTraceRepository trace;
 
     private AvailabilityReconciliationWorker worker;
 
     @BeforeEach
     void setUp() {
         worker = new AvailabilityReconciliationWorker(queue, refresh, exceptions, inbound, ids,
-                Clock.fixed(NOW, ZoneOffset.UTC));
+                Clock.fixed(NOW, ZoneOffset.UTC), trace);
         when(ids.newId()).thenReturn(RUN);
         when(exceptions.expireDue(ORGANIZATION, NOW)).thenReturn(List.of());
         when(exceptions.revalidateActive(ORGANIZATION, NOW)).thenReturn(List.of());
         when(queue.repairCoveredRequests(eq(ORGANIZATION), anyList(), eq(NOW))).thenReturn(0);
+        when(queue.backlog(ORGANIZATION, NOW))
+                .thenReturn(new AvailabilityRecalculationRepository.Backlog(0, Duration.ZERO));
     }
 
     @Test
@@ -65,10 +70,12 @@ class AvailabilityReconciliationWorkerTest {
         when(queue.variantsToReconcile(ORGANIZATION, NOW, healthy, 1_000))
                 .thenReturn(List.of());
         when(refresh.refresh(ORGANIZATION, failed, NOW,
-                AvailabilityRiskRefreshService.RECONCILIATION, RUN))
+                AvailabilityRiskRefreshService.RECONCILIATION, RUN,
+                "availability-sweep:" + RUN))
                 .thenThrow(new IllegalStateException("synthetic item failure"));
         when(refresh.refresh(ORGANIZATION, healthy, NOW,
-                AvailabilityRiskRefreshService.RECONCILIATION, RUN))
+                AvailabilityRiskRefreshService.RECONCILIATION, RUN,
+                "availability-sweep:" + RUN))
                 .thenReturn(outcome(AvailabilityLane.HEALTHY));
 
         var result = worker.sweep(ORGANIZATION, "SCHEDULED").orElseThrow();
@@ -97,7 +104,7 @@ class AvailabilityReconciliationWorkerTest {
                 .thenReturn(List.of(last));
         when(queue.variantsToReconcile(ORGANIZATION, NOW, last, 1_000)).thenReturn(List.of());
         when(refresh.refresh(eq(ORGANIZATION), any(), eq(NOW),
-                eq(AvailabilityRiskRefreshService.RECONCILIATION), eq(RUN)))
+                eq(AvailabilityRiskRefreshService.RECONCILIATION), eq(RUN), anyString()))
                 .thenReturn(outcome(AvailabilityLane.HEALTHY));
 
         var result = worker.sweep(ORGANIZATION, "SCHEDULED").orElseThrow();
@@ -123,7 +130,7 @@ class AvailabilityReconciliationWorkerTest {
         when(queue.variantsToReconcile(ORGANIZATION, NOW, portfolio.getLast(), 1_000))
                 .thenReturn(List.of());
         when(refresh.refresh(eq(ORGANIZATION), any(), eq(NOW),
-                eq(AvailabilityRiskRefreshService.RECONCILIATION), eq(RUN)))
+                eq(AvailabilityRiskRefreshService.RECONCILIATION), eq(RUN), anyString()))
                 .thenReturn(outcome(AvailabilityLane.HEALTHY));
 
         AvailabilityReconciliationWorker.SweepResult result = assertTimeout(

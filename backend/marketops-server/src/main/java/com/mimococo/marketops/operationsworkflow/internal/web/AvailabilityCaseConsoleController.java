@@ -1,5 +1,9 @@
 package com.mimococo.marketops.operationsworkflow.internal.web;
 
+import com.mimococo.marketops.adminobservability.audit.AuditAction;
+import com.mimococo.marketops.adminobservability.audit.AuditSourceDomain;
+import com.mimococo.marketops.adminobservability.audit.MetadataAuditChange;
+import com.mimococo.marketops.adminobservability.audit.MetadataAuditRecorder;
 import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
@@ -7,6 +11,7 @@ import com.mimococo.marketops.identityaccess.BusinessRoleCode;
 import com.mimococo.marketops.identityaccess.ResourceScope;
 import com.mimococo.marketops.identityaccess.OwnedResource;
 import com.mimococo.marketops.operationsworkflow.AcceptedExceptionView;
+import com.mimococo.marketops.operationsworkflow.AvailabilityExceptionDelegationView;
 import com.mimococo.marketops.operationsworkflow.AvailabilityCaseIntake;
 import com.mimococo.marketops.operationsworkflow.AvailabilityCaseView;
 import com.mimococo.marketops.operationsworkflow.AvailabilityExceptionGovernance;
@@ -24,8 +29,10 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,22 +63,26 @@ class AvailabilityCaseConsoleController {
     private final AvailabilityExceptionGovernance exceptions;
     private final AvailabilityCaseRepository caseReads;
     private final BusinessAuthorization authorization;
+    private final MetadataAuditRecorder audit;
     private final Clock clock;
 
     AvailabilityCaseConsoleController(AvailabilityCaseIntake cases,
                                       AvailabilityExceptionGovernance exceptions,
                                       AvailabilityCaseRepository caseReads,
                                       BusinessAuthorization authorization,
+                                      MetadataAuditRecorder audit,
                                       Clock clock) {
         this.cases = cases;
         this.exceptions = exceptions;
         this.caseReads = caseReads;
         this.authorization = authorization;
+        this.audit = audit;
         this.clock = clock;
     }
 
     /** The organization's open availability work, most urgent first. */
     @GetMapping(value = "/cases", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     List<AvailabilityCaseView> queue(AuthenticatedActor actor,
                                      @RequestParam(required = false) UUID assigneeUserId,
                                      @RequestParam(defaultValue = "true") boolean liveOnly,
@@ -83,15 +94,21 @@ class AvailabilityCaseConsoleController {
         if (stores.isEmpty() && products.isEmpty()) {
             throw OperationRejectedException.of(ErrorCode.RESOURCE_SCOPE_DENIED);
         }
-        return caseReads.queue(actor.organizationId(), liveOnly, assigneeUserId,
+        List<AvailabilityCaseView> result = caseReads.queue(
+                actor.organizationId(), liveOnly, assigneeUserId,
                 stores.toArray(UUID[]::new), products.toArray(UUID[]::new),
                 Math.clamp(limit, 1, 200));
+        auditRead(actor, "availability_case_queue", actor.organizationId(), "case_queue");
+        return result;
     }
 
     /** One case as it stands. */
     @GetMapping(value = "/cases/{caseId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     AvailabilityCaseView one(AuthenticatedActor actor, @PathVariable UUID caseId) {
-        return readable(actor, caseId);
+        AvailabilityCaseView result = readable(actor, caseId);
+        auditRead(actor, "availability_case", caseId, "case");
+        return result;
     }
 
     /**
@@ -102,10 +119,13 @@ class AvailabilityCaseConsoleController {
      * that showed only the current state could not answer it.
      */
     @GetMapping(value = "/cases/{caseId}/journal", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     List<AvailabilityCaseRepository.CaseJournalEntry> journal(AuthenticatedActor actor,
                                                               @PathVariable UUID caseId) {
         readable(actor, caseId);
-        return caseReads.journal(caseId);
+        List<AvailabilityCaseRepository.CaseJournalEntry> result = caseReads.journal(caseId);
+        auditRead(actor, "availability_case_journal", caseId, "case_journal");
+        return result;
     }
 
     /**
@@ -133,10 +153,13 @@ class AvailabilityCaseConsoleController {
 
     /** Every acceptance ever recorded against one case. */
     @GetMapping(value = "/cases/{caseId}/exceptions", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     List<AcceptedExceptionView> exceptionsOf(AuthenticatedActor actor,
                                              @PathVariable UUID caseId) {
         readable(actor, caseId);
-        return exceptions.forCase(caseId);
+        List<AcceptedExceptionView> result = exceptions.forCase(caseId);
+        auditRead(actor, "availability_case_exception", caseId, "case_exceptions");
+        return result;
     }
 
     /** Ask the business to accept a calculated risk for a bounded period. */
@@ -169,12 +192,56 @@ class AvailabilityCaseConsoleController {
     AcceptedExceptionView decideException(AuthenticatedActor actor,
                                           @PathVariable UUID exceptionId,
                                           @Valid @RequestBody DecisionRequestBody request) {
-        authorization.requireOwned(actor, ActionScopeCode.AVAILABILITY_EXCEPTION_APPROVE,
-                new OwnedResource(OwnedResource.Kind.AVAILABILITY_EXCEPTION, exceptionId));
+        Instant at = clock.instant();
+        if (request.delegationReference() == null
+                || request.delegationReference().isBlank()) {
+            authorization.requireOwned(actor, ActionScopeCode.AVAILABILITY_EXCEPTION_APPROVE,
+                    new OwnedResource(OwnedResource.Kind.AVAILABILITY_EXCEPTION, exceptionId));
+        } else {
+            authorization.requireOwned(actor, ActionScopeCode.AVAILABILITY_VIEW,
+                    new OwnedResource(OwnedResource.Kind.AVAILABILITY_EXCEPTION, exceptionId));
+            if (!actor.stepUpSatisfiedAt(at)) {
+                throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
+            }
+        }
         return exceptions.decide(new AvailabilityExceptionGovernance.ExceptionDecision(
-                exceptionId, request.approved(), actor.userId(), decidingRole(actor),
-                request.delegationReference(), actor.authenticatedAt(), true, request.reason(),
-                "exception-decision-" + exceptionId, clock.instant()));
+                exceptionId, request.approved(), actor.userId(),
+                request.delegationReference() == null || request.delegationReference().isBlank()
+                        ? decidingRole(actor) : null,
+                request.delegationReference(), actor.authenticatedAt(),
+                actor.stepUpSatisfiedAt(at), request.reason(),
+                "exception-decision-" + exceptionId, at));
+    }
+
+    /** Grant one named person bounded accepted-risk decision authority. */
+    @PostMapping(value = "/exception-delegations", produces = MediaType.APPLICATION_JSON_VALUE)
+    AvailabilityExceptionDelegationView grantDelegation(
+            AuthenticatedActor actor, @Valid @RequestBody DelegationGrantBody request) {
+        authorization.require(actor, ActionScopeCode.AVAILABILITY_EXCEPTION_APPROVE,
+                ResourceScope.organization(actor.organizationId()));
+        Instant at = clock.instant();
+        return exceptions.grantDelegation(
+                new AvailabilityExceptionGovernance.ExceptionDelegationGrant(
+                        actor.organizationId(), request.delegationReference(),
+                        request.delegateUserId(), request.delegatedRole(), actor.userId(),
+                        decidingRole(actor), request.effectiveFrom(), request.effectiveTo(),
+                        request.evidenceReference(),
+                        "exception-delegation-grant-" + request.delegationReference(), at));
+    }
+
+    /** Revoke one exact delegation without rewriting its grant history. */
+    @PostMapping(value = "/exception-delegations/{reference}/revocation",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    AvailabilityExceptionDelegationView revokeDelegation(
+            AuthenticatedActor actor, @PathVariable String reference,
+            @Valid @RequestBody DelegationRevocationBody request) {
+        authorization.require(actor, ActionScopeCode.AVAILABILITY_EXCEPTION_APPROVE,
+                ResourceScope.organization(actor.organizationId()));
+        return exceptions.revokeDelegation(
+                new AvailabilityExceptionGovernance.ExceptionDelegationRevocation(
+                        actor.organizationId(), reference, actor.userId(), decidingRole(actor),
+                        request.reason(), "exception-delegation-revoke-" + reference,
+                        clock.instant()));
     }
 
     /**
@@ -267,6 +334,13 @@ class AvailabilityCaseConsoleController {
         return governed;
     }
 
+    private void auditRead(AuthenticatedActor actor, String entityType,
+                           UUID entityId, String reason) {
+        audit.recordChange(new MetadataAuditChange(AuditSourceDomain.OPERATIONS_WORKFLOW,
+                actor.userId().toString(), AuditAction.READ, entityType, entityId, null,
+                Map.of(), reason, null));
+    }
+
     record ActionRequest(@NotNull CaseActionKind actionKind,
                          @NotBlank String evidenceReference,
                          @NotBlank String reason) {
@@ -290,5 +364,16 @@ class AvailabilityCaseConsoleController {
 
     record DecisionRequestBody(boolean approved, String delegationReference,
                                @NotBlank String reason) {
+    }
+
+    record DelegationGrantBody(@NotBlank String delegationReference,
+                               @NotNull UUID delegateUserId,
+                               @NotNull BusinessRoleCode delegatedRole,
+                               @NotNull Instant effectiveFrom,
+                               @NotNull Instant effectiveTo,
+                               @NotBlank String evidenceReference) {
+    }
+
+    record DelegationRevocationBody(@NotBlank String reason) {
     }
 }

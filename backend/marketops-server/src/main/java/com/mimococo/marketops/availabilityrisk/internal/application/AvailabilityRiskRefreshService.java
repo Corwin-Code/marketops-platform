@@ -2,6 +2,7 @@ package com.mimococo.marketops.availabilityrisk.internal.application;
 
 import com.mimococo.marketops.operationsworkflow.AvailabilityCaseView;
 import com.mimococo.marketops.shared.IdGenerator;
+import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityTraceRepository;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -36,17 +37,19 @@ public class AvailabilityRiskRefreshService {
     private final AvailabilityCaseActivationService activation;
     private final AvailabilityOutcomeVerificationService verification;
     private final IdGenerator ids;
+    private final AvailabilityTraceRepository trace;
 
     public AvailabilityRiskRefreshService(AvailabilityRiskCalculationService calculation,
                                           AvailabilityProjectionWriter writer,
                                           AvailabilityCaseActivationService activation,
                                           AvailabilityOutcomeVerificationService verification,
-                                          IdGenerator ids) {
+                                          IdGenerator ids, AvailabilityTraceRepository trace) {
         this.calculation = calculation;
         this.writer = writer;
         this.activation = activation;
         this.verification = verification;
         this.ids = ids;
+        this.trace = trace;
     }
 
     /**
@@ -62,24 +65,50 @@ public class AvailabilityRiskRefreshService {
     @Transactional
     public RefreshOutcome refresh(UUID organizationId, UUID productVariantId, Instant asOf,
                                   String calculationKind, UUID reconciliationRunId) {
+        return refresh(organizationId, productVariantId, asOf, calculationKind,
+                reconciliationRunId, null);
+    }
+
+    /** Same path with the queue/scan/sweep correlation that caused it. */
+    @Transactional
+    public RefreshOutcome refresh(UUID organizationId, UUID productVariantId, Instant asOf,
+                                  String calculationKind, UUID reconciliationRunId,
+                                  String parentCorrelationId) {
+        String correlationId = calculationKind + ':'
+                + (reconciliationRunId == null
+                ? ids.newId() : reconciliationRunId + ":" + productVariantId);
+        trace.record(organizationId, productVariantId, calculationKind,
+                "CALCULATION_STARTED", "STARTED", correlationId, parentCorrelationId,
+                productVariantId.toString(), "{}", asOf);
         VariantRisk risk = calculation.calculate(organizationId, productVariantId, asOf);
+        trace.record(organizationId, productVariantId, calculationKind,
+                "EVIDENCE_AND_RISK_CALCULATED", "COMPLETED", correlationId,
+                parentCorrelationId, productVariantId.toString(), "{}", asOf);
         AvailabilityProjectionWriter.WrittenCard written =
                 writer.write(risk, calculationKind, reconciliationRunId);
+        trace.record(organizationId, productVariantId, calculationKind,
+                "PROJECTION_WRITTEN", "COMPLETED", correlationId, parentCorrelationId,
+                written.cardId().toString(), "{}", asOf);
 
         // The calculation run gets its own identity, distinct from any case's.
         // A case that carried a run identity would appear to be a different
         // case on every recalculation, which is exactly the duplication the
         // cause key exists to prevent.
-        String correlationId = calculationKind + ':'
-                + (reconciliationRunId == null ? ids.newId() : reconciliationRunId);
         AvailabilityCaseActivationService.ActivationResult raised =
                 activation.activate(risk, written, correlationId);
+        trace.record(organizationId, productVariantId, calculationKind,
+                "CASE_SYNCHRONIZED", "COMPLETED", correlationId, parentCorrelationId,
+                written.cardId().toString(), "{\"raised\":" + raised.raised().size()
+                        + ",\"refreshed\":" + raised.refreshed().size() + "}", asOf);
 
         // Verification runs after activation and on the same calculation, so a
         // case raised a moment ago and a case waiting on an outcome are both
         // answered by one reading of the evidence rather than by two that could
         // disagree.
         var verified = verification.observe(risk, written);
+        trace.record(organizationId, productVariantId, calculationKind,
+                "AUTO_VERIFICATION", "COMPLETED", correlationId, parentCorrelationId,
+                written.cardId().toString(), "{\"observed\":" + verified.size() + "}", asOf);
         return new RefreshOutcome(risk, written, raised, verified, correlationId);
     }
 

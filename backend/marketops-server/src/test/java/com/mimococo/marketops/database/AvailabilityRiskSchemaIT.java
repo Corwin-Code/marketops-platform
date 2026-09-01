@@ -265,7 +265,10 @@ class AvailabilityRiskSchemaIT extends PostgresContainerSupport {
              Statement statement = connection.createStatement()) {
             for (String table : new String[] {"ops.availability_case", "ops.availability_case_event",
                     "ops.availability_exception_decision", "ops.availability_slo_observation",
-                    "core.inbound_supply_attestation_version"}) {
+                    "core.inbound_supply_attestation_version",
+                    "ledger.return_quality_evidence_snapshot",
+                    "ops.availability_exception_delegation",
+                    "ops.availability_trace_event"}) {
                 assertThatThrownBy(() -> statement.executeUpdate("DELETE FROM " + table))
                         .as("no history in %s may be deleted", table)
                         .satisfies(thrown ->

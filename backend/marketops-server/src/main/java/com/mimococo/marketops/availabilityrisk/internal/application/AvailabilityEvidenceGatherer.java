@@ -20,6 +20,7 @@ import com.mimococo.marketops.operatingfacts.SellabilitySnapshot;
 import com.mimococo.marketops.operatingfacts.StockSnapshot;
 import com.mimococo.marketops.operatingfacts.WarehouseStockSnapshot;
 import com.mimococo.marketops.operatingfacts.ReturnTotals;
+import com.mimococo.marketops.operatingfacts.ReturnQualityEvidence;
 import com.mimococo.marketops.productlisting.ListingIdentityDirectory;
 import com.mimococo.marketops.productlisting.ListingVariantContext;
 import java.math.BigDecimal;
@@ -192,23 +193,47 @@ public class AvailabilityEvidenceGatherer {
             return ReturnQualityAssessment.blocked("RETURN_QUALITY_POLICY_UNRESOLVED", true);
         }
         FactWindow window = FactWindow.endingAt(asOf, Duration.ofDays(30));
+        ReturnQualityEvidence authority = facts.returnQualityEvidence(listingVariantId, window,
+                policy.evidenceFreshnessMaximum(), asOf);
+        switch (authority.state()) {
+            case NO_EVIDENCE -> {
+                return ReturnQualityAssessment.blocked("RETURN_QUALITY_NO_EVIDENCE", false);
+            }
+            case INCOMPLETE -> {
+                return ReturnQualityAssessment.blocked("RETURN_QUALITY_INCOMPLETE", false);
+            }
+            case STALE -> {
+                return ReturnQualityAssessment.blocked("RETURN_QUALITY_STALE", false);
+            }
+            case CONFLICTED -> {
+                return ReturnQualityAssessment.review("RETURN_QUALITY_CONFLICTED");
+            }
+            default -> {
+                // Only fresh, complete coverage may reach ratio calculation.
+            }
+        }
         SalesTotals completed = facts.sales(listingVariantId, SaleStage.COMPLETED, null, window);
         SalesTotals retained = facts.sales(listingVariantId, SaleStage.RETAINED, 30, window);
         ReturnTotals returns = facts.returns(listingVariantId, window);
-        if (!completed.available() || !retained.available() || !returns.available()) {
+        boolean authoritativeZero = authority.state()
+                == ReturnQualityEvidence.State.FRESH_COMPLETE_ZERO_RETURNS;
+        if (!completed.available() || !retained.available()
+                || (!authoritativeZero && !returns.available())) {
             return ReturnQualityAssessment.blocked("RETURN_QUALITY_EVIDENCE_UNRESOLVED", false);
         }
         if (completed.units() <= 0) {
             return ReturnQualityAssessment.clear();
         }
         BigDecimal completedUnits = BigDecimal.valueOf(completed.units());
-        BigDecimal returnRatio = BigDecimal.valueOf(returns.units())
+        long returnedUnits = authoritativeZero ? 0L : returns.units();
+        Map<String, Long> reasons = authoritativeZero ? Map.of() : returns.unitsByReason();
+        BigDecimal returnRatio = BigDecimal.valueOf(returnedUnits)
                 .divide(completedUnits, RATIO);
         BigDecimal retentionRatio = BigDecimal.valueOf(retained.units())
                 .divide(completedUnits, RATIO);
-        long defects = returns.unitsByReason().getOrDefault("QUALITY", 0L)
-                + returns.unitsByReason().getOrDefault("DAMAGED_IN_TRANSIT", 0L)
-                + returns.unitsByReason().getOrDefault("NOT_AS_DESCRIBED", 0L);
+        long defects = reasons.getOrDefault("QUALITY", 0L)
+                + reasons.getOrDefault("DAMAGED_IN_TRANSIT", 0L)
+                + reasons.getOrDefault("NOT_AS_DESCRIBED", 0L);
         BigDecimal defectRatio = BigDecimal.valueOf(defects).divide(completedUnits, RATIO);
         if (defectRatio.compareTo(policy.maximumDefectReturnRatio()) > 0) {
             return ReturnQualityAssessment.review("SUPPLIER_OR_PRODUCT_DEFECT_RATE_HIGH");

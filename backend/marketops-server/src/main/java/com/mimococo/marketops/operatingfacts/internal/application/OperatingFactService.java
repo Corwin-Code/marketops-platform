@@ -13,6 +13,7 @@ import com.mimococo.marketops.operatingfacts.InternalStockSnapshot;
 import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
 import com.mimococo.marketops.operatingfacts.PriceSnapshot;
 import com.mimococo.marketops.operatingfacts.ReturnTotals;
+import com.mimococo.marketops.operatingfacts.ReturnQualityEvidence;
 import com.mimococo.marketops.operatingfacts.SaleStage;
 import com.mimococo.marketops.operatingfacts.SalesTotals;
 import com.mimococo.marketops.operatingfacts.SellabilitySnapshot;
@@ -23,6 +24,7 @@ import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.FactQu
 import com.mimococo.marketops.shared.Money;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,6 +158,45 @@ public class OperatingFactService implements OperatingFactQuery {
                 money(row.secondaryAmount(), row.currencyCode()),
                 byReason,
                 FactEvidence.of(row.provenanceIds(), row.oldestSourceTime()));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReturnQualityEvidence returnQualityEvidence(UUID platformListingVariantId,
+                                                       FactWindow window,
+                                                       Duration freshnessMaximum,
+                                                       Instant asOf) {
+        return facts.returnQualityEvidence(platformListingVariantId, window.periodStart(),
+                        window.periodEnd(), asOf)
+                .map(row -> classifyReturnQuality(row, window, freshnessMaximum, asOf))
+                .orElseGet(() -> ReturnQualityEvidence.noEvidence(window));
+    }
+
+    private static ReturnQualityEvidence classifyReturnQuality(
+            FactQueryRepository.ReturnQualityEvidenceRow row, FactWindow window,
+            Duration freshnessMaximum, Instant asOf) {
+        List<String> coverage = List.of(row.completedCoverage(), row.retainedCoverage(),
+                row.returnCoverage(), row.qcCoverage());
+        ReturnQualityEvidence.State state;
+        if (coverage.contains("CONFLICTED")) {
+            state = ReturnQualityEvidence.State.CONFLICTED;
+        } else if (coverage.contains("INCOMPLETE")) {
+            state = ReturnQualityEvidence.State.INCOMPLETE;
+        } else {
+            Instant freshnessFloor = asOf.minus(freshnessMaximum);
+            List<Instant> updates = List.of(row.completedSourceUpdatedAt(),
+                    row.retainedSourceUpdatedAt(), row.returnSourceUpdatedAt(),
+                    row.qcSourceUpdatedAt());
+            if (updates.stream().anyMatch(updated -> updated.isBefore(freshnessFloor))) {
+                state = ReturnQualityEvidence.State.STALE;
+            } else {
+                state = "COMPLETE_ZERO".equals(row.returnCoverage())
+                        ? ReturnQualityEvidence.State.FRESH_COMPLETE_ZERO_RETURNS
+                        : ReturnQualityEvidence.State.FRESH_COMPLETE_OBSERVED_RETURNS;
+            }
+        }
+        return new ReturnQualityEvidence(state, row.id(), window.periodStart(),
+                window.periodEnd(), row.acceptedAt(), row.evidenceReference());
     }
 
     @Override

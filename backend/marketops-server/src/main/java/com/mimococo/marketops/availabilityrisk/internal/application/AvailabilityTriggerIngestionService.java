@@ -1,6 +1,7 @@
 package com.mimococo.marketops.availabilityrisk.internal.application;
 
 import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityRecalculationRepository;
+import com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityTraceRepository;
 import com.mimococo.marketops.operatingfacts.AcceptedFactChange;
 import com.mimococo.marketops.operatingfacts.AcceptedFactCursor;
 import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
@@ -38,16 +39,19 @@ public class AvailabilityTriggerIngestionService {
     private final AvailabilityRecalculationRepository queue;
     private final IdGenerator ids;
     private final Clock clock;
+    private final AvailabilityTraceRepository trace;
 
     public AvailabilityTriggerIngestionService(OperatingFactQuery facts,
                                                ListingIdentityDirectory listings,
                                                AvailabilityRecalculationRepository queue,
-                                               IdGenerator ids, Clock clock) {
+                                               IdGenerator ids, Clock clock,
+                                               AvailabilityTraceRepository trace) {
         this.facts = facts;
         this.listings = listings;
         this.queue = queue;
         this.ids = ids;
         this.clock = clock;
+        this.trace = trace;
     }
 
     /**
@@ -86,13 +90,26 @@ public class AvailabilityTriggerIngestionService {
                 unmapped++;
                 continue;
             }
-            boolean enqueued = queue.enqueue(new AvailabilityRecalculationRepository.NewRequest(
+            AvailabilityRecalculationRepository.EnqueueOutcome enqueueOutcome = queue.enqueue(
+                    new AvailabilityRecalculationRepository.NewRequest(
                     ids.newId(), change.organizationId(), variant.get(), change.triggerClass(),
                     change.provenanceId() == null ? null : change.provenanceId().toString(),
                     change.factAcceptedAt(), now, correlationId));
-            if (enqueued) {
+            if (enqueueOutcome != AvailabilityRecalculationRepository.EnqueueOutcome.SUPPRESSED) {
                 queued.add(variant.get());
             }
+            String stage = switch (enqueueOutcome) {
+                case CREATED -> "TARGET_DEDUP_QUEUED";
+                case COALESCED -> "TARGET_DEDUP_COALESCED";
+                case SUPPRESSED -> "TARGET_DEDUP_SUPPRESSED";
+            };
+            trace.record(change.organizationId(), variant.get(),
+                    AvailabilityRiskRefreshService.TARGETED,
+                    stage,
+                    enqueueOutcome == AvailabilityRecalculationRepository.EnqueueOutcome.SUPPRESSED
+                            ? "SUPPRESSED" : "COMPLETED",
+                    correlationId, null,
+                    change.cursor().itemKey(), "{}", now);
         }
         queue.advanceCursor(furthest, now, changes.size());
         if (unmapped > 0) {

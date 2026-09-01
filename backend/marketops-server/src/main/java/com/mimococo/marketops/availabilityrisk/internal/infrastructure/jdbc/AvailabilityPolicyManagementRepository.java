@@ -166,11 +166,13 @@ public class AvailabilityPolicyManagementRepository {
         jdbc.sql("""
                         INSERT INTO core.return_quality_policy
                             (id, organization_id, policy_version, maximum_return_ratio,
-                             minimum_retention_ratio, maximum_defect_return_ratio, owner_user_id,
+                             minimum_retention_ratio, maximum_defect_return_ratio,
+                             evidence_freshness_max_minutes, owner_user_id,
                              reason, evidence_reference, effective_from, effective_to, status,
                              created_at)
                         VALUES (:id, :organizationId, :version, :maximumReturnRatio,
-                                :minimumRetentionRatio, :maximumDefectReturnRatio, :ownerUserId,
+                                :minimumRetentionRatio, :maximumDefectReturnRatio,
+                                :evidenceFreshnessMaxMinutes, :ownerUserId,
                                 :reason, :evidenceReference, :effectiveFrom, :effectiveTo,
                                 'ACTIVE', :createdAt)
                         """)
@@ -179,6 +181,7 @@ public class AvailabilityPolicyManagementRepository {
                 .param("maximumReturnRatio", draft.maximumReturnRatio())
                 .param("minimumRetentionRatio", draft.minimumRetentionRatio())
                 .param("maximumDefectReturnRatio", draft.maximumDefectReturnRatio())
+                .param("evidenceFreshnessMaxMinutes", draft.evidenceFreshnessMaxMinutes())
                 .param("ownerUserId", ownerUserId).param("reason", draft.reason())
                 .param("evidenceReference", draft.evidenceReference())
                 .param("effectiveFrom", Timestamp.from(draft.effectiveFrom()))
@@ -422,7 +425,8 @@ public class AvailabilityPolicyManagementRepository {
 
     public record ReturnQualityDraft(UUID organizationId, BigDecimal maximumReturnRatio,
                                      BigDecimal minimumRetentionRatio,
-                                     BigDecimal maximumDefectReturnRatio, String reason,
+                                     BigDecimal maximumDefectReturnRatio,
+                                     int evidenceFreshnessMaxMinutes, String reason,
                                      String evidenceReference, Instant effectiveFrom,
                                      Instant effectiveTo, UUID supersedesPolicyId) {
     }

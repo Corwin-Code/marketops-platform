@@ -132,6 +132,14 @@ class AvailabilityRecalculationLoopIT {
         assertThat(count("SELECT count(*) FROM ops.availability_recalculation_request"
                 + " WHERE organization_id = '" + ORGANIZATION + "' AND state = 'PENDING'"))
                 .isEqualTo(1);
+        assertThat(count("SELECT count(*) FROM ops.availability_trace_event"
+                + " WHERE organization_id = '" + ORGANIZATION + "'"
+                + " AND stage_code = 'TARGET_DEDUP_QUEUED'"))
+                .isEqualTo(1);
+        assertThat(count("SELECT count(*) FROM ops.availability_trace_event"
+                + " WHERE organization_id = '" + ORGANIZATION + "'"
+                + " AND stage_code = 'TARGET_DEDUP_COALESCED'"))
+                .isEqualTo(2);
     }
 
     @Test
@@ -151,6 +159,10 @@ class AvailabilityRecalculationLoopIT {
 
         assertThat(count("SELECT count(*) FROM ops.availability_recalculation_request"
                 + " WHERE organization_id = '" + ORGANIZATION + "'")).isEqualTo(before);
+        assertThat(count("SELECT count(*) FROM ops.availability_trace_event"
+                + " WHERE organization_id = '" + ORGANIZATION + "'"
+                + " AND stage_code = 'TARGET_DEDUP_COALESCED'"))
+                .isEqualTo(5);
     }
 
     @Test
@@ -176,6 +188,24 @@ class AvailabilityRecalculationLoopIT {
                 + " AND internal_latency_ms >= 0 AND NOT breached)::text"
                 + " FROM ops.availability_slo_observation"
                 + " WHERE organization_id = '" + ORGANIZATION + "'")).isEqualTo("true");
+        assertThat(count("""
+                SELECT count(*)
+                  FROM ops.availability_trace_event calculation
+                  JOIN ops.availability_trace_event process
+                    ON process.organization_id = calculation.organization_id
+                   AND process.product_variant_id = calculation.product_variant_id
+                   AND process.stage_code = 'TARGETED_PROCESS_STARTED'
+                   AND process.correlation_id = calculation.parent_correlation_id
+                  JOIN ops.availability_trace_event verification
+                    ON verification.correlation_id = calculation.correlation_id
+                   AND verification.stage_code = 'AUTO_VERIFICATION'
+                  JOIN ops.availability_trace_event slo
+                    ON slo.correlation_id = calculation.correlation_id
+                   AND slo.parent_correlation_id = process.correlation_id
+                   AND slo.stage_code = 'SLO_RECORDED'
+                 WHERE calculation.organization_id = '%s'
+                   AND calculation.stage_code = 'CALCULATION_STARTED'
+                """.formatted(ORGANIZATION))).isEqualTo(1);
     }
 
     @Test
@@ -214,6 +244,18 @@ class AvailabilityRecalculationLoopIT {
         assertThat(count("SELECT count(*) FROM ops.availability_recalculation_request"
                 + " WHERE organization_id = '" + ORGANIZATION + "'"
                 + "   AND state IN ('PENDING', 'LEASED')")).isZero();
+        String sweepCorrelation = "availability-sweep:" + result.runId();
+        assertThat(count("SELECT count(*) FROM ops.availability_trace_event"
+                + " WHERE organization_id = '" + ORGANIZATION + "'"
+                + " AND correlation_id = '" + sweepCorrelation + "'"
+                + " AND stage_code IN ('SWEEP_STARTED', 'BACKLOG_SNAPSHOT',"
+                + " 'EXCEPTION_EXPIRY_REVALIDATION', 'SWEEP_COMPLETED')")).isEqualTo(4);
+        assertThat(count("SELECT count(*) FROM ops.availability_trace_event"
+                + " WHERE organization_id = '" + ORGANIZATION + "'"
+                + " AND path_kind = 'RECONCILIATION'"
+                + " AND stage_code = 'AUTO_VERIFICATION'"
+                + " AND parent_correlation_id = '" + sweepCorrelation + "'"))
+                .isEqualTo(1);
     }
 
     @Test
@@ -256,6 +298,9 @@ class AvailabilityRecalculationLoopIT {
         sql("UPDATE ops.availability_reconciliation_run SET state = 'FAILED',"
                 + " failure_code = 'ABANDONED_BY_TEST', completed_at = now()"
                 + " WHERE id = '" + inFlight + "'");
+        assertThat(health.health(ORGANIZATION).incidents())
+                .contains("RECONCILIATION_LAST_RUN_FAILED");
+        assertThat(reconciliation.sweep(ORGANIZATION, "RECOVERY")).isPresent();
     }
 
     @Test

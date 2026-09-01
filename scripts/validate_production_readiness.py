@@ -129,6 +129,7 @@ APPROVED_MIGRATIONS = (
     "V0032__create_availability_fact_feed_cursor.sql",
     "V0033__track_case_improvement_observation.sql",
     "V0034__close_availability_deep_review_findings.sql",
+    "V0035__close_availability_targeted_findings.sql",
 )
 
 DEFERRED_EVIDENCE_REGISTER = (
@@ -410,6 +411,8 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_002_draft_pr_url: https://github.com/Corwin-Code/marketops-platform/pull/26",
     "slice_v1_002_controlled_write_target: NONE_IN_THIS_SLICE",
     "slice_v1_002_real_provider_calls: NONE",
+    "slice_v1_002_r1_finding_closure: docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json",
+    "slice_v1_002_r1_final_handoff: docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md",
     "slice_v1_001_controller_final_gate: PASS_R2_ENGINEERING_FINAL_GATE",
     "slice_v1_001_actual_squash_commit: d562b81f4f0271aa33a53b21ccaffc88b5610c0c",
     "slice_v1_001_actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b",
@@ -424,8 +427,8 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_001_snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e84823ddedf30aab2e3",
     "slice_v1_001_owner_acceptance_comment: 5469935477",
     "slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33",
-    "next_authorized_actor: Independent Controller Final Closure Verification",
-    "next_action: CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_DRAFT_PR_26",
+    "next_authorized_actor: GPT-5.6 Pro Controller",
+    "next_action: CONTROLLER_SLICE_V1_002_FINAL_CLOSURE_VERIFICATION",
     "production_write_enabled: false",
     "bounded_real_write_verification_authorization: NONE",
     "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",

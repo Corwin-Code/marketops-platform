@@ -48,6 +48,8 @@ slice_v1_002_as_built_design: docs/02-architecture/designs/SLICE-V1-002-design.m
 slice_v1_002_acceptance_status: docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md
 slice_v1_002_executable_evidence: docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md
 slice_v1_002_root_cause_rework_evidence: docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md
+slice_v1_002_r1_finding_closure: docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json
+slice_v1_002_r1_final_handoff: docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md
 slice_v1_002_deferred_release_register: docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json
 accepted_contract_mutation: PROHIBITED_APPEND_ONLY_AMENDMENT_REQUIRED
 execution_envelope: EXECUTION_ENVELOPE_V1
@@ -134,8 +136,8 @@ slice_v1_001_as_built_design: docs/02-architecture/designs/SLICE-V1-001-design.m
 slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
-next_authorized_actor: Independent Controller Final Closure Verification
-next_action: CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_DRAFT_PR_26
+next_authorized_actor: GPT-5.6 Pro Controller
+next_action: CONTROLLER_SLICE_V1_002_FINAL_CLOSURE_VERIFICATION
 slice_v1_001_handoff_pending: CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
@@ -429,12 +431,16 @@ docs/02-architecture/designs/SLICE-V1-002-design.md
 docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md
 docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md
 docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md
+docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json
+docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md
 docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json
 ```
 
 The acceptance status is an honest per-criterion record rather than a closure
-claim: a criterion is verified only where named evidence asserts it. The Slice
-adds forward migrations V0030 through V0034; V0001–V0029 remain byte-identical.
+claim: a criterion is verified only where named evidence asserts it. `99` of
+`100` criteria are executably verified and `S2-AC-100` remains reserved for the
+Controller. The Slice adds forward migrations V0030 through V0035;
+V0001–V0029 remain byte-identical.
 
 The Contract's non-goals are absent by construction and checked rather than
 asserted. There is no replenishment quantity or order date, no purchase
@@ -448,8 +454,8 @@ capability anywhere in the module or in any migration.
 The repository gate remains `SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION` inside the
 exact accepted Contract named above, but the bounded rework and remote
 verification action is complete. The next authorized action is
-`CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_DRAFT_PR_26` by an independent
-Controller. SLICE-V1-001's closed lifecycle action remains
+`CONTROLLER_SLICE_V1_002_FINAL_CLOSURE_VERIFICATION` by the `GPT-5.6 Pro
+Controller`. SLICE-V1-001's closed lifecycle action remains
 `NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY` for the Slice after this one, and its
 bounded `CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK` over the actual
 PR #23 SQUASH identity and cleanup receipt is unchanged by this flip.

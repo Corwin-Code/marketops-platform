@@ -2,10 +2,12 @@ package com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc;
 
 import com.mimococo.marketops.operationsworkflow.AcceptedExceptionState;
 import com.mimococo.marketops.operationsworkflow.AcceptedExceptionView;
+import com.mimococo.marketops.operationsworkflow.AvailabilityExceptionDelegationView;
 import com.mimococo.marketops.operationsworkflow.ExceptionAuthorityLevel;
 import com.mimococo.marketops.operationsworkflow.ExceptionReasonCode;
 import com.mimococo.marketops.operationsworkflow.ExceptionScopeKind;
 import com.mimococo.marketops.operationsworkflow.internal.domain.ExceptionMaterialityPolicy;
+import com.mimococo.marketops.identityaccess.BusinessRoleCode;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,6 +39,8 @@ public class AvailabilityExceptionRepository {
                    requested_by_user_id, requested_at, decision_owner_role_code,
                    required_authority_level, state, effective_from, expires_at, review_at,
                    invalidated_at, invalidation_reason, materiality_policy_id, occurrence_count
+                   , accepted_severity, accepted_profit_at_risk_amount,
+                   accepted_profit_at_risk_currency, accepted_case_reopen_count
               FROM ops.availability_accepted_exception
             """;
 
@@ -195,6 +199,31 @@ public class AvailabilityExceptionRepository {
                                     WHERE child.id = ops.availability_accepted_exception.child_id
                                       AND child.organization_id =
                                           ops.availability_accepted_exception.organization_id),
+                               accepted_severity = (
+                                   SELECT child.lane
+                                     FROM mart.availability_risk_child child
+                                    WHERE child.id = ops.availability_accepted_exception.child_id
+                                      AND child.organization_id =
+                                          ops.availability_accepted_exception.organization_id),
+                               accepted_profit_at_risk_amount = (
+                                   SELECT child.profit_at_risk_amount
+                                     FROM mart.availability_risk_child child
+                                    WHERE child.id = ops.availability_accepted_exception.child_id
+                                      AND child.organization_id =
+                                          ops.availability_accepted_exception.organization_id),
+                               accepted_profit_at_risk_currency = (
+                                   SELECT child.profit_at_risk_currency
+                                     FROM mart.availability_risk_child child
+                                    WHERE child.id = ops.availability_accepted_exception.child_id
+                                      AND child.organization_id =
+                                          ops.availability_accepted_exception.organization_id),
+                               accepted_case_reopen_count = (
+                                   SELECT governed.reopen_count
+                                     FROM ops.availability_case governed
+                                    WHERE governed.id =
+                                          ops.availability_accepted_exception.case_id
+                                      AND governed.organization_id =
+                                          ops.availability_accepted_exception.organization_id),
                                updated_at = :at, version = version + 1
                          WHERE id = :id
                         """)
@@ -263,6 +292,11 @@ public class AvailabilityExceptionRepository {
                                child.platform_listing_variant_id,
                                child.fulfillment_mode_code, card.product_variant_id,
                                child.profit_at_risk_amount, child.profit_at_risk_currency,
+                               accepted.accepted_severity,
+                               accepted.accepted_profit_at_risk_amount,
+                               accepted.accepted_profit_at_risk_currency,
+                               accepted.accepted_case_reopen_count,
+                               governed.reopen_count AS current_case_reopen_count,
                                md5(concat_ws('|', child.cause_code, child.lane,
                                    child.evidence_state, child.confidence_state,
                                    child.available_units, child.daily_demand_rate,
@@ -277,6 +311,9 @@ public class AvailabilityExceptionRepository {
                           JOIN mart.availability_risk_card card
                             ON card.id = child.card_id
                            AND card.organization_id = child.organization_id
+                          JOIN ops.availability_case governed
+                            ON governed.id = accepted.case_id
+                           AND governed.organization_id = accepted.organization_id
                          WHERE accepted.id = :exceptionId
                         """)
                 .param("exceptionId", exceptionId)
@@ -288,12 +325,17 @@ public class AvailabilityExceptionRepository {
                         rows.getObject("product_variant_id", UUID.class),
                         rows.getBigDecimal("profit_at_risk_amount"),
                         rows.getString("profit_at_risk_currency"),
+                        rows.getString("accepted_severity"),
+                        rows.getBigDecimal("accepted_profit_at_risk_amount"),
+                        rows.getString("accepted_profit_at_risk_currency"),
+                        rows.getObject("accepted_case_reopen_count", Integer.class),
+                        rows.getInt("current_case_reopen_count"),
                         rows.getString("risk_digest"),
                         rows.getString("accepted_risk_digest")))
                 .optional();
     }
 
-    /** Whether the approving identity still holds the role under which it decided. */
+    /** Whether the approver's direct assignment or exact named delegation remains live. */
     public boolean approvalAuthorityLive(UUID exceptionId, Instant at) {
         return Boolean.TRUE.equals(jdbc.sql("""
                         SELECT EXISTS (
@@ -302,20 +344,205 @@ public class AvailabilityExceptionRepository {
                               JOIN iam.user_account actor
                                 ON actor.id = decision.decided_by_user_id
                                AND actor.organization_id = decision.organization_id
-                              JOIN iam.user_role_assignment assignment
-                                ON assignment.user_id = actor.id
-                               AND assignment.organization_id = actor.organization_id
-                               AND assignment.role_code = decision.decided_by_role_code
                              WHERE decision.exception_id = :exceptionId
                                AND decision.decision = 'APPROVED'
                                AND actor.status = 'ACTIVE'
+                               AND (
+                                   (decision.delegation_reference IS NULL AND EXISTS (
+                                       SELECT 1 FROM iam.user_role_assignment assignment
+                                        WHERE assignment.user_id = actor.id
+                                          AND assignment.organization_id = actor.organization_id
+                                          AND assignment.role_code = decision.decided_by_role_code
+                                          AND assignment.status = 'ACTIVE'
+                                          AND assignment.effective_from <= :at
+                                          AND (assignment.effective_to IS NULL
+                                               OR assignment.effective_to > :at)))
+                                   OR
+                                   (decision.delegation_reference IS NOT NULL AND EXISTS (
+                                       SELECT 1
+                                         FROM ops.availability_exception_delegation delegation
+                                         JOIN iam.user_account grantor
+                                           ON grantor.id = delegation.granted_by_user_id
+                                          AND grantor.organization_id = delegation.organization_id
+                                         JOIN iam.user_role_assignment grantor_assignment
+                                           ON grantor_assignment.user_id = grantor.id
+                                          AND grantor_assignment.organization_id =
+                                              grantor.organization_id
+                                          AND grantor_assignment.role_code =
+                                              delegation.granted_by_role_code
+                                        WHERE delegation.organization_id = decision.organization_id
+                                          AND delegation.delegation_reference
+                                              = decision.delegation_reference
+                                          AND delegation.delegate_user_id
+                                              = decision.decided_by_user_id
+                                          AND delegation.delegated_role_code
+                                              = decision.decided_by_role_code
+                                          AND delegation.revoked_at IS NULL
+                                          AND delegation.effective_from <= :at
+                                          AND delegation.effective_to > :at
+                                          AND grantor.status = 'ACTIVE'
+                                          AND grantor_assignment.status = 'ACTIVE'
+                                          AND grantor_assignment.effective_from <= :at
+                                          AND (grantor_assignment.effective_to IS NULL
+                                               OR grantor_assignment.effective_to > :at)))))
+                        """)
+                .param("exceptionId", exceptionId).param("at", Timestamp.from(at))
+                .query(Boolean.class).single());
+    }
+
+    /** Validate the exact direct or delegated authority before a grant is recorded. */
+    public boolean decisionAuthorityLive(UUID organizationId, UUID userId, String roleCode,
+                                         String delegationReference, Instant at) {
+        return Boolean.TRUE.equals(jdbc.sql("""
+                        SELECT CASE WHEN CAST(:delegation AS text) IS NULL THEN EXISTS (
+                            SELECT 1
+                              FROM iam.user_account actor
+                              JOIN iam.user_role_assignment assignment
+                                ON assignment.user_id = actor.id
+                               AND assignment.organization_id = actor.organization_id
+                             WHERE actor.id = :userId
+                               AND actor.organization_id = :organizationId
+                               AND actor.status = 'ACTIVE'
+                               AND assignment.role_code = :roleCode
                                AND assignment.status = 'ACTIVE'
                                AND assignment.effective_from <= :at
                                AND (assignment.effective_to IS NULL
                                     OR assignment.effective_to > :at))
+                        ELSE EXISTS (
+                            SELECT 1
+                              FROM ops.availability_exception_delegation delegation
+                              JOIN iam.user_account delegate
+                                ON delegate.id = delegation.delegate_user_id
+                               AND delegate.organization_id = delegation.organization_id
+                              JOIN iam.user_account grantor
+                                ON grantor.id = delegation.granted_by_user_id
+                               AND grantor.organization_id = delegation.organization_id
+                              JOIN iam.user_role_assignment grantor_assignment
+                                ON grantor_assignment.user_id = grantor.id
+                               AND grantor_assignment.organization_id = grantor.organization_id
+                               AND grantor_assignment.role_code = delegation.granted_by_role_code
+                             WHERE delegation.organization_id = :organizationId
+                               AND delegation.delegation_reference = CAST(:delegation AS text)
+                               AND delegation.delegate_user_id = :userId
+                               AND delegation.delegated_role_code = :roleCode
+                               AND delegation.revoked_at IS NULL
+                               AND delegation.effective_from <= :at
+                               AND delegation.effective_to > :at
+                               AND delegate.status = 'ACTIVE'
+                               AND grantor.status = 'ACTIVE'
+                               AND grantor_assignment.status = 'ACTIVE'
+                               AND grantor_assignment.effective_from <= :at
+                               AND (grantor_assignment.effective_to IS NULL
+                                    OR grantor_assignment.effective_to > :at)) END
                         """)
-                .param("exceptionId", exceptionId).param("at", Timestamp.from(at))
-                .query(Boolean.class).single());
+                .param("organizationId", organizationId).param("userId", userId)
+                .param("roleCode", roleCode).param("delegation", delegationReference)
+                .param("at", Timestamp.from(at)).query(Boolean.class).single());
+    }
+
+    /** The delegated role carried by one exact live reference. */
+    public Optional<BusinessRoleCode> delegatedRole(UUID organizationId, UUID userId,
+                                                     String reference, Instant at) {
+        return jdbc.sql("""
+                        SELECT delegation.delegated_role_code
+                          FROM ops.availability_exception_delegation delegation
+                          JOIN iam.user_account delegate
+                            ON delegate.id = delegation.delegate_user_id
+                           AND delegate.organization_id = delegation.organization_id
+                          JOIN iam.user_account grantor
+                            ON grantor.id = delegation.granted_by_user_id
+                           AND grantor.organization_id = delegation.organization_id
+                          JOIN iam.user_role_assignment grantor_assignment
+                            ON grantor_assignment.user_id = grantor.id
+                           AND grantor_assignment.organization_id = grantor.organization_id
+                           AND grantor_assignment.role_code = delegation.granted_by_role_code
+                         WHERE delegation.organization_id = :organizationId
+                           AND delegation.delegate_user_id = :userId
+                           AND delegation.delegation_reference = :reference
+                           AND delegation.revoked_at IS NULL
+                           AND delegation.effective_from <= :at
+                           AND delegation.effective_to > :at
+                           AND delegate.status = 'ACTIVE'
+                           AND grantor.status = 'ACTIVE'
+                           AND grantor_assignment.status = 'ACTIVE'
+                           AND grantor_assignment.effective_from <= :at
+                           AND (grantor_assignment.effective_to IS NULL
+                                OR grantor_assignment.effective_to > :at)
+                        """)
+                .param("organizationId", organizationId).param("userId", userId)
+                .param("reference", reference).param("at", Timestamp.from(at))
+                .query(String.class).optional().map(BusinessRoleCode::valueOf);
+    }
+
+    /** Persist one bounded delegation grant. */
+    public void insertDelegation(DelegationRow row) {
+        jdbc.sql("""
+                        INSERT INTO ops.availability_exception_delegation
+                            (id, organization_id, delegation_reference, delegate_user_id,
+                             delegated_role_code, granted_by_user_id, granted_by_role_code,
+                             effective_from, effective_to, evidence_reference, granted_at,
+                             correlation_id)
+                        VALUES (:id, :organizationId, :reference, :delegateUserId,
+                                :delegatedRole, :grantedByUserId, :grantedByRole,
+                                :effectiveFrom, :effectiveTo, :evidenceReference, :grantedAt,
+                                :correlationId)
+                        """)
+                .param("id", row.id()).param("organizationId", row.organizationId())
+                .param("reference", row.delegationReference())
+                .param("delegateUserId", row.delegateUserId())
+                .param("delegatedRole", row.delegatedRole().name())
+                .param("grantedByUserId", row.grantedByUserId())
+                .param("grantedByRole", row.grantedByRole().name())
+                .param("effectiveFrom", Timestamp.from(row.effectiveFrom()))
+                .param("effectiveTo", Timestamp.from(row.effectiveTo()))
+                .param("evidenceReference", row.evidenceReference())
+                .param("grantedAt", Timestamp.from(row.grantedAt()))
+                .param("correlationId", row.correlationId()).update();
+    }
+
+    /** Revoke one exact live grant; the grant columns are database-immutable. */
+    public boolean revokeDelegation(UUID organizationId, String reference, UUID revokedBy,
+                                    String reason, Instant at) {
+        return jdbc.sql("""
+                        UPDATE ops.availability_exception_delegation
+                           SET revoked_at = :at, revoked_by_user_id = :revokedBy,
+                               revocation_reason = :reason
+                         WHERE organization_id = :organizationId
+                           AND delegation_reference = :reference
+                           AND revoked_at IS NULL
+                        """)
+                .param("organizationId", organizationId).param("reference", reference)
+                .param("revokedBy", revokedBy).param("reason", reason)
+                .param("at", Timestamp.from(at)).update() == 1;
+    }
+
+    /** Resolve one exact delegation, including revoked history. */
+    public Optional<AvailabilityExceptionDelegationView> findDelegation(
+            UUID organizationId, String reference) {
+        return jdbc.sql("""
+                        SELECT id, organization_id, delegation_reference, delegate_user_id,
+                               delegated_role_code, granted_by_user_id, granted_by_role_code,
+                               effective_from, effective_to, evidence_reference, granted_at,
+                               revoked_at, revoked_by_user_id, revocation_reason
+                          FROM ops.availability_exception_delegation
+                         WHERE organization_id = :organizationId
+                           AND delegation_reference = :reference
+                        """)
+                .param("organizationId", organizationId).param("reference", reference)
+                .query((rows, number) -> new AvailabilityExceptionDelegationView(
+                        rows.getObject("id", UUID.class),
+                        rows.getObject("organization_id", UUID.class),
+                        rows.getString("delegation_reference"),
+                        rows.getObject("delegate_user_id", UUID.class),
+                        BusinessRoleCode.valueOf(rows.getString("delegated_role_code")),
+                        rows.getObject("granted_by_user_id", UUID.class),
+                        BusinessRoleCode.valueOf(rows.getString("granted_by_role_code")),
+                        instant(rows, "effective_from"), instant(rows, "effective_to"),
+                        rows.getString("evidence_reference"), instant(rows, "granted_at"),
+                        instant(rows, "revoked_at"),
+                        rows.getObject("revoked_by_user_id", UUID.class),
+                        rows.getString("revocation_reason")))
+                .optional();
     }
 
     /** Every acceptance recorded against one case, newest first. */
@@ -387,7 +614,11 @@ public class AvailabilityExceptionRepository {
                 instant(rows, "invalidated_at"),
                 rows.getString("invalidation_reason"),
                 rows.getObject("materiality_policy_id", UUID.class),
-                rows.getInt("occurrence_count"));
+                rows.getInt("occurrence_count"),
+                rows.getString("accepted_severity"),
+                rows.getBigDecimal("accepted_profit_at_risk_amount"),
+                rows.getString("accepted_profit_at_risk_currency"),
+                rows.getObject("accepted_case_reopen_count", Integer.class));
     }
 
     private static Instant instant(ResultSet rows, String column) throws SQLException {
@@ -469,7 +700,19 @@ public class AvailabilityExceptionRepository {
     public record CurrentRisk(String causeCode, String severity, UUID storeId,
                               UUID platformListingVariantId, String fulfillmentModeCode,
                               UUID productVariantId, BigDecimal profitAtRiskAmount,
-                              String profitAtRiskCurrency, String riskDigest,
+                              String profitAtRiskCurrency, String acceptedSeverity,
+                              BigDecimal acceptedProfitAtRiskAmount,
+                              String acceptedProfitAtRiskCurrency,
+                              Integer acceptedCaseReopenCount, int currentCaseReopenCount,
+                              String riskDigest,
                               String acceptedRiskDigest) {
+    }
+
+    public record DelegationRow(UUID id, UUID organizationId, String delegationReference,
+                                UUID delegateUserId, BusinessRoleCode delegatedRole,
+                                UUID grantedByUserId, BusinessRoleCode grantedByRole,
+                                Instant effectiveFrom, Instant effectiveTo,
+                                String evidenceReference, Instant grantedAt,
+                                String correlationId) {
     }
 }

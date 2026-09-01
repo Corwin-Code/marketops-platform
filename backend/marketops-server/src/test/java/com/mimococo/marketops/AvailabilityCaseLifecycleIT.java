@@ -392,6 +392,9 @@ class AvailabilityCaseLifecycleIT {
     void aGrantedAcceptanceDisposesRatherThanResolves() {
         UUID exceptionId = requestedException();
         String laneBefore = childLane();
+        AvailabilityCaseView before = live(COMPANY_CAUSE);
+        long eventsBefore = count("SELECT count(*) FROM ops.availability_case_event"
+                + " WHERE case_id = '" + before.id() + "'");
 
         AcceptedExceptionView granted = exceptions.decide(decision(exceptionId, APPROVER,
                 BusinessRoleCode.RISK_AUTHORITY, true, true));
@@ -399,7 +402,14 @@ class AvailabilityCaseLifecycleIT {
         assertThat(granted.state()).isEqualTo(AcceptedExceptionState.ACTIVE);
         assertThat(granted.inForceAt(AS_OF.plus(Duration.ofDays(1)))).isTrue();
         assertThat(granted.inForceAt(AS_OF.plus(Duration.ofDays(8)))).isFalse();
-        assertThat(live(COMPANY_CAUSE).state()).isEqualTo(AvailabilityCaseState.ACCEPTED_RISK);
+        AvailabilityCaseView paused = live(COMPANY_CAUSE);
+        assertThat(paused.state()).isEqualTo(AvailabilityCaseState.ACCEPTED_RISK);
+        assertThat(paused.originalActionDueAt()).isEqualTo(before.originalActionDueAt());
+        assertThat(paused.actionDueAt()).isEqualTo(before.actionDueAt());
+        assertThat(paused.actionSlaPausedAt()).isEqualTo(AS_OF);
+        assertThat(paused.actionSlaRemainingMillis()).isNotNull().isGreaterThanOrEqualTo(0);
+        assertThat(count("SELECT count(*) FROM ops.availability_case_event"
+                + " WHERE case_id = '" + before.id() + "'")).isEqualTo(eventsBefore + 1);
         assertThat(childLane())
                 .as("an acceptance never relabels the calculated risk")
                 .isEqualTo(laneBefore);
@@ -429,11 +439,16 @@ class AvailabilityCaseLifecycleIT {
     @Order(18)
     @DisplayName("TC-CASE-018 expiry ends the acceptance and returns the same case to somebody")
     void expiryReturnsTheSameCase() {
-        UUID caseId = live(COMPANY_CAUSE).id();
-        int reopensBefore = live(COMPANY_CAUSE).reopenCount();
+        AvailabilityCaseView paused = live(COMPANY_CAUSE);
+        UUID caseId = paused.id();
+        int reopensBefore = paused.reopenCount();
+        long remainingMillis = paused.actionSlaRemainingMillis();
+        long eventsBefore = count("SELECT count(*) FROM ops.availability_case_event"
+                + " WHERE case_id = '" + caseId + "'");
+        Instant resumedAt = AS_OF.plus(Duration.ofDays(8));
 
         List<AcceptedExceptionView> expired =
-                exceptions.expireDue(ORGANIZATION, AS_OF.plus(Duration.ofDays(8)));
+                exceptions.expireDue(ORGANIZATION, resumedAt);
 
         assertThat(expired).singleElement()
                 .satisfies(view -> assertThat(view.state())
@@ -442,6 +457,16 @@ class AvailabilityCaseLifecycleIT {
         assertThat(reopened.id()).isEqualTo(caseId);
         assertThat(reopened.state()).isEqualTo(AvailabilityCaseState.REOPENED);
         assertThat(reopened.reopenCount()).isEqualTo(reopensBefore + 1);
+        assertThat(reopened.originalActionDueAt()).isEqualTo(paused.originalActionDueAt());
+        assertThat(reopened.actionDueAt()).isEqualTo(resumedAt.plusMillis(remainingMillis));
+        assertThat(reopened.actionSlaPausedAt()).isNull();
+        assertThat(reopened.actionSlaRemainingMillis()).isNull();
+        assertThat(count("SELECT count(*) FROM ops.availability_case_event"
+                + " WHERE case_id = '" + caseId + "'")).isEqualTo(eventsBefore + 1);
+        assertThat(count("SELECT count(*) FROM ops.availability_case_event"
+                + " WHERE case_id = '" + caseId + "'"
+                + " AND event_kind IN ('EXCEPTION_APPLIED', 'EXCEPTION_INVALIDATED')"))
+                .isEqualTo(2);
     }
 
     @Test
@@ -592,11 +617,16 @@ class AvailabilityCaseLifecycleIT {
 
         // The first calculation sees the improvement and starts the window; the
         // second, past it, is the one that may close the case.
+        returnCoverage(AS_OF.plus(Duration.ofMinutes(3)), 2);
         refresh.refresh(ORGANIZATION, VARIANT, AS_OF.plus(Duration.ofMinutes(3)),
                 AvailabilityRiskRefreshService.TARGETED, null);
         assertThat(string("SELECT lane || ':' || cause_code FROM mart.availability_risk_child"
                 + " WHERE child_kind = 'CHANNEL' AND organization_id = '" + ORGANIZATION + "'"))
-                .as("the restock has to have repaired the channel for anything to verify")
+                .as("the restock has to have repaired the channel for anything to verify;"
+                        + " blockers=%s", string("SELECT blocker_codes::text"
+                                + " FROM mart.availability_risk_child"
+                                + " WHERE child_kind = 'CHANNEL' AND organization_id = '"
+                                + ORGANIZATION + "'"))
                 .isEqualTo("HEALTHY:NONE");
         assertThat(state(caseId)).isEqualTo(AvailabilityCaseState.VERIFYING.name());
         assertThat(string("SELECT coalesce(improvement_first_seen_at::text, 'none')"
@@ -604,6 +634,7 @@ class AvailabilityCaseLifecycleIT {
                 .as("the governed window has to have started for anything to elapse")
                 .isNotEqualTo("none");
 
+        returnCoverage(AS_OF.plus(Duration.ofMinutes(9)), 3);
         refresh.refresh(ORGANIZATION, VARIANT, AS_OF.plus(Duration.ofMinutes(9)),
                 AvailabilityRiskRefreshService.RECONCILIATION, null);
 
@@ -734,6 +765,16 @@ class AvailabilityCaseLifecycleIT {
                 VALUES ('%s', '%s', '%s', 'case-approver', 'Risk Authority', 'ACTIVE', now(),
                         now(), now())
                 """.formatted(APPROVER, ORGANIZATION, PROVIDER));
+        sql("""
+                INSERT INTO iam.user_role_assignment
+                    (id, organization_id, user_id, role_code, effective_from, status,
+                     created_at, updated_at)
+                VALUES ('%s', '%s', '%s', 'RISK_AUTHORITY', now() - interval '1 day',
+                        'ACTIVE', now(), now()),
+                       ('%s', '%s', '%s', 'RISK_AUTHORITY', now() - interval '1 day',
+                        'ACTIVE', now(), now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER,
+                UUID.randomUUID(), ORGANIZATION, APPROVER));
     }
 
     /**
@@ -784,9 +825,10 @@ class AvailabilityCaseLifecycleIT {
         sql("""
                 INSERT INTO core.return_quality_policy (id, organization_id, policy_version,
                         maximum_return_ratio, minimum_retention_ratio,
-                        maximum_defect_return_ratio, owner_user_id, reason,
+                        maximum_defect_return_ratio, evidence_freshness_max_minutes,
+                        owner_user_id, reason,
                         evidence_reference, effective_from, status, created_at)
-                VALUES ('%s', '%s', 1, 0.25, 0.80, 0.10, '%s',
+                VALUES ('%s', '%s', 1, 0.25, 0.80, 0.10, 1440, '%s',
                         'agreed return and retention guardrail', 'ev://ops/return-quality',
                         now() - interval '10 days', 'ACTIVE', now())
                 """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
@@ -867,6 +909,24 @@ class AvailabilityCaseLifecycleIT {
                         '%s', 1, 'RUB', 1000.0000, 0.0000)
                 """.formatted(UUID.randomUUID(), ORGANIZATION, returnProvenance, STORE,
                 LISTING_VARIANT, AS_OF.minus(Duration.ofDays(1))));
+        returnCoverage(AS_OF, 1);
+    }
+
+    /** Publish exact report-coverage authority for one rolling D30 calculation. */
+    private void returnCoverage(Instant at, int mark) {
+        sql("""
+                INSERT INTO ledger.return_quality_evidence_snapshot
+                    (id, organization_id, platform_listing_variant_id,
+                     report_window_start, report_window_end, completed_coverage,
+                     retained_coverage, return_coverage, qc_coverage,
+                     completed_source_updated_at, retained_source_updated_at,
+                     return_source_updated_at, qc_source_updated_at,
+                     evidence_reference, accepted_at, correlation_id)
+                VALUES ('%s', '%s', '%s', '%s', '%s', 'COMPLETE', 'COMPLETE',
+                        'COMPLETE_OBSERVED', 'COMPLETE', '%s', '%s', '%s', '%s',
+                        'ev://returns/case-report/%d', '%s', 'case-return-quality-report-%d')
+                """.formatted(UUID.randomUUID(), ORGANIZATION, LISTING_VARIANT,
+                at.minus(Duration.ofDays(31)), at, at, at, at, at, mark, at, mark));
     }
 
     /** One published stock observation for the exact listing and mode. */

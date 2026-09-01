@@ -528,6 +528,7 @@ class MigrationContractTests(unittest.TestCase):
                 "V0032__create_availability_fact_feed_cursor.sql",
                 "V0033__track_case_improvement_observation.sql",
                 "V0034__close_availability_deep_review_findings.sql",
+                "V0035__close_availability_targeted_findings.sql",
             ),
             APPROVED_MIGRATIONS,
         )

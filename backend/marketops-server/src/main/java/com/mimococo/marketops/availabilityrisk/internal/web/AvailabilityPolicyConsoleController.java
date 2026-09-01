@@ -101,7 +101,8 @@ class AvailabilityPolicyConsoleController {
                 new AvailabilityPolicyManagementRepository.ReturnQualityDraft(
                         actor.organizationId(), body.maximumReturnRatio(),
                         body.minimumRetentionRatio(), body.maximumDefectReturnRatio(),
-                        body.reason(), body.evidenceReference(), body.effectiveFrom(),
+                        body.evidenceFreshnessMaxMinutes(), body.reason(),
+                        body.evidenceReference(), body.effectiveFrom(),
                         body.effectiveTo(), body.supersedesPolicyId()));
     }
 
@@ -199,6 +200,9 @@ class AvailabilityPolicyConsoleController {
                              BigDecimal minimumRetentionRatio,
                              @NotNull @DecimalMin("0") @DecimalMax("1")
                              BigDecimal maximumDefectReturnRatio,
+                             @jakarta.validation.constraints.Min(1)
+                             @jakarta.validation.constraints.Max(10080)
+                             int evidenceFreshnessMaxMinutes,
                              @NotBlank String reason, @NotBlank String evidenceReference,
                              @NotNull Instant effectiveFrom, Instant effectiveTo,
                              UUID supersedesPolicyId) {

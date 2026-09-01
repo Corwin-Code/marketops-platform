@@ -327,6 +327,14 @@ materiality policy or approving authority changes. The console has no endpoint
 that can declare outcome success: only the recalculation-owned observation path
 can do that.
 
+V0035 adds the final evidence-hardening authorities without changing that
+product outcome: append-only Retained/Return/Refusal/QC coverage snapshots with
+explicit freshness/completeness states; persisted Case action-SLA
+pause/remainder/resume state; effective-dated exception delegation with
+one-time revoke; append-only relational trace stages for targeted and
+reconciliation paths; READ audit vocabulary; and partial successor indexes that
+make the accepted-fact anti-joins satisfy the actual 5,000-Variant profile.
+
 ## 5. Schema, V0030 onward
 
 Applied migrations V0001–V0029 are untouched. New work is forward-only. Every
@@ -392,6 +400,10 @@ Concretely:
   write-off/sellability; returned-goods quality guardrail and attributable
   ledger re-entry; governed inbound and policy lifecycle APIs; policy-derived
   priority digest; and automatic accepted-exception revalidation;
+- V0035 targeted closure: return-evidence coverage/freshness, exact action-SLA
+  pause/resume, direct/delegated authority revalidation, attributable READ and
+  delegation audit, durable relational trace continuity, and the successor
+  indexes proven by the actual-path capacity profile;
 - the loop's own health as named operator incidents rather than quiet counters;
 - the accountable-work surface: the case queue, journal, action, verification,
   escalation and exception routes, each behind the grant it actually needs, and
@@ -399,12 +411,11 @@ Concretely:
   means "seen".
 
 The [acceptance status](../../07-phase-evidence/SLICE-V1-002/acceptance-status.md)
-records exactly which criteria remain partial and why. The declared 5,000-
-variant profile now has real-PostgreSQL keyset traversal evidence and a complete
-five-page worker capacity test, while automatic governance-drift detection,
-restart recovery and the return-quality/re-entry product path are executable.
-Independent Controller Final Closure remains the only authority for
-`S2-AC-100`.
+records 99 criteria with named executable evidence and reserves only
+`S2-AC-100` for independent Controller Final Closure. The declared 5,000-
+Variant profile executes the actual targeted worker and full sweep over real
+PostgreSQL, while governance-drift detection, restart recovery, durable trace,
+runbook drills and the return-quality/re-entry product path are executable.
 
 ## 7. What this design does not do
 

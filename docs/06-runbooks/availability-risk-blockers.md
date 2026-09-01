@@ -161,6 +161,62 @@ No acceptance can be extended by editing it. A new period is a new request,
 sized again by the materiality version in force at the time, and refused if the
 requester is also its only approver where separation is required.
 
+## Isolated executable drills
+
+These five drills are exercised without a Provider by
+`AvailabilityRunbookConformanceTest`. Each drill starts from the production
+signal, proves the fail-closed state, names the bounded repair, and defines the
+exit evidence. A drill is not complete merely because an operator performed an
+action.
+
+### DRILL-STALE-SOURCE
+
+- Signal: `CHANNEL_OBSERVATION_STALE`, `RiskEvidenceState.STALE`, and no proven
+  current units.
+- Action: restore the exact source feed and accept a newer attributed fact;
+  never substitute the stale quantity or zero.
+- Exit: a targeted recalculation reads a fresh observation and the stale
+  blocker is absent from the persisted child.
+
+### DRILL-OWNERSHIP-CONFLICT
+
+- Signal: `COMPANY_SUPPLY_OWNERSHIP_NOT_DECLARED`,
+  `RiskCause.OWNERSHIP_UNDECLARED`, and `RiskEvidenceState.DATA_BLOCKED`.
+- Action: publish one non-overlapping, evidence-linked declaration of
+  `MIRRORS_INTERNAL` or `PHYSICALLY_DISTINCT` for the exact store and mode.
+- Exit: recalculation resolves one unique declaration; the blocker disappears
+  without double-counting mirrored units.
+
+### DRILL-POLICY-BLOCKER
+
+- Signal: `RiskCause.LEAD_TIME_POLICY_MISSING` or
+  `RiskCause.DEMAND_POLICY_MISSING` with `RiskEvidenceState.POLICY_BLOCKED`.
+- Action: an authorized owner publishes the missing effective-dated policy at
+  the intended precedence; do not supply a default in code or in the drill.
+- Exit: recalculation resolves exactly one policy version and the persisted
+  child no longer has a policy-blocked evidence state.
+
+### DRILL-BACKLOG-SLO-BREACH
+
+- Signal: `RECALCULATION_BACKLOG_BEYOND_OBLIGATION`,
+  `CRITICAL_RESPONSE_HARD_BOUND_BREACHED`, or
+  `CRITICAL_RESPONSE_DISTRIBUTION_TARGET_MISSED` from recorded latency facts.
+- Action: inspect oldest age and depth, repair repeatedly failing variants, and
+  run the bounded worker; do not discard, rewrite, or age-forward requests.
+- Exit: the unfinished queue is empty or within the obligation and a later
+  measured window has no hard-bound breach and meets the critical distribution
+  target.
+
+### DRILL-FAILED-RECONCILIATION
+
+- Signal: `RECONCILIATION_LAST_RUN_FAILED`, with `failure_code` and
+  `failed_variant_count` from the newest durable run.
+- Action: inspect `last_product_variant_id` and the failed variant identities,
+  repair the cause, then start a new `RECOVERY` sweep; do not relabel the failed
+  run or close requests for variants it skipped.
+- Exit: a later full run is `COMPLETED`, has `failed_variant_count = 0`, and its
+  relational trace contains `SWEEP_STARTED` through `SWEEP_COMPLETED`.
+
 ## What none of these do
 
 None of these states writes anything to a marketplace. This capability has no

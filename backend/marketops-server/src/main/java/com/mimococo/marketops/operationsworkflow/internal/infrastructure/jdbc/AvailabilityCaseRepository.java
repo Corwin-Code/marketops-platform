@@ -166,10 +166,12 @@ public class AvailabilityCaseRepository {
                         INSERT INTO ops.availability_case
                             (id, organization_id, card_id, child_id, cause_code, cause_key,
                              child_kind, severity, state, accountable_role_code, action_due_at,
+                             original_action_due_at,
                              outcome_due_at, activation_policy_id, first_activated_at,
                              last_evidence_at, correlation_id, created_at, updated_at)
                         VALUES (:id, :organizationId, :cardId, :childId, :causeCode, :causeKey,
                                 :childKind, :severity, 'OPEN', :roleCode, :actionDueAt,
+                                :actionDueAt,
                                 :outcomeDueAt, :policyId, :at, :at, :correlationId, :at, :at)
                         """)
                 .param("id", row.id()).param("organizationId", row.organizationId())
@@ -196,7 +198,8 @@ public class AvailabilityCaseRepository {
         jdbc.sql("""
                         UPDATE ops.availability_case
                            SET severity = :severity,
-                               action_due_at = :actionDueAt,
+                               action_due_at = CASE WHEN state = 'ACCEPTED_RISK'
+                                   THEN action_due_at ELSE :actionDueAt END,
                                last_evidence_at = :lastEvidenceAt,
                                updated_at = :lastEvidenceAt,
                                version = version + 1
@@ -206,6 +209,40 @@ public class AvailabilityCaseRepository {
                 .param("actionDueAt", Timestamp.from(actionDueAt))
                 .param("lastEvidenceAt", Timestamp.from(lastEvidenceAt))
                 .update();
+    }
+
+    /** Pause only the ordinary Action SLA; no history or original deadline is erased. */
+    public void pauseActionSla(UUID id, Instant at) {
+        jdbc.sql("""
+                        UPDATE ops.availability_case
+                           SET state = 'ACCEPTED_RISK',
+                               action_sla_paused_at = :at,
+                               action_sla_remaining_ms = greatest(0,
+                                   floor(extract(epoch FROM (action_due_at - :at)) * 1000)),
+                               updated_at = :at,
+                               version = version + 1
+                         WHERE id = :id
+                           AND action_sla_paused_at IS NULL
+                        """)
+                .param("id", id).param("at", Timestamp.from(at)).update();
+    }
+
+    /** Resume deterministically from the exact remainder stored at acceptance. */
+    public void resumeActionSla(UUID id, Instant at) {
+        jdbc.sql("""
+                        UPDATE ops.availability_case
+                           SET state = 'REOPENED',
+                               action_due_at = CAST(:at AS timestamptz)
+                                   + action_sla_remaining_ms * interval '1 millisecond',
+                               action_sla_paused_at = NULL,
+                               action_sla_remaining_ms = NULL,
+                               updated_at = :at,
+                               version = version + 1
+                         WHERE id = :id
+                           AND action_sla_paused_at IS NOT NULL
+                           AND action_sla_remaining_ms IS NOT NULL
+                        """)
+                .param("id", id).param("at", Timestamp.from(at)).update();
     }
 
     /**
@@ -325,6 +362,7 @@ public class AvailabilityCaseRepository {
     private static final String SELECT = """
             SELECT id, organization_id, card_id, child_id, cause_code, cause_key, severity,
                    state, accountable_role_code, assignee_user_id, action_due_at, outcome_due_at,
+                   original_action_due_at, action_sla_paused_at, action_sla_remaining_ms,
                    reopen_count, escalation_level, first_activated_at, last_evidence_at,
                    improvement_first_seen_at
               FROM ops.availability_case
@@ -344,6 +382,10 @@ public class AvailabilityCaseRepository {
                 rows.getString("accountable_role_code"),
                 rows.getObject("assignee_user_id", UUID.class),
                 rows.getTimestamp("action_due_at").toInstant(),
+                rows.getTimestamp("original_action_due_at").toInstant(),
+                rows.getTimestamp("action_sla_paused_at") == null
+                        ? null : rows.getTimestamp("action_sla_paused_at").toInstant(),
+                rows.getObject("action_sla_remaining_ms", Long.class),
                 rows.getTimestamp("outcome_due_at") == null
                         ? null : rows.getTimestamp("outcome_due_at").toInstant(),
                 rows.getInt("reopen_count"),

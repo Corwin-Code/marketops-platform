@@ -21,6 +21,9 @@ import java.util.UUID;
  * @param accountableRoleCode the role that owns the cause
  * @param assigneeUserId who owns it, or {@code null}
  * @param actionDueAt when the action stage is due
+ * @param originalActionDueAt the immutable first ordinary Action SLA deadline
+ * @param actionSlaPausedAt when an active exception paused that clock, or {@code null}
+ * @param actionSlaRemainingMillis stored remainder while paused, or {@code null}
  * @param outcomeDueAt when the outcome stage is due, or {@code null}
  * @param reopenCount how many times the same cause has returned
  * @param escalationLevel how far it has been raised
@@ -40,6 +43,9 @@ public record AvailabilityCaseView(
         String accountableRoleCode,
         UUID assigneeUserId,
         Instant actionDueAt,
+        Instant originalActionDueAt,
+        Instant actionSlaPausedAt,
+        Long actionSlaRemainingMillis,
         Instant outcomeDueAt,
         int reopenCount,
         int escalationLevel,

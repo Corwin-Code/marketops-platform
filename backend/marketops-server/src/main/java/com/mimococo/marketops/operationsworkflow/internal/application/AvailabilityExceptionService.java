@@ -7,6 +7,7 @@ import com.mimococo.marketops.adminobservability.audit.MetadataAuditChange;
 import com.mimococo.marketops.adminobservability.audit.MetadataAuditRecorder;
 import com.mimococo.marketops.operationsworkflow.AcceptedExceptionState;
 import com.mimococo.marketops.operationsworkflow.AcceptedExceptionView;
+import com.mimococo.marketops.operationsworkflow.AvailabilityExceptionDelegationView;
 import com.mimococo.marketops.operationsworkflow.AvailabilityCaseView;
 import com.mimococo.marketops.operationsworkflow.AvailabilityExceptionGovernance;
 import com.mimococo.marketops.operationsworkflow.ExceptionAuthorityLevel;
@@ -14,6 +15,7 @@ import com.mimococo.marketops.operationsworkflow.ExceptionScopeKind;
 import com.mimococo.marketops.operationsworkflow.internal.domain.ExceptionMaterialityPolicy;
 import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.AvailabilityCaseRepository;
 import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.AvailabilityExceptionRepository;
+import com.mimococo.marketops.identityaccess.BusinessRoleCode;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.IdGenerator;
 import com.mimococo.marketops.shared.OperationRejectedException;
@@ -127,9 +129,10 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
         }
         if (blank(decision.reason()) || decision.decidedByUserId() == null
-                || decision.decidedByRole() == null) {
+                || blank(decision.correlationId()) || decision.at() == null) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
+        BusinessRoleCode effectiveRole = resolveDecisionRole(existing, decision);
         AvailabilityCaseView governed = cases.find(existing.caseId())
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
 
@@ -140,7 +143,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
             // now, so the request goes back to blocked and the risk stays live.
             // Separation is recorded as required because nothing established
             // that it was not: an unsized decision is not a lenient one.
-            return blockAuthority(existing, decision, true);
+            return blockAuthority(existing, decision, effectiveRole, true);
         }
         ExceptionMaterialityPolicy sizing = policy.get();
         ExceptionAuthorityLevel required = sizing.requiredAuthority(governed.severity(),
@@ -152,19 +155,24 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
         boolean requesterIsApprover =
                 existing.requestedByUserId().equals(decision.decidedByUserId());
 
+        if (!ExceptionAuthorityLevel.levelsFor(effectiveRole).contains(required)) {
+            return blockAuthority(existing, decision, effectiveRole, separationRequired);
+        }
+        if (!exceptions.decisionAuthorityLive(existing.organizationId(),
+                decision.decidedByUserId(), effectiveRole.name(),
+                decision.delegationReference(), decision.at())) {
+            return blockAuthority(existing, decision, effectiveRole, separationRequired);
+        }
+
         if (!decision.approved()) {
-            exceptions.insertDecision(decisionRow(existing, decision, "REJECTED", required,
-                    requesterIsApprover, separationRequired, null, null));
+            exceptions.insertDecision(decisionRow(existing, decision, effectiveRole,
+                    "REJECTED", required, requesterIsApprover, separationRequired, null, null));
             exceptions.setState(existing.id(), AcceptedExceptionState.REJECTED, decision.at());
             recordAudit(existing.id(), AuditAction.STATUS_CHANGE,
                     decision.decidedByUserId().toString(),
                     Map.of("state", new FieldChange(existing.state().name(),
                             AcceptedExceptionState.REJECTED.name())));
             return find(existing.id());
-        }
-
-        if (!ExceptionAuthorityLevel.levelsFor(decision.decidedByRole()).contains(required)) {
-            return blockAuthority(existing, decision, separationRequired);
         }
         if (separationRequired && requesterIsApprover) {
             // The database refuses this row too. Refusing it here as well gives
@@ -178,8 +186,8 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
 
-        exceptions.insertDecision(decisionRow(existing, decision, "APPROVED", required,
-                requesterIsApprover, separationRequired, existing.effectiveFrom(),
+        exceptions.insertDecision(decisionRow(existing, decision, effectiveRole, "APPROVED",
+                required, requesterIsApprover, separationRequired, existing.effectiveFrom(),
                 existing.expiresAt()));
         exceptions.activate(existing.id(), existing.effectiveFrom(), existing.expiresAt(),
                 existing.reviewAt(), sizing.policyId(), sizing.policyVersion(), decision.at());
@@ -191,6 +199,76 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
                 Map.of("state", new FieldChange(existing.state().name(),
                         AcceptedExceptionState.ACTIVE.name())));
         return find(existing.id());
+    }
+
+    @Override
+    @Transactional
+    public AvailabilityExceptionDelegationView grantDelegation(ExceptionDelegationGrant grant) {
+        validateGrant(grant);
+        if (!exceptions.decisionAuthorityLive(grant.organizationId(), grant.grantedByUserId(),
+                grant.grantedByRole().name(), null, grant.at())) {
+            throw OperationRejectedException.of(ErrorCode.ACTION_NOT_PERMITTED);
+        }
+        if (!ExceptionAuthorityLevel.levelsFor(grant.grantedByRole())
+                .containsAll(ExceptionAuthorityLevel.levelsFor(grant.delegatedRole()))) {
+            throw OperationRejectedException.of(ErrorCode.ACTION_NOT_PERMITTED);
+        }
+        UUID id = ids.newId();
+        try {
+            exceptions.insertDelegation(new AvailabilityExceptionRepository.DelegationRow(
+                    id, grant.organizationId(), grant.delegationReference(),
+                    grant.delegateUserId(), grant.delegatedRole(), grant.grantedByUserId(),
+                    grant.grantedByRole(), grant.effectiveFrom(), grant.effectiveTo(),
+                    grant.evidenceReference(), grant.at(), grant.correlationId()));
+        } catch (DuplicateKeyException duplicate) {
+            throw OperationRejectedException.of(ErrorCode.DUPLICATE_IDENTITY);
+        }
+        audit.recordChange(new MetadataAuditChange(AuditSourceDomain.OPERATIONS_WORKFLOW,
+                grant.grantedByUserId().toString(), AuditAction.GRANT,
+                "availability_exception_delegation", id, grant.delegationReference(),
+                Map.of("delegateUserId", new FieldChange(null,
+                                grant.delegateUserId().toString()),
+                        "delegatedRole", new FieldChange(null, grant.delegatedRole().name()),
+                        "effectiveTo", new FieldChange(null, grant.effectiveTo().toString())),
+                "bounded accepted-risk decision delegation", grant.evidenceReference()));
+        return findDelegation(grant.organizationId(), grant.delegationReference());
+    }
+
+    @Override
+    @Transactional
+    public AvailabilityExceptionDelegationView revokeDelegation(
+            ExceptionDelegationRevocation revocation) {
+        if (revocation.organizationId() == null || revocation.revokedByUserId() == null
+                || revocation.revokedByRole() == null || revocation.at() == null
+                || blank(revocation.delegationReference()) || blank(revocation.reason())
+                || blank(revocation.correlationId())) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        AvailabilityExceptionDelegationView existing = findDelegation(
+                revocation.organizationId(), revocation.delegationReference());
+        if (existing.revokedAt() != null) {
+            throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
+        }
+        if (!exceptions.decisionAuthorityLive(revocation.organizationId(),
+                revocation.revokedByUserId(), revocation.revokedByRole().name(), null,
+                revocation.at())
+                || !ExceptionAuthorityLevel.levelsFor(revocation.revokedByRole())
+                .containsAll(ExceptionAuthorityLevel.levelsFor(existing.delegatedRole()))) {
+            throw OperationRejectedException.of(ErrorCode.ACTION_NOT_PERMITTED);
+        }
+        if (!exceptions.revokeDelegation(revocation.organizationId(),
+                revocation.delegationReference(), revocation.revokedByUserId(),
+                revocation.reason(), revocation.at())) {
+            throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
+        }
+        audit.recordChange(new MetadataAuditChange(AuditSourceDomain.OPERATIONS_WORKFLOW,
+                revocation.revokedByUserId().toString(), AuditAction.REVOKE,
+                "availability_exception_delegation", existing.id(),
+                existing.delegationReference(),
+                Map.of("revokedAt", new FieldChange(null, revocation.at().toString()),
+                        "revocationReason", new FieldChange(null, revocation.reason())),
+                "revoke accepted-risk decision delegation", existing.evidenceReference()));
+        return findDelegation(revocation.organizationId(), revocation.delegationReference());
     }
 
     @Override
@@ -276,12 +354,15 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
         if (!scopeStillMatches(accepted, current)) {
             return InvalidationCause.SCOPE_CHANGED;
         }
-        if (current.acceptedRiskDigest() == null
-                || !current.acceptedRiskDigest().equals(current.riskDigest())) {
-            return InvalidationCause.EVIDENCE_CONFLICT;
-        }
         if (!exceptions.approvalAuthorityLive(accepted.id(), at)) {
             return InvalidationCause.AUTHORITY_LOST;
+        }
+        if (current.acceptedCaseReopenCount() != null
+                && current.currentCaseReopenCount() > current.acceptedCaseReopenCount()) {
+            return InvalidationCause.REPEATED_CONDITION;
+        }
+        if (severityRank(current.severity()) > severityRank(current.acceptedSeverity())) {
+            return InvalidationCause.MATERIALITY_INCREASED;
         }
         ExceptionAuthorityLevel nowRequired = livePolicy.requiredAuthority(current.severity(),
                 accepted.occurrenceCount(), current.profitAtRiskAmount(),
@@ -297,7 +378,28 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
                 && current.profitAtRiskAmount().compareTo(accepted.consequenceAmount()) > 0) {
             return InvalidationCause.MATERIALITY_INCREASED;
         }
+        if (current.acceptedProfitAtRiskAmount() != null
+                && current.profitAtRiskAmount() != null
+                && java.util.Objects.equals(current.acceptedProfitAtRiskCurrency(),
+                        current.profitAtRiskCurrency())
+                && current.profitAtRiskAmount()
+                        .compareTo(current.acceptedProfitAtRiskAmount()) > 0) {
+            return InvalidationCause.MATERIALITY_INCREASED;
+        }
+        if (current.acceptedRiskDigest() == null
+                || !current.acceptedRiskDigest().equals(current.riskDigest())) {
+            return InvalidationCause.EVIDENCE_CONFLICT;
+        }
         return null;
+    }
+
+    private static int severityRank(String severity) {
+        return switch (severity == null ? "" : severity) {
+            case "WATCH" -> 1;
+            case "HIGH" -> 2;
+            case "CRITICAL", "REVIEW", "UNRESOLVED" -> 3;
+            default -> 0;
+        };
     }
 
     private static boolean scopeStillMatches(AcceptedExceptionView accepted,
@@ -356,9 +458,10 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
      */
     private AcceptedExceptionView blockAuthority(AcceptedExceptionView existing,
                                                  ExceptionDecision decision,
+                                                 BusinessRoleCode effectiveRole,
                                                  boolean separationRequired) {
-        exceptions.insertDecision(decisionRow(existing, decision, "AUTHORITY_BLOCKED",
-                existing.requiredAuthority(),
+        exceptions.insertDecision(decisionRow(existing, decision, effectiveRole,
+                "AUTHORITY_BLOCKED", existing.requiredAuthority(),
                 existing.requestedByUserId().equals(decision.decidedByUserId()),
                 separationRequired, null, null));
         exceptions.setState(existing.id(), AcceptedExceptionState.AUTHORITY_BLOCKED, decision.at());
@@ -390,12 +493,13 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
     }
 
     private AvailabilityExceptionRepository.DecisionRow decisionRow(
-            AcceptedExceptionView existing, ExceptionDecision decision, String verdict,
+            AcceptedExceptionView existing, ExceptionDecision decision,
+            BusinessRoleCode effectiveRole, String verdict,
             ExceptionAuthorityLevel level, boolean requesterIsApprover, boolean separationRequired,
             Instant grantedFrom, Instant grantedUntil) {
         return new AvailabilityExceptionRepository.DecisionRow(ids.newId(),
                 existing.organizationId(), existing.id(), verdict, level,
-                decision.decidedByUserId(), decision.decidedByRole().name(),
+                decision.decidedByUserId(), effectiveRole.name(),
                 decision.delegationReference(), requesterIsApprover, separationRequired,
                 decision.authenticatedAt(), decision.stepUpSatisfied(), decision.reason(),
                 grantedFrom, grantedUntil, decision.at(), decision.correlationId());
@@ -404,6 +508,43 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
     private AcceptedExceptionView find(UUID id) {
         return exceptions.find(id)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+    }
+
+    private AvailabilityExceptionDelegationView findDelegation(UUID organizationId,
+                                                                String reference) {
+        return exceptions.findDelegation(organizationId, reference)
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+    }
+
+    private BusinessRoleCode resolveDecisionRole(AcceptedExceptionView existing,
+                                                  ExceptionDecision decision) {
+        if (!blank(decision.delegationReference())) {
+            return exceptions.delegatedRole(existing.organizationId(),
+                            decision.decidedByUserId(), decision.delegationReference(),
+                            decision.at())
+                    .orElseThrow(() -> OperationRejectedException.of(
+                            ErrorCode.ACTION_NOT_PERMITTED));
+        }
+        if (decision.decidedByRole() == null) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        return decision.decidedByRole();
+    }
+
+    private static void validateGrant(ExceptionDelegationGrant grant) {
+        if (grant.organizationId() == null || grant.delegateUserId() == null
+                || grant.delegatedRole() == null || grant.grantedByUserId() == null
+                || grant.grantedByRole() == null || grant.effectiveFrom() == null
+                || grant.effectiveTo() == null || grant.at() == null
+                || blank(grant.delegationReference()) || blank(grant.evidenceReference())
+                || blank(grant.correlationId())
+                || grant.delegateUserId().equals(grant.grantedByUserId())
+                || !grant.effectiveTo().isAfter(grant.at())
+                || !grant.effectiveTo().isAfter(grant.effectiveFrom())
+                || ExceptionAuthorityLevel.levelsFor(grant.delegatedRole()).isEmpty()
+                || ExceptionAuthorityLevel.levelsFor(grant.grantedByRole()).isEmpty()) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
     }
 
     /**
