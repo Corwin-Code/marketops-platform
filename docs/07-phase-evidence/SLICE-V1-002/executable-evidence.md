@@ -17,10 +17,10 @@ engineering_findings_addressed: 18_OF_18_PENDING_INDEPENDENT_CLOSURE_VERIFICATIO
 engineering_closure: NOT_CLAIMED
 controller_verdict: NOT_CLAIMED
 owner_formal_closure: NOT_CLAIMED
-remote_publication: DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS
+remote_publication: DRAFT_PR_26_OPEN_FINAL_HEAD_READBACK_REQUIRED
 draft_pr: 26
 draft_pr_url: https://github.com/Corwin-Code/marketops-platform/pull/26
-required_checks: PASS_12_OF_12_PLUS_AGGREGATE_CODEQL
+required_checks: FINAL_HEAD_READBACK_REQUIRED
 external_business_systems_contacted: NONE
 deployment: NOT_EXECUTED
 gate_ev: NOT_AUTHORIZED
@@ -64,8 +64,8 @@ The database evidence is real PostgreSQL, not an in-memory substitute.
 | `./mvnw -B -ntp -Dtest='PriorityPolicyTest' test` | 5 passed | lane band, visible factors, determinism |
 | `./mvnw -B -ntp -Dtest='ProfitLaneResolverTest' test` | 5 passed | settled-positive, operational fallback, provisional estimate, stale block and decisive settled-negative profit |
 | `./mvnw -B -ntp -Dtest='ReturnQualityAssessmentTest' test` | 8 passed | no report versus complete zero-return versus observed returns, freshness/completeness/conflict, retention, QC disposition and sellability authority |
-| `./mvnw -B -ntp -Dtest='AvailabilityReconciliationWorkerTest' test` | 3 passed | failure isolation, full keyset paging and 5,000-variant hourly capacity margin |
-| `./mvnw -B -ntp -Dtest='AvailabilityTargetedWorkerCapacityTest' test` | 1 passed | 5,000 CRITICAL response observations inside P95 and hard bounds |
+| `./mvnw -B -ntp -Dtest='AvailabilityReconciliationWorkerTest' test` | 3 passed | supporting mocked worker failure-isolation and keyset-paging accounting; `TC-RECON-003` is not runtime sweep-capacity authority |
+| `./mvnw -B -ntp -Dtest='AvailabilityTargetedWorkerCapacityTest' test` | 1 passed | supporting mocked worker/SLO-observation accounting; `TC-TARGET-CAP-001` is not actual-path capacity authority |
 | `./mvnw -B -ntp -Dtest='AvailabilityExceptionRevalidationTest' test` | 10 passed | accepted exception invalidation on cause, scope, severity, consequence, recurrence, direct/delegated authority, policy and evidence conflict |
 | `./mvnw -B -ntp -Dtest='AvailabilityRunbookConformanceTest' test` | 5 passed | isolated executable stale-source, ownership-conflict, policy-blocker, backlog/SLO and failed-reconciliation drills |
 | `./mvnw -B -ntp -Dtest='WorkActivationPolicyTest' test` | 8 passed | CRITICAL now, blocker on first sighting, HIGH only once sustained, WATCH never, and the two clocks |
@@ -84,9 +84,9 @@ The database evidence is real PostgreSQL, not an in-memory substitute.
 | `./mvnw -B -ntp -Dit.test='ControlBoundaryCompletenessIT' verify` | 10 passed | every new table registered in the route inventory |
 | `./mvnw -B -ntp -Dit.test='ControlEpochTriggerIT' verify` | 11 passed | no epoch trigger on a `NO_ROUTE` table |
 | `./mvnw -B -ntp -Dit.test='DatabasePrivilegeIT' verify` | 11 passed | least-privilege grants unchanged |
-| `./mvnw -B -ntp clean verify` | BUILD SUCCESS in 19:01; 1,028 unit and 465 integration tests passed, 0 failed/errors/skipped | the complete backend unit, PostgreSQL integration, actual-path capacity, export/restore and combined coverage suite |
+| `./mvnw -B -ntp clean verify` | BUILD SUCCESS in 20:21; 1,028 unit and 465 integration tests passed, 0 failed/errors/skipped | the complete backend unit, PostgreSQL integration, actual scheduled-path capacity, export/restore and combined coverage suite |
 | `python3 scripts/validate_governance.py` | passed | canonical governance contract, including the flip to SLICE-V1-002 |
-| `python3 scripts/validate_production_readiness.py` | passed over 2,533 files | TC-GLOBAL-001 through TC-GLOBAL-004 |
+| `python3 scripts/validate_production_readiness.py` | passed over 2,534 files | TC-GLOBAL-001 through TC-GLOBAL-004 |
 | `python3 -m unittest discover -s tests -p 'test_*.py'` | 385 passed | governance tooling, including V0030 through V0035 and the exact safe index-replacement control |
 | `bash scripts/verify_coverage_thresholds.sh backend` | passed | mutation guard independently rejected any backend coverage report below the fixed bundle LINE 0.80 or BRANCH 0.70 gates |
 | `python3 scripts/verify_migration_artifact.py` | passed | the packaged application contains the exact ordered V0001-through-V0035 migration inventory |
@@ -94,8 +94,44 @@ The database evidence is real PostgreSQL, not an in-memory substitute.
 | `make verify-local-config` | passed | owner-only root configuration, no backend-side secret copy, absolute import and readiness requiring the generated database password |
 | `make supply-chain` | passed; backend and frontend CycloneDX 1.6 inventories written | dependency convergence, license inventory and reproducible SBOM generation |
 | `npm run lint && npm run format:check && npm run typecheck && npm run test:ci && npm run build && npm run verify:bundle` | 227 passed; all static, coverage, build and bundle gates passed | frontend suite including queue, cases and the governed authority panel |
-| `COMPOSE_PROJECT_NAME=marketops-browser-final3 make frontend-browser` | 12 passed in 42.8 seconds | the browser suite against the real backend and an isolated V0035-migrated PostgreSQL database, including real database outage/recovery |
-| Draft PR #26 remote required checks | 12/12 required contexts passed; aggregate CodeQL passed with no remaining new alert | exact remote backend, frontend, architecture, governance, infrastructure, dependency and security gates |
+| `COMPOSE_PROJECT_NAME=marketops-browser-s2f017 make frontend-browser` | 12 passed in 49.5 seconds | the browser suite against the real backend and an isolated V0035-migrated PostgreSQL database, including real database outage/recovery; sandbox-external launch was required only for macOS Chromium Mach-port permission |
+| Draft PR #26 remote required checks | final-Head readback required after publication | exact remote backend, frontend, architecture, governance, infrastructure, dependency and security gates; the external final packet is recorded in the PR body because a committed document cannot contain its own final Head |
+
+## Declared-capacity authority
+
+The versioned capacity binding is
+`backend/marketops-server/src/test/resources/application-availability-declared-capacity-v1.yaml`
+(SHA-256
+`01523457ab9aa19ffbd7f363a5e0f2946c0f6c483954818984f4b0ce42751215`),
+identified inside the report as `S2_DECLARED_CAPACITY_V1`. It declares
+`worker-enabled=true`, `facts-per-scan=5000`, `variants-per-pass=5000`,
+`scan-interval=PT30S` and `sweep-interval=PT1H`. The profile defers autonomous
+background starts by `PT24H` so the test can invoke each scheduled entry point
+exactly once without an uncontrolled overlapping pass.
+
+`RepresentativePerformanceIT` is the only declared-capacity runtime authority.
+It does not insert targeted queue work. It accepts 5,000 attributable canonical
+`listing_stock_observation` facts at one exact `fact_accepted_at`, then invokes
+`AvailabilityRecalculationScheduler.recalculateWhatChanged()`. The exercised
+path is `AvailabilityTriggerIngestionService` -> durable total-order cursor ->
+`ListingIdentityDirectory.internalVariantAt` resolution/dedup ->
+`AvailabilityTargetedWorker` -> evidence -> calculation -> projection -> Case
+-> automatic verification -> SLO. It then performs the real 5,000-Variant
+keyset-paged reconciliation and repairs 50/50 deliberately dropped triggers.
+
+The prepublication run wrote
+`backend/marketops-server/target/performance/representative-v1.json` with SHA-256
+`68c0ac2307b89b583deeaed72d19dcb5ec154f555b8b902ec3fa5231ee6a80d7`.
+It reports 5,000 facts scanned/queued/completed in one scheduler pass,
+`directQueueSeeded=false`, 1,000 observations in each of the five lanes,
+CRITICAL P95 272,951 ms, every hard maximum below 900,000 ms, a 361,221 ms
+full sweep, 3,238,779 ms hourly margin, zero failed/retried Variants and complete
+5,000 targeted plus 5,000 reconciliation trace linkage. The final remote run
+is stamped from GitHub Actions with source Head, tested merge, workflow run/job
+and artifact name. After all required checks pass, the external PR packet binds
+those values plus the downloaded report SHA-256 and GitHub artifact digest;
+that packet is the exact final authority and does not require a self-referential
+documentation commit.
 
 ## Coverage
 
@@ -104,9 +140,9 @@ merged unit and integration run:
 
 | Measure | Observed | Gate |
 | --- | ---: | ---: |
-| Line | 0.856820 | 0.80 |
-| Branch | 0.714626 | 0.70 |
-| Line, `availabilityrisk` only | 0.823295 | — |
+| Line | 0.858439 | 0.80 |
+| Branch | 0.714583 | 0.70 |
+| Line, `availabilityrisk` module packages | 0.833830 | — |
 
 ## What the database refuses
 
@@ -153,6 +189,7 @@ caught cannot judge whether the tests are good enough.
 | Successor anti-joins on accepted-fact tables had no supporting partial indexes and repeatedly scanned historical predecessors per Variant | the actual 5,000-Variant worker sustained under one Variant/second; V0035 partial successor indexes improved the same path by roughly 26x and the full SLO profile passes |
 | V0035 was absent from the exact Flyway and managed-profile migration inventories | full aggregate migration guards exposed every stale terminal version/count; fresh, managed and V0010-upgrade paths now all bind V0035 |
 | The first final-R1 aggregate CodeQL analysis reported seven high `java/user-controlled-bypass` annotations in accepted-risk decision/revocation flow | all seven code paths traced to compound fail-fast request validation controlling later policy/authority/step-up calls; dedicated fail-closed validation boundaries preserve every rejection and prevent malformed fields from selecting an alternate successful decision path, no alert was dismissed, and the next exact-Head aggregate CodeQL result is the closure authority |
+| The supposed declared-capacity targeted proof pre-seeded 5,000 `ops.availability_recalculation_request` rows | the fixture bypassed accepted-fact ingestion, durable cursor progress and Variant resolution/dedup, so it could not prove the scheduled production path from `fact_accepted_at`; `RepresentativePerformanceIT` now seeds only attributable canonical facts and invokes `AvailabilityRecalculationScheduler.recalculateWhatChanged()`, while asserting no targeted queue row existed before ingestion |
 
 ## Targeted and sweep equivalence
 
@@ -185,21 +222,22 @@ neither by evidence that cannot establish safety in the first place.
   image references resolve unchanged. No test source, image name or pinned
   digest was modified.
 - Declared-capacity evidence is local and synthetic, but it executes the actual
-  production application path rather than a mocked refresh. PostgreSQL
-  enumerated all 5,000 Variants in five keyset pages in 44 ms; the targeted
-  worker completed 5,000 accepted facts in 244,035 ms, wrote 5,000 cards,
-  10,000 children, 5,000 Cases and 5,000 SLO rows, and produced exactly 1,000
+  scheduled production application path rather than a mocked refresh or a
+  pre-seeded targeted queue. PostgreSQL accepted and ingested all 5,000
+  canonical facts through one durable-cursor scheduler pass; the targeted
+  worker completed 5,000 Variants in 280,726 ms, wrote 5,000 cards, 10,000
+  children, 5,000 Cases and 5,000 SLO rows, and produced exactly 1,000
   observations in each of CRITICAL/HIGH/WATCH/HEALTHY/UNRESOLVED. CRITICAL P95
-  was 232,766 ms and worst case 244,110 ms with zero breaches. The full sweep
-  completed 5,000 Variants in 337,180 ms with zero failed Variants/retries,
-  repaired 50/50 dropped triggers and retained 3,262,820 ms hourly margin. Its
+  was 272,951 ms and worst case 283,065 ms with zero breaches. The full sweep
+  completed 5,000 Variants in 361,221 ms with zero failed Variants/retries,
+  repaired 50/50 dropped triggers and retained 3,238,779 ms hourly margin. Its
   relational trace linked all 5,000 targeted and 5,000 reconciliation Variants.
   The 600,000-row, 201,207,247-byte asynchronous export completed and verified
-  in 35,577 ms (54 parts; submission 26 ms; manifest
-  `b9319a32d3d6676883e2a0e96233b0663edc6a2e8ce96ec42e0ff504fa1d554c`),
-  and exact-byte PG17 restore passed in 74,289 ms with V0035, zero post-restore
+  in 42,716 ms (54 parts; submission 39 ms; manifest
+  `8b1a11043052a4e2d482a52fde11497c21c34dc8066f4994a4005bc3ef27db19`),
+  and exact-byte PG17 restore passed in 79,706 ms with V0035, zero post-restore
   migrations and dump SHA-256
-  `dc090bfddf31abe8c4cc0629debd1614c8efe2d40e40d9b119263dd4cc9d59b5`.
+  `4205000ccd5dba33c2c875c955c604be3b993900d5b6c21ca3f4f260af84b8fc`.
   This is internal capacity evidence, not a deployed Owner cohort or
   real-provider claim.
 - Fault injection now covers a dropped trigger (`TC-LOOP-006`), concurrent

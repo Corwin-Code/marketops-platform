@@ -76,6 +76,37 @@ handoff; exact observed counts, timings and coverage are synchronized in
 - Draft PR required checks, dependency review and aggregate CodeQL;
 - exact remote identity, Draft state and zero unresolved review-thread readback.
 
+## Declared-capacity authority
+
+The authoritative profile is version `S2_DECLARED_CAPACITY_V1` in
+`backend/marketops-server/src/test/resources/application-availability-declared-capacity-v1.yaml`,
+SHA-256
+`01523457ab9aa19ffbd7f363a5e0f2946c0f6c483954818984f4b0ce42751215`.
+It binds `worker-enabled=true`, `facts-per-scan=5000`,
+`variants-per-pass=5000`, `scan-interval=PT30S` and
+`sweep-interval=PT1H`. Test-only initial delays are `PT24H`, preventing
+background overlap while the declared scheduler entry points are invoked
+explicitly and exactly once.
+
+`RepresentativePerformanceIT` is the capacity authority. It seeds no targeted
+`ops.availability_recalculation_request`; instead, it accepts 5,000 attributable
+canonical facts with one exact `fact_accepted_at`, asserts the queue is empty,
+and drives `AvailabilityRecalculationScheduler.recalculateWhatChanged()` through
+`AvailabilityTriggerIngestionService`, durable cursor, Variant resolution/dedup,
+targeted worker, evidence, calculation, projection, Case, automatic verification
+and SLO. It then executes the real 5,000-Variant sweep and 50/50 dropped-trigger
+recovery. `TC-TARGET-CAP-001` is mocked worker-accounting support and
+`TC-RECON-003` is mocked worker-paging support; neither is runtime authority.
+
+The report is self-stamped by the final GitHub Actions run with source Head,
+tested merge, workflow run/attempt/job and artifact name. GitHub assigns the
+artifact archive digest after upload, so the authoritative final binding is
+recorded in the Draft PR #26 external handoff packet after the final Head passes:
+source Head/tree, tested merge/tree/parents, workflow run/job, artifact
+name/digest, downloaded `representative-v1.json` SHA-256 and exact capacity
+values. Recording this packet outside the commit avoids changing the identity
+it proves.
+
 ## Authority boundary
 
 This packet is implementation evidence, not self-approval. Draft PR #26 remains

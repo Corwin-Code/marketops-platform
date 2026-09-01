@@ -251,19 +251,26 @@
     },
     {
       "findingId": "S2-F-017",
-      "reproduction": "The reviewed candidate declared itself incomplete, had a red aggregate gate and lacked declared-capacity, browser, security and closure evidence.",
-      "rootCause": "Supporting isolated tests were treated as completion while full regression, runtime capacity, fault injection and canonical evidence were unfinished.",
+      "reproduction": "The reviewed candidate declared itself incomplete, had a red aggregate gate and lacked declared-capacity, browser, security and closure evidence; the later capacity fixture still pre-seeded 5,000 ops.availability_recalculation_request rows and therefore bypassed accepted-fact ingestion, durable cursor progress and Variant resolution/dedup.",
+      "rootCause": "Supporting isolated tests and downstream worker throughput were treated as completion while the scheduled path from attributable canonical fact acceptance through ingestion/cursor/resolution/dedup and the downstream runtime chain was not executed.",
       "changedFiles": [
+        ".github/workflows/backend.yml",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/application/AvailabilityRecalculationScheduler.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/config/AvailabilityWorkerProperties.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/RepresentativePerformanceIT.java",
+        "backend/marketops-server/src/test/resources/application-availability-declared-capacity-v1.yaml",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/AvailabilityRecalculationLoopIT.java",
         "backend/marketops-server/src/test/java/com/mimococo/marketops/availabilityrisk/internal/domain/AvailabilityRunbookConformanceTest.java",
         "frontend/marketops-console/tests/browser/availability-journey.spec.ts",
         "docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md",
-        "docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md"
+        "docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md",
+        "docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md",
+        "docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json",
+        "docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md"
       ],
-      "sameClassScan": "Scanned skipped/quarantined tests, fixture-only completion claims, stale acceptance text, performance mocks and incomplete remote security gates; thresholds and failing-path assertions remain intact.",
-      "tests": ["full Maven clean verify", "full governance unittest discovery", "frontend lint/format/typecheck/unit/build/bundle isolation", "real-backend browser E2E", "supply-chain and security scans"],
-      "runtimeEvidence": "RepresentativePerformanceIT records actual 5,000-Variant targeted/sweep, SLO, trace, dropped-trigger, 600,000-row export and restore evidence; Draft PR required checks are read back before handoff.",
+      "sameClassScan": "Scanned skipped/quarantined tests, direct availability_recalculation_request fixture inserts, stale capacity claims, mocked performance tests and incomplete remote identity/security gates; the only remaining direct queue fixture insertion is the deliberate 50-trigger loss used to prove sweep recovery, and thresholds remain unchanged.",
+      "tests": ["RepresentativePerformanceIT actual scheduled path with 5,000 canonical accepted facts", "TC-TARGET-CAP-001 mocked worker-accounting support", "TC-RECON-003 mocked worker-paging support", "full Maven clean verify", "full governance unittest discovery", "frontend lint/format/typecheck/unit/build/bundle isolation", "real-backend browser E2E", "supply-chain and security scans"],
+      "runtimeEvidence": "RepresentativePerformanceIT binds the versioned worker-enabled 5,000-facts/5,000-variants/cadence profile and records the actual scheduler -> ingestion/cursor -> resolution/dedup -> targeted worker -> evidence -> calculation -> projection -> Case -> automatic verification -> SLO chain, real 5,000-Variant sweep, 50/50 recovery, trace, 600,000-row export and restore evidence. The final GitHub artifact is bound externally to exact source Head, tested merge, workflow run/job, artifact name/digest and report SHA-256 before handoff.",
       "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
     },
     {

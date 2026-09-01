@@ -7,7 +7,8 @@ import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessRoleCode;
 import com.mimococo.marketops.shared.Digest;
 import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorker;
-import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityTargetedWorker;
+import com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityRecalculationScheduler;
+import com.mimococo.marketops.availabilityrisk.internal.config.AvailabilityWorkerProperties;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -16,7 +17,9 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,11 +55,14 @@ import tools.jackson.databind.ObjectMapper;
  * the executed application statements rather than copies of repository SQL. */
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("ci")
+@ActiveProfiles({"ci", "availability-declared-capacity-v1"})
 @Import(RepresentativePerformanceIT.TraceConfiguration.class)
 class RepresentativePerformanceIT {
     private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE = TestDatabase.isolatedContainer();
     private static final String DATASET = "performance/representative-v1.sql";
+    private static final String DECLARED_CAPACITY_CONFIGURATION =
+            "application-availability-declared-capacity-v1.yaml";
+    private static final String DECLARED_CAPACITY_VERSION = "S2_DECLARED_CAPACITY_V1";
     private static final int WARMUPS = 3;
     private static final int SAMPLES = 25;
     private static final Path CUSTODY_DIRECTORY = temporaryDirectory("marketops-performance-custody-");
@@ -69,7 +75,8 @@ class RepresentativePerformanceIT {
     @Autowired com.mimococo.marketops.analyticsdecision.internal.application.DiagnosticExportWorker exportWorker;
     @Autowired com.mimococo.marketops.marketplaceintegration.port.ObjectStoragePort objectStorage;
     @Autowired com.mimococo.marketops.availabilityrisk.internal.infrastructure.jdbc.AvailabilityRecalculationRepository availabilityQueue;
-    @Autowired AvailabilityTargetedWorker availabilityTargeted;
+    @Autowired AvailabilityRecalculationScheduler availabilityScheduler;
+    @Autowired AvailabilityWorkerProperties availabilityWorkerProperties;
     @Autowired AvailabilityReconciliationWorker availabilityReconciliation;
 
     @DynamicPropertySource
@@ -88,6 +95,9 @@ class RepresentativePerformanceIT {
         Map<String,Object> report = new LinkedHashMap<>();
         report.put("classification","SYNTHETIC_LOCAL_PERFORMANCE_EVIDENCE");
         report.put("datasetVersion","SYNTHETIC_PERFORMANCE_DATASET_V1");
+        report.put("declaredCapacityConfiguration",
+                declaredCapacityConfiguration());
+        report.put("executionIdentity", executionIdentity());
         report.put("actualOwnerCohortVerified",false);
         report.put("profileAssumption",Map.of("hypotheticalBaselineSkus",500,"testedSkus",5000,
                 "hypotheticalBaselineDailyOrders",100,"testedDailyOrders",2000,"historyDays",180));
@@ -188,6 +198,59 @@ class RepresentativePerformanceIT {
             Files.createDirectories(output.getParent());
             Files.writeString(output,mapper.writerWithDefaultPrettyPrinter().writeValueAsString(report)+"\n");
         }
+    }
+
+    /** Exact versioned worker envelope exercised by the declared-capacity run. */
+    private Map<String, Object> declaredCapacityConfiguration() throws java.io.IOException {
+        assertThat(availabilityWorkerProperties.isWorkerEnabled()).isTrue();
+        assertThat(availabilityWorkerProperties.getFactsPerScan()).isEqualTo(5_000);
+        assertThat(availabilityWorkerProperties.getVariantsPerPass()).isEqualTo(5_000);
+        assertThat(availabilityWorkerProperties.getScanInterval()).isEqualTo(java.time.Duration.ofSeconds(30));
+        assertThat(availabilityWorkerProperties.getSweepInterval()).isEqualTo(java.time.Duration.ofHours(1));
+        assertThat(availabilityWorkerProperties.getScanInitialDelay()).isEqualTo(java.time.Duration.ofHours(24));
+        assertThat(availabilityWorkerProperties.getSweepInitialDelay()).isEqualTo(java.time.Duration.ofHours(24));
+
+        ClassPathResource configuration =
+                new ClassPathResource(DECLARED_CAPACITY_CONFIGURATION);
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("version", DECLARED_CAPACITY_VERSION);
+        result.put("resource", "classpath:" + DECLARED_CAPACITY_CONFIGURATION);
+        result.put("sha256", Digest.ofBytes(configuration.getContentAsByteArray()));
+        result.put("workerEnabled", true);
+        result.put("factsPerScan", availabilityWorkerProperties.getFactsPerScan());
+        result.put("variantsPerPass", availabilityWorkerProperties.getVariantsPerPass());
+        result.put("scanCadenceAssumptionMillis",
+                availabilityWorkerProperties.getScanInterval().toMillis());
+        result.put("sweepCadenceMillis",
+                availabilityWorkerProperties.getSweepInterval().toMillis());
+        result.put("backgroundInitialDelayMillis",
+                availabilityWorkerProperties.getScanInitialDelay().toMillis());
+        result.put("capacityInvocation", "EXPLICIT_SCHEDULED_ENTRY_POINT");
+        return result;
+    }
+
+    /** CI supplies the exact PR Head, generated merge and workflow identity. */
+    private static Map<String, Object> executionIdentity() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("sourceHead", environment("MARKETOPS_EVIDENCE_SOURCE_HEAD_SHA",
+                "LOCAL_WORKTREE_NOT_REMOTE_BOUND"));
+        result.put("testedMerge", environment("MARKETOPS_EVIDENCE_TESTED_MERGE_SHA",
+                "LOCAL_WORKTREE_NOT_REMOTE_BOUND"));
+        result.put("workflowRunId", environment("MARKETOPS_EVIDENCE_WORKFLOW_RUN_ID",
+                "LOCAL_NOT_A_WORKFLOW_RUN"));
+        result.put("workflowRunAttempt", environment(
+                "MARKETOPS_EVIDENCE_WORKFLOW_RUN_ATTEMPT", "LOCAL_NOT_A_WORKFLOW_RUN"));
+        result.put("workflowJob", environment("MARKETOPS_EVIDENCE_WORKFLOW_JOB",
+                "LOCAL_ISOLATED_RUNTIME"));
+        result.put("artifactName", environment("MARKETOPS_EVIDENCE_ARTIFACT_NAME",
+                "LOCAL_TARGET_DIRECTORY"));
+        result.put("artifactFile", "performance/representative-v1.json");
+        return result;
+    }
+
+    private static String environment(String name, String localValue) {
+        String value = System.getenv(name);
+        return value == null || value.isBlank() ? localValue : value;
     }
 
     private void verifyLargeExportAndRestore(AuthenticatedActor actor, UUID store, Map<String,Object> report) throws Exception {
@@ -325,11 +388,30 @@ class RepresentativePerformanceIT {
      */
     private void verifyActualAvailabilityRuntime(Map<String, Object> report) {
         UUID organization = id("org");
-        seedAvailabilityRuntimeProfile();
+        Instant factAcceptedAt = Instant.now().truncatedTo(ChronoUnit.MICROS);
+        availabilityQueue.startCursor(factAcceptedAt.minus(1, ChronoUnit.MICROS));
+        seedAvailabilityRuntimeProfile(factAcceptedAt);
+
+        assertThat(count("ops.availability_recalculation_request", organization)).isZero();
+        assertThat(jdbc.sql("""
+                        SELECT count(*) FROM core.fact_provenance
+                         WHERE organization_id = :organizationId
+                           AND evidence_note = :evidenceNote
+                           AND ingestion_time = :factAcceptedAt
+                        """).param("organizationId", organization)
+                .param("evidenceNote", DECLARED_CAPACITY_VERSION + "_TRIGGER")
+                .param("factAcceptedAt", Timestamp.from(factAcceptedAt))
+                .query(Long.class).single()).isEqualTo(5_000);
 
         long targetedStarted = System.nanoTime();
-        int processed = availabilityTargeted.runOnce(5_000);
+        availabilityScheduler.recalculateWhatChanged();
         long targetedMillis = (System.nanoTime() - targetedStarted) / 1_000_000;
+        int processed = Math.toIntExact(jdbc.sql("""
+                        SELECT count(*) FROM ops.availability_recalculation_request
+                         WHERE organization_id = :organizationId
+                           AND state = 'COMPLETED' AND attempt_count = 1
+                        """).param("organizationId", organization)
+                .query(Long.class).single());
 
         assertThat(processed).isEqualTo(5_000);
         assertThat(count("mart.availability_risk_card", organization)).isEqualTo(5_000);
@@ -338,9 +420,25 @@ class RepresentativePerformanceIT {
         assertThat(jdbc.sql("""
                         SELECT count(*) FROM ops.availability_recalculation_request
                          WHERE organization_id = :organizationId
-                           AND state = 'COMPLETED' AND attempt_count = 1
+                           AND fact_accepted_at <> :factAcceptedAt
                         """).param("organizationId", organization)
-                .query(Long.class).single()).isEqualTo(5_000);
+                .param("factAcceptedAt", Timestamp.from(factAcceptedAt))
+                .query(Long.class).single()).isZero();
+        long cursorScanned = jdbc.sql("""
+                        SELECT scanned_count FROM ops.availability_fact_cursor
+                         WHERE feed_code = 'ACCEPTED_FACT'
+                        """).query(Long.class).single();
+        Instant cursorPosition = jdbc.sql("""
+                        SELECT position_at FROM ops.availability_fact_cursor
+                         WHERE feed_code = 'ACCEPTED_FACT'
+                        """).query(Timestamp.class).single().toInstant();
+        String cursorItemKey = jdbc.sql("""
+                        SELECT position_item_key FROM ops.availability_fact_cursor
+                         WHERE feed_code = 'ACCEPTED_FACT'
+                        """).query(String.class).single();
+        assertThat(cursorScanned).isEqualTo(5_000);
+        assertThat(cursorPosition).isEqualTo(factAcceptedAt);
+        assertThat(cursorItemKey).startsWith("LISTING_STOCK|");
         assertTargetedTraceContinuity(organization);
 
         Map<String, Object> lanes = new LinkedHashMap<>();
@@ -412,8 +510,18 @@ class RepresentativePerformanceIT {
         capacity.put("status", "PASS");
         capacity.put("classification", "SYNTHETIC_LOCAL_ACTUAL_PATH_EVIDENCE");
         capacity.put("mockedRefresh", false);
+        capacity.put("directQueueSeeded", false);
+        capacity.put("targetedEntryPoint",
+                "AvailabilityRecalculationScheduler.recalculateWhatChanged");
+        capacity.put("variantResolution", "ListingIdentityDirectory.internalVariantAt");
         capacity.put("variants", 5_000);
         capacity.put("targetedAcceptedFacts", 5_000);
+        capacity.put("factAcceptedAt", factAcceptedAt.toString());
+        capacity.put("targetedSchedulerPasses", 1);
+        capacity.put("targetedFeedCursor", Map.of(
+                "scanned", cursorScanned,
+                "positionAt", cursorPosition.toString(),
+                "positionItemKey", cursorItemKey));
         capacity.put("targetedCompleted", processed);
         capacity.put("targetedWallMillis", targetedMillis);
         capacity.put("projectionCards", 5_000);
@@ -438,7 +546,7 @@ class RepresentativePerformanceIT {
     }
 
     private void assertTargetedTraceContinuity(UUID organization) {
-        for (String stage : List.of("TARGETED_PROCESS_STARTED", "CALCULATION_STARTED",
+        for (String stage : List.of("TARGET_DEDUP_QUEUED", "TARGETED_PROCESS_STARTED", "CALCULATION_STARTED",
                 "EVIDENCE_AND_RISK_CALCULATED", "PROJECTION_WRITTEN", "CASE_SYNCHRONIZED",
                 "AUTO_VERIFICATION", "SLO_RECORDED")) {
             assertThat(traceCount(organization, stage)).as(stage).isEqualTo(5_000);
@@ -512,7 +620,7 @@ class RepresentativePerformanceIT {
     }
 
     /** Bulk seed through production-owned tables; no projection or Case fixture is inserted. */
-    private void seedAvailabilityRuntimeProfile() {
+    private void seedAvailabilityRuntimeProfile(Instant factAcceptedAt) {
         jdbc.sql("""
                 INSERT INTO core.warehouse (id, organization_id, legal_entity_id, code,
                         display_name, status, created_at, updated_at)
@@ -608,11 +716,13 @@ class RepresentativePerformanceIT {
                      recorded_by_user_id, evidence_note)
                 SELECT md5('availability-capacity/provenance/' || n)::uuid,
                        md5('performance-v1/org')::uuid, 'MANUAL_ENTRY',
-                       now() - interval '1 minute', now(),
+                       :sourceTime, :supportingAcceptedAt,
                        md5('performance-v1/user')::uuid,
                        'SYNTHETIC_LOCAL_ACTUAL_PATH_EVIDENCE'
                   FROM generate_series(1, 5000) n
-                """).update();
+                """).param("sourceTime", Timestamp.from(factAcceptedAt.minusSeconds(60)))
+                .param("supportingAcceptedAt", Timestamp.from(factAcceptedAt.minusSeconds(30)))
+                .update();
         jdbc.sql("""
                 INSERT INTO core.internal_stock_snapshot
                     (id, organization_id, provenance_id, warehouse_id, product_variant_id,
@@ -711,18 +821,40 @@ class RepresentativePerformanceIT {
                        now(), 'availability-capacity-return-report-' || n
                   FROM generate_series(1, 5000) n
                 """).update();
+        // These are the only accepted feed items after the durable cursor.
+        // Each canonical listing-stock fact must be resolved through the mapping
+        // authority and deduplicated by the production ingestion service before
+        // the scheduled worker may claim it.
         jdbc.sql("""
-                INSERT INTO ops.availability_recalculation_request
-                    (id, organization_id, product_variant_id, trigger_class,
-                     trigger_reference, fact_accepted_at, requested_at, state, correlation_id)
-                SELECT md5('availability-capacity/request/' || n)::uuid,
-                       md5('performance-v1/org')::uuid,
-                       md5('performance-v1/sku/' || n)::uuid,
-                       'STOCK_OR_SELLABILITY',
-                       md5('availability-capacity/provenance/' || n)::text,
-                       now(), now(), 'PENDING', 'availability-capacity-' || n
+                INSERT INTO core.fact_provenance
+                    (id, organization_id, source_kind, source_time, ingestion_time,
+                     recorded_by_user_id, evidence_note)
+                SELECT md5('availability-capacity/trigger-provenance/' || n)::uuid,
+                       md5('performance-v1/org')::uuid, 'MANUAL_ENTRY',
+                       :sourceTime, :factAcceptedAt,
+                       md5('performance-v1/user')::uuid, :evidenceNote
                   FROM generate_series(1, 5000) n
-                """).update();
+                """).param("sourceTime", Timestamp.from(factAcceptedAt.minusSeconds(60)))
+                .param("factAcceptedAt", Timestamp.from(factAcceptedAt))
+                .param("evidenceNote", DECLARED_CAPACITY_VERSION + "_TRIGGER")
+                .update();
+        jdbc.sql("""
+                INSERT INTO core.listing_stock_observation
+                    (id, organization_id, provenance_id, platform_listing_variant_id,
+                     fulfillment_mode_code, source_fact_key, observed_at,
+                     available_quantity, reserved_quantity)
+                SELECT md5('availability-capacity/trigger-stock/' || n)::uuid,
+                       md5('performance-v1/org')::uuid,
+                       md5('availability-capacity/trigger-provenance/' || n)::uuid,
+                       md5('performance-v1/variant/' || n)::uuid,
+                       'MARKETPLACE_FULFILLED',
+                       'availability-capacity-trigger-stock-' || n,
+                       :sourceTime,
+                       CASE n % 5 WHEN 0 THEN 0 WHEN 1 THEN 100 WHEN 2 THEN 130
+                            WHEN 3 THEN 220 ELSE NULL END, 0
+                  FROM generate_series(1, 5000) n
+                """).param("sourceTime", Timestamp.from(factAcceptedAt.minusSeconds(60)))
+                .update();
     }
 
     private static Path temporaryDirectory(String prefix) {

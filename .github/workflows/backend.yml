@@ -63,6 +63,12 @@ jobs:
           # The commit a contributor authored, not the merge commit this run
           # generated. See the note in the workflow header.
           SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          MARKETOPS_EVIDENCE_SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          MARKETOPS_EVIDENCE_TESTED_MERGE_SHA: ${{ github.sha }}
+          MARKETOPS_EVIDENCE_WORKFLOW_RUN_ID: ${{ github.run_id }}
+          MARKETOPS_EVIDENCE_WORKFLOW_RUN_ATTEMPT: ${{ github.run_attempt }}
+          MARKETOPS_EVIDENCE_WORKFLOW_JOB: backend-build
+          MARKETOPS_EVIDENCE_ARTIFACT_NAME: backend-test-reports
 
       - name: Prove the backend coverage gate rejects an unmet threshold
         working-directory: .
@@ -144,6 +150,13 @@ jobs:
         # PostgreSQL themselves and mount the same initialisation scripts a
         # workstation mounts, so a privilege that only holds here cannot pass.
         run: ./mvnw -B -ntp clean verify
+        env:
+          MARKETOPS_EVIDENCE_SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          MARKETOPS_EVIDENCE_TESTED_MERGE_SHA: ${{ github.sha }}
+          MARKETOPS_EVIDENCE_WORKFLOW_RUN_ID: ${{ github.run_id }}
+          MARKETOPS_EVIDENCE_WORKFLOW_RUN_ATTEMPT: ${{ github.run_attempt }}
+          MARKETOPS_EVIDENCE_WORKFLOW_JOB: backend-integration
+          MARKETOPS_EVIDENCE_ARTIFACT_NAME: backend-integration-reports
 
       - name: Publish the integration test reports
         if: always()

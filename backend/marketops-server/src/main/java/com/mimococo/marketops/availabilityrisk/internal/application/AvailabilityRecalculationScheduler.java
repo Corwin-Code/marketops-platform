@@ -31,18 +31,6 @@ public class AvailabilityRecalculationScheduler {
     private static final Logger LOG =
             LoggerFactory.getLogger(AvailabilityRecalculationScheduler.class);
 
-    /** How often accepted facts are turned into work, in milliseconds. */
-    private static final long SCAN_INTERVAL_MILLIS = 30_000L;
-
-    /** How often the portfolio is reconciled, in milliseconds. */
-    private static final long SWEEP_INTERVAL_MILLIS = 3_600_000L;
-
-    /** How long the process waits before its first scan, in milliseconds. */
-    private static final long SCAN_INITIAL_DELAY_MILLIS = 20_000L;
-
-    /** How long the process waits before its first sweep, in milliseconds. */
-    private static final long SWEEP_INITIAL_DELAY_MILLIS = 120_000L;
-
     private final AvailabilityTriggerIngestionService ingestion;
     private final AvailabilityTargetedWorker targeted;
     private final AvailabilityReconciliationWorker reconciliation;
@@ -65,7 +53,9 @@ public class AvailabilityRecalculationScheduler {
     }
 
     /** Read what was accepted and recalculate what it invalidated. */
-    @Scheduled(initialDelay = SCAN_INITIAL_DELAY_MILLIS, fixedDelay = SCAN_INTERVAL_MILLIS)
+    @Scheduled(
+            initialDelayString = "${marketops.availability.scan-initial-delay:PT20S}",
+            fixedDelayString = "${marketops.availability.scan-interval:PT30S}")
     public void recalculateWhatChanged() {
         AvailabilityTriggerIngestionService.ScanResult scan =
                 ingestion.scanOnce(properties.getFactsPerScan());
@@ -82,7 +72,9 @@ public class AvailabilityRecalculationScheduler {
     }
 
     /** Reconcile every organization's whole portfolio, and report what it cost. */
-    @Scheduled(initialDelay = SWEEP_INITIAL_DELAY_MILLIS, fixedRate = SWEEP_INTERVAL_MILLIS)
+    @Scheduled(
+            initialDelayString = "${marketops.availability.sweep-initial-delay:PT2M}",
+            fixedRateString = "${marketops.availability.sweep-interval:PT1H}")
     public void reconcileEveryPortfolio() {
         for (UUID organizationId : queue.activeOrganizations()) {
             reconciliation.sweep(organizationId, "SCHEDULED")

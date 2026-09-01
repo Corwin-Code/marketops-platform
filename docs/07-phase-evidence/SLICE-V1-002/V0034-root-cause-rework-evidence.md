@@ -12,10 +12,10 @@ frozen_finding_set_sha256: 60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f7
 finding_count: 18
 engineering_disposition: 18_OF_18_IMPLEMENTED_PENDING_INDEPENDENT_CLOSURE_VERIFICATION
 target_branch: fix/SLICE-V1-002-root-cause-rework-r1
-remote_publication: DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS
+remote_publication: DRAFT_PR_26_OPEN_FINAL_HEAD_READBACK_REQUIRED
 draft_pr: 26
 draft_pr_url: https://github.com/Corwin-Code/marketops-platform/pull/26
-required_checks: PASS_12_OF_12_PLUS_AGGREGATE_CODEQL
+required_checks: FINAL_HEAD_READBACK_REQUIRED
 controller_verdict: NOT_CLAIMED
 owner_formal_closure: NOT_CLAIMED
 merge: NOT_EXECUTED
@@ -55,7 +55,7 @@ controls found incomplete during final evidence hardening.
 | `S2-F-014` | Inbound create/amend/reverify/cancel and policy publish/retire flows are scoped application, API and UI capabilities with audit, effective time, optimistic conflict and recalculation. | `AvailabilityRiskFlowIT` `TC-AVAIL-FLOW-011`, `012`; `AvailabilityConsoleAuthorizationIT`; frontend authority-panel tests |
 | `S2-F-015` | Priority weights are effective-dated policy rows and their exact identity participates in projection/card digests. | `PriorityPolicyTest`; `AvailabilityRiskFlowIT`; V0034 priority policy |
 | `S2-F-016` | Every sweep revalidates active acceptances against materiality, cause, scope, direct/delegated authority, recurrence, evidence and policy identity and reopens/escalates the same case on invalidation. | `AvailabilityExceptionRevalidationTest` `TC-EXC-REVAL-001`–`010`; `AvailabilityCaseLifecycleIT`; `TC-CONSOLE-015` actual grant/use/revoke/authority-loss path |
-| `S2-F-017` | Aggregate regression is deterministic; 5,000-variant pagination/cadence margin, abandoned-worker recovery, late/reordered/stale evidence, browser verification/reopen/exception, security/supply-chain gates and full traceability are part of the executable gate. | Final command ledger below; `TC-RECON-003`; `TC-LOOP-010`, `011`; `TC-BROWSER-014`; this traceability record |
+| `S2-F-017` | Aggregate regression is deterministic; the declared 5,000-Variant profile starts from attributable canonical accepted facts and exercises ingestion, durable cursor, Variant resolution/dedup, targeted processing, evidence, calculation, projection, Case, automatic verification and SLO before the real hourly sweep. Abandoned-worker recovery, late/reordered/stale evidence, browser verification/reopen/exception, security/supply-chain gates and full traceability remain part of the executable gate. | `RepresentativePerformanceIT` actual-path report; versioned declared-capacity profile; final command ledger below; `TC-TARGET-CAP-001` mocked accounting support; `TC-RECON-003` mocked paging support; `TC-LOOP-010`, `011`; `TC-BROWSER-014`; this traceability record |
 | `S2-F-018` | The reviewed Claude Head/tree remain immutable evidence; canonical state records the authority conflict and only Codex transports the exact rework branch to a new Draft PR. | `CURRENT_STATE.md`; exact source identity checks; Draft-PR handoff |
 
 ## V0035 targeted evidence closure
@@ -68,16 +68,22 @@ outcome:
 | Criterion | Added executable control | Evidence |
 | --- | --- | --- |
 | `S2-AC-010` | sensitive queue/case reads, mutations and delegation grant/revoke are attributable audit facts | `TC-CONSOLE-015`; `AuditAction.READ`; real `metadata_audit_event` rows |
-| `S2-AC-063` | exact action-SLA original due, pause instant, remaining duration and resume rebase are persisted | `TC-CASE-016`, `TC-CASE-018`; V0035 Case SLA fields/triggers |
-| `S2-AC-080` | append-only relational trace links dedup, targeted/sweep calculation, projection, Case, verification, expiry, backlog and SLO stages | `TC-LOOP-002`–`011`; `RepresentativePerformanceIT` 5,000 targeted plus 5,000 reconciliation trace chains |
+| `S2-AC-063` | exact action-SLA `original_action_due_at`, pause instant, remaining duration and resume rebase are persisted | `TC-CASE-016`, `TC-CASE-018`; V0035 Case SLA fields/triggers |
+| `S2-AC-080` | append-only relational trace links accepted-fact ingestion/cursor and dedup, targeted/sweep calculation, projection, Case, verification, expiry, backlog and SLO stages | `TC-LOOP-002`–`011`; `RepresentativePerformanceIT` 5,000 targeted plus 5,000 reconciliation trace chains |
 | `S2-AC-081` | each of the five incident runbook procedures is parsed and exercised as an isolated drill | `AvailabilityRunbookConformanceTest` 5/5 |
 
 The targeted capacity profile also exposed and closed two runtime defects that
 small fixtures could not reveal: nullable channel stock was accidentally
 unboxed in `AvailabilityProjectionWriter`, and successor anti-joins lacked
-indexes. V0035 adds partial successor indexes to the accepted-fact tables and
-return-quality snapshots; the actual 5,000-Variant worker/sweep profile is now
-the capacity authority recorded in `representative-v1.json`.
+indexes. A final evidence audit found a third proof defect: the profile directly
+inserted `ops.availability_recalculation_request`, bypassing the scheduled
+accepted-fact path it purported to prove. The fixture now accepts 5,000
+attributable canonical facts, asserts the targeted queue is empty, invokes
+`AvailabilityRecalculationScheduler.recalculateWhatChanged()` once and proves
+cursor, resolution/dedup, targeted worker and downstream trace continuity.
+V0035 retains the partial successor indexes; the actual 5,000-Variant
+scheduled-path worker/sweep profile is the capacity authority recorded in
+`representative-v1.json`.
 
 ## Normative-to-executable traceability
 
@@ -92,9 +98,30 @@ that requirement inventory to design, implementation and executable proof.
 | `OD-S2-007`–`011` | Design §§2.3, 2.6–2.7 | profit resolver, lead-time/demand/return-quality policies, window coverage | `ProfitLaneResolverTest`, `DemandPolicyEngineTest`, `ReturnQualityAssessmentTest` |
 | `OD-S2-012`–`015` | Design §§2.8–2.10, 2.14, 2.16 | activation, case service, automatic outcome observer, exception service/revalidation | `AvailabilityCaseLifecycleIT`, `AvailabilityExceptionRevalidationTest`, `TC-BROWSER-014` |
 | `OD-S2-016`–`017` | Design §2.12 and §7 | explicit no-write/no-adjacent-capability boundary | `AvailabilityNonGoalsTest`, architecture tests, bundle isolation |
-| `OD-S2-018` | Design §§2.11, 2.15 | total feed cursor, targeted worker, full reconciliation and durable progress | `AvailabilityRecalculationLoopIT`, `AvailabilityReconciliationWorkerTest` |
+| `OD-S2-018` | Design §§2.11, 2.15 | total feed cursor, targeted worker, full reconciliation and durable progress | `AvailabilityRecalculationLoopIT`; `RepresentativePerformanceIT` actual-path capacity; `AvailabilityReconciliationWorkerTest` mocked paging support |
 | `OD-S2-019` | Design §§2.1–2.2 | independent exact channel child plus asymmetric fail-closed company child | `ChannelRiskCalculatorTest`, `CompanyRiskCalculatorTest`, `TC-AVAIL-FLOW-010` |
-| `OD-S2-020` | Design §2.13 and Contract §10 | response observations, percentile query, fixed-rate hourly sweep, health incidents | `AvailabilitySloTest`, `TC-LOOP-004`, `009`–`011`, `TC-RECON-003`, `RepresentativePerformanceIT` |
+| `OD-S2-020` | Design §2.13 and Contract §10 | response observations, percentile query, fixed-rate hourly sweep, health incidents | `AvailabilitySloTest`, `TC-LOOP-004`, `009`–`011`, `RepresentativePerformanceIT` actual-path capacity; `TC-TARGET-CAP-001` and `TC-RECON-003` mocked accounting/paging support |
+
+## Declared-capacity binding
+
+The exact capacity configuration is
+`application-availability-declared-capacity-v1.yaml`, SHA-256
+`01523457ab9aa19ffbd7f363a5e0f2946c0f6c483954818984f4b0ce42751215`,
+version `S2_DECLARED_CAPACITY_V1`: worker enabled, 5,000 facts per scan, 5,000
+Variants per pass, 30-second scan cadence and one-hour sweep cadence. The
+24-hour initial delays prevent an autonomous test-time overlap; the declared
+scheduled methods are invoked explicitly once and their configured cadence is
+asserted in the report.
+
+`TC-TARGET-CAP-001` uses mocked queue/refresh collaborators and is only worker
+accounting support. `TC-RECON-003` uses mocked repository/refresh collaborators
+and is only worker paging support. Neither is declared-capacity authority.
+`RepresentativePerformanceIT`, its downloaded `representative-v1.json`, and
+the final external PR packet are authoritative for `S2-AC-070`, `071`, `072`
+and `095`. The GitHub Actions report is self-stamped with source Head, tested
+merge, workflow run/attempt/job and artifact name; the final PR packet adds the
+downloaded report SHA-256 and GitHub artifact digest after the exact final Head
+is green.
 
 ## Verification command ledger
 
