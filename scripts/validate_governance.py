@@ -116,7 +116,9 @@ DR0004_CURRENT_STATE = {
     "deep_review_mode": "ONE_SHOT_DISCOVERY_FROZEN_FINDING_SET",
     "final_gate_mode": "CLOSURE_VERIFICATION_ONLY",
     "owner_formal_slice_closure": "HUMAN_OWNER_ACCEPTED",
-    "closure_snapshot_before_next_slice": "SATISFIED_EXACT_OWNER_ACCEPTED",
+    "closure_snapshot_before_next_slice": (
+        "PENDING_CONTROLLER_POST_MERGE_BOOKKEEPING_VERIFICATION"
+    ),
     "dual_truth_model": "NORMATIVE_AND_IMPLEMENTATION_FACT",
     "dr0004_original_contract": DR0004_DR_RELATIVE_PATH,
     "dr0004_original_contract_sha256": DR0004_ARTIFACT_HASHES[
@@ -211,6 +213,8 @@ DR0003_REQUIRED_FILES = [
     "docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json",
     "docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md",
     "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json",
+    "docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md",
+    "docs/08-handoffs/OWNER-SLICE-V1-002-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md",
     "docs/04-api/V1_CAPABILITY_MATRIX.md",
     "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md",
     "docs/07-phase-evidence/README.md",
@@ -266,6 +270,24 @@ V1_ACTIVE_SLICE_ACCEPTANCE_PATH = (
 )
 V1_ACTIVE_SLICE_ACCEPTANCE_SHA256 = (
     "4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e"
+)
+V1_SLICE_002_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-002-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md"
+)
+V1_SLICE_002_OWNER_FORMAL_CLOSURE_EVIDENCE_SHA256 = (
+    "9fe722096e39883412e87274abc67ae4ef9ef7636a540e34878995f603016345"
+)
+V1_SLICE_002_OWNER_STATEMENT_SHA256 = (
+    "be99e247e6a47876ca42dde61b8c1834a59464c6168beb25acb2c2519f57a6ff"
+)
+V1_SLICE_002_CLOSURE_SNAPSHOT_PATH = (
+    "docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md"
+)
+V1_SLICE_002_CLOSURE_SNAPSHOT_GIT_BLOB_SHA1 = (
+    "26e9a3b0b6fa6bcf091bb41d0ddf5e1a596b05f1"
+)
+V1_SLICE_002_CLOSURE_SNAPSHOT_SHA256 = (
+    "0d49acf38756f113bd1fe16f1f9959fa8c0c9ebc4628f1b60c13ce23530b90e4"
 )
 V1_SLICE_AUTHORIZATION_CONDITION = (
     "EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN"
@@ -323,8 +345,8 @@ V1_ACTIVE_STATE = {
     "active_slice_acceptance_evidence": V1_ACTIVE_SLICE_ACCEPTANCE_PATH,
     "active_slice_acceptance_evidence_sha256": V1_ACTIVE_SLICE_ACCEPTANCE_SHA256,
     "active_slice_amendment": "NONE_ACCEPTED",
-    "active_gate": "SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION",
-    "authorization": "FULL_SCOPE_IMPLEMENTATION",
+    "active_gate": "SLICE_V1_002_POST_MERGE_CLOSURE_BOOKKEEPING",
+    "authorization": "FINAL_REVIEW_ONLY",
     "r2_remote_publication_authority": (
         "HUMAN_OWNER_EXPLICIT_FORMAL_CLOSURE_RECORDING_AND_PROTECTED_SQUASH_PR_23"
     ),
@@ -338,7 +360,7 @@ V1_ACTIVE_STATE = {
     "slice_v1_001_amendment_002_acceptance": "HUMAN_OWNER_ACCEPTED_FOR_SUPPLEMENTAL_R2",
     "slice_v1_001_amendment_002_acceptance_evidence": V1_AMENDMENT_002_ACCEPTANCE_PATH,
     "slice_v1_001_amendment_002_acceptance_evidence_sha256": V1_AMENDMENT_002_ACCEPTANCE_SHA256,
-    "slice_v1_002_implementation_state": "ROOT_CAUSE_REWORK_VERIFIED_LOCAL",
+    "slice_v1_002_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_002_branch": "fix/SLICE-V1-002-root-cause-rework-r1",
     "slice_v1_002_reviewed_source_head": "c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6",
     "slice_v1_002_reviewed_source_tree": "c94341232b5fa67b5c40a1e6be121a7696e748c4",
@@ -346,15 +368,61 @@ V1_ACTIVE_STATE = {
         "60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f799879ebcf94"
     ),
     "slice_v1_002_finding_count": "18",
-    "slice_v1_002_engineering_findings_addressed": (
-        "18_OF_18_PENDING_INDEPENDENT_CLOSURE_VERIFICATION"
+    "slice_v1_002_engineering_findings_addressed": "18_OF_18_CLOSED",
+    "slice_v1_002_controller_review": (
+        "CONTROLLER_SLICE_V1_002_FINAL_CLOSURE_VERIFICATION_PR26_R3"
     ),
-    "slice_v1_002_controller_verdict": "NOT_CLAIMED",
-    "slice_v1_002_owner_formal_closure": "NOT_CLAIMED",
-    "slice_v1_002_remote_publication": "DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS",
+    "slice_v1_002_controller_verdict": "PASS_R3_ENGINEERING_FINAL_GATE",
+    "slice_v1_002_owner_formal_closure": "HUMAN_OWNER_ACCEPTED",
+    "slice_v1_002_owner_formal_closure_statement_sha256": (
+        V1_SLICE_002_OWNER_STATEMENT_SHA256
+    ),
+    "slice_v1_002_owner_formal_closure_evidence": (
+        V1_SLICE_002_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH
+    ),
+    "slice_v1_002_owner_formal_closure_evidence_sha256": (
+        V1_SLICE_002_OWNER_FORMAL_CLOSURE_EVIDENCE_SHA256
+    ),
+    "slice_v1_002_remote_publication": "PR_26_MERGED_PROTECTED_SQUASH",
     "slice_v1_002_draft_pr": "26",
     "slice_v1_002_draft_pr_url": (
         "https://github.com/Corwin-Code/marketops-platform/pull/26"
+    ),
+    "slice_v1_002_pr_state": "MERGED",
+    "slice_v1_002_final_head": "6b5ab03b62d557ee8cb04847ba4418ca2cb3d529",
+    "slice_v1_002_final_tree": "f7e02da0bf38922f6c5a80d49b263613ade997d9",
+    "slice_v1_002_tested_merge": "12f82ac66d9b023cc158a12f10f97b0e4415fe12",
+    "slice_v1_002_actual_squash_commit": (
+        "cc42760cfc99c1bab027039fca67410d696e96fa"
+    ),
+    "slice_v1_002_actual_squash_tree": (
+        "f7e02da0bf38922f6c5a80d49b263613ade997d9"
+    ),
+    "slice_v1_002_actual_squash_sole_parent": (
+        "8a7076877374391cf851481c023dfb0e621ab712"
+    ),
+    "slice_v1_002_actual_squash_signature": "VERIFIED_VALID",
+    "slice_v1_002_actual_squash_merged_at": "2026-09-01T10:13:48Z",
+    "slice_v1_002_source_branch_cleanup": (
+        "GITHUB_AUTO_DELETED_THEN_EXACT_REF_RESTORED"
+    ),
+    "slice_v1_002_source_branch_preservation_head": (
+        "6b5ab03b62d557ee8cb04847ba4418ca2cb3d529"
+    ),
+    "slice_v1_002_engineering_acceptance": "100_OF_100",
+    "slice_v1_002_deferred_release_obligations": (
+        "S2_REL_001_THROUGH_010_PRODUCTION_BLOCKING"
+    ),
+    "slice_v1_002_closure_sync_branch": (
+        "docs/SLICE-V1-002-post-merge-closure-sync"
+    ),
+    "slice_v1_002_closure_sync_pr": "TO_BE_ASSIGNED_AFTER_DRAFT_CREATION",
+    "slice_v1_002_closure_snapshot": V1_SLICE_002_CLOSURE_SNAPSHOT_PATH,
+    "slice_v1_002_closure_snapshot_git_blob_sha1": (
+        "TO_BE_COMPUTED_AFTER_DRAFT_CREATION"
+    ),
+    "slice_v1_002_closure_snapshot_sha256": (
+        "TO_BE_COMPUTED_AFTER_DRAFT_CREATION"
     ),
     "slice_v1_002_controlled_write_target": "NONE_IN_THIS_SLICE",
     "slice_v1_002_real_provider_calls": "NONE",
@@ -380,7 +448,7 @@ V1_ACTIVE_STATE = {
         "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json"
     ),
     "next_authorized_actor": "GPT-5.6 Pro Controller",
-    "next_action": "CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_UPDATED_DRAFT_PR_26",
+    "next_action": "CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION",
     "slice_v1_001_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_001_rework_phase": "R2_FORMAL_CLOSURE_ACCEPTED",
     "slice_v1_001_pr": "22",
@@ -472,11 +540,9 @@ V1_ACTIVE_STATE = {
         "CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK"
     ),
     "candidate_state_scope": (
-        "PROTECTED_MAIN_ENGINEERING_MERGED_FORMAL_CLOSURE_ACCEPTED"
+        "PROTECTED_MAIN_SLICE_V1_002_ENGINEERING_MERGED_FORMAL_CLOSURE_ACCEPTED"
     ),
-    "merge_authorization": (
-        "HUMAN_OWNER_AUTHORIZED_PROTECTED_SQUASH_PR_23_IF_ALL_GATES_PASS"
-    ),
+    "merge_authorization": "CONSUMED_PROTECTED_SQUASH_PR_26",
     "production_deployment": "NOT_AUTHORIZED",
     "gate_ev": "NOT_AUTHORIZED",
     "gate_e": "NOT_AUTHORIZED",
@@ -4189,14 +4255,17 @@ SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS = {
     ),
     "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md": (
         "## 2c. SLICE-V1-002 implementation evidence state",
-        "implementation_state: ROOT_CAUSE_REWORK_VERIFIED_LOCAL",
+        "implementation_state: ENGINEERING_IMPLEMENTATION_MERGED",
         "controlled_write_target: NONE_IN_THIS_SLICE",
-        "controller_verdict: PASS_R2_ENGINEERING_FINAL_GATE",
-        "actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b",
-        "engineering_implementation: ENGINEERING_IMPLEMENTATION_CLOSED",
+        "controller_verdict: PASS_R3_ENGINEERING_FINAL_GATE",
+        "actual_squash_commit: cc42760cfc99c1bab027039fca67410d696e96fa",
+        "actual_squash_tree: f7e02da0bf38922f6c5a80d49b263613ade997d9",
+        "actual_squash_sole_parent: 8a7076877374391cf851481c023dfb0e621ab712",
+        "engineering_acceptance: 100_OF_100",
         "owner_formal_closure: HUMAN_OWNER_ACCEPTED",
-        "slice_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
-        "controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+        "deferred_release_obligations: S2_REL_001_THROUGH_010_PRODUCTION_BLOCKING",
+        "closure_snapshot: docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md",
+        "production_write_enabled: false",
     ),
     "docs/07-phase-evidence/README.md": (
         "SLICE-V1-001 R2 post-merge record",
@@ -4343,6 +4412,95 @@ def validate_slice_post_merge_closure_documents(
             )
 
 
+SLICE_V1_002_POST_MERGE_DOCUMENT_REQUIREMENTS = {
+    V1_SLICE_002_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH: (
+        "controller_review: CONTROLLER_SLICE_V1_002_FINAL_CLOSURE_VERIFICATION_PR26_R3",
+        "controller_verdict: PASS_R3_ENGINEERING_FINAL_GATE",
+        "owner_statement_sha256_utf8_lf: " + V1_SLICE_002_OWNER_STATEMENT_SHA256,
+        "- Frozen Findings: 18/18 closed",
+        "- total engineering Acceptance: 100/100",
+        "production_write_enabled: false",
+    ),
+    V1_SLICE_002_CLOSURE_SNAPSHOT_PATH: (
+        "status: DRAFT_PENDING_CONTROLLER_POST_MERGE_BOOKKEEPING_VERIFICATION",
+        "controller_final_gate: PASS_R3_ENGINEERING_FINAL_GATE",
+        "human_owner_formal_closure: COMPLETE",
+        "| Actual protected `main` | commit `cc42760cfc99c1bab027039fca67410d696e96fa`",
+        "tree `f7e02da0bf38922f6c5a80d49b263613ade997d9`",
+        "sole parent `8a7076877374391cf851481c023dfb0e621ab712`",
+        "`S2-AC-100` is `CONTROLLER_VERIFIED`",
+        "All ten `S2-REL-001` through `S2-REL-010` obligations remain exactly",
+        "CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION",
+        "production_write_enabled: false",
+    ),
+}
+
+
+def validate_slice_v1_002_post_merge_closure_documents(
+    errors: list[str], documents: dict[str, bytes]
+) -> None:
+    """Freeze the exact Owner evidence and fail closed on Slice 2 release claims."""
+    for path, tokens in SLICE_V1_002_POST_MERGE_DOCUMENT_REQUIREMENTS.items():
+        content = documents.get(path)
+        if content is None:
+            errors.append(f"SLICE-V1-002 post-merge document is missing: {path}")
+            continue
+        text = content.decode("utf-8")
+        for token in tokens:
+            if token not in text:
+                errors.append(
+                    f"SLICE-V1-002 post-merge document {path} missing exact token: {token}"
+                )
+
+    owner = documents.get(V1_SLICE_002_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH, b"")
+    if hashlib.sha256(owner).hexdigest() != V1_SLICE_002_OWNER_FORMAL_CLOSURE_EVIDENCE_SHA256:
+        errors.append("SLICE-V1-002 Owner Formal Closure evidence SHA-256 changed")
+
+    snapshot = documents.get(V1_SLICE_002_CLOSURE_SNAPSHOT_PATH, b"")
+    if hashlib.sha256(snapshot).hexdigest() != V1_SLICE_002_CLOSURE_SNAPSHOT_SHA256:
+        errors.append("SLICE-V1-002 Closure Snapshot SHA-256 changed")
+    git_blob = b"blob " + str(len(snapshot)).encode() + b"\0" + snapshot
+    if hashlib.sha1(git_blob).hexdigest() != V1_SLICE_002_CLOSURE_SNAPSHOT_GIT_BLOB_SHA1:
+        errors.append("SLICE-V1-002 Closure Snapshot Git blob SHA-1 changed")
+
+    deferred_path = "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json"
+    try:
+        deferred = json.loads(documents.get(deferred_path, b"{}"))
+        entries = deferred["entries"]
+        expected_ids = {f"S2-REL-{number:03d}" for number in range(1, 11)}
+        if {entry["releaseObligationId"] for entry in entries} != expected_ids:
+            errors.append("SLICE-V1-002 deferred register must retain S2-REL-001..010")
+        if deferred.get("futureGate") != "RELEASE-V1-001":
+            errors.append("SLICE-V1-002 deferred register future Gate changed")
+        if deferred.get("productionWriteEnabled") is not False:
+            errors.append("SLICE-V1-002 deferred register enabled production write")
+        for entry in entries:
+            for field in ("currentStatus", "releaseEvidenceState"):
+                if entry.get(field) != "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001":
+                    errors.append(
+                        f"SLICE-V1-002 {entry.get('releaseObligationId')} {field} is not production-blocking"
+                    )
+    except (KeyError, TypeError, ValueError):
+        errors.append("SLICE-V1-002 deferred release register is unreadable")
+
+    combined = "\n".join(
+        content.decode("utf-8", errors="replace") for content in documents.values()
+    ).lower()
+    for claim in (
+        "production_write_enabled: true",
+        "gate_ev: authorized",
+        "gate_e: authorized",
+        "pilot: activated",
+        "release-v1-001: activated",
+        "production_readiness: production_ready",
+    ):
+        if claim in combined:
+            errors.append(
+                "SLICE-V1-002 Formal Closure contains a prohibited release claim: "
+                + claim
+            )
+
+
 def validate_v1_current_state_text(
     errors: list[str],
     current_state_text: str,
@@ -4371,6 +4529,18 @@ def validate_v1_current_state_text(
         if path.is_file():
             post_merge_documents[relative] = path.read_text()
     validate_slice_post_merge_closure_documents(errors, post_merge_documents)
+    slice_v1_002_paths = {
+        *SLICE_V1_002_POST_MERGE_DOCUMENT_REQUIREMENTS,
+        "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json",
+    }
+    slice_v1_002_documents = {
+        relative: path.read_bytes()
+        for relative in slice_v1_002_paths
+        if (path := ROOT / relative).is_file()
+    }
+    validate_slice_v1_002_post_merge_closure_documents(
+        errors, slice_v1_002_documents
+    )
     disposition_root = evidence_root / "rework-r1/codeql-v1.1"
     validate_codeql_disposition_artifacts(
         errors, {path.name: path.read_bytes() for path in disposition_root.glob("*") if path.is_file()}
@@ -4604,7 +4774,7 @@ def validate_delivery_slices_v1_text(errors: list[str], text: str) -> None:
             "SLICE-V1-001 — SKU Growth & Profit Diagnostic Loop",
             "CONTRACT_APPROVED_EFFECTIVE_ON_PROTECTED_MAIN",
             "SLICE-V1-002 — Stockout & Availability Risk with Accountable Response",
-            "ROOT_CAUSE_REWORK_VERIFIED_LOCAL_PENDING_INDEPENDENT_CLOSURE",
+            "ENGINEERING_MERGED_FORMAL_CLOSURE_ACCEPTED_RELEASE_DEFERRED",
             # The narrowing is only honest while the row it replaced is still
             # readable next to it.
             "SLICE-V1-002 — Inventory & Availability Optimization",
@@ -4820,13 +4990,18 @@ def validate_v1_traceability_text(errors: list[str], text: str) -> None:
             errors.append(
                 f"v1 traceability {source_id} VERIFIED requires test and evidence"
             )
+        if source_id.startswith("OD-S2-") and status != "VERIFIED":
+            errors.append(
+                f"v1 traceability {source_id} must remain VERIFIED after exact "
+                "Controller and Human Owner engineering closure"
+            )
         if source_id in {"D-19", "HR-05"} and status == "VERIFIED":
             errors.append(
                 f"v1 traceability {source_id} cannot verify write enablement from DR-0003"
             )
         if status == "VERIFIED" and (
             source_id in {"SLICE-V1-001", "V1"}
-            or "complete" in (row.get("title") or "").lower()
+            or re.search(r"\bcomplete\b", (row.get("title") or ""), re.I)
         ):
             errors.append(f"v1 traceability cannot claim completion in reset: {source_id}")
 

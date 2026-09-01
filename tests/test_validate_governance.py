@@ -66,6 +66,7 @@ from scripts.validate_governance import (
     validate_required_file_set,
     validate_slice_v1_001_text,
     validate_slice_post_merge_closure_documents,
+    validate_slice_v1_002_post_merge_closure_documents,
     validate_slice_rework_evidence_text,
     validate_v1_current_state_text,
     validate_v1_authority_effect_texts,
@@ -2936,12 +2937,12 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "active_slice_contract",
             ),
             (
-                "active_gate: SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION",
+                "active_gate: SLICE_V1_002_POST_MERGE_CLOSURE_BOOKKEEPING",
                 "active_gate: READY_FOR_DESIGN",
                 "active_gate",
             ),
             (
-                "authorization: FULL_SCOPE_IMPLEMENTATION",
+                "authorization: FINAL_REVIEW_ONLY",
                 "authorization: DESIGN_ONLY",
                 "authorization",
             ),
@@ -2966,6 +2967,45 @@ class V1CurrentStateContractTests(unittest.TestCase):
         for old, new in mutations:
             with self.subTest(field=old.split(":", 1)[0]):
                 self.assertTrue(self.validate(current=self.current().replace(old, new, 1)))
+
+    def slice_v1_002_closure_documents(self) -> dict[str, bytes]:
+        root = Path(__file__).resolve().parents[1]
+        paths = (
+            "docs/08-handoffs/OWNER-SLICE-V1-002-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md",
+            "docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md",
+            "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json",
+        )
+        return {relative: (root / relative).read_bytes() for relative in paths}
+
+    def test_exact_slice_v1_002_post_merge_closure_documents_are_valid(self) -> None:
+        errors: list[str] = []
+        validate_slice_v1_002_post_merge_closure_documents(
+            errors, self.slice_v1_002_closure_documents()
+        )
+        self.assertEqual([], errors)
+
+    def test_slice_v1_002_owner_evidence_byte_change_is_rejected(self) -> None:
+        documents = self.slice_v1_002_closure_documents()
+        path = (
+            "docs/08-handoffs/"
+            "OWNER-SLICE-V1-002-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md"
+        )
+        documents[path] = documents[path].replace(b"18/18 closed", b"17/18 closed", 1)
+        errors: list[str] = []
+        validate_slice_v1_002_post_merge_closure_documents(errors, documents)
+        self.assertTrue(any("Owner Formal Closure evidence SHA-256" in error for error in errors))
+
+    def test_slice_v1_002_release_promotion_is_rejected(self) -> None:
+        documents = self.slice_v1_002_closure_documents()
+        path = "docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md"
+        documents[path] = documents[path].replace(
+            b"production_write_enabled: false",
+            b"production_write_enabled: true",
+            1,
+        )
+        errors: list[str] = []
+        validate_slice_v1_002_post_merge_closure_documents(errors, documents)
+        self.assertTrue(any("prohibited release claim" in error for error in errors))
 
     def test_contract_byte_change_with_old_hash_is_rejected(self) -> None:
         mutated = self.slice_contract_bytes().replace(
@@ -3033,7 +3073,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "slice_v1_001_closure_claim: OWNER_FORMALLY_CLOSED",
             ),
             (
-                "candidate_state_scope: PROTECTED_MAIN_ENGINEERING_MERGED_FORMAL_CLOSURE_ACCEPTED",
+                "candidate_state_scope: PROTECTED_MAIN_SLICE_V1_002_ENGINEERING_MERGED_FORMAL_CLOSURE_ACCEPTED",
                 "candidate_state_scope: PRODUCTION_READY",
             ),
             (
@@ -3598,6 +3638,14 @@ class V1TraceabilityAndOpenQuestionTests(unittest.TestCase):
             errors: list[str] = []
             validate_v1_traceability_text(errors, mutated)
             self.assertTrue(errors)
+
+    def test_slice_v1_002_closed_traceability_cannot_regress_to_implementing(self) -> None:
+        mutated = mutate_traceability_field(
+            self.traceability(), "OD-S2-001", "status", "IMPLEMENTING"
+        )
+        errors: list[str] = []
+        validate_v1_traceability_text(errors, mutated)
+        self.assertTrue(any("OD-S2-001 must remain VERIFIED" in error for error in errors))
 
     def test_open_question_cannot_block_slice_start(self) -> None:
         original = repository_governance_text("docs/00-governance/OPEN_QUESTIONS.md")
