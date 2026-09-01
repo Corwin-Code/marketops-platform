@@ -1,0 +1,11 @@
+marketops:
+  availability:
+    # S2_DECLARED_CAPACITY_V1. The test invokes the scheduled entry point
+    # explicitly; long initial delays prevent a background timer racing it.
+    worker-enabled: true
+    facts-per-scan: 5000
+    variants-per-pass: 5000
+    scan-interval: PT30S
+    scan-initial-delay: PT24H
+    sweep-interval: PT1H
+    sweep-initial-delay: PT24H

@@ -35,6 +35,130 @@ export type ConsoleOutcome<T> =
   | { readonly ok: true; readonly value: T }
   | { readonly ok: false; readonly failure: ConsoleFailure };
 
+/** One visible reason a card sits where it does in the availability queue. */
+export interface AvailabilityRankFactor {
+  readonly factorCode: string;
+  readonly value: string | null;
+  readonly weight: string | null;
+  readonly contribution: string | null;
+  readonly displayNote: string;
+}
+
+/** One demand window and how much of it could actually be observed. */
+export interface AvailabilityDemandWindow {
+  readonly windowCode: string;
+  readonly periodStart: string;
+  readonly periodEnd: string;
+  readonly completedUnits: number | null;
+  readonly dailyRate: string | null;
+  readonly observedDays: string | null;
+  readonly coverageRatio: string | null;
+  readonly sampleSufficient: boolean;
+  readonly censored: boolean;
+  readonly censoringReason: string | null;
+  readonly outlierShare: string | null;
+  readonly eligibility: string;
+}
+
+/** One independently governed child risk. */
+export interface AvailabilityChild {
+  readonly id: string;
+  readonly childKind: 'CHANNEL' | 'COMPANY';
+  readonly platformCode: string | null;
+  readonly storeId: string | null;
+  readonly platformListingVariantId: string | null;
+  readonly fulfillmentModeCode: string | null;
+  readonly lane: string;
+  readonly evidenceState: string;
+  readonly confidenceState: string;
+  readonly causeCode: string;
+  readonly availableUnits: number | null;
+  readonly dailyDemandRate: string | null;
+  readonly daysOfCover: string | null;
+  readonly coverageHorizonDays: number | null;
+  readonly projectedStockoutAt: string | null;
+  readonly profitLane: string;
+  readonly profitAtRiskAmount: string | null;
+  readonly profitAtRiskCurrency: string | null;
+  readonly demandSelectionReason: string;
+  readonly conservativeProofTerms: readonly string[];
+  readonly blockerCodes: readonly string[];
+  readonly rankFactors: readonly AvailabilityRankFactor[];
+  readonly demandWindows: readonly AvailabilityDemandWindow[];
+  readonly calculatedAt: string;
+}
+
+/** One grouped Internal Variant card. */
+export interface AvailabilityCard {
+  readonly id: string;
+  readonly productVariantId: string;
+  readonly skuCode: string;
+  readonly displayName: string;
+  readonly lane: string;
+  readonly triggeringChildId: string | null;
+  readonly rankScore: string | null;
+  readonly policyVersionDigest: string;
+  readonly asOf: string;
+  readonly calculatedAt: string;
+  readonly children: readonly AvailabilityChild[];
+}
+
+/** Current append-only state of one governed inbound claim. */
+export interface InboundAttestation {
+  readonly id: string;
+  readonly productVariantId: string;
+  readonly externalReference: string;
+  readonly versionId: string;
+  readonly versionNo: number;
+  readonly quantity: number;
+  readonly expectedArrivalFrom: string;
+  readonly expectedArrivalTo: string;
+  readonly businessStatus: string;
+  readonly evidenceReference: string;
+  readonly lastVerifiedAt: string;
+}
+
+/** Identity returned after an effective-dated policy publication. */
+export interface ManagedAvailabilityPolicy {
+  readonly id: string;
+  readonly kind: string;
+  readonly version: number;
+  readonly scopeReference: string;
+  readonly effectiveFrom: string;
+  readonly effectiveTo: string | null;
+  readonly status: string;
+}
+
+export interface InboundAttestationDraft {
+  readonly productVariantId: string;
+  readonly externalReference: string;
+  readonly quantity: number;
+  readonly expectedArrivalFrom: string;
+  readonly expectedArrivalTo: string;
+  readonly businessStatus: string;
+  readonly evidenceReference: string;
+  readonly sourceTime: string;
+  readonly reason: string;
+}
+
+export interface LeadTimePolicyDraft {
+  readonly scopeKind: string;
+  readonly productVariantId: string | null;
+  readonly supplierCode: string | null;
+  readonly routeCode: string | null;
+  readonly categoryCode: string | null;
+  readonly leadTimeDaysMin: number;
+  readonly leadTimeDaysMax: number;
+  readonly safetyDays: number;
+  readonly reason: string;
+  readonly evidenceReference: string;
+  readonly lastReviewedAt: string;
+  readonly effectiveFrom: string;
+  readonly effectiveTo: string | null;
+  readonly fallbackOfId: string | null;
+  readonly supersedesPolicyId: string | null;
+}
+
 /** One subject on the daily work list. */
 export interface PrioritySubject {
   readonly subjectId: string;
@@ -374,6 +498,172 @@ function decimal(source: Record<string, unknown>, key: string): string | null {
     return value;
   }
   return typeof value === 'number' ? String(value) : null;
+}
+
+function parseRankFactor(body: unknown): AvailabilityRankFactor | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const factorCode = text(body, 'factorCode');
+  const displayNote = text(body, 'displayNote');
+  if (factorCode === undefined || displayNote === undefined) {
+    return undefined;
+  }
+  return {
+    factorCode,
+    value: decimal(body, 'value'),
+    weight: decimal(body, 'weight'),
+    contribution: decimal(body, 'contribution'),
+    displayNote,
+  };
+}
+
+function parseDemandWindow(body: unknown): AvailabilityDemandWindow | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const windowCode = text(body, 'windowCode');
+  const periodStart = text(body, 'periodStart');
+  const periodEnd = text(body, 'periodEnd');
+  const eligibility = text(body, 'eligibility');
+  if (
+    windowCode === undefined ||
+    periodStart === undefined ||
+    periodEnd === undefined ||
+    eligibility === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    windowCode,
+    periodStart,
+    periodEnd,
+    completedUnits: optionalNumber(body, 'completedUnits'),
+    dailyRate: decimal(body, 'dailyRate'),
+    observedDays: decimal(body, 'observedDays'),
+    coverageRatio: decimal(body, 'coverageRatio'),
+    sampleSufficient: body.sampleSufficient === true,
+    censored: body.censored === true,
+    censoringReason: optionalText(body, 'censoringReason'),
+    outlierShare: decimal(body, 'outlierShare'),
+    eligibility,
+  };
+}
+
+/**
+ * Read one child risk.
+ *
+ * A child whose kind, lane or evidence state is missing is dropped rather than
+ * defaulted. A card that rendered an unknown evidence state as a confirmed one
+ * would be exactly the false safety the whole surface exists to prevent.
+ */
+function parseAvailabilityChild(body: unknown): AvailabilityChild | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const id = text(body, 'id');
+  const childKind = text(body, 'childKind');
+  const lane = text(body, 'lane');
+  const evidenceState = text(body, 'evidenceState');
+  const confidenceState = text(body, 'confidenceState');
+  const causeCode = text(body, 'causeCode');
+  const profitLane = text(body, 'profitLane');
+  const demandSelectionReason = text(body, 'demandSelectionReason');
+  const calculatedAt = text(body, 'calculatedAt');
+  if (
+    id === undefined ||
+    (childKind !== 'CHANNEL' && childKind !== 'COMPANY') ||
+    lane === undefined ||
+    evidenceState === undefined ||
+    confidenceState === undefined ||
+    causeCode === undefined ||
+    profitLane === undefined ||
+    demandSelectionReason === undefined ||
+    calculatedAt === undefined
+  ) {
+    return undefined;
+  }
+  const factors = Array.isArray(body.rankFactors)
+    ? body.rankFactors
+        .map(parseRankFactor)
+        .filter((factor): factor is AvailabilityRankFactor => factor !== undefined)
+    : [];
+  const windows = Array.isArray(body.demandWindows)
+    ? body.demandWindows
+        .map(parseDemandWindow)
+        .filter((window): window is AvailabilityDemandWindow => window !== undefined)
+    : [];
+  return {
+    id,
+    childKind,
+    platformCode: optionalText(body, 'platformCode'),
+    storeId: optionalText(body, 'storeId'),
+    platformListingVariantId: optionalText(body, 'platformListingVariantId'),
+    fulfillmentModeCode: optionalText(body, 'fulfillmentModeCode'),
+    lane,
+    evidenceState,
+    confidenceState,
+    causeCode,
+    availableUnits: optionalNumber(body, 'availableUnits'),
+    dailyDemandRate: decimal(body, 'dailyDemandRate'),
+    daysOfCover: decimal(body, 'daysOfCover'),
+    coverageHorizonDays: optionalNumber(body, 'coverageHorizonDays'),
+    projectedStockoutAt: optionalText(body, 'projectedStockoutAt'),
+    profitLane,
+    profitAtRiskAmount: decimal(body, 'profitAtRiskAmount'),
+    profitAtRiskCurrency: optionalText(body, 'profitAtRiskCurrency'),
+    demandSelectionReason,
+    conservativeProofTerms: textList(body, 'conservativeProofTerms'),
+    blockerCodes: textList(body, 'blockerCodes'),
+    rankFactors: factors,
+    demandWindows: windows,
+    calculatedAt,
+  };
+}
+
+/** Read one grouped card. */
+export function parseAvailabilityCard(body: unknown): AvailabilityCard | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const id = text(body, 'id');
+  const productVariantId = text(body, 'productVariantId');
+  const skuCode = text(body, 'skuCode');
+  const displayName = text(body, 'displayName');
+  const lane = text(body, 'lane');
+  const policyVersionDigest = text(body, 'policyVersionDigest');
+  const asOf = text(body, 'asOf');
+  const calculatedAt = text(body, 'calculatedAt');
+  if (
+    id === undefined ||
+    productVariantId === undefined ||
+    skuCode === undefined ||
+    displayName === undefined ||
+    lane === undefined ||
+    policyVersionDigest === undefined ||
+    asOf === undefined ||
+    calculatedAt === undefined
+  ) {
+    return undefined;
+  }
+  const children = Array.isArray(body.children)
+    ? body.children
+        .map(parseAvailabilityChild)
+        .filter((child): child is AvailabilityChild => child !== undefined)
+    : [];
+  return {
+    id,
+    productVariantId,
+    skuCode,
+    displayName,
+    lane,
+    triggeringChildId: optionalText(body, 'triggeringChildId'),
+    rankScore: decimal(body, 'rankScore'),
+    policyVersionDigest,
+    asOf,
+    calculatedAt,
+    children,
+  };
 }
 
 /** Read one subject from the priority queue. */
@@ -788,6 +1078,441 @@ function list<T>(parse: (body: unknown) => T | undefined) {
     Array.isArray(body)
       ? body.map(parse).filter((item): item is T => item !== undefined)
       : undefined;
+}
+
+/**
+ * The stockout and availability queue, most urgent first.
+ *
+ * The backend orders it and the console does not re-sort. The order is a
+ * deterministic figure with a published definition, and a console that
+ * re-ordered it would be presenting its own opinion as the product's.
+ */
+export function fetchAvailabilityQueue(
+  context: ConsoleRequest,
+  lane?: string,
+  limit = 50,
+  offset = 0,
+): Promise<ConsoleOutcome<readonly AvailabilityCard[]>> {
+  const laneFilter = lane === undefined ? '' : `lane=${encodeURIComponent(lane)}&`;
+  return request(
+    context,
+    `/api/v1/console/availability/queue?${laneFilter}limit=${String(limit)}` +
+      `&offset=${String(offset)}`,
+    list(parseAvailabilityCard),
+  );
+}
+
+/** One accountable availability case, as the console sees it. */
+export interface AvailabilityCase {
+  /** The case. */
+  readonly id: string;
+  /** The card it was raised from. */
+  readonly cardId: string;
+  /** The exact child that produced it. */
+  readonly childId: string;
+  /** Why somebody is needed. */
+  readonly causeCode: string;
+  /** The deduplication identity of the cause. */
+  readonly causeKey: string;
+  /** The lane that activated it. */
+  readonly severity: string;
+  /** Where it stands. */
+  readonly state: string;
+  /** The role accountable for the cause. */
+  readonly accountableRoleCode: string;
+  /** Who owns it, or null. */
+  readonly assigneeUserId: string | null;
+  /** When accountable action is due. */
+  readonly actionDueAt: string;
+  /** When fresh outcome evidence is due, or null. */
+  readonly outcomeDueAt: string | null;
+  /** How many times the same cause has returned. */
+  readonly reopenCount: number;
+  /** How far it has been raised. */
+  readonly escalationLevel: number;
+  /** When the cause was first raised. */
+  readonly firstActivatedAt: string;
+}
+
+/** One entry in a case's history. */
+export interface CaseJournalEntry {
+  /** Its position in the case's history. */
+  readonly sequenceNo: number;
+  /** What happened. */
+  readonly eventKind: string;
+  /** The state before, or null. */
+  readonly fromState: string | null;
+  /** The state after, or null. */
+  readonly toState: string | null;
+  /** The structured action, or null. */
+  readonly actionKind: string | null;
+  /** How a verification came out, or null. */
+  readonly verificationOutcome: string | null;
+  /** Why. */
+  readonly reason: string;
+  /** The artefact behind it, or null. */
+  readonly evidenceReference: string | null;
+  /** When it happened. */
+  readonly occurredAt: string;
+}
+
+/** One bounded, governed acceptance of a calculated risk. */
+export interface AcceptedException {
+  /** The acceptance. */
+  readonly id: string;
+  /** The cause being accepted. */
+  readonly causeCode: string;
+  /** The business reason. */
+  readonly reasonCode: string;
+  /** Where the request stands. */
+  readonly state: string;
+  /** How much authority the decision needs. */
+  readonly requiredAuthority: string;
+  /** When the grant starts, or null. */
+  readonly effectiveFrom: string | null;
+  /** When the grant ends, or null. */
+  readonly expiresAt: string | null;
+  /** When it must be reviewed, or null. */
+  readonly reviewAt: string | null;
+  /** Why it stopped being valid, or null. */
+  readonly invalidationReason: string | null;
+}
+
+function parseAvailabilityCase(body: unknown): AvailabilityCase | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const id = text(body, 'id');
+  const cardId = text(body, 'cardId');
+  const childId = text(body, 'childId');
+  const causeCode = text(body, 'causeCode');
+  const causeKey = text(body, 'causeKey');
+  const severity = text(body, 'severity');
+  const state = text(body, 'state');
+  const accountableRoleCode = text(body, 'accountableRoleCode');
+  const actionDueAt = text(body, 'actionDueAt');
+  const firstActivatedAt = text(body, 'firstActivatedAt');
+  if (
+    id === undefined ||
+    cardId === undefined ||
+    childId === undefined ||
+    causeCode === undefined ||
+    causeKey === undefined ||
+    severity === undefined ||
+    state === undefined ||
+    accountableRoleCode === undefined ||
+    actionDueAt === undefined ||
+    firstActivatedAt === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    id,
+    cardId,
+    childId,
+    causeCode,
+    causeKey,
+    severity,
+    state,
+    accountableRoleCode,
+    assigneeUserId: optionalText(body, 'assigneeUserId'),
+    actionDueAt,
+    outcomeDueAt: optionalText(body, 'outcomeDueAt'),
+    reopenCount: integer(body, 'reopenCount'),
+    escalationLevel: integer(body, 'escalationLevel'),
+    firstActivatedAt,
+  };
+}
+
+function parseJournalEntry(body: unknown): CaseJournalEntry | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const eventKind = text(body, 'eventKind');
+  const reason = text(body, 'reason');
+  const occurredAt = text(body, 'occurredAt');
+  if (eventKind === undefined || reason === undefined || occurredAt === undefined) {
+    return undefined;
+  }
+  return {
+    sequenceNo: integer(body, 'sequenceNo'),
+    eventKind,
+    fromState: optionalText(body, 'fromState'),
+    toState: optionalText(body, 'toState'),
+    actionKind: optionalText(body, 'actionKind'),
+    verificationOutcome: optionalText(body, 'verificationOutcome'),
+    reason,
+    evidenceReference: optionalText(body, 'evidenceReference'),
+    occurredAt,
+  };
+}
+
+function parseAcceptedException(body: unknown): AcceptedException | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const id = text(body, 'id');
+  const causeCode = text(body, 'causeCode');
+  const reasonCode = text(body, 'reasonCode');
+  const state = text(body, 'state');
+  const requiredAuthority = text(body, 'requiredAuthority');
+  if (
+    id === undefined ||
+    causeCode === undefined ||
+    reasonCode === undefined ||
+    state === undefined ||
+    requiredAuthority === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    id,
+    causeCode,
+    reasonCode,
+    state,
+    requiredAuthority,
+    effectiveFrom: optionalText(body, 'effectiveFrom'),
+    expiresAt: optionalText(body, 'expiresAt'),
+    reviewAt: optionalText(body, 'reviewAt'),
+    invalidationReason: optionalText(body, 'invalidationReason'),
+  };
+}
+
+/** The organization's accountable availability work, most urgent first. */
+export function fetchAvailabilityCases(
+  context: ConsoleRequest,
+  limit = 50,
+): Promise<ConsoleOutcome<readonly AvailabilityCase[]>> {
+  return request(
+    context,
+    `/api/v1/console/availability/cases?limit=${String(limit)}`,
+    list(parseAvailabilityCase),
+  );
+}
+
+/** Everything that ever happened to one case, oldest first. */
+export function fetchCaseJournal(
+  context: ConsoleRequest,
+  caseId: string,
+): Promise<ConsoleOutcome<readonly CaseJournalEntry[]>> {
+  return request(
+    context,
+    `/api/v1/console/availability/cases/${encodeURIComponent(caseId)}/journal`,
+    list(parseJournalEntry),
+  );
+}
+
+/** Every acceptance ever recorded against one case. */
+export function fetchCaseExceptions(
+  context: ConsoleRequest,
+  caseId: string,
+): Promise<ConsoleOutcome<readonly AcceptedException[]>> {
+  return request(
+    context,
+    `/api/v1/console/availability/cases/${encodeURIComponent(caseId)}/exceptions`,
+    list(parseAcceptedException),
+  );
+}
+
+/**
+ * Record accountable structured action.
+ *
+ * The call takes an action kind and the reference to the artefact behind it,
+ * and there is deliberately no shape it will accept that means "looked at it".
+ * A console that offered an acknowledgement button would be offering something
+ * the product refuses to treat as action.
+ */
+export function recordCaseAction(
+  context: ConsoleRequest,
+  caseId: string,
+  actionKind: string,
+  evidenceReference: string,
+  reason: string,
+): Promise<ConsoleOutcome<AvailabilityCase>> {
+  return request(
+    context,
+    `/api/v1/console/availability/cases/${encodeURIComponent(caseId)}/action`,
+    parseAvailabilityCase,
+    { method: 'POST', body: JSON.stringify({ actionKind, evidenceReference, reason }) },
+  );
+}
+
+function parseInboundAttestation(body: unknown): InboundAttestation | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const id = text(body, 'id');
+  const productVariantId = text(body, 'productVariantId');
+  const externalReference = text(body, 'externalReference');
+  const versionId = text(body, 'versionId');
+  const expectedArrivalFrom = text(body, 'expectedArrivalFrom');
+  const expectedArrivalTo = text(body, 'expectedArrivalTo');
+  const businessStatus = text(body, 'businessStatus');
+  const evidenceReference = text(body, 'evidenceReference');
+  const lastVerifiedAt = text(body, 'lastVerifiedAt');
+  if (
+    id === undefined ||
+    productVariantId === undefined ||
+    externalReference === undefined ||
+    versionId === undefined ||
+    expectedArrivalFrom === undefined ||
+    expectedArrivalTo === undefined ||
+    businessStatus === undefined ||
+    evidenceReference === undefined ||
+    lastVerifiedAt === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    id,
+    productVariantId,
+    externalReference,
+    versionId,
+    versionNo: integer(body, 'versionNo'),
+    quantity: integer(body, 'quantity'),
+    expectedArrivalFrom,
+    expectedArrivalTo,
+    businessStatus,
+    evidenceReference,
+    lastVerifiedAt,
+  };
+}
+
+function parseManagedAvailabilityPolicy(body: unknown): ManagedAvailabilityPolicy | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+  const id = text(body, 'id');
+  const kind = text(body, 'kind');
+  const scopeReference = text(body, 'scopeReference');
+  const effectiveFrom = text(body, 'effectiveFrom');
+  const status = text(body, 'status');
+  if (
+    id === undefined ||
+    kind === undefined ||
+    scopeReference === undefined ||
+    effectiveFrom === undefined ||
+    status === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    id,
+    kind,
+    version: integer(body, 'version'),
+    scopeReference,
+    effectiveFrom,
+    effectiveTo: optionalText(body, 'effectiveTo'),
+    status,
+  };
+}
+
+/** Create the first attributable version of an inbound claim. */
+export function createInboundAttestation(
+  context: ConsoleRequest,
+  draft: InboundAttestationDraft,
+): Promise<ConsoleOutcome<InboundAttestation>> {
+  return request(context, '/api/v1/console/availability/inbound', parseInboundAttestation, {
+    method: 'POST',
+    body: JSON.stringify(draft),
+  });
+}
+
+export function fetchInboundAttestation(
+  context: ConsoleRequest,
+  attestationId: string,
+): Promise<ConsoleOutcome<InboundAttestation>> {
+  return request(
+    context,
+    `/api/v1/console/availability/inbound/${encodeURIComponent(attestationId)}`,
+    parseInboundAttestation,
+  );
+}
+
+/** Append a corrected inbound version; the external identity is immutable. */
+export function amendInboundAttestation(
+  context: ConsoleRequest,
+  attestationId: string,
+  body: Omit<InboundAttestationDraft, 'productVariantId' | 'externalReference'> & {
+    readonly expectedVersion: number;
+  },
+): Promise<ConsoleOutcome<InboundAttestation>> {
+  return request(
+    context,
+    `/api/v1/console/availability/inbound/${encodeURIComponent(attestationId)}/amend`,
+    parseInboundAttestation,
+    { method: 'POST', body: JSON.stringify(body) },
+  );
+}
+
+export function cancelInboundAttestation(
+  context: ConsoleRequest,
+  attestationId: string,
+  expectedVersion: number,
+  evidenceReference: string,
+  reason: string,
+): Promise<ConsoleOutcome<InboundAttestation>> {
+  return request(
+    context,
+    `/api/v1/console/availability/inbound/${encodeURIComponent(attestationId)}/cancel`,
+    parseInboundAttestation,
+    { method: 'POST', body: JSON.stringify({ expectedVersion, evidenceReference, reason }) },
+  );
+}
+
+export function reverifyInboundAttestation(
+  context: ConsoleRequest,
+  attestationId: string,
+  expectedVersion: number,
+  evidenceReference: string,
+  reason: string,
+): Promise<ConsoleOutcome<InboundAttestation>> {
+  return request(
+    context,
+    `/api/v1/console/availability/inbound/${encodeURIComponent(attestationId)}/reverify`,
+    parseInboundAttestation,
+    { method: 'POST', body: JSON.stringify({ expectedVersion, evidenceReference, reason }) },
+  );
+}
+
+/** Publish or supersede an attributable lead-time/safety authority. */
+export function publishLeadTimePolicy(
+  context: ConsoleRequest,
+  draft: LeadTimePolicyDraft,
+): Promise<ConsoleOutcome<ManagedAvailabilityPolicy>> {
+  return request(
+    context,
+    '/api/v1/console/availability/policies/lead-time',
+    parseManagedAvailabilityPolicy,
+    { method: 'POST', body: JSON.stringify(draft) },
+  );
+}
+
+export function retireAvailabilityPolicy(
+  context: ConsoleRequest,
+  kind: string,
+  policyId: string,
+  reason: string,
+  evidenceReference: string,
+): Promise<ConsoleOutcome<ManagedAvailabilityPolicy>> {
+  return request(
+    context,
+    `/api/v1/console/availability/policies/${encodeURIComponent(kind)}/${encodeURIComponent(policyId)}/retire`,
+    parseManagedAvailabilityPolicy,
+    { method: 'POST', body: JSON.stringify({ reason, evidenceReference }) },
+  );
+}
+
+/** One grouped card with every child, factor and window behind it. */
+export function fetchAvailabilityCard(
+  context: ConsoleRequest,
+  productVariantId: string,
+): Promise<ConsoleOutcome<AvailabilityCard>> {
+  return request(
+    context,
+    `/api/v1/console/availability/cards/${encodeURIComponent(productVariantId)}`,
+    parseAvailabilityCard,
+  );
 }
 
 /** The store's daily work list, most urgent first. */

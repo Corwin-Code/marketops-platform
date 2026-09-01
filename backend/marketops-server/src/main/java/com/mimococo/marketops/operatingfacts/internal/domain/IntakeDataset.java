@@ -33,7 +33,12 @@ public enum IntakeDataset {
             new Field("warehouseCode", FieldKind.TEXT, true),
             new Field("quantityOnHand", FieldKind.INTEGER, true),
             new Field("observedAt", FieldKind.INSTANT, true),
-            new Field("quantityReserved", FieldKind.INTEGER, false))),
+            new Field("quantityReserved", FieldKind.INTEGER, false),
+            new Field("quantityQualityLocked", FieldKind.INTEGER, false),
+            new Field("quantityDamaged", FieldKind.INTEGER, false),
+            new Field("quantityWrittenOff", FieldKind.INTEGER, false),
+            new Field("sellable", FieldKind.TEXT, false),
+            new Field("returnReentryId", FieldKind.TEXT, false))),
 
     /** A company-owned input to the profit definition. */
     FINANCE_INPUT(List.of(

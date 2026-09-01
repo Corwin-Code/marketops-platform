@@ -17,6 +17,7 @@
 | `diagnostic-export.md` | Authorized asynchronous snapshots, bounded verified downloads and recovery |
 | `database-restore-drill.md` | Executed local PG17/object recovery evidence and the pending provider PITR procedure |
 | `yandex-environment-bootstrap.md` | Building an environment from the reviewed infrastructure code — never applied |
+| `availability-risk-blockers.md` | A stockout card that will not resolve: undeclared ownership, blocked policy, censored demand, a provisional answer and blocked profit |
 
 Still required before V1 production enablement: credential expiry, schema
 change, inventory drift, finance mismatch and personal-data incident

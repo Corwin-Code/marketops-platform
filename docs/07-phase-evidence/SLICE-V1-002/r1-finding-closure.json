@@ -1,0 +1,293 @@
+{
+  "documentType": "SLICE_V1_002_R1_FROZEN_FINDING_CLOSURE",
+  "slice": "SLICE-V1-002",
+  "frozenFindingSetId": "SLICE-V1-002-FROZEN-FINDING-SET-001",
+  "frozenFindingSetSha256": "60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f799879ebcf94",
+  "reviewedSource": {
+    "branch": "claude/slice-v1-002-stockout-u48w8w",
+    "head": "c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6",
+    "tree": "c94341232b5fa67b5c40a1e6be121a7696e748c4"
+  },
+  "reworkBranch": "fix/SLICE-V1-002-root-cause-rework-r1",
+  "generatedAt": "2026-09-01",
+  "overallClosureStatus": "ENGINEERING_CLOSED_PENDING_INDEPENDENT_CONTROLLER_VERIFICATION",
+  "productionWriteEnabled": false,
+  "findings": [
+    {
+      "findingId": "S2-F-001",
+      "reproduction": "A later inbound window was added to present on-hand before the depletion calculation, allowing a pre-arrival stock gap to appear safe.",
+      "rootCause": "Current supply and future dated supply were represented as one fungible scalar instead of a governed time-phased schedule.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/domain/CompanyRiskCalculator.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/domain/InboundConsignment.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/availabilityrisk/internal/domain/CompanyRiskCalculatorTest.java"
+      ],
+      "sameClassScan": "Scanned every future-supply aggregation; inbound now changes projected supply only at its conservative eligible instant and stale/cancelled/conflicted/overdue states never supply safety.",
+      "tests": ["TC-COMPANY-007", "TC-COMPANY-008", "TC-COMPANY-009", "TC-COMPANY-010"],
+      "runtimeEvidence": "AvailabilityRiskFlowIT persists the time-phased calculation and exact evidence links in PostgreSQL.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-002",
+      "reproduction": "A fresh nonpositive Settled result could collapse into unavailable and fall through to a positive Operational result.",
+      "rootCause": "Nullable profit authority conflated unavailable, authoritative-positive and authoritative-nonpositive states.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/application/ProfitLaneResolver.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/availabilityrisk/internal/application/ProfitLaneResolverTest.java"
+      ],
+      "sameClassScan": "Scanned Optional/nullable business-authority collapse paths and retained an explicit unavailable state distinct from an authoritative numeric result.",
+      "tests": ["TC-PROFIT-LANE-001", "TC-PROFIT-LANE-002", "TC-PROFIT-LANE-003", "TC-PROFIT-LANE-004", "TC-PROFIT-LANE-005"],
+      "runtimeEvidence": "AvailabilityRiskFlowIT exercises Settled/Operational projection selection through real persisted metrics.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-003",
+      "reproduction": "Facts sharing a timestamp at a page boundary could be skipped by the timestamp-only cursor; crash replay could not prove total order.",
+      "rootCause": "The feed cursor did not persist the complete durable keyset ordering tuple.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/AcceptedFactCursor.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/AcceptedFactChange.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/infrastructure/jdbc/FactQueryRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/application/AvailabilityTriggerIngestionService.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0034__close_availability_deep_review_findings.sql"
+      ],
+      "sameClassScan": "Scanned timestamp-only keyset cursors; accepted facts now order by `(ingestion_time, provenance_id, item_key)` with durable first-start and monotonic replay semantics.",
+      "tests": ["TC-LOOP-001", "TC-LOOP-002", "TC-LOOP-003"],
+      "runtimeEvidence": "AvailabilityRecalculationLoopIT proves same-timestamp paging, first-start backfill and idempotent crash replay against PostgreSQL.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-004",
+      "reproduction": "The reconciliation job stopped at a hard row cap, delayed completion and did not prove a full portfolio could finish hourly.",
+      "rootCause": "A capped batch was treated as a complete sweep and progress/failure were not represented as durable run state.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/application/AvailabilityReconciliationWorker.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/application/AvailabilityRecalculationScheduler.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/infrastructure/jdbc/AvailabilityRecalculationRepository.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/RepresentativePerformanceIT.java"
+      ],
+      "sameClassScan": "Scanned every hard row cap described as full; reconciliation now keyset-pages the declared portfolio, persists progress, isolates per-Variant failure and records incomplete/recovered runs.",
+      "tests": ["TC-RECON-001", "TC-RECON-002", "TC-RECON-003", "TC-LOOP-006", "TC-LOOP-008", "TC-LOOP-010"],
+      "runtimeEvidence": "RepresentativePerformanceIT executes a real 5,000-Variant full sweep, records wall time/hourly margin and repairs 50 deliberately dropped triggers.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-005",
+      "reproduction": "Company demand divided combined sales by the maximum single-channel exposure, understating demand when channel availability intervals were disjoint.",
+      "rootCause": "Cross-channel exposure was reduced to one scalar maximum rather than an attributable union of intervals.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/domain/DemandPolicyEngine.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/application/AvailabilityEvidenceGatherer.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/availabilityrisk/internal/domain/DemandPolicyEngineTest.java"
+      ],
+      "sameClassScan": "Scanned demand/exposure aggregation and replaced cross-channel maximum exposure with interval-union semantics that preserve overlap, disjoint periods, censoring and gaps.",
+      "tests": ["TC-DEMAND-001", "TC-DEMAND-004", "TC-DEMAND-005", "TC-DEMAND-011"],
+      "runtimeEvidence": "AvailabilityRiskFlowIT persists selected demand windows and their attributable exposure evidence.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-006",
+      "reproduction": "A same-tenant caller with one Store/Product grant could reach queue/card/child resources outside that owned scope.",
+      "rootCause": "Authorization stopped at Organization ownership and direct-ID reads did not rebind loaded resources to Store/Product/Data/Action scope.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/OwnedResource.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/application/JdbcBusinessAuthorization.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/infrastructure/jdbc/AvailabilityQueryRepository.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AvailabilityConsoleAuthorizationIT.java"
+      ],
+      "sameClassScan": "Scanned all direct-ID reads/mutations and pagination/filter paths for loaded-resource scope authorization, including same-tenant sibling Product and Store bypass attempts.",
+      "tests": ["TC-CONSOLE-002", "TC-CONSOLE-003", "TC-CONSOLE-004", "TC-CONSOLE-005", "TC-CONSOLE-010", "TC-CONSOLE-011", "TC-AVAIL-FLOW-008", "TC-AVAIL-FLOW-009"],
+      "runtimeEvidence": "AvailabilityConsoleAuthorizationIT proves absence/refusal semantics using real grants and PostgreSQL resources.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-007",
+      "reproduction": "A public human endpoint could mark an unresolved Case `VERIFIED_SUCCESS` without fresh calculated outcome authority.",
+      "rootCause": "Human action evidence and canonical outcome verification shared one externally writable transition surface.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/web/AvailabilityCaseConsoleController.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AvailabilityCaseService.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AvailabilityCaseLifecycleIT.java"
+      ],
+      "sameClassScan": "Scanned every human endpoint and state transition capable of canonical success; people may record structured action evidence, while only fresh cause-specific calculations may verify.",
+      "tests": ["TC-CONSOLE-012", "TC-CASE-006", "TC-CASE-007", "TC-CASE-021", "TC-CASE-022", "TC-CASE-023", "TC-CASE-024", "TC-CASE-025"],
+      "runtimeEvidence": "Browser `TC-BROWSER-014` exercises action, automatic verification and same-Case reopen against the real backend.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-008",
+      "reproduction": "Exception decision identifiers could be combined across Organizations/resources because the service authorized supplied IDs rather than the loaded owned graph.",
+      "rootCause": "Exception, Case, risk child and Organization identities were not relationally bound and authorization did not operate on the loaded aggregate.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AvailabilityExceptionService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AvailabilityExceptionRepository.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0034__close_availability_deep_review_findings.sql",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AvailabilityCaseLifecycleIT.java"
+      ],
+      "sameClassScan": "Scanned exception/request/decision mutations for supplied-ID trust; service and database constraints now bind the complete owned resource graph and requester/approver separation.",
+      "tests": ["TC-CASE-013", "TC-CASE-014", "TC-CASE-015", "TC-AVAIL-DB-007", "TC-EXC-001", "TC-EXC-002", "TC-EXC-003", "TC-EXC-004", "TC-EXC-005"],
+      "runtimeEvidence": "PostgreSQL foreign keys/checks reject cross-tenant and unrelated-resource combinations independently of the service.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-009",
+      "reproduction": "A missing company demand policy aborted the complete calculation and suppressed an independently exact Channel stockout.",
+      "rootCause": "Channel and company calculations shared an all-or-nothing policy-resolution gate.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/application/AvailabilityRiskCalculationService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/domain/ChildRisk.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/availabilityrisk/internal/application/AvailabilityCoverageTest.java"
+      ],
+      "sameClassScan": "Scanned queries/calculations that dropped independent Channel identity when company authority failed; channel results now compute independently and company policy defects route separately.",
+      "tests": ["TC-CHANNEL-002", "TC-AVAIL-FLOW-002", "TC-AVAIL-FLOW-003", "TC-COVERAGE-001", "TC-COVERAGE-002"],
+      "runtimeEvidence": "AvailabilityRiskFlowIT persists the exact Channel child while separately persisting a company blocker child.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-010",
+      "reproduction": "Demand/availability evidence lost exact fulfillment-mode identity and began the observation window without the last authoritative pre-window exposure state.",
+      "rootCause": "Fact queries aggregated above Store/mode/as-of identity and initialized exposure from only in-window facts.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/domain/CompanyObservation.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/OperatingFactQuery.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/infrastructure/jdbc/FactQueryRepository.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AvailabilityRiskFlowIT.java"
+      ],
+      "sameClassScan": "Scanned availability/demand queries for dropped Store/mode/as-of/freshness; exact mode is preserved or fails closed and windows seed from the latest authoritative pre-window state.",
+      "tests": ["TC-AVAIL-FLOW-010", "TC-AVAIL-FLOW-011", "TC-DEMAND-004", "TC-DEMAND-005"],
+      "runtimeEvidence": "Real PostgreSQL facts prove pre-window seeding and mode-specific evidence provenance.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-011",
+      "reproduction": "Carry-forward could activate when only one demand window was censored, allowing a mixed verdict to reuse historical demand.",
+      "rootCause": "The predicate used any-window censoring rather than the accepted all-windows-censored condition.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/domain/DemandPolicyEngine.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/availabilityrisk/internal/domain/DemandPolicyEngineTest.java"
+      ],
+      "sameClassScan": "Scanned carry-forward predicates and encoded the exact truth table: every governed window must be censored and the prior eligible period must remain fresh and bounded.",
+      "tests": ["TC-DEMAND-006", "TC-DEMAND-007", "TC-DEMAND-008", "TC-DEMAND-010"],
+      "runtimeEvidence": "AvailabilityRiskFlowIT exposes carry-forward source period, expiry and confidence downgrade in stored evidence.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-012",
+      "reproduction": "Company available supply omitted live QC lock, damage/write-off and sellability authority and could count non-sellable units.",
+      "rootCause": "Warehouse stock facts did not carry the material stock-state inputs used by the accepted company-supply formula.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/WarehouseStockSnapshot.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/ManualFactEntryService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/application/AvailabilityEvidenceGatherer.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0034__close_availability_deep_review_findings.sql"
+      ],
+      "sameClassScan": "Scanned stale stock/ownership values used as current supply; reservation, QC lock, damaged/written-off and sellability facts are current, attributable and fail closed when material state is absent.",
+      "tests": ["TC-COMPANY-004", "TC-COMPANY-006", "TC-COMPANY-012", "TC-COMPANY-013"],
+      "runtimeEvidence": "OperatingFlowIT and AvailabilityRiskFlowIT ingest and calculate from the expanded stock-state facts through PostgreSQL.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-013",
+      "reproduction": "Retained/Return/Refusal/QC evidence and returned-stock ledger re-entry semantics were absent, so the quality Guardrail could not run end to end.",
+      "rootCause": "The Slice had a quality label but no durable report-coverage authority, policy freshness, return/QC lane or governed inventory transition chain.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/domain/ReturnQualityAssessment.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/ReturnQualityEvidence.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operatingfacts/internal/application/ReturnInventoryTransitionService.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0034__close_availability_deep_review_findings.sql",
+        "backend/marketops-server/src/main/resources/db/migration/V0035__close_availability_targeted_findings.sql"
+      ],
+      "sameClassScan": "Scanned fixture-only quality authority; append-only snapshots now distinguish no evidence, zero-return evidence, stale, incomplete, conflicted and observed-return coverage, while returned supply requires the exact QC/re-entry chain.",
+      "tests": ["TC-RETURN-QUALITY-001", "TC-RETURN-QUALITY-002", "TC-RETURN-QUALITY-003", "TC-RETURN-QUALITY-004", "TC-RETURN-QUALITY-005", "TC-RETURN-QUALITY-006", "TC-RETURN-QUALITY-007", "TC-RETURN-QUALITY-008", "TC-FLOW-003"],
+      "runtimeEvidence": "OperatingFlowIT proves transport-to-QC-to-ledger-reentry linkage; AvailabilityRiskSchemaIT proves append-only quality evidence and freshness policy schema.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-014",
+      "reproduction": "Inbound attestation and required availability policies existed mostly as fixture/read paths without governed application/API mutation lifecycles.",
+      "rootCause": "Policy and inbound authority were modeled as calculation inputs but not as attributable, effective-dated, audited user capabilities.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/application/InboundAttestationService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/application/AvailabilityPolicyManagementService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/web/InboundAttestationConsoleController.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/web/AvailabilityPolicyConsoleController.java",
+        "frontend/marketops-console/src/availability/AvailabilityAuthorityPanel.tsx"
+      ],
+      "sameClassScan": "Scanned fixture-only authorities falsely marked complete; inbound and policy create/amend/reverify/cancel/publish flows enforce role/resource scope, effective time, audit, conflict and targeted recalculation.",
+      "tests": ["TC-CONSOLE-013", "TC-CONSOLE-014", "TC-AVAIL-FLOW-001", "TC-AVAIL-FLOW-012", "TC-UI-010", "TC-UI-011"],
+      "runtimeEvidence": "Browser and PostgreSQL integration paths exercise the governed authority surfaces with synthetic isolated identities.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-015",
+      "reproduction": "Priority weights were hard-coded and excluded from the stored projection/card policy identity.",
+      "rootCause": "Ranking configuration lived in code instead of an attributable effective-dated policy authority.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/domain/PriorityPolicy.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/domain/PriorityPolicyVersion.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/infrastructure/jdbc/AvailabilityPolicyRepository.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0034__close_availability_deep_review_findings.sql"
+      ],
+      "sameClassScan": "Scanned policy constants excluded from evidence identity; every ranking factor resolves through a versioned policy whose exact digest participates in projection/card identity.",
+      "tests": ["TC-RANK-001", "TC-RANK-002", "TC-RANK-003", "TC-RANK-004", "TC-RANK-005", "TC-AVAIL-FLOW-007"],
+      "runtimeEvidence": "AvailabilityRiskFlowIT stores and reads back the exact priority policy digest with the triggering child.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-016",
+      "reproduction": "An accepted exception remained active after risk/materiality/cause/scope/authority/recurrence/evidence/policy drift.",
+      "rootCause": "Validity was checked only when the exception was approved or expired, not continuously against current typed authority and risk snapshots.",
+      "changedFiles": [
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AvailabilityExceptionService.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AvailabilityExceptionRepository.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/AvailabilityExceptionDelegationView.java",
+        "backend/marketops-server/src/main/resources/db/migration/V0035__close_availability_targeted_findings.sql",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AvailabilityExceptionRevalidationTest.java"
+      ],
+      "sameClassScan": "Scanned every exception invalidation condition; accepted snapshots, direct/delegated authority and current policy/evidence are re-evaluated on change and sweep, with one-time delegation revocation and same-Case reopen/escalation.",
+      "tests": ["TC-EXC-REVAL-001", "TC-EXC-REVAL-002", "TC-EXC-REVAL-003", "TC-EXC-REVAL-004", "TC-EXC-REVAL-005", "TC-EXC-REVAL-006", "TC-EXC-REVAL-007", "TC-EXC-REVAL-008", "TC-EXC-REVAL-009", "TC-EXC-REVAL-010", "TC-CONSOLE-015"],
+      "runtimeEvidence": "AvailabilityConsoleAuthorizationIT executes grant, delegated approval, revoke, automatic `AUTHORITY_LOST` invalidation and same-Case escalation against PostgreSQL.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-017",
+      "reproduction": "The reviewed candidate declared itself incomplete, had a red aggregate gate and lacked declared-capacity, browser, security and closure evidence; the later capacity fixture still pre-seeded 5,000 ops.availability_recalculation_request rows and therefore bypassed accepted-fact ingestion, durable cursor progress and Variant resolution/dedup.",
+      "rootCause": "Supporting isolated tests and downstream worker throughput were treated as completion while the scheduled path from attributable canonical fact acceptance through ingestion/cursor/resolution/dedup and the downstream runtime chain was not executed.",
+      "changedFiles": [
+        ".github/workflows/backend.yml",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/application/AvailabilityRecalculationScheduler.java",
+        "backend/marketops-server/src/main/java/com/mimococo/marketops/availabilityrisk/internal/config/AvailabilityWorkerProperties.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/RepresentativePerformanceIT.java",
+        "backend/marketops-server/src/test/resources/application-availability-declared-capacity-v1.yaml",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/AvailabilityRecalculationLoopIT.java",
+        "backend/marketops-server/src/test/java/com/mimococo/marketops/availabilityrisk/internal/domain/AvailabilityRunbookConformanceTest.java",
+        "frontend/marketops-console/tests/browser/availability-journey.spec.ts",
+        "docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md",
+        "docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md",
+        "docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md",
+        "docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json",
+        "docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md"
+      ],
+      "sameClassScan": "Scanned skipped/quarantined tests, direct availability_recalculation_request fixture inserts, stale capacity claims, mocked performance tests and incomplete remote identity/security gates; the only remaining direct queue fixture insertion is the deliberate 50-trigger loss used to prove sweep recovery, and thresholds remain unchanged.",
+      "tests": ["RepresentativePerformanceIT actual scheduled path with 5,000 canonical accepted facts", "TC-TARGET-CAP-001 mocked worker-accounting support", "TC-RECON-003 mocked worker-paging support", "full Maven clean verify", "full governance unittest discovery", "frontend lint/format/typecheck/unit/build/bundle isolation", "real-backend browser E2E", "supply-chain and security scans"],
+      "runtimeEvidence": "RepresentativePerformanceIT binds the versioned worker-enabled 5,000-facts/5,000-variants/cadence profile and records the actual scheduler -> ingestion/cursor -> resolution/dedup -> targeted worker -> evidence -> calculation -> projection -> Case -> automatic verification -> SLO chain, real 5,000-Variant sweep, 50/50 recovery, trace, 600,000-row export and restore evidence. The final GitHub artifact is bound externally to exact source Head, tested merge, workflow run/job, artifact name/digest and report SHA-256 before handoff.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    },
+    {
+      "findingId": "S2-F-018",
+      "reproduction": "The reviewed Claude branch was remotely pushed although its binding prompt and canonical repository model withheld that authority.",
+      "rootCause": "Remote transport authority and maker implementation authority were conflated outside the canonical delegation model.",
+      "changedFiles": [
+        "docs/00-governance/CURRENT_STATE.md",
+        "docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md",
+        "docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md",
+        "scripts/validate_governance.py",
+        "scripts/validate_production_readiness.py"
+      ],
+      "sameClassScan": "Scanned repository-controlled publication instructions/hooks for precedence conflict; the Claude reviewed Head/Tree remain immutable evidence and Codex performs only the separately authorized transport of the exact rework branch.",
+      "tests": ["validate_governance.py", "validate_production_readiness.py", "governance mutation tests", "exact reviewed-source Head/Tree readback"],
+      "runtimeEvidence": "Final handoff records reviewed source identity, exact rework/PR identity, remote checks, no deployment/provider call and `production_write_enabled=false`.",
+      "closureStatus": "ENGINEERING_CLOSED_PENDING_CONTROLLER_VERIFICATION"
+    }
+  ]
+}

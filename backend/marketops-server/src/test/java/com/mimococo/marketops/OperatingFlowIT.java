@@ -30,6 +30,8 @@ import com.mimococo.marketops.operatingfacts.FactWindow;
 import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
 import com.mimococo.marketops.operatingfacts.SaleStage;
 import com.mimococo.marketops.operatingfacts.internal.application.ManualFactEntryService;
+import com.mimococo.marketops.operatingfacts.internal.application.ReturnInventoryTransitionService;
+import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.ReturnInventoryTransitionRepository.Transition;
 import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.FactWriteRepository;
 import com.mimococo.marketops.operatingfacts.internal.infrastructure.jdbc.InternalReferenceRepository;
 import com.mimococo.marketops.operationsworkflow.ActionKind;
@@ -108,6 +110,7 @@ class OperatingFlowIT {
     private static UUID policyId;
     private static UUID recommendationId;
     private static UUID factProvenanceId;
+    private static UUID returnFactId;
     private static UUID economicsProfileId;
     private static UUID selectedEconomicsProfileId;
     private static UUID selectedModeDeclarationId;
@@ -139,6 +142,9 @@ class OperatingFlowIT {
 
     @Autowired
     private ManualFactEntryService manualEntry;
+
+    @Autowired
+    private ReturnInventoryTransitionService returnTransitions;
 
     @Autowired
     private FactWriteRepository facts;
@@ -337,7 +343,7 @@ class OperatingFlowIT {
                          WHERE platform_listing_variant_id = :listingVariantId
                         """)
                 .param("effectiveFrom", java.sql.Timestamp.from(
-                        calculationBoundary.minus(Duration.ofMinutes(1))))
+                        calculationBoundary.minus(Duration.ofDays(2))))
                 .param("listingVariantId", listingVariantId)
                 .update();
 
@@ -372,6 +378,12 @@ class OperatingFlowIT {
                 new BigDecimal("120.0000"), new BigDecimal("100.0000"), null, "NO", "SELLING");
         facts.insertStock(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
                 "MARKETPLACE_FULFILLED", "flow:stock:1", now.minus(Duration.ofHours(1)), 40, 2, 0);
+        facts.insertListingHealth(UUID.randomUUID(), organizationId, factProvenanceId,
+                listingVariantId, "flow:health:seed", now.minus(Duration.ofHours(1)),
+                "ACTIVE", "YES", null);
+        facts.insertStock(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+                "SELLER_FULFILLED", "flow:stock:other-mode", now.minus(Duration.ofMinutes(10)),
+                99, 0, 0);
         facts.insertTraffic(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
                 "flow:traffic:1", calculationBoundary.minus(Duration.ofDays(30)),
                 calculationBoundary, 10_000L, 140L, null, null, 15L);
@@ -383,10 +395,30 @@ class OperatingFlowIT {
                     new BigDecimal("300.0000"), new BigDecimal("0.0000"),
                     new BigDecimal("300.0000"));
         }
-        facts.insertReturn(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
+        returnFactId = UUID.randomUUID();
+        facts.insertReturn(returnFactId, organizationId, factProvenanceId, listingVariantId,
                 storeId, "flow:return:1", "RETURN-1", "ORDER-1", "DELIVERY_REFUSAL", "QUALITY",
                 "buyer refused", now.minus(Duration.ofDays(1)), 1, "RUB",
                 new BigDecimal("100.0000"), new BigDecimal("20.0000"));
+
+        Transition inTransit = returnTransitions.record(returnFactId, organizationId, userId,
+                new ReturnInventoryTransitionService.Draft("IN_TRANSIT", 1, null, null,
+                        "ev://return/carrier", now.minus(Duration.ofHours(20)), null));
+        assertThatThrownBy(() -> returnTransitions.record(returnFactId, organizationId, userId,
+                new ReturnInventoryTransitionService.Draft("REENTERED_AVAILABLE", 1,
+                        warehouseId, "RESELLABLE", "ev://return/invalid-direct-reentry",
+                        now.minus(Duration.ofHours(19)), inTransit.id())))
+                .isInstanceOf(OperationRejectedException.class)
+                .extracting(error -> ((OperationRejectedException) error).errorCode())
+                .isEqualTo(ErrorCode.INVALID_STATE_TRANSITION);
+        Transition awaitingQc = returnTransitions.record(returnFactId, organizationId, userId,
+                new ReturnInventoryTransitionService.Draft("AWAITING_QC", 1, warehouseId, null,
+                        "ev://return/warehouse-receipt", now.minus(Duration.ofHours(18)),
+                        inTransit.id()));
+        Transition reentered = returnTransitions.record(returnFactId, organizationId, userId,
+                new ReturnInventoryTransitionService.Draft("REENTERED_AVAILABLE", 1,
+                        warehouseId, "RESELLABLE", "ev://return/qc-release",
+                        now.minus(Duration.ofHours(17)), awaitingQc.id()));
         facts.insertFee(UUID.randomUUID(), organizationId, factProvenanceId, listingVariantId,
                 storeId, "flow:fee:1", "COMMISSION", "ORDER-1", "COMMISSION", "SETTLED",
                 now.minus(Duration.ofDays(1)), "RUB", new BigDecimal("150.0000"));
@@ -426,7 +458,20 @@ class OperatingFlowIT {
         manualEntry.enterCost(actor, "flow-widget-m", new BigDecimal("60.0000"), "RUB",
                 now.minus(Duration.ofHours(1)), "opening cost");
         manualEntry.enterInternalStock(actor, "flow-widget-m", "flow-warehouse", 25, 0,
-                pointObservation, "stock count");
+                0, 0, 0, "YES", null, pointObservation, "stock count");
+        manualEntry.enterInternalStock(actor, "flow-widget-m", "flow-warehouse", 26, 0,
+                0, 0, 0, "YES", reentered.id(), now.minus(Duration.ofMinutes(1)),
+                "returned unit released by QC");
+        assertThat(jdbc.sql("""
+                        SELECT count(*) FROM ledger.return_inventory_transition
+                         WHERE return_fact_id = :returnFactId
+                        """).param("returnFactId", returnFactId).query(Integer.class).single())
+                .isEqualTo(3);
+        assertThat(jdbc.sql("""
+                        SELECT return_reentry_id FROM core.internal_stock_snapshot
+                         WHERE return_reentry_id = :transitionId
+                        """).param("transitionId", reentered.id()).query(UUID.class).single())
+                .isEqualTo(reentered.id());
 
         internalReferences.insertFinanceInput(UUID.randomUUID(), organizationId,
                 "VARIABLE_TAX_RATE", "ORGANIZATION", null, null, "RATE",
@@ -448,6 +493,17 @@ class OperatingFlowIT {
                 .units()).isEqualTo(15);
         assertThat(factQuery.unitCost(productVariantId, now)).isPresent();
         assertThat(factQuery.internalStock(productVariantId, now)).isNotNull();
+
+        var modeTimeline = factQuery.availabilityObservations(listingVariantId,
+                "MARKETPLACE_FULFILLED",
+                new FactWindow(now.minus(Duration.ofMinutes(30)), now));
+        assertThat(modeTimeline)
+                .as("pre-window state is seeded and another fulfillment mode never leaks in")
+                .isNotEmpty()
+                .allSatisfy(observation -> assertThat(observation.availableUnits())
+                        .isNotEqualTo(99));
+        assertThat(modeTimeline.getLast().availableUnits()).isEqualTo(40);
+        assertThat(modeTimeline.getLast().sellable()).isEqualTo("YES");
 
         // Every fact points back at where it came from.
         assertThat(evidence.trail(factProvenanceId)).isPresent();

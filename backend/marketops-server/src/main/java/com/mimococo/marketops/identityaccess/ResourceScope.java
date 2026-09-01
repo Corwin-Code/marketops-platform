@@ -30,4 +30,9 @@ public record ResourceScope(ResourceScopeType type, UUID resourceId) {
     public static ResourceScope warehouse(UUID warehouseId) {
         return new ResourceScope(ResourceScopeType.WAREHOUSE, warehouseId);
     }
+
+    /** A scope naming one internal product variant. */
+    public static ResourceScope productVariant(UUID productVariantId) {
+        return new ResourceScope(ResourceScopeType.PRODUCT_VARIANT, productVariantId);
+    }
 }

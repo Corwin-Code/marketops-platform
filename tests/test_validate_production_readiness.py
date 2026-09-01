@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import json
 import unittest
+from pathlib import Path
 
 from scripts.validate_production_readiness import (
     APPROVED_MIGRATIONS,
+    approved_index_replacement,
     DEFERRED_ACCEPTANCE_IDS,
     DEFERRED_EVIDENCE_REGISTER,
     HASH_PINNED_DOC_PATHS,
@@ -246,14 +248,34 @@ class RepositoryContractPatternTests(unittest.TestCase):
 
         self.assertTrue(any("auto-commit: true" in violation for violation in violations))
 
-    def test_post_merge_state_cannot_reactivate_implementation_authority(self) -> None:
+    def test_a_closed_slice_cannot_be_reopened_by_the_next_one_starting(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)
         mutated = source.replace(
-            "authorization: FINAL_REVIEW_ONLY",
-            "authorization: FULL_SCOPE_IMPLEMENTATION",
+            "slice_v1_001_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+            "slice_v1_001_state: IMPLEMENTATION_IN_PROGRESS",
         )
         violations = contract_token_violations(mutated, required=COMPLETION_STATE_TOKENS)
-        self.assertTrue(any("FINAL_REVIEW_ONLY" in violation for violation in violations))
+        self.assertTrue(
+            any("CLOSED_ENGINEERING" in violation for violation in violations)
+        )
+
+    def test_the_active_slice_cannot_claim_a_verdict_it_does_not_have(self) -> None:
+        source = "\n".join(COMPLETION_STATE_TOKENS)
+        for token, claimed in (
+            ("slice_v1_002_controller_verdict: NOT_CLAIMED", "PASS"),
+            ("slice_v1_002_owner_formal_closure: NOT_CLAIMED", "HUMAN_OWNER_ACCEPTED"),
+            (
+                "slice_v1_002_remote_publication: DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS",
+                "MERGED",
+            ),
+        ):
+            with self.subTest(token=token):
+                field = token.split(":", 1)[0]
+                mutated = source.replace(token, f"{field}: {claimed}")
+                violations = contract_token_violations(
+                    mutated, required=COMPLETION_STATE_TOKENS
+                )
+                self.assertTrue(any(field in violation for violation in violations))
 
     def test_post_merge_squash_identity_is_required(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)
@@ -501,6 +523,12 @@ class MigrationContractTests(unittest.TestCase):
                 "V0027__create_account_bound_registry_verification.sql",
                 "V0028__create_bounded_diagnostic_export.sql",
                 "V0029__version_profit_economics_and_commercial_inputs.sql",
+                "V0030__create_availability_risk_policy_inbound_and_case.sql",
+                "V0031__track_sustained_availability_lane.sql",
+                "V0032__create_availability_fact_feed_cursor.sql",
+                "V0033__track_case_improvement_observation.sql",
+                "V0034__close_availability_deep_review_findings.sql",
+                "V0035__close_availability_targeted_findings.sql",
             ),
             APPROVED_MIGRATIONS,
         )
@@ -529,6 +557,16 @@ class MigrationContractTests(unittest.TestCase):
         ):
             with self.subTest(statement=statement):
                 self.assertIsNone(DESTRUCTIVE_MIGRATION_STATEMENT.search(statement))
+
+    def test_the_product_scope_index_replacement_is_narrowly_approved(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        path = root / "backend/marketops-server/src/main/resources/db/migration/V0034__close_availability_deep_review_findings.sql"
+        text = path.read_text(encoding="utf-8")
+        line = "DROP INDEX iam.user_scope_grant_active_uq;"
+
+        self.assertTrue(approved_index_replacement(path, text, line))
+        self.assertFalse(approved_index_replacement(path.with_name("V9999__unsafe.sql"), text, line))
+        self.assertFalse(approved_index_replacement(path, text.replace("product_variant_ref_id", "omitted"), line))
 
 
 class CommentExtractionTests(unittest.TestCase):

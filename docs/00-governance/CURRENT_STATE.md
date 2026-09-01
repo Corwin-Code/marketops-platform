@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-08-31
+as_of: 2026-09-01
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -9,23 +9,48 @@ lifecycle_state: EXECUTING_V1
 product_version: V1
 delivery_model: PRODUCTION_VERTICAL_SLICES
 legacy_phase_model: SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN
-active_delivery_slice: SLICE-V1-001
-active_slice_title: SKU Growth & Profit Diagnostic Loop
-active_slice_contract: docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md
-active_slice_contract_sha256: 0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5
-active_slice_amendment: docs/03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md
-active_slice_amendment_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d
-active_slice_amendment_acceptance: HUMAN_OWNER_ACCEPTED_FOR_PR20_REWORK
-active_slice_amendment_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md
-active_slice_amendment_acceptance_evidence_sha256: e8fc208a4fcd9270b9187b65aa1618ecf6179166a3a44b4a37213bf067a91ee8
-active_slice_amendment_002: docs/03-work-items/SLICE-V1-001-AMENDMENT-002-DEFERRED-REAL-INTEGRATION-AND-PREPRODUCTION-ASSURANCE.md
-active_slice_amendment_002_sha256: 92fdd8d67b327fbd2288ba99290b5b59f2797106c4b691ce2bff22bb80198b93
-active_slice_amendment_002_acceptance: HUMAN_OWNER_ACCEPTED_FOR_SUPPLEMENTAL_R2
-active_slice_amendment_002_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-002-ACCEPTANCE-EVIDENCE.md
-active_slice_amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923
+active_delivery_slice: SLICE-V1-002
+active_slice_title: Stockout & Availability Risk with Accountable Response
+active_slice_contract: docs/03-work-items/SLICE-V1-002-stockout-availability-risk-and-accountable-response.md
+active_slice_contract_sha256: d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e
+active_slice_contract_git_blob_sha1: 1caa50f1b33011f7d226c83654835401c00bde1e
+active_slice_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-002-CONTRACT-ACCEPTANCE-EVIDENCE.md
+active_slice_acceptance_evidence_sha256: 4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e
+active_slice_amendment: NONE_ACCEPTED
+slice_v1_001_amendment: docs/03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md
+slice_v1_001_amendment_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d
+slice_v1_001_amendment_acceptance: HUMAN_OWNER_ACCEPTED_FOR_PR20_REWORK
+slice_v1_001_amendment_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md
+slice_v1_001_amendment_acceptance_evidence_sha256: e8fc208a4fcd9270b9187b65aa1618ecf6179166a3a44b4a37213bf067a91ee8
+slice_v1_001_amendment_002: docs/03-work-items/SLICE-V1-001-AMENDMENT-002-DEFERRED-REAL-INTEGRATION-AND-PREPRODUCTION-ASSURANCE.md
+slice_v1_001_amendment_002_sha256: 92fdd8d67b327fbd2288ba99290b5b59f2797106c4b691ce2bff22bb80198b93
+slice_v1_001_amendment_002_acceptance: HUMAN_OWNER_ACCEPTED_FOR_SUPPLEMENTAL_R2
+slice_v1_001_amendment_002_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-002-ACCEPTANCE-EVIDENCE.md
+slice_v1_001_amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923
 active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
-active_gate: SLICE_V1_001_FORMAL_CLOSURE_ACCEPTED
-authorization: FINAL_REVIEW_ONLY
+active_gate: SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION
+authorization: FULL_SCOPE_IMPLEMENTATION
+slice_v1_002_implementation_state: ROOT_CAUSE_REWORK_VERIFIED_LOCAL
+slice_v1_002_branch: fix/SLICE-V1-002-root-cause-rework-r1
+slice_v1_002_reviewed_source_head: c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6
+slice_v1_002_reviewed_source_tree: c94341232b5fa67b5c40a1e6be121a7696e748c4
+slice_v1_002_frozen_findings_sha256: 60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f799879ebcf94
+slice_v1_002_finding_count: 18
+slice_v1_002_engineering_findings_addressed: 18_OF_18_PENDING_INDEPENDENT_CLOSURE_VERIFICATION
+slice_v1_002_controller_verdict: NOT_CLAIMED
+slice_v1_002_owner_formal_closure: NOT_CLAIMED
+slice_v1_002_remote_publication: DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS
+slice_v1_002_draft_pr: 26
+slice_v1_002_draft_pr_url: https://github.com/Corwin-Code/marketops-platform/pull/26
+slice_v1_002_controlled_write_target: NONE_IN_THIS_SLICE
+slice_v1_002_real_provider_calls: NONE
+slice_v1_002_as_built_design: docs/02-architecture/designs/SLICE-V1-002-design.md
+slice_v1_002_acceptance_status: docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md
+slice_v1_002_executable_evidence: docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md
+slice_v1_002_root_cause_rework_evidence: docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md
+slice_v1_002_r1_finding_closure: docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json
+slice_v1_002_r1_final_handoff: docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md
+slice_v1_002_deferred_release_register: docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json
 accepted_contract_mutation: PROHIBITED_APPEND_ONLY_AMENDMENT_REQUIRED
 execution_envelope: EXECUTION_ENVELOPE_V1
 maker_remote_git_authority: DENIED
@@ -112,7 +137,7 @@ slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-s
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
 next_authorized_actor: GPT-5.6 Pro Controller
-next_action: NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY
+next_action: CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_UPDATED_DRAFT_PR_26
 slice_v1_001_handoff_pending: CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
@@ -132,6 +157,27 @@ owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 ```
 
 ## Active authority
+
+SLICE-V1-002 is the active Slice. Its accepted Contract is
+[SLICE-V1-002-stockout-availability-risk-and-accountable-response.md](../03-work-items/SLICE-V1-002-stockout-availability-risk-and-accountable-response.md)
+at SHA-256 `d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e`
+and Git blob `1caa50f1b33011f7d226c83654835401c00bde1e`, with Human Owner
+acceptance recorded in
+[OWNER-SLICE-V1-002-CONTRACT-ACCEPTANCE-EVIDENCE.md](../08-handoffs/OWNER-SLICE-V1-002-CONTRACT-ACCEPTANCE-EVIDENCE.md)
+at SHA-256 `4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e`.
+Those bytes are frozen: a normative change requires a separately identified,
+exact, Owner-accepted additive Amendment, and no Amendment to this Contract has
+been accepted.
+
+`FULL_SCOPE_IMPLEMENTATION` authorizes continuous Detailed Design and Initial
+Full Implementation inside that Contract. It authorizes nothing outside it, and
+it is not merge, deployment, Gate-EV, Gate-E, Pilot or production-write
+authority. SLICE-V1-002 has no controlled write target at all, makes no provider
+call, and leaves `production_write_enabled` at `false`.
+
+SLICE-V1-001 remains formally closed with its deferred Release obligations
+intact. Everything recorded below about it is preserved provenance rather than
+live authority, and its accepted Contract and Amendment bytes remain immutable.
 
 The exact Supplemental R2 engineering candidate has completed its protected
 merge. The Human Owner accepted exact
@@ -196,12 +242,11 @@ and acceptance evidence are present on protected `main` after independent
 Controller approval and Human Owner merge authorization. A proposal branch does
 not activate repository authority.
 
-The earlier `SLICE_CONTRACT_APPROVED` / `FULL_SCOPE_IMPLEMENTATION` authority was
-valid only for the exact `active_slice_contract` path and hash recorded above.
-The current `FINAL_REVIEW_ONLY` authority permits this bounded bookkeeping sync,
-not further product implementation. A byte change or identity mismatch remains
-prohibited; any normative change requires a separately accepted additive
-Amendment.
+Every authority is bound to an exact `active_slice_contract` path and hash. The
+`FULL_SCOPE_IMPLEMENTATION` authority recorded above is bound to SLICE-V1-002's
+bytes and to nothing else; the closed SLICE-V1-001 authority is bound to its
+own. A byte change or identity mismatch remains prohibited, and any normative
+change requires a separately accepted additive Amendment.
 
 The accepted original Contract is permanently byte-frozen. A normative change
 requires a separately identified, exact, Owner-accepted additive Amendment; a
@@ -242,7 +287,7 @@ This implementation authorization does **not** authorize:
 - Buyer PII in AI or general Analytics/Mart;
 - destructive migration or changes to V0001–V0010;
 - a second ingestion, metric, policy, command or audit authority;
-- a product-scope expansion outside SLICE-V1-001;
+- a product-scope expansion outside SLICE-V1-002;
 - merge or production release without later independent Gates.
 
 The Ozon/WB price-write fields remain disabled production/scheduling flags. A
@@ -365,11 +410,55 @@ Every row remains `OWNER_ACCEPTED_DEFERRED_TO_RELEASE_V1_001`; engineering
 fixtures cannot be promoted to real-provider evidence. `OPEN_QUESTIONS.md`
 continues to govern other external product/configuration questions.
 
+## SLICE-V1-002 root-cause rework state
+
+The exact one-shot Deep Review source was Head
+`c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6`, tree
+`c94341232b5fa67b5c40a1e6be121a7696e748c4`. Its 18-item Frozen Finding Set is
+bound at SHA-256
+`60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f799879ebcf94`.
+The coherent root-cause rework is locally verified on branch
+`fix/SLICE-V1-002-root-cause-rework-r1`; all 18 findings have an implemented
+engineering disposition, pending independent closure verification. No
+Controller verdict, Owner Formal Closure, merge, deployment, provider call or
+production enablement is claimed. Codex published the rework to open Draft PR
+#26, where all 12 required contexts and aggregate CodeQL pass. Independent
+Controller Final Closure Verification is the next bounded operation. Its entry
+points are:
+
+```text
+docs/02-architecture/designs/SLICE-V1-002-design.md
+docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md
+docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md
+docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md
+docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json
+docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md
+docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json
+```
+
+The acceptance status is an honest per-criterion record rather than a closure
+claim: a criterion is verified only where named evidence asserts it. `99` of
+`100` criteria are executably verified and `S2-AC-100` remains reserved for the
+Controller. The Slice adds forward migrations V0030 through V0035;
+V0001–V0029 remain byte-identical.
+
+The Contract's non-goals are absent by construction and checked rather than
+asserted. There is no replenishment quantity or order date, no purchase
+execution, no Dead Stock, Ageing, Slow-moving or Overstock loop, no Allocation
+or Transfer, no advertising intervention, no stock target, and no stock
+Preview, Approval, Command, Outbox, Adapter, Readback or `STOCK_CHANGE`
+capability anywhere in the module or in any migration.
+
 ## Next authorized action
 
-The closed Slice's next product-lifecycle action is
-`NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY`. GPT-5.6 Pro Controller first performs
-the bounded `CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK` over the
-actual PR #23 SQUASH identity and cleanup receipt. Neither action activates
-`RELEASE-V1-001`. Deployment, real credentials/provider calls, Gate EV, Gate E,
-Pilot and production writes remain unauthorized.
+The repository gate remains `SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION` inside the
+exact accepted Contract named above, but the bounded rework and remote
+verification action is complete. The next authorized action is
+`CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_UPDATED_DRAFT_PR_26` by the `GPT-5.6 Pro
+Controller`. SLICE-V1-001's closed lifecycle action remains
+`NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY` for the Slice after this one, and its
+bounded `CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK` over the actual
+PR #23 SQUASH identity and cleanup receipt is unchanged by this flip.
+
+Nothing here activates `RELEASE-V1-001`. Deployment, real credentials, provider
+calls, Gate EV, Gate E, Pilot and production writes remain unauthorized.

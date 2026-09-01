@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 /**
  * Administration of role assignments and scope grants.
  *
- * <p>The five typed resource columns are written from one logical resource
+ * <p>The typed resource columns are written from one logical resource
  * reference. Keeping the mapping here means the relational guarantee — that a
  * grant cannot name a resource outside its own organization — is expressed once
  * and cannot be bypassed by a caller that writes the wrong column.
@@ -98,11 +98,13 @@ public class UserGrantRepository {
                             id, organization_id, user_id, action_code,
                             organization_ref_id, legal_entity_ref_id,
                             marketplace_account_ref_id, store_ref_id, warehouse_ref_id,
+                            product_variant_ref_id,
                             effective_from, effective_to, status, reason,
                             created_at, updated_at, version)
                         VALUES (:id, :organizationId, :userId, :action,
                             :organizationRef, :legalEntityRef, :accountRef, :storeRef,
-                            :warehouseRef, :effectiveFrom, :effectiveTo, :status, :reason,
+                            :warehouseRef, :productVariantRef, :effectiveFrom, :effectiveTo,
+                            :status, :reason,
                             :createdAt, :updatedAt, :version)
                         """)
                 .param("id", grantRecord.id())
@@ -114,6 +116,8 @@ public class UserGrantRepository {
                 .param("accountRef", reference(grantRecord, ResourceScopeType.MARKETPLACE_ACCOUNT))
                 .param("storeRef", reference(grantRecord, ResourceScopeType.STORE))
                 .param("warehouseRef", reference(grantRecord, ResourceScopeType.WAREHOUSE))
+                .param("productVariantRef",
+                        reference(grantRecord, ResourceScopeType.PRODUCT_VARIANT))
                 .param("effectiveFrom", Timestamp.from(grantRecord.effectiveFrom()))
                 .param("effectiveTo", timestamp(grantRecord.effectiveTo()))
                 .param("status", grantRecord.status().name())
@@ -200,9 +204,12 @@ public class UserGrantRepository {
         } else if (rows.getObject("store_ref_id", UUID.class) != null) {
             type = ResourceScopeType.STORE;
             resourceId = rows.getObject("store_ref_id", UUID.class);
-        } else {
+        } else if (rows.getObject("warehouse_ref_id", UUID.class) != null) {
             type = ResourceScopeType.WAREHOUSE;
             resourceId = rows.getObject("warehouse_ref_id", UUID.class);
+        } else {
+            type = ResourceScopeType.PRODUCT_VARIANT;
+            resourceId = rows.getObject("product_variant_ref_id", UUID.class);
         }
         return new UserScopeGrantRecord(
                 rows.getObject("id", UUID.class),

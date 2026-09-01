@@ -5,7 +5,7 @@ document_type: active_delivery_plan
 product_version: V1
 delivery_model: PRODUCTION_VERTICAL_SLICES
 source_contract: docs/01-requirements/V1_PRODUCT_CONTRACT.md
-active_slice: SLICE-V1-001
+active_slice: SLICE-V1-002
 old_phase_zero_backlog: SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN
 effective_condition: PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION
 ```
@@ -48,12 +48,33 @@ See `docs/02-architecture/V1_SHARED_SPINE.md`.
 | Order | Slice | User outcome | New controlled-write target | Status |
 | ---: | --- | --- | --- | --- |
 | 1 | `SLICE-V1-001 — SKU Growth & Profit Diagnostic Loop` | Cross-domain SKU diagnosis, evidence-linked AI recommendation, task/approval and dual-platform guarded price execution | `PRICE_CHANGE` on Ozon and WB | CONTRACT_APPROVED_EFFECTIVE_ON_PROTECTED_MAIN |
-| 2 | `SLICE-V1-002 — Inventory & Availability Optimization` | Internal/platform stock truth, FBO/FBS drift, stockout/overstock diagnosis and allocation workflow | selected `STOCK_CHANGE` | PLANNED |
+| 2 | `SLICE-V1-002 — Stockout & Availability Risk with Accountable Response` | Trusted channel and company availability risk, grouped queue, deterministic priority, cause-routed accountable Case with two-stage action and outcome verification, governed Accepted Exception and targeted plus hourly recalculation | none; this Slice has no controlled-write target | ROOT_CAUSE_REWORK_VERIFIED_LOCAL_PENDING_INDEPENDENT_CLOSURE |
 | 3 | `SLICE-V1-003 — Advertising & Traffic Efficiency` | Campaign/target efficiency tied to inventory, conversion and Contribution Profit | selected budget/bid/campaign command | PLANNED |
 | 4 | `SLICE-V1-004 — Promotion & Listing Conversion` | Listing Health, content/promotion diagnosis, experiments and governed content/promotion workflow | selected promotion/listing command | PLANNED |
 | 5 | `SLICE-V1-005 — Order, Fulfillment & Return Control` | Ozon/WB FBO/FBS order state, SLA, return/QC and exception control | selected low-risk order action | PLANNED |
 | 6 | `SLICE-V1-006 — Finance & Contribution Profit Reconciliation` | Operational/Settled Contribution Profit, late adjustments, reconciliation and close workflow | none required by default | PLANNED |
 | 7 | `SLICE-V1-007 — Cross-domain Command Center & V1 Gate` | Integrated daily command center, policy management, cross-domain prioritization and V1 readiness | expand only capabilities that independently pass | PLANNED |
+
+### SLICE-V1-002 scope narrowing, with its original provenance
+
+The row above records the accepted Contract, which is narrower than the row this
+roadmap originally carried. The original text is preserved here so the change is
+visible rather than silent:
+
+```text
+SLICE-V1-002 — Inventory & Availability Optimization
+Internal/platform stock truth, FBO/FBS drift, stockout/overstock diagnosis and
+allocation workflow
+new controlled-write target: selected STOCK_CHANGE
+```
+
+The accepted Contract removes Overstock, Ageing, Dead Stock and Slow-moving
+diagnosis, Allocation and Transfer, replenishment quantity and order date, and
+the `STOCK_CHANGE` capability itself. Those remain future product Capabilities
+for a later Slice; they are not deferred evidence and they are not implied by
+this one. What the Slice keeps is the availability question a person can act on
+and be held to: what is running out, who owns it, what they did, and whether it
+actually improved.
 
 The order is the default dependency path, not an artificial ban on safe overlap.
 A later Slice may start discovery or fixture work when it does not compete with or

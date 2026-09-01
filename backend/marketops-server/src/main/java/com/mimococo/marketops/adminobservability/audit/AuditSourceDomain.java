@@ -16,7 +16,8 @@ public enum AuditSourceDomain {
     OPERATING_FACTS("operatingfacts"),
     ANALYTICS_DECISION("analyticsdecision"),
     AI_COPILOT("aicopilot"),
-    OPERATIONS_WORKFLOW("operationsworkflow");
+    OPERATIONS_WORKFLOW("operationsworkflow"),
+    AVAILABILITY_RISK("availabilityrisk");
 
     private final String dbValue;
 

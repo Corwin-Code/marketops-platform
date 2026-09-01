@@ -1,0 +1,224 @@
+# A card that will not resolve
+
+An availability card can sit in the queue without naming a shortage. That is the
+system saying it cannot answer, and the answer is a repair rather than a
+replenishment. This page covers the blocked and degraded states an operator
+meets and what each one needs.
+
+The rule underneath all of them: a company answer never becomes safe by
+default. When a material input is missing the card stays visible and stays
+somebody's work, because the alternative is a green card over a real stockout.
+
+## The company child is unresolved and data-blocked
+
+The card carries `COMPANY_SUPPLY_OWNERSHIP_NOT_DECLARED` or a similar blocker.
+Some platform-visible stock exists that nobody has classified: it is either the
+same physical units the warehouse holds, or genuinely separate stock held at
+the marketplace, and the two produce different answers.
+
+Resolve it by publishing a supply ownership declaration for the exact store and
+fulfillment mode, stating `MIRRORS_INTERNAL` with the warehouse it mirrors, or
+`PHYSICALLY_DISTINCT`. The declaration is effective-dated and evidence-linked;
+two active declarations for one store and mode cannot overlap in time, so
+correcting one means ending its interval and publishing a successor.
+
+The card resolves on the next recalculation. It does not resolve by anyone
+deciding the stock is probably fine.
+
+## The child is policy-blocked
+
+No lead-time and safety version resolves for the variant at any scope, or no
+demand-observation version is in force for the organization. There is no
+default: a missing policy is not zero lead time and not zero safety days.
+
+Resolve it by publishing the version at the scope that should own it —
+variant with supplier and route, supplier, product category, or the
+organization default. Publishing requires `SUPPLY_POLICY_MANAGE` and a recent
+authentication, because a shortened lead time can clear a queue without a
+single unit moving.
+
+## Demand is censored and then blocked
+
+The card reports that every recent window was materially censored: the listing
+was unsellable, or there was nothing to sell, or the source stopped publishing.
+While a previously eligible answer exists it is carried forward, visibly
+downgraded and showing the period it came from. When the bounded carry-forward
+period expires the answer becomes data-blocked.
+
+Demand never becomes zero through this path. Resolve it by restoring
+observation — repair the feed, or restore the listing — rather than by
+supplying a number.
+
+## The child is provisional
+
+The card shows a lower-bound argument rather than a full picture: using only
+stock that is owned, fresh and proven distinct, the variant still runs out
+inside its horizon. The refused units are listed with the reason each was
+refused, and they can only reduce the shortfall, never create it.
+
+A provisional card is actionable now. Clearing the refusal — usually an
+ownership declaration or a stale feed — turns it into a confirmed answer, which
+may be better or worse than the lower bound but will be the real one.
+
+## Profit evidence is blocked
+
+The card reports `PROFIT_DATA_BLOCKED`. Settled and operational contribution
+profit are both unavailable, stale, incomplete or conflicted, so the variant
+cannot be placed in the profitable queue and cannot be dismissed from it
+either.
+
+Resolve it through the cost and finance-input path that owns the missing
+component. The availability queue does not estimate profit to fill the gap.
+
+## Return quality is blocked or under review
+
+The company child carries `RETURN_QUALITY_EVIDENCE_UNRESOLVED` when completed,
+retained, return or reason-coded QC evidence is absent. It carries
+`SUPPLIER_OR_PRODUCT_DEFECT_RATE_HIGH` or
+`RETURN_OR_RETENTION_GUARDRAIL_BREACHED` when fresh evidence breaches the
+effective return-quality policy. Neither state can be cleared by treating goods
+in transport or awaiting QC as available supply.
+
+Repair the missing evidence or investigate the supplier/product defect. A
+returned unit becomes supply only after the append-only return ledger reaches
+`REENTERED_AVAILABLE` with a `RESELLABLE` disposition and a later warehouse
+snapshot links that exact transition. Rejected or written-off units never
+re-enter availability.
+
+## A case that is verifying and not closing
+
+Nothing is stuck. A case stays in verification until the cause it was raised for
+is actually repaired and stays repaired for the governed window, and the
+recalculation reports that on its own — there is no button that closes it.
+
+Read the case's own record before doing anything. A case with no improvement
+recorded means the cause is still present: the action did not work, or it worked
+on something else. A case with an improvement recorded is inside the window and
+will close by itself. A case that reopened had its improvement come back, which
+is a regression rather than a failure of the action.
+
+What does need somebody is a case whose outcome deadline has passed with the
+cause still present. That is recorded as a failure and returns the case for
+different work, not for the same work again.
+
+## The queue has stopped being current
+
+The loop reports one of three named incidents. Each one means the queue an
+operator is trusting is behind, which is the only failure that makes every
+other page in this runbook misleading.
+
+`RECONCILIATION_SWEEP_OVERDUE` — no full portfolio reconciliation has completed
+inside its cadence and grace period. Targeted recalculation may still be
+running, so cards are not necessarily stale; what is lost is the safety net
+that repairs a dropped trigger. Check that the availability worker is enabled
+and running in this environment, look for a sweep stuck in `RUNNING` (only one
+per organization is allowed, and a process that died holding one blocks the
+next), and close it out before triggering a fresh sweep.
+
+A completed run with `state = FAILED` and `failed_variant_count > 0` is a
+partial reconciliation, not a successful hourly safety net. Read
+`last_product_variant_id` to confirm traversal progress, inspect the logged
+variant identifiers, repair those variants and run reconciliation again. Do not
+close pending requests for failed variants; the worker deliberately repairs
+only successful ones.
+
+`RECALCULATION_BACKLOG_BEYOND_OBLIGATION` — the oldest unfinished recalculation
+has been waiting since its fact was accepted for longer than the response
+obligation allows. Read the depth and the age together: a thousand requests
+queued a second ago are healthy and one queued an hour ago is not. Look for
+requests repeatedly attempted and failing; past the attempt bound they are
+abandoned so one permanently broken variant cannot occupy the queue, and the
+sweep still visits it.
+
+`CRITICAL_RESPONSE_HARD_BOUND_BREACHED` or
+`CRITICAL_RESPONSE_DISTRIBUTION_TARGET_MISSED` — the response evidence itself
+says the promise was not kept. The two latencies are recorded separately, so
+read them apart before acting: a large source latency is a marketplace
+publishing late and is not this system's incident, while a large internal
+latency is. Both are stored per recalculation and can be re-examined; neither
+is an aggregate that has already thrown away the detail.
+
+## A dropped trigger
+
+Nothing needs to be diagnosed. The sweep recalculates the portfolio and closes
+the requests it covered, which is what turns a lost trigger into a recovered
+one rather than a queue that never drains. Confirm the repair by reading the
+run's repaired count.
+
+If a trigger is dropped and the sweep is also overdue, treat the sweep as the
+incident: the trigger is recoverable and the sweep is what recovers it.
+
+## An acceptance that should no longer hold
+
+Expiry is automatic: the sweep ends the acceptance and reopens the same case
+with its journal intact. The sweep also revalidates every active acceptance
+against current materiality policy, cause, scope, risk-evidence fingerprint and
+approving authority. A mismatch invalidates automatically; governance failures
+escalate the case as well as reopening it, because they need a higher authority
+than the one that let them happen.
+
+No acceptance can be extended by editing it. A new period is a new request,
+sized again by the materiality version in force at the time, and refused if the
+requester is also its only approver where separation is required.
+
+## Isolated executable drills
+
+These five drills are exercised without a Provider by
+`AvailabilityRunbookConformanceTest`. Each drill starts from the production
+signal, proves the fail-closed state, names the bounded repair, and defines the
+exit evidence. A drill is not complete merely because an operator performed an
+action.
+
+### DRILL-STALE-SOURCE
+
+- Signal: `CHANNEL_OBSERVATION_STALE`, `RiskEvidenceState.STALE`, and no proven
+  current units.
+- Action: restore the exact source feed and accept a newer attributed fact;
+  never substitute the stale quantity or zero.
+- Exit: a targeted recalculation reads a fresh observation and the stale
+  blocker is absent from the persisted child.
+
+### DRILL-OWNERSHIP-CONFLICT
+
+- Signal: `COMPANY_SUPPLY_OWNERSHIP_NOT_DECLARED`,
+  `RiskCause.OWNERSHIP_UNDECLARED`, and `RiskEvidenceState.DATA_BLOCKED`.
+- Action: publish one non-overlapping, evidence-linked declaration of
+  `MIRRORS_INTERNAL` or `PHYSICALLY_DISTINCT` for the exact store and mode.
+- Exit: recalculation resolves one unique declaration; the blocker disappears
+  without double-counting mirrored units.
+
+### DRILL-POLICY-BLOCKER
+
+- Signal: `RiskCause.LEAD_TIME_POLICY_MISSING` or
+  `RiskCause.DEMAND_POLICY_MISSING` with `RiskEvidenceState.POLICY_BLOCKED`.
+- Action: an authorized owner publishes the missing effective-dated policy at
+  the intended precedence; do not supply a default in code or in the drill.
+- Exit: recalculation resolves exactly one policy version and the persisted
+  child no longer has a policy-blocked evidence state.
+
+### DRILL-BACKLOG-SLO-BREACH
+
+- Signal: `RECALCULATION_BACKLOG_BEYOND_OBLIGATION`,
+  `CRITICAL_RESPONSE_HARD_BOUND_BREACHED`, or
+  `CRITICAL_RESPONSE_DISTRIBUTION_TARGET_MISSED` from recorded latency facts.
+- Action: inspect oldest age and depth, repair repeatedly failing variants, and
+  run the bounded worker; do not discard, rewrite, or age-forward requests.
+- Exit: the unfinished queue is empty or within the obligation and a later
+  measured window has no hard-bound breach and meets the critical distribution
+  target.
+
+### DRILL-FAILED-RECONCILIATION
+
+- Signal: `RECONCILIATION_LAST_RUN_FAILED`, with `failure_code` and
+  `failed_variant_count` from the newest durable run.
+- Action: inspect `last_product_variant_id` and the failed variant identities,
+  repair the cause, then start a new `RECOVERY` sweep; do not relabel the failed
+  run or close requests for variants it skipped.
+- Exit: a later full run is `COMPLETED`, has `failed_variant_count = 0`, and its
+  relational trace contains `SWEEP_STARTED` through `SWEEP_COMPLETED`.
+
+## What none of these do
+
+None of these states writes anything to a marketplace. This capability has no
+stock command, no outbox, no adapter write and no readback, and nothing in this
+runbook creates one.

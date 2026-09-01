@@ -60,3 +60,31 @@ comment `5469802650` passed the exact post-merge bookkeeping packet, and Human
 Owner comment `5469935477` issued Formal Closure over the frozen Snapshot.
 Production readiness remains deferred to `RELEASE-V1-001`; every deferred row
 remains production-blocking and `production_write_enabled` remains `false`.
+
+## SLICE-V1-002 implementation record
+
+SLICE-V1-002 is the active Slice. Its complete mandatory product path is
+implemented and exercised end to end, and it is not closed. Its entry points
+are:
+
+- [`acceptance-status.md`](SLICE-V1-002/acceptance-status.md) — the hundred
+  `S2-AC-*` criteria with a per-criterion verification or gap;
+- [`executable-evidence.md`](SLICE-V1-002/executable-evidence.md) — the exact
+  commands run and the results observed;
+- [`V0034-root-cause-rework-evidence.md`](SLICE-V1-002/V0034-root-cause-rework-evidence.md)
+  and [`r1-finding-closure.json`](SLICE-V1-002/r1-finding-closure.json) — the
+  human- and machine-readable 18/18 frozen-finding disposition;
+- [`r1-final-handoff.md`](SLICE-V1-002/r1-final-handoff.md) — the bounded Codex
+  to Controller handoff and authority boundary;
+- [`deferred-release-register.json`](SLICE-V1-002/deferred-release-register.json)
+  — the ten `S2-REL-*` obligations, each production-blocking.
+
+Draft PR #26 is the authorized remote publication. No Controller verdict,
+Owner closure or merge is claimed. The Slice has no controlled write target,
+no provider call exists in its execution path, and
+`production_write_enabled` remains `false`.
+
+The acceptance status is deliberately evidence-bound. A criterion is verified
+only where a named, currently passing test asserts it: 99 are
+`EXECUTABLY_VERIFIED`, while `S2-AC-100` remains reserved exclusively for
+independent Controller Final Closure.

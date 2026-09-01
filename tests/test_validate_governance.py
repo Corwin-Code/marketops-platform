@@ -2879,7 +2879,8 @@ class V1CurrentStateContractTests(unittest.TestCase):
     def slice_contract_bytes(self) -> bytes:
         return (
             Path(__file__).resolve().parents[1]
-            / "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md"
+            / "docs/03-work-items"
+            / "SLICE-V1-002-stockout-availability-risk-and-accountable-response.md"
         ).read_bytes()
 
     def validate(
@@ -2920,8 +2921,8 @@ class V1CurrentStateContractTests(unittest.TestCase):
 
     def test_duplicate_active_slice_is_rejected(self) -> None:
         current = self.current().replace(
-            "active_delivery_slice: SLICE-V1-001",
-            "active_delivery_slice: SLICE-V1-001\nactive_delivery_slice: SLICE-V1-001",
+            "active_delivery_slice: SLICE-V1-002",
+            "active_delivery_slice: SLICE-V1-002\nactive_delivery_slice: SLICE-V1-002",
             1,
         )
         self.assertTrue(any("active_delivery_slice" in error for error in self.validate(current=current)))
@@ -2929,16 +2930,21 @@ class V1CurrentStateContractTests(unittest.TestCase):
     def test_wrong_contract_gate_and_authorization_are_rejected(self) -> None:
         mutations = (
             (
-                "active_slice_contract: docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+                "active_slice_contract: docs/03-work-items/"
+                "SLICE-V1-002-stockout-availability-risk-and-accountable-response.md",
                 "active_slice_contract: docs/03-work-items/other.md",
                 "active_slice_contract",
             ),
             (
-                "active_gate: SLICE_V1_001_FORMAL_CLOSURE_ACCEPTED",
+                "active_gate: SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION",
                 "active_gate: READY_FOR_DESIGN",
                 "active_gate",
             ),
-            ("authorization: FINAL_REVIEW_ONLY", "authorization: DESIGN_ONLY", "authorization"),
+            (
+                "authorization: FULL_SCOPE_IMPLEMENTATION",
+                "authorization: DESIGN_ONLY",
+                "authorization",
+            ),
         )
         for old, new, field in mutations:
             with self.subTest(field=field):
@@ -2963,8 +2969,8 @@ class V1CurrentStateContractTests(unittest.TestCase):
 
     def test_contract_byte_change_with_old_hash_is_rejected(self) -> None:
         mutated = self.slice_contract_bytes().replace(
-            b"SKU Growth & Profit Diagnostic Loop",
-            b"SKU Growth & Profit Diagnostic Lo0p",
+            b"Stockout & Availability Risk",
+            b"Stockout & Availability R1sk",
             1,
         )
         errors = self.validate(slice_contract_bytes=mutated)
@@ -3005,7 +3011,10 @@ class V1CurrentStateContractTests(unittest.TestCase):
 
     def test_rework_identity_phase_and_actor_cannot_drift(self) -> None:
         mutations = (
-            ("next_authorized_actor: GPT-5.6 Pro Controller", "next_authorized_actor: CLAUDE_FABLE_5"),
+            (
+                "next_authorized_actor: GPT-5.6 Pro Controller",
+                "next_authorized_actor: SOMEBODY_ELSE",
+            ),
             (
                 "slice_v1_001_rework_phase: R2_FORMAL_CLOSURE_ACCEPTED",
                 "slice_v1_001_rework_phase: CLOSED",

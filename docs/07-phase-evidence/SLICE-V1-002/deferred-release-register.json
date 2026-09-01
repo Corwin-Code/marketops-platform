@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "registerId": "SLICE-V1-002-DEFERRED-RELEASE-OBLIGATIONS",
+  "authority": {
+    "contractPath": "docs/03-work-items/SLICE-V1-002-stockout-availability-risk-and-accountable-response.md",
+    "contractSha256": "d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e",
+    "ownerAcceptancePath": "docs/08-handoffs/OWNER-SLICE-V1-002-CONTRACT-ACCEPTANCE-EVIDENCE.md",
+    "ownerAcceptanceSha256": "4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e"
+  },
+  "futureGate": "RELEASE-V1-001",
+  "controlledWriteTarget": "NONE_IN_THIS_SLICE",
+  "productionWriteEnabled": false,
+  "note": "STOCK_CHANGE, Overstock, Allocation and Transfer are future product Capabilities rather than deferred evidence rows, and are deliberately absent from this register.",
+  "entries": [
+    {
+      "releaseObligationId": "S2-REL-001",
+      "obligation": "real Ozon stock/sellability read capability, source semantics and actual account/store/FBO/FBS evidence",
+      "engineeringWorkClosedNow": "Deterministic channel availability interfaces and their fail-closed states, exercised with synthetic facts",
+      "deferredEvidence": "real Ozon stock/sellability read capability, source semantics and actual account/store/FBO/FBS evidence",
+      "activationPrerequisite": "OWNER_ACCEPTED_RELEASE_V1_001_CONTRACT",
+      "productionBlockingEffect": "BLOCKS_PRODUCTION_MARKETPLACE_AVAILABILITY_EVIDENCE",
+      "currentStatus": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "engineeringStatus": "ENGINEERING_INTERFACE_PRESENT_RELEASE_EVIDENCE_PENDING",
+      "releaseEvidenceState": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "futureEvidencePath": "docs/07-phase-evidence/RELEASE-V1-001/S2-REL-001/"
+    },
+    {
+      "releaseObligationId": "S2-REL-002",
+      "obligation": "equivalent Wildberries stock/sales/freshness evidence without assuming platform symmetry",
+      "engineeringWorkClosedNow": "The same deterministic interfaces, with no platform asymmetry assumed anywhere in the calculation",
+      "deferredEvidence": "equivalent Wildberries stock/sales/freshness evidence without assuming platform symmetry",
+      "activationPrerequisite": "OWNER_ACCEPTED_RELEASE_V1_001_CONTRACT",
+      "productionBlockingEffect": "BLOCKS_PRODUCTION_MARKETPLACE_AVAILABILITY_EVIDENCE",
+      "currentStatus": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "engineeringStatus": "ENGINEERING_INTERFACE_PRESENT_RELEASE_EVIDENCE_PENDING",
+      "releaseEvidenceState": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "futureEvidencePath": "docs/07-phase-evidence/RELEASE-V1-001/S2-REL-002/"
+    },
+    {
+      "releaseObligationId": "S2-REL-003",
+      "obligation": "real internal warehouse/stock ownership, Mapping and deduplication evidence using approved redacted/controlled inputs",
+      "engineeringWorkClosedNow": "Ownership declaration, deduplication and per-warehouse internal stock reads with synthetic facts",
+      "deferredEvidence": "real internal warehouse/stock ownership, Mapping and deduplication evidence using approved redacted/controlled inputs",
+      "activationPrerequisite": "OWNER_ACCEPTED_RELEASE_V1_001_CONTRACT",
+      "productionBlockingEffect": "BLOCKS_PRODUCTION_COMPANY_SUPPLY_ENABLEMENT",
+      "currentStatus": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "engineeringStatus": "ENGINEERING_INTERFACE_PRESENT_RELEASE_EVIDENCE_PENDING",
+      "releaseEvidenceState": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "futureEvidencePath": "docs/07-phase-evidence/RELEASE-V1-001/S2-REL-003/"
+    },
+    {
+      "releaseObligationId": "S2-REL-004",
+      "obligation": "real Product/Procurement inbound attestation workflow and actual evidence classes",
+      "engineeringWorkClosedNow": "Append-only attestation schema with version history and eligibility rules",
+      "deferredEvidence": "real Product/Procurement inbound attestation workflow and actual evidence classes",
+      "activationPrerequisite": "OWNER_ACCEPTED_RELEASE_V1_001_CONTRACT",
+      "productionBlockingEffect": "BLOCKS_PRODUCTION_INBOUND_ATTESTATION_ENABLEMENT",
+      "currentStatus": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "engineeringStatus": "ENGINEERING_INTERFACE_PRESENT_RELEASE_EVIDENCE_PENDING",
+      "releaseEvidenceState": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "futureEvidencePath": "docs/07-phase-evidence/RELEASE-V1-001/S2-REL-004/"
+    },
+    {
+      "releaseObligationId": "S2-REL-005",
+      "obligation": "real Organization policy values for lead time, safety, demand/quality, work activation, exception materiality and delegation",
+      "engineeringWorkClosedNow": "Versioned effective-dated policy schema with no-overlap enforcement and fail-closed resolution",
+      "deferredEvidence": "real Organization policy values for lead time, safety, demand/quality, work activation, exception materiality and delegation",
+      "activationPrerequisite": "OWNER_ACCEPTED_RELEASE_V1_001_CONTRACT",
+      "productionBlockingEffect": "BLOCKS_PRODUCTION_POLICY_ENABLEMENT",
+      "currentStatus": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "engineeringStatus": "ENGINEERING_INTERFACE_PRESENT_RELEASE_EVIDENCE_PENDING",
+      "releaseEvidenceState": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "futureEvidencePath": "docs/07-phase-evidence/RELEASE-V1-001/S2-REL-005/"
+    },
+    {
+      "releaseObligationId": "S2-REL-006",
+      "obligation": "real OIDC/MFA and production role/scope evidence",
+      "engineeringWorkClosedNow": "Seeded role and action matrix pinned by a migration inventory test",
+      "deferredEvidence": "real OIDC/MFA and production role/scope evidence",
+      "activationPrerequisite": "OWNER_ACCEPTED_RELEASE_V1_001_CONTRACT",
+      "productionBlockingEffect": "BLOCKS_PRODUCTION_IDENTITY_ENABLEMENT",
+      "currentStatus": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "engineeringStatus": "ENGINEERING_INTERFACE_PRESENT_RELEASE_EVIDENCE_PENDING",
+      "releaseEvidenceState": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "futureEvidencePath": "docs/07-phase-evidence/RELEASE-V1-001/S2-REL-006/"
+    },
+    {
+      "releaseObligationId": "S2-REL-007",
+      "obligation": "Yandex runtime, managed PostgreSQL, object custody, backup/restore, monitoring and legal/security release evidence",
+      "engineeringWorkClosedNow": "Isolated PostgreSQL 18.4 migration, privilege and constraint evidence",
+      "deferredEvidence": "Yandex runtime, managed PostgreSQL, object custody, backup/restore, monitoring and legal/security release evidence",
+      "activationPrerequisite": "OWNER_ACCEPTED_RELEASE_V1_001_CONTRACT",
+      "productionBlockingEffect": "BLOCKS_PRODUCTION_INFRASTRUCTURE_ENABLEMENT",
+      "currentStatus": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "engineeringStatus": "ENGINEERING_INTERFACE_PRESENT_RELEASE_EVIDENCE_PENDING",
+      "releaseEvidenceState": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "futureEvidencePath": "docs/07-phase-evidence/RELEASE-V1-001/S2-REL-007/"
+    },
+    {
+      "releaseObligationId": "S2-REL-008",
+      "obligation": "real-provider source Freshness and end-to-end latency evidence, explicitly separated from internal SLO",
+      "engineeringWorkClosedNow": "Internal timing fields modelled and stored; no end-to-end latency claimed",
+      "deferredEvidence": "real-provider source Freshness and end-to-end latency evidence, explicitly separated from internal SLO",
+      "activationPrerequisite": "OWNER_ACCEPTED_RELEASE_V1_001_CONTRACT",
+      "productionBlockingEffect": "BLOCKS_PRODUCTION_LATENCY_CLAIM",
+      "currentStatus": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "engineeringStatus": "ENGINEERING_INTERFACE_PRESENT_RELEASE_EVIDENCE_PENDING",
+      "releaseEvidenceState": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "futureEvidencePath": "docs/07-phase-evidence/RELEASE-V1-001/S2-REL-008/"
+    },
+    {
+      "releaseObligationId": "S2-REL-009",
+      "obligation": "Key User/Operator acceptance and controlled operating evidence for the queue/Task loop",
+      "engineeringWorkClosedNow": "Deterministic queue and case model; no operator acceptance claimed",
+      "deferredEvidence": "Key User/Operator acceptance and controlled operating evidence for the queue/Task loop",
+      "activationPrerequisite": "OWNER_ACCEPTED_RELEASE_V1_001_CONTRACT",
+      "productionBlockingEffect": "BLOCKS_PRODUCTION_OPERATING_ENABLEMENT",
+      "currentStatus": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "engineeringStatus": "ENGINEERING_INTERFACE_PRESENT_RELEASE_EVIDENCE_PENDING",
+      "releaseEvidenceState": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "futureEvidencePath": "docs/07-phase-evidence/RELEASE-V1-001/S2-REL-009/"
+    },
+    {
+      "releaseObligationId": "S2-REL-010",
+      "obligation": "release traceability, runbooks, training and no unresolved release-blocking defect",
+      "engineeringWorkClosedNow": "Repository-level traceability from Contract criterion to test",
+      "deferredEvidence": "release traceability, runbooks, training and no unresolved release-blocking defect",
+      "activationPrerequisite": "OWNER_ACCEPTED_RELEASE_V1_001_CONTRACT",
+      "productionBlockingEffect": "BLOCKS_PRODUCTION_RELEASE",
+      "currentStatus": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "engineeringStatus": "ENGINEERING_INTERFACE_PRESENT_RELEASE_EVIDENCE_PENDING",
+      "releaseEvidenceState": "PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+      "futureEvidencePath": "docs/07-phase-evidence/RELEASE-V1-001/S2-REL-010/"
+    }
+  ]
+}

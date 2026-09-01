@@ -62,7 +62,13 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0026__rename_operational_capability_column_to_action_kind.sql",
             "V0027__create_account_bound_registry_verification.sql",
             "V0028__create_bounded_diagnostic_export.sql",
-            "V0029__version_profit_economics_and_commercial_inputs.sql");
+            "V0029__version_profit_economics_and_commercial_inputs.sql",
+            "V0030__create_availability_risk_policy_inbound_and_case.sql",
+            "V0031__track_sustained_availability_lane.sql",
+            "V0032__create_availability_fact_feed_cursor.sql",
+            "V0033__track_case_improvement_observation.sql",
+            "V0034__close_availability_deep_review_findings.sql",
+            "V0035__close_availability_targeted_findings.sql");
 
     private static PostgreSQLContainer container;
 
@@ -125,14 +131,20 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                             + " ORDER BY 1");
 
             assertThat(tables).containsExactly(
+                    "core.availability_priority_policy",
                     "core.cost_version",
+                    "core.demand_observation_policy",
                     "core.economics_projection_component",
                     "core.economics_projection_family",
                     "core.economics_projection_profile",
+                    "core.exception_materiality_policy",
                     "core.fact_provenance",
                     "core.finance_input_version",
                     "core.fulfillment_mode",
+                    "core.inbound_supply_attestation",
+                    "core.inbound_supply_attestation_version",
                     "core.internal_stock_snapshot",
+                    "core.lead_time_safety_policy",
                     "core.legal_entity",
                     "core.listing_health_observation",
                     "core.listing_mapping",
@@ -149,11 +161,14 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "core.product",
                     "core.product_barcode",
                     "core.product_variant",
+                    "core.return_quality_policy",
                     "core.source_feed_watermark",
                     "core.store",
                     "core.store_fulfillment_declaration",
                     "core.store_warehouse_link",
+                    "core.supply_ownership_declaration",
                     "core.warehouse",
+                    "core.work_activation_policy",
                     "iam.action_scope",
                     "iam.business_role",
                     "iam.business_role_action_scope",
@@ -169,8 +184,15 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ledger.ad_spend_fact",
                     "ledger.finance_fee_fact",
                     "ledger.return_fact",
+                    "ledger.return_inventory_transition",
+                    "ledger.return_quality_evidence_snapshot",
                     "ledger.sales_fact",
+                    "mart.availability_risk_card",
+                    "mart.availability_risk_child",
+                    "mart.availability_risk_evidence",
+                    "mart.availability_risk_factor",
                     "mart.calculation_run",
+                    "mart.demand_window_observation",
                     "mart.diagnosis_finding",
                     "mart.diagnosis_finding_input",
                     "mart.diagnosis_rule",
@@ -188,6 +210,16 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ops.ai_provider",
                     "ops.approval_decision",
                     "ops.authorization_decision_evidence",
+                    "ops.availability_accepted_exception",
+                    "ops.availability_case",
+                    "ops.availability_case_event",
+                    "ops.availability_exception_decision",
+                    "ops.availability_exception_delegation",
+                    "ops.availability_fact_cursor",
+                    "ops.availability_recalculation_request",
+                    "ops.availability_reconciliation_run",
+                    "ops.availability_slo_observation",
+                    "ops.availability_trace_event",
                     "ops.commercial_policy",
                     "ops.commercial_policy_limit",
                     "ops.diagnostic_export",
@@ -277,14 +309,19 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     .containsExactly("OZON", "WILDBERRIES");
             assertThat(strings(connection,
                     "SELECT code FROM iam.business_role ORDER BY ordinal"))
-                    .containsExactly("OWNER", "OPERATIONS", "FINANCE", "READ_ONLY");
+                    .containsExactly("OWNER", "OPERATIONS", "FINANCE", "READ_ONLY",
+                            "MARKETPLACE_OPERATOR", "PRODUCT_PROCUREMENT", "TECH_DATA",
+                            "FINANCE_ANALYST", "OPS_LEAD", "RISK_AUTHORITY", "AUDITOR");
             assertThat(strings(connection,
                     "SELECT code FROM iam.action_scope ORDER BY ordinal"))
                     .containsExactly(
                             "DIAGNOSTIC_VIEW", "EVIDENCE_VIEW", "MAPPING_RESOLVE",
                             "INTERNAL_FACT_INTAKE", "RECOMMENDATION_MANAGE", "TASK_ASSIGN",
                             "PRICE_CHANGE_APPROVE", "COMMERCIAL_POLICY_MANAGE",
-                            "COMMAND_RESOLVE", "KILL_SWITCH_OPERATE");
+                            "COMMAND_RESOLVE", "KILL_SWITCH_OPERATE",
+                            "AVAILABILITY_VIEW", "INBOUND_ATTEST", "SUPPLY_POLICY_MANAGE",
+                            "AVAILABILITY_TASK_ACT", "AVAILABILITY_EXCEPTION_REQUEST",
+                            "AVAILABILITY_EXCEPTION_APPROVE");
             // A role matrix that grew without review is the quiet way a
             // read-only profile acquires the ability to move a price.
             assertThat(strings(connection,
@@ -296,6 +333,25 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                             + " WHERE role_code <> 'OWNER' AND action_code IN"
                             + " ('PRICE_CHANGE_APPROVE', 'COMMERCIAL_POLICY_MANAGE')"))
                     .isZero();
+            // The availability step-up actions are held only by the roles the
+            // Contract makes accountable for them. Publishing a lead time and
+            // accepting a risk both silently change what the queue reports, so
+            // widening either is a migration a reviewer has to see.
+            assertThat(strings(connection,
+                    "SELECT role_code FROM iam.business_role_action_scope"
+                            + " WHERE action_code = 'SUPPLY_POLICY_MANAGE' ORDER BY role_code"))
+                    .containsExactly("OWNER", "PRODUCT_PROCUREMENT");
+            assertThat(strings(connection,
+                    "SELECT role_code FROM iam.business_role_action_scope"
+                            + " WHERE action_code = 'AVAILABILITY_EXCEPTION_APPROVE'"
+                            + " ORDER BY role_code"))
+                    .containsExactly("OPS_LEAD", "OWNER", "RISK_AUTHORITY");
+            // An auditor reads. A role that could act on a case or accept a risk
+            // would not be an audit role.
+            assertThat(strings(connection,
+                    "SELECT action_code FROM iam.business_role_action_scope"
+                            + " WHERE role_code = 'AUDITOR' ORDER BY action_code"))
+                    .containsExactly("AVAILABILITY_VIEW", "DIAGNOSTIC_VIEW", "EVIDENCE_VIEW");
             assertThat(strings(connection,
                     "SELECT metric_code FROM mart.metric_definition"
                             + " WHERE domain = 'PROFIT' AND status = 'ACTIVE'"

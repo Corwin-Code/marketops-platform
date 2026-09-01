@@ -201,6 +201,16 @@ DR0003_REQUIRED_FILES = [
     "docs/02-architecture/adr/ADR-0008-unified-capability-model-and-selective-controlled-write.md",
     "docs/03-work-items/V1_DELIVERY_SLICES.md",
     "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md",
+    "docs/03-work-items/"
+    "SLICE-V1-002-stockout-availability-risk-and-accountable-response.md",
+    "docs/08-handoffs/OWNER-SLICE-V1-002-CONTRACT-ACCEPTANCE-EVIDENCE.md",
+    "docs/02-architecture/designs/SLICE-V1-002-design.md",
+    "docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md",
+    "docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md",
+    "docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md",
+    "docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json",
+    "docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md",
+    "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json",
     "docs/04-api/V1_CAPABILITY_MATRIX.md",
     "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md",
     "docs/07-phase-evidence/README.md",
@@ -232,14 +242,45 @@ WP_EXECUTION_AUTHORIZATION_ALLOWED_STATES = ACTIVE_AUTHORIZATION_STATES | {"CLOS
 LIFECYCLE_ALLOWED_STATES = {"INITIATING", "EXECUTING_PHASE_0", "EXECUTING_V1"}
 
 DR0003_REQUIRED_BASE = "52a657f7f6358f43246e03457ba2d48ef658986a"
-V1_ACTIVE_SLICE_CONTRACT_PATH = (
+# SLICE-V1-001's Contract is no longer the active one, but its bytes stay
+# pinned: DR-0004 and the closed Slice's own acceptance record quote this hash,
+# and a closed Slice's provenance does not move when the next one starts.
+V1_SLICE_001_CONTRACT_PATH = (
     "docs/03-work-items/SLICE-V1-001-sku-growth-profit-diagnostic-loop.md"
 )
-V1_ACTIVE_SLICE_CONTRACT_SHA256 = (
+V1_SLICE_001_CONTRACT_SHA256 = (
     "0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5"
+)
+V1_ACTIVE_SLICE_CONTRACT_PATH = (
+    "docs/03-work-items/"
+    "SLICE-V1-002-stockout-availability-risk-and-accountable-response.md"
+)
+V1_ACTIVE_SLICE_CONTRACT_SHA256 = (
+    "d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e"
+)
+V1_ACTIVE_SLICE_CONTRACT_GIT_BLOB_SHA1 = (
+    "1caa50f1b33011f7d226c83654835401c00bde1e"
+)
+V1_ACTIVE_SLICE_ACCEPTANCE_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-002-CONTRACT-ACCEPTANCE-EVIDENCE.md"
+)
+V1_ACTIVE_SLICE_ACCEPTANCE_SHA256 = (
+    "4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e"
 )
 V1_SLICE_AUTHORIZATION_CONDITION = (
     "EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN"
+)
+V1_AMENDMENT_001_PATH = (
+    "docs/03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md"
+)
+V1_AMENDMENT_001_SHA256 = (
+    "8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d"
+)
+V1_AMENDMENT_001_ACCEPTANCE_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-001-ACCEPTANCE-EVIDENCE.md"
+)
+V1_AMENDMENT_001_ACCEPTANCE_SHA256 = (
+    "e8fc208a4fcd9270b9187b65aa1618ecf6179166a3a44b4a37213bf067a91ee8"
 )
 V1_AMENDMENT_002_PATH = (
     "docs/03-work-items/"
@@ -273,22 +314,73 @@ V1_ACTIVE_STATE = {
     "lifecycle_state": "EXECUTING_V1",
     "product_version": "V1",
     "delivery_model": "PRODUCTION_VERTICAL_SLICES",
-    "active_delivery_slice": "SLICE-V1-001",
+    "active_delivery_slice": "SLICE-V1-002",
+    "active_slice_title": "Stockout & Availability Risk with Accountable Response",
     "active_slice_contract": V1_ACTIVE_SLICE_CONTRACT_PATH,
     "active_slice_contract_sha256": V1_ACTIVE_SLICE_CONTRACT_SHA256,
+    "active_slice_contract_git_blob_sha1": V1_ACTIVE_SLICE_CONTRACT_GIT_BLOB_SHA1,
     "active_slice_contract_authorization_condition": V1_SLICE_AUTHORIZATION_CONDITION,
-    "active_gate": "SLICE_V1_001_FORMAL_CLOSURE_ACCEPTED",
-    "authorization": "FINAL_REVIEW_ONLY",
+    "active_slice_acceptance_evidence": V1_ACTIVE_SLICE_ACCEPTANCE_PATH,
+    "active_slice_acceptance_evidence_sha256": V1_ACTIVE_SLICE_ACCEPTANCE_SHA256,
+    "active_slice_amendment": "NONE_ACCEPTED",
+    "active_gate": "SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION",
+    "authorization": "FULL_SCOPE_IMPLEMENTATION",
     "r2_remote_publication_authority": (
         "HUMAN_OWNER_EXPLICIT_FORMAL_CLOSURE_RECORDING_AND_PROTECTED_SQUASH_PR_23"
     ),
-    "active_slice_amendment_002": V1_AMENDMENT_002_PATH,
-    "active_slice_amendment_002_sha256": V1_AMENDMENT_002_SHA256,
-    "active_slice_amendment_002_acceptance": "HUMAN_OWNER_ACCEPTED_FOR_SUPPLEMENTAL_R2",
-    "active_slice_amendment_002_acceptance_evidence": V1_AMENDMENT_002_ACCEPTANCE_PATH,
-    "active_slice_amendment_002_acceptance_evidence_sha256": V1_AMENDMENT_002_ACCEPTANCE_SHA256,
+    "slice_v1_001_amendment": V1_AMENDMENT_001_PATH,
+    "slice_v1_001_amendment_sha256": V1_AMENDMENT_001_SHA256,
+    "slice_v1_001_amendment_acceptance": "HUMAN_OWNER_ACCEPTED_FOR_PR20_REWORK",
+    "slice_v1_001_amendment_acceptance_evidence": V1_AMENDMENT_001_ACCEPTANCE_PATH,
+    "slice_v1_001_amendment_acceptance_evidence_sha256": V1_AMENDMENT_001_ACCEPTANCE_SHA256,
+    "slice_v1_001_amendment_002": V1_AMENDMENT_002_PATH,
+    "slice_v1_001_amendment_002_sha256": V1_AMENDMENT_002_SHA256,
+    "slice_v1_001_amendment_002_acceptance": "HUMAN_OWNER_ACCEPTED_FOR_SUPPLEMENTAL_R2",
+    "slice_v1_001_amendment_002_acceptance_evidence": V1_AMENDMENT_002_ACCEPTANCE_PATH,
+    "slice_v1_001_amendment_002_acceptance_evidence_sha256": V1_AMENDMENT_002_ACCEPTANCE_SHA256,
+    "slice_v1_002_implementation_state": "ROOT_CAUSE_REWORK_VERIFIED_LOCAL",
+    "slice_v1_002_branch": "fix/SLICE-V1-002-root-cause-rework-r1",
+    "slice_v1_002_reviewed_source_head": "c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6",
+    "slice_v1_002_reviewed_source_tree": "c94341232b5fa67b5c40a1e6be121a7696e748c4",
+    "slice_v1_002_frozen_findings_sha256": (
+        "60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f799879ebcf94"
+    ),
+    "slice_v1_002_finding_count": "18",
+    "slice_v1_002_engineering_findings_addressed": (
+        "18_OF_18_PENDING_INDEPENDENT_CLOSURE_VERIFICATION"
+    ),
+    "slice_v1_002_controller_verdict": "NOT_CLAIMED",
+    "slice_v1_002_owner_formal_closure": "NOT_CLAIMED",
+    "slice_v1_002_remote_publication": "DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS",
+    "slice_v1_002_draft_pr": "26",
+    "slice_v1_002_draft_pr_url": (
+        "https://github.com/Corwin-Code/marketops-platform/pull/26"
+    ),
+    "slice_v1_002_controlled_write_target": "NONE_IN_THIS_SLICE",
+    "slice_v1_002_real_provider_calls": "NONE",
+    "slice_v1_002_as_built_design": (
+        "docs/02-architecture/designs/SLICE-V1-002-design.md"
+    ),
+    "slice_v1_002_acceptance_status": (
+        "docs/07-phase-evidence/SLICE-V1-002/acceptance-status.md"
+    ),
+    "slice_v1_002_executable_evidence": (
+        "docs/07-phase-evidence/SLICE-V1-002/executable-evidence.md"
+    ),
+    "slice_v1_002_root_cause_rework_evidence": (
+        "docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause-rework-evidence.md"
+    ),
+    "slice_v1_002_r1_finding_closure": (
+        "docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json"
+    ),
+    "slice_v1_002_r1_final_handoff": (
+        "docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md"
+    ),
+    "slice_v1_002_deferred_release_register": (
+        "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json"
+    ),
     "next_authorized_actor": "GPT-5.6 Pro Controller",
-    "next_action": "NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY",
+    "next_action": "CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_UPDATED_DRAFT_PR_26",
     "slice_v1_001_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_001_rework_phase": "R2_FORMAL_CLOSURE_ACCEPTED",
     "slice_v1_001_pr": "22",
@@ -434,6 +526,7 @@ V1_TRACEABILITY_STATUSES = {
 }
 V1_TRACEABILITY_REQUIRED_IDS = {
     *(f"D-{number:02d}" for number in range(18, 26)),
+    *(f"OD-S2-{number:03d}" for number in range(1, 21)),
     "HR-01",
     "HR-02",
     "HR-05",
@@ -4024,7 +4117,7 @@ def validate_slice_rework_evidence_text(
         "owner_acceptance_comment": "5469935477",
         "owner_acceptance_evidence": V1_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH,
         "next_action": "NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY",
-        "contract_sha256": V1_ACTIVE_SLICE_CONTRACT_SHA256,
+        "contract_sha256": V1_SLICE_001_CONTRACT_SHA256,
         "frozen_findings_sha256": V1_ACTIVE_STATE["slice_v1_001_frozen_findings_sha256"],
         "supplemental_r2_review_sha256": V1_ACTIVE_STATE[
             "slice_v1_001_supplemental_r2_review_sha256"
@@ -4095,6 +4188,9 @@ SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS = {
         "owner_acceptance_comment: 5469935477",
     ),
     "docs/05-testing/V1_PRODUCTION_ASSURANCE_MATRIX.md": (
+        "## 2c. SLICE-V1-002 implementation evidence state",
+        "implementation_state: ROOT_CAUSE_REWORK_VERIFIED_LOCAL",
+        "controlled_write_target: NONE_IN_THIS_SLICE",
         "controller_verdict: PASS_R2_ENGINEERING_FINAL_GATE",
         "actual_squash_tree: 390ebe37bea778b7a4548381ad357fc99aa0da6b",
         "engineering_implementation: ENGINEERING_IMPLEMENTATION_CLOSED",
@@ -4345,6 +4441,29 @@ def validate_v1_current_state_text(
                 f"expected {expected}, found {actual}"
             )
 
+    # The active Slice's own acceptance evidence is checked the same way. An
+    # authorization to implement is only as good as the exact bytes the Owner
+    # accepted, and a hash recorded in one place and never re-derived is a
+    # claim rather than a check.
+    acceptance = ROOT / V1_ACTIVE_SLICE_ACCEPTANCE_PATH
+    acceptance_sha256 = (
+        hashlib.sha256(acceptance.read_bytes()).hexdigest()
+        if acceptance.is_file()
+        else None
+    )
+    if acceptance_sha256 != V1_ACTIVE_SLICE_ACCEPTANCE_SHA256:
+        errors.append(
+            "active Slice Owner acceptance evidence hash mismatch for "
+            f"{V1_ACTIVE_SLICE_ACCEPTANCE_PATH}: expected "
+            f"{V1_ACTIVE_SLICE_ACCEPTANCE_SHA256}, found {acceptance_sha256}"
+        )
+    recorded_blob = unique_yaml_value(metadata, "active_slice_contract_git_blob_sha1")
+    if recorded_blob != V1_ACTIVE_SLICE_CONTRACT_GIT_BLOB_SHA1:
+        errors.append(
+            "CURRENT_STATE active_slice_contract_git_blob_sha1 must be exactly: "
+            + V1_ACTIVE_SLICE_CONTRACT_GIT_BLOB_SHA1
+        )
+
     for field, expected in {
         "conditional_design_gate": "ENABLED",
         "mandatory_design_gate_for_every_slice": "DISABLED",
@@ -4467,7 +4586,7 @@ def validate_delivery_slices_v1_text(errors: list[str], text: str) -> None:
         "product_version": "V1",
         "delivery_model": "PRODUCTION_VERTICAL_SLICES",
         "source_contract": "docs/01-requirements/V1_PRODUCT_CONTRACT.md",
-        "active_slice": "SLICE-V1-001",
+        "active_slice": "SLICE-V1-002",
         "old_phase_zero_backlog": "SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN",
         "effective_condition": "PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION",
     }
@@ -4484,6 +4603,11 @@ def validate_delivery_slices_v1_text(errors: list[str], text: str) -> None:
         (
             "SLICE-V1-001 — SKU Growth & Profit Diagnostic Loop",
             "CONTRACT_APPROVED_EFFECTIVE_ON_PROTECTED_MAIN",
+            "SLICE-V1-002 — Stockout & Availability Risk with Accountable Response",
+            "ROOT_CAUSE_REWORK_VERIFIED_LOCAL_PENDING_INDEPENDENT_CLOSURE",
+            # The narrowing is only honest while the row it replaced is still
+            # readable next to it.
+            "SLICE-V1-002 — Inventory & Availability Optimization",
             "production enablement is separate from merge",
             "AI cannot become the Metric, Policy, Approval, Command or Credential authority",
         ),
@@ -5111,7 +5235,7 @@ def validate_dr0004_protocol_texts(
         "dr0004": (
             f"required_base: {DR0004_REQUIRED_BASE}",
             f"required_base_tree: {DR0004_REQUIRED_BASE_TREE}",
-            f"active_slice_contract_sha256: {V1_ACTIVE_SLICE_CONTRACT_SHA256}",
+            f"active_slice_contract_sha256: {V1_SLICE_001_CONTRACT_SHA256}",
             "change_class: GOVERNANCE_ONLY",
             "active_slice_contract_change: PROHIBITED",
             "production_enablement: NOT_AUTHORIZED",
