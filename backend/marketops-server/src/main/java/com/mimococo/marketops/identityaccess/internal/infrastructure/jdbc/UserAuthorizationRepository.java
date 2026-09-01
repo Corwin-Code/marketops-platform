@@ -44,7 +44,9 @@ public class UserAuthorizationRepository {
              OR (CAST(:storeId AS uuid) IS NOT NULL
                  AND grant_row.store_ref_id = CAST(:storeId AS uuid))
              OR (CAST(:warehouseId AS uuid) IS NOT NULL
-                 AND grant_row.warehouse_ref_id = CAST(:warehouseId AS uuid)))
+                 AND grant_row.warehouse_ref_id = CAST(:warehouseId AS uuid))
+             OR (CAST(:productVariantId AS uuid) IS NOT NULL
+                 AND grant_row.product_variant_ref_id = CAST(:productVariantId AS uuid)))
             """;
 
     private final JdbcClient jdbc;
@@ -101,24 +103,26 @@ public class UserAuthorizationRepository {
             case ORGANIZATION -> """
                     SELECT id AS organization_id, NULL::uuid AS legal_entity_id,
                            NULL::uuid AS marketplace_account_id, NULL::uuid AS store_id,
-                           NULL::uuid AS warehouse_id
+                           NULL::uuid AS warehouse_id, NULL::uuid AS product_variant_id
                       FROM core.organization WHERE id = :resourceId
                     """;
             case LEGAL_ENTITY -> """
                     SELECT organization_id, id AS legal_entity_id,
                            NULL::uuid AS marketplace_account_id, NULL::uuid AS store_id,
-                           NULL::uuid AS warehouse_id
+                           NULL::uuid AS warehouse_id, NULL::uuid AS product_variant_id
                       FROM core.legal_entity WHERE id = :resourceId
                     """;
             case MARKETPLACE_ACCOUNT -> """
                     SELECT organization_id, legal_entity_id, id AS marketplace_account_id,
                            NULL::uuid AS store_id, NULL::uuid AS warehouse_id
+                           , NULL::uuid AS product_variant_id
                       FROM core.marketplace_account WHERE id = :resourceId
                     """;
             case STORE -> """
                     SELECT store.organization_id, account.legal_entity_id,
                            store.marketplace_account_id, store.id AS store_id,
                            NULL::uuid AS warehouse_id
+                           , NULL::uuid AS product_variant_id
                       FROM core.store AS store
                       JOIN core.marketplace_account AS account
                         ON account.id = store.marketplace_account_id
@@ -128,7 +132,14 @@ public class UserAuthorizationRepository {
                     SELECT organization_id, legal_entity_id,
                            NULL::uuid AS marketplace_account_id, NULL::uuid AS store_id,
                            id AS warehouse_id
+                           , NULL::uuid AS product_variant_id
                       FROM core.warehouse WHERE id = :resourceId
+                    """;
+            case PRODUCT_VARIANT -> """
+                    SELECT organization_id, NULL::uuid AS legal_entity_id,
+                           NULL::uuid AS marketplace_account_id, NULL::uuid AS store_id,
+                           NULL::uuid AS warehouse_id, id AS product_variant_id
+                      FROM core.product_variant WHERE id = :resourceId
                     """;
         };
         return jdbc.sql(sql)
@@ -138,7 +149,8 @@ public class UserAuthorizationRepository {
                         rows.getObject("legal_entity_id", UUID.class),
                         rows.getObject("marketplace_account_id", UUID.class),
                         rows.getObject("store_id", UUID.class),
-                        rows.getObject("warehouse_id", UUID.class)))
+                        rows.getObject("warehouse_id", UUID.class),
+                        rows.getObject("product_variant_id", UUID.class)))
                 .optional();
     }
 
@@ -146,29 +158,35 @@ public class UserAuthorizationRepository {
     public Optional<ScopeChain> resolveOwner(OwnedResource resource) {
         String target = switch (resource.kind()) {
             case LISTING_VARIANT -> """
-                    SELECT v.organization_id, l.store_id
+                    SELECT v.organization_id, l.store_id,
+                           NULL::uuid AS product_variant_id
                       FROM core.platform_listing_variant v
                       JOIN core.platform_listing l ON l.id = v.platform_listing_id
                      WHERE v.id = :resourceId
                     """;
-            case IMPORT_BATCH -> "SELECT organization_id, NULL::uuid AS store_id"
+            case IMPORT_BATCH -> "SELECT organization_id, NULL::uuid AS store_id,"
+                    + " NULL::uuid AS product_variant_id"
                     + " FROM staging.import_batch WHERE id = :resourceId";
             case AI_INVOCATION -> """
-                    SELECT i.organization_id, l.store_id FROM ops.ai_invocation i
+                    SELECT i.organization_id, l.store_id,
+                           NULL::uuid AS product_variant_id FROM ops.ai_invocation i
                       JOIN core.platform_listing_variant v ON v.id = i.subject_id
                        AND v.organization_id = i.organization_id
                       JOIN core.platform_listing l ON l.id = v.platform_listing_id
                      WHERE i.id = :resourceId AND i.subject_kind = 'PLATFORM_LISTING_VARIANT'
                     """;
             case WORK_TASK -> """
-                    SELECT t.organization_id, r.store_id FROM ops.work_task t
+                    SELECT t.organization_id, r.store_id,
+                           NULL::uuid AS product_variant_id FROM ops.work_task t
                       JOIN ops.recommendation r ON r.id = t.recommendation_id
                        AND r.organization_id = t.organization_id WHERE t.id = :resourceId
                     """;
-            case RECOMMENDATION -> "SELECT organization_id, store_id"
+            case RECOMMENDATION -> "SELECT organization_id, store_id,"
+                    + " NULL::uuid AS product_variant_id"
                     + " FROM ops.recommendation WHERE id = :resourceId";
             case MAPPING_CANDIDATE, MAPPING_CONFLICT -> """
-                    SELECT m.organization_id, l.store_id FROM %s m
+                    SELECT m.organization_id, l.store_id,
+                           NULL::uuid AS product_variant_id FROM %s m
                       JOIN core.platform_listing_variant v ON v.id = m.platform_listing_variant_id
                        AND v.organization_id = m.organization_id
                       JOIN core.platform_listing l ON l.id = v.platform_listing_id
@@ -176,7 +194,8 @@ public class UserAuthorizationRepository {
                     """.formatted(resource.kind() == OwnedResource.Kind.MAPPING_CANDIDATE
                             ? "core.listing_mapping_candidate" : "core.mapping_conflict");
             case PROVENANCE -> """
-                    SELECT p.organization_id, j.store_id FROM core.fact_provenance p
+                    SELECT p.organization_id, j.store_id,
+                           NULL::uuid AS product_variant_id FROM core.fact_provenance p
                       LEFT JOIN raw.raw_acquisition_observation o ON o.id = p.raw_observation_id
                       LEFT JOIN ops.ingestion_run r ON r.id = o.run_id
                       LEFT JOIN platform.ingestion_job j ON j.id = r.job_id
@@ -184,10 +203,37 @@ public class UserAuthorizationRepository {
                        OR (j.store_id IS NOT NULL AND EXISTS (SELECT 1 FROM core.store s
                            WHERE s.id = j.store_id AND s.organization_id = p.organization_id)))
                     """;
+            case AVAILABILITY_CASE -> """
+                    SELECT c.organization_id, child.store_id, card.product_variant_id
+                      FROM ops.availability_case c
+                      JOIN mart.availability_risk_child child
+                        ON child.id = c.child_id AND child.organization_id = c.organization_id
+                      JOIN mart.availability_risk_card card
+                        ON card.id = c.card_id AND card.organization_id = c.organization_id
+                     WHERE c.id = :resourceId
+                    """;
+            case AVAILABILITY_RISK_CHILD -> """
+                    SELECT child.organization_id, child.store_id, card.product_variant_id
+                      FROM mart.availability_risk_child child
+                      JOIN mart.availability_risk_card card
+                        ON card.id = child.card_id AND card.organization_id = child.organization_id
+                     WHERE child.id = :resourceId
+                    """;
+            case AVAILABILITY_EXCEPTION -> """
+                    SELECT accepted.organization_id, child.store_id, card.product_variant_id
+                      FROM ops.availability_accepted_exception accepted
+                      JOIN mart.availability_risk_child child
+                        ON child.id = accepted.child_id
+                       AND child.organization_id = accepted.organization_id
+                      JOIN mart.availability_risk_card card
+                        ON card.id = child.card_id AND card.organization_id = child.organization_id
+                     WHERE accepted.id = :resourceId
+                    """;
         };
         return jdbc.sql("""
                 SELECT target.organization_id, account.legal_entity_id,
-                       store.marketplace_account_id, target.store_id, NULL::uuid AS warehouse_id
+                       store.marketplace_account_id, target.store_id, NULL::uuid AS warehouse_id,
+                       target.product_variant_id
                   FROM (%s) target
                   LEFT JOIN core.store store ON store.id = target.store_id
                    AND store.organization_id = target.organization_id
@@ -198,7 +244,8 @@ public class UserAuthorizationRepository {
                         rows.getObject("organization_id", UUID.class),
                         rows.getObject("legal_entity_id", UUID.class),
                         rows.getObject("marketplace_account_id", UUID.class),
-                        rows.getObject("store_id", UUID.class), null)).optional();
+                        rows.getObject("store_id", UUID.class), null,
+                        rows.getObject("product_variant_id", UUID.class))).optional();
     }
 
     /** Whether a live grant covers any level of this chain for this action. */
@@ -224,6 +271,7 @@ public class UserAuthorizationRepository {
                 .param("accountId", chain.marketplaceAccountId())
                 .param("storeId", chain.storeId())
                 .param("warehouseId", chain.warehouseId())
+                .param("productVariantId", chain.productVariantId())
                 .query(Boolean.class)
                 .single());
     }
@@ -256,6 +304,31 @@ public class UserAuthorizationRepository {
                                               = store.marketplace_account_id
                                        OR grant_row.store_ref_id = store.id))
                          ORDER BY store.id
+                        """)
+                .param("userId", userId)
+                .param("action", action.name())
+                .param("at", Timestamp.from(at))
+                .query(UUID.class)
+                .list();
+    }
+
+    /** Product grants, with organization grants expanded to all active variants. */
+    public List<UUID> permittedProductVariantIds(UUID userId, ActionScopeCode action, Instant at) {
+        return jdbc.sql("""
+                        SELECT variant.id
+                          FROM core.product_variant AS variant
+                         WHERE variant.status = 'ACTIVE'
+                           AND EXISTS (
+                               SELECT 1 FROM iam.user_scope_grant AS grant_row
+                                WHERE grant_row.user_id = :userId
+                                  AND grant_row.action_code = :action
+                                  AND grant_row.status = 'ACTIVE'
+                                  AND grant_row.effective_from <= :at
+                                  AND (grant_row.effective_to IS NULL
+                                       OR grant_row.effective_to > :at)
+                                  AND (grant_row.organization_ref_id = variant.organization_id
+                                       OR grant_row.product_variant_ref_id = variant.id))
+                         ORDER BY variant.id
                         """)
                 .param("userId", userId)
                 .param("action", action.name())

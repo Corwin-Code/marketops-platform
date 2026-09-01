@@ -1,6 +1,7 @@
 package com.mimococo.marketops.operatingfacts;
 
 import java.time.Instant;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,8 +41,31 @@ public interface OperatingFactQuery {
                       Integer retentionWindowDays,
                       FactWindow window);
 
+    /**
+     * Completed units per day across a window, oldest first.
+     *
+     * <p>Days on which nothing completed are absent rather than zero-valued:
+     * the caller distinguishes an unobservable day from a quiet one using the
+     * availability timeline, and a manufactured zero here would erase that
+     * distinction before it could be made.
+     */
+    List<DailySaleTotal> dailyCompletedUnits(UUID platformListingVariantId, FactWindow window);
+
     /** Returns over a window, with their reason mix. */
     ReturnTotals returns(UUID platformListingVariantId, FactWindow window);
+
+    /**
+     * Explicit coverage/freshness authority for completed, retained, returns and QC.
+     *
+     * <p>The report must explicitly cover the entire requested window; an exact
+     * window or a declared complete superset is acceptable. Events inside D30 do
+     * not imply either coverage or freshness, and an absent report never becomes
+     * an authoritative zero.
+     */
+    ReturnQualityEvidence returnQualityEvidence(UUID platformListingVariantId,
+                                                FactWindow window,
+                                                Duration freshnessMaximum,
+                                                Instant asOf);
 
     /** Platform charges over a window. */
     FeeTotals fees(UUID platformListingVariantId, FactWindow window);
@@ -67,6 +91,45 @@ public interface OperatingFactQuery {
 
     /** What the company itself holds of one internal variant. */
     InternalStockSnapshot internalStock(UUID productVariantId, Instant asOf);
+
+    /**
+     * Whether a source last said one listing variant could be bought.
+     *
+     * <p>Kept separate from {@link #latestStock} because the two answers can
+     * disagree: a blocked listing with stock is unavailable, and a sellable
+     * listing with nothing on it is unavailable for a different reason and a
+     * different owner.
+     */
+    java.util.Optional<SellabilitySnapshot> latestSellability(UUID platformListingVariantId,
+                                                              Instant asOf);
+
+    /**
+     * What each internal warehouse holds of one internal variant.
+     *
+     * <p>{@link #internalStock} sums these. A caller that has to decide whether
+     * a platform view mirrors a particular warehouse needs them apart.
+     */
+    List<WarehouseStockSnapshot> internalStockByWarehouse(UUID productVariantId, Instant asOf);
+
+    /**
+     * The record of whether one listing variant could sell across a window.
+     *
+     * <p>Returned oldest first. A caller reading a demand window needs this to
+     * tell an empty week from an unobservable one.
+     */
+    List<AvailabilityObservation> availabilityObservations(UUID platformListingVariantId,
+                                                           String fulfillmentModeCode,
+                                                           FactWindow window);
+
+    /**
+     * Facts accepted at or after an instant, oldest first.
+     *
+     * <p>The feed is pulled rather than pushed so that consuming a fact never
+     * makes the fact authority depend on its consumers. Each entry carries the
+     * instant the fact was accepted, which is where a response-time obligation
+     * starts counting.
+     */
+    List<AcceptedFactChange> factsAcceptedAfter(AcceptedFactCursor cursor, int limit);
 
     /**
      * Listing variants on one store that any source reported activity for

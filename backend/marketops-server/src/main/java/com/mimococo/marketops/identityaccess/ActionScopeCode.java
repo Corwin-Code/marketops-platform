@@ -43,7 +43,36 @@ public enum ActionScopeCode {
     COMMAND_RESOLVE(true),
 
     /** Disable or re-enable a write capability scope. */
-    KILL_SWITCH_OPERATE(true);
+    KILL_SWITCH_OPERATE(true),
+
+    /** Read the stockout and availability queue, its children and its evidence. */
+    AVAILABILITY_VIEW(false),
+
+    /** Record, amend or cancel an evidence-backed inbound supply attestation. */
+    INBOUND_ATTEST(false),
+
+    /**
+     * Publish or retire lead-time, safety, demand, ownership and activation policy.
+     *
+     * <p>Step-up is required because a published policy version silently changes
+     * every risk calculated after it: a shortened lead time can clear a queue
+     * without a single unit moving.
+     */
+    SUPPLY_POLICY_MANAGE(true),
+
+    /** Record structured action evidence against an accountable availability case. */
+    AVAILABILITY_TASK_ACT(false),
+
+    /** Request a scoped, expiring accepted exception against a calculated risk. */
+    AVAILABILITY_EXCEPTION_REQUEST(false),
+
+    /**
+     * Decide a scoped, expiring accepted exception at the authorised lane.
+     *
+     * <p>Step-up is required for the same reason a price approval needs it: the
+     * consequence is that a real risk stops raising work.
+     */
+    AVAILABILITY_EXCEPTION_APPROVE(true);
 
     private final boolean stepUpRequired;
 

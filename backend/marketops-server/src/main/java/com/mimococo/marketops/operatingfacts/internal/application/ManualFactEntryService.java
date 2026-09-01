@@ -118,6 +118,11 @@ public class ManualFactEntryService {
                                    String warehouseCode,
                                    int quantityOnHand,
                                    Integer quantityReserved,
+                                   Integer quantityQualityLocked,
+                                   Integer quantityDamaged,
+                                   Integer quantityWrittenOff,
+                                   String sellable,
+                                   UUID returnReentryId,
                                    Instant observedAt,
                                    String reason) {
         String validReason = MetadataFieldPolicy.requireText("reason", reason);
@@ -129,7 +134,9 @@ public class ManualFactEntryService {
                 .warehouseIdByCode(actor.organizationId(),
                         MetadataFieldPolicy.requireCode(warehouseCode))
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
-        if (quantityOnHand < 0 || (quantityReserved != null && quantityReserved < 0)) {
+        if (quantityOnHand < 0 || negative(quantityReserved) || negative(quantityQualityLocked)
+                || negative(quantityDamaged) || negative(quantityWrittenOff)
+                || (sellable != null && !List.of("YES", "NO", "UNKNOWN").contains(sellable))) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
 
@@ -142,7 +149,8 @@ public class ManualFactEntryService {
                 variantId,
                 Digest.ofComponents(List.of("manual", variantId.toString(),
                         warehouseId.toString(), observed.toString())),
-                observed, quantityOnHand, quantityReserved);
+                observed, quantityOnHand, quantityReserved, quantityQualityLocked,
+                quantityDamaged, quantityWrittenOff, sellable, returnReentryId);
 
         auditRecorder.recordChange(new MetadataAuditChange(
                 AuditSourceDomain.OPERATING_FACTS, actor.userId().toString(),
@@ -153,5 +161,9 @@ public class ManualFactEntryService {
                         "observedAt", new FieldChange(null, observed.toString())),
                 validReason, null));
         return snapshotId;
+    }
+
+    private static boolean negative(Integer value) {
+        return value != null && value < 0;
     }
 }

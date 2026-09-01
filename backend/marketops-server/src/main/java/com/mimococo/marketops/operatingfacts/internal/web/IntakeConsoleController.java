@@ -155,6 +155,8 @@ class IntakeConsoleController {
         requireIntake(actor);
         return new EntryCreated(manualEntry.enterInternalStock(actor, request.skuCode(),
                 request.warehouseCode(), request.quantityOnHand(), request.quantityReserved(),
+                request.quantityQualityLocked(), request.quantityDamaged(),
+                request.quantityWrittenOff(), request.sellable(), request.returnReentryId(),
                 request.observedAt(), request.reason()));
     }
 
@@ -186,6 +188,11 @@ class IntakeConsoleController {
             @NotBlank String warehouseCode,
             int quantityOnHand,
             Integer quantityReserved,
+            Integer quantityQualityLocked,
+            Integer quantityDamaged,
+            Integer quantityWrittenOff,
+            String sellable,
+            UUID returnReentryId,
             Instant observedAt,
             @NotBlank String reason) {
     }

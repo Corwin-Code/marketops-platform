@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -120,6 +121,24 @@ public class ImportRowValidator {
         if (values.get("quantityReserved") instanceof Long reserved
                 && (reserved < 0 || reserved > Integer.MAX_VALUE)) {
             return Outcome.rejected(values, VALUE_OUT_OF_RANGE, "quantityReserved");
+        }
+        for (String field : List.of("quantityQualityLocked", "quantityDamaged",
+                "quantityWrittenOff")) {
+            if (values.get(field) instanceof Long value
+                    && (value < 0 || value > Integer.MAX_VALUE)) {
+                return Outcome.rejected(values, VALUE_OUT_OF_RANGE, field);
+            }
+        }
+        if (values.get("sellable") != null
+                && !List.of("YES", "NO", "UNKNOWN").contains(values.get("sellable").toString())) {
+            return Outcome.rejected(values, VALUE_OUT_OF_RANGE, "sellable");
+        }
+        if (values.get("returnReentryId") != null) {
+            try {
+                UUID.fromString(values.get("returnReentryId").toString());
+            } catch (IllegalArgumentException invalid) {
+                return Outcome.rejected(values, VALUE_OUT_OF_RANGE, "returnReentryId");
+            }
         }
         return Outcome.accepted(values, variantId.get() + "|" + warehouseId.get());
     }

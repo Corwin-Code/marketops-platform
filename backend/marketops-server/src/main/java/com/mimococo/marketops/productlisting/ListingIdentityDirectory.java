@@ -27,6 +27,15 @@ public interface ListingIdentityDirectory {
     Map<UUID, UUID> internalVariantsAt(Collection<UUID> platformListingVariantIds, Instant at);
 
     /** Whether an unresolved mapping conflict currently blocks this listing variant. */
+    /**
+     * The platform listing variants an internal variant is currently sold through.
+     *
+     * <p>The forward lookup answers "what is this listing"; a caller reasoning
+     * about a whole internal variant needs the reverse, and reconstructing it
+     * by scanning every listing would be a second reader of the mapping table.
+     */
+    java.util.List<UUID> listingVariantsFor(UUID productVariantId, Instant at);
+
     boolean hasOpenConflict(UUID platformListingVariantId);
 
     /**

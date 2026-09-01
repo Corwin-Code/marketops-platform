@@ -94,6 +94,12 @@ public class ListingMappingService implements ListingIdentityDirectory {
 
     @Override
     @Transactional(readOnly = true)
+    public List<UUID> listingVariantsFor(UUID productVariantId, Instant at) {
+        return mappings.listingVariantsFor(productVariantId, at);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public boolean hasOpenConflict(UUID platformListingVariantId) {
         return mappings.hasOpenConflict(platformListingVariantId);
     }

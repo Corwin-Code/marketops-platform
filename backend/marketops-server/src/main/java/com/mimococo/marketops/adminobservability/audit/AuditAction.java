@@ -10,6 +10,7 @@ package com.mimococo.marketops.adminobservability.audit;
  * they belong in one journal rather than in five.
  */
 public enum AuditAction {
+    READ,
     CREATE,
     UPDATE,
     STATUS_CHANGE,

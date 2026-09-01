@@ -49,4 +49,7 @@ public interface BusinessAuthorization {
      * query. The result is ordered and may be empty.
      */
     List<UUID> permittedStoreIds(AuthenticatedActor actor, ActionScopeCode action);
+
+    /** Internal variants this person may currently perform this action on. */
+    List<UUID> permittedProductVariantIds(AuthenticatedActor actor, ActionScopeCode action);
 }

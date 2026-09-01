@@ -13,5 +13,6 @@ public enum ResourceScopeType {
     LEGAL_ENTITY,
     MARKETPLACE_ACCOUNT,
     STORE,
-    WAREHOUSE
+    WAREHOUSE,
+    PRODUCT_VARIANT
 }

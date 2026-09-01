@@ -20,5 +20,33 @@ public enum BusinessRoleCode {
     FINANCE,
 
     /** Reads diagnosis and evidence without changing any operating state. */
-    READ_ONLY
+    READ_ONLY,
+
+    /**
+     * Restores channel availability for an exact listing, store and mode.
+     *
+     * <p>The availability roles below are finer than the original four because
+     * the Contract routes each kind of availability failure to a different
+     * accountable person. They remain coarse in the same way: which stores and
+     * which variants they may act on is still a scope grant, not a role.
+     */
+    MARKETPLACE_OPERATOR,
+
+    /** Owns inbound attestation and the lead-time and safety policy. */
+    PRODUCT_PROCUREMENT,
+
+    /** Repairs stock, mapping, ownership and source defects. */
+    TECH_DATA,
+
+    /** Resolves the profit and cost-data blockers behind an availability decision. */
+    FINANCE_ANALYST,
+
+    /** Approves bounded accepted risk and owns the operating response. */
+    OPS_LEAD,
+
+    /** Owner-designated approver for critical, repeated or material accepted risk. */
+    RISK_AUTHORITY,
+
+    /** Reads availability risk, cases and decisions without changing any state. */
+    AUDITOR
 }
