@@ -11,7 +11,7 @@ controller_final_gate: PASS_R3_ENGINEERING_FINAL_GATE
 human_owner_formal_closure: COMPLETE
 production_readiness: DEFERRED_TO_RELEASE_V1_001
 closure_sync_branch: docs/SLICE-V1-002-post-merge-closure-sync
-closure_sync_pr: TO_BE_ASSIGNED_AFTER_DRAFT_CREATION
+closure_sync_pr: 27
 next_actor: GPT-5.6 Pro Controller
 next_action: CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION
 production_write_enabled: false

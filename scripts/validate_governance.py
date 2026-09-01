@@ -284,10 +284,10 @@ V1_SLICE_002_CLOSURE_SNAPSHOT_PATH = (
     "docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md"
 )
 V1_SLICE_002_CLOSURE_SNAPSHOT_GIT_BLOB_SHA1 = (
-    "26e9a3b0b6fa6bcf091bb41d0ddf5e1a596b05f1"
+    "88e472c7699e6f9165376cae8338f8f6e33bd29c"
 )
 V1_SLICE_002_CLOSURE_SNAPSHOT_SHA256 = (
-    "0d49acf38756f113bd1fe16f1f9959fa8c0c9ebc4628f1b60c13ce23530b90e4"
+    "26328b71a20ab6457910c1849b0b6da544e494343c4ea4c7de84d339b3262f91"
 )
 V1_SLICE_AUTHORIZATION_CONDITION = (
     "EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN"
@@ -416,13 +416,13 @@ V1_ACTIVE_STATE = {
     "slice_v1_002_closure_sync_branch": (
         "docs/SLICE-V1-002-post-merge-closure-sync"
     ),
-    "slice_v1_002_closure_sync_pr": "TO_BE_ASSIGNED_AFTER_DRAFT_CREATION",
+    "slice_v1_002_closure_sync_pr": "27",
     "slice_v1_002_closure_snapshot": V1_SLICE_002_CLOSURE_SNAPSHOT_PATH,
     "slice_v1_002_closure_snapshot_git_blob_sha1": (
-        "TO_BE_COMPUTED_AFTER_DRAFT_CREATION"
+        V1_SLICE_002_CLOSURE_SNAPSHOT_GIT_BLOB_SHA1
     ),
     "slice_v1_002_closure_snapshot_sha256": (
-        "TO_BE_COMPUTED_AFTER_DRAFT_CREATION"
+        V1_SLICE_002_CLOSURE_SNAPSHOT_SHA256
     ),
     "slice_v1_002_controlled_write_target": "NONE_IN_THIS_SLICE",
     "slice_v1_002_real_provider_calls": "NONE",
@@ -4423,6 +4423,7 @@ SLICE_V1_002_POST_MERGE_DOCUMENT_REQUIREMENTS = {
     ),
     V1_SLICE_002_CLOSURE_SNAPSHOT_PATH: (
         "status: DRAFT_PENDING_CONTROLLER_POST_MERGE_BOOKKEEPING_VERIFICATION",
+        "closure_sync_pr: 27",
         "controller_final_gate: PASS_R3_ENGINEERING_FINAL_GATE",
         "human_owner_formal_closure: COMPLETE",
         "| Actual protected `main` | commit `cc42760cfc99c1bab027039fca67410d696e96fa`",
@@ -4430,6 +4431,7 @@ SLICE_V1_002_POST_MERGE_DOCUMENT_REQUIREMENTS = {
         "sole parent `8a7076877374391cf851481c023dfb0e621ab712`",
         "`S2-AC-100` is `CONTROLLER_VERIFIED`",
         "All ten `S2-REL-001` through `S2-REL-010` obligations remain exactly",
+        "source ref\n`fix/SLICE-V1-002-root-cause-rework-r1` was restored to",
         "CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION",
         "production_write_enabled: false",
     ),
