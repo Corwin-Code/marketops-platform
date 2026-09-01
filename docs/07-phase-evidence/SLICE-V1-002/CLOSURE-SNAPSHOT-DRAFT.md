@@ -12,6 +12,8 @@ human_owner_formal_closure: COMPLETE
 production_readiness: DEFERRED_TO_RELEASE_V1_001
 closure_sync_branch: docs/SLICE-V1-002-post-merge-closure-sync
 closure_sync_pr: 27
+post_merge_security_readback: 2_OPEN_PR_ATTRIBUTABLE_CODE_SCANNING_ALERTS
+bookkeeping_pass_eligibility: BLOCKED_PENDING_CONTROLLER_DISPOSITION
 next_actor: GPT-5.6 Pro Controller
 next_action: CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION
 production_write_enabled: false
@@ -64,6 +66,23 @@ the exact final Head. Immediately before merge, all 18 review threads were
 resolved, the PR-attributable open code-scanning alert set was empty, and the
 deployment set was empty. Merge did not activate any runtime capability.
 
+The later default-branch analysis created open CodeQL alerts
+[#116](https://github.com/Corwin-Code/marketops-platform/security/code-scanning/116)
+and
+[#117](https://github.com/Corwin-Code/marketops-platform/security/code-scanning/117)
+at `2026-09-01T10:17:01Z`, after the protected merge completed. Both are
+`high` severity instances of `java/concatenated-sql-query`, bind actual squash
+commit `cc42760cfc99c1bab027039fca67410d696e96fa`, and point to lines 180–191 of
+`backend/marketops-server/src/test/java/com/mimococo/marketops/database/AvailabilityRiskSchemaIT.java`.
+That file was added by PR #26, so the new post-merge evidence is attributable to
+the PR even though the exact pre-merge alert readback was empty and all required
+contexts plus aggregate CodeQL were successful.
+
+This Snapshot does not dismiss, fix or downgrade those alerts. They do not
+rewrite the exact historical Controller/Owner records, but they block a
+post-merge bookkeeping PASS and next-Slice progression until the independent
+Controller gives a precise disposition under the existing governance protocol.
+
 ## Runtime artifact custody
 
 | Item | Exact identity / observed fact |
@@ -115,4 +134,5 @@ Provider call or production write occurred. `production_write_enabled=false`.
 The next actor is `GPT-5.6 Pro Controller`. The exact next action is
 `CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION` over the final
 closure-sync Draft PR Head/tree, this Snapshot blob/hash, the allowlist and the
-zero-product proof. This prompt does not authorize merging that Draft PR.
+zero-product proof, and open CodeQL alerts #116/#117. This prompt does not
+authorize merging that Draft PR.

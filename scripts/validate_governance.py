@@ -117,7 +117,7 @@ DR0004_CURRENT_STATE = {
     "final_gate_mode": "CLOSURE_VERIFICATION_ONLY",
     "owner_formal_slice_closure": "HUMAN_OWNER_ACCEPTED",
     "closure_snapshot_before_next_slice": (
-        "PENDING_CONTROLLER_POST_MERGE_BOOKKEEPING_VERIFICATION"
+        "PENDING_CONTROLLER_POST_MERGE_BOOKKEEPING_VERIFICATION_WITH_SECURITY_DRIFT"
     ),
     "dual_truth_model": "NORMATIVE_AND_IMPLEMENTATION_FACT",
     "dr0004_original_contract": DR0004_DR_RELATIVE_PATH,
@@ -284,10 +284,10 @@ V1_SLICE_002_CLOSURE_SNAPSHOT_PATH = (
     "docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md"
 )
 V1_SLICE_002_CLOSURE_SNAPSHOT_GIT_BLOB_SHA1 = (
-    "88e472c7699e6f9165376cae8338f8f6e33bd29c"
+    "800642ccc4331c5a521bc306153b583304349b3e"
 )
 V1_SLICE_002_CLOSURE_SNAPSHOT_SHA256 = (
-    "26328b71a20ab6457910c1849b0b6da544e494343c4ea4c7de84d339b3262f91"
+    "8d5ef527cd3286464eb8f57f02f589bfe81701ce5de00e827439ac4daeb2a139"
 )
 V1_SLICE_AUTHORIZATION_CONDITION = (
     "EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN"
@@ -408,6 +408,12 @@ V1_ACTIVE_STATE = {
     ),
     "slice_v1_002_source_branch_preservation_head": (
         "6b5ab03b62d557ee8cb04847ba4418ca2cb3d529"
+    ),
+    "slice_v1_002_post_merge_code_scanning_alerts": (
+        "116_117_OPEN_HIGH_ATTRIBUTABLE_TO_PR_26"
+    ),
+    "slice_v1_002_post_merge_security_readback": (
+        "BLOCKS_BOOKKEEPING_PASS_PENDING_CONTROLLER_DISPOSITION"
     ),
     "slice_v1_002_engineering_acceptance": "100_OF_100",
     "slice_v1_002_deferred_release_obligations": (
@@ -4424,6 +4430,8 @@ SLICE_V1_002_POST_MERGE_DOCUMENT_REQUIREMENTS = {
     V1_SLICE_002_CLOSURE_SNAPSHOT_PATH: (
         "status: DRAFT_PENDING_CONTROLLER_POST_MERGE_BOOKKEEPING_VERIFICATION",
         "closure_sync_pr: 27",
+        "post_merge_security_readback: 2_OPEN_PR_ATTRIBUTABLE_CODE_SCANNING_ALERTS",
+        "bookkeeping_pass_eligibility: BLOCKED_PENDING_CONTROLLER_DISPOSITION",
         "controller_final_gate: PASS_R3_ENGINEERING_FINAL_GATE",
         "human_owner_formal_closure: COMPLETE",
         "| Actual protected `main` | commit `cc42760cfc99c1bab027039fca67410d696e96fa`",
@@ -4432,6 +4440,10 @@ SLICE_V1_002_POST_MERGE_DOCUMENT_REQUIREMENTS = {
         "`S2-AC-100` is `CONTROLLER_VERIFIED`",
         "All ten `S2-REL-001` through `S2-REL-010` obligations remain exactly",
         "source ref\n`fix/SLICE-V1-002-root-cause-rework-r1` was restored to",
+        "open CodeQL alerts\n[#116]",
+        "[#117]",
+        "`java/concatenated-sql-query`",
+        "block a\npost-merge bookkeeping PASS",
         "CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION",
         "production_write_enabled: false",
     ),
