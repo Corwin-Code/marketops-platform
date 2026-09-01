@@ -152,6 +152,7 @@ caught cannot judge whether the tests are good enough.
 | Mixed primitive/boxed selection in `AvailabilityProjectionWriter` unboxed a nullable Channel `availableUnits` value during a real portfolio refresh | the 5,000-Variant actual-path profile produced the NPE; explicit boxing preserves the governed null state |
 | Successor anti-joins on accepted-fact tables had no supporting partial indexes and repeatedly scanned historical predecessors per Variant | the actual 5,000-Variant worker sustained under one Variant/second; V0035 partial successor indexes improved the same path by roughly 26x and the full SLO profile passes |
 | V0035 was absent from the exact Flyway and managed-profile migration inventories | full aggregate migration guards exposed every stale terminal version/count; fresh, managed and V0010-upgrade paths now all bind V0035 |
+| The first final-R1 aggregate CodeQL analysis reported seven high `java/user-controlled-bypass` annotations in accepted-risk decision/revocation flow | all seven code paths traced to compound fail-fast request validation controlling later policy/authority/step-up calls; dedicated fail-closed validation boundaries preserve every rejection and prevent malformed fields from selecting an alternate successful decision path, no alert was dismissed, and the next exact-Head aggregate CodeQL result is the closure authority |
 
 ## Targeted and sweep equivalence
 

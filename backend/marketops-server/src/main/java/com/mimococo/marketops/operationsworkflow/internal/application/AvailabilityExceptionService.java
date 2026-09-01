@@ -124,13 +124,10 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
     @Override
     @Transactional
     public AcceptedExceptionView decide(ExceptionDecision decision) {
+        validateDecision(decision);
         AcceptedExceptionView existing = find(decision.exceptionId());
         if (existing.state() != AcceptedExceptionState.REQUESTED) {
             throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
-        }
-        if (blank(decision.reason()) || decision.decidedByUserId() == null
-                || blank(decision.correlationId()) || decision.at() == null) {
-            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
         BusinessRoleCode effectiveRole = resolveDecisionRole(existing, decision);
         AvailabilityCaseView governed = cases.find(existing.caseId())
@@ -179,9 +176,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
             // the caller a stable code instead of a constraint name.
             throw OperationRejectedException.of(ErrorCode.ACTION_NOT_PERMITTED);
         }
-        if (!decision.stepUpSatisfied() || decision.authenticatedAt() == null) {
-            throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
-        }
+        validateApprovalProof(decision);
         if (sizing.exceedsMaximum(existing.effectiveFrom(), existing.expiresAt())) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
@@ -238,12 +233,7 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
     @Transactional
     public AvailabilityExceptionDelegationView revokeDelegation(
             ExceptionDelegationRevocation revocation) {
-        if (revocation.organizationId() == null || revocation.revokedByUserId() == null
-                || revocation.revokedByRole() == null || revocation.at() == null
-                || blank(revocation.delegationReference()) || blank(revocation.reason())
-                || blank(revocation.correlationId())) {
-            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
-        }
+        validateRevocation(revocation);
         AvailabilityExceptionDelegationView existing = findDelegation(
                 revocation.organizationId(), revocation.delegationReference());
         if (existing.revokedAt() != null) {
@@ -543,6 +533,41 @@ public class AvailabilityExceptionService implements AvailabilityExceptionGovern
                 || !grant.effectiveTo().isAfter(grant.effectiveFrom())
                 || ExceptionAuthorityLevel.levelsFor(grant.delegatedRole()).isEmpty()
                 || ExceptionAuthorityLevel.levelsFor(grant.grantedByRole()).isEmpty()) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+    }
+
+    /**
+     * Validate caller-shaped decision data before the governed decision flow.
+     *
+     * <p>Keeping input validation in a dedicated fail-closed boundary separates
+     * input rejection from the later policy, authority and step-up flow. A
+     * malformed request is rejected before that flow and cannot obtain an
+     * alternate decision path.
+     */
+    private static void validateDecision(ExceptionDecision decision) {
+        if (decision == null || decision.exceptionId() == null
+                || decision.decidedByUserId() == null || decision.at() == null
+                || blank(decision.reason()) || blank(decision.correlationId())) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+    }
+
+    /** Validate the two independent proofs required for an approval. */
+    private static void validateApprovalProof(ExceptionDecision decision) {
+        boolean stepUpSatisfied = decision.stepUpSatisfied();
+        Instant authenticatedAt = decision.authenticatedAt();
+        if (!stepUpSatisfied || authenticatedAt == null) {
+            throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
+        }
+    }
+
+    /** Validate caller-shaped revocation data before any authority lookup. */
+    private static void validateRevocation(ExceptionDelegationRevocation revocation) {
+        if (revocation == null || revocation.organizationId() == null
+                || revocation.revokedByUserId() == null || revocation.revokedByRole() == null
+                || revocation.at() == null || blank(revocation.delegationReference())
+                || blank(revocation.reason()) || blank(revocation.correlationId())) {
             throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
         }
     }
