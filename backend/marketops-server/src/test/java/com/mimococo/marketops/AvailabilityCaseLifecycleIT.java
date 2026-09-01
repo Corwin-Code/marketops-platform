@@ -19,6 +19,7 @@ import com.mimococo.marketops.operationsworkflow.ExceptionReasonCode;
 import com.mimococo.marketops.operationsworkflow.ExceptionScopeKind;
 import com.mimococo.marketops.shared.OperationRejectedException;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -57,6 +58,9 @@ class AvailabilityCaseLifecycleIT {
 
     private static final Instant AS_OF = Instant.parse("2026-08-31T12:00:00Z");
     private static final Instant FRESH = AS_OF.minus(Duration.ofMinutes(10));
+    private static final Instant MAPPING_EFFECTIVE_FROM = AS_OF.minus(Duration.ofDays(60));
+    private static final Instant POLICY_EFFECTIVE_FROM = AS_OF.minus(Duration.ofDays(10));
+    private static final Instant ROLE_EFFECTIVE_FROM = AS_OF.minus(Duration.ofDays(1));
 
     private static final UUID ORGANIZATION = UUID.fromString("cccc0000-0000-0000-0000-000000000001");
     private static final UUID LEGAL_ENTITY = UUID.fromString("cccc0000-0000-0000-0000-000000000002");
@@ -118,13 +122,15 @@ class AvailabilityCaseLifecycleIT {
     void seedTheOperatingGraph() {
         seedTopology();
         seedIdentity();
+        assertDirectRiskAuthoritiesAreLiveAtScenarioTime();
         sql("""
                 INSERT INTO core.listing_mapping (id, organization_id, platform_listing_variant_id,
                         product_variant_id, effective_from, status, confirmed_by_user_id, reason,
                         created_at, updated_at)
-                VALUES ('%s', '%s', '%s', '%s', now() - interval '60 days', 'ACTIVE', '%s',
+                VALUES ('%s', '%s', '%s', '%s', :mappingEffectiveFrom, 'ACTIVE', '%s',
                         'seeded operating graph', now(), now())
-                """.formatted(UUID.randomUUID(), ORGANIZATION, LISTING_VARIANT, VARIANT, USER));
+                """.formatted(UUID.randomUUID(), ORGANIZATION, LISTING_VARIANT, VARIANT, USER),
+                "mappingEffectiveFrom", MAPPING_EFFECTIVE_FROM);
         seedPolicies();
         seedFacts();
 
@@ -347,8 +353,9 @@ class AvailabilityCaseLifecycleIT {
                         evidence_reference, effective_from, status, policy_version, created_at)
                 VALUES ('%s', '%s', 'RUB', 50000.0000, 14, 3, 90, 30, '%s',
                         'agreed exception materiality', 'ev://ops/materiality',
-                        now() - interval '10 days', 'ACTIVE', 1, now())
-                """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
+                        :policyEffectiveFrom, 'ACTIVE', 1, now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER),
+                "policyEffectiveFrom", POLICY_EFFECTIVE_FROM);
 
         AvailabilityCaseView governed = live(COMPANY_CAUSE);
         AcceptedExceptionView requested = exceptions.request(request(governed, "CHILD",
@@ -731,14 +738,17 @@ class AvailabilityCaseLifecycleIT {
                         marketplace_account_id, platform_code, native_listing_key, title,
                         first_seen_at, last_seen_at, status, created_at, updated_at)
                 VALUES ('%s', '%s', '%s', '%s', 'OZON', 'case-listing-1', 'Чайник 1 л',
-                        now(), now(), 'OBSERVED', now(), now())
-                """.formatted(LISTING, ORGANIZATION, STORE, ACCOUNT));
+                        :listingObservedAt, :listingObservedAt, 'OBSERVED', now(), now())
+                """.formatted(LISTING, ORGANIZATION, STORE, ACCOUNT),
+                "listingObservedAt", FRESH);
         sql("""
                 INSERT INTO core.platform_listing_variant (id, organization_id, platform_listing_id,
                         native_variant_key, first_seen_at, last_seen_at, status, created_at,
                         updated_at)
-                VALUES ('%s', '%s', '%s', 'case-variant-1', now(), now(), 'OBSERVED', now(), now())
-                """.formatted(LISTING_VARIANT, ORGANIZATION, LISTING));
+                VALUES ('%s', '%s', '%s', 'case-variant-1', :listingObservedAt,
+                        :listingObservedAt, 'OBSERVED', now(), now())
+                """.formatted(LISTING_VARIANT, ORGANIZATION, LISTING),
+                "listingObservedAt", FRESH);
     }
 
     private void seedIdentity() {
@@ -748,33 +758,59 @@ class AvailabilityCaseLifecycleIT {
                         evidence_ref, verified_source_title, owner_label, status, created_at,
                         updated_at)
                 VALUES ('%s', 'case-idp', 'IdP', 'https://id.example.test/case', 'amr', 'mfa',
-                        900, 'VERIFIED', now(), 'ev://idp', 'IdP docs', 'security', 'ACTIVE',
-                        now(), now())
-                """.formatted(PROVIDER));
+                        900, 'VERIFIED', :identityVerifiedAt, 'ev://idp', 'IdP docs', 'security',
+                        'ACTIVE', now(), now())
+                """.formatted(PROVIDER), "identityVerifiedAt", FRESH);
         sql("""
                 INSERT INTO iam.user_account (id, organization_id, identity_provider_id,
                         external_subject, display_name, status, credentials_valid_from,
                         created_at, updated_at)
-                VALUES ('%s', '%s', '%s', 'case-owner', 'Policy Owner', 'ACTIVE', now(),
+                VALUES ('%s', '%s', '%s', 'case-owner', 'Policy Owner', 'ACTIVE',
+                        :credentialsValidFrom,
                         now(), now())
-                """.formatted(USER, ORGANIZATION, PROVIDER));
+                """.formatted(USER, ORGANIZATION, PROVIDER),
+                "credentialsValidFrom", ROLE_EFFECTIVE_FROM);
         sql("""
                 INSERT INTO iam.user_account (id, organization_id, identity_provider_id,
                         external_subject, display_name, status, credentials_valid_from,
                         created_at, updated_at)
-                VALUES ('%s', '%s', '%s', 'case-approver', 'Risk Authority', 'ACTIVE', now(),
+                VALUES ('%s', '%s', '%s', 'case-approver', 'Risk Authority', 'ACTIVE',
+                        :credentialsValidFrom,
                         now(), now())
-                """.formatted(APPROVER, ORGANIZATION, PROVIDER));
+                """.formatted(APPROVER, ORGANIZATION, PROVIDER),
+                "credentialsValidFrom", ROLE_EFFECTIVE_FROM);
         sql("""
                 INSERT INTO iam.user_role_assignment
                     (id, organization_id, user_id, role_code, effective_from, status,
                      created_at, updated_at)
-                VALUES ('%s', '%s', '%s', 'RISK_AUTHORITY', now() - interval '1 day',
+                VALUES ('%s', '%s', '%s', 'RISK_AUTHORITY', :roleEffectiveFrom,
                         'ACTIVE', now(), now()),
-                       ('%s', '%s', '%s', 'RISK_AUTHORITY', now() - interval '1 day',
+                       ('%s', '%s', '%s', 'RISK_AUTHORITY', :roleEffectiveFrom,
                         'ACTIVE', now(), now())
                 """.formatted(UUID.randomUUID(), ORGANIZATION, USER,
-                UUID.randomUUID(), ORGANIZATION, APPROVER));
+                UUID.randomUUID(), ORGANIZATION, APPROVER),
+                "roleEffectiveFrom", ROLE_EFFECTIVE_FROM);
+    }
+
+    /** Both direct decision authorities must be live at the fixed scenario instant. */
+    private void assertDirectRiskAuthoritiesAreLiveAtScenarioTime() {
+        List<UUID> liveAuthorities = seed.sql("""
+                        SELECT user_id
+                          FROM iam.user_role_assignment
+                         WHERE organization_id = :organizationId
+                           AND user_id IN (:requesterId, :approverId)
+                           AND role_code = 'RISK_AUTHORITY'
+                           AND effective_from <= :asOf
+                           AND (effective_to IS NULL OR effective_to > :asOf)
+                           AND status = 'ACTIVE'
+                        """)
+                .param("organizationId", ORGANIZATION)
+                .param("requesterId", USER)
+                .param("approverId", APPROVER)
+                .param("asOf", Timestamp.from(AS_OF))
+                .query(UUID.class).list();
+
+        assertThat(liveAuthorities).containsExactlyInAnyOrder(USER, APPROVER);
     }
 
     /**
@@ -791,8 +827,9 @@ class AvailabilityCaseLifecycleIT {
                         effective_from, status, policy_version, created_at)
                 VALUES ('%s', '%s', 'ORGANIZATION', 3, 10, 14, 7, '%s',
                         'agreed replenishment lead time', 'ev://procurement/lead-time',
-                        now(), now() - interval '10 days', 'ACTIVE', 1, now())
-                """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
+                        :lastReviewedAt, :policyEffectiveFrom, 'ACTIVE', 1, now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER),
+                "lastReviewedAt", FRESH, "policyEffectiveFrom", POLICY_EFFECTIVE_FROM);
         sql("""
                 INSERT INTO core.demand_observation_policy (id, organization_id,
                         minimum_sample_units, acceleration_ratio, deceleration_ratio,
@@ -801,8 +838,9 @@ class AvailabilityCaseLifecycleIT {
                         effective_from, status, policy_version, created_at)
                 VALUES ('%s', '%s', 5, 1.50, 0.60, 0.70, 0.60, 14, 360, '%s',
                         'agreed demand observation policy', 'ev://procurement/demand',
-                        now() - interval '10 days', 'ACTIVE', 1, now())
-                """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
+                        :policyEffectiveFrom, 'ACTIVE', 1, now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER),
+                "policyEffectiveFrom", POLICY_EFFECTIVE_FROM);
         sql("""
                 INSERT INTO core.work_activation_policy (id, organization_id,
                         high_sustained_cycles, critical_action_sla_minutes,
@@ -811,8 +849,9 @@ class AvailabilityCaseLifecycleIT {
                         effective_from, status, policy_version, created_at)
                 VALUES ('%s', '%s', 2, 60, 240, 480, 2880, 1, '%s',
                         'agreed activation policy', 'ev://ops/activation',
-                        now() - interval '10 days', 'ACTIVE', 1, now())
-                """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
+                        :policyEffectiveFrom, 'ACTIVE', 1, now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER),
+                "policyEffectiveFrom", POLICY_EFFECTIVE_FROM);
         sql("""
                 INSERT INTO core.availability_priority_policy (id, organization_id,
                         policy_version, time_weight, profit_weight, velocity_weight,
@@ -820,8 +859,9 @@ class AvailabilityCaseLifecycleIT {
                         evidence_reference, effective_from, status, created_at)
                 VALUES ('%s', '%s', 1, 400, 5, 20, 25, -10, '%s',
                         'agreed availability ordering', 'ev://ops/availability-priority',
-                        now() - interval '10 days', 'ACTIVE', now())
-                """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
+                        :policyEffectiveFrom, 'ACTIVE', now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER),
+                "policyEffectiveFrom", POLICY_EFFECTIVE_FROM);
         sql("""
                 INSERT INTO core.return_quality_policy (id, organization_id, policy_version,
                         maximum_return_ratio, minimum_retention_ratio,
@@ -830,8 +870,9 @@ class AvailabilityCaseLifecycleIT {
                         evidence_reference, effective_from, status, created_at)
                 VALUES ('%s', '%s', 1, 0.25, 0.80, 0.10, 1440, '%s',
                         'agreed return and retention guardrail', 'ev://ops/return-quality',
-                        now() - interval '10 days', 'ACTIVE', now())
-                """.formatted(UUID.randomUUID(), ORGANIZATION, USER));
+                        :policyEffectiveFrom, 'ACTIVE', now())
+                """.formatted(UUID.randomUUID(), ORGANIZATION, USER),
+                "policyEffectiveFrom", POLICY_EFFECTIVE_FROM);
     }
 
     /**
@@ -966,6 +1007,18 @@ class AvailabilityCaseLifecycleIT {
 
     private void sql(String statement) {
         seed.sql(statement).update();
+    }
+
+    private void sql(String statement, String parameterName, Instant value) {
+        seed.sql(statement).param(parameterName, Timestamp.from(value)).update();
+    }
+
+    private void sql(String statement, String firstParameterName, Instant firstValue,
+                     String secondParameterName, Instant secondValue) {
+        seed.sql(statement)
+                .param(firstParameterName, Timestamp.from(firstValue))
+                .param(secondParameterName, Timestamp.from(secondValue))
+                .update();
     }
 
     private long count(String query) {
