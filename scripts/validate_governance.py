@@ -117,7 +117,7 @@ DR0004_CURRENT_STATE = {
     "final_gate_mode": "CLOSURE_VERIFICATION_ONLY",
     "owner_formal_slice_closure": "HUMAN_OWNER_ACCEPTED",
     "closure_snapshot_before_next_slice": (
-        "PENDING_CONTROLLER_POST_MERGE_BOOKKEEPING_VERIFICATION_WITH_SECURITY_DRIFT"
+        "PENDING_CONTROLLER_FINAL_POST_MERGE_BOOKKEEPING_VERIFICATION"
     ),
     "dual_truth_model": "NORMATIVE_AND_IMPLEMENTATION_FACT",
     "dr0004_original_contract": DR0004_DR_RELATIVE_PATH,
@@ -275,7 +275,7 @@ V1_SLICE_002_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH = (
     "docs/08-handoffs/OWNER-SLICE-V1-002-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md"
 )
 V1_SLICE_002_OWNER_FORMAL_CLOSURE_EVIDENCE_SHA256 = (
-    "9fe722096e39883412e87274abc67ae4ef9ef7636a540e34878995f603016345"
+    "3b1b0aa0c1ebbc2f8b995ac69e9adcf6cbc6c19548bd33a234071e7941ec1e46"
 )
 V1_SLICE_002_OWNER_STATEMENT_SHA256 = (
     "be99e247e6a47876ca42dde61b8c1834a59464c6168beb25acb2c2519f57a6ff"
@@ -284,10 +284,10 @@ V1_SLICE_002_CLOSURE_SNAPSHOT_PATH = (
     "docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md"
 )
 V1_SLICE_002_CLOSURE_SNAPSHOT_GIT_BLOB_SHA1 = (
-    "800642ccc4331c5a521bc306153b583304349b3e"
+    "da35a11b30843603c5defdc10299bcf8b53fbc83"
 )
 V1_SLICE_002_CLOSURE_SNAPSHOT_SHA256 = (
-    "8d5ef527cd3286464eb8f57f02f589bfe81701ce5de00e827439ac4daeb2a139"
+    "f4847d4fdca8bede97decc02a12f99b2358b196d3d5b31a3aac60362ae41799f"
 )
 V1_SLICE_AUTHORIZATION_CONDITION = (
     "EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN"
@@ -409,11 +409,45 @@ V1_ACTIVE_STATE = {
     "slice_v1_002_source_branch_preservation_head": (
         "6b5ab03b62d557ee8cb04847ba4418ca2cb3d529"
     ),
+    "slice_v1_002_post_merge_findings": (
+        "S2_PM_SEC_001_AND_S2_PM_TST_002_CLOSED"
+    ),
+    "slice_v1_002_security_fix_controller_review": (
+        "CONTROLLER_SLICE_V1_002_POST_MERGE_SECURITY_FIX_REVERIFICATION_PR28_R2"
+    ),
+    "slice_v1_002_security_fix_controller_verdict": (
+        "PASS_POST_MERGE_SECURITY_FIX_REVERIFICATION"
+    ),
+    "slice_v1_002_security_fix_owner_authorization_sha256": (
+        "651b949c92de5da484f0715fdb7b255afe294996e5431ca99723a74b4fdfbab9"
+    ),
+    "slice_v1_002_security_fix_pr": "28",
+    "slice_v1_002_security_fix_final_head": (
+        "fde6e07f4f5d5856202e52287b7544be0e85c523"
+    ),
+    "slice_v1_002_security_fix_final_tree": (
+        "a18229584c73e1d0535ce407ebe21883224b5c03"
+    ),
+    "slice_v1_002_security_fix_tested_merge": (
+        "3a5db7bb40c8ee8dc8718809dfa605f400e4c1b4"
+    ),
+    "slice_v1_002_security_fix_actual_squash_commit": (
+        "e0184852785f451256a36f52fa3d520ceea2c313"
+    ),
+    "slice_v1_002_security_fix_actual_squash_tree": (
+        "a18229584c73e1d0535ce407ebe21883224b5c03"
+    ),
+    "slice_v1_002_security_fix_actual_squash_sole_parent": (
+        "cc42760cfc99c1bab027039fca67410d696e96fa"
+    ),
+    "slice_v1_002_security_fix_actual_squash_signature": "VERIFIED_VALID",
+    "slice_v1_002_security_fix_merged_at": "2026-09-01T19:37:14Z",
+    "slice_v1_002_default_branch_security_run": "33550566209_SUCCESS",
     "slice_v1_002_post_merge_code_scanning_alerts": (
-        "116_117_OPEN_HIGH_ATTRIBUTABLE_TO_PR_26"
+        "116_117_FIXED_BY_CODE_NO_DISMISSAL"
     ),
     "slice_v1_002_post_merge_security_readback": (
-        "BLOCKS_BOOKKEEPING_PASS_PENDING_CONTROLLER_DISPOSITION"
+        "PASS_NO_OPEN_HIGH_CRITICAL_ALERTS"
     ),
     "slice_v1_002_engineering_acceptance": "100_OF_100",
     "slice_v1_002_deferred_release_obligations": (
@@ -454,7 +488,9 @@ V1_ACTIVE_STATE = {
         "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json"
     ),
     "next_authorized_actor": "GPT-5.6 Pro Controller",
-    "next_action": "CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION",
+    "next_action": (
+        "CONTROLLER_SLICE_V1_002_FINAL_POST_MERGE_BOOKKEEPING_VERIFICATION"
+    ),
     "slice_v1_001_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_001_rework_phase": "R2_FORMAL_CLOSURE_ACCEPTED",
     "slice_v1_001_pr": "22",
@@ -548,7 +584,7 @@ V1_ACTIVE_STATE = {
     "candidate_state_scope": (
         "PROTECTED_MAIN_SLICE_V1_002_ENGINEERING_MERGED_FORMAL_CLOSURE_ACCEPTED"
     ),
-    "merge_authorization": "CONSUMED_PROTECTED_SQUASH_PR_26",
+    "merge_authorization": "CONSUMED_PROTECTED_SQUASH_PR_28",
     "production_deployment": "NOT_AUTHORIZED",
     "gate_ev": "NOT_AUTHORIZED",
     "gate_e": "NOT_AUTHORIZED",
@@ -4425,26 +4461,49 @@ SLICE_V1_002_POST_MERGE_DOCUMENT_REQUIREMENTS = {
         "owner_statement_sha256_utf8_lf: " + V1_SLICE_002_OWNER_STATEMENT_SHA256,
         "- Frozen Findings: 18/18 closed",
         "- total engineering Acceptance: 100/100",
+        "S2-PM-SEC-001: CLOSED_BY_FIXED_CODE_ON_DEFAULT_BRANCH",
+        "S2-PM-TST-002: CLOSED",
+        "final_head: fde6e07f4f5d5856202e52287b7544be0e85c523",
+        "actual_squash_commit: e0184852785f451256a36f52fa3d520ceea2c313",
+        "alert_116: FIXED_BY_CODE_NO_DISMISSAL",
+        "alert_116_dismissed_by: null",
+        "alert_116_dismissed_at: null",
+        "alert_116_dismissed_reason: null",
+        "alert_116_dismissed_comment: null",
+        "alert_117: FIXED_BY_CODE_NO_DISMISSAL",
+        "alert_117_dismissed_by: null",
+        "alert_117_dismissed_at: null",
+        "alert_117_dismissed_reason: null",
+        "alert_117_dismissed_comment: null",
+        "new_open_high_critical_alerts: NONE",
         "production_write_enabled: false",
     ),
     V1_SLICE_002_CLOSURE_SNAPSHOT_PATH: (
-        "status: DRAFT_PENDING_CONTROLLER_POST_MERGE_BOOKKEEPING_VERIFICATION",
+        "status: DRAFT_PENDING_CONTROLLER_FINAL_POST_MERGE_BOOKKEEPING_VERIFICATION",
         "closure_sync_pr: 27",
-        "post_merge_security_readback: 2_OPEN_PR_ATTRIBUTABLE_CODE_SCANNING_ALERTS",
-        "bookkeeping_pass_eligibility: BLOCKED_PENDING_CONTROLLER_DISPOSITION",
+        "post_merge_security_readback: PASS_ALERTS_116_117_FIXED_BY_CODE_NO_DISMISSAL",
+        "bookkeeping_pass_eligibility: READY_FOR_CONTROLLER_FINAL_VERIFICATION",
         "controller_final_gate: PASS_R3_ENGINEERING_FINAL_GATE",
         "human_owner_formal_closure: COMPLETE",
         "| Actual protected `main` | commit `cc42760cfc99c1bab027039fca67410d696e96fa`",
         "tree `f7e02da0bf38922f6c5a80d49b263613ade997d9`",
         "sole parent `8a7076877374391cf851481c023dfb0e621ab712`",
+        "`S2-PM-SEC-001`, finding SHA-256",
+        "`S2-PM-TST-002`, finding SHA-256",
+        "PR #28 Head `fde6e07f4f5d5856202e52287b7544be0e85c523`",
+        "| Corrected protected `main` | commit `e0184852785f451256a36f52fa3d520ceea2c313`",
+        "sole parent `cc42760cfc99c1bab027039fca67410d696e96fa`",
+        "Security run `33550566209` `SUCCESS`",
+        "alerts #116/#117 `FIXED_BY_CODE_NO_DISMISSAL`",
+        "new open High/Critical set `[]`",
         "`S2-AC-100` is `CONTROLLER_VERIFIED`",
         "All ten `S2-REL-001` through `S2-REL-010` obligations remain exactly",
         "source ref\n`fix/SLICE-V1-002-root-cause-rework-r1` was restored to",
-        "open CodeQL alerts\n[#116]",
+        "CodeQL alerts\n[#116]",
         "[#117]",
         "`java/concatenated-sql-query`",
-        "block a\npost-merge bookkeeping PASS",
-        "CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION",
+        "`dismissed_reason` and `dismissed_comment` fields are all `null`",
+        "CONTROLLER_SLICE_V1_002_FINAL_POST_MERGE_BOOKKEEPING_VERIFICATION",
         "production_write_enabled: false",
     ),
 }

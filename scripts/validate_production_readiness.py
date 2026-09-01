@@ -409,7 +409,7 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_002_owner_formal_closure_statement_sha256: "
     "be99e247e6a47876ca42dde61b8c1834a59464c6168beb25acb2c2519f57a6ff",
     "slice_v1_002_owner_formal_closure_evidence_sha256: "
-    "9fe722096e39883412e87274abc67ae4ef9ef7636a540e34878995f603016345",
+    "3b1b0aa0c1ebbc2f8b995ac69e9adcf6cbc6c19548bd33a234071e7941ec1e46",
     "slice_v1_002_remote_publication: PR_26_MERGED_PROTECTED_SQUASH",
     "slice_v1_002_draft_pr: 26",
     "slice_v1_002_draft_pr_url: https://github.com/Corwin-Code/marketops-platform/pull/26",
@@ -423,14 +423,34 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_002_actual_squash_signature: VERIFIED_VALID",
     "slice_v1_002_source_branch_cleanup: GITHUB_AUTO_DELETED_THEN_EXACT_REF_RESTORED",
     "slice_v1_002_source_branch_preservation_head: 6b5ab03b62d557ee8cb04847ba4418ca2cb3d529",
-    "slice_v1_002_post_merge_code_scanning_alerts: 116_117_OPEN_HIGH_ATTRIBUTABLE_TO_PR_26",
-    "slice_v1_002_post_merge_security_readback: BLOCKS_BOOKKEEPING_PASS_PENDING_CONTROLLER_DISPOSITION",
+    "slice_v1_002_post_merge_findings: S2_PM_SEC_001_AND_S2_PM_TST_002_CLOSED",
+    "slice_v1_002_security_fix_controller_review: "
+    "CONTROLLER_SLICE_V1_002_POST_MERGE_SECURITY_FIX_REVERIFICATION_PR28_R2",
+    "slice_v1_002_security_fix_controller_verdict: "
+    "PASS_POST_MERGE_SECURITY_FIX_REVERIFICATION",
+    "slice_v1_002_security_fix_owner_authorization_sha256: "
+    "651b949c92de5da484f0715fdb7b255afe294996e5431ca99723a74b4fdfbab9",
+    "slice_v1_002_security_fix_pr: 28",
+    "slice_v1_002_security_fix_final_head: fde6e07f4f5d5856202e52287b7544be0e85c523",
+    "slice_v1_002_security_fix_final_tree: a18229584c73e1d0535ce407ebe21883224b5c03",
+    "slice_v1_002_security_fix_tested_merge: 3a5db7bb40c8ee8dc8718809dfa605f400e4c1b4",
+    "slice_v1_002_security_fix_actual_squash_commit: "
+    "e0184852785f451256a36f52fa3d520ceea2c313",
+    "slice_v1_002_security_fix_actual_squash_tree: "
+    "a18229584c73e1d0535ce407ebe21883224b5c03",
+    "slice_v1_002_security_fix_actual_squash_sole_parent: "
+    "cc42760cfc99c1bab027039fca67410d696e96fa",
+    "slice_v1_002_security_fix_actual_squash_signature: VERIFIED_VALID",
+    "slice_v1_002_security_fix_merged_at: 2026-09-01T19:37:14Z",
+    "slice_v1_002_default_branch_security_run: 33550566209_SUCCESS",
+    "slice_v1_002_post_merge_code_scanning_alerts: 116_117_FIXED_BY_CODE_NO_DISMISSAL",
+    "slice_v1_002_post_merge_security_readback: PASS_NO_OPEN_HIGH_CRITICAL_ALERTS",
     "slice_v1_002_engineering_acceptance: 100_OF_100",
     "slice_v1_002_deferred_release_obligations: S2_REL_001_THROUGH_010_PRODUCTION_BLOCKING",
     "slice_v1_002_closure_sync_branch: docs/SLICE-V1-002-post-merge-closure-sync",
     "slice_v1_002_closure_sync_pr: 27",
-    "slice_v1_002_closure_snapshot_git_blob_sha1: 800642ccc4331c5a521bc306153b583304349b3e",
-    "slice_v1_002_closure_snapshot_sha256: 8d5ef527cd3286464eb8f57f02f589bfe81701ce5de00e827439ac4daeb2a139",
+    "slice_v1_002_closure_snapshot_git_blob_sha1: da35a11b30843603c5defdc10299bcf8b53fbc83",
+    "slice_v1_002_closure_snapshot_sha256: f4847d4fdca8bede97decc02a12f99b2358b196d3d5b31a3aac60362ae41799f",
     "slice_v1_002_controlled_write_target: NONE_IN_THIS_SLICE",
     "slice_v1_002_real_provider_calls: NONE",
     "slice_v1_002_r1_finding_closure: docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json",
@@ -450,7 +470,7 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_001_owner_acceptance_comment: 5469935477",
     "slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33",
     "next_authorized_actor: GPT-5.6 Pro Controller",
-    "next_action: CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION",
+    "next_action: CONTROLLER_SLICE_V1_002_FINAL_POST_MERGE_BOOKKEEPING_VERIFICATION",
     "production_write_enabled: false",
     "bounded_real_write_verification_authorization: NONE",
     "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",

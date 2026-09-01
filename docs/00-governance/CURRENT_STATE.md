@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-09-01
+as_of: 2026-09-02
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -42,7 +42,7 @@ slice_v1_002_controller_verdict: PASS_R3_ENGINEERING_FINAL_GATE
 slice_v1_002_owner_formal_closure: HUMAN_OWNER_ACCEPTED
 slice_v1_002_owner_formal_closure_statement_sha256: be99e247e6a47876ca42dde61b8c1834a59464c6168beb25acb2c2519f57a6ff
 slice_v1_002_owner_formal_closure_evidence: docs/08-handoffs/OWNER-SLICE-V1-002-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
-slice_v1_002_owner_formal_closure_evidence_sha256: 9fe722096e39883412e87274abc67ae4ef9ef7636a540e34878995f603016345
+slice_v1_002_owner_formal_closure_evidence_sha256: 3b1b0aa0c1ebbc2f8b995ac69e9adcf6cbc6c19548bd33a234071e7941ec1e46
 slice_v1_002_remote_publication: PR_26_MERGED_PROTECTED_SQUASH
 slice_v1_002_draft_pr: 26
 slice_v1_002_draft_pr_url: https://github.com/Corwin-Code/marketops-platform/pull/26
@@ -57,15 +57,29 @@ slice_v1_002_actual_squash_signature: VERIFIED_VALID
 slice_v1_002_actual_squash_merged_at: 2026-09-01T10:13:48Z
 slice_v1_002_source_branch_cleanup: GITHUB_AUTO_DELETED_THEN_EXACT_REF_RESTORED
 slice_v1_002_source_branch_preservation_head: 6b5ab03b62d557ee8cb04847ba4418ca2cb3d529
-slice_v1_002_post_merge_code_scanning_alerts: 116_117_OPEN_HIGH_ATTRIBUTABLE_TO_PR_26
-slice_v1_002_post_merge_security_readback: BLOCKS_BOOKKEEPING_PASS_PENDING_CONTROLLER_DISPOSITION
+slice_v1_002_post_merge_findings: S2_PM_SEC_001_AND_S2_PM_TST_002_CLOSED
+slice_v1_002_security_fix_controller_review: CONTROLLER_SLICE_V1_002_POST_MERGE_SECURITY_FIX_REVERIFICATION_PR28_R2
+slice_v1_002_security_fix_controller_verdict: PASS_POST_MERGE_SECURITY_FIX_REVERIFICATION
+slice_v1_002_security_fix_owner_authorization_sha256: 651b949c92de5da484f0715fdb7b255afe294996e5431ca99723a74b4fdfbab9
+slice_v1_002_security_fix_pr: 28
+slice_v1_002_security_fix_final_head: fde6e07f4f5d5856202e52287b7544be0e85c523
+slice_v1_002_security_fix_final_tree: a18229584c73e1d0535ce407ebe21883224b5c03
+slice_v1_002_security_fix_tested_merge: 3a5db7bb40c8ee8dc8718809dfa605f400e4c1b4
+slice_v1_002_security_fix_actual_squash_commit: e0184852785f451256a36f52fa3d520ceea2c313
+slice_v1_002_security_fix_actual_squash_tree: a18229584c73e1d0535ce407ebe21883224b5c03
+slice_v1_002_security_fix_actual_squash_sole_parent: cc42760cfc99c1bab027039fca67410d696e96fa
+slice_v1_002_security_fix_actual_squash_signature: VERIFIED_VALID
+slice_v1_002_security_fix_merged_at: 2026-09-01T19:37:14Z
+slice_v1_002_default_branch_security_run: 33550566209_SUCCESS
+slice_v1_002_post_merge_code_scanning_alerts: 116_117_FIXED_BY_CODE_NO_DISMISSAL
+slice_v1_002_post_merge_security_readback: PASS_NO_OPEN_HIGH_CRITICAL_ALERTS
 slice_v1_002_engineering_acceptance: 100_OF_100
 slice_v1_002_deferred_release_obligations: S2_REL_001_THROUGH_010_PRODUCTION_BLOCKING
 slice_v1_002_closure_sync_branch: docs/SLICE-V1-002-post-merge-closure-sync
 slice_v1_002_closure_sync_pr: 27
 slice_v1_002_closure_snapshot: docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md
-slice_v1_002_closure_snapshot_git_blob_sha1: 800642ccc4331c5a521bc306153b583304349b3e
-slice_v1_002_closure_snapshot_sha256: 8d5ef527cd3286464eb8f57f02f589bfe81701ce5de00e827439ac4daeb2a139
+slice_v1_002_closure_snapshot_git_blob_sha1: da35a11b30843603c5defdc10299bcf8b53fbc83
+slice_v1_002_closure_snapshot_sha256: f4847d4fdca8bede97decc02a12f99b2358b196d3d5b31a3aac60362ae41799f
 slice_v1_002_controlled_write_target: NONE_IN_THIS_SLICE
 slice_v1_002_real_provider_calls: NONE
 slice_v1_002_as_built_design: docs/02-architecture/designs/SLICE-V1-002-design.md
@@ -83,7 +97,7 @@ r2_remote_publication_authority: HUMAN_OWNER_EXPLICIT_FORMAL_CLOSURE_RECORDING_A
 deep_review_mode: ONE_SHOT_DISCOVERY_FROZEN_FINDING_SET
 final_gate_mode: CLOSURE_VERIFICATION_ONLY
 owner_formal_slice_closure: HUMAN_OWNER_ACCEPTED
-closure_snapshot_before_next_slice: PENDING_CONTROLLER_POST_MERGE_BOOKKEEPING_VERIFICATION_WITH_SECURITY_DRIFT
+closure_snapshot_before_next_slice: PENDING_CONTROLLER_FINAL_POST_MERGE_BOOKKEEPING_VERIFICATION
 dual_truth_model: NORMATIVE_AND_IMPLEMENTATION_FACT
 dr0004_original_contract: docs/00-governance/DR-0004-engineering-execution-closure-protocol-alignment.md
 dr0004_original_contract_sha256: dcc073bb8f6593bd24b4a74a96f06d0c45ece2f1c192615deb7301cbb850da9a
@@ -152,7 +166,7 @@ slice_v1_001_owner_acceptance_comment: 5469935477
 slice_v1_001_owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
 slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33
 candidate_state_scope: PROTECTED_MAIN_SLICE_V1_002_ENGINEERING_MERGED_FORMAL_CLOSURE_ACCEPTED
-merge_authorization: CONSUMED_PROTECTED_SQUASH_PR_26
+merge_authorization: CONSUMED_PROTECTED_SQUASH_PR_28
 production_deployment: NOT_AUTHORIZED
 gate_ev: NOT_AUTHORIZED
 gate_e: NOT_AUTHORIZED
@@ -161,7 +175,7 @@ slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-s
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
 next_authorized_actor: GPT-5.6 Pro Controller
-next_action: CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION
+next_action: CONTROLLER_SLICE_V1_002_FINAL_POST_MERGE_BOOKKEEPING_VERIFICATION
 slice_v1_001_handoff_pending: CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
@@ -478,6 +492,19 @@ production-blocking in `RELEASE-V1-001`. The Slice added forward migrations
 V0030 through V0035; V0001–V0029 remain byte-identical, and closure bookkeeping
 changes no migration.
 
+The first default-branch analysis after PR #26 detected high-severity CodeQL
+alerts #116/#117 in a test-only SQL pattern. The bounded Controller review
+`CONTROLLER_SLICE_V1_002_POST_MERGE_SECURITY_FIX_REVERIFICATION_PR28_R2`
+closed `S2-PM-SEC-001` at candidate source level and fully closed
+`S2-PM-TST-002`. Under separate exact Human Owner authorization, PR #28 merged
+by protected squash at `2026-09-01T19:37:14Z`. Corrected protected `main` is
+signed/valid commit `e0184852785f451256a36f52fa3d520ceea2c313`, tree
+`a18229584c73e1d0535ce407ebe21883224b5c03`, with sole parent
+`cc42760cfc99c1bab027039fca67410d696e96fa`. Default-branch Security run
+`33550566209` passed; alerts #116/#117 are fixed by code with every dismissal
+field `null`, and the open High/Critical set is empty. These receipts do not
+alter the original Formal Closure or any deferred release boundary.
+
 The Contract's non-goals are absent by construction and checked rather than
 asserted. There is no replenishment quantity or order date, no purchase
 execution, no Dead Stock, Ageing, Slow-moving or Overstock loop, no Allocation
@@ -489,10 +516,10 @@ capability anywhere in the module or in any migration.
 
 The repository gate is
 `SLICE_V1_002_POST_MERGE_CLOSURE_BOOKKEEPING`. The exact next authorized action
-is `CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION` by the
-`GPT-5.6 Pro Controller` over the bounded closure-sync Draft PR. That Draft PR
-is not authorized for merge by this record. Starting the next Slice remains
-blocked until the exact Closure Snapshot and bookkeeping packet pass the
+is `CONTROLLER_SLICE_V1_002_FINAL_POST_MERGE_BOOKKEEPING_VERIFICATION` by the
+`GPT-5.6 Pro Controller` over the corrected-Main closure-sync Draft PR. That
+Draft PR is not authorized for merge by this record. Starting the next Slice
+remains blocked until the exact Closure Snapshot and bookkeeping packet pass the
 required independent readback.
 
 Nothing here activates `RELEASE-V1-001`. Deployment, real credentials, provider

@@ -2,7 +2,8 @@
 
 ```yaml
 snapshot_id: SLICE-V1-002-POST-MERGE-DRAFT-2026-09-01
-status: DRAFT_PENDING_CONTROLLER_POST_MERGE_BOOKKEEPING_VERIFICATION
+updated_at: 2026-09-02
+status: DRAFT_PENDING_CONTROLLER_FINAL_POST_MERGE_BOOKKEEPING_VERIFICATION
 product_version: V1
 slice: SLICE-V1-002
 engineering_implementation: ENGINEERING_IMPLEMENTATION_CLOSED
@@ -12,10 +13,10 @@ human_owner_formal_closure: COMPLETE
 production_readiness: DEFERRED_TO_RELEASE_V1_001
 closure_sync_branch: docs/SLICE-V1-002-post-merge-closure-sync
 closure_sync_pr: 27
-post_merge_security_readback: 2_OPEN_PR_ATTRIBUTABLE_CODE_SCANNING_ALERTS
-bookkeeping_pass_eligibility: BLOCKED_PENDING_CONTROLLER_DISPOSITION
+post_merge_security_readback: PASS_ALERTS_116_117_FIXED_BY_CODE_NO_DISMISSAL
+bookkeeping_pass_eligibility: READY_FOR_CONTROLLER_FINAL_VERIFICATION
 next_actor: GPT-5.6 Pro Controller
-next_action: CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION
+next_action: CONTROLLER_SLICE_V1_002_FINAL_POST_MERGE_BOOKKEEPING_VERIFICATION
 production_write_enabled: false
 ```
 
@@ -40,6 +41,15 @@ authority.
 | Actual protected merge | PR #26 `MERGED`; method `SQUASH`; merged at `2026-09-01T10:13:48Z` |
 | Actual protected `main` | commit `cc42760cfc99c1bab027039fca67410d696e96fa`; tree `f7e02da0bf38922f6c5a80d49b263613ade997d9`; sole parent `8a7076877374391cf851481c023dfb0e621ab712` |
 | GitHub signature | `verified=true`; reason `valid`; verified at `2026-09-01T10:13:48Z` |
+| Post-merge finding set | `S2-PM-SEC-001`, finding SHA-256 `ebb849ad5a813d5a1f5f1287620be247a9ed8e7b8df6d59344c33f9244f7f6f2`; `S2-PM-TST-002`, finding SHA-256 `77d55aedaeddb26d4414290472b19549a7f06bd84e673bae0a19e55a89fdb500` |
+| Security-fix Controller review | `CONTROLLER_SLICE_V1_002_POST_MERGE_SECURITY_FIX_REVERIFICATION_PR28_R2`; verdict `PASS_POST_MERGE_SECURITY_FIX_REVERIFICATION` |
+| Human Owner PR #28 authorization | exact statement SHA-256 `651b949c92de5da484f0715fdb7b255afe294996e5431ca99723a74b4fdfbab9` |
+| Security-fix candidate | PR #28 Head `fde6e07f4f5d5856202e52287b7544be0e85c523`; tree `a18229584c73e1d0535ce407ebe21883224b5c03` |
+| Security-fix tested merge | `3a5db7bb40c8ee8dc8718809dfa605f400e4c1b4`; tree `a18229584c73e1d0535ce407ebe21883224b5c03`; parents `cc42760cfc99c1bab027039fca67410d696e96fa`, `fde6e07f4f5d5856202e52287b7544be0e85c523` |
+| Actual hotfix protected merge | PR #28 `MERGED`; method `SQUASH`; merged at `2026-09-01T19:37:14Z` |
+| Corrected protected `main` | commit `e0184852785f451256a36f52fa3d520ceea2c313`; tree `a18229584c73e1d0535ce407ebe21883224b5c03`; sole parent `cc42760cfc99c1bab027039fca67410d696e96fa` |
+| Hotfix GitHub signature | `verified=true`; reason `valid`; verified at `2026-09-01T19:37:14Z` |
+| Default-branch security receipt | Security run `33550566209` `SUCCESS`; CodeQL Java and TypeScript `SUCCESS`; alerts #116/#117 `FIXED_BY_CODE_NO_DISMISSAL`; fixed at `2026-09-01T19:40:26Z`; new open High/Critical set `[]` |
 
 The actual SQUASH tree equals both the final engineering tree and the tested-
 merge tree. The sole parent equals the pre-merge Base. Repository settings
@@ -66,7 +76,7 @@ the exact final Head. Immediately before merge, all 18 review threads were
 resolved, the PR-attributable open code-scanning alert set was empty, and the
 deployment set was empty. Merge did not activate any runtime capability.
 
-The later default-branch analysis created open CodeQL alerts
+The first default-branch analysis created open CodeQL alerts
 [#116](https://github.com/Corwin-Code/marketops-platform/security/code-scanning/116)
 and
 [#117](https://github.com/Corwin-Code/marketops-platform/security/code-scanning/117)
@@ -76,12 +86,29 @@ commit `cc42760cfc99c1bab027039fca67410d696e96fa`, and point to lines 180–191 
 `backend/marketops-server/src/test/java/com/mimococo/marketops/database/AvailabilityRiskSchemaIT.java`.
 That file was added by PR #26, so the new post-merge evidence is attributable to
 the PR even though the exact pre-merge alert readback was empty and all required
-contexts plus aggregate CodeQL were successful.
+contexts plus aggregate CodeQL were successful. That detection is retained as
+historical evidence rather than erased by the later fix.
 
-This Snapshot does not dismiss, fix or downgrade those alerts. They do not
-rewrite the exact historical Controller/Owner records, but they block a
-post-merge bookkeeping PASS and next-Slice progression until the independent
-Controller gives a precise disposition under the existing governance protocol.
+The bounded Controller review
+`CONTROLLER_SLICE_V1_002_POST_MERGE_SECURITY_FIX_REVERIFICATION_PR28_R2`
+verified PR #28. `S2-PM-SEC-001` closed the dynamic SQL root cause with JDBC
+parameter binding, while `S2-PM-TST-002` closed the wall-clock eligibility
+dependency with the fixed `AS_OF = 2026-08-31T12:00:00Z` scenario clock. The
+candidate passed `12/12` required contexts and aggregate CodeQL with no new alert
+in changed code.
+
+After the exact Human Owner-authorized protected squash, default-branch Security
+run `33550566209` completed successfully against corrected `main`
+`e0184852785f451256a36f52fa3d520ceea2c313`. Alerts #116 and #117 both changed
+to `fixed` at `2026-09-01T19:40:26Z`. Their `dismissed_by`, `dismissed_at`,
+`dismissed_reason` and `dismissed_comment` fields are all `null`; no suppression,
+downgrade or manual dismissal was used. The corrected default branch has no open
+High/Critical code-scanning alert. `S2-PM-SEC-001` is therefore closed by fixed
+code, and `S2-PM-TST-002` remains closed.
+
+These post-closure corrections do not rewrite the exact historical
+Controller/Owner records or self-issue the final bookkeeping PASS. Independent
+Controller verification remains required before next-Slice progression.
 
 ## Runtime artifact custody
 
@@ -114,8 +141,9 @@ Gate E, Pilot and `RELEASE-V1-001` remain unauthorized/inactive.
 
 ## Zero-product boundary
 
-The closure-sync branch is limited to canonical governance/evidence and strict
-validator/test synchronization. It must retain zero Base-to-Head diff in:
+After synchronization onto corrected protected `main`, the closure-sync branch
+is limited to canonical governance/evidence and strict validator/test
+synchronization. It must retain zero Base-to-Head diff in:
 
 ```text
 backend/
@@ -125,14 +153,16 @@ fixtures/
 backend/marketops-server/src/main/resources/db/migration/
 ```
 
-No product, runtime, schema, migration, fixture or IaC behavior is changed. No
-deployment, Terraform apply, production database operation, real Credential,
-Provider call or production write occurred. `production_write_enabled=false`.
+PR #28's two test-only corrections are already part of the protected Base and
+are not part of PR #27's Base-to-Head diff. No product, runtime, schema,
+migration, fixture or IaC behavior is changed by PR #27. No deployment,
+Terraform apply, production database operation, real Credential, Provider call
+or production write occurred. `production_write_enabled=false`.
 
 ## Pending bounded action
 
 The next actor is `GPT-5.6 Pro Controller`. The exact next action is
-`CONTROLLER_SLICE_V1_002_POST_MERGE_BOOKKEEPING_VERIFICATION` over the final
-closure-sync Draft PR Head/tree, this Snapshot blob/hash, the allowlist and the
-zero-product proof, and open CodeQL alerts #116/#117. This prompt does not
-authorize merging that Draft PR.
+`CONTROLLER_SLICE_V1_002_FINAL_POST_MERGE_BOOKKEEPING_VERIFICATION` over the
+final closure-sync Draft PR Head/tree, this Snapshot blob/hash, the allowlist,
+the zero-product proof and the fixed-code closure receipts for alerts #116/#117.
+This prompt does not authorize merging that Draft PR.

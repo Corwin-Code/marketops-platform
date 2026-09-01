@@ -27,6 +27,39 @@ representative_v1_sha256: 6267e80477109c62aec619a8ffa00a06b8a1b4cab84fa5766d62d2
 
 owner_statement_sha256_utf8_lf: be99e247e6a47876ca42dde61b8c1834a59464c6168beb25acb2c2519f57a6ff
 
+post_closure_security_fix:
+  date: 2026-09-02
+  controller_review: CONTROLLER_SLICE_V1_002_POST_MERGE_SECURITY_FIX_REVERIFICATION_PR28_R2
+  controller_verdict: PASS_POST_MERGE_SECURITY_FIX_REVERIFICATION
+  findings:
+    S2-PM-SEC-001: CLOSED_BY_FIXED_CODE_ON_DEFAULT_BRANCH
+    S2-PM-TST-002: CLOSED
+  human_owner_merge_authorization_sha256: 651b949c92de5da484f0715fdb7b255afe294996e5431ca99723a74b4fdfbab9
+  pr: 28
+  final_head: fde6e07f4f5d5856202e52287b7544be0e85c523
+  final_tree: a18229584c73e1d0535ce407ebe21883224b5c03
+  tested_merge: 3a5db7bb40c8ee8dc8718809dfa605f400e4c1b4
+  tested_merge_tree: a18229584c73e1d0535ce407ebe21883224b5c03
+  actual_squash_commit: e0184852785f451256a36f52fa3d520ceea2c313
+  actual_squash_tree: a18229584c73e1d0535ce407ebe21883224b5c03
+  actual_squash_sole_parent: cc42760cfc99c1bab027039fca67410d696e96fa
+  actual_squash_signature: VERIFIED_VALID
+  merged_at: 2026-09-01T19:37:14Z
+  default_branch_security_run: 33550566209
+  alert_116: FIXED_BY_CODE_NO_DISMISSAL
+  alert_116_fixed_at: 2026-09-01T19:40:26Z
+  alert_116_dismissed_by: null
+  alert_116_dismissed_at: null
+  alert_116_dismissed_reason: null
+  alert_116_dismissed_comment: null
+  alert_117: FIXED_BY_CODE_NO_DISMISSAL
+  alert_117_fixed_at: 2026-09-01T19:40:26Z
+  alert_117_dismissed_by: null
+  alert_117_dismissed_at: null
+  alert_117_dismissed_reason: null
+  alert_117_dismissed_comment: null
+  new_open_high_critical_alerts: NONE
+
 formal_closure_state:
   CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
 
@@ -92,3 +125,26 @@ Pilot approval or production-write authorization.
 
 The exact Owner statement is immutable evidence. Repository recording may bind
 the actual post-merge Git identity but must not rewrite the statement.
+
+## Post-closure security-fix readback
+
+The later bounded Controller review
+`CONTROLLER_SLICE_V1_002_POST_MERGE_SECURITY_FIX_REVERIFICATION_PR28_R2`
+identified `S2-PM-SEC-001` and `S2-PM-TST-002` as the exact post-merge
+bookkeeping findings. PR #28 retained the accepted engineering outcome while
+parameterizing the test-only SQL and making the lifecycle fixture clock
+deterministic. The Human Owner separately authorized its exact protected
+`SQUASH` merge under authorization statement SHA-256
+`651b949c92de5da484f0715fdb7b255afe294996e5431ca99723a74b4fdfbab9`.
+
+PR #28 merged at `2026-09-01T19:37:14Z` as signed/valid commit
+`e0184852785f451256a36f52fa3d520ceea2c313`, tree
+`a18229584c73e1d0535ce407ebe21883224b5c03`, with sole parent
+`cc42760cfc99c1bab027039fca67410d696e96fa`. Default-branch Security run
+`33550566209` succeeded. Alerts #116 and #117 became `fixed` at
+`2026-09-01T19:40:26Z`; every dismissal field remained `null`, and the open
+High/Critical alert set on corrected `main` was empty.
+
+These later receipts do not alter the exact Human Owner statement above, reopen
+Formal Closure, satisfy any `S2-REL-*` obligation or authorize deployment,
+Provider calls, Gate EV/E/Pilot, a production migration or production writes.

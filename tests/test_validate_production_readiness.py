@@ -292,6 +292,27 @@ class RepositoryContractPatternTests(unittest.TestCase):
         violations = contract_token_violations(mutated, required=COMPLETION_STATE_TOKENS)
         self.assertTrue(any("slice_v1_002_actual_squash_tree" in item for item in violations))
 
+    def test_slice_v1_002_security_fix_identity_and_alert_closure_are_required(self) -> None:
+        source = "\n".join(COMPLETION_STATE_TOKENS)
+        for old, new in (
+            (
+                "slice_v1_002_security_fix_actual_squash_commit: "
+                "e0184852785f451256a36f52fa3d520ceea2c313",
+                "slice_v1_002_security_fix_actual_squash_commit: " + "0" * 40,
+            ),
+            (
+                "slice_v1_002_post_merge_code_scanning_alerts: "
+                "116_117_FIXED_BY_CODE_NO_DISMISSAL",
+                "slice_v1_002_post_merge_code_scanning_alerts: 116_117_OPEN",
+            ),
+        ):
+            with self.subTest(field=old.split(":", 1)[0]):
+                mutated = source.replace(old, new)
+                violations = contract_token_violations(
+                    mutated, required=COMPLETION_STATE_TOKENS
+                )
+                self.assertTrue(any(old.split(":", 1)[0] in item for item in violations))
+
     def test_post_merge_squash_identity_is_required(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)
         mutated = source.replace(
