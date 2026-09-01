@@ -428,7 +428,7 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_001_owner_acceptance_comment: 5469935477",
     "slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33",
     "next_authorized_actor: GPT-5.6 Pro Controller",
-    "next_action: CONTROLLER_SLICE_V1_002_FINAL_CLOSURE_VERIFICATION",
+    "next_action: CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_UPDATED_DRAFT_PR_26",
     "production_write_enabled: false",
     "bounded_real_write_verification_authorization: NONE",
     "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",

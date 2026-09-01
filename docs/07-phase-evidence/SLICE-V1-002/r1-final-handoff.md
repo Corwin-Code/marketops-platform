@@ -23,7 +23,7 @@ deployment: NOT_EXECUTED
 real_provider_calls: NONE
 production_write_enabled: false
 next_actor: GPT-5.6 Pro Controller
-next_action: CONTROLLER_SLICE_V1_002_FINAL_CLOSURE_VERIFICATION
+next_action: CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_UPDATED_DRAFT_PR_26
 ```
 
 ## Identity binding
@@ -82,4 +82,4 @@ This packet is implementation evidence, not self-approval. Draft PR #26 remains
 Draft and unmerged. No deployment, Credential, Buyer PII, real provider,
 shared/production database, Gate EV, Gate E, Pilot or production write entered
 the work. The exact next actor is `GPT-5.6 Pro Controller`; the exact next action
-is `CONTROLLER_SLICE_V1_002_FINAL_CLOSURE_VERIFICATION`.
+is `CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_UPDATED_DRAFT_PR_26`.

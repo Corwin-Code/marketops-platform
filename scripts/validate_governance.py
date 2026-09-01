@@ -380,7 +380,7 @@ V1_ACTIVE_STATE = {
         "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json"
     ),
     "next_authorized_actor": "GPT-5.6 Pro Controller",
-    "next_action": "CONTROLLER_SLICE_V1_002_FINAL_CLOSURE_VERIFICATION",
+    "next_action": "CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_UPDATED_DRAFT_PR_26",
     "slice_v1_001_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_001_rework_phase": "R2_FORMAL_CLOSURE_ACCEPTED",
     "slice_v1_001_pr": "22",

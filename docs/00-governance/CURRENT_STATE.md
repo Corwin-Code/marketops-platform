@@ -137,7 +137,7 @@ slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-s
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
 next_authorized_actor: GPT-5.6 Pro Controller
-next_action: CONTROLLER_SLICE_V1_002_FINAL_CLOSURE_VERIFICATION
+next_action: CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_UPDATED_DRAFT_PR_26
 slice_v1_001_handoff_pending: CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
@@ -454,7 +454,7 @@ capability anywhere in the module or in any migration.
 The repository gate remains `SLICE_V1_002_FULL_SCOPE_IMPLEMENTATION` inside the
 exact accepted Contract named above, but the bounded rework and remote
 verification action is complete. The next authorized action is
-`CONTROLLER_SLICE_V1_002_FINAL_CLOSURE_VERIFICATION` by the `GPT-5.6 Pro
+`CONTROLLER_FINAL_CLOSURE_VERIFICATION_ON_UPDATED_DRAFT_PR_26` by the `GPT-5.6 Pro
 Controller`. SLICE-V1-001's closed lifecycle action remains
 `NEXT_SLICE_CONTRACT_SOCRATIC_DISCOVERY` for the Slice after this one, and its
 bounded `CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK` over the actual
