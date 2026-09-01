@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
@@ -172,23 +173,36 @@ class AvailabilityRiskSchemaIT extends PostgresContainerSupport {
 
             // A closed case releases the key: the same cause returning later is
             // a new case, and its history is not overwritten.
-            try (Statement statement = connection.createStatement()) {
-                // The schema refuses a success that never recorded an action, so
-                // closing the case here has to walk both stages. That refusal is
-                // the two-stage rule, and it is asserted directly below.
-                assertThatThrownBy(() -> statement.executeUpdate(
-                        "UPDATE ops.availability_case SET state = 'VERIFIED_SUCCESS',"
-                                + " verified_at = now(), closed_at = now(),"
-                                + " closure_reason = 'verified' WHERE cause_key = '"
-                                + causeKey + "'"))
+            // The schema refuses a success that never recorded an action, so
+            // closing the case here has to walk both stages. That refusal is
+            // the two-stage rule, and it is asserted directly below.
+            try (PreparedStatement missingAction = connection.prepareStatement("""
+                    UPDATE ops.availability_case
+                       SET state = 'VERIFIED_SUCCESS',
+                           verified_at = now(),
+                           closed_at = now(),
+                           closure_reason = 'verified'
+                     WHERE cause_key = ?
+                    """)) {
+                missingAction.setString(1, causeKey);
+                assertThatThrownBy(missingAction::executeUpdate)
                         .as("a verified success cannot exist without a recorded action")
                         .satisfies(thrown ->
                                 assertThat(carriesSqlState(thrown, CHECK_VIOLATION)).isTrue());
+            }
 
-                statement.executeUpdate("UPDATE ops.availability_case SET state = 'VERIFIED_SUCCESS',"
-                        + " action_recorded_at = now(), verification_started_at = now(),"
-                        + " verified_at = now(), closed_at = now(), closure_reason = 'verified'"
-                        + " WHERE cause_key = '" + causeKey + "'");
+            try (PreparedStatement completedAction = connection.prepareStatement("""
+                    UPDATE ops.availability_case
+                       SET state = 'VERIFIED_SUCCESS',
+                           action_recorded_at = now(),
+                           verification_started_at = now(),
+                           verified_at = now(),
+                           closed_at = now(),
+                           closure_reason = 'verified'
+                     WHERE cause_key = ?
+                    """)) {
+                completedAction.setString(1, causeKey);
+                completedAction.executeUpdate();
             }
             insertCase(connection, UUID.randomUUID(), childId, policyId, causeKey, "OPEN");
         }
