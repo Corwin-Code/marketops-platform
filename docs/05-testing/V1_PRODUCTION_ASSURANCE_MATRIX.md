@@ -88,17 +88,25 @@ Controller PASS and actual SQUASH identity are the current engineering record.
 assessed_at: 2026-09-01
 slice: SLICE-V1-002
 contract_sha256: d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e
-implementation_state: ROOT_CAUSE_REWORK_VERIFIED_LOCAL
+implementation_state: ENGINEERING_IMPLEMENTATION_MERGED
 reviewed_source_head: c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6
 reviewed_source_tree: c94341232b5fa67b5c40a1e6be121a7696e748c4
 frozen_finding_set_sha256: 60589cfa9303d17e71910e085fd18f1d68b87dd9e3b56a99bf6f799879ebcf94
-engineering_findings_addressed: 18_OF_18_PENDING_INDEPENDENT_CLOSURE_VERIFICATION
-controller_verdict: NOT_CLAIMED
-owner_formal_closure: NOT_CLAIMED
-remote_publication: DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS
+engineering_findings_addressed: 18_OF_18_CLOSED
+controller_verdict: PASS_R3_ENGINEERING_FINAL_GATE
+owner_formal_closure: HUMAN_OWNER_ACCEPTED
+remote_publication: PR_26_MERGED_PROTECTED_SQUASH
 draft_pr: 26
 draft_pr_url: https://github.com/Corwin-Code/marketops-platform/pull/26
 required_checks: PASS_12_OF_12_PLUS_AGGREGATE_CODEQL
+final_head: 6b5ab03b62d557ee8cb04847ba4418ca2cb3d529
+final_tree: f7e02da0bf38922f6c5a80d49b263613ade997d9
+tested_merge: 12f82ac66d9b023cc158a12f10f97b0e4415fe12
+actual_squash_commit: cc42760cfc99c1bab027039fca67410d696e96fa
+actual_squash_tree: f7e02da0bf38922f6c5a80d49b263613ade997d9
+actual_squash_sole_parent: 8a7076877374391cf851481c023dfb0e621ab712
+engineering_acceptance: 100_OF_100
+deferred_release_obligations: S2_REL_001_THROUGH_010_PRODUCTION_BLOCKING
 controlled_write_target: NONE_IN_THIS_SLICE
 real_provider_calls: NONE
 deployment: NOT_EXECUTED
@@ -112,6 +120,8 @@ root_cause_rework_evidence: docs/07-phase-evidence/SLICE-V1-002/V0034-root-cause
 r1_finding_closure: docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json
 r1_final_handoff: docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md
 deferred_release: docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json
+closure_snapshot: docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md
+owner_formal_closure_evidence: docs/08-handoffs/OWNER-SLICE-V1-002-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
 ```
 
 The Slice carries no controlled-write target at all, so Gate EV and Gate E have

@@ -259,23 +259,59 @@ class RepositoryContractPatternTests(unittest.TestCase):
             any("CLOSED_ENGINEERING" in violation for violation in violations)
         )
 
-    def test_the_active_slice_cannot_claim_a_verdict_it_does_not_have(self) -> None:
+    def test_the_closed_active_slice_cannot_regress_its_exact_closure(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)
-        for token, claimed in (
-            ("slice_v1_002_controller_verdict: NOT_CLAIMED", "PASS"),
-            ("slice_v1_002_owner_formal_closure: NOT_CLAIMED", "HUMAN_OWNER_ACCEPTED"),
+        for token, regressed in (
             (
-                "slice_v1_002_remote_publication: DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS",
-                "MERGED",
+                "slice_v1_002_controller_verdict: PASS_R3_ENGINEERING_FINAL_GATE",
+                "NOT_CLAIMED",
+            ),
+            (
+                "slice_v1_002_owner_formal_closure: HUMAN_OWNER_ACCEPTED",
+                "NOT_CLAIMED",
+            ),
+            (
+                "slice_v1_002_remote_publication: PR_26_MERGED_PROTECTED_SQUASH",
+                "DRAFT_PR_26_OPEN_REQUIRED_CHECKS_PASS",
             ),
         ):
             with self.subTest(token=token):
                 field = token.split(":", 1)[0]
-                mutated = source.replace(token, f"{field}: {claimed}")
+                mutated = source.replace(token, f"{field}: {regressed}")
                 violations = contract_token_violations(
                     mutated, required=COMPLETION_STATE_TOKENS
                 )
                 self.assertTrue(any(field in violation for violation in violations))
+
+    def test_slice_v1_002_squash_identity_is_required(self) -> None:
+        source = "\n".join(COMPLETION_STATE_TOKENS)
+        mutated = source.replace(
+            "slice_v1_002_actual_squash_tree: f7e02da0bf38922f6c5a80d49b263613ade997d9",
+            "slice_v1_002_actual_squash_tree: 0000000000000000000000000000000000000000",
+        )
+        violations = contract_token_violations(mutated, required=COMPLETION_STATE_TOKENS)
+        self.assertTrue(any("slice_v1_002_actual_squash_tree" in item for item in violations))
+
+    def test_slice_v1_002_security_fix_identity_and_alert_closure_are_required(self) -> None:
+        source = "\n".join(COMPLETION_STATE_TOKENS)
+        for old, new in (
+            (
+                "slice_v1_002_security_fix_actual_squash_commit: "
+                "e0184852785f451256a36f52fa3d520ceea2c313",
+                "slice_v1_002_security_fix_actual_squash_commit: " + "0" * 40,
+            ),
+            (
+                "slice_v1_002_post_merge_code_scanning_alerts: "
+                "116_117_FIXED_BY_CODE_NO_DISMISSAL",
+                "slice_v1_002_post_merge_code_scanning_alerts: 116_117_OPEN",
+            ),
+        ):
+            with self.subTest(field=old.split(":", 1)[0]):
+                mutated = source.replace(old, new)
+                violations = contract_token_violations(
+                    mutated, required=COMPLETION_STATE_TOKENS
+                )
+                self.assertTrue(any(old.split(":", 1)[0] in item for item in violations))
 
     def test_post_merge_squash_identity_is_required(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)
