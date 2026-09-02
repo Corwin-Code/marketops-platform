@@ -394,8 +394,8 @@ COMPLETION_STATE_TOKENS = (
     "4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e",
     "active_slice_amendment: NONE_ACCEPTED",
     "active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN",
-    "active_gate: SLICE_V1_002_POST_MERGE_CLOSURE_BOOKKEEPING",
-    "authorization: FINAL_REVIEW_ONLY",
+    "active_gate: SLICE_V1_002_OWNER_ACCEPTED_SNAPSHOT_PROTECTED_SQUASH_PR_27",
+    "authorization: PROTECTED_SQUASH_MERGE_ONLY",
     "slice_v1_002_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_002_branch: fix/SLICE-V1-002-root-cause-rework-r1",
     "slice_v1_002_reviewed_source_head: c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6",
@@ -405,6 +405,9 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_002_engineering_findings_addressed: 18_OF_18_CLOSED",
     "slice_v1_002_controller_review: CONTROLLER_SLICE_V1_002_FINAL_CLOSURE_VERIFICATION_PR26_R3",
     "slice_v1_002_controller_verdict: PASS_R3_ENGINEERING_FINAL_GATE",
+    "slice_v1_002_controller_bookkeeping_review: "
+    "CONTROLLER_SLICE_V1_002_FINAL_POST_MERGE_BOOKKEEPING_VERIFICATION_R2",
+    "slice_v1_002_controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
     "slice_v1_002_owner_formal_closure: HUMAN_OWNER_ACCEPTED",
     "slice_v1_002_owner_formal_closure_statement_sha256: "
     "be99e247e6a47876ca42dde61b8c1834a59464c6168beb25acb2c2519f57a6ff",
@@ -449,8 +452,23 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_002_deferred_release_obligations: S2_REL_001_THROUGH_010_PRODUCTION_BLOCKING",
     "slice_v1_002_closure_sync_branch: docs/SLICE-V1-002-post-merge-closure-sync",
     "slice_v1_002_closure_sync_pr: 27",
+    "slice_v1_002_closure_snapshot_source_commit: dbc09e00a942c53580270a4157da863933502e8b",
+    "slice_v1_002_closure_snapshot_source_head: dbc09e00a942c53580270a4157da863933502e8b",
+    "slice_v1_002_closure_snapshot_source_tree: 11e209e1991c49e7d2a4706da1b1d2654dfe35d6",
+    "slice_v1_002_closure_snapshot_tested_merge: b36e057ed6388385f846dfceef96a960c8ff6c45",
     "slice_v1_002_closure_snapshot_git_blob_sha1: da35a11b30843603c5defdc10299bcf8b53fbc83",
     "slice_v1_002_closure_snapshot_sha256: f4847d4fdca8bede97decc02a12f99b2358b196d3d5b31a3aac60362ae41799f",
+    "slice_v1_002_owner_snapshot_acceptance: HUMAN_OWNER_ACCEPTED",
+    "slice_v1_002_owner_snapshot_acceptance_statement_sha256: "
+    "ed01ebaac4e92ffc74e02bf9cecd3aafdb8c094305b53a3b66bca0764275763d",
+    "slice_v1_002_owner_snapshot_acceptance_evidence_git_blob_sha1: "
+    "658458e0421ecf41bdbf5bba1c466c2ec69f571b",
+    "slice_v1_002_owner_snapshot_acceptance_evidence_sha256: "
+    "410d56fcba47ca2ccdd2807b743863e420a3ee49dea34cd3b60c1b71446f8be6",
+    "slice_v1_002_post_merge_closure_sync_record_git_blob_sha1: "
+    "5c02646a5ef5cb5847d8e792dd6184d9d4ab28b1",
+    "slice_v1_002_post_merge_closure_sync_record_sha256: "
+    "1138ce792d990d069b563af34728220f50b0d25dbc56f3f5ee08a621535cfca6",
     "slice_v1_002_controlled_write_target: NONE_IN_THIS_SLICE",
     "slice_v1_002_real_provider_calls: NONE",
     "slice_v1_002_r1_finding_closure: docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json",
@@ -469,8 +487,10 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_001_snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e84823ddedf30aab2e3",
     "slice_v1_001_owner_acceptance_comment: 5469935477",
     "slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33",
-    "next_authorized_actor: GPT-5.6 Pro Controller",
-    "next_action: CONTROLLER_SLICE_V1_002_FINAL_POST_MERGE_BOOKKEEPING_VERIFICATION",
+    "closure_snapshot_before_next_slice: SATISFIED_EXACT_OWNER_ACCEPTED",
+    "merge_authorization: HUMAN_OWNER_AUTHORIZED_PROTECTED_SQUASH_PR_27_IF_ALL_GATES_PASS",
+    "next_authorized_actor: CODEX_POST_CLOSURE_GIT_EXECUTOR",
+    "next_action: PROTECTED_SQUASH_MERGE_PR27_AND_FINAL_READBACK",
     "production_write_enabled: false",
     "bounded_real_write_verification_authorization: NONE",
     "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",

@@ -2937,12 +2937,12 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "active_slice_contract",
             ),
             (
-                "active_gate: SLICE_V1_002_POST_MERGE_CLOSURE_BOOKKEEPING",
+                "active_gate: SLICE_V1_002_OWNER_ACCEPTED_SNAPSHOT_PROTECTED_SQUASH_PR_27",
                 "active_gate: READY_FOR_DESIGN",
                 "active_gate",
             ),
             (
-                "authorization: FINAL_REVIEW_ONLY",
+                "authorization: PROTECTED_SQUASH_MERGE_ONLY",
                 "authorization: DESIGN_ONLY",
                 "authorization",
             ),
@@ -2972,7 +2972,9 @@ class V1CurrentStateContractTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         paths = (
             "docs/08-handoffs/OWNER-SLICE-V1-002-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md",
+            "docs/08-handoffs/OWNER-SLICE-V1-002-CLOSURE-SNAPSHOT-ACCEPTANCE-EVIDENCE.md",
             "docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md",
+            "docs/07-phase-evidence/SLICE-V1-002/post-merge-closure-sync.md",
             "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json",
         )
         return {relative: (root / relative).read_bytes() for relative in paths}
@@ -2995,6 +2997,59 @@ class V1CurrentStateContractTests(unittest.TestCase):
         validate_slice_v1_002_post_merge_closure_documents(errors, documents)
         self.assertTrue(any("Owner Formal Closure evidence SHA-256" in error for error in errors))
 
+    def test_slice_v1_002_original_owner_statement_byte_change_is_rejected(self) -> None:
+        documents = self.slice_v1_002_closure_documents()
+        path = (
+            "docs/08-handoffs/"
+            "OWNER-SLICE-V1-002-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md"
+        )
+        documents[path] = documents[path].replace(
+            b"I formally close the engineering implementation",
+            b"I formally alter the engineering implementation",
+            1,
+        )
+        errors: list[str] = []
+        validate_slice_v1_002_post_merge_closure_documents(errors, documents)
+        self.assertTrue(any("exact Human Owner Formal Closure statement" in error for error in errors))
+
+    def test_slice_v1_002_snapshot_acceptance_statement_drift_is_rejected(self) -> None:
+        documents = self.slice_v1_002_closure_documents()
+        path = (
+            "docs/08-handoffs/"
+            "OWNER-SLICE-V1-002-CLOSURE-SNAPSHOT-ACCEPTANCE-EVIDENCE.md"
+        )
+        documents[path] = documents[path].replace(
+            b"I accept the exact SLICE-V1-002 Closure Snapshot",
+            b"I alter the exact SLICE-V1-002 Closure Snapshot",
+            1,
+        )
+        errors: list[str] = []
+        validate_slice_v1_002_post_merge_closure_documents(errors, documents)
+        self.assertTrue(any("exact Human Owner Snapshot acceptance statement" in error for error in errors))
+
+    def test_slice_v1_002_bookkeeping_or_security_regression_is_rejected(self) -> None:
+        path = "docs/07-phase-evidence/SLICE-V1-002/post-merge-closure-sync.md"
+        for old, new in (
+            (
+                b"controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+                b"controller_bookkeeping_verdict: PENDING",
+            ),
+            (
+                b"alert_116: FIXED_BY_CODE_NO_DISMISSAL",
+                b"alert_116: DISMISSED",
+            ),
+            (
+                b"closure_snapshot_before_next_slice: SATISFIED_EXACT_OWNER_ACCEPTED",
+                b"closure_snapshot_before_next_slice: PENDING",
+            ),
+        ):
+            with self.subTest(field=old):
+                documents = self.slice_v1_002_closure_documents()
+                documents[path] = documents[path].replace(old, new, 1)
+                errors: list[str] = []
+                validate_slice_v1_002_post_merge_closure_documents(errors, documents)
+                self.assertTrue(errors)
+
     def test_slice_v1_002_release_promotion_is_rejected(self) -> None:
         documents = self.slice_v1_002_closure_documents()
         path = "docs/07-phase-evidence/SLICE-V1-002/CLOSURE-SNAPSHOT-DRAFT.md"
@@ -3006,6 +3061,32 @@ class V1CurrentStateContractTests(unittest.TestCase):
         errors: list[str] = []
         validate_slice_v1_002_post_merge_closure_documents(errors, documents)
         self.assertTrue(any("prohibited release claim" in error for error in errors))
+
+    def test_slice_v1_002_deferred_release_obligation_cannot_be_promoted(self) -> None:
+        documents = self.slice_v1_002_closure_documents()
+        path = "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json"
+        documents[path] = documents[path].replace(
+            b"PRODUCTION_BLOCKING_DEFERRED_TO_RELEASE_V1_001",
+            b"SATISFIED",
+            1,
+        )
+        errors: list[str] = []
+        validate_slice_v1_002_post_merge_closure_documents(errors, documents)
+        self.assertTrue(any("is not production-blocking" in error for error in errors))
+
+    def test_slice_v1_002_provider_or_deployment_authority_is_rejected(self) -> None:
+        path = "docs/07-phase-evidence/SLICE-V1-002/post-merge-closure-sync.md"
+        for old, new in (
+            (b"deployment: PROHIBITED", b"deployment: AUTHORIZED"),
+            (b"provider_calls: PROHIBITED", b"provider_calls: AUTHORIZED"),
+            (b"production_write_enabled: false", b"production_write_enabled: true"),
+        ):
+            with self.subTest(field=old):
+                documents = self.slice_v1_002_closure_documents()
+                documents[path] = documents[path].replace(old, new, 1)
+                errors: list[str] = []
+                validate_slice_v1_002_post_merge_closure_documents(errors, documents)
+                self.assertTrue(any("prohibited release claim" in error for error in errors))
 
     def test_contract_byte_change_with_old_hash_is_rejected(self) -> None:
         mutated = self.slice_contract_bytes().replace(
@@ -3052,7 +3133,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
     def test_rework_identity_phase_and_actor_cannot_drift(self) -> None:
         mutations = (
             (
-                "next_authorized_actor: GPT-5.6 Pro Controller",
+                "next_authorized_actor: CODEX_POST_CLOSURE_GIT_EXECUTOR",
                 "next_authorized_actor: SOMEBODY_ELSE",
             ),
             (
@@ -3073,8 +3154,24 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "slice_v1_001_closure_claim: OWNER_FORMALLY_CLOSED",
             ),
             (
-                "candidate_state_scope: PROTECTED_MAIN_SLICE_V1_002_ENGINEERING_MERGED_FORMAL_CLOSURE_ACCEPTED",
+                "candidate_state_scope: PROTECTED_MAIN_SLICE_V1_002_ENGINEERING_MERGED_FORMAL_CLOSURE_AND_SNAPSHOT_ACCEPTED",
                 "candidate_state_scope: PRODUCTION_READY",
+            ),
+            (
+                "slice_v1_002_controller_bookkeeping_verdict: PASS_POST_MERGE_CLOSURE_BOOKKEEPING",
+                "slice_v1_002_controller_bookkeeping_verdict: PENDING",
+            ),
+            (
+                "slice_v1_002_owner_snapshot_acceptance: HUMAN_OWNER_ACCEPTED",
+                "slice_v1_002_owner_snapshot_acceptance: PENDING",
+            ),
+            (
+                "closure_snapshot_before_next_slice: SATISFIED_EXACT_OWNER_ACCEPTED",
+                "closure_snapshot_before_next_slice: PENDING",
+            ),
+            (
+                "merge_authorization: HUMAN_OWNER_AUTHORIZED_PROTECTED_SQUASH_PR_27_IF_ALL_GATES_PASS",
+                "merge_authorization: NOT_GRANTED",
             ),
             (
                 "slice_v1_001_actual_squash_commit: d562b81f4f0271aa33a53b21ccaffc88b5610c0c",
