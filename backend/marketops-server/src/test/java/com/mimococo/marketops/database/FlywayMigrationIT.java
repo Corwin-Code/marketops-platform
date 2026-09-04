@@ -69,7 +69,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0033__track_case_improvement_observation.sql",
             "V0034__close_availability_deep_review_findings.sql",
             "V0035__close_availability_targeted_findings.sql",
-            "V0036__create_advertising_identity_and_official_facts.sql");
+            "V0036__create_advertising_identity_and_official_facts.sql",
+            "V0037__create_advertising_conversion_freshness_and_qualification.sql");
 
     private static PostgreSQLContainer container;
 
@@ -133,9 +134,13 @@ class FlywayMigrationIT extends PostgresContainerSupport {
 
             assertThat(tables).containsExactly(
                     "core.ad_affected_set",
+                    "core.ad_allowable_cpa_definition",
+                    "core.ad_conversion_definition",
+                    "core.ad_freshness_profile",
                     "core.ad_native_object",
                     "core.ad_object_configuration_observation",
                     "core.ad_object_relationship",
+                    "core.ad_optimization_qualification_policy",
                     "core.availability_priority_policy",
                     "core.cost_version",
                     "core.demand_observation_policy",
@@ -186,6 +191,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "iam.user_account",
                     "iam.user_role_assignment",
                     "iam.user_scope_grant",
+                    "ledger.ad_linked_sale_event",
                     "ledger.ad_object_fact",
                     "ledger.ad_object_listing_allocation",
                     "ledger.ad_spend_fact",
@@ -387,6 +393,23 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             assertThat(count(connection,
                     "SELECT count(*) FROM platform.ad_semantic_profile"))
                     .isZero();
+            assertThat(strings(connection,
+                    "SELECT metric_code FROM mart.metric_definition"
+                            + " WHERE domain = 'ADVERTISING' AND status = 'ACTIVE'"
+                            + " ORDER BY metric_code"))
+                    .containsExactly(
+                            "AD_ATTRIBUTION_GAP_RATIO",
+                            "AD_COST_OF_SALE",
+                            "AD_ELIGIBLE_TRAFFIC",
+                            "AD_LINKED_COMPLETED_SALE_CONVERSION",
+                            "AD_LINKED_ORDER_CONVERSION",
+                            "AD_LINKED_RETAINED_SALE_CONVERSION",
+                            "AD_SPEND",
+                            "ADVERTISING_CONTRIBUTION_PROFIT",
+                            "ALLOWABLE_CPA",
+                            "CONTRIBUTION_PROFIT_PER_AD_RUB",
+                            "MAX_CPC",
+                            "PROVIDER_ATTRIBUTED_CONVERSION");
             assertThat(strings(connection,
                     "SELECT metric_code FROM mart.metric_definition"
                             + " WHERE domain = 'PROFIT' AND status = 'ACTIVE'"

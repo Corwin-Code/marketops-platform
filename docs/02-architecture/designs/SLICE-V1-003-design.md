@@ -568,14 +568,14 @@ in `platform.control_route_inventory` and granting per object:
 
 | Migration | Contents |
 | --- | --- |
-| `V0036` | advertising identity and official facts: native object registry, lineage, affected set + digest, semantic/capability profile versions, official spend/traffic/attribution facts with raw provenance and correction history |
-| `V0037` | canonical advertising metrics and decision evidence: conversion definitions, Allowable CPA, Max CPC, contribution-profit components, sales-stage links, freshness and qualification profiles |
+| `V0036` | *(landed)* advertising identity and official facts: semantic profile, native object registry with lineage and proven control granularity, structural relationships, append-only affected set + digest, observed configuration, official object spend/traffic/attribution with correction lineage, explicitly-labelled per-listing allocation. Also carries the six IAM action scopes, the role matrix and the `advertisingefficiency` audit source domain, because every later migration and every Java class depends on them |
+| `V0037` | *(landed)* canonical advertising metrics and decision evidence: conversion definition, stage-bound Allowable CPA definition, deterministic ad-linked sale events, purpose-specific freshness profiles, purpose-tiered optimization qualification, and the two monotonicity functions the Bundle validation calls |
 | `V0038` | advertising case projection, lanes, priority policy, rank factors, evidence, recalculation queue, reconciliation run, SLO and trace events |
 | `V0039` | accountable task, exception, manual execution packet, configuration verification, approval lease, materiality and target policies |
 | `V0040` | `AD_BID_CHANGE` command, transition graph, attempt, readback, raw response custody, write gate, lease/transition/attempt/readback functions, compensation guard |
 | `V0041` | reservation, aggregate exposure envelope, quarantine, kill/reenablement, decision policy bundle and its whole-combination validation |
 | `V0042` | outcome evaluation plan, baseline and confounder authority, operational and settled outcome lineage, regression, report projections |
-| `V0043` | IAM action scopes and role matrix, audit source domain widening, vocabulary widenings, synthetic Ozon/WB fixture profiles marked `UNVERIFIED` |
+| `V0043` | remaining vocabulary widenings and the synthetic Ozon/WB fixture profiles marked `UNVERIFIED` (IAM and the audit domain moved forward into `V0036`) |
 
 The exact split may change as implementation proceeds; the constraints that may
 not are: forward-only, contiguous `V%04d__[a-z0-9_]+.sql`, no edit to V0001–V0035,
