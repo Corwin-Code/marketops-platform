@@ -1,0 +1,201 @@
+{
+  "document_type": "REWORK_IN_PROGRESS",
+  "contract_sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c",
+  "warning": "Reconcile with the existing register; do not overwrite history or relabel engineering defects. No real evidence is asserted by this template.",
+  "entries": [
+    {
+      "id": "S3-REL-001",
+      "obligation": "real Ozon advertising read capability, native object hierarchy, Spend/traffic/attribution semantics, source maturity and account/store evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-002",
+      "obligation": "equivalent real Wildberries advertising read evidence without assuming Ozon symmetry.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-003",
+      "obligation": "real Product Mapping, native-object lineage and complete affected-set coverage for the intended operating cohort.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-004",
+      "obligation": "real company Order/Completed/Retained sales and deterministic ad-linked sale-event evidence, including Provider-to-canonical attribution-gap profile.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-005",
+      "obligation": "real official advertising Spend reconciliation and correction-window evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-006",
+      "obligation": "real COGS, fee, fulfillment, return-loss, Settlement and Adjustment inputs sufficient for Operational and Settled advertising profit.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-007",
+      "obligation": "real stage-consistent Conversion, Allowable CPA and Max CPC definitions and approved evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-008",
+      "obligation": "real source/platform/purpose Freshness Profiles for Queue, Task, Recommendation, Write, Compensation and Outcomes.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-009",
+      "obligation": "real Optimization qualification, Target, Outcome, Priority, human-SLO, Approval-Lease and aggregate-Exposure Policies with owners and evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-010",
+      "obligation": "one complete, compatible, scope-bound Advertising Decision Policy Bundle accepted for each intended real operating scope.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-011",
+      "obligation": "real OIDC/MFA, user disable/revoke, Role/Scope and role-minimal disclosure evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-012",
+      "obligation": "real Operating Calendar, staffed Coverage, escalation, Daily Brief and Weekly Review ownership.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-013",
+      "obligation": "real governed Shadow evidence under preaccepted sample, duration, discrepancy, manual-verification and operating-SLO thresholds.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-014",
+      "obligation": "real Ozon `AD_BID_CHANGE` endpoint, permission, unit, step, quota, idempotency/NOT_APPLIED, error, propagation and Readback evidence for each consumed scope.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-015",
+      "obligation": "real Wildberries `AD_BID_CHANGE` capability evidence if that Provider path is to become reachable; otherwise verified Shadow-only fail-closed state.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-016",
+      "obligation": "exact Gate EV envelope and Human Owner authorization before the first real write for each Platform/Store/Direction/Candidate Basis.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-017",
+      "obligation": "exact Gate EV Write/Readback evidence and, when API Compensation is claimed, exact prior-value Compensation round-trip evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-018",
+      "obligation": "layered scope-monotonic Gate E Pilot Evidence Bundle, exact allowlist, aggregate Exposure, recovery headroom and operating ownership.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-019",
+      "obligation": "real Provider-transmission Kill/Quarantine drill and cause-specific multi-party reenablement evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-020",
+      "obligation": "real early Completed-Sales Guard evidence for the Gate E entry scope and continuing 30-day/Settled Outcome obligations.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-021",
+      "obligation": "real Operational/Settled baseline, critical-sales-unit and settlement-attribution evidence for mature Outcome reporting.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-022",
+      "obligation": "real Ordinary-route promotion evidence before any Owner per-command delegation is activated; absent evidence keeps every nonzero action Material.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-023",
+      "obligation": "Yandex runtime, managed PostgreSQL, immutable object custody, backup/PITR/restore, monitoring, security and legal/data-localization release evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    },
+    {
+      "id": "S3-REL-024",
+      "obligation": "Key User training/adoption, runbooks, release traceability and no unresolved release-blocking defect for the exact real scope.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": null,
+      "evidence_reference": null
+    }
+  ],
+  "closure_claim_made": false,
+  "production_write_enabled": false
+}

@@ -36,3 +36,15 @@ reason, affected contracts/modules, migration and compatibility impact, security
 tests, rollback and authority. Normal engineering choices inside an approved
 Slice Contract do not require an Owner Decision or ADR unless they trigger the
 Conditional Design Gate.
+
+## Execution evidence — 2026-09-05 Codex R1
+
+This records execution authority without changing any product decision: Human
+Owner's `OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1` authorizes one continuous
+root-cause cycle for the immutable accepted SLICE-V1-003 Contract and the 22-item
+Frozen Finding Set. [Exact authorization evidence](../08-handoffs/OWNER-SLICE-V1-003-CODEX-REWORK-AUTHORIZATION-EVIDENCE.md)
+and [takeover receipt](../07-phase-evidence/SLICE-V1-003/rework-r1/TAKEOVER_RECEIPT.md)
+retain the original Base, Head, tree and SHA identities. Append-only transport on
+the named branch, one Draft PR and CI are authorized. Ready, merge, force-push,
+real Provider or shared/production access and enablement remain unauthorized.
+This entry makes no engineering-closure or release claim.

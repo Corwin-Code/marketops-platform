@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-09-04
+as_of: 2026-09-05
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -25,6 +25,16 @@ slice_v1_003_source_protected_main: 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430
 slice_v1_003_source_protected_main_tree: 0ca229112bcf351ab5c572dd8d375c647bab61c0
 slice_v1_003_source_protected_main_parent: e0184852785f451256a36f52fa3d520ceea2c313
 slice_v1_003_branch: feat/SLICE-V1-003-advertising-traffic-efficiency
+slice_v1_003_rework_actor: CODEX
+slice_v1_003_rework_authorization: OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1
+slice_v1_003_rework_authorization_evidence: docs/08-handoffs/OWNER-SLICE-V1-003-CODEX-REWORK-AUTHORIZATION-EVIDENCE.md
+slice_v1_003_rework_authorization_evidence_sha256: 23a2954d68abeebf87d7710f3ab749af5246cdfcbe4a3029dde73dbb34647a11
+slice_v1_003_rework_starting_head: a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb
+slice_v1_003_rework_starting_tree: fb4d242d62febd87191da9dce353bdef99f5a77d
+slice_v1_003_frozen_findings_sha256: 15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1
+slice_v1_003_rework_takeover: docs/07-phase-evidence/SLICE-V1-003/rework-r1/TAKEOVER_RECEIPT.md
+slice_v1_003_rework_status: ROOT_CAUSE_REWORK_IN_PROGRESS_NO_CLOSURE_CLAIM
+slice_v1_003_rework_transport: APPEND_ONLY_NAMED_BRANCH_ONE_DRAFT_PR_AND_CI_AUTHORIZED
 slice_v1_003_implementation_state: FULL_SCOPE_IMPLEMENTATION_IN_PROGRESS
 slice_v1_003_controlled_write_target: AD_BID_CHANGE
 slice_v1_003_controlled_write_provider_paths: STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE
@@ -638,3 +648,18 @@ published implementation candidate.
 
 Nothing here activates `RELEASE-V1-001`. Deployment, real credentials, provider
 calls, Gate EV, Gate E, Pilot and production writes remain unauthorized.
+
+## SLICE-V1-003 Codex R1 execution record
+
+The separate Owner authorization `OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1`
+is effective for Codex's continuous in-scope repair and verification of the exact
+22-item Frozen Finding Set on starting Head `a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb`.
+[The takeover receipt](../07-phase-evidence/SLICE-V1-003/rework-r1/TAKEOVER_RECEIPT.md)
+records the completed read-only package, source, repository and authority checks.
+[The new authorization evidence](../08-handoffs/OWNER-SLICE-V1-003-CODEX-REWORK-AUTHORIZATION-EVIDENCE.md)
+is independent from the preserved original Contract acceptance and its historical
+local-only restrictions. It permits append-only publication on the named branch,
+one Draft PR and CI; it does not permit Ready, merge, force-push, real Provider
+access, shared/production access or production enablement. No finding or AC status
+is inherited as verified in this R1 cycle. `production_write_enabled=false` remains
+in force; all 24 external release obligations remain production-blocking.
