@@ -70,7 +70,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0034__close_availability_deep_review_findings.sql",
             "V0035__close_availability_targeted_findings.sql",
             "V0036__create_advertising_identity_and_official_facts.sql",
-            "V0037__create_advertising_conversion_freshness_and_qualification.sql");
+            "V0037__create_advertising_conversion_freshness_and_qualification.sql",
+            "V0038__create_advertising_case_projection_and_orchestration.sql");
 
     private static PostgreSQLContainer container;
 
@@ -137,10 +138,12 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "core.ad_allowable_cpa_definition",
                     "core.ad_conversion_definition",
                     "core.ad_freshness_profile",
+                    "core.ad_human_slo_profile",
                     "core.ad_native_object",
                     "core.ad_object_configuration_observation",
                     "core.ad_object_relationship",
                     "core.ad_optimization_qualification_policy",
+                    "core.ad_priority_policy",
                     "core.availability_priority_policy",
                     "core.cost_version",
                     "core.demand_observation_policy",
@@ -200,6 +203,10 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ledger.return_inventory_transition",
                     "ledger.return_quality_evidence_snapshot",
                     "ledger.sales_fact",
+                    "mart.ad_case",
+                    "mart.ad_case_evidence",
+                    "mart.ad_case_rank_factor",
+                    "mart.ad_case_variant_diagnostic",
                     "mart.availability_risk_card",
                     "mart.availability_risk_child",
                     "mart.availability_risk_evidence",
@@ -214,6 +221,11 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "mart.metric_definition",
                     "mart.metric_input_reference",
                     "mart.metric_value",
+                    "ops.ad_fact_cursor",
+                    "ops.ad_recalculation_request",
+                    "ops.ad_reconciliation_run",
+                    "ops.ad_slo_observation",
+                    "ops.ad_trace_event",
                     "ops.ai_claim_evidence",
                     "ops.ai_invocation",
                     "ops.ai_model",
