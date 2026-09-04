@@ -122,7 +122,10 @@ public class GuardrailService {
         UUID evaluationId = idGenerator.newId();
         String inputDigest = adBidDigest(proposal, projection, unresolved, now);
         evaluations.insert(evaluationId, proposal.organizationId(), proposal.id(),
-                null, null, purpose, passed, reasons, adBidDetail(projection),
+                null, null,
+                projection == null ? null : projection.decisionBundleId(),
+                projection == null ? null : projection.decisionBundleVersion(),
+                purpose, passed, reasons, adBidDetail(projection),
                 inputDigest, authority.document(), now, CorrelationId.current());
 
         GuardrailVerdict verdict = new GuardrailVerdict(evaluationId, purpose, passed,
@@ -167,6 +170,12 @@ public class GuardrailService {
         }
         if (!projection.exhaustedExposureAxes().isEmpty()) {
             reasons.add(GuardrailReason.EXPOSURE_ENVELOPE_EXHAUSTED);
+        }
+        if (!projection.authorised()) {
+            // A verdict that passes has to name the authority that let it pass,
+            // and for an advertising decision that is the bundle. Without one
+            // there is nothing to record a PASS against.
+            reasons.add(GuardrailReason.AD_POLICY_BUNDLE_UNRESOLVED);
         }
         for (String reason : unresolved) {
             switch (reason) {

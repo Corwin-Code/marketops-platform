@@ -160,4 +160,65 @@ class AdPriorityPolicyTest {
         assertThatThrownBy(() -> AdPriorityPolicy.band(AdvertisingLane.PROTECTION, null))
                 .isInstanceOf(NullPointerException.class);
     }
+
+    @org.junit.jupiter.api.Nested
+    @DisplayName("the workflow scale keeps the ordering the band score guarantees")
+    class WorkflowPriority {
+
+        @Test
+        @DisplayName("TC-AD-RANK-020 no commercial value crosses a band boundary after mapping")
+        void noCommercialValueCrossesABoundary() {
+            // The band score reaches six hundred thousand and the workflow's
+            // priority column is bounded at a thousand. Dividing by a constant
+            // would have let a large commercial term in a low band round up past
+            // a small one in a high band, which is exactly the property the
+            // band arithmetic exists to prevent.
+            java.math.BigDecimal band = com.mimococo.marketops.advertisingefficiency.internal
+                    .domain.AdPriorityPolicy.BAND;
+            for (int lower = 0; lower < 6; lower++) {
+                java.math.BigDecimal topOfLower = AdPriorityPolicy.workflowPriority(
+                        band.multiply(java.math.BigDecimal.valueOf(lower))
+                                .add(band.subtract(java.math.BigDecimal.ONE)));
+                java.math.BigDecimal bottomOfHigher = AdPriorityPolicy.workflowPriority(
+                        band.multiply(java.math.BigDecimal.valueOf(lower + 1L)));
+
+                assertThat(topOfLower)
+                        .describedAs("band %s top must stay below band %s bottom",
+                                lower, lower + 1)
+                        .isLessThan(bottomOfHigher);
+            }
+        }
+
+        @Test
+        @DisplayName("TC-AD-RANK-021 every mapped priority fits the column the workflow stores it in")
+        void everyMappedPriorityFitsTheColumn() {
+            // numeric(9, 4) with CHECK (priority_score >= 0 AND <= 1000).
+            java.math.BigDecimal band = com.mimococo.marketops.advertisingefficiency.internal
+                    .domain.AdPriorityPolicy.BAND;
+            for (int index = 0; index <= 8; index++) {
+                java.math.BigDecimal mapped = AdPriorityPolicy.workflowPriority(
+                        band.multiply(java.math.BigDecimal.valueOf(index))
+                                .add(band.subtract(java.math.BigDecimal.ONE)));
+
+                assertThat(mapped).isBetween(java.math.BigDecimal.ZERO,
+                        new java.math.BigDecimal("1000"));
+                assertThat(mapped.scale()).isEqualTo(4);
+            }
+        }
+
+        @Test
+        @DisplayName("TC-AD-RANK-022 the mapping is monotonic within a band")
+        void mappingIsMonotonicWithinABand() {
+            java.math.BigDecimal band = com.mimococo.marketops.advertisingefficiency.internal
+                    .domain.AdPriorityPolicy.BAND;
+            java.math.BigDecimal low = AdPriorityPolicy.workflowPriority(
+                    band.multiply(java.math.BigDecimal.valueOf(3)).add(
+                            new java.math.BigDecimal("100")));
+            java.math.BigDecimal high = AdPriorityPolicy.workflowPriority(
+                    band.multiply(java.math.BigDecimal.valueOf(3)).add(
+                            new java.math.BigDecimal("90000")));
+
+            assertThat(low).isLessThan(high);
+        }
+    }
 }

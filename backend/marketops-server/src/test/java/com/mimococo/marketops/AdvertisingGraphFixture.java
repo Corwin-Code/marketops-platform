@@ -38,6 +38,112 @@ final class AdvertisingGraphFixture {
                  UUID executorUserId, UUID verifierUserId) {
     }
 
+    /** One proposed bid change: a target policy, a candidate and a recommendation. */
+    record Decision(UUID targetPolicyId, UUID candidateId, UUID recommendationId,
+                    String entityVersionDigest) {
+    }
+
+    /**
+     * Add a candidate and the recommendation that proposes it.
+     *
+     * <p>The entity version digest is read from the database rather than
+     * invented, because the approval trigger compares itself against exactly
+     * that value. A fixture that made one up would be testing whether the
+     * trigger accepts an arbitrary string.
+     */
+    static Decision seedDecision(JdbcClient seed, Graph graph, String direction,
+                                 String candidateBasis) {
+        boolean causeBound = "CAUSE_BOUND_PROTECTION_STEP".equals(candidateBasis);
+        UUID targetPolicy = UUID.randomUUID();
+        UUID candidate = UUID.randomUUID();
+        UUID recommendation = UUID.randomUUID();
+
+        seed.sql("""
+                INSERT INTO core.ad_bid_target_policy (id, organization_id, policy_version,
+                        scope_kind, native_object_kind, direction, candidate_basis,
+                        candidate_count, max_relative_change_ratio, max_absolute_change_amount,
+                        currency_code, ceiling_headroom_ratio, cause_bound_step_enabled,
+                        cause_bound_step_ratio, cause_bound_causes, owner_user_id, reason,
+                        evidence_reference, effective_from, status, created_at)
+                VALUES (:id, :organization, 1, 'ORGANIZATION', 'KEYWORD', :direction, :basis,
+                        1, 0.30000, 50.0000, 'RUB', :headroom, :causeBound, :causeRatio,
+                        CAST(:causes AS text[]), :owner, 'synthetic advertising fixture',
+                        'evidence://fixture/target-policy', now() - interval '1 day',
+                        'ACTIVE', now())
+                """).param("id", targetPolicy).param("organization", graph.organizationId())
+                .param("direction", direction).param("basis", candidateBasis)
+                // The two bases are mutually exclusive shapes, which the schema
+                // enforces: an economically bounded policy must state its
+                // headroom and may not enable a cause-bound step, and a
+                // cause-bound one is the other way round.
+                .param("headroom", causeBound ? null : new java.math.BigDecimal("0.10000"))
+                .param("causeBound", causeBound)
+                .param("causeRatio", causeBound ? new java.math.BigDecimal("0.30000") : null)
+                .param("causes", causeBound
+                        ? "{PROMOTED_VARIANT_NOT_SELLABLE,PROMOTED_VARIANT_UNAVAILABLE}" : "{}")
+                .param("owner", graph.executorUserId()).update();
+
+        seed.sql("""
+                INSERT INTO ops.ad_bid_candidate (id, organization_id, case_id,
+                        ad_native_object_id, affected_set_digest, target_policy_id,
+                        target_policy_version, semantic_profile_id, direction, candidate_basis,
+                        ordinal, current_bid_amount, requested_amount,
+                        provider_normalized_amount, currency_code, bid_unit_code,
+                        max_cpc_amount, cause_code, generated_at, correlation_id)
+                VALUES (:id, :organization, :caseId, :object, :digest, :policy, 1, :profile,
+                        :direction, :basis, 1, 30.0000, 20.0000, 20.0000, 'RUB',
+                        'CURRENCY_MAJOR', 18.0000, 'PROVEN_ADVERTISING_LOSS', now(),
+                        'advertising-fixture')
+                """).param("id", candidate).param("organization", graph.organizationId())
+                .param("caseId", graph.caseId()).param("object", graph.objectId())
+                .param("digest", graph.digest()).param("policy", targetPolicy)
+                .param("profile", graph.semanticProfileId())
+                .param("direction", direction).param("basis", candidateBasis).update();
+
+        String entityDigest = seed.sql(
+                        "SELECT ops.ad_entity_version_digest(:object, :candidate)")
+                .param("object", graph.objectId()).param("candidate", candidate)
+                .query(String.class).single();
+
+        // A real calculation run, because ops.recommendation.calculation_run_id
+        // has a foreign key into mart.calculation_run and a case identifier is
+        // not one.
+        UUID calculationRun = UUID.randomUUID();
+        seed.sql("""
+                INSERT INTO mart.calculation_run (id, organization_id, trigger_kind, scope_kind,
+                        store_ref_id, window_code, period_start, period_end,
+                        definition_set_digest, state, subject_count, value_count, started_at,
+                        completed_at, correlation_id)
+                VALUES (:id, :organization, 'SCHEDULED', 'STORE', :store, 'D30',
+                        now() - interval '30 days', now(), :digest, 'SUCCEEDED', 1, 1,
+                        now(), now(), 'advertising-fixture')
+                """).param("id", calculationRun).param("organization", graph.organizationId())
+                .param("store", graph.storeId())
+                .param("digest", com.mimococo.marketops.shared.Digest.ofText("fixture-definitions"))
+                .update();
+
+        seed.sql("""
+                INSERT INTO ops.recommendation (id, organization_id, store_id, subject_kind,
+                        subject_id, action_kind, origin, calculation_run_id, window_code,
+                        state, priority_score, proposed_parameters, expected_effect,
+                        risk_label, validation_horizon_days, entity_version_digest,
+                        valid_until, created_at, updated_at)
+                VALUES (:id, :organization, :store, 'AD_NATIVE_OBJECT', :object,
+                        'AD_BID_CHANGE', 'DETERMINISTIC', :calculationRun, 'D30',
+                        'READY_FOR_REVIEW', 993,
+                        CAST(:parameters AS jsonb), '{}'::jsonb, 'LOW', 14, :entityDigest,
+                        now() + interval '3 days', now(), now())
+                """).param("id", recommendation).param("organization", graph.organizationId())
+                .param("store", graph.storeId()).param("object", graph.objectId())
+                .param("calculationRun", calculationRun)
+                .param("parameters", "{\"candidateId\":\"" + candidate
+                        + "\",\"direction\":\"" + direction
+                        + "\",\"targetBid\":\"20.0000\"}")
+                .param("entityDigest", entityDigest).update();
+
+        return new Decision(targetPolicy, candidate, recommendation, entityDigest);
+    }
+
     static Graph seed(JdbcClient seed) {
         UUID organization = UUID.randomUUID();
         UUID legalEntity = UUID.randomUUID();

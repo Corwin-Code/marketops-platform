@@ -44,6 +44,8 @@ import java.util.UUID;
  * @param materialityRoute whether the change is Material or Ordinary
  * @param exhaustedExposureAxes aggregate-envelope axes with no headroom left
  * @param entityVersionDigest identity of the facts the case was built from
+ * @param decisionBundleId the unique active policy bundle, or {@code null}
+ * @param decisionBundleVersion that bundle's version, or {@code null}
  */
 public record AdvertisingBidProjection(
         UUID recommendationId,
@@ -70,7 +72,9 @@ public record AdvertisingBidProjection(
         String affectedSetDigest,
         String materialityRoute,
         List<String> exhaustedExposureAxes,
-        String entityVersionDigest) {
+        String entityVersionDigest,
+        UUID decisionBundleId,
+        Integer decisionBundleVersion) {
 
     public AdvertisingBidProjection {
         Objects.requireNonNull(recommendationId, "recommendationId");
@@ -80,6 +84,22 @@ public record AdvertisingBidProjection(
         blockerCodes = List.copyOf(blockerCodes == null ? List.of() : blockerCodes);
         exhaustedExposureAxes =
                 List.copyOf(exhaustedExposureAxes == null ? List.of() : exhaustedExposureAxes);
+        if ((decisionBundleId == null) != (decisionBundleVersion == null)) {
+            throw new IllegalArgumentException(
+                    "a bundle is named with its version or it is not named at all");
+        }
+    }
+
+    /**
+     * Whether a policy bundle authorises this decision.
+     *
+     * <p>A guardrail verdict that passes has to name the authority that let it
+     * pass, and for an advertising decision that authority is the bundle. Without
+     * one there is nothing to record a PASS against, which is why an unresolved
+     * bundle is a refusal rather than a missing field.
+     */
+    public boolean authorised() {
+        return decisionBundleId != null;
     }
 
     /** How far the bid would move, as a positive amount. */

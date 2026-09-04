@@ -83,7 +83,9 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0047__refuse_a_zero_target_bid_in_the_parameter_contract.sql",
             "V0048__serialize_advertising_reservations_against_overlap.sql",
             "V0049__create_advertising_outcome_plan_and_lineage.sql",
-            "V0050__cause_specific_outcomes_and_same_lineage_reopen.sql");
+            "V0050__cause_specific_outcomes_and_same_lineage_reopen.sql",
+            "V0051__bind_each_decision_to_its_own_authority.sql",
+            "V0052__a_guardrail_verdict_names_the_policy_that_authorised_it.sql");
 
     private static PostgreSQLContainer container;
 

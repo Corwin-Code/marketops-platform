@@ -199,7 +199,9 @@ public class AdvertisingDecisionRepository {
                        candidate.bid_unit_code,
                        candidate.affected_set_digest,
                        affected.variant_count,
-                       configuration.observed_bid_amount
+                       configuration.observed_bid_amount,
+                       bundle.id             AS bundle_id,
+                       bundle.bundle_version
                   FROM ops.recommendation r
                   LEFT JOIN ops.ad_bid_candidate candidate
                     ON candidate.organization_id = r.organization_id
@@ -226,6 +228,21 @@ public class AdvertisingDecisionRepository {
                                 SELECT 1 FROM core.ad_object_configuration_observation later
                                  WHERE later.supersedes_observation_id = c.id)
                          ORDER BY c.observed_at DESC, c.id DESC LIMIT 1) configuration ON true
+                  LEFT JOIN LATERAL (
+                        SELECT b.id, b.bundle_version
+                          FROM ops.ad_decision_policy_bundle b
+                         WHERE b.organization_id = r.organization_id
+                           AND b.store_id = r.store_id
+                           AND b.capability_code = 'ad-bid-change'
+                           AND b.direction = candidate.direction
+                           AND b.candidate_basis = candidate.candidate_basis
+                           AND b.native_object_kind = object.native_object_kind
+                           AND b.status = 'ACTIVE'
+                           AND b.validation_state = 'VALIDATED'
+                           AND b.effective_from <= statement_timestamp()
+                           AND (b.effective_to IS NULL
+                                OR b.effective_to > statement_timestamp())
+                         LIMIT 1) bundle ON true
                  WHERE r.id = :recommendationId
                    AND r.action_kind = 'AD_BID_CHANGE'
                    AND r.subject_kind = 'AD_NATIVE_OBJECT'
@@ -333,7 +350,7 @@ public class AdvertisingDecisionRepository {
             BigDecimal attributionGapRatio, String direction, String candidateBasis,
             BigDecimal currentBidAmount, BigDecimal targetBidAmount, String currencyCode,
             String bidUnitCode, String affectedSetDigest, Integer affectedVariantCount,
-            BigDecimal observedBidAmount) {
+            BigDecimal observedBidAmount, UUID bundleId, Integer bundleVersion) {
     }
 
     private static ProjectionRow mapProjection(ResultSet rs, int index) throws SQLException {
@@ -362,7 +379,9 @@ public class AdvertisingDecisionRepository {
                 rs.getString("bid_unit_code"),
                 rs.getString("affected_set_digest"),
                 integerOf(rs, "variant_count"),
-                rs.getBigDecimal("observed_bid_amount"));
+                rs.getBigDecimal("observed_bid_amount"),
+                rs.getObject("bundle_id", UUID.class),
+                integerOf(rs, "bundle_version"));
     }
 
     /**

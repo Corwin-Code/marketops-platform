@@ -118,6 +118,22 @@ public class AdvertisingCandidateRepository {
                 .optional();
     }
 
+    /**
+     * The identity of the advertising facts one decision rests on.
+     *
+     * <p>Read rather than computed. The approval compares itself against this
+     * exact value at approval time and the write gate compares again at
+     * transmission, and all three have to be the same definition — so there is
+     * one, and it lives in the database.
+     */
+    public Optional<String> entityVersionDigest(UUID adNativeObjectId, UUID candidateId) {
+        return jdbc.sql("SELECT ops.ad_entity_version_digest(:objectId, :candidateId)")
+                .param("objectId", adNativeObjectId)
+                .param("candidateId", candidateId)
+                .query(String.class)
+                .optional();
+    }
+
     /** One resolved affected set, as a reservation needs it. */
     public record AffectedSetRow(UUID id, String digest, java.util.List<UUID> productVariantIds) {
     }

@@ -97,7 +97,7 @@ public class AdvertisingDecisionService implements AdvertisingDecisionAuthority 
                 decisions.materialityRoute(row.organizationId(),
                         current == null || target == null
                                 ? BigDecimal.ZERO : target.subtract(current).abs()),
-                axes, row.entityVersionDigest());
+                axes, row.entityVersionDigest(), row.bundleId(), row.bundleVersion());
     }
 
     private Optional<AdvertisingDecisionScope> scopeOf(DecisionRow row) {

@@ -97,17 +97,39 @@ public class GuardrailRepository {
                        Integer policyVersion, GuardrailPurpose purpose, boolean passed,
                        List<GuardrailReason> reasons, Map<String, String> detail,
                        String inputDigest, String authoritySnapshot, Instant evaluatedAt, String correlationId) {
+        insert(id, organizationId, recommendationId, policyId, policyVersion, null, null,
+                purpose, passed, reasons, detail, inputDigest, authoritySnapshot, evaluatedAt,
+                correlationId);
+    }
+
+    /**
+     * Record one verdict, naming whichever policy authority let it pass.
+     *
+     * <p>A price verdict names a commercial policy and an advertising one names
+     * a decision policy bundle. The schema admits exactly one of the two on a
+     * PASS, because a verdict two authorities could each claim is a verdict
+     * neither owns.
+     */
+    public void insert(UUID id, UUID organizationId, UUID recommendationId, UUID policyId,
+                       Integer policyVersion, UUID adDecisionBundleId, Integer adBundleVersion,
+                       GuardrailPurpose purpose, boolean passed,
+                       List<GuardrailReason> reasons, Map<String, String> detail,
+                       String inputDigest, String authoritySnapshot, Instant evaluatedAt, String correlationId) {
         jdbc.sql("""
                         INSERT INTO ops.guardrail_evaluation (
                             id, organization_id, recommendation_id, policy_id, policy_version,
+                            ad_decision_bundle_id, ad_bundle_version,
                             purpose, outcome, reason_codes, detail, input_digest, evaluated_at,
                             correlation_id, authority_snapshot)
                         VALUES (:id, :organizationId, :recommendationId, :policyId,
-                            :policyVersion, :purpose, :outcome, :reasonCodes,
+                            :policyVersion, :adDecisionBundleId, :adBundleVersion,
+                            :purpose, :outcome, :reasonCodes,
                             CAST(:detail AS jsonb), :inputDigest, :evaluatedAt,
                             :correlationId, CAST(:authoritySnapshot AS jsonb))
                         """)
                 .param("id", id)
+                .param("adDecisionBundleId", adDecisionBundleId)
+                .param("adBundleVersion", adBundleVersion)
                 .param("organizationId", organizationId)
                 .param("recommendationId", recommendationId)
                 .param("policyId", policyId)

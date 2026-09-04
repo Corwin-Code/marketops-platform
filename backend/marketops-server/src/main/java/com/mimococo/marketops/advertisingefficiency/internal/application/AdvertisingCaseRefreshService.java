@@ -30,6 +30,7 @@ class AdvertisingCaseRefreshService {
     private final AdvertisingCaseCalculationService calculation;
     private final AdvertisingProjectionWriter writer;
     private final AdvertisingProposalService proposals;
+    private final com.mimococo.marketops.analyticsdecision.CalculationRunLedger runs;
     private final AdvertisingTraceRepository trace;
     private final IdGenerator ids;
 
@@ -37,11 +38,13 @@ class AdvertisingCaseRefreshService {
             AdvertisingCaseCalculationService calculation,
             AdvertisingProjectionWriter writer,
             AdvertisingProposalService proposals,
+            com.mimococo.marketops.analyticsdecision.CalculationRunLedger runs,
             AdvertisingTraceRepository trace,
             IdGenerator ids) {
         this.calculation = calculation;
         this.writer = writer;
         this.proposals = proposals;
+        this.runs = runs;
         this.trace = trace;
         this.ids = ids;
     }
@@ -85,11 +88,24 @@ class AdvertisingCaseRefreshService {
                 correlationId, parentCorrelationId,
                 "{\"laneChanged\":" + written.anyLaneChanged() + "}", asOf);
 
+        // The recommendation names a calculation run, and a run is this
+        // product's lineage record of work actually done. Advertising records a
+        // real one through the module that owns that table rather than putting
+        // a case identifier in the column, which is what the foreign key
+        // refused.
+        UUID calculationRunId = runs.recordCompletedRun(
+                new com.mimococo.marketops.analyticsdecision.CalculationRunLedger.CompletedRun(
+                        organizationId, result.storeId(), runTriggerOf(calculationKind),
+                        com.mimococo.marketops.analyticsdecision.MetricWindow.D30,
+                        asOf.minus(java.time.Duration.ofDays(30)), asOf,
+                        result.policies().versionDigest(), 1, result.cases().size(),
+                        true, null, asOf));
+
         // Proposing happens inside the same seam and the same transaction, so
         // the targeted path and the hourly sweep produce the same proposals from
         // the same evidence rather than one of them producing more.
         java.util.List<UUID> proposed = proposals.proposeFor(result, written.cases(),
-                correlationId);
+                calculationRunId, correlationId);
         if (!proposed.isEmpty()) {
             record(organizationId, objectId, calculationKind, "PROJECTION_WRITTEN", "COMPLETED",
                     correlationId, parentCorrelationId,
@@ -106,6 +122,17 @@ class AdvertisingCaseRefreshService {
                 : detail.startsWith("{") ? detail : "{\"note\":\"" + detail + "\"}";
         trace.record(ids.newId(), organizationId, objectId, calculationKind, stage, status,
                 correlationId, parentCorrelationId, objectId.toString(), detailJson, at);
+    }
+
+    /**
+     * Why the run happened, in the lineage table's vocabulary.
+     *
+     * <p>A targeted pass is a response to data arriving, which is what
+     * {@code LATE_DATA} names; the hourly sweep is scheduled. Neither is manual,
+     * and calling either one of those would make the lineage lie about who asked.
+     */
+    private static String runTriggerOf(String calculationKind) {
+        return "TARGETED".equals(calculationKind) ? "LATE_DATA" : "SCHEDULED";
     }
 
     /** The correlation identifier a caller should attribute its own work to. */

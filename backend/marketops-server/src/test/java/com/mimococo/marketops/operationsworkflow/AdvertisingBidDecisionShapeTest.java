@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 class AdvertisingBidDecisionShapeTest {
 
     private static final UUID ID = UUID.fromString("3f2504e0-4f89-41d3-9a0c-0305e82c3301");
+    private static final UUID BUNDLE = UUID.fromString("3f2504e0-4f89-41d3-9a0c-0305e82c3302");
 
     private static AdvertisingBidProjection projection(BigDecimal current, BigDecimal target,
                                                        BigDecimal maxCpc) {
@@ -26,7 +27,7 @@ class AdvertisingBidDecisionShapeTest {
                 "PROTECTION_DECREASE", "MAX_CPC_DERIVED", current, target, "RUB",
                 "CURRENCY_MAJOR", maxCpc, maxCpc == null ? "NOT_AVAILABLE" : "AVAILABLE",
                 new BigDecimal("0.100000"), 47, "a".repeat(64), "MATERIAL_IMPACT",
-                List.of(), "b".repeat(64));
+                List.of(), "b".repeat(64), BUNDLE, 3);
     }
 
     @Nested
@@ -63,6 +64,22 @@ class AdvertisingBidDecisionShapeTest {
         }
 
         @Test
+        @DisplayName("TC-AD-SHAPE-003b a bundle is named with its version or not at all")
+        void bundleIsNamedWithItsVersion() {
+            // The verdict records both, and the schema admits both or neither.
+            // A half-named authority would be a PASS nobody can trace to the
+            // policy that allowed it.
+            assertThatThrownBy(() -> new AdvertisingBidProjection(ID, ID, ID, ID, ID,
+                    "PROTECTION", null, "CAUSE", "COMPLETE", "HIGH", List.of(),
+                    "PROTECTION_DECREASE", "MAX_CPC_BOUNDED", BigDecimal.ONE, BigDecimal.TEN,
+                    "RUB", "CURRENCY_MAJOR", null, "NOT_AVAILABLE", null, 1, "a".repeat(64),
+                    "MATERIAL_IMPACT", null, "b".repeat(64), BUNDLE, null))
+                    .isInstanceOf(IllegalArgumentException.class);
+            assertThat(projection(new BigDecimal("30"), new BigDecimal("20"), null)
+                    .authorised()).isTrue();
+        }
+
+        @Test
         @DisplayName("TC-AD-SHAPE-004 the blocker and axis lists cannot be mutated afterwards")
         void listsAreCopied() {
             List<String> blockers = new java.util.ArrayList<>(List.of("ONE"));
@@ -70,7 +87,7 @@ class AdvertisingBidDecisionShapeTest {
                     "PROTECTION", null, "CAUSE", "COMPLETE", "HIGH", blockers,
                     "PROTECTION_DECREASE", "MAX_CPC_DERIVED", BigDecimal.ONE, BigDecimal.TEN,
                     "RUB", "CURRENCY_MAJOR", null, "NOT_AVAILABLE", null, 1, "a".repeat(64),
-                    "MATERIAL_IMPACT", null, "b".repeat(64));
+                    "MATERIAL_IMPACT", null, "b".repeat(64), BUNDLE, 3);
 
             blockers.add("TWO");
             assertThat(built.blockerCodes()).containsExactly("ONE");
@@ -117,7 +134,8 @@ class AdvertisingBidDecisionShapeTest {
         private static AdvertisingBidProposal proposal(Duration window) {
             return new AdvertisingBidProposal("calculation", ID, ID, ID, ID, ID,
                     "PROTECTION_DECREASE", new BigDecimal("20.5000"), MetricWindow.D30,
-                    new BigDecimal("700100"), Map.of(), "MEDIUM", 14, window, List.of());
+                    new BigDecimal("700100"), Map.of(), "MEDIUM", 14, window, ID,
+                    "d".repeat(64), List.of());
         }
 
         @Test
@@ -126,6 +144,20 @@ class AdvertisingBidDecisionShapeTest {
             assertThat(proposal(Duration.ofHours(4)).parameters())
                     .containsOnlyKeys("candidateId", "direction", "targetBid")
                     .containsEntry("targetBid", "20.5000");
+        }
+
+        @Test
+        @DisplayName("TC-AD-SHAPE-007b an identity that is not the database's digest is refused")
+        void identityMustBeTheDatabasesDigest() {
+            // The approval compares itself against exactly this value. A
+            // proposal carrying something else would make the "have the facts
+            // moved" check compare two different things and pass by accident.
+            assertThatThrownBy(() -> new AdvertisingBidProposal("calculation", ID, ID, ID, ID, ID,
+                    "PROTECTION_DECREASE", new BigDecimal("20.5000"), MetricWindow.D30,
+                    new BigDecimal("700100"), Map.of(), "MEDIUM", 14, Duration.ofHours(4), ID,
+                    "not-a-digest", List.of()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("sixty-four hex");
         }
 
         @Test

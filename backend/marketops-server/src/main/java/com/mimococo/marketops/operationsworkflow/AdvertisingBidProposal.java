@@ -34,7 +34,9 @@ import java.util.UUID;
  * @param riskLabel how risky it is
  * @param validationHorizonDays how long the effect should be measured for
  * @param humanReviewWindow how long a person has, from the advertising SLO profile
- * @param evidence what the case rests on
+ * @param calculationRunId the recorded run that produced it
+ * @param entityVersionDigest identity of the advertising facts this rests on
+ * @param metricValueEvidenceIds canonical values the case rests on
  */
 public record AdvertisingBidProposal(
         String operator,
@@ -51,6 +53,8 @@ public record AdvertisingBidProposal(
         String riskLabel,
         int validationHorizonDays,
         Duration humanReviewWindow,
+        UUID calculationRunId,
+        String entityVersionDigest,
         List<UUID> metricValueEvidenceIds) {
 
     public AdvertisingBidProposal {
@@ -64,6 +68,15 @@ public record AdvertisingBidProposal(
         Objects.requireNonNull(targetBid, "targetBid");
         Objects.requireNonNull(window, "window");
         Objects.requireNonNull(humanReviewWindow, "humanReviewWindow");
+        Objects.requireNonNull(calculationRunId, "calculationRunId");
+        Objects.requireNonNull(entityVersionDigest, "entityVersionDigest");
+        if (!entityVersionDigest.matches("^[0-9a-f]{64}$")) {
+            // The database defines this identity and the approval compares
+            // itself against it. A value that is not that digest would make the
+            // "have the facts moved" check compare two different things.
+            throw new IllegalArgumentException(
+                    "an entity version digest is the database's sixty-four hex characters");
+        }
         expectedEffect = Map.copyOf(expectedEffect == null ? Map.of() : expectedEffect);
         metricValueEvidenceIds = List.copyOf(
                 metricValueEvidenceIds == null ? List.of() : metricValueEvidenceIds);

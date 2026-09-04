@@ -171,6 +171,49 @@ public final class AdPriorityPolicy {
         return new Ranking(score, List.of());
     }
 
+    /**
+     * The number of bands, and the width each gets in the workflow's scale.
+     *
+     * <p>Seven bands: four Protection tiers, then Data Repair, Optimization and
+     * Watch. The widest band that fits under a thousand is a hundred and
+     * forty-two, so the top of the scale is 993 and nothing overflows.
+     */
+    private static final int BANDS = 7;
+    private static final int WORKFLOW_BAND_WIDTH = 142;
+
+    /**
+     * The same ordering, expressed in the range the workflow queue admits.
+     *
+     * <p>The advertising rank is a band score that reaches six hundred thousand.
+     * {@code ops.recommendation.priority_score} is {@code numeric(9, 4)} bounded
+     * at a thousand. Writing one into the other is not a rounding problem, it is
+     * a constraint violation on every proposal — and the fix is not to divide,
+     * because dividing a non-compensating score by a constant would let a large
+     * commercial term in a low band round up past a small one in a high band.
+     *
+     * <p>So the band survives the mapping intact and the commercial part is
+     * scaled inside its own band. No input value can move a case across a
+     * boundary here either, which is the property the band arithmetic exists to
+     * guarantee.
+     */
+    public static BigDecimal workflowPriority(BigDecimal bandScore) {
+        Objects.requireNonNull(bandScore, "bandScore");
+        BigDecimal clamped = bandScore.max(BigDecimal.ZERO);
+        BigDecimal band = clamped.divideToIntegralValue(BAND)
+                .min(BigDecimal.valueOf(BANDS - 1L));
+        BigDecimal commercial = clamped.subtract(band.multiply(BAND))
+                .max(BigDecimal.ZERO)
+                .min(BAND.subtract(BigDecimal.ONE));
+        // Strictly inside the band: the top of one band must stay below the
+        // bottom of the next, so the commercial part can reach at most width-1.
+        BigDecimal withinBand = commercial
+                .multiply(BigDecimal.valueOf(WORKFLOW_BAND_WIDTH - 1L), CONTEXT)
+                .divide(BAND, 0, RoundingMode.FLOOR);
+        return band.multiply(BigDecimal.valueOf(WORKFLOW_BAND_WIDTH))
+                .add(withinBand)
+                .setScale(4, RoundingMode.HALF_UP);
+    }
+
     private static BigDecimal term(
             List<AdRankFactor> factors, AdRankFactor.Code code, BigDecimal value, BigDecimal weight) {
         BigDecimal contribution = value.multiply(weight, CONTEXT);

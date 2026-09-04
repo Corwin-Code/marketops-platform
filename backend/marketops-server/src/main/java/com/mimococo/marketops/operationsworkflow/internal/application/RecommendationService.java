@@ -237,16 +237,22 @@ public class RecommendationService
         String validRisk = MetadataFieldPolicy.requireText("riskLabel", proposal.riskLabel());
 
         Instant now = clock.instant();
-        Map<MetricCode, MetricValueView> current = metrics.currentValues(
-                SubjectKind.AD_NATIVE_OBJECT, proposal.adNativeObjectId(), proposal.window());
+        // Not EntityVersion.of(...) here, unlike the price path. Canonical
+        // metric values are keyed by product variant, listing variant or store,
+        // and an advertising object is none of those, so digesting metrics for
+        // one would produce the same constant for every object — a check that
+        // passes forever and means nothing. The advertising identity is defined
+        // by the database and read rather than recomputed, so the proposal, the
+        // approval and the write gate cannot end up with three definitions.
+        String entityVersionDigest = proposal.entityVersionDigest();
 
         UUID id = idGenerator.newId();
         recommendations.insert(id, proposal.organizationId(), proposal.storeId(),
                 SubjectKind.AD_NATIVE_OBJECT, proposal.adNativeObjectId(),
-                ActionKind.AD_BID_CHANGE, "DETERMINISTIC", null, proposal.caseId(),
+                ActionKind.AD_BID_CHANGE, "DETERMINISTIC", null, proposal.calculationRunId(),
                 proposal.window(), RecommendationState.DRAFT, proposal.priorityScore(),
                 proposal.parameters(), proposal.expectedEffect(), validRisk,
-                proposal.validationHorizonDays(), EntityVersion.of(current),
+                proposal.validationHorizonDays(), entityVersionDigest,
                 now.plus(DEFAULT_VALIDITY), now);
         proposal.metricValueEvidenceIds().forEach(metricValueId ->
                 recommendations.insertEvidence(idGenerator.newId(), id, metricValueId,
@@ -267,7 +273,7 @@ public class RecommendationService
                         "actionKind", new FieldChange(null, ActionKind.AD_BID_CHANGE.name()),
                         "direction", new FieldChange(null, proposal.direction()),
                         "state", new FieldChange(null, RecommendationState.DRAFT.name()),
-                        "entityVersionDigest", new FieldChange(null, EntityVersion.of(current))),
+                        "entityVersionDigest", new FieldChange(null, entityVersionDigest)),
                 null, null));
         return id;
     }

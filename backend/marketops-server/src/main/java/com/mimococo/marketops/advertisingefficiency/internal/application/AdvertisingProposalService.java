@@ -76,13 +76,14 @@ class AdvertisingProposalService {
     @Transactional
     List<UUID> proposeFor(AdCaseCalculation calculation,
                           List<AdvertisingProjectionWriter.WrittenCase> written,
-                          String correlationId) {
+                          UUID calculationRunId, String correlationId) {
         List<UUID> proposed = new java.util.ArrayList<>();
         for (AdvertisingProjectionWriter.WrittenCase writtenCase : written) {
             calculation.cases().stream()
                     .filter(scored -> scored.identity().caseKey().equals(writtenCase.caseKey()))
                     .findFirst()
-                    .flatMap(scored -> propose(calculation, scored, writtenCase, correlationId))
+                    .flatMap(scored -> propose(calculation, scored, writtenCase,
+                            calculationRunId, correlationId))
                     .ifPresent(proposed::add);
         }
         return List.copyOf(proposed);
@@ -91,7 +92,7 @@ class AdvertisingProposalService {
     private Optional<UUID> propose(AdCaseCalculation calculation,
                                    AdCaseCalculation.ScoredCase scored,
                                    AdvertisingProjectionWriter.WrittenCase writtenCase,
-                                   String correlationId) {
+                                   UUID calculationRunId, String correlationId) {
         // A case the calculation itself refused is not a case anybody may act
         // on, whatever its cause would otherwise justify.
         if (!scored.decision().blockerCodes().isEmpty()) {
@@ -179,15 +180,32 @@ class AdvertisingProposalService {
             return Optional.empty();
         }
 
+        String entityVersionDigest = candidates
+                .entityVersionDigest(calculation.adNativeObjectId(), candidateId)
+                .orElse(null);
+        if (entityVersionDigest == null) {
+            // The identity the approval will be compared against could not be
+            // computed, so there is nothing to approve against. Refusing here is
+            // better than proposing something the approval would refuse.
+            return Optional.empty();
+        }
+
         return Optional.of(intake.proposeBidChange(new AdvertisingBidProposal(
                 "advertising-calculation", calculation.organizationId(), calculation.storeId(),
                 calculation.adNativeObjectId(), writtenCase.caseId(), candidateId,
                 candidate.direction(), candidate.providerNormalizedAmount(),
                 com.mimococo.marketops.analyticsdecision.MetricWindow.D30,
-                scored.ranking().score(), expectedEffect(scored, candidate),
+                // Not the band score itself: the workflow's priority column is
+                // bounded at a thousand and the band score reaches six hundred
+                // thousand. The mapping keeps the band and scales only inside
+                // it, so nothing can cross a boundary that could not cross it
+                // before.
+                com.mimococo.marketops.advertisingefficiency.internal.domain
+                        .AdPriorityPolicy.workflowPriority(scored.ranking().score()),
+                expectedEffect(scored, candidate),
                 riskLabel(scored.decision().lane()), VALIDATION_HORIZON_DAYS,
                 humanReviewWindow(calculation.organizationId(), scored.decision().lane(), asOf),
-                List.of())));
+                calculationRunId, entityVersionDigest, List.of())));
     }
 
     /**
