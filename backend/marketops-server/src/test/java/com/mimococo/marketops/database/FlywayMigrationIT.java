@@ -71,7 +71,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0035__close_availability_targeted_findings.sql",
             "V0036__create_advertising_identity_and_official_facts.sql",
             "V0037__create_advertising_conversion_freshness_and_qualification.sql",
-            "V0038__create_advertising_case_projection_and_orchestration.sql");
+            "V0038__create_advertising_case_projection_and_orchestration.sql",
+            "V0039__create_advertising_target_materiality_and_manual_shadow.sql");
 
     private static PostgreSQLContainer container;
 
@@ -136,9 +137,12 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             assertThat(tables).containsExactly(
                     "core.ad_affected_set",
                     "core.ad_allowable_cpa_definition",
+                    "core.ad_approval_lease_policy",
+                    "core.ad_bid_target_policy",
                     "core.ad_conversion_definition",
                     "core.ad_freshness_profile",
                     "core.ad_human_slo_profile",
+                    "core.ad_materiality_policy",
                     "core.ad_native_object",
                     "core.ad_object_configuration_observation",
                     "core.ad_object_relationship",
@@ -221,7 +225,10 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "mart.metric_definition",
                     "mart.metric_input_reference",
                     "mart.metric_value",
+                    "ops.ad_bid_candidate",
                     "ops.ad_fact_cursor",
+                    "ops.ad_manual_configuration_verification",
+                    "ops.ad_manual_execution_packet",
                     "ops.ad_recalculation_request",
                     "ops.ad_reconciliation_run",
                     "ops.ad_slo_observation",
