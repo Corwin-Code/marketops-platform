@@ -39,6 +39,10 @@ public record BidCandidate(
     public static final String OPTIMIZATION_INCREASE = "OPTIMIZATION_INCREASE";
     public static final String EXACT_PRIOR_BID_COMPENSATION = "EXACT_PRIOR_BID_COMPENSATION";
 
+    /** The two bases the schema admits, and there is no third. */
+    public static final String MAX_CPC_BOUNDED = "MAX_CPC_BOUNDED";
+    public static final String CAUSE_BOUND_PROTECTION_STEP = "CAUSE_BOUND_PROTECTION_STEP";
+
     private static final int STORED_SCALE = 4;
 
     public BidCandidate {
@@ -110,6 +114,47 @@ public record BidCandidate(
                 .map(normalized -> new BidCandidate(OPTIMIZATION_INCREASE, candidateBasis,
                         current, requested, normalized, grid.bidCurrencyCode(),
                         grid.bidUnitCode()));
+    }
+
+    /**
+     * A decrease bounded by the cause rather than by a ceiling.
+     *
+     * <p>The route for the two Protection causes where no conversion figure is
+     * needed to know the spend is wasted: a variant that cannot be sold, and a
+     * variant that is not there to sell. Every rouble spent promoting either is
+     * certainly wasted, so a decrease is justified without a Max CPC — which is
+     * the whole point, because those are exactly the cases where conversion data
+     * is least likely to exist.
+     *
+     * <p>It is still bounded three ways: by the step ratio the policy names for
+     * this cause, by the policy's ordinary step limits, and by the platform's
+     * grid. What it is not bounded by is an economic ceiling, and the candidate
+     * says so by carrying {@code CAUSE_BOUND_PROTECTION_STEP} rather than
+     * pretending to a ceiling it never had.
+     */
+    public static Optional<BidCandidate> causeBoundDecrease(
+            AdMeasure currentBid, BigDecimal causeStepRatio, BidStepLimits limits,
+            ProviderBidGrid grid) {
+        if (currentBid == null || limits == null || grid == null || causeStepRatio == null
+                || causeStepRatio.signum() <= 0
+                || causeStepRatio.compareTo(BigDecimal.ONE) > 0
+                || !currentBid.sufficientForWrite() || !grid.usable()) {
+            return Optional.empty();
+        }
+        BigDecimal current = currentBid.orElse(null);
+        if (current == null || current.signum() <= 0) {
+            return Optional.empty();
+        }
+        BigDecimal causeTarget = current
+                .subtract(current.multiply(causeStepRatio))
+                .setScale(STORED_SCALE, RoundingMode.FLOOR);
+        BigDecimal floor = limits.lowestPermittedFrom(current);
+        BigDecimal requested = causeTarget.max(floor).setScale(STORED_SCALE, RoundingMode.FLOOR);
+        return grid.normalizeDownward(requested)
+                .filter(normalized -> normalized.compareTo(current) < 0)
+                .map(normalized -> new BidCandidate(PROTECTION_DECREASE,
+                        CAUSE_BOUND_PROTECTION_STEP, current, requested, normalized,
+                        grid.bidCurrencyCode(), grid.bidUnitCode()));
     }
 
     /**

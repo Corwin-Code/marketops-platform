@@ -222,6 +222,80 @@ class BidCandidateTest {
     }
 
     @Nested
+    @DisplayName("a cause may bound a decrease when no ceiling exists")
+    class CauseBound {
+
+        @Test
+        @DisplayName("TC-AD-BID-020 a named cause lowers the bid without a Max CPC")
+        void causeBoundDecreaseNeedsNoCeiling() {
+            // The two Protection causes this exists for are a variant that
+            // cannot be sold and one that is not there to sell. Both are cases
+            // where conversion data is least likely to exist, which is exactly
+            // why a route that does not need it has to exist.
+            Optional<BidCandidate> candidate = BidCandidate.causeBoundDecrease(bid("100.0000"),
+                    new BigDecimal("0.30000"), limits("0.90000", "500.0000", null), grid());
+
+            assertThat(candidate).isPresent();
+            assertThat(candidate.get().providerNormalizedAmount()).isEqualByComparingTo("70.0000");
+            assertThat(candidate.get().candidateBasis())
+                    .isEqualTo(BidCandidate.CAUSE_BOUND_PROTECTION_STEP);
+            assertThat(candidate.get().direction()).isEqualTo(BidCandidate.PROTECTION_DECREASE);
+        }
+
+        @Test
+        @DisplayName("TC-AD-BID-021 the ordinary step limit still binds a cause-bound decrease")
+        void ordinaryStepLimitStillBinds() {
+            // A cause justifies a decrease; it does not remove the bound on how
+            // far one decision may move spend.
+            Optional<BidCandidate> candidate = BidCandidate.causeBoundDecrease(bid("100.0000"),
+                    new BigDecimal("0.90000"), limits("0.10000", "500.0000", null), grid());
+
+            assertThat(candidate).isPresent();
+            assertThat(candidate.get().providerNormalizedAmount()).isEqualByComparingTo("90.0000");
+        }
+
+        @Test
+        @DisplayName("TC-AD-BID-022 a step ratio outside its range produces nothing")
+        void incoherentStepRatioProducesNothing() {
+            for (String ratio : java.util.List.of("0", "-0.10000", "1.50000")) {
+                assertThat(BidCandidate.causeBoundDecrease(bid("100.0000"),
+                        new BigDecimal(ratio), limits("0.90000", "500.0000", null), grid()))
+                        .describedAs("ratio %s", ratio)
+                        .isEmpty();
+            }
+            assertThat(BidCandidate.causeBoundDecrease(bid("100.0000"), null,
+                    limits("0.90000", "500.0000", null), grid())).isEmpty();
+        }
+
+        @Test
+        @DisplayName("TC-AD-BID-023 an unverified grid stops a cause-bound decrease too")
+        void unverifiedGridStopsItToo() {
+            ProviderBidGrid unverified = new ProviderBidGrid("CURRENCY_MAJOR", "RUB", 2,
+                    new BigDecimal("0.5"), new BigDecimal("1"), new BigDecimal("500"), true,
+                    "UNVERIFIED");
+
+            assertThat(BidCandidate.causeBoundDecrease(bid("100.0000"),
+                    new BigDecimal("0.30000"), limits("0.90000", "500.0000", null), unverified))
+                    .isEmpty();
+        }
+
+        @Test
+        @DisplayName("TC-AD-BID-024 both bases are exactly the two the schema admits")
+        void basesAreTheSchemaVocabulary() {
+            // The schema's CHECK lists these two and no others. A candidate
+            // carrying anything else is a row the database refuses, which is a
+            // defect discovered at the worst possible moment.
+            assertThat(BidCandidate.MAX_CPC_BOUNDED).isEqualTo("MAX_CPC_BOUNDED");
+            assertThat(BidCandidate.CAUSE_BOUND_PROTECTION_STEP)
+                    .isEqualTo("CAUSE_BOUND_PROTECTION_STEP");
+            assertThat(BidCandidate.decrease(bid("100.0000"), ceiling("40.0000"),
+                    limits("0.20000", "5.0000", null), grid(), BidCandidate.MAX_CPC_BOUNDED))
+                    .hasValueSatisfying(c -> assertThat(c.candidateBasis())
+                            .isEqualTo(BidCandidate.MAX_CPC_BOUNDED));
+        }
+    }
+
+    @Nested
     @DisplayName("a candidate that changes nothing is not a candidate")
     class Identity {
 

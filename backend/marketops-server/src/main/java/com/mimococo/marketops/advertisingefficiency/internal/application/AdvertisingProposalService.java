@@ -106,27 +106,44 @@ class AdvertisingProposalService {
         Instant asOf = calculation.asOf();
         Optional<AdvertisingPolicyRepository.ObjectBidContext> context =
                 policies.resolveBidGrid(calculation.adNativeObjectId());
-        Optional<AdvertisingPolicyRepository.TargetPolicy> policy = context.flatMap(resolved ->
-                policies.resolveBidTargetPolicy(calculation.organizationId(),
-                        calculation.platformCode(), calculation.storeId(),
-                        resolved.nativeObjectKind(), direction.get().name(),
-                        candidateBasis(scored), asOf));
-        if (context.isEmpty() || policy.isEmpty()) {
+        if (context.isEmpty() || !context.get().independentlyControllable()) {
             // No grid means this platform's bid semantics are not known well
-            // enough to ask for anything; no policy means nobody has agreed how
-            // far one decision may move a bid here. Both are refusals.
+            // enough to ask for anything, and an object nobody has proven to be
+            // independently controllable is one whose bid may not be touched at
+            // all. Both are refusals rather than absences.
             return Optional.empty();
         }
         ProviderBidGrid grid = context.get().grid();
+        String objectKind = context.get().nativeObjectKind();
+        String causeCode = scored.decision().cause().name();
 
-        Optional<BidCandidate> generated = direction.get() == BidDirection.PROTECTION_DECREASE
-                ? BidCandidate.decrease(scored.currentBid(), scored.maxCpc(),
-                        policy.get().limits(), grid, candidateBasis(scored))
-                : BidCandidate.increase(scored.currentBid(), scored.maxCpc(),
-                        policy.get().limits(), grid, candidateBasis(scored));
-        if (generated.isEmpty()) {
+        // The economic route first. A candidate bounded by what a click is worth
+        // can support a claim about profitability; the cause-bound route cannot,
+        // and taking it when a ceiling exists would throw that away.
+        Generated generated = generate(calculation, scored, direction.get(), objectKind,
+                BidCandidate.MAX_CPC_BOUNDED, grid, asOf,
+                (limits, unused) -> direction.get() == BidDirection.PROTECTION_DECREASE
+                        ? BidCandidate.decrease(scored.currentBid(), scored.maxCpc(), limits,
+                                grid, BidCandidate.MAX_CPC_BOUNDED)
+                        : BidCandidate.increase(scored.currentBid(), scored.maxCpc(), limits,
+                                grid, BidCandidate.MAX_CPC_BOUNDED));
+
+        if (generated == null && direction.get() == BidDirection.PROTECTION_DECREASE) {
+            // The cause-bound route. Only for a decrease, only where a policy
+            // names this exact cause, and only because for these causes the
+            // spend is wasted whether or not any conversion figure exists.
+            generated = generate(calculation, scored, direction.get(), objectKind,
+                    BidCandidate.CAUSE_BOUND_PROTECTION_STEP, grid, asOf,
+                    (limits, policy) -> policy.allowsCauseBoundStep(causeCode)
+                            ? BidCandidate.causeBoundDecrease(scored.currentBid(),
+                                    policy.causeBoundStepRatio(), limits, grid)
+                            : Optional.empty());
+        }
+        if (generated == null) {
             return Optional.empty();
         }
+        Optional<AdvertisingPolicyRepository.TargetPolicy> policy =
+                Optional.of(generated.policy());
 
         Optional<AdvertisingCandidateRepository.AffectedSetRow> affected =
                 candidates.resolvedAffectedSet(calculation.organizationId(),
@@ -137,7 +154,7 @@ class AdvertisingProposalService {
             return Optional.empty();
         }
 
-        BidCandidate candidate = generated.get();
+        BidCandidate candidate = generated.candidate();
         UUID candidateId = candidates.record(ids.newId(), calculation.organizationId(),
                 writtenCase.caseId(), calculation.adNativeObjectId(),
                 affected.get().digest(), policy.get().id(), policy.get().policyVersion(),
@@ -211,9 +228,39 @@ class AdvertisingProposalService {
         return lane == AdvertisingLane.PROTECTION ? "LOW" : "MEDIUM";
     }
 
-    /** Where the target came from, in the schema's vocabulary. */
-    private static String candidateBasis(AdCaseCalculation.ScoredCase scored) {
-        return scored.maxCpc().writeGrade() ? "MAX_CPC_DERIVED" : "UNRESOLVED";
+    /**
+     * Resolve the policy for one basis and try to generate against it.
+     *
+     * <p>The policy is scoped by basis as well as by direction, so the bounds a
+     * cause-bound step may use are a separate, separately owned decision from
+     * the bounds an economically bounded change may use. Returns {@code null}
+     * when either the policy or the candidate is absent, because at that point
+     * this basis simply is not available and the caller may try the next.
+     */
+    private Generated generate(AdCaseCalculation calculation,
+                               AdCaseCalculation.ScoredCase scored,
+                               BidDirection direction, String objectKind, String basis,
+                               ProviderBidGrid grid, Instant asOf,
+                               java.util.function.BiFunction<
+                                       com.mimococo.marketops.advertisingefficiency.internal
+                                               .domain.BidStepLimits,
+                                       AdvertisingPolicyRepository.TargetPolicy,
+                                       Optional<BidCandidate>> generator) {
+        Optional<AdvertisingPolicyRepository.TargetPolicy> policy =
+                policies.resolveBidTargetPolicy(calculation.organizationId(),
+                        calculation.platformCode(), calculation.storeId(), objectKind,
+                        direction.name(), basis, asOf);
+        if (policy.isEmpty()) {
+            return null;
+        }
+        return generator.apply(policy.get().limits(), policy.get())
+                .map(candidate -> new Generated(candidate, policy.get()))
+                .orElse(null);
+    }
+
+    /** One generated candidate and the exact policy version that bounded it. */
+    private record Generated(BidCandidate candidate,
+                             AdvertisingPolicyRepository.TargetPolicy policy) {
     }
 
     private static BigDecimal ceilingAmount(MaxCpc maxCpc) {

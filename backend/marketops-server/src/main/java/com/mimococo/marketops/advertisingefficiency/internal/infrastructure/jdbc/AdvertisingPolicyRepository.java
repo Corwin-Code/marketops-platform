@@ -326,13 +326,20 @@ public class AdvertisingPolicyRepository {
                 .param("direction", direction)
                 .param("candidateBasis", candidateBasis)
                 .param("at", ts(at))
-                .query((ResultSet rs, int index) -> new TargetPolicy(
-                        rs.getObject("id", UUID.class), rs.getInt("policy_version"),
-                        rs.getInt("candidate_count"),
-                        rs.getBigDecimal("max_relative_change_ratio"),
-                        rs.getBigDecimal("max_absolute_change_amount"),
-                        rs.getString("currency_code"),
-                        rs.getBigDecimal("ceiling_headroom_ratio")))
+                .query((ResultSet rs, int index) -> {
+                    java.sql.Array causes = rs.getArray("cause_bound_causes");
+                    return new TargetPolicy(
+                            rs.getObject("id", UUID.class), rs.getInt("policy_version"),
+                            rs.getInt("candidate_count"),
+                            rs.getBigDecimal("max_relative_change_ratio"),
+                            rs.getBigDecimal("max_absolute_change_amount"),
+                            rs.getString("currency_code"),
+                            rs.getBigDecimal("ceiling_headroom_ratio"),
+                            rs.getBoolean("cause_bound_step_enabled"),
+                            rs.getBigDecimal("cause_bound_step_ratio"),
+                            causes == null ? java.util.List.<String>of()
+                                    : java.util.List.of((String[]) causes.getArray()));
+                })
                 .optional();
     }
 
@@ -392,7 +399,25 @@ public class AdvertisingPolicyRepository {
             UUID id, int policyVersion, int candidateCount,
             java.math.BigDecimal maxRelativeChangeRatio,
             java.math.BigDecimal maxAbsoluteChangeAmount, String currencyCode,
-            java.math.BigDecimal ceilingHeadroomRatio) {
+            java.math.BigDecimal ceilingHeadroomRatio,
+            boolean causeBoundStepEnabled,
+            java.math.BigDecimal causeBoundStepRatio,
+            java.util.List<String> causeBoundCauses) {
+
+        /**
+         * Whether this policy lets one named cause bound a decrease on its own.
+         *
+         * <p>The cause has to be listed. A policy that enabled the route without
+         * naming the causes would be a policy that permits a bid change for any
+         * reason, which is the opposite of what a cause-bound step is.
+         */
+        public boolean allowsCauseBoundStep(String causeCode) {
+            return causeBoundStepEnabled
+                    && causeBoundStepRatio != null
+                    && causeBoundStepRatio.signum() > 0
+                    && causeCode != null
+                    && causeBoundCauses.contains(causeCode);
+        }
 
         /** The limits as the candidate arithmetic consumes them. */
         public com.mimococo.marketops.advertisingefficiency.internal.domain.BidStepLimits limits() {
