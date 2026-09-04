@@ -68,7 +68,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0032__create_availability_fact_feed_cursor.sql",
             "V0033__track_case_improvement_observation.sql",
             "V0034__close_availability_deep_review_findings.sql",
-            "V0035__close_availability_targeted_findings.sql");
+            "V0035__close_availability_targeted_findings.sql",
+            "V0036__create_advertising_identity_and_official_facts.sql");
 
     private static PostgreSQLContainer container;
 
@@ -131,6 +132,10 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                             + " ORDER BY 1");
 
             assertThat(tables).containsExactly(
+                    "core.ad_affected_set",
+                    "core.ad_native_object",
+                    "core.ad_object_configuration_observation",
+                    "core.ad_object_relationship",
                     "core.availability_priority_policy",
                     "core.cost_version",
                     "core.demand_observation_policy",
@@ -181,6 +186,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "iam.user_account",
                     "iam.user_role_assignment",
                     "iam.user_scope_grant",
+                    "ledger.ad_object_fact",
+                    "ledger.ad_object_listing_allocation",
                     "ledger.ad_spend_fact",
                     "ledger.finance_fee_fact",
                     "ledger.return_fact",
@@ -240,6 +247,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ops.recommendation",
                     "ops.recommendation_evidence",
                     "ops.work_task",
+                    "platform.ad_semantic_profile",
                     "platform.capability_operation",
                     "platform.capability_subject_status",
                     "platform.capability_verification_event",
@@ -321,7 +329,10 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                             "COMMAND_RESOLVE", "KILL_SWITCH_OPERATE",
                             "AVAILABILITY_VIEW", "INBOUND_ATTEST", "SUPPLY_POLICY_MANAGE",
                             "AVAILABILITY_TASK_ACT", "AVAILABILITY_EXCEPTION_REQUEST",
-                            "AVAILABILITY_EXCEPTION_APPROVE");
+                            "AVAILABILITY_EXCEPTION_APPROVE",
+                            "ADVERTISING_VIEW", "ADVERTISING_TASK_ACT",
+                            "ADVERTISING_EXCEPTION_REQUEST", "AD_BID_CHANGE_ENDORSE",
+                            "AD_BID_CHANGE_APPROVE", "ADVERTISING_POLICY_MANAGE");
             // A role matrix that grew without review is the quiet way a
             // read-only profile acquires the ability to move a price.
             assertThat(strings(connection,
@@ -351,7 +362,31 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             assertThat(strings(connection,
                     "SELECT action_code FROM iam.business_role_action_scope"
                             + " WHERE role_code = 'AUDITOR' ORDER BY action_code"))
-                    .containsExactly("AVAILABILITY_VIEW", "DIAGNOSTIC_VIEW", "EVIDENCE_VIEW");
+                    .containsExactly("ADVERTISING_VIEW", "AVAILABILITY_VIEW",
+                            "DIAGNOSTIC_VIEW", "EVIDENCE_VIEW");
+            // The two halves of the advertising Maker-Checker chain are held by
+            // different roles on purpose. Endorsement is the Operations Lead's;
+            // the final per-command approval is the Owner's. A role holding both
+            // would let one person move a live bid alone, which is the exact
+            // outcome the Contract's material route exists to prevent.
+            assertThat(strings(connection,
+                    "SELECT role_code FROM iam.business_role_action_scope"
+                            + " WHERE action_code = 'AD_BID_CHANGE_ENDORSE' ORDER BY role_code"))
+                    .containsExactly("OPS_LEAD", "OWNER");
+            assertThat(strings(connection,
+                    "SELECT role_code FROM iam.business_role_action_scope"
+                            + " WHERE action_code = 'AD_BID_CHANGE_APPROVE' ORDER BY role_code"))
+                    .containsExactly("OWNER");
+            assertThat(strings(connection,
+                    "SELECT role_code FROM iam.business_role_action_scope"
+                            + " WHERE action_code = 'ADVERTISING_POLICY_MANAGE'"
+                            + " ORDER BY role_code"))
+                    .containsExactly("OPS_LEAD", "OWNER");
+            // No advertising Semantic Profile is seeded. A synthetic fixture can
+            // never be VERIFIED, so even a fixture cannot open a Provider path.
+            assertThat(count(connection,
+                    "SELECT count(*) FROM platform.ad_semantic_profile"))
+                    .isZero();
             assertThat(strings(connection,
                     "SELECT metric_code FROM mart.metric_definition"
                             + " WHERE domain = 'PROFIT' AND status = 'ACTIVE'"
