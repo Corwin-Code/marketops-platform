@@ -81,7 +81,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0045__create_ad_bid_command_from_approval.sql",
             "V0046__capture_ad_bid_authority_for_guardrail_evaluation.sql",
             "V0047__refuse_a_zero_target_bid_in_the_parameter_contract.sql",
-            "V0048__serialize_advertising_reservations_against_overlap.sql");
+            "V0048__serialize_advertising_reservations_against_overlap.sql",
+            "V0049__create_advertising_outcome_plan_and_lineage.sql");
 
     private static PostgreSQLContainer container;
 
@@ -157,6 +158,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "core.ad_object_configuration_observation",
                     "core.ad_object_relationship",
                     "core.ad_optimization_qualification_policy",
+                    "core.ad_outcome_policy",
                     "core.ad_priority_policy",
                     "core.availability_priority_policy",
                     "core.cost_version",
@@ -246,6 +248,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ops.ad_fact_cursor",
                     "ops.ad_manual_configuration_verification",
                     "ops.ad_manual_execution_packet",
+                    "ops.ad_outcome_observation",
                     "ops.ad_recalculation_request",
                     "ops.ad_reconciliation_run",
                     "ops.ad_slo_observation",
