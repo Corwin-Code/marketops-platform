@@ -384,18 +384,27 @@ LOCAL_LOGGING_TOKENS = (
 
 COMPLETION_STATE_TOKENS = (
     "lifecycle_state: EXECUTING_V1",
-    "active_delivery_slice: SLICE-V1-002",
+    "active_delivery_slice: SLICE-V1-003",
     "active_slice_contract: docs/03-work-items/"
-    "SLICE-V1-002-stockout-availability-risk-and-accountable-response.md",
+    "SLICE-V1-003-advertising-traffic-efficiency.md",
     "active_slice_contract_sha256: "
-    "d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e",
-    "active_slice_contract_git_blob_sha1: 1caa50f1b33011f7d226c83654835401c00bde1e",
+    "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c",
+    "active_slice_contract_git_blob_sha1: 669c38dc4d9429249e663da0e684dabf570c4a4a",
     "active_slice_acceptance_evidence_sha256: "
-    "4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e",
+    "d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d",
     "active_slice_amendment: NONE_ACCEPTED",
     "active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN",
-    "active_gate: SLICE_V1_002_OWNER_ACCEPTED_SNAPSHOT_PROTECTED_SQUASH_PR_27",
-    "authorization: PROTECTED_SQUASH_MERGE_ONLY",
+    "active_gate: SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION",
+    "authorization: FULL_SCOPE_IMPLEMENTATION",
+    "slice_v1_002_contract_sha256: "
+    "d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e",
+    "slice_v1_002_contract_git_blob_sha1: 1caa50f1b33011f7d226c83654835401c00bde1e",
+    "slice_v1_002_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+    "slice_v1_003_controlled_write_target: AD_BID_CHANGE",
+    "slice_v1_003_real_provider_calls: NONE",
+    "slice_v1_003_ordinary_impact_envelope: ZERO_EVERY_NONZERO_AD_BID_CHANGE_IS_MATERIAL",
+    "slice_v1_003_standing_policy_automation: NOT_AUTHORIZED",
+    "slice_v1_003_deferred_release_obligations: S3_REL_001_THROUGH_024_PRODUCTION_BLOCKING",
     "slice_v1_002_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_002_branch: fix/SLICE-V1-002-root-cause-rework-r1",
     "slice_v1_002_reviewed_source_head: c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6",
@@ -488,14 +497,17 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_001_owner_acceptance_comment: 5469935477",
     "slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33",
     "closure_snapshot_before_next_slice: SATISFIED_EXACT_OWNER_ACCEPTED",
-    "merge_authorization: HUMAN_OWNER_AUTHORIZED_PROTECTED_SQUASH_PR_27_IF_ALL_GATES_PASS",
-    "next_authorized_actor: CODEX_POST_CLOSURE_GIT_EXECUTOR",
-    "next_action: PROTECTED_SQUASH_MERGE_PR27_AND_FINAL_READBACK",
+    "merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED",
+    "next_authorized_actor: Claude Fable 5 / Claude Code",
     "production_write_enabled: false",
     "bounded_real_write_verification_authorization: NONE",
     "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",
     "ozon_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
     "wildberries_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+    "ozon_ad_bid_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+    "wildberries_ad_bid_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+    "pilot: NOT_AUTHORIZED",
+    "release_v1_001: RESERVED_NOT_ACTIVATED",
 )
 
 COMPLETED_WORK_PACKAGE_TOKENS = (

@@ -2922,8 +2922,8 @@ class V1CurrentStateContractTests(unittest.TestCase):
 
     def test_duplicate_active_slice_is_rejected(self) -> None:
         current = self.current().replace(
-            "active_delivery_slice: SLICE-V1-002",
-            "active_delivery_slice: SLICE-V1-002\nactive_delivery_slice: SLICE-V1-002",
+            "active_delivery_slice: SLICE-V1-003",
+            "active_delivery_slice: SLICE-V1-003\nactive_delivery_slice: SLICE-V1-003",
             1,
         )
         self.assertTrue(any("active_delivery_slice" in error for error in self.validate(current=current)))
@@ -2932,17 +2932,17 @@ class V1CurrentStateContractTests(unittest.TestCase):
         mutations = (
             (
                 "active_slice_contract: docs/03-work-items/"
-                "SLICE-V1-002-stockout-availability-risk-and-accountable-response.md",
+                "SLICE-V1-003-advertising-traffic-efficiency.md",
                 "active_slice_contract: docs/03-work-items/other.md",
                 "active_slice_contract",
             ),
             (
-                "active_gate: SLICE_V1_002_OWNER_ACCEPTED_SNAPSHOT_PROTECTED_SQUASH_PR_27",
+                "active_gate: SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION",
                 "active_gate: READY_FOR_DESIGN",
                 "active_gate",
             ),
             (
-                "authorization: PROTECTED_SQUASH_MERGE_ONLY",
+                "authorization: FULL_SCOPE_IMPLEMENTATION",
                 "authorization: DESIGN_ONLY",
                 "authorization",
             ),
@@ -3133,7 +3133,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
     def test_rework_identity_phase_and_actor_cannot_drift(self) -> None:
         mutations = (
             (
-                "next_authorized_actor: CODEX_POST_CLOSURE_GIT_EXECUTOR",
+                "next_authorized_actor: Claude Fable 5 / Claude Code",
                 "next_authorized_actor: SOMEBODY_ELSE",
             ),
             (
@@ -3154,7 +3154,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "slice_v1_001_closure_claim: OWNER_FORMALLY_CLOSED",
             ),
             (
-                "candidate_state_scope: PROTECTED_MAIN_SLICE_V1_002_ENGINEERING_MERGED_FORMAL_CLOSURE_AND_SNAPSHOT_ACCEPTED",
+                "candidate_state_scope: PROTECTED_MAIN_SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION_LOCAL_CHECKPOINT",
                 "candidate_state_scope: PRODUCTION_READY",
             ),
             (
@@ -3170,7 +3170,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "closure_snapshot_before_next_slice: PENDING",
             ),
             (
-                "merge_authorization: HUMAN_OWNER_AUTHORIZED_PROTECTED_SQUASH_PR_27_IF_ALL_GATES_PASS",
+                "merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED",
                 "merge_authorization: NOT_GRANTED",
             ),
             (

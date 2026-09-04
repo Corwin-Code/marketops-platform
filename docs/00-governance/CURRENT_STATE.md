@@ -404,9 +404,9 @@ This implementation authorization does **not** authorize:
 
 The Ozon/WB price-write and ad-bid-write fields remain disabled
 production/scheduling flags. A future Gate-EV envelope is represented as a
-separate, exact, expiring authority; it cannot be implemented by changing any
-default flag to `ENABLED`, and it is consumed without creating recurring
-execution authority. Ozon evidence never authorizes Wildberries and Wildberries
+separate, exact, expiring authority; it
+cannot be implemented by changing any default flag to `ENABLED`, and it is
+consumed without creating recurring execution authority. Ozon evidence never authorizes Wildberries and Wildberries
 evidence never authorizes Ozon; every unverified Provider write path stays
 structurally unreachable and reports an explicit `UNVERIFIED` or Shadow-only
 state.

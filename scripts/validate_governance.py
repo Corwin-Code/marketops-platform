@@ -255,22 +255,50 @@ V1_SLICE_001_CONTRACT_PATH = (
 V1_SLICE_001_CONTRACT_SHA256 = (
     "0bf558d6539e9620424058e31ccd03062a5195642b58434c1ce11d8d861db3d5"
 )
-V1_ACTIVE_SLICE_CONTRACT_PATH = (
+V1_SLICE_002_CONTRACT_PATH = (
     "docs/03-work-items/"
     "SLICE-V1-002-stockout-availability-risk-and-accountable-response.md"
 )
-V1_ACTIVE_SLICE_CONTRACT_SHA256 = (
+V1_SLICE_002_CONTRACT_SHA256 = (
     "d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e"
 )
-V1_ACTIVE_SLICE_CONTRACT_GIT_BLOB_SHA1 = (
+V1_SLICE_002_CONTRACT_GIT_BLOB_SHA1 = (
     "1caa50f1b33011f7d226c83654835401c00bde1e"
 )
-V1_ACTIVE_SLICE_ACCEPTANCE_PATH = (
+V1_SLICE_002_ACCEPTANCE_PATH = (
     "docs/08-handoffs/OWNER-SLICE-V1-002-CONTRACT-ACCEPTANCE-EVIDENCE.md"
 )
-V1_ACTIVE_SLICE_ACCEPTANCE_SHA256 = (
+V1_SLICE_002_ACCEPTANCE_SHA256 = (
     "4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e"
 )
+V1_SLICE_003_CONTRACT_PATH = (
+    "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md"
+)
+V1_SLICE_003_CONTRACT_SHA256 = (
+    "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c"
+)
+V1_SLICE_003_CONTRACT_GIT_BLOB_SHA1 = (
+    "669c38dc4d9429249e663da0e684dabf570c4a4a"
+)
+V1_SLICE_003_CONTRACT_BYTES = "129400"
+V1_SLICE_003_CONTRACT_LINES = "2687"
+V1_SLICE_003_ACCEPTANCE_PATH = (
+    "docs/08-handoffs/OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md"
+)
+V1_SLICE_003_ACCEPTANCE_SHA256 = (
+    "d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d"
+)
+V1_SLICE_003_OWNER_STATEMENT_SHA256 = (
+    "0ffaf4e865447ad18e0cb18f2527a3183553366295274e1be0811db3e2b19634"
+)
+# The active Slice is SLICE-V1-003. The SLICE-V1-002 identities above stay
+# pinned so a closed Slice cannot lose its accepted bytes when the active
+# pointer moves.
+V1_ACTIVE_SLICE_CONTRACT_PATH = V1_SLICE_003_CONTRACT_PATH
+V1_ACTIVE_SLICE_CONTRACT_SHA256 = V1_SLICE_003_CONTRACT_SHA256
+V1_ACTIVE_SLICE_CONTRACT_GIT_BLOB_SHA1 = V1_SLICE_003_CONTRACT_GIT_BLOB_SHA1
+V1_ACTIVE_SLICE_ACCEPTANCE_PATH = V1_SLICE_003_ACCEPTANCE_PATH
+V1_ACTIVE_SLICE_ACCEPTANCE_SHA256 = V1_SLICE_003_ACCEPTANCE_SHA256
 V1_SLICE_002_OWNER_FORMAL_CLOSURE_EVIDENCE_PATH = (
     "docs/08-handoffs/OWNER-SLICE-V1-002-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md"
 )
@@ -358,8 +386,8 @@ V1_ACTIVE_STATE = {
     "lifecycle_state": "EXECUTING_V1",
     "product_version": "V1",
     "delivery_model": "PRODUCTION_VERTICAL_SLICES",
-    "active_delivery_slice": "SLICE-V1-002",
-    "active_slice_title": "Stockout & Availability Risk with Accountable Response",
+    "active_delivery_slice": "SLICE-V1-003",
+    "active_slice_title": "Advertising & Traffic Efficiency",
     "active_slice_contract": V1_ACTIVE_SLICE_CONTRACT_PATH,
     "active_slice_contract_sha256": V1_ACTIVE_SLICE_CONTRACT_SHA256,
     "active_slice_contract_git_blob_sha1": V1_ACTIVE_SLICE_CONTRACT_GIT_BLOB_SHA1,
@@ -367,8 +395,44 @@ V1_ACTIVE_STATE = {
     "active_slice_acceptance_evidence": V1_ACTIVE_SLICE_ACCEPTANCE_PATH,
     "active_slice_acceptance_evidence_sha256": V1_ACTIVE_SLICE_ACCEPTANCE_SHA256,
     "active_slice_amendment": "NONE_ACCEPTED",
-    "active_gate": "SLICE_V1_002_OWNER_ACCEPTED_SNAPSHOT_PROTECTED_SQUASH_PR_27",
-    "authorization": "PROTECTED_SQUASH_MERGE_ONLY",
+    "active_slice_contract_bytes": V1_SLICE_003_CONTRACT_BYTES,
+    "active_slice_contract_lines": V1_SLICE_003_CONTRACT_LINES,
+    "active_gate": "SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION",
+    "authorization": "FULL_SCOPE_IMPLEMENTATION",
+    "slice_v1_003_owner_acceptance": "HUMAN_OWNER_ACCEPTED_EXACT",
+    "slice_v1_003_owner_acceptance_statement_sha256": (
+        V1_SLICE_003_OWNER_STATEMENT_SHA256
+    ),
+    "slice_v1_003_source_protected_main": (
+        "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430"
+    ),
+    "slice_v1_003_source_protected_main_tree": (
+        "0ca229112bcf351ab5c572dd8d375c647bab61c0"
+    ),
+    "slice_v1_003_controlled_write_target": "AD_BID_CHANGE",
+    "slice_v1_003_controlled_write_provider_paths": (
+        "STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE"
+    ),
+    "slice_v1_003_real_provider_calls": "NONE",
+    "slice_v1_003_ordinary_impact_envelope": (
+        "ZERO_EVERY_NONZERO_AD_BID_CHANGE_IS_MATERIAL"
+    ),
+    "slice_v1_003_standing_policy_automation": "NOT_AUTHORIZED",
+    "slice_v1_003_governed_manual_shadow": "REQUIRED_ON_BOTH_PLATFORMS",
+    "slice_v1_003_deferred_release_obligations": (
+        "S3_REL_001_THROUGH_024_PRODUCTION_BLOCKING"
+    ),
+    "slice_v1_003_owner_decision_count": "47",
+    "slice_v1_003_acceptance_criteria_count": "200",
+    "slice_v1_002_contract": V1_SLICE_002_CONTRACT_PATH,
+    "slice_v1_002_contract_sha256": V1_SLICE_002_CONTRACT_SHA256,
+    "slice_v1_002_contract_git_blob_sha1": V1_SLICE_002_CONTRACT_GIT_BLOB_SHA1,
+    "slice_v1_002_contract_acceptance_evidence": V1_SLICE_002_ACCEPTANCE_PATH,
+    "slice_v1_002_contract_acceptance_evidence_sha256": (
+        V1_SLICE_002_ACCEPTANCE_SHA256
+    ),
+    "slice_v1_002_contract_amendment": "NONE_ACCEPTED",
+    "slice_v1_002_state": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
     "r2_remote_publication_authority": (
         "HUMAN_OWNER_EXPLICIT_FORMAL_CLOSURE_RECORDING_AND_PROTECTED_SQUASH_PR_23"
     ),
@@ -550,8 +614,11 @@ V1_ACTIVE_STATE = {
     "slice_v1_002_deferred_release_register": (
         "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json"
     ),
-    "next_authorized_actor": "CODEX_POST_CLOSURE_GIT_EXECUTOR",
-    "next_action": "PROTECTED_SQUASH_MERGE_PR27_AND_FINAL_READBACK",
+    "next_authorized_actor": "Claude Fable 5 / Claude Code",
+    "next_action": (
+        "SOURCE_UNDERSTANDING_DETAILED_DESIGN_FULL_SCOPE_IMPLEMENTATION_"
+        "TESTS_EVIDENCE_AND_EXACT_LOCAL_CHECKPOINT"
+    ),
     "slice_v1_001_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_001_rework_phase": "R2_FORMAL_CLOSURE_ACCEPTED",
     "slice_v1_001_pr": "22",
@@ -643,11 +710,10 @@ V1_ACTIVE_STATE = {
         "CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK"
     ),
     "candidate_state_scope": (
-        "PROTECTED_MAIN_SLICE_V1_002_ENGINEERING_MERGED_"
-        "FORMAL_CLOSURE_AND_SNAPSHOT_ACCEPTED"
+        "PROTECTED_MAIN_SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION_LOCAL_CHECKPOINT"
     ),
     "merge_authorization": (
-        "HUMAN_OWNER_AUTHORIZED_PROTECTED_SQUASH_PR_27_IF_ALL_GATES_PASS"
+        "NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED"
     ),
     "closure_snapshot_before_next_slice": "SATISFIED_EXACT_OWNER_ACCEPTED",
     "production_deployment": "NOT_AUTHORIZED",
@@ -4155,7 +4221,7 @@ def validate_gate_ev_contract_texts(
             "bounded_real_write_verification_authorization: NONE",
             "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",
             "production_write_enabled: false",
-            "cannot be implemented by changing either default flag to `ENABLED`",
+            "cannot be implemented by changing any default flag to `ENABLED`",
         ),
         "quality": (
             "## Gate EV — Bounded Real-Write Verification Authorization",
@@ -5028,7 +5094,7 @@ def validate_delivery_slices_v1_text(errors: list[str], text: str) -> None:
         "product_version": "V1",
         "delivery_model": "PRODUCTION_VERTICAL_SLICES",
         "source_contract": "docs/01-requirements/V1_PRODUCT_CONTRACT.md",
-        "active_slice": "SLICE-V1-002",
+        "active_slice": "SLICE-V1-003",
         "old_phase_zero_backlog": "SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN",
         "effective_condition": "PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION",
     }
@@ -5050,6 +5116,11 @@ def validate_delivery_slices_v1_text(errors: list[str], text: str) -> None:
             # The narrowing is only honest while the row it replaced is still
             # readable next to it.
             "SLICE-V1-002 — Inventory & Availability Optimization",
+            "SLICE-V1-003 — Advertising & Traffic Efficiency",
+            "CONTRACT_ACCEPTED_FULL_SCOPE_IMPLEMENTATION",
+            # The same honesty rule as above: the open-ended controlled-write
+            # phrase this Contract narrowed must stay readable beside the row.
+            "new controlled-write target: selected budget/bid/campaign command",
             "production enablement is separate from merge",
             "AI cannot become the Metric, Policy, Approval, Command or Credential authority",
         ),
