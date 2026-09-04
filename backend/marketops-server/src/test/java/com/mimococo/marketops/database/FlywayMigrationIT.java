@@ -74,7 +74,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0038__create_advertising_case_projection_and_orchestration.sql",
             "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
             "V0040__widen_write_registry_for_ad_bid_capability.sql",
-            "V0041__create_advertising_containment_and_decision_bundle.sql");
+            "V0041__create_advertising_containment_and_decision_bundle.sql",
+            "V0042__create_ad_bid_command_outbox_readback_and_gate.sql");
 
     private static PostgreSQLContainer container;
 
@@ -230,6 +231,10 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "mart.metric_value",
                     "ops.ad_action_reservation",
                     "ops.ad_bid_candidate",
+                    "ops.ad_bid_command",
+                    "ops.ad_bid_command_attempt",
+                    "ops.ad_bid_command_readback",
+                    "ops.ad_bid_command_transition",
                     "ops.ad_containment",
                     "ops.ad_decision_policy_bundle",
                     "ops.ad_fact_cursor",
@@ -297,6 +302,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "platform.platform_endpoint",
                     "platform.platform_permission_requirement",
                     "platform.registry_verification_case",
+                    "raw.ad_bid_response_observation",
                     "raw.price_response_observation",
                     "raw.raw_acquisition_observation",
                     "raw.raw_content",
