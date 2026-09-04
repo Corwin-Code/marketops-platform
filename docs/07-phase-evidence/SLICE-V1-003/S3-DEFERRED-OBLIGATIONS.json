@@ -1,0 +1,98 @@
+[
+  {
+    "id": "S3-REL-001",
+    "text": "real Ozon advertising read capability, native object hierarchy, Spend/traffic/attribution semantics, source maturity and account/store evidence."
+  },
+  {
+    "id": "S3-REL-002",
+    "text": "equivalent real Wildberries advertising read evidence without assuming Ozon symmetry."
+  },
+  {
+    "id": "S3-REL-003",
+    "text": "real Product Mapping, native-object lineage and complete affected-set coverage for the intended operating cohort."
+  },
+  {
+    "id": "S3-REL-004",
+    "text": "real company Order/Completed/Retained sales and deterministic ad-linked sale-event evidence, including Provider-to-canonical attribution-gap profile."
+  },
+  {
+    "id": "S3-REL-005",
+    "text": "real official advertising Spend reconciliation and correction-window evidence."
+  },
+  {
+    "id": "S3-REL-006",
+    "text": "real COGS, fee, fulfillment, return-loss, Settlement and Adjustment inputs sufficient for Operational and Settled advertising profit."
+  },
+  {
+    "id": "S3-REL-007",
+    "text": "real stage-consistent Conversion, Allowable CPA and Max CPC definitions and approved evidence."
+  },
+  {
+    "id": "S3-REL-008",
+    "text": "real source/platform/purpose Freshness Profiles for Queue, Task, Recommendation, Write, Compensation and Outcomes."
+  },
+  {
+    "id": "S3-REL-009",
+    "text": "real Optimization qualification, Target, Outcome, Priority, human-SLO, Approval-Lease and aggregate-Exposure Policies with owners and evidence."
+  },
+  {
+    "id": "S3-REL-010",
+    "text": "one complete, compatible, scope-bound Advertising Decision Policy Bundle accepted for each intended real operating scope."
+  },
+  {
+    "id": "S3-REL-011",
+    "text": "real OIDC/MFA, user disable/revoke, Role/Scope and role-minimal disclosure evidence."
+  },
+  {
+    "id": "S3-REL-012",
+    "text": "real Operating Calendar, staffed Coverage, escalation, Daily Brief and Weekly Review ownership."
+  },
+  {
+    "id": "S3-REL-013",
+    "text": "real governed Shadow evidence under preaccepted sample, duration, discrepancy, manual-verification and operating-SLO thresholds."
+  },
+  {
+    "id": "S3-REL-014",
+    "text": "real Ozon `AD_BID_CHANGE` endpoint, permission, unit, step, quota, idempotency/NOT_APPLIED, error, propagation and Readback evidence for each consumed scope."
+  },
+  {
+    "id": "S3-REL-015",
+    "text": "real Wildberries `AD_BID_CHANGE` capability evidence if that Provider path is to become reachable; otherwise verified Shadow-only fail-closed state."
+  },
+  {
+    "id": "S3-REL-016",
+    "text": "exact Gate EV envelope and Human Owner authorization before the first real write for each Platform/Store/Direction/Candidate Basis."
+  },
+  {
+    "id": "S3-REL-017",
+    "text": "exact Gate EV Write/Readback evidence and, when API Compensation is claimed, exact prior-value Compensation round-trip evidence."
+  },
+  {
+    "id": "S3-REL-018",
+    "text": "layered scope-monotonic Gate E Pilot Evidence Bundle, exact allowlist, aggregate Exposure, recovery headroom and operating ownership."
+  },
+  {
+    "id": "S3-REL-019",
+    "text": "real Provider-transmission Kill/Quarantine drill and cause-specific multi-party reenablement evidence."
+  },
+  {
+    "id": "S3-REL-020",
+    "text": "real early Completed-Sales Guard evidence for the Gate E entry scope and continuing 30-day/Settled Outcome obligations."
+  },
+  {
+    "id": "S3-REL-021",
+    "text": "real Operational/Settled baseline, critical-sales-unit and settlement-attribution evidence for mature Outcome reporting."
+  },
+  {
+    "id": "S3-REL-022",
+    "text": "real Ordinary-route promotion evidence before any Owner per-command delegation is activated; absent evidence keeps every nonzero action Material."
+  },
+  {
+    "id": "S3-REL-023",
+    "text": "Yandex runtime, managed PostgreSQL, immutable object custody, backup/PITR/restore, monitoring, security and legal/data-localization release evidence."
+  },
+  {
+    "id": "S3-REL-024",
+    "text": "Key User training/adoption, runbooks, release traceability and no unresolved release-blocking defect for the exact real scope."
+  }
+]

@@ -1,7 +1,7 @@
 # Current State
 
 ```yaml
-as_of: 2026-09-02
+as_of: 2026-09-04
 project: MarketOps Russia
 repository: Corwin-Code/marketops-platform
 reset_effective_base: 52a657f7f6358f43246e03457ba2d48ef658986a
@@ -9,14 +9,39 @@ lifecycle_state: EXECUTING_V1
 product_version: V1
 delivery_model: PRODUCTION_VERTICAL_SLICES
 legacy_phase_model: SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN
-active_delivery_slice: SLICE-V1-002
-active_slice_title: Stockout & Availability Risk with Accountable Response
-active_slice_contract: docs/03-work-items/SLICE-V1-002-stockout-availability-risk-and-accountable-response.md
-active_slice_contract_sha256: d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e
-active_slice_contract_git_blob_sha1: 1caa50f1b33011f7d226c83654835401c00bde1e
-active_slice_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-002-CONTRACT-ACCEPTANCE-EVIDENCE.md
-active_slice_acceptance_evidence_sha256: 4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e
+active_delivery_slice: SLICE-V1-003
+active_slice_title: Advertising & Traffic Efficiency
+active_slice_contract: docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md
+active_slice_contract_sha256: 1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c
+active_slice_contract_git_blob_sha1: 669c38dc4d9429249e663da0e684dabf570c4a4a
+active_slice_contract_bytes: 129400
+active_slice_contract_lines: 2687
+active_slice_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md
+active_slice_acceptance_evidence_sha256: d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d
 active_slice_amendment: NONE_ACCEPTED
+slice_v1_003_owner_acceptance: HUMAN_OWNER_ACCEPTED_EXACT
+slice_v1_003_owner_acceptance_statement_sha256: 0ffaf4e865447ad18e0cb18f2527a3183553366295274e1be0811db3e2b19634
+slice_v1_003_source_protected_main: 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430
+slice_v1_003_source_protected_main_tree: 0ca229112bcf351ab5c572dd8d375c647bab61c0
+slice_v1_003_source_protected_main_parent: e0184852785f451256a36f52fa3d520ceea2c313
+slice_v1_003_branch: feat/SLICE-V1-003-advertising-traffic-efficiency
+slice_v1_003_implementation_state: FULL_SCOPE_IMPLEMENTATION_IN_PROGRESS
+slice_v1_003_controlled_write_target: AD_BID_CHANGE
+slice_v1_003_controlled_write_provider_paths: STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE
+slice_v1_003_real_provider_calls: NONE
+slice_v1_003_ordinary_impact_envelope: ZERO_EVERY_NONZERO_AD_BID_CHANGE_IS_MATERIAL
+slice_v1_003_standing_policy_automation: NOT_AUTHORIZED
+slice_v1_003_governed_manual_shadow: REQUIRED_ON_BOTH_PLATFORMS
+slice_v1_003_deferred_release_obligations: S3_REL_001_THROUGH_024_PRODUCTION_BLOCKING
+slice_v1_003_owner_decision_count: 47
+slice_v1_003_acceptance_criteria_count: 200
+slice_v1_002_contract: docs/03-work-items/SLICE-V1-002-stockout-availability-risk-and-accountable-response.md
+slice_v1_002_contract_sha256: d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e
+slice_v1_002_contract_git_blob_sha1: 1caa50f1b33011f7d226c83654835401c00bde1e
+slice_v1_002_contract_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-002-CONTRACT-ACCEPTANCE-EVIDENCE.md
+slice_v1_002_contract_acceptance_evidence_sha256: 4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e
+slice_v1_002_contract_amendment: NONE_ACCEPTED
+slice_v1_002_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS
 slice_v1_001_amendment: docs/03-work-items/SLICE-V1-001-AMENDMENT-001-YANDEX-MANAGED-PG-BOOTSTRAP.md
 slice_v1_001_amendment_sha256: 8a36bbe0f2cd1d8e40efb171d368d8c4058ecc913da2a76f43f7e0a14de6854d
 slice_v1_001_amendment_acceptance: HUMAN_OWNER_ACCEPTED_FOR_PR20_REWORK
@@ -28,8 +53,8 @@ slice_v1_001_amendment_002_acceptance: HUMAN_OWNER_ACCEPTED_FOR_SUPPLEMENTAL_R2
 slice_v1_001_amendment_002_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-002-ACCEPTANCE-EVIDENCE.md
 slice_v1_001_amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923
 active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
-active_gate: SLICE_V1_002_OWNER_ACCEPTED_SNAPSHOT_PROTECTED_SQUASH_PR_27
-authorization: PROTECTED_SQUASH_MERGE_ONLY
+active_gate: SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION
+authorization: FULL_SCOPE_IMPLEMENTATION
 slice_v1_002_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED
 slice_v1_002_branch: fix/SLICE-V1-002-root-cause-rework-r1
 slice_v1_002_reviewed_source_head: c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6
@@ -180,8 +205,8 @@ slice_v1_001_snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e8482
 slice_v1_001_owner_acceptance_comment: 5469935477
 slice_v1_001_owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
 slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33
-candidate_state_scope: PROTECTED_MAIN_SLICE_V1_002_ENGINEERING_MERGED_FORMAL_CLOSURE_AND_SNAPSHOT_ACCEPTED
-merge_authorization: HUMAN_OWNER_AUTHORIZED_PROTECTED_SQUASH_PR_27_IF_ALL_GATES_PASS
+candidate_state_scope: PROTECTED_MAIN_SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION_LOCAL_CHECKPOINT
+merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED
 production_deployment: NOT_AUTHORIZED
 gate_ev: NOT_AUTHORIZED
 gate_e: NOT_AUTHORIZED
@@ -189,8 +214,8 @@ slice_v1_001_as_built_design: docs/02-architecture/designs/SLICE-V1-001-design.m
 slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
-next_authorized_actor: CODEX_POST_CLOSURE_GIT_EXECUTOR
-next_action: PROTECTED_SQUASH_MERGE_PR27_AND_FINAL_READBACK
+next_authorized_actor: Claude Fable 5 / Claude Code
+next_action: SOURCE_UNDERSTANDING_DETAILED_DESIGN_FULL_SCOPE_IMPLEMENTATION_TESTS_EVIDENCE_AND_EXACT_LOCAL_CHECKPOINT
 slice_v1_001_handoff_pending: CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
@@ -198,6 +223,10 @@ bounded_real_write_verification_authorization: NONE
 bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE
 ozon_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
 wildberries_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
+ozon_ad_bid_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
+wildberries_ad_bid_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE
+pilot: NOT_AUTHORIZED
+release_v1_001: RESERVED_NOT_ACTIVATED
 production_infrastructure: YANDEX_CLOUD_RU_CENTRAL1
 managed_postgresql_major: "17"
 human_authentication: EXTERNAL_OIDC_MFA_DEFAULT_YANDEX_IDENTITY_HUB
@@ -211,26 +240,51 @@ owner_git_execution_delegation_exit: HUMAN_OWNER_EXPLICIT_REVOCATION
 
 ## Active authority
 
-SLICE-V1-002 is the active Slice. Its accepted Contract is
-[SLICE-V1-002-stockout-availability-risk-and-accountable-response.md](../03-work-items/SLICE-V1-002-stockout-availability-risk-and-accountable-response.md)
-at SHA-256 `d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e`
-and Git blob `1caa50f1b33011f7d226c83654835401c00bde1e`, with Human Owner
-acceptance recorded in
-[OWNER-SLICE-V1-002-CONTRACT-ACCEPTANCE-EVIDENCE.md](../08-handoffs/OWNER-SLICE-V1-002-CONTRACT-ACCEPTANCE-EVIDENCE.md)
-at SHA-256 `4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e`.
+SLICE-V1-003 is the active Slice. Its accepted Contract is
+[SLICE-V1-003-advertising-traffic-efficiency.md](../03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md)
+at SHA-256 `1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c`
+and Git blob `669c38dc4d9429249e663da0e684dabf570c4a4a`, exactly 129400 bytes
+and 2687 lines, with Human Owner acceptance recorded in
+[OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md](../08-handoffs/OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md)
+at SHA-256 `d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d`.
 Those bytes are frozen: a normative change requires a separately identified,
 exact, Owner-accepted additive Amendment, and no Amendment to this Contract has
-been accepted.
+been accepted. The Contract is anchored to protected `main`
+`08ad7da7d9e75b4ddd1c387a22ac0affba9e1430`, tree
+`0ca229112bcf351ab5c572dd8d375c647bab61c0`.
 
-The exact PR #26 candidate received independent
-`PASS_R3_ENGINEERING_FINAL_GATE`; the Human Owner accepted Formal Closure and
-conditionally authorized the exact protected squash. Protected `main` now
-contains commit `cc42760cfc99c1bab027039fca67410d696e96fa`, tree
-`f7e02da0bf38922f6c5a80d49b263613ade997d9`, with sole parent
-`8a7076877374391cf851481c023dfb0e621ab712`. The active authority is now limited
-to post-merge closure bookkeeping and independent Controller verification.
-SLICE-V1-002 has no controlled-write target, made no Provider call or deployment,
-and leaves `production_write_enabled` at `false`.
+Exact acceptance authorizes `FULL_SCOPE_IMPLEMENTATION_WITHIN_EXECUTION_ENVELOPE_V1`
+and nothing beyond it. The selected controlled-write family is `AD_BID_CHANGE`
+on both Ozon and Wildberries, engineered to production quality with every
+unverified Provider write path structurally unreachable. The initial Ordinary
+nonzero envelope is zero, so every nonzero `AD_BID_CHANGE` is Material and
+requires Human Owner final per-command approval; Standing Policy automation is
+not authorized. All 47 incorporated Owner decisions, `S3-AC-001` through
+`S3-AC-200` and `S3-REL-001` through `S3-REL-024` are in force. No acceptance
+here activates `RELEASE-V1-001`, Gate EV, Gate E, Pilot, deployment, real
+Credentials, real Provider access or production write, and
+`production_write_enabled` remains `false`.
+
+SLICE-V1-002 is formally closed as
+`CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS`. Its accepted Contract
+[bytes](../03-work-items/SLICE-V1-002-stockout-availability-risk-and-accountable-response.md)
+at SHA-256 `d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e`
+and Git blob `1caa50f1b33011f7d226c83654835401c00bde1e`, its
+[acceptance evidence](../08-handoffs/OWNER-SLICE-V1-002-CONTRACT-ACCEPTANCE-EVIDENCE.md)
+at SHA-256 `4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e`,
+its accepted Closure Snapshot at SHA-256
+`f4847d4fdca8bede97decc02a12f99b2358b196d3d5b31a3aac60362ae41799f`, its
+`100/100` engineering Acceptance and its ten `S2-REL-001` through `S2-REL-010`
+production-blocking obligations are preserved unchanged. SLICE-V1-003 may consume
+SLICE-V1-002 availability, sellability, mapping, demand, profit, Task, Accepted
+Exception, targeted-recalculation and hourly-reconciliation capabilities. It does
+not reopen `STOCK_CHANGE`, replenishment quantity or order date, Overstock,
+Slow-moving, Dead Stock, Allocation or Transfer. The exact PR #26 candidate
+received independent `PASS_R3_ENGINEERING_FINAL_GATE` and merged as
+`cc42760cfc99c1bab027039fca67410d696e96fa`; the PR #28 post-merge security fix
+merged as `e0184852785f451256a36f52fa3d520ceea2c313`; the PR #27 closure-sync
+merge produced the current protected `main`
+`08ad7da7d9e75b4ddd1c387a22ac0affba9e1430`.
 
 SLICE-V1-001 remains formally closed with its deferred Release obligations
 intact. Everything recorded below about it is preserved provenance rather than
@@ -345,13 +399,17 @@ This implementation authorization does **not** authorize:
 - Buyer PII in AI or general Analytics/Mart;
 - destructive migration or changes to V0001–V0010;
 - a second ingestion, metric, policy, command or audit authority;
-- a product-scope expansion outside SLICE-V1-002;
+- a product-scope expansion outside SLICE-V1-003;
 - merge or production release without later independent Gates.
 
-The Ozon/WB price-write fields remain disabled production/scheduling flags. A
-future Gate-EV envelope is represented as a separate, exact, expiring authority;
-it cannot be implemented by changing either default flag to `ENABLED`, and it is
-consumed without creating recurring execution authority.
+The Ozon/WB price-write and ad-bid-write fields remain disabled
+production/scheduling flags. A future Gate-EV envelope is represented as a
+separate, exact, expiring authority; it cannot be implemented by changing any
+default flag to `ENABLED`, and it is consumed without creating recurring
+execution authority. Ozon evidence never authorizes Wildberries and Wildberries
+evidence never authorizes Ozon; every unverified Provider write path stays
+structurally unreachable and reports an explicit `UNVERIFIED` or Shadow-only
+state.
 
 ## Preserved historical provenance
 
@@ -545,14 +603,28 @@ capability anywhere in the module or in any migration.
 
 ## Next authorized action
 
-The repository gate is
-`SLICE_V1_002_OWNER_ACCEPTED_SNAPSHOT_PROTECTED_SQUASH_PR_27`. The exact next
-authorized action is `PROTECTED_SQUASH_MERGE_PR27_AND_FINAL_READBACK` by
-`CODEX_POST_CLOSURE_GIT_EXECUTOR`. This authority is conditional on the exact
-pre-merge Base, accepted Snapshot identity, bounded changed-file allowlist, zero
-product/runtime/IaC/fixture/migration diff, all protected checks, review state
-and raw security readback. It does not authorize direct push to `main`, bypass,
-self-approval, another PR merge or any product change.
+The repository gate is `SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION`. The exact next
+authorized action is source understanding, evolvable Detailed Design, Full-Scope
+backend and frontend implementation, forward-only migrations, the complete test
+and isolated-runtime evidence set, canonical documentation synchronization and an
+exact local Git commit/tree with a clean worktree, performed by
+`Claude Fable 5 / Claude Code` on branch
+`feat/SLICE-V1-003-advertising-traffic-efficiency` from protected `main`
+`08ad7da7d9e75b4ddd1c387a22ac0affba9e1430`.
+
+That authority is bounded by `EXECUTION_ENVELOPE_V1` Level 1. It does not
+authorize remote Git push, branch/tag mutation, PR create/update or merge; a
+shared non-production or production database; migration execution outside an
+isolated ephemeral development database; real Credential, Secret or OIDC/Yandex
+activation; any real Ozon or Wildberries read or write; deployment or Terraform
+apply; Gate EV; Gate E; Pilot; or any production business side effect. Remote
+publication remains a separately authorized Codex/Owner-delegate transport
+operation over an exact local checkpoint.
+
+The permitted engineering closure claim for this Slice is
+`CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS`. The Controller's next
+engineering decision point is a one-shot independent Deep Review over the exact
+published implementation candidate.
 
 Nothing here activates `RELEASE-V1-001`. Deployment, real credentials, provider
 calls, Gate EV, Gate E, Pilot and production writes remain unauthorized.
