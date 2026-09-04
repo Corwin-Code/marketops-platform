@@ -7,20 +7,19 @@
 -- authority, so `AD_BID_CHANGE` joins that registry rather than growing a
 -- parallel one.
 --
--- Joining it means widening four closed vocabularies, and each widening below is
+-- Joining it means widening four closed vocabularies, and each widening is
 -- narrower in effect than it looks, because the trigger that validates a write
--- shape now dispatches on the capability. Before this migration the trigger
--- accepted only `price-change`; after it, it accepts `price-change` or
--- `ad-bid-change` and requires each to carry its own placeholders and refuse
--- the other's. A price operation that mentioned {targetBid} was previously
--- impossible because the vocabulary did not contain the token; it is now
--- impossible because the trigger refuses it by name.
+-- shape dispatches on the capability: it admits `price-change` and
+-- `ad-bid-change`, and requires each to carry its own placeholders and refuse
+-- the other's. A price operation that mentions {targetBid} is impossible
+-- because the trigger refuses it by name, not because a vocabulary happens to
+-- omit the token.
 --
--- The one constraint this migration drops, `capability_operation_template_ck`,
--- is replaced by a strictly stronger check inside that trigger. The constraint
--- could only ask "does the template contain {targetPrice}" without knowing which
--- capability it belonged to; the trigger asks the same question per capability
--- and additionally refuses the wrong capability's placeholders.
+-- `capability_operation_template_ck` is dropped because that trigger asks a
+-- strictly stronger question. A table constraint can only ask "does the
+-- template contain {targetPrice}" without knowing which capability the row
+-- belongs to; the trigger asks it per capability and additionally refuses the
+-- wrong capability's placeholders.
 --
 -- Nothing here makes any advertising Provider path reachable. No capability,
 -- endpoint, profile, header or operation row is created. The registry gains the
@@ -209,9 +208,9 @@ $$;
 -- ---------------------------------------------------------------------------
 
 -- A price write authenticates with a price-write credential and an advertising
--- write with an advertising one. The purposes already exist as reference data;
--- what was missing was a way for the registry snapshot to pick the right one,
--- which it previously hard-coded.
+-- write with an advertising one. The purposes exist as reference data; this
+-- function is how the registry snapshot picks the right one, so that no caller
+-- has to name a purpose it cannot check.
 CREATE FUNCTION platform.capability_credential_purpose(
     p_capability_code text, p_read_write_class text)
 RETURNS text

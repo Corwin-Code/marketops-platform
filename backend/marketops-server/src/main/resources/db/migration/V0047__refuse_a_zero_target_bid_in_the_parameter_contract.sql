@@ -10,8 +10,8 @@
 -- The Java contract already refused it. This makes the two agree, and a parity
 -- test asserts that they still do.
 --
--- Forward-only: the function is replaced, no data is touched, and nothing that
--- was previously refused becomes accepted.
+-- Forward-only: the function is replaced, no data is touched, and the set of
+-- accepted parameter shapes only narrows.
 
 CREATE OR REPLACE FUNCTION ops.ad_bid_parameter_contract_is_valid(p_parameters jsonb)
 RETURNS boolean
