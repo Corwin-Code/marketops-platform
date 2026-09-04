@@ -29,17 +29,30 @@ import org.junit.jupiter.api.Test;
  */
 class AdvertisingNonGoalsTest {
 
-    /** Advertising actions the Contract explicitly places outside this Slice. */
+    /**
+     * Provider write paths the Contract places outside this Slice.
+     *
+     * <p>These are deliberately the markers a <em>write path</em> would leave —
+     * a capability code, an endpoint operation function, a command table — and
+     * not the bare name of the business action. The Contract permits a governed
+     * Manual Execution Packet to instruct a person to change a budget or pause a
+     * campaign in the marketplace's own console; what it forbids is any of those
+     * becoming an API path. A scan for the bare word would fail on the manual
+     * packet's own vocabulary and would therefore have to be deleted, which is
+     * how a non-goal check quietly stops checking anything.
+     */
     private static final List<String> FORBIDDEN_ACTION_MARKERS = List.of(
-            "budget_change", "budgetchange", "BUDGET_CHANGE",
-            "campaign_pause", "campaignpause", "CAMPAIGN_PAUSE",
-            "campaign_resume", "campaignresume", "CAMPAIGN_RESUME",
-            "strategy_switch", "strategyswitch", "STRATEGY_SWITCH",
-            "bidding_mode_change", "BIDDING_MODE_CHANGE",
+            "budget_command", "budgetcommand", "BUDGET_APPLY", "BUDGET_READBACK",
+            "'ad-budget", "\"ad-budget", "budget-change", "budget_write",
+            "pause_command", "pausecommand", "PAUSE_APPLY", "'ad-status",
+            "status-change-write", "campaign_pause_write",
+            "strategy_switch", "strategyswitch", "STRATEGY_SWITCH", "STRATEGY_APPLY",
+            "bidding_mode_write", "BIDDING_MODE_APPLY",
             "negative_keyword", "NEGATIVE_KEYWORD",
-            "creative_write", "CREATIVE_WRITE",
+            "creative_write", "CREATIVE_WRITE", "CREATIVE_APPLY",
             "portfolio_reallocation", "PORTFOLIO_REALLOCATION",
-            "standing_policy_automation", "STANDING_POLICY_AUTOMATION");
+            "standing_policy_automation", "STANDING_POLICY_AUTOMATION",
+            "portfolio_intervention", "PORTFOLIO_INTERVENTION");
 
     /** Capabilities that belong to a different Slice entirely. */
     private static final List<String> ADJACENT_PRODUCT_MARKERS = List.of(
@@ -155,5 +168,66 @@ class AdvertisingNonGoalsTest {
                         BidDirection.PROTECTION_DECREASE,
                         BidDirection.OPTIMIZATION_INCREASE,
                         BidDirection.EXACT_PRIOR_BID_COMPENSATION);
+    }
+
+    /**
+     * The distinction the Contract actually draws: a person may be instructed to
+     * change a budget or a status in the marketplace's own console, and no code
+     * path may do it.
+     *
+     * <p>So AD_BUDGET_CHANGE and AD_STATUS_CHANGE are permitted to appear, and
+     * are permitted to appear in exactly one place — the manual execution
+     * packet's action vocabulary. An occurrence anywhere else would mean
+     * something other than a human instruction had learned to name them.
+     */
+    @Test
+    @DisplayName("TC-ADV-NONGOAL-005 budget and status actions exist only as human instructions")
+    void budgetAndStatusExistOnlyAsManualInstructions() {
+        for (String action : List.of("AD_BUDGET_CHANGE", "AD_STATUS_CHANGE")) {
+            List<Path> carrying = new ArrayList<>();
+            for (Path source : sources()) {
+                if (read(source).contains(action)) {
+                    carrying.add(source);
+                }
+            }
+            assertThat(carrying)
+                    .describedAs("%s may only be named by the manual execution packet", action)
+                    .hasSize(1);
+            assertThat(carrying.get(0).getFileName().toString())
+                    .isEqualTo("V0039__create_advertising_target_materiality_and_manual_shadow.sql");
+        }
+    }
+
+    /**
+     * The registry describes exactly two controlled writes.
+     *
+     * <p>A third capability code appearing in the write-shape trigger would be a
+     * third controlled write, whatever it was called.
+     */
+    @Test
+    @DisplayName("TC-ADV-NONGOAL-006 the write registry describes exactly two capabilities")
+    void writeRegistryDescribesExactlyTwoCapabilities() {
+        Path registry = repositoryRoot().resolve(
+                "backend/marketops-server/src/main/resources/db/migration/"
+                        + "V0040__widen_write_registry_for_ad_bid_capability.sql");
+        String content = read(registry);
+
+        assertThat(content).contains("capability.capability_code = 'price-change'");
+        assertThat(content).contains("capability.capability_code = 'ad-bid-change'");
+        assertThat(content).contains("no write shape is defined for this capability");
+        // Any other capability code named anywhere in the write-shape validation
+        // would be a third controlled write, whatever it was called. Counting
+        // distinct codes rather than occurrences, because the same two are
+        // legitimately named more than once.
+        java.util.Set<String> codes = new java.util.TreeSet<>();
+        java.util.regex.Matcher matcher = java.util.regex.Pattern
+                .compile("capability\\.capability_code = '([a-z0-9-]+)'")
+                .matcher(content);
+        while (matcher.find()) {
+            codes.add(matcher.group(1));
+        }
+        assertThat(codes)
+                .describedAs("the write-shape validation names exactly two capabilities")
+                .containsExactly("ad-bid-change", "price-change");
     }
 }
