@@ -75,7 +75,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
             "V0040__widen_write_registry_for_ad_bid_capability.sql",
             "V0041__create_advertising_containment_and_decision_bundle.sql",
-            "V0042__create_ad_bid_command_outbox_readback_and_gate.sql");
+            "V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+            "V0043__create_ad_bid_attempt_lifecycle_and_readback.sql");
 
     private static PostgreSQLContainer container;
 
