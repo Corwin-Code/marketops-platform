@@ -1,5 +1,19 @@
-import type { AdvertisingCase } from './advertising';
-import { parseAdvertisingCase } from './advertising';
+import type {
+  AdvertisingCase,
+  AdvertisingContainment,
+  AdvertisingExposure,
+  AdvertisingManualPacket,
+  AdvertisingOutcome,
+  AdvertisingReservation,
+} from './advertising';
+import {
+  parseAdvertisingCase,
+  parseAdvertisingContainment,
+  parseAdvertisingExposure,
+  parseAdvertisingManualPacket,
+  parseAdvertisingOutcome,
+  parseAdvertisingReservation,
+} from './advertising';
 /**
  * Every request the operating console makes, and the parsing that stands
  * between a backend answer and the screen.
@@ -1545,7 +1559,7 @@ export function fetchAdvertisingQueue(
   const laneParam = lane === undefined ? '' : `lane=${encodeURIComponent(lane)}&`;
   return request(
     context,
-    `/api/v1/console/advertising/queue?${laneParam}limit=${limit}`,
+    `/api/v1/console/advertising/queue?${laneParam}limit=${String(limit)}`,
     list(parseAdvertisingCase),
   );
 }
@@ -1555,10 +1569,79 @@ export function fetchAdvertisingCase(
   context: ConsoleRequest,
   caseId: string,
 ): Promise<ConsoleOutcome<AdvertisingCase>> {
+  return request(context, `/api/v1/console/advertising/cases/${caseId}`, parseAdvertisingCase);
+}
+
+/**
+ * Reservations currently standing over the operator's stores.
+ *
+ * A report, never a precondition. Nothing the console reads here is consulted
+ * before a write: the write gate re-derives every reservation fact inside the
+ * database at the moment a write is attempted, so a stale reading can mislead a
+ * person but cannot let anything through.
+ */
+export function fetchAdvertisingReservations(
+  context: ConsoleRequest,
+  holdingOnly = true,
+  limit = 50,
+): Promise<ConsoleOutcome<readonly AdvertisingReservation[]>> {
   return request(
     context,
-    `/api/v1/console/advertising/cases/${caseId}`,
-    parseAdvertisingCase,
+    `/api/v1/console/advertising/reservations?holdingOnly=${String(holdingOnly)}` +
+      `&limit=${String(limit)}`,
+    list(parseAdvertisingReservation),
+  );
+}
+
+/** The aggregate envelope in force, with each axis against its own limit. */
+export function fetchAdvertisingExposure(
+  context: ConsoleRequest,
+): Promise<ConsoleOutcome<AdvertisingExposure>> {
+  return request(context, '/api/v1/console/advertising/exposure', parseAdvertisingExposure);
+}
+
+/** Holds, quarantines and kills currently stopping advertising execution. */
+export function fetchAdvertisingContainments(
+  context: ConsoleRequest,
+  holdingOnly = true,
+  limit = 50,
+): Promise<ConsoleOutcome<readonly AdvertisingContainment[]>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/containments?holdingOnly=${String(holdingOnly)}` +
+      `&limit=${String(limit)}`,
+    list(parseAdvertisingContainment),
+  );
+}
+
+/** Manual execution packets issued for one advertising object. */
+export function fetchAdvertisingManualPackets(
+  context: ConsoleRequest,
+  objectId: string,
+  limit = 20,
+): Promise<ConsoleOutcome<readonly AdvertisingManualPacket[]>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/objects/${objectId}/manual-packets?limit=${String(limit)}`,
+    list(parseAdvertisingManualPacket),
+  );
+}
+
+/**
+ * Every outcome observation recorded against one command.
+ *
+ * Both stages and every restatement, in the order they were taken. The caller
+ * shows them as a history rather than collapsing them, because the operational
+ * and settled readings are different claims about the same change.
+ */
+export function fetchAdvertisingOutcomes(
+  context: ConsoleRequest,
+  commandId: string,
+): Promise<ConsoleOutcome<readonly AdvertisingOutcome[]>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/commands/${commandId}/outcomes`,
+    list(parseAdvertisingOutcome),
   );
 }
 

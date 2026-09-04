@@ -8,6 +8,8 @@ import { AvailabilityQueue } from './availability/AvailabilityQueue';
 import { AvailabilityAuthorityPanel } from './availability/AvailabilityAuthorityPanel';
 import { AdvertisingQueue } from './advertising/AdvertisingQueue';
 import { AdvertisingCaseView } from './advertising/AdvertisingCaseView';
+import { AdvertisingOperations } from './advertising/AdvertisingOperations';
+import { AdvertisingOutcomeHistory } from './advertising/AdvertisingOutcomeHistory';
 import { PriorityQueue } from './queue/PriorityQueue';
 import { RecommendationReview } from './workflow/RecommendationReview';
 import type { Session } from './session/session';
@@ -91,6 +93,8 @@ export function ConsoleShell({
 
       {view.name === 'queue' && <AvailabilityAuthorityPanel context={context} />}
 
+      {view.name === 'queue' && <AdvertisingOperations context={context} />}
+
       {view.name === 'queue' && (
         <AdvertisingQueue
           context={context}
@@ -157,7 +161,17 @@ export function ConsoleShell({
         </>
       )}
 
-      {view.name === 'command' && <CommandTimeline context={context} commandId={view.commandId} />}
+      {view.name === 'command' && (
+        <>
+          <CommandTimeline context={context} commandId={view.commandId} />
+          {/*
+            What the change achieved, beside what it did. Kept separate from the
+            timeline because provider acceptance, readback and outcome are three
+            different facts and the timeline only carries the first two.
+          */}
+          <AdvertisingOutcomeHistory context={context} commandId={view.commandId} />
+        </>
+      )}
     </main>
   );
 }

@@ -152,3 +152,377 @@ export function parseAdvertisingCase(body: unknown): AdvertisingCase | undefined
     rankFactors: factors,
   };
 }
+
+/**
+ * One reservation currently standing over a set of variants.
+ *
+ * Only a real intervention reserves. A proposal nobody has acted on is not one,
+ * which is why this list is short even when the queue is long — and why a
+ * console that showed proposals here would make the envelope look spent.
+ */
+export interface AdvertisingReservation {
+  readonly id: string;
+  readonly adNativeObjectId: string;
+  readonly storeId: string;
+  readonly affectedSetDigest: string | undefined;
+  readonly productVariantIds: readonly string[];
+  readonly interventionKind: string;
+  readonly interventionReferenceId: string | undefined;
+  readonly direction: string | undefined;
+  readonly lane: string;
+  readonly state: string;
+  readonly holding: boolean;
+  readonly outstandingReleaseConditions: readonly string[];
+  readonly reservedAt: string;
+  readonly releasedAt: string | undefined;
+  readonly releaseReason: string | undefined;
+}
+
+/**
+ * The aggregate envelope in force and what is consumed against it.
+ *
+ * Each axis carries its own limit. There is no combined figure here because the
+ * product does not have one: the write gate checks every axis independently and
+ * never adds one axis's slack to another's.
+ */
+export interface AdvertisingExposure {
+  readonly envelopeId: string | undefined;
+  readonly policyVersion: number | undefined;
+  readonly scopeKind: string | undefined;
+  readonly currencyCode: string | undefined;
+  readonly activeInterventions: number;
+  readonly maxActiveInterventions: number | undefined;
+  readonly reservedRecoveryHeadroom: number | undefined;
+  readonly unresolvedTransmittedWrites: number;
+  readonly maxUnresolvedTransmittedWrites: number | undefined;
+  readonly cumulativeBidChangeAmount: number | undefined;
+  readonly maxCumulativeBidChangeAmount: number | undefined;
+  readonly cumulativeWindowHours: number | undefined;
+  readonly resolved: boolean;
+  readonly exhaustedAxes: readonly string[];
+  readonly status: string | undefined;
+}
+
+/** One hold, quarantine or kill standing over advertising. */
+export interface AdvertisingContainment {
+  readonly id: string;
+  readonly containmentKind: string;
+  readonly scopeKind: string | undefined;
+  readonly causeClass: string | undefined;
+  readonly reason: string | undefined;
+  readonly evidenceReference: string | undefined;
+  readonly activatedByUserId: string | undefined;
+  readonly activatedByTrigger: string | undefined;
+  readonly activatedAt: string;
+  readonly state: string;
+  readonly holding: boolean;
+  readonly outstandingConditions: readonly string[];
+  readonly readyToLift: boolean;
+  readonly reenabledAt: string | undefined;
+}
+
+/**
+ * One observation of what a bid change actually did.
+ *
+ * The stage is carried, never flattened. An operational reading counts orders
+ * and arrives in days; a settled reading counts what the buyer kept and arrives
+ * much later. Showing one number labelled "result" would show whichever was
+ * written last.
+ */
+export interface AdvertisingOutcome {
+  readonly id: string;
+  readonly commandId: string;
+  readonly outcomeStage: string;
+  readonly revisionNo: number;
+  readonly supersedesObservationId: string | undefined;
+  readonly adjustmentReason: string | undefined;
+  readonly windowStartsAt: string;
+  readonly windowEndsAt: string;
+  readonly baselineMetricState: string;
+  readonly baselineMetricValue: number | undefined;
+  readonly observedMetricState: string;
+  readonly observedMetricValue: number | undefined;
+  readonly observedTrafficCount: number | undefined;
+  readonly settledCoverageRatio: number | undefined;
+  readonly verdict: string;
+  readonly guardState: string | undefined;
+  readonly unresolvedReasonCodes: readonly string[];
+  readonly settled: boolean;
+  readonly evaluatedAt: string;
+}
+
+function strings(value: unknown): readonly string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : [];
+}
+
+/** One reservation, or `undefined` when the body is not one. */
+export function parseAdvertisingReservation(body: unknown): AdvertisingReservation | undefined {
+  if (typeof body !== 'object' || body === null) {
+    return undefined;
+  }
+  const record = body as Record<string, unknown>;
+  const id = text(record.id);
+  const adNativeObjectId = text(record.adNativeObjectId);
+  const interventionKind = text(record.interventionKind);
+  const state = text(record.state);
+  if (
+    id === undefined ||
+    adNativeObjectId === undefined ||
+    interventionKind === undefined ||
+    state === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    id,
+    adNativeObjectId,
+    storeId: text(record.storeId) ?? '',
+    affectedSetDigest: text(record.affectedSetDigest),
+    productVariantIds: strings(record.productVariantIds),
+    interventionKind,
+    interventionReferenceId: text(record.interventionReferenceId),
+    direction: text(record.direction),
+    lane: text(record.lane) ?? 'UNKNOWN',
+    state,
+    holding: record.holding === true,
+    outstandingReleaseConditions: strings(record.outstandingReleaseConditions),
+    reservedAt: text(record.reservedAt) ?? '',
+    releasedAt: text(record.releasedAt),
+    releaseReason: text(record.releaseReason),
+  };
+}
+
+/**
+ * The envelope reading, or `undefined` when the body is not one.
+ *
+ * An unresolved envelope is a legitimate answer, not a parse failure: it means
+ * nothing may be written at all, and the console has to be able to say so.
+ */
+export function parseAdvertisingExposure(body: unknown): AdvertisingExposure | undefined {
+  if (typeof body !== 'object' || body === null) {
+    return undefined;
+  }
+  const record = body as Record<string, unknown>;
+  if (typeof record.activeInterventions !== 'number') {
+    return undefined;
+  }
+  return {
+    envelopeId: text(record.envelopeId),
+    policyVersion: decimal(record.policyVersion),
+    scopeKind: text(record.scopeKind),
+    currencyCode: text(record.currencyCode),
+    activeInterventions: record.activeInterventions,
+    maxActiveInterventions: decimal(record.maxActiveInterventions),
+    reservedRecoveryHeadroom: decimal(record.reservedRecoveryHeadroom),
+    unresolvedTransmittedWrites: decimal(record.unresolvedTransmittedWrites) ?? 0,
+    maxUnresolvedTransmittedWrites: decimal(record.maxUnresolvedTransmittedWrites),
+    cumulativeBidChangeAmount: decimal(record.cumulativeBidChangeAmount),
+    maxCumulativeBidChangeAmount: decimal(record.maxCumulativeBidChangeAmount),
+    cumulativeWindowHours: decimal(record.cumulativeWindowHours),
+    resolved: record.resolved === true,
+    exhaustedAxes: strings(record.exhaustedAxes),
+    status: text(record.status),
+  };
+}
+
+/** One containment, or `undefined` when the body is not one. */
+export function parseAdvertisingContainment(body: unknown): AdvertisingContainment | undefined {
+  if (typeof body !== 'object' || body === null) {
+    return undefined;
+  }
+  const record = body as Record<string, unknown>;
+  const id = text(record.id);
+  const containmentKind = text(record.containmentKind);
+  const state = text(record.state);
+  if (id === undefined || containmentKind === undefined || state === undefined) {
+    return undefined;
+  }
+  return {
+    id,
+    containmentKind,
+    scopeKind: text(record.scopeKind),
+    causeClass: text(record.causeClass),
+    reason: text(record.reason),
+    evidenceReference: text(record.evidenceReference),
+    activatedByUserId: text(record.activatedByUserId),
+    activatedByTrigger: text(record.activatedByTrigger),
+    activatedAt: text(record.activatedAt) ?? '',
+    state,
+    holding: record.holding === true,
+    outstandingConditions: strings(record.outstandingConditions),
+    readyToLift: record.readyToLift === true,
+    reenabledAt: text(record.reenabledAt),
+  };
+}
+
+/**
+ * One outcome observation, or `undefined` when the body is not one.
+ *
+ * The stage, the verdict and both metric states are required. A reading whose
+ * stage was missing could not be told from the other stage, which is the exact
+ * confusion this surface exists to prevent.
+ */
+export function parseAdvertisingOutcome(body: unknown): AdvertisingOutcome | undefined {
+  if (typeof body !== 'object' || body === null) {
+    return undefined;
+  }
+  const record = body as Record<string, unknown>;
+  const id = text(record.id);
+  const commandId = text(record.commandId);
+  const outcomeStage = text(record.outcomeStage);
+  const verdict = text(record.verdict);
+  const baselineMetricState = text(record.baselineMetricState);
+  const observedMetricState = text(record.observedMetricState);
+  if (
+    id === undefined ||
+    commandId === undefined ||
+    outcomeStage === undefined ||
+    verdict === undefined ||
+    baselineMetricState === undefined ||
+    observedMetricState === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    id,
+    commandId,
+    outcomeStage,
+    revisionNo: decimal(record.revisionNo) ?? 1,
+    supersedesObservationId: text(record.supersedesObservationId),
+    adjustmentReason: text(record.adjustmentReason),
+    windowStartsAt: text(record.windowStartsAt) ?? '',
+    windowEndsAt: text(record.windowEndsAt) ?? '',
+    baselineMetricState,
+    baselineMetricValue: decimal(record.baselineMetricValue),
+    observedMetricState,
+    observedMetricValue: decimal(record.observedMetricValue),
+    observedTrafficCount: decimal(record.observedTrafficCount),
+    settledCoverageRatio: decimal(record.settledCoverageRatio),
+    verdict,
+    guardState: text(record.guardState),
+    unresolvedReasonCodes: strings(record.unresolvedReasonCodes),
+    settled: record.settled === true,
+    evaluatedAt: text(record.evaluatedAt) ?? '',
+  };
+}
+
+/**
+ * One observation about whether a manual change actually landed.
+ *
+ * `provesConfiguration` is the whole point. An executor saying they did it is a
+ * report; only an official readback, an official export or a second person's
+ * independent look proves anything, and the console must never render the two
+ * the same way.
+ */
+export interface AdvertisingManualVerification {
+  readonly id: string;
+  readonly evidenceGrade: string;
+  readonly executorUserId: string | undefined;
+  readonly verifierUserId: string | undefined;
+  readonly observedFieldPath: string | undefined;
+  readonly observedValue: string | undefined;
+  readonly conflictState: string | undefined;
+  readonly provesConfiguration: boolean;
+  readonly observedAt: string;
+}
+
+/**
+ * One manual execution packet: work a person was asked to do by hand.
+ *
+ * Nothing here can produce a command, an outbox row, an attempt or a provider
+ * call. A packet is a written instruction and a place to record what was
+ * observed afterwards, which is exactly why the verification evidence grade
+ * matters more than the executor's own report.
+ */
+export interface AdvertisingManualPacket {
+  readonly id: string;
+  readonly caseId: string | undefined;
+  readonly adNativeObjectId: string;
+  readonly actionKind: string;
+  readonly intendedState: string | undefined;
+  readonly reason: string | undefined;
+  readonly evidenceReference: string | undefined;
+  readonly blockerCodes: readonly string[];
+  readonly makerUserId: string | undefined;
+  readonly endorserUserId: string | undefined;
+  readonly approverUserId: string | undefined;
+  readonly state: string;
+  readonly issuedAt: string;
+  readonly expiresAt: string;
+  readonly configurationProven: boolean;
+  readonly verifications: readonly AdvertisingManualVerification[];
+}
+
+/** One verification, or `undefined` when the body is not one. */
+export function parseAdvertisingManualVerification(
+  body: unknown,
+): AdvertisingManualVerification | undefined {
+  if (typeof body !== 'object' || body === null) {
+    return undefined;
+  }
+  const record = body as Record<string, unknown>;
+  const id = text(record.id);
+  const evidenceGrade = text(record.evidenceGrade);
+  if (id === undefined || evidenceGrade === undefined) {
+    return undefined;
+  }
+  return {
+    id,
+    evidenceGrade,
+    executorUserId: text(record.executorUserId),
+    verifierUserId: text(record.verifierUserId),
+    observedFieldPath: text(record.observedFieldPath),
+    observedValue: text(record.observedValue),
+    conflictState: text(record.conflictState),
+    // Never defaulted true. An absent flag is not a proof.
+    provesConfiguration: record.provesConfiguration === true,
+    observedAt: text(record.observedAt) ?? '',
+  };
+}
+
+/** One manual packet, or `undefined` when the body is not one. */
+export function parseAdvertisingManualPacket(body: unknown): AdvertisingManualPacket | undefined {
+  if (typeof body !== 'object' || body === null) {
+    return undefined;
+  }
+  const record = body as Record<string, unknown>;
+  const id = text(record.id);
+  const adNativeObjectId = text(record.adNativeObjectId);
+  const actionKind = text(record.actionKind);
+  const state = text(record.state);
+  if (
+    id === undefined ||
+    adNativeObjectId === undefined ||
+    actionKind === undefined ||
+    state === undefined
+  ) {
+    return undefined;
+  }
+  const verifications = Array.isArray(record.verifications)
+    ? record.verifications
+        .map(parseAdvertisingManualVerification)
+        .filter((item): item is AdvertisingManualVerification => item !== undefined)
+    : [];
+  return {
+    id,
+    caseId: text(record.caseId),
+    adNativeObjectId,
+    actionKind,
+    intendedState: text(record.intendedState),
+    reason: text(record.reason),
+    evidenceReference: text(record.evidenceReference),
+    blockerCodes: strings(record.blockerCodes),
+    makerUserId: text(record.makerUserId),
+    endorserUserId: text(record.endorserUserId),
+    approverUserId: text(record.approverUserId),
+    state,
+    issuedAt: text(record.issuedAt) ?? '',
+    expiresAt: text(record.expiresAt) ?? '',
+    // Derived from the verifications by the backend, and re-derived here rather
+    // than trusted, so a body that claimed proof with none could not assert it.
+    configurationProven: verifications.some((item) => item.provesConfiguration),
+    verifications,
+  };
+}

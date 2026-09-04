@@ -63,7 +63,13 @@ const PROTECTION_CASE = {
       contribution: '0.4',
       absenceReason: null,
     },
-    { code: 'CRITICAL_SALES', value: null, weight: '1.0', contribution: null, absenceReason: 'NOT_AVAILABLE' },
+    {
+      code: 'CRITICAL_SALES',
+      value: null,
+      weight: '1.0',
+      contribution: null,
+      absenceReason: 'NOT_AVAILABLE',
+    },
   ],
 };
 
@@ -150,9 +156,7 @@ describe('the advertising queue', () => {
   });
 
   it('TC-UI-ADV-007 forbidden says which access is missing', async () => {
-    render(
-      <AdvertisingQueue context={context(respondWith({}, 403))} onSelect={() => undefined} />,
-    );
+    render(<AdvertisingQueue context={context(respondWith({}, 403))} onSelect={() => undefined} />);
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent(/advertising access/u);

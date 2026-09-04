@@ -29,10 +29,7 @@ const LANES = ['PROTECTION', 'DATA_REPAIR', 'OPTIMIZATION', 'WATCH'] as const;
  * column has to be able to tell "nothing was spent" from "nobody knows what was
  * spent", because one of those is a finding and the other is a gap.
  */
-export function AdvertisingQueue({
-  context,
-  onSelect,
-}: AdvertisingQueueProps): React.JSX.Element {
+export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): React.JSX.Element {
   const [lane, setLane] = useState<string | undefined>(undefined);
   const [cases, setCases] = useState<readonly AdvertisingCase[] | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
@@ -72,8 +69,8 @@ export function AdvertisingQueue({
     <section aria-label="Advertising control" data-state="loaded">
       <h2>Advertising</h2>
       <p>
-        Ordered by the product&rsquo;s own rank. A protection case outranks every
-        optimization case whatever the amounts involved.
+        Ordered by the product&rsquo;s own rank. A protection case outranks every optimization case
+        whatever the amounts involved.
       </p>
       <fieldset>
         <legend>Lane</legend>
@@ -102,8 +99,8 @@ export function AdvertisingQueue({
 
       {cases.length === 0 ? (
         <p data-empty="advertising-queue">
-          Nothing is waiting in this lane. That is a statement about the queue, not
-          about whether the calculation ran.
+          Nothing is waiting in this lane. That is a statement about the queue, not about whether
+          the calculation ran.
         </p>
       ) : (
         <table>

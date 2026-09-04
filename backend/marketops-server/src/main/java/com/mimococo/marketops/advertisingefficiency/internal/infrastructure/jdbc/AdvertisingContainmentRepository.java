@@ -352,6 +352,144 @@ public class AdvertisingContainmentRepository {
     }
 
     /**
+     * Reservations over a set of stores, most recently taken first.
+     *
+     * <p>A read, and only a read. Nothing decides anything from this: the write
+     * gate re-derives every reservation fact inside the database at the moment a
+     * write is attempted, so a console that read a stale list cannot let
+     * anything through.
+     */
+    public List<com.mimococo.marketops.advertisingefficiency.AdvertisingReservationView>
+            reservations(UUID organizationId, List<UUID> permittedStoreIds, boolean holdingOnly,
+                    int limit) {
+        return jdbc.sql("""
+                SELECT id, ad_native_object_id, store_id, affected_set_digest,
+                       product_variant_ids, intervention_kind, intervention_reference_id,
+                       direction, lane, state, configuration_resolved,
+                       unknown_or_mismatch_open, early_observation_complete, regression_open,
+                       reserved_at, released_at, release_reason
+                  FROM ops.ad_action_reservation
+                 WHERE organization_id = :organizationId
+                   AND store_id = ANY (CAST(:permittedStoreIds AS uuid[]))
+                   AND (:holdingOnly = false OR state = 'ACTIVE')
+                 ORDER BY reserved_at DESC, id
+                 LIMIT :limit
+                """)
+                .param("organizationId", organizationId)
+                .param("permittedStoreIds", uuidArrayLiteral(permittedStoreIds))
+                .param("holdingOnly", holdingOnly)
+                .param("limit", limit)
+                .query(AdvertisingContainmentRepository::mapReservation)
+                .list();
+    }
+
+    /** How many reservations currently hold, which is the envelope's first axis. */
+    public long activeInterventionCount(UUID organizationId) {
+        return jdbc.sql("""
+                SELECT count(*) FROM ops.ad_action_reservation
+                 WHERE organization_id = :organizationId AND state = 'ACTIVE'
+                """)
+                .param("organizationId", organizationId)
+                .query(Long.class)
+                .single();
+    }
+
+    /**
+     * The envelope in force and what is consumed against each of its axes.
+     *
+     * <p>The envelope is selected the same way the write gate selects it — the
+     * narrowest scope first, then the most recent — so the console reports the
+     * envelope that would actually apply rather than whichever one happened to
+     * be written last. Retired envelopes are still selectable, because the gate
+     * treats a retired envelope as binding rather than as absent.
+     *
+     * <p>The three consumption figures are counted here rather than read from
+     * anywhere, and each is counted independently. There is no place where one
+     * axis's slack is added to another's, in this method or in the gate.
+     */
+    public com.mimococo.marketops.advertisingefficiency.AdvertisingExposureView exposure(
+            UUID organizationId) {
+        long active = activeInterventionCount(organizationId);
+        long unresolved = jdbc.sql("""
+                SELECT count(*) FROM ops.ad_bid_command
+                 WHERE organization_id = :organizationId
+                   AND state IN ('UNKNOWN_REQUIRES_READBACK', 'READBACK_MISMATCH',
+                                 'LATER_CHANGE_OR_MISMATCH_INVESTIGATION', 'MANUAL_RESOLUTION')
+                """)
+                .param("organizationId", organizationId)
+                .query(Long.class)
+                .single();
+        return jdbc.sql("""
+                SELECT e.id, e.policy_version, e.scope_kind, e.currency_code,
+                       e.max_active_interventions, e.reserved_recovery_headroom_count,
+                       e.max_unresolved_transmitted_writes,
+                       e.max_cumulative_bid_change_amount, e.cumulative_window_hours,
+                       e.effective_from, e.status,
+                       (SELECT coalesce(sum(abs(c.target_bid_amount - c.prior_bid_amount)), 0)
+                          FROM ops.ad_bid_command c
+                         WHERE c.organization_id = e.organization_id
+                           AND c.created_at > statement_timestamp()
+                               - make_interval(hours => e.cumulative_window_hours))
+                           AS cumulative_bid_change_amount
+                  FROM core.ad_exposure_envelope e
+                 WHERE e.organization_id = :organizationId
+                   AND e.status IN ('ACTIVE', 'RETIRED')
+                   AND e.effective_from <= statement_timestamp()
+                   AND (e.effective_to IS NULL OR e.effective_to > statement_timestamp())
+                 ORDER BY CASE e.scope_kind WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END,
+                          e.effective_from DESC
+                 LIMIT 1
+                """)
+                .param("organizationId", organizationId)
+                .query((java.sql.ResultSet rs, int index) ->
+                        new com.mimococo.marketops.advertisingefficiency.AdvertisingExposureView(
+                                rs.getObject("id", UUID.class),
+                                rs.getInt("policy_version"),
+                                rs.getString("scope_kind"),
+                                rs.getString("currency_code"),
+                                active,
+                                rs.getInt("max_active_interventions"),
+                                rs.getInt("reserved_recovery_headroom_count"),
+                                unresolved,
+                                rs.getInt("max_unresolved_transmitted_writes"),
+                                rs.getBigDecimal("cumulative_bid_change_amount"),
+                                rs.getBigDecimal("max_cumulative_bid_change_amount"),
+                                rs.getInt("cumulative_window_hours"),
+                                rs.getTimestamp("effective_from").toInstant(),
+                                rs.getString("status")))
+                .optional()
+                // No envelope is not an empty envelope. Nothing may be written
+                // at all, and the consumption figures are still reported so an
+                // operator can see what is standing while none resolves.
+                .orElseGet(() -> com.mimococo.marketops.advertisingefficiency
+                        .AdvertisingExposureView.unresolved(active, unresolved));
+    }
+
+    private static com.mimococo.marketops.advertisingefficiency.AdvertisingReservationView
+            mapReservation(java.sql.ResultSet rs, int index) throws java.sql.SQLException {
+        Array variants = rs.getArray("product_variant_ids");
+        java.sql.Timestamp released = rs.getTimestamp("released_at");
+        return new com.mimococo.marketops.advertisingefficiency.AdvertisingReservationView(
+                rs.getObject("id", UUID.class),
+                rs.getObject("ad_native_object_id", UUID.class),
+                rs.getObject("store_id", UUID.class),
+                rs.getString("affected_set_digest"),
+                variants == null ? List.of() : List.of((UUID[]) variants.getArray()),
+                rs.getString("intervention_kind"),
+                rs.getObject("intervention_reference_id", UUID.class),
+                rs.getString("direction"),
+                rs.getString("lane"),
+                rs.getString("state"),
+                rs.getBoolean("configuration_resolved"),
+                rs.getBoolean("unknown_or_mismatch_open"),
+                rs.getBoolean("early_observation_complete"),
+                rs.getBoolean("regression_open"),
+                rs.getTimestamp("reserved_at").toInstant(),
+                released == null ? null : released.toInstant(),
+                rs.getString("release_reason"));
+    }
+
+    /**
      * A uuid array as PostgreSQL reads it.
      *
      * <p>The driver will not infer an array type from a Java list here, and

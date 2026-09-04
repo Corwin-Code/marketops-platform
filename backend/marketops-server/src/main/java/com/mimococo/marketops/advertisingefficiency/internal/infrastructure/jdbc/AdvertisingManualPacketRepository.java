@@ -209,6 +209,49 @@ public class AdvertisingManualPacketRepository {
                 .toList();
     }
 
+    /**
+     * Every packet for one object, narrowed to the caller's stores.
+     *
+     * <p>The packet carries the store it was issued for, so the narrowing
+     * happens in SQL as well as in the caller.
+     */
+    public List<ManualExecutionPacketView> forObject(UUID organizationId, UUID objectId,
+                                                     List<UUID> permittedStoreIds, int limit) {
+        return jdbc.sql(PACKET_SELECT + """
+                 WHERE packet.organization_id = :organizationId
+                   AND packet.ad_native_object_id = :objectId
+                   AND packet.store_id = ANY (CAST(:permittedStoreIds AS uuid[]))
+                 ORDER BY packet.issued_at DESC, packet.id
+                 LIMIT :limit
+                """)
+                .param("organizationId", organizationId)
+                .param("objectId", objectId)
+                .param("permittedStoreIds", uuidArrayLiteral(permittedStoreIds))
+                .param("limit", limit)
+                .query(AdvertisingManualPacketRepository::mapPacket)
+                .list()
+                .stream()
+                .map(packet -> withVerifications(packet, verifications(packet.id())))
+                .toList();
+    }
+
+    /**
+     * A uuid array as PostgreSQL reads it.
+     *
+     * <p>Every element is already a {@link UUID}, so the literal cannot carry
+     * anything a uuid array may not hold.
+     */
+    private static String uuidArrayLiteral(List<UUID> ids) {
+        StringBuilder literal = new StringBuilder("{");
+        for (int index = 0; index < ids.size(); index++) {
+            if (index > 0) {
+                literal.append(',');
+            }
+            literal.append(ids.get(index).toString());
+        }
+        return literal.append('}').toString();
+    }
+
     private List<ManualExecutionPacketView.Verification> verifications(UUID packetId) {
         return jdbc.sql("""
                 SELECT id, evidence_grade, executor_user_id, verifier_user_id,

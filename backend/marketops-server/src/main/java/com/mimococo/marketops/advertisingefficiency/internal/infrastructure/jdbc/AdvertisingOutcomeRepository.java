@@ -258,6 +258,78 @@ public class AdvertisingOutcomeRepository {
                 .list();
     }
 
+    /**
+     * Every observation about one command, narrowed to the caller's stores.
+     *
+     * <p>The command carries the store, so the narrowing happens in SQL as well
+     * as in the caller. Both stages and every restatement come back in the order
+     * they were taken: collapsing them here would hide that an answer changed.
+     */
+    public List<com.mimococo.marketops.advertisingefficiency.AdvertisingOutcomeView> forCommand(
+            UUID organizationId, UUID commandId, List<UUID> permittedStoreIds) {
+        return jdbc.sql("""
+                SELECT o.id, o.command_id, o.outcome_stage, o.revision_no,
+                       o.supersedes_observation_id, o.adjustment_reason, o.window_starts_at,
+                       o.window_ends_at, o.baseline_metric_state, o.baseline_metric_value,
+                       o.observed_metric_state, o.observed_metric_value,
+                       o.observed_traffic_count, o.settled_coverage_ratio, o.verdict,
+                       o.guard_state, o.unresolved_reason_codes, o.evaluated_at
+                  FROM ops.ad_outcome_observation o
+                  JOIN ops.ad_bid_command c
+                    ON c.id = o.command_id AND c.organization_id = o.organization_id
+                 WHERE o.organization_id = :organizationId
+                   AND o.command_id = :commandId
+                   AND c.store_id = ANY (CAST(:permittedStoreIds AS uuid[]))
+                 ORDER BY o.evaluated_at, o.revision_no
+                """)
+                .param("organizationId", organizationId)
+                .param("commandId", commandId)
+                .param("permittedStoreIds", uuidArrayLiteral(permittedStoreIds))
+                .query(AdvertisingOutcomeRepository::mapOutcomeView)
+                .list();
+    }
+
+    private static com.mimococo.marketops.advertisingefficiency.AdvertisingOutcomeView
+            mapOutcomeView(ResultSet rs, int index) throws SQLException {
+        java.sql.Array reasons = rs.getArray("unresolved_reason_codes");
+        return new com.mimococo.marketops.advertisingefficiency.AdvertisingOutcomeView(
+                rs.getObject("id", UUID.class),
+                rs.getObject("command_id", UUID.class),
+                rs.getString("outcome_stage"),
+                rs.getInt("revision_no"),
+                rs.getObject("supersedes_observation_id", UUID.class),
+                rs.getString("adjustment_reason"),
+                rs.getTimestamp("window_starts_at").toInstant(),
+                rs.getTimestamp("window_ends_at").toInstant(),
+                rs.getString("baseline_metric_state"),
+                rs.getBigDecimal("baseline_metric_value"),
+                rs.getString("observed_metric_state"),
+                rs.getBigDecimal("observed_metric_value"),
+                longOrNull(rs, "observed_traffic_count"),
+                rs.getBigDecimal("settled_coverage_ratio"),
+                rs.getString("verdict"),
+                rs.getString("guard_state"),
+                reasons == null ? List.of() : List.of((String[]) reasons.getArray()),
+                rs.getTimestamp("evaluated_at").toInstant());
+    }
+
+    /**
+     * A uuid array as PostgreSQL reads it.
+     *
+     * <p>Every element is already a {@link UUID}, so the literal cannot carry
+     * anything a uuid array may not hold.
+     */
+    private static String uuidArrayLiteral(List<UUID> ids) {
+        StringBuilder literal = new StringBuilder("{");
+        for (int index = 0; index < ids.size(); index++) {
+            if (index > 0) {
+                literal.append(',');
+            }
+            literal.append(ids.get(index).toString());
+        }
+        return literal.append('}').toString();
+    }
+
     /** One command's next due stage, and the frozen plan that judges it. */
     public record DueRow(
             UUID commandId, UUID organizationId, UUID storeId, String platformCode,

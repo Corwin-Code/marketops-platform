@@ -37,13 +37,7 @@ export type EvidenceState = (typeof EVIDENCE_STATES)[number];
 /** How one state must be shown. */
 export interface EvidencePresentation {
   /** Machine-readable marker every renderer puts on the element. */
-  readonly tone:
-    | 'confirmed'
-    | 'operational'
-    | 'estimated'
-    | 'stale'
-    | 'unknown'
-    | 'blocked';
+  readonly tone: 'confirmed' | 'operational' | 'estimated' | 'stale' | 'unknown' | 'blocked';
   /** Short operator-facing label. */
   readonly label: string;
   /** What it means for a decision, in words somebody can act on. */
@@ -169,5 +163,5 @@ export function presentMeasure(
   if (state === 'AVAILABLE' && value !== undefined) {
     return format(value);
   }
-  return VALUE_LABELS[state as ValueState] ?? 'unknown';
+  return VALUE_LABELS[state as ValueState];
 }

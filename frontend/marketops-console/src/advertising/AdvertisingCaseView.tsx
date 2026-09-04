@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchAdvertisingCase } from '../api/console';
 import type { AdvertisingCase } from '../api/advertising';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
+import { AdvertisingManualShadow } from './AdvertisingManualShadow';
 import { AdvertisingProblem } from './AdvertisingQueue';
 import { EvidenceChip } from './EvidenceChip';
 import { presentMeasure } from './evidencePresentation';
@@ -147,8 +148,8 @@ export function AdvertisingCaseView({
         <h3>Why it is here in the queue</h3>
         {detail.rankFactors.length === 0 ? (
           <p data-empty="rank-factors">
-            No factors were recorded, which happens when no priority policy is in
-            force. The case still sorts by its lane.
+            No factors were recorded, which happens when no priority policy is in force. The case
+            still sorts by its lane.
           </p>
         ) : (
           <table>
@@ -165,7 +166,7 @@ export function AdvertisingCaseView({
               {detail.rankFactors.map((factor) => (
                 <tr key={factor.code} data-factor={factor.code}>
                   <td>{factor.code}</td>
-                  <td>{factor.value === undefined ? (factor.absenceReason ?? 'absent') : factor.value}</td>
+                  <td>{factor.value ?? factor.absenceReason ?? 'absent'}</td>
                   <td>{factor.weight ?? '—'}</td>
                   <td>{factor.contribution ?? '—'}</td>
                 </tr>
@@ -174,6 +175,13 @@ export function AdvertisingCaseView({
           </table>
         )}
       </section>
+      {/*
+        The manual work for this object, kept beside the evidence rather than on
+        a page of its own. Budget and pause changes live entirely here and reach
+        no marketplace, and an operator reading the case is the person who needs
+        to know whether somebody has already done one by hand.
+      */}
+      <AdvertisingManualShadow context={context} objectId={detail.adNativeObjectId} />
     </section>
   );
 }
