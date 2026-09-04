@@ -7,6 +7,7 @@ import com.mimococo.marketops.advertisingefficiency.AdvertisingCaseQuery;
 import com.mimococo.marketops.advertisingefficiency.AdvertisingCaseView;
 import com.mimococo.marketops.advertisingefficiency.AdvertisingCause;
 import com.mimococo.marketops.advertisingefficiency.AdvertisingLane;
+import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingRecalculationRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -82,6 +83,16 @@ class AdvertisingEfficiencyFlowIT {
 
     @Autowired
     private JdbcClient jdbc;
+
+    @Autowired
+    private AdvertisingTargetedWorker targeted;
+
+    @Autowired
+    private AdvertisingReconciliationWorker reconciliation;
+
+    @Autowired
+    private com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc
+            .AdvertisingRecalculationRepository queue;
 
     /**
      * A private server, not the shared one.
@@ -368,6 +379,118 @@ class AdvertisingEfficiencyFlowIT {
                 + " WHERE id = '" + SEMANTIC_PROFILE + "'")).isEqualTo("SYNTHETIC_FIXTURE");
         assertThat(string("SELECT verification_state FROM platform.ad_semantic_profile"
                 + " WHERE id = '" + SEMANTIC_PROFILE + "'")).isEqualTo("UNVERIFIED");
+    }
+
+    @Test
+    @Order(15)
+    @DisplayName("TC-AD-FLOW-015 the targeted worker drains what a fact enqueued, and says how long it took")
+    void theTargetedWorkerDrainsAndMeasures() {
+        UUID requestId = UUID.randomUUID();
+        assertThat(queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
+                requestId, ORGANIZATION, AD_OBJECT, "AD_SPEND_OR_TRAFFIC",
+                "fact://advertising-loop-it/spend", AS_OF.minusSeconds(120), AS_OF,
+                "advertising-loop-it")))
+                .isEqualTo(AdvertisingRecalculationRepository.EnqueueOutcome.CREATED);
+
+        assertThat(targeted.runOnce(50)).isPositive();
+
+        assertThat(count("SELECT count(*) FROM ops.ad_recalculation_request"
+                + " WHERE id = '" + requestId + "' AND state = 'COMPLETED'")).isEqualTo(1);
+        // A pass that ran and left no latency behind would be a queue nobody
+        // could hold to a service level.
+        assertThat(count("SELECT count(*) FROM ops.ad_slo_observation"
+                + " WHERE organization_id = '" + ORGANIZATION + "'")).isPositive();
+    }
+
+    @Test
+    @Order(16)
+    @DisplayName("TC-AD-FLOW-016 the sweep visits the portfolio and records the run that did it")
+    void theSweepRecordsItsOwnRun() {
+        AdvertisingReconciliationWorker.SweepResult result =
+                reconciliation.sweep(ORGANIZATION, "MANUAL").orElseThrow();
+
+        assertThat(result.completed()).isTrue();
+        assertThat(result.objectCount()).isPositive();
+        assertThat(result.failedObjectCount()).isZero();
+        // The run is the evidence that the hour was covered. Without it a quiet
+        // queue and a sweep that never ran look identical.
+        assertThat(count("SELECT count(*) FROM ops.ad_reconciliation_run"
+                + " WHERE id = '" + result.runId() + "' AND state = 'COMPLETED'")).isEqualTo(1);
+    }
+
+    @Test
+    @Order(17)
+    @DisplayName("TC-AD-FLOW-017 a trigger the targeted pass never reached is repaired by the sweep that covered it")
+    void theSweepRepairsWhatTheTargetedPassMissed() {
+        // A request that was enqueued and then never drained — a worker that
+        // died, a lease that expired, a pass that was behind. The object was
+        // still recalculated by the sweep, so the request is satisfied and must
+        // not sit pending forever asking for work already done.
+        UUID missed = UUID.randomUUID();
+        seed.sql("""
+                INSERT INTO ops.ad_recalculation_request (id, organization_id,
+                        ad_native_object_id, trigger_class, trigger_reference,
+                        fact_accepted_at, requested_at, state, correlation_id)
+                VALUES (:id, :organization, :object, 'AD_SPEND_OR_TRAFFIC',
+                        'fact://advertising-loop-it/missed', :at, :at, 'PENDING',
+                        'advertising-loop-it-missed')
+                """).param("id", missed).param("organization", ORGANIZATION)
+                .param("object", AD_OBJECT)
+                .param("at", java.sql.Timestamp.from(AS_OF.minusSeconds(3_600))).update();
+
+        AdvertisingReconciliationWorker.SweepResult result =
+                reconciliation.sweep(ORGANIZATION, "MANUAL").orElseThrow();
+
+        assertThat(result.repairedCount()).isPositive();
+        assertThat(string("SELECT state FROM ops.ad_recalculation_request WHERE id = '"
+                + missed + "'")).isEqualTo("COMPLETED");
+    }
+
+    @Test
+    @Order(18)
+    @DisplayName("TC-AD-FLOW-018 the sweep and the targeted worker leave the same case behind")
+    void bothSchedulesLeaveTheSameCase() {
+        // The same property as TC-AD-FLOW-012, asked one level up: not of the
+        // shared seam but of the two workers that call it, because a schedule
+        // that read a different window or a different policy version would
+        // differ here and nowhere else.
+        queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
+                UUID.randomUUID(), ORGANIZATION, AD_OBJECT, "AD_SPEND_OR_TRAFFIC",
+                "fact://advertising-loop-it/parity", AS_OF.minusSeconds(60), AS_OF,
+                "advertising-loop-it-parity"));
+        targeted.runOnce(50);
+        String afterTargeted = caseFingerprint();
+
+        reconciliation.sweep(ORGANIZATION, "MANUAL").orElseThrow();
+        String afterSweep = caseFingerprint();
+
+        assertThat(afterSweep).isEqualTo(afterTargeted);
+    }
+
+    @Test
+    @Order(19)
+    @DisplayName("TC-AD-FLOW-019 a sweep abandoned mid-portfolio is failed rather than left holding it")
+    void anAbandonedSweepIsFailedRatherThanLeftHolding() {
+        UUID stale = UUID.randomUUID();
+        seed.sql("""
+                INSERT INTO ops.ad_reconciliation_run (id, organization_id, trigger_kind,
+                        as_of, started_at, state, correlation_id)
+                VALUES (:id, :organization, 'SCHEDULED', :startedAt, :startedAt, 'RUNNING',
+                        'advertising-loop-it-stale')
+                """).param("id", stale).param("organization", ORGANIZATION)
+                .param("startedAt",
+                        java.sql.Timestamp.from(java.time.Instant.now().minusSeconds(7_200)))
+                .update();
+
+        // One run per organization at a time is the rule. A run that died two
+        // hours ago still holding the mutex would stop every later sweep, so the
+        // next sweep fails it rather than declining forever.
+        AdvertisingReconciliationWorker.SweepResult result =
+                reconciliation.sweep(ORGANIZATION, "MANUAL").orElseThrow();
+
+        assertThat(result.completed()).isTrue();
+        assertThat(string("SELECT state FROM ops.ad_reconciliation_run WHERE id = '"
+                + stale + "'")).isEqualTo("FAILED");
     }
 
     // ------------------------------------------------------------------

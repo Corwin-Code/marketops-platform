@@ -38,7 +38,7 @@ JAVA_HOME=~/.sdkman/candidates/java/21.0.10-zulu ./backend/marketops-server/mvnw
 | `AdvertisingAuthorityBindingIT` | 6 | an advertising decision binds to the advertising authority |
 | `AdvertisingReservationIT` | 9 | overlap refusal, containment, multi-party reenablement |
 | `AdvertisingManualShadowIT` | 8 | the Manual Shadow records and never routes |
-| `AdvertisingEfficiencyFlowIT` | 14 | the calculation loop from evidence to a projected case |
+| `AdvertisingEfficiencyFlowIT` | 19 | the calculation loop, and the two schedules that drive it |
 | `AdvertisingDecisionQueryIT` | 4 | the decision-resolution queries against the real schema |
 | `AdBidDispatchAuthorityIT` | 1 | the dispatch-authority query type-checks for all four operations |
 | `AdBidParameterContractParityIT` | 1 | the Java and SQL parameter contracts accept the same shapes |
@@ -60,6 +60,10 @@ JAVA_HOME=~/.sdkman/candidates/java/21.0.10-zulu ./backend/marketops-server/mvnw
 | A security cause needs an attestation before anything restarts | `AdvertisingReservationIT#TC-AD-CONTAIN-003` |
 | Budget and status changes have no command table, and no FK into one | `AdvertisingManualShadowIT#TC-AD-MANUAL-001,002` |
 | An executor's own report cannot prove a configuration | `AdvertisingManualShadowIT#TC-AD-MANUAL-003,004` |
+| The targeted path and the sweep leave the same case | `AdvertisingEfficiencyFlowIT#TC-AD-FLOW-012,018` |
+| A trigger no targeted pass reached is repaired by the sweep that covered it | `AdvertisingEfficiencyFlowIT#TC-AD-FLOW-017` |
+| A sweep abandoned mid-portfolio is failed, not left holding the mutex | `AdvertisingEfficiencyFlowIT#TC-AD-FLOW-019` |
+| Every drained request leaves a latency observation behind | `AdvertisingEfficiencyFlowIT#TC-AD-FLOW-015` |
 | A settled claim cannot outrun the Completed-Sales Guard | `OutcomeEvaluationTest#TC-AD-OUTCOME-007,011` |
 | A fall in spend is the improvement a decrease wanted | `OutcomeEvaluationTest#TC-AD-OUTCOME-003b` |
 | A bid never lands above the intent or off the platform's grid | `BidCandidateTest` (24 cases) |
@@ -146,9 +150,6 @@ Named plainly, because a reader should not have to infer it from absence.
 - **Browser end-to-end.** The Playwright suite has not been run against the new
   advertising surfaces.
 - **Mutation and adversarial testing.** Not run for the advertising module.
-- **Targeted and sweep equivalence.** The hourly reconciliation and the targeted
-  path are implemented and separately tested; a run proving both produce
-  identical results for the same object has not been recorded.
 - **Advertising capacity and SLO measurement.** `AdvertisingSlo` fixes the bounds
   and `ops.ad_slo_observation` records latencies; no advertising load has been
   applied.
