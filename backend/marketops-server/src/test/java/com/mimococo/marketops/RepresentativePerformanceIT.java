@@ -142,14 +142,21 @@ class RepresentativePerformanceIT {
                 counts.put(table,jdbc.sql("SELECT count(*) FROM "+table).query(Long.class).single());
             }
             report.put("rowCounts",counts);
-            // The dataset generates one metric value per active definition, so
-            // these two counts move whenever a metric is added — as they did
-            // when the advertising domain brought ten. Pinning the product
-            // rather than the total keeps the dataset just as reproducible and
-            // stops the number needing an edit every time the schema learns a
-            // new figure.
-            long activeDefinitions = jdbc
-                    .sql("SELECT count(*) FROM mart.metric_definition WHERE status='ACTIVE'")
+            // The dataset generates one metric value per definition it applies,
+            // so these two counts move whenever a metric is added. Pinning the
+            // product rather than the total keeps the dataset just as
+            // reproducible and stops the number needing an edit every time the
+            // schema learns a new figure.
+            //
+            // Advertising is excluded on both sides. Every value here is about a
+            // listing variant, and the product never computes an advertising
+            // metric for one — mart.metric_value does not even admit an
+            // advertising subject — so including them fabricated rows the
+            // product would never produce and inflated the latency measured
+            // against them by the same proportion.
+            long activeDefinitions = jdbc.sql(
+                    "SELECT count(*) FROM mart.metric_definition"
+                            + " WHERE status='ACTIVE' AND domain <> 'ADVERTISING'")
                     .query(Long.class).single();
             report.put("activeMetricDefinitions",activeDefinitions);
             assertThat(counts).containsEntry("core.product_variant",5000L).containsEntry("ledger.sales_fact",720000L)

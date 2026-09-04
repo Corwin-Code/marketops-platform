@@ -87,7 +87,14 @@ FROM perf_snapshot CROSS JOIN perf_config GROUP BY run,org,days,period_start,per
 CREATE TEMP TABLE perf_metric AS
 SELECT s.*,d.metric_code,d.definition_version,
     md5('performance-v1/metric/'||n||'/'||days||'/'||iteration||'/'||d.metric_code)::uuid AS metric_id
-FROM perf_snapshot s CROSS JOIN mart.metric_definition d WHERE d.status='ACTIVE';
+-- Advertising metrics are deliberately excluded. Every value this dataset
+-- writes has subject_kind PLATFORM_LISTING_VARIANT, and the product never
+-- computes an advertising metric for a listing variant — mart.metric_value
+-- does not even admit an advertising subject. Including them fabricated a
+-- third more rows than the product would ever produce and inflated the
+-- latency measured against them by the same proportion.
+FROM perf_snapshot s CROSS JOIN mart.metric_definition d
+WHERE d.status='ACTIVE' AND d.domain <> 'ADVERTISING';
 INSERT INTO mart.metric_value(id,organization_id,calculation_run_id,metric_code,definition_version,subject_kind,subject_id,
     window_code,period_start,period_end,value_state,numeric_value,currency_code,confidence_state,estimated,
     oldest_source_time,freshness_seconds,input_digest,computed_at)
