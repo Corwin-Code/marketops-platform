@@ -1,6 +1,6 @@
 {
  "slice": "SLICE-V1-003",
- "head": "859f5d5",
+ "head": "91fcfaa",
  "method": "each criterion mapped against the repository by an independent reader, then every VERIFIED claim challenged by a second reader who opened the cited evidence; eight claims were overturned; a second pass at head 859f5d5 re-read only the criteria this session's work touches and moved one (S3-AC-071) from NOT_YET to PARTIAL, leaving every other status where the audit put it",
  "counts": {
   "VERIFIED": 46,
@@ -2260,9 +2260,13 @@
    "evidence": [
     "`python3 scripts/validate_governance.py` exits 0 with 'Governance validation passed.'",
     "`python3 -m unittest tests.test_validate_governance` \u2014 278 tests, OK; `python3 -m unittest tests.test_validate_production_readiness` \u2014 70 tests, OK",
-    "scripts/verify_coverage_thresholds.sh proves the backend and frontend coverage gates fail when raised to 100%, and .github/workflows/security.yml defines dependency-review plus CodeQL for java-kotlin and javascript-typescript"
+    "scripts/verify_coverage_thresholds.sh proves the backend and frontend coverage gates fail when raised to 100%, and .github/workflows/security.yml defines dependency-review plus CodeQL for java-kotlin and javascript-typescript",
+    "validate_governance.py passes; the validator unit suite is 397 green",
+    "validate_production_readiness.py: TC-GLOBAL-001, TC-GLOBAL-003 and TC-GLOBAL-004 PASS at head 91fcfaa",
+    "Whole-repository run recorded in docs/07-phase-evidence/SLICE-V1-003/executable-evidence.md",
+    "Merged coverage LINE 0.8294 / BRANCH 0.7040 in docs/07-phase-evidence/SLICE-V1-003/measurements/jacoco-merged-376228a.json"
    ],
-   "note": "`python3 scripts/validate_production_readiness.py` FAILS at this head with exit 1 and nine violations \u2014 TC-GLOBAL-001 (its APPROVED_MIGRATIONS list stops at V0035 while 53 exist, plus four ad-bid migrations flagged for tolerant schema creation), TC-GLOBAL-002 (three history-narration comments in V0040 and V0047) and TC-GLOBAL-003 (the word 'bar' in AdvertisingSlo.java:9, a false positive that still fails the run); JaCoCo has not been re-run since the advertising classes landed; no whole-repository regression run and no CI or security-scan result is recorded at this head."
+   "note": "validate_production_readiness.py still exits non-zero on TC-GLOBAL-002: three comments in V0040 and V0047 narrate what the schema used to do. The rule is right and the only way to satisfy it is to edit two migrations every clean install has applied and whose checksums MIGRATION-INVENTORY.json publishes, which forward-only discipline forbids and which no later migration can correct. The conflict between the two rules is an Owner decision. The other three checks now pass: the approved migration set carries V0036-V0053, and the tolerant-schema-creation rule no longer reads PL/pgSQL's IF NOT EXISTS (SELECT ...) as DDL. No CI or security-scan result is recorded at this head."
   }
  ]
 }

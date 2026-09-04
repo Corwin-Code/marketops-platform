@@ -8,14 +8,22 @@ after those corrections, not before.
 | Status | Count | What it means |
 | --- | --- | --- |
 | VERIFIED | 46 | a named passing test or an artefact somebody opened demonstrates it |
-| PARTIAL | 133 | some of it is demonstrated and a named part is not |
-| NOT_YET | 21 | nothing in the repository demonstrates it |
+| PARTIAL | 134 | some of it is demonstrated and a named part is not |
+| NOT_YET | 20 | nothing in the repository demonstrates it |
+
+A second pass at head `91fcfaa` re-read only the criteria this session's work
+touches. One moved — `S3-AC-071`, because the sweep, its repair of a dropped
+trigger, its abandoned-run recovery and its parity with the targeted path are
+now exercised through the workers rather than only through the shared seam.
+Every other status is where the audit put it; `S3-AC-062`, `S3-AC-144`,
+`S3-AC-187`, `S3-AC-194`, `S3-AC-195`, `S3-AC-196` and `S3-AC-197` gained
+evidence without gaining a status.
 
 ## No engineering closure claim is made
 
 `CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS` is the only claim this
 Slice may make, and it requires all two hundred criteria executably verified.
-They are not: 133 are partial and 21 have nothing behind them yet. The
+They are not: 134 are partial and 20 have nothing behind them yet. The
 deferred obligations are recorded separately in `deferred-release-register.json`;
 what follows is the engineering work that remains, not an external dependency.
 
