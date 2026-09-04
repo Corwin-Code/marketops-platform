@@ -27,6 +27,7 @@ import com.mimococo.marketops.operationsworkflow.RecommendationView;
 import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.ApprovalRepository;
 import com.mimococo.marketops.productlisting.ListingIdentityDirectory;
 import com.mimococo.marketops.productlisting.ListingVariantContext;
+import com.mimococo.marketops.shared.CorrelationId;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.Money;
 import com.mimococo.marketops.shared.OperationRejectedException;
@@ -236,9 +237,20 @@ public class ExecutionService {
             throw OperationRejectedException.of(ErrorCode.RECOMMENDATION_STALE);
         }
 
+        // The reservation is taken here and nowhere earlier. Until this point
+        // the proposal was a decision somebody might make; from this point it is
+        // an intervention that stops anything else touching the same product
+        // variants and consumes aggregate exposure. Reserving when the proposal
+        // was created would have made every unactioned case in the queue look
+        // like a live intervention.
+        UUID reservationId = adDecisions
+                .reserveForExecution(proposal.id(), CorrelationId.current())
+                .orElseThrow(() -> OperationRejectedException.of(
+                        ErrorCode.CONCURRENT_INTERVENTION));
+
         UUID commandId = adCommands.submit(new AdBidCommandRequest(
                 proposal.id(), expectedVersion, actor.userId(),
-                scope.reservationId(), scope.bundleId(), scope.approvalExpiresAt()));
+                reservationId, scope.bundleId(), scope.approvalExpiresAt()));
 
         recommendations.transition(actor.userId().toString(), proposal.id(),
                 RecommendationState.COMMAND_CREATED, null, expectedVersion);

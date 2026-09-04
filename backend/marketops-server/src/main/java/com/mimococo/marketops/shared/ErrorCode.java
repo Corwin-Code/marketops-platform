@@ -174,6 +174,10 @@ public enum ErrorCode {
     /** The capability is unverified, unavailable or switched off for this subject. */
     CAPABILITY_NOT_USABLE("The capability is not usable for this subject."),
 
+    /** Another intervention already holds the product variants this one affects. */
+    CONCURRENT_INTERVENTION(
+            "Another intervention already covers the products this action affects."),
+
     /** Stored bytes did not read back with the digest they were written under. */
     OBJECT_STORAGE_VERIFICATION_FAILED("Stored content failed read-back verification."),
 

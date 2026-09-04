@@ -48,4 +48,22 @@ public interface AdvertisingDecisionAuthority {
      * most needs to see what the case says.
      */
     Optional<AdvertisingBidProjection> bidProjection(UUID recommendationId);
+
+    /**
+     * Take the governed reservation for one approved decision, at the moment it
+     * becomes an action.
+     *
+     * <p>Separate from resolving the scope, and called later, because they mean
+     * different things. A resolved scope says a decision could be made. A
+     * reservation says one is under way: it stops anything else acting on the
+     * same product variants and it consumes aggregate exposure. A proposal
+     * sitting in a queue does neither, and reserving when the proposal was
+     * created would have made every unactioned case look like a live
+     * intervention — and exhausted the exposure envelope with work nobody had
+     * approved.
+     *
+     * <p>Empty when something else already holds an overlapping affected set.
+     * That is the reservation doing its job, not a failure.
+     */
+    Optional<UUID> reserveForExecution(UUID recommendationId, String correlationId);
 }

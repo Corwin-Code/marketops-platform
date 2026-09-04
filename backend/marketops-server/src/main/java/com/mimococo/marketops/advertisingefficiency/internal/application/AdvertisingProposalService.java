@@ -163,20 +163,16 @@ class AdvertisingProposalService {
                 ceilingAmount(scored.maxCpc()), absenceReason(scored.maxCpc()),
                 scored.decision().cause().name(), asOf, correlationId);
 
-        UUID reservationId;
-        try {
-            reservationId = reservations.take(ids.newId(), calculation.organizationId(),
-                    calculation.adNativeObjectId(), calculation.storeId(), affected.get().id(),
-                    affected.get().digest(), affected.get().productVariantIds(),
-                    "CONTROLLED_AD_BID_CHANGE", candidateId, candidate.direction(),
-                    scored.decision().lane().name(), correlationId);
-        } catch (org.springframework.dao.DataAccessException heldElsewhere) {
-            // Something else is already acting on these variants. That is the
-            // reservation doing its job, not a failure, and the case stays in
-            // the queue for the next cycle.
-            return Optional.empty();
-        }
-        if (reservationId == null) {
+        // Read, not reserve. A proposal is a decision somebody might make, and
+        // reserving here would make every unactioned case in the queue look like
+        // a live intervention and spend the aggregate exposure envelope on work
+        // nobody had approved. The governed reservation is taken at the action
+        // stage. What is worth knowing now is whether something else already
+        // holds these variants, because proposing work that cannot proceed
+        // wastes a reviewer's attention.
+        if (reservations.blockingReservation(calculation.organizationId(),
+                affected.get().productVariantIds(), calculation.adNativeObjectId())
+                .isPresent()) {
             return Optional.empty();
         }
 

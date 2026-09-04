@@ -47,6 +47,8 @@ public class AdvertisingDecisionRepository {
                        r.valid_until,
                        r.version,
                        candidate.id               AS candidate_id,
+                       candidate.case_id,
+                       kase.lane,
                        candidate.direction,
                        candidate.candidate_basis,
                        candidate.current_bid_amount,
@@ -68,6 +70,9 @@ public class AdvertisingDecisionRepository {
                    AND candidate.id = CASE
                            WHEN ops.ad_bid_parameter_contract_is_valid(r.proposed_parameters)
                            THEN (r.proposed_parameters ->> 'candidateId')::uuid END
+                  LEFT JOIN mart.ad_case kase
+                    ON kase.id = candidate.case_id
+                   AND kase.organization_id = candidate.organization_id
                   LEFT JOIN core.ad_native_object object
                     ON object.id = r.subject_id AND object.organization_id = r.organization_id
                   LEFT JOIN LATERAL (
@@ -391,7 +396,7 @@ public class AdvertisingDecisionRepository {
     public record DecisionRow(
             UUID recommendationId, UUID organizationId, UUID storeId, UUID adNativeObjectId,
             String recommendationState, Instant validUntil, long version,
-            UUID candidateId, String direction, String candidateBasis,
+            UUID candidateId, UUID caseId, String lane, String direction, String candidateBasis,
             BigDecimal currentBidAmount, BigDecimal targetBidAmount,
             String currencyCode, String bidUnitCode,
             String controlGranularityState, String objectStatus, String platformCode,
@@ -409,6 +414,8 @@ public class AdvertisingDecisionRepository {
                 instantOf(rs, "valid_until"),
                 rs.getLong("version"),
                 rs.getObject("candidate_id", UUID.class),
+                rs.getObject("case_id", UUID.class),
+                rs.getString("lane"),
                 rs.getString("direction"),
                 rs.getString("candidate_basis"),
                 rs.getBigDecimal("current_bid_amount"),

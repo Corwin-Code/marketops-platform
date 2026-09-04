@@ -177,18 +177,30 @@ class AdvertisingBidDecisionShapeTest {
         @Test
         @DisplayName("TC-AD-SHAPE-009 no element of a decision scope may be absent")
         void everyElementIsRequired() {
-            assertThatThrownBy(() -> new AdvertisingDecisionScope(ID, ID, ID, ID, ID, null, ID,
-                    "PROTECTION_DECREASE", "MAX_CPC_DERIVED", BigDecimal.TEN, BigDecimal.ONE,
+            assertThatThrownBy(() -> new AdvertisingDecisionScope(ID, ID, ID, ID, ID, null,
+                    "PROTECTION_DECREASE", "MAX_CPC_BOUNDED", BigDecimal.TEN, BigDecimal.ONE,
                     "RUB", "CURRENCY_MAJOR", Instant.EPOCH))
                     .isInstanceOf(NullPointerException.class)
-                    .hasMessageContaining("reservationId");
+                    .hasMessageContaining("bundleId");
+        }
+
+        @Test
+        @DisplayName("TC-AD-SHAPE-009b a resolved scope names no reservation")
+        void aResolvedScopeNamesNoReservation() {
+            // A scope says a decision could be made. A reservation says one is
+            // under way. Carrying the second on the first would have made every
+            // proposal in the queue a live intervention, and spent the aggregate
+            // exposure envelope on work nobody had approved.
+            assertThat(AdvertisingDecisionScope.class.getRecordComponents())
+                    .extracting(java.lang.reflect.RecordComponent::getName)
+                    .doesNotContain("reservationId");
         }
 
         @Test
         @DisplayName("TC-AD-SHAPE-010 the change a scope describes is a distance")
         void changeIsADistance() {
-            assertThat(new AdvertisingDecisionScope(ID, ID, ID, ID, ID, ID, ID,
-                    "PROTECTION_DECREASE", "MAX_CPC_DERIVED", new BigDecimal("30.0000"),
+            assertThat(new AdvertisingDecisionScope(ID, ID, ID, ID, ID, ID,
+                    "PROTECTION_DECREASE", "MAX_CPC_BOUNDED", new BigDecimal("30.0000"),
                     new BigDecimal("20.0000"), "RUB", "CURRENCY_MAJOR", Instant.EPOCH)
                     .changeAmount()).isEqualByComparingTo("10");
         }

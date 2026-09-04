@@ -3,6 +3,8 @@ package com.mimococo.marketops.advertisingefficiency.internal.application;
 import com.mimococo.marketops.operationsworkflow.AdvertisingBidProjection;
 import com.mimococo.marketops.operationsworkflow.AdvertisingDecisionAuthority;
 import com.mimococo.marketops.operationsworkflow.AdvertisingDecisionScope;
+import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingCandidateRepository;
+import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingContainmentRepository;
 import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingDecisionRepository;
 import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingDecisionRepository.DecisionRow;
 import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingDecisionRepository.ProjectionRow;
@@ -34,10 +36,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdvertisingDecisionService implements AdvertisingDecisionAuthority {
 
     private final AdvertisingDecisionRepository decisions;
+    private final AdvertisingCandidateRepository candidates;
+    private final AdvertisingContainmentRepository reservations;
+    private final com.mimococo.marketops.shared.IdGenerator ids;
     private final Clock clock;
 
-    AdvertisingDecisionService(AdvertisingDecisionRepository decisions, Clock clock) {
+    AdvertisingDecisionService(AdvertisingDecisionRepository decisions,
+                               AdvertisingCandidateRepository candidates,
+                               AdvertisingContainmentRepository reservations,
+                               com.mimococo.marketops.shared.IdGenerator ids,
+                               Clock clock) {
         this.decisions = decisions;
+        this.candidates = candidates;
+        this.reservations = reservations;
+        this.ids = ids;
         this.clock = clock;
     }
 
@@ -106,7 +118,7 @@ public class AdvertisingDecisionService implements AdvertisingDecisionAuthority 
         }
         return Optional.of(new AdvertisingDecisionScope(
                 row.recommendationId(), row.organizationId(), row.storeId(),
-                row.adNativeObjectId(), row.candidateId(), row.reservationId(), row.bundleId(),
+                row.adNativeObjectId(), row.candidateId(), row.bundleId(),
                 row.direction(), row.candidateBasis(),
                 row.currentBidAmount(), row.targetBidAmount(),
                 row.currencyCode(), row.bidUnitCode(),
@@ -148,9 +160,6 @@ public class AdvertisingDecisionService implements AdvertisingDecisionAuthority 
                 || !"ACTIVE".equals(row.objectStatus())) {
             reasons.add("CONTROL_GRANULARITY_UNPROVEN");
         }
-        if (row.reservationId() == null) {
-            reasons.add("RESERVATION_NOT_HELD");
-        }
         if (row.bundleId() == null) {
             reasons.add("BUNDLE_UNRESOLVED");
         }
@@ -171,6 +180,36 @@ public class AdvertisingDecisionService implements AdvertisingDecisionAuthority 
      * an authority nobody granted; an approval outliving its lease would let a
      * decision be spent long after the conditions it rested on were checked.
      */
+    @Override
+    @Transactional
+    public Optional<UUID> reserveForExecution(UUID recommendationId, String correlationId) {
+        Optional<DecisionRow> found = decisions.resolve(recommendationId);
+        if (found.isEmpty() || !reasons(found.get()).isEmpty()) {
+            return Optional.empty();
+        }
+        DecisionRow row = found.get();
+        Optional<AdvertisingCandidateRepository.AffectedSetRow> affected =
+                candidates.resolvedAffectedSet(row.organizationId(), row.caseId());
+        if (affected.isEmpty()) {
+            // Nothing may be reserved against a set nobody could finish
+            // enumerating, because the reservation would claim to hold variants
+            // that were never listed.
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(reservations.take(ids.newId(), row.organizationId(),
+                    row.adNativeObjectId(), row.storeId(), affected.get().id(),
+                    affected.get().digest(), affected.get().productVariantIds(),
+                    "CONTROLLED_AD_BID_CHANGE", row.candidateId(), row.direction(),
+                    row.lane() == null ? "PROTECTION" : row.lane(), correlationId));
+        } catch (org.springframework.dao.DataAccessException heldElsewhere) {
+            // Something else is already acting on these variants. Refusing here
+            // is the containment working, and the decision stays approvable when
+            // the other intervention finishes.
+            return Optional.empty();
+        }
+    }
+
     private Instant approvalExpiry(DecisionRow row) {
         BigDecimal change = row.targetBidAmount().subtract(row.currentBidAmount()).abs();
         int seconds = change.signum() > 0 && row.materialLeaseSeconds() != null
