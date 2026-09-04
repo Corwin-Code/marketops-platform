@@ -47,6 +47,7 @@ JAVA_HOME=~/.sdkman/candidates/java/21.0.10-zulu ./backend/marketops-server/mvnw
 | `ManagedMigrationRunnerIT` | 1 | clean install of 53 migrations, replay applies 0 |
 | `ManagedProfileMigrationIT` | 4 | managed and standard profiles, upgrade from a prior release |
 | `AdvertisingOperationsReadIT` | 7 | the console reads: scope in SQL, envelope axes kept apart, both outcome stages |
+| `AdBidWriteGateAdversarialIT` | 8 | the gate attacked one fact at a time; every reason earned separately |
 
 ## The safety properties, and where each is proved
 
@@ -72,6 +73,9 @@ JAVA_HOME=~/.sdkman/candidates/java/21.0.10-zulu ./backend/marketops-server/mvnw
 | The advertising module writes no table another module owns | `SoleAuthorityArchitectureTest#TC-AUTHORITY-001` |
 | Exactly one migration inserts into `ops.ad_bid_command` | `SoleAuthorityArchitectureTest#TC-AUTHORITY-002` |
 | Java's vocabulary and the schema's are the same words | `SchemaVocabularyAgreementTest` (5 cases) |
+| Each gate reason moves on its own fact, and none is emitted with another | `AdBidWriteGateAdversarialIT#TC-AD-GATE-ADV-003,004,006` |
+| A reservation cannot be released while its conditions are unmet | `AdBidWriteGateAdversarialIT#TC-AD-GATE-ADV-005` |
+| A command that does not exist is refused by name, never by an empty list | `AdBidWriteGateAdversarialIT#TC-AD-GATE-ADV-002` |
 | The application role holds DELETE on no advertising table | `AdvertisingPrivilegeBoundaryIT#TC-AD-PRIV-101` |
 | Every state-moving function is SECURITY DEFINER with a pinned search_path | `AdvertisingPrivilegeBoundaryIT#TC-AD-PRIV-103` |
 
@@ -173,7 +177,10 @@ message has to appear in the right place.
 
 Named plainly, because a reader should not have to infer it from absence.
 
-- **Mutation and adversarial testing.** Not run for the advertising module.
+- **Mutation testing.** No mutation-testing tool is configured in this
+  repository and none was added; the adversarial suites above change one fact at
+  a time and require exactly one reason to move, which is the property a
+  mutation score is a proxy for, but it is not a mutation score.
 - **Advertising capacity and SLO measurement.** `AdvertisingSlo` fixes the bounds
   and `ops.ad_slo_observation` records latencies; no advertising load has been
   applied.
