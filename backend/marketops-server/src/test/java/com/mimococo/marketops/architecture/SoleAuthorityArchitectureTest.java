@@ -59,6 +59,30 @@ class SoleAuthorityArchitectureTest {
             Map.entry("mart.diagnosis_finding", "analyticsdecision"),
             Map.entry("ops.metadata_audit_event", "adminobservability MetadataAuditRecorder"));
 
+    /**
+     * Tables no Java writes at all, and the reason each has none.
+     *
+     * <p>These are owner-published policy: a decision bundle, an exposure
+     * envelope, the versioned policies a bundle names. They are changed by a
+     * reviewed data change with an owner, a reason and an evidence reference,
+     * not by a service — so a repository method that inserted one would be this
+     * product quietly acquiring the authority to set its own limits.
+     */
+    private static final Map<String, String> NO_JAVA_WRITER = Map.ofEntries(
+            Map.entry("ops.ad_decision_policy_bundle", "owner-published decision authority"),
+            Map.entry("core.ad_exposure_envelope", "owner-published exposure bounds"),
+            Map.entry("core.ad_bid_target_policy", "owner-published step limits"),
+            Map.entry("core.ad_materiality_policy", "owner-published materiality envelope"),
+            Map.entry("core.ad_approval_lease_policy", "owner-published approval lease"),
+            Map.entry("core.ad_outcome_policy", "owner-published outcome evaluation plan"),
+            Map.entry("core.ad_human_slo_profile", "owner-published human service level"),
+            Map.entry("core.ad_priority_policy", "owner-published ranking weights"),
+            Map.entry("core.ad_conversion_definition", "owner-published conversion definition"),
+            Map.entry("core.ad_allowable_cpa_definition", "owner-published allowable CPA"),
+            Map.entry("core.ad_freshness_profile", "owner-published freshness bounds"),
+            Map.entry("core.ad_optimization_qualification_policy",
+                    "owner-published qualification tiers"));
+
     /** Statements that write. A SELECT of any of these tables is fine. */
     private static final Pattern WRITE_STATEMENT = Pattern.compile(
             "(?is)\\b(insert\\s+into|update|delete\\s+from)\\s+([a-z_]+\\.[a-z_]+)");
@@ -102,6 +126,49 @@ class SoleAuthorityArchitectureTest {
                 }
             }
             assertThat(violations).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("TC-AUTHORITY-003 owner-published policy has no writer in this product")
+    class OwnerPublishedPolicy {
+
+        @Test
+        @DisplayName("no Java anywhere writes a policy or bundle the Owner publishes")
+        void noJavaWritesOwnerPublishedPolicy() throws IOException {
+            List<String> violations = new ArrayList<>();
+            for (Path file : javaFilesUnder(SOURCE_ROOT)) {
+                String source = Files.readString(file, StandardCharsets.UTF_8);
+                var matcher = WRITE_STATEMENT.matcher(source);
+                while (matcher.find()) {
+                    String table = matcher.group(2).toLowerCase(Locale.ROOT);
+                    String why = NO_JAVA_WRITER.get(table);
+                    if (why != null) {
+                        violations.add(file.getFileName() + " writes " + table + " (" + why + ")");
+                    }
+                }
+            }
+            // A bundle is the authority a controlled write rests on. A service
+            // that could write one could grant itself the authority to act,
+            // which is the whole thing the whole-combination validation exists
+            // to stop somebody doing by hand.
+            assertThat(violations).isEmpty();
+        }
+
+        @Test
+        @DisplayName("the bundle's own activation rule lives in the database, not in Java")
+        void bundleActivationIsADatabaseRule() throws IOException {
+            Path migrations = Path.of("src/main/resources/db/migration");
+            String v0041 = Files.readString(
+                    migrations.resolve(
+                            "V0041__create_advertising_containment_and_decision_bundle.sql"),
+                    StandardCharsets.UTF_8);
+
+            // Validation is a function and a trigger, so a bundle that did not
+            // validate cannot be ACTIVE however it was inserted.
+            assertThat(v0041)
+                    .contains("ops.ad_bundle_validation_failures")
+                    .contains("AFTER INSERT OR UPDATE ON ops.ad_decision_policy_bundle");
         }
     }
 

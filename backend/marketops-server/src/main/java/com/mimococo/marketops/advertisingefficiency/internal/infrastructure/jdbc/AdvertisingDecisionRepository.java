@@ -59,7 +59,6 @@ public class AdvertisingDecisionRepository {
                        object.status              AS object_status,
                        object.platform_code,
                        configuration.observed_bid_amount,
-                       reservation.id             AS reservation_id,
                        bundle.id                  AS bundle_id,
                        approval.scope_expires_at,
                        lease.lease_seconds,
@@ -84,14 +83,6 @@ public class AdvertisingDecisionRepository {
                                 SELECT 1 FROM core.ad_object_configuration_observation later
                                  WHERE later.supersedes_observation_id = c.id)
                          ORDER BY c.observed_at DESC, c.id DESC LIMIT 1) configuration ON true
-                  LEFT JOIN LATERAL (
-                        SELECT res.id
-                          FROM ops.ad_action_reservation res
-                         WHERE res.organization_id = r.organization_id
-                           AND res.ad_native_object_id = object.id
-                           AND res.state = 'ACTIVE'
-                           AND res.affected_set_digest = candidate.affected_set_digest
-                         ORDER BY res.reserved_at DESC LIMIT 1) reservation ON true
                   LEFT JOIN LATERAL (
                         SELECT b.id
                           FROM ops.ad_decision_policy_bundle b
@@ -400,7 +391,7 @@ public class AdvertisingDecisionRepository {
             BigDecimal currentBidAmount, BigDecimal targetBidAmount,
             String currencyCode, String bidUnitCode,
             String controlGranularityState, String objectStatus, String platformCode,
-            BigDecimal observedBidAmount, UUID reservationId, UUID bundleId,
+            BigDecimal observedBidAmount, UUID bundleId,
             Instant approvalExpiresAt, Integer leaseSeconds, Integer materialLeaseSeconds) {
     }
 
@@ -426,7 +417,6 @@ public class AdvertisingDecisionRepository {
                 rs.getString("object_status"),
                 rs.getString("platform_code"),
                 rs.getBigDecimal("observed_bid_amount"),
-                rs.getObject("reservation_id", UUID.class),
                 rs.getObject("bundle_id", UUID.class),
                 instantOf(rs, "scope_expires_at"),
                 integerOf(rs, "lease_seconds"),

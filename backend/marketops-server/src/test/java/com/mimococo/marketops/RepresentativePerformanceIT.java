@@ -60,6 +60,12 @@ import tools.jackson.databind.ObjectMapper;
 class RepresentativePerformanceIT {
     private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE = TestDatabase.isolatedContainer();
     private static final String DATASET = "performance/representative-v1.sql";
+
+    /** Rows the dataset writes for each active metric definition. */
+    private static final long VALUES_PER_DEFINITION = 31740L;
+
+    /** Provenance references the dataset writes for each metric value. */
+    private static final long INPUT_REFERENCES_PER_VALUE = 3L;
     private static final String DECLARED_CAPACITY_CONFIGURATION =
             "application-availability-declared-capacity-v1.yaml";
     private static final String DECLARED_CAPACITY_VERSION = "S2_DECLARED_CAPACITY_V1";
@@ -136,8 +142,20 @@ class RepresentativePerformanceIT {
                 counts.put(table,jdbc.sql("SELECT count(*) FROM "+table).query(Long.class).single());
             }
             report.put("rowCounts",counts);
+            // The dataset generates one metric value per active definition, so
+            // these two counts move whenever a metric is added — as they did
+            // when the advertising domain brought ten. Pinning the product
+            // rather than the total keeps the dataset just as reproducible and
+            // stops the number needing an edit every time the schema learns a
+            // new figure.
+            long activeDefinitions = jdbc
+                    .sql("SELECT count(*) FROM mart.metric_definition WHERE status='ACTIVE'")
+                    .query(Long.class).single();
+            report.put("activeMetricDefinitions",activeDefinitions);
             assertThat(counts).containsEntry("core.product_variant",5000L).containsEntry("ledger.sales_fact",720000L)
-                    .containsEntry("mart.metric_value",1047420L).containsEntry("mart.metric_input_reference",3142260L)
+                    .containsEntry("mart.metric_value",VALUES_PER_DEFINITION*activeDefinitions)
+                    .containsEntry("mart.metric_input_reference",
+                            INPUT_REFERENCES_PER_VALUE*VALUES_PER_DEFINITION*activeDefinitions)
                     .containsEntry("mart.diagnosis_finding",285660L).containsEntry("ops.recommendation",30000L);
             assertThat(jdbc.sql("SELECT count(*) FROM ops.price_command").query(Integer.class).single()).isZero();
             assertThat(jdbc.sql("SELECT count(*) FROM platform.platform_capability WHERE verification_state='VERIFIED'")
