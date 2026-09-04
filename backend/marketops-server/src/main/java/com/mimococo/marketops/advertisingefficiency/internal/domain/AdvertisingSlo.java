@@ -6,9 +6,9 @@ import java.time.Duration;
  * The internal response bounds the Contract fixes, and the clock they run on.
  *
  * <p>These are constants rather than configuration on purpose. A deployment that
- * could relax its own SLO would report itself healthy by lowering the bar, and
- * the number an operator is being asked to trust would stop meaning anything
- * across environments.
+ * could relax its own SLO would report itself healthy by moving the threshold it
+ * is judged against, and the number an operator is being asked to trust would
+ * stop meaning anything across environments.
  *
  * <p>The clock starts at {@code fact_accepted_at}, not at the moment a worker
  * picked the work up. Measuring from the worker start would hide exactly the

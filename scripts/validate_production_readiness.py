@@ -92,6 +92,12 @@ SKIP_DIR_NAMES = {
 # reviewers to ignore the result.
 UNRESOLVED_MARKERS = re.compile(r"""(?<![`'"\w])(?:TODO|FIXME|HACK|XXX)(?![`'"\w])""")
 
+# Tolerant schema creation, and only that. PostgreSQL's tolerant DDL writes
+# `IF NOT EXISTS` after an object name; PL/pgSQL's conditional writes
+# `IF NOT EXISTS (SELECT ...)`, which is a boolean expression and creates
+# nothing. Matching the bare string treated every PL/pgSQL guard as tolerant DDL.
+TOLERANT_SCHEMA_CREATION = re.compile(r"IF\s+NOT\s+EXISTS(?!\s*\()")
+
 # The approved migration set. A migration appears here in the same change that
 # adds the file; an unlisted migration file fails the check in both directions.
 APPROVED_MIGRATIONS = (
@@ -130,6 +136,24 @@ APPROVED_MIGRATIONS = (
     "V0033__track_case_improvement_observation.sql",
     "V0034__close_availability_deep_review_findings.sql",
     "V0035__close_availability_targeted_findings.sql",
+    "V0036__create_advertising_identity_and_official_facts.sql",
+    "V0037__create_advertising_conversion_freshness_and_qualification.sql",
+    "V0038__create_advertising_case_projection_and_orchestration.sql",
+    "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
+    "V0040__widen_write_registry_for_ad_bid_capability.sql",
+    "V0041__create_advertising_containment_and_decision_bundle.sql",
+    "V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+    "V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
+    "V0044__supersede_advertising_cases_whose_cause_no_longer_holds.sql",
+    "V0045__create_ad_bid_command_from_approval.sql",
+    "V0046__capture_ad_bid_authority_for_guardrail_evaluation.sql",
+    "V0047__refuse_a_zero_target_bid_in_the_parameter_contract.sql",
+    "V0048__serialize_advertising_reservations_against_overlap.sql",
+    "V0049__create_advertising_outcome_plan_and_lineage.sql",
+    "V0050__cause_specific_outcomes_and_same_lineage_reopen.sql",
+    "V0051__bind_each_decision_to_its_own_authority.sql",
+    "V0052__a_guardrail_verdict_names_the_policy_that_authorised_it.sql",
+    "V0053__the_write_gate_must_refuse_rather_than_raise.sql",
 )
 
 DEFERRED_EVIDENCE_REGISTER = (
@@ -1413,7 +1437,7 @@ def check_compromise_retirement(report: Report, files: list[Path]) -> None:
         for path in migrations.glob("*.sql"):
             text = read_text(path) or ""
             upper = text.upper()
-            if "IF NOT EXISTS" in upper:
+            if TOLERANT_SCHEMA_CREATION.search(upper):
                 report.add(
                     rule, path, 0,
                     "schema creation is strict and must not tolerate an existing object",

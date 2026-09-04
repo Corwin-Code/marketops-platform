@@ -6,6 +6,7 @@ from pathlib import Path
 
 from scripts.validate_production_readiness import (
     APPROVED_MIGRATIONS,
+    TOLERANT_SCHEMA_CREATION,
     approved_index_replacement,
     DEFERRED_ACCEPTANCE_IDS,
     DEFERRED_EVIDENCE_REGISTER,
@@ -565,9 +566,48 @@ class MigrationContractTests(unittest.TestCase):
                 "V0033__track_case_improvement_observation.sql",
                 "V0034__close_availability_deep_review_findings.sql",
                 "V0035__close_availability_targeted_findings.sql",
+                "V0036__create_advertising_identity_and_official_facts.sql",
+                "V0037__create_advertising_conversion_freshness_and_qualification.sql",
+                "V0038__create_advertising_case_projection_and_orchestration.sql",
+                "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
+                "V0040__widen_write_registry_for_ad_bid_capability.sql",
+                "V0041__create_advertising_containment_and_decision_bundle.sql",
+                "V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+                "V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
+                "V0044__supersede_advertising_cases_whose_cause_no_longer_holds.sql",
+                "V0045__create_ad_bid_command_from_approval.sql",
+                "V0046__capture_ad_bid_authority_for_guardrail_evaluation.sql",
+                "V0047__refuse_a_zero_target_bid_in_the_parameter_contract.sql",
+                "V0048__serialize_advertising_reservations_against_overlap.sql",
+                "V0049__create_advertising_outcome_plan_and_lineage.sql",
+                "V0050__cause_specific_outcomes_and_same_lineage_reopen.sql",
+                "V0051__bind_each_decision_to_its_own_authority.sql",
+                "V0052__a_guardrail_verdict_names_the_policy_that_authorised_it.sql",
+                "V0053__the_write_gate_must_refuse_rather_than_raise.sql",
             ),
             APPROVED_MIGRATIONS,
         )
+
+    def test_tolerant_schema_creation_is_ddl_and_not_a_plpgsql_guard(self) -> None:
+        # The rule refuses schema creation that tolerates an existing object.
+        # PL/pgSQL's `IF NOT EXISTS (SELECT ...)` is a boolean expression and
+        # creates nothing, so reading the bare string as tolerant DDL refused
+        # every migration that used a conditional at all.
+        for tolerant in (
+            "CREATE TABLE IF NOT EXISTS core.store (id uuid)",
+            "CREATE INDEX IF NOT EXISTS store_ix ON core.store (id)",
+            "CREATE SCHEMA IF NOT EXISTS ops",
+            "ALTER TABLE core.store ADD COLUMN IF NOT EXISTS code text",
+        ):
+            with self.subTest(statement=tolerant):
+                self.assertTrue(TOLERANT_SCHEMA_CREATION.search(tolerant.upper()))
+        for guard in (
+            "IF NOT EXISTS (SELECT 1 FROM core.store) THEN",
+            "    IF NOT EXISTS (",
+            "IF NOT EXISTS(SELECT 1) THEN",
+        ):
+            with self.subTest(statement=guard):
+                self.assertIsNone(TOLERANT_SCHEMA_CREATION.search(guard.upper()))
 
     def test_the_foundation_pin_is_a_sha256_digest(self) -> None:
         self.assertRegex(FOUNDATION_MIGRATION_SHA256, r"^[0-9a-f]{64}$")

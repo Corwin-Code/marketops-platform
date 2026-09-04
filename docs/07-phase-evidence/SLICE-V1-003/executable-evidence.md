@@ -176,6 +176,49 @@ and a second panel reporting its own refusal made that query ambiguous. The
 assertion is now scoped to the panel, which is stricter rather than looser — the
 message has to appear in the right place.
 
+## Governance validators
+
+```bash
+python3 scripts/validate_governance.py
+python3 scripts/validate_production_readiness.py
+python3 -m unittest discover -s tests -p 'test_*.py'
+```
+
+`validate_governance.py` passes. The validator unit suite is 397 green.
+`validate_production_readiness.py` now passes three of its four checks and fails
+one:
+
+| Check | Result |
+| --- | --- |
+| TC-GLOBAL-001 Compromise Retirement | PASS |
+| TC-GLOBAL-002 Functional JavaDoc Rewrite | 3 violations, all narration in two already-applied migrations |
+| TC-GLOBAL-003 Production Naming | PASS |
+| TC-GLOBAL-004 Deferred Evidence Boundary | PASS |
+
+TC-GLOBAL-001 failed for two reasons and both are fixed. The approved migration
+set stopped at `V0035` — the validator's own comment says a migration is listed
+in the change that adds it, and this Slice had not done that for `V0036`–`V0053`
+— and the tolerant-schema-creation rule matched the bare string `IF NOT EXISTS`,
+which reads PL/pgSQL's `IF NOT EXISTS (SELECT …)` as tolerant DDL. That
+conditional is a boolean expression and creates nothing, and the four advertising
+migrations are the only ones in the repository that use PL/pgSQL at all, so the
+rule refused exactly them. It now matches `IF NOT EXISTS` only where DDL puts
+it, which a new validator test pins in both directions.
+
+### The one that is not fixed
+
+TC-GLOBAL-002 flags three comments in `V0040` and `V0047` that narrate what the
+schema used to do. The rule is right — a reader of a migration should learn what
+is true, not what changed — but the only way to satisfy it is to edit two
+migrations that every clean install has already applied and whose checksums this
+Slice publishes in `MIGRATION-INVENTORY.json`. Forward-only migration discipline
+forbids that, and a comment cannot be corrected by a later migration.
+
+The two rules are in direct conflict for any applied migration, which is an
+Owner decision rather than an engineering one. Nothing here works around it:
+the violation stands, `validate_production_readiness.py` exits non-zero, and
+`S3-AC-200` records it.
+
 ## What has not been run
 
 Named plainly, because a reader should not have to infer it from absence.
