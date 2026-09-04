@@ -642,7 +642,43 @@ unverified · operational · settled · unknown · quarantined
 
 They are rendered by one `EvidenceChip` primitive driven by a total mapping from
 the API's `String` state, so an unmapped state is a build failure rather than a
-silently neutral badge. Role-specific minimum disclosure is enforced in the
+silently neutral badge.
+
+### 7.1 As built: four surfaces, and what each refuses to combine
+
+The queue and the case view carry the state vocabulary above. Three more were
+added because the questions an operator asks about execution are not the
+questions they ask about evidence.
+
+`AdvertisingOperations` answers "what is this product currently doing, and what
+is stopping it": the reservations that hold, the aggregate envelope, and the
+containments in force. The envelope is rendered axis by axis with no combined
+figure and no percentage, because the product does not have one — the write gate
+checks every axis independently and never adds one axis's slack to another's, so
+a single number would describe a quantity that does not exist. The intervention
+axis is shown against capacity less the reserved recovery headroom, since
+ordinary work may not spend the headroom and the raw maximum would tell an
+operator they had room they do not.
+
+`AdvertisingOutcomeHistory` renders both outcome stages as a history rather than
+one figure. A restatement appears beside what it restates, because a settled
+number can change when a late return arrives and that the answer changed is
+itself something an operator needs to see — particularly when the earlier
+reading is the one somebody acted on.
+
+`AdvertisingManualShadow` keeps a self-report and a proof visually distinct. An
+executor saying they made a change is a report; only an official readback, an
+official export or a second person's look establishes the configuration, and the
+console re-derives that from the observations rather than trusting a flag on the
+body.
+
+All five reads behind them are reports and none is a precondition: the gate
+re-derives the reservation state, the containment state and every envelope axis
+inside the database at the moment a write is attempted, so a stale reading here
+can mislead a person but cannot let a write through. Containment is the one read
+not narrowed by store, because a kill switch is not a per-store fact and an
+operator seeing only some of the holds in force would draw the wrong conclusion
+about why their work is stopped. Role-specific minimum disclosure is enforced in the
 backend, and the console renders exactly what it receives; a field the API did
 not send is rendered as "not disclosed", which is visually distinct from a data
 gap. Russian text, UTF-8 and store-local time and currency display are handled by

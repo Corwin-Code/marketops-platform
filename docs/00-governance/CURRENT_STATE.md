@@ -129,6 +129,15 @@ slice_v1_002_root_cause_rework_evidence: docs/07-phase-evidence/SLICE-V1-002/V00
 slice_v1_002_r1_finding_closure: docs/07-phase-evidence/SLICE-V1-002/r1-finding-closure.json
 slice_v1_002_r1_final_handoff: docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md
 slice_v1_002_deferred_release_register: docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json
+slice_v1_003_as_built_design: docs/02-architecture/designs/SLICE-V1-003-design.md
+slice_v1_003_acceptance_status: docs/07-phase-evidence/SLICE-V1-003/acceptance-status.md
+slice_v1_003_acceptance_status_machine_readable: docs/07-phase-evidence/SLICE-V1-003/S3-AC-STATUS.json
+slice_v1_003_executable_evidence: docs/07-phase-evidence/SLICE-V1-003/executable-evidence.md
+slice_v1_003_migration_inventory: docs/07-phase-evidence/SLICE-V1-003/MIGRATION-INVENTORY.json
+slice_v1_003_deferred_release_register: docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json
+slice_v1_003_measurements: docs/07-phase-evidence/SLICE-V1-003/measurements/
+slice_v1_003_runbooks: docs/06-runbooks/
+slice_v1_003_engineering_closure_claim: NOT_MADE
 accepted_contract_mutation: PROHIBITED_APPEND_ONLY_AMENDMENT_REQUIRED
 execution_envelope: EXECUTION_ENVELOPE_V1
 maker_remote_git_authority: DENIED

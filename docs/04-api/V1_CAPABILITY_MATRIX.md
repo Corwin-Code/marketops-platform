@@ -122,6 +122,15 @@ payload, state or error semantics are symmetric.
 
 These capabilities are diagnosis/task-only in Slice 1 unless separately promoted.
 
+`AD_BID_CHANGE` is the one new controlled-write business capability SLICE-V1-003
+adds, and the only one. A budget and a campaign status are changed by a person in
+the marketplace's own console under a manual execution packet: they carry no
+Preview, Approval, Command, Outbox, Adapter or Readback, and they cannot acquire
+one, because the two names appear in exactly one vocabulary — the packet's — and
+`AdvertisingNonGoalsTest#TC-ADV-NONGOAL-005` fails if they appear anywhere else.
+Listing them as capabilities intended for this Slice said the opposite of what
+the Slice built.
+
 `STOCK_CHANGE` moved out of SLICE-V1-002 when that Contract was accepted. The
 Slice raises accountable work about availability and verifies its outcome; it
 writes no stock anywhere, has no Preview, Approval, Command, Outbox, Adapter or
@@ -130,9 +139,9 @@ Readback for stock, and its absence is checked by test rather than asserted.
 | Capability | Intended Slice | Current release state |
 | --- | --- | --- |
 | `STOCK_CHANGE` | a later Slice; explicitly out of SLICE-V1-002 | DISABLED / UNVERIFIED |
-| `AD_BUDGET_CHANGE` | SLICE-V1-003 | DISABLED / UNVERIFIED |
 | `AD_BID_CHANGE` | SLICE-V1-003 | DISABLED / UNVERIFIED |
-| `AD_CAMPAIGN_STATE_CHANGE` | SLICE-V1-003 | DISABLED / UNVERIFIED |
+| `AD_BUDGET_CHANGE` | none; deliberately never a controlled write | no capability exists |
+| `AD_CAMPAIGN_STATE_CHANGE` | none; deliberately never a controlled write | no capability exists |
 | `PROMOTION_PARTICIPATION_CHANGE` | SLICE-V1-004 | DISABLED / UNVERIFIED |
 | `LISTING_CONTENT_CHANGE` | SLICE-V1-004 | DISABLED / UNVERIFIED |
 | `ORDER_FULFILLMENT_ACTION` | SLICE-V1-005 | DISABLED / UNVERIFIED |
