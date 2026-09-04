@@ -1,6 +1,6 @@
 {
  "slice": "SLICE-V1-003",
- "head": "376228a",
+ "head": "384e34e",
  "closure_claim_permitted": "CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
  "closure_claim_made": false,
  "closure_claim_withheld_because": "S3-AC-001..200 are not all executably verified; the frontend, browser end-to-end, mutation, coverage and runbook obligations remain.",
@@ -317,7 +317,7 @@
    "fails_closed_because": "No deployment, shared environment or production runtime is touched by this Slice. Migrations are proven on PostgreSQL 18.4 and 17.6 in disposable containers only. The declared-capacity assertion fails on the development machine at this head and equally at the Slice base 08ad7da7, so it is unverified rather than regressed: the p95 it measures is the wall clock of a 5,000-variant sweep, and Docker here holds 4 of the host's 8 CPUs and 6.2 GB. The threshold was not moved.",
    "fail_closed_evidence": [
     "docs/07-phase-evidence/SLICE-V1-003/MIGRATION-INVENTORY.json",
-    "docs/07-phase-evidence/SLICE-V1-003/measurements/representative-v1-head-376228a.json",
+    "docs/07-phase-evidence/SLICE-V1-003/measurements/representative-v1-head-384e34e.json",
     "docs/07-phase-evidence/SLICE-V1-003/measurements/representative-v1-base-08ad7da7.json"
    ]
   },

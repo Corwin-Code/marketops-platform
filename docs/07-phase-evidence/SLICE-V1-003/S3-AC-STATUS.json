@@ -1,6 +1,6 @@
 {
  "slice": "SLICE-V1-003",
- "head": "91fcfaa",
+ "head": "384e34e",
  "method": "each criterion mapped against the repository by an independent reader, then every VERIFIED claim challenged by a second reader who opened the cited evidence; eight claims were overturned; a second pass at head 859f5d5 re-read only the criteria this session's work touches and moved one (S3-AC-071) from NOT_YET to PARTIAL, leaving every other status where the audit put it",
  "counts": {
   "VERIFIED": 46,
@@ -2201,10 +2201,10 @@
     "Authority boundaries: SoleAuthorityArchitectureTest#TC-AUTHORITY-001 and #TC-AUTHORITY-002, AdvertisingPrivilegeBoundaryIT#TC-AD-PRIV-101..104, ModuleBoundaryArchitectureTest#TC-ARCH-001..007",
     "State distinctions: SchemaVocabularyAgreementTest#TC-VOCAB-001..005",
     "PostgreSQL: FlywayMigrationIT, AdBidWritePathIT, AdvertisingReservationIT, AdvertisingManualShadowIT, AdvertisingTransmissionBoundaryIT, AdvertisingEfficiencyFlowIT, AdvertisingDecisionQueryIT",
-    "1406 unit and architecture cases, 545 integration cases and 262 console cases at head 859f5d5",
+    "1406 unit and architecture cases, 569 integration cases and 262 console cases at head 384e34e",
     "Browser: advertising-execution.spec.ts#TC-BROWSER-015 (the real backend refuses the three advertising reads unauthenticated) and #TC-BROWSER-016 (the surfaces render in Chromium); whole browser suite 19 passed",
     "Console reads against the real schema: AdvertisingOperationsReadIT#TC-AD-READ-001..007",
-    "Merged unit and integration coverage LINE 0.8294 / BRANCH 0.7040 against gates of 0.80 / 0.70 (docs/07-phase-evidence/SLICE-V1-003/measurements/jacoco-merged-376228a.json)"
+    "Merged unit and integration coverage LINE 0.8361 / BRANCH 0.7061 against gates of 0.80 / 0.70 (docs/07-phase-evidence/SLICE-V1-003/measurements/jacoco-merged-384e34e.json)"
    ],
    "note": "Property-based testing still does not exist (no jqwik dependency and no @Property anywhere), and no test carries an advertising decision through approval, command and readback, so the full operating path still stops at a projected case and its console surfaces. The browser gap is closed."
   },
@@ -2226,10 +2226,10 @@
    "criterion": "performance evidence proves targeted SLOs and hourly reconciliation at declared capacity.",
    "status": "NOT_YET",
    "evidence": [
-    "Measured and failing on the development machine: docs/07-phase-evidence/SLICE-V1-003/measurements/representative-v1-head-376228a.json",
+    "Measured and failing on the development machine: docs/07-phase-evidence/SLICE-V1-003/measurements/representative-v1-head-384e34e.json",
     "Measured and failing at the Slice base 08ad7da7 as well: docs/07-phase-evidence/SLICE-V1-003/measurements/representative-v1-base-08ad7da7.json"
    ],
-   "note": "RepresentativePerformanceIT fails its CRITICAL-lane p95 at this head (377,769 ms against a 300,000 ms budget) and equally at the Slice base (326,120 ms), so the declared capacity is unverified on this hardware rather than regressed by this Slice. Docker here holds 4 of the host's 8 CPUs and 6.2 GB. The threshold was not moved; S3-REL-023 carries the obligation to establish this on representative hardware."
+   "note": "RepresentativePerformanceIT fails its CRITICAL-lane p95 at this head (388,962 ms against a 300,000 ms budget) and equally at the Slice base (326,120 ms), so the declared capacity is unverified on this hardware rather than regressed by this Slice. Docker here holds 4 of the host's 8 CPUs and 6.2 GB. The threshold was not moved; S3-REL-023 carries the obligation to establish this on representative hardware."
   },
   {
    "id": "S3-AC-198",
@@ -2264,7 +2264,7 @@
     "validate_governance.py passes; the validator unit suite is 397 green",
     "validate_production_readiness.py: TC-GLOBAL-001, TC-GLOBAL-003 and TC-GLOBAL-004 PASS at head 91fcfaa",
     "Whole-repository run recorded in docs/07-phase-evidence/SLICE-V1-003/executable-evidence.md",
-    "Merged coverage LINE 0.8294 / BRANCH 0.7040 in docs/07-phase-evidence/SLICE-V1-003/measurements/jacoco-merged-376228a.json"
+    "Merged coverage LINE 0.8361 / BRANCH 0.7061 in docs/07-phase-evidence/SLICE-V1-003/measurements/jacoco-merged-384e34e.json"
    ],
    "note": "validate_production_readiness.py still exits non-zero on TC-GLOBAL-002: three comments in V0040 and V0047 narrate what the schema used to do. The rule is right and the only way to satisfy it is to edit two migrations every clean install has applied and whose checksums MIGRATION-INVENTORY.json publishes, which forward-only discipline forbids and which no later migration can correct. The conflict between the two rules is an Owner decision. The other three checks now pass: the approved migration set carries V0036-V0053, and the tolerant-schema-creation rule no longer reads PL/pgSQL's IF NOT EXISTS (SELECT ...) as DDL. No CI or security-scan result is recorded at this head."
   }

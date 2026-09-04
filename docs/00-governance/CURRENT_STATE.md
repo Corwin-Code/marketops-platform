@@ -138,6 +138,7 @@ slice_v1_003_deferred_release_register: docs/07-phase-evidence/SLICE-V1-003/defe
 slice_v1_003_measurements: docs/07-phase-evidence/SLICE-V1-003/measurements/
 slice_v1_003_runbooks: docs/06-runbooks/
 slice_v1_003_engineering_closure_claim: NOT_MADE
+slice_v1_003_r2_implementation_handoff: docs/07-phase-evidence/SLICE-V1-003/r2-implementation-handoff.md
 accepted_contract_mutation: PROHIBITED_APPEND_ONLY_AMENDMENT_REQUIRED
 execution_envelope: EXECUTION_ENVELOPE_V1
 maker_remote_git_authority: DENIED

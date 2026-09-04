@@ -24,11 +24,11 @@
   },
   "actualOwnerCohortVerified" : false,
   "profileAssumption" : {
+    "hypotheticalBaselineSkus" : 500,
+    "hypotheticalBaselineDailyOrders" : 100,
     "testedDailyOrders" : 2000,
     "testedSkus" : 5000,
-    "historyDays" : 180,
-    "hypotheticalBaselineSkus" : 500,
-    "hypotheticalBaselineDailyOrders" : 100
+    "historyDays" : 180
   },
   "scope" : "MockMvc authorization, actual SQL and JSON serialization; excludes network, browser, real provider and production",
   "warmups" : 3,
@@ -36,11 +36,12 @@
   "readTransactionTimeoutSeconds" : 5,
   "readTransactionTimeoutSource" : "Production AnalyticsQueryService and EvidenceService; no test connection override",
   "datasetSha256" : "4b6f6f52d258d8e42e19ada997dcc15ab394e8c97c39c149ea3db7531389e0a2",
-  "startedAt" : "2026-09-04T14:50:12.859457Z",
+  "startedAt" : "2026-09-04T16:27:58.564458Z",
   "measurements" : [ ],
-  "generationSeconds" : 248.709316,
+  "generationSeconds" : 232.045956792,
   "postgresVersion" : "PostgreSQL 17.6 (Debian 17.6-2.pgdg12+1) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit",
   "runtime" : {
+    "availableProcessors" : 8,
     "jvmMaxHeapBytes" : 4294967296,
     "postgresSettings" : [ {
       "name" : "max_connections",
@@ -59,8 +60,7 @@
       "setting" : "4096",
       "unit" : "kB"
     } ],
-    "javaVersion" : "21.0.10",
-    "availableProcessors" : 8
+    "javaVersion" : "21.0.10"
   },
   "rowCounts" : {
     "core.store" : 3,
@@ -76,30 +76,14 @@
   },
   "activeMetricDefinitions" : 31,
   "availabilityPortfolioEnumeration" : {
-    "status" : "PASS",
-    "elapsedMillis" : 87,
+    "elapsedMillis" : 61,
     "enumerationBudgetMillis" : 30000,
     "databasePages" : 5,
     "variants" : 5000,
-    "sweepCadenceMillis" : 3600000
+    "sweepCadenceMillis" : 3600000,
+    "status" : "PASS"
   },
   "availabilityLaneDiagnostic" : {
-    "cards" : [ {
-      "lane" : "CRITICAL",
-      "variants" : 1000
-    }, {
-      "lane" : "HEALTHY",
-      "variants" : 1000
-    }, {
-      "lane" : "HIGH",
-      "variants" : 1000
-    }, {
-      "lane" : "UNRESOLVED",
-      "variants" : 1000
-    }, {
-      "lane" : "WATCH",
-      "variants" : 1000
-    } ],
     "children" : [ {
       "child_kind" : "CHANNEL",
       "lane" : "CRITICAL",
@@ -128,9 +112,25 @@
       "child_kind" : "COMPANY",
       "lane" : "UNRESOLVED",
       "children" : 2000
+    } ],
+    "cards" : [ {
+      "lane" : "CRITICAL",
+      "variants" : 1000
+    }, {
+      "lane" : "HEALTHY",
+      "variants" : 1000
+    }, {
+      "lane" : "HIGH",
+      "variants" : 1000
+    }, {
+      "lane" : "UNRESOLVED",
+      "variants" : 1000
+    }, {
+      "lane" : "WATCH",
+      "variants" : 1000
     } ]
   },
   "status" : "FAIL",
   "failureType" : "java.lang.AssertionError",
-  "completedAt" : "2026-09-04T15:01:17.904656Z"
+  "completedAt" : "2026-09-04T16:38:39.745477Z"
 }

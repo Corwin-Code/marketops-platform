@@ -3,7 +3,7 @@
 Every claim below is a command anybody can run against this tree. Nothing here
 is a summary of a summary: the counts are what the runner printed.
 
-Head `376228a`, branch `feat/SLICE-V1-003-advertising-traffic-efficiency`.
+Head `384e34e`, branch `feat/SLICE-V1-003-advertising-traffic-efficiency`.
 All runs require `JAVA_HOME=~/.sdkman/candidates/java/21.0.10-zulu` and are
 invoked from the repository root.
 
@@ -95,8 +95,8 @@ JAVA_HOME=~/.sdkman/candidates/java/21.0.10-zulu ./backend/marketops-server/mvnw
 | Phase | Result |
 | --- | --- |
 | surefire (unit + architecture) | `Tests run: 1406, Failures: 0, Errors: 0, Skipped: 0` |
-| failsafe (integration) | `Tests run: 545, Failures: 1, Errors: 0, Skipped: 0` |
-| total | 18:09 min, `BUILD FAILURE` on the one failure below |
+| failsafe (integration) | `Tests run: 569, Failures: 1, Errors: 0, Skipped: 0` |
+| total | 18:49 min, `BUILD FAILURE` on the one failure below |
 
 ### Coverage
 
@@ -105,10 +105,10 @@ same file, which is how the bundle gate is computed):
 
 | Counter | Measured | Gate |
 | --- | --- | --- |
-| LINE | 0.8294 | 0.80 |
-| BRANCH | 0.7040 | 0.70 |
+| LINE | 0.8361 | 0.80 |
+| BRANCH | 0.7061 | 0.70 |
 
-5,814 of 8,259 branches, 33 above what the gate needs. No threshold was
+52 branches above what the gate needs. No threshold was
 weakened to get there; the four suites in `16f254a` were written instead.
 
 ### The one failing test, and what it means
@@ -117,7 +117,7 @@ weakened to get there; the four suites in `16f254a` were written instead.
 fails its CRITICAL-lane p95 assertion:
 
 ```
-Expecting actual:  377769L
+Expecting actual:  388962L
 to be less than or equal to:  300000L
 ```
 
@@ -128,7 +128,7 @@ nothing else running:
 | Commit | CRITICAL p95 | Budget | Test wall clock | Dataset `mart.metric_value` |
 | --- | --- | --- | --- | --- |
 | `08ad7da7` (Slice base) | 326,120 ms | 300,000 ms | 607.8 s | 1,047,420 |
-| `376228a` (this head) | 377,769 ms | 300,000 ms | 672.3 s | 983,940 |
+| `384e34e` (this head) | 388,962 ms | 300,000 ms | 650.6 s | 983,940 |
 
 The base already fails. What the p95 measures is the internal latency of the
 5,000-variant availability recalculation, and because every request is enqueued
@@ -142,11 +142,12 @@ Two honest statements follow, and they are different:
 - The declared-capacity claim is **unverified on this hardware**, at the Slice
   base and at this head. It is not established, and it is not this Slice's
   doing.
-- This head is ~16% slower than the base on a dataset 6% smaller. That gap was
-  measured once each; the head run was the tail of an 18-minute suite and the
-  base run followed only unit tests, so page-cache and container state differ.
-  It is recorded rather than explained, and it has not been attributed to a
-  specific change.
+- This head is ~19% slower than the base on a dataset 6% smaller. Three
+  measurements exist: 326,120 ms at the base, and 377,769 ms and 388,962 ms at
+  two heads of this branch. The head runs were the tail of an 18-minute suite
+  and the base run followed only unit tests, so page-cache and container state
+  differ between them. The gap is recorded rather than explained, and it has not
+  been attributed to any specific change.
 
 The threshold was not moved. `docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json`
 carries the obligation to establish this on representative hardware.

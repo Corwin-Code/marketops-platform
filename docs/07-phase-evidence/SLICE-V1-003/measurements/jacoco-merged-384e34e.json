@@ -1,6 +1,6 @@
 {
   "classification": "MERGED_UNIT_AND_INTEGRATION_COVERAGE",
-  "head": "376228a",
+  "head": "384e34e",
   "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
   "source": "backend/marketops-server/target/site/jacoco/jacoco.csv",
   "gate": {
@@ -9,13 +9,13 @@
     "scope": "BUNDLE"
   },
   "measured": {
-    "lineCovered": 20027,
-    "lineMissed": 4119,
-    "lineRatio": 0.8294,
-    "branchCovered": 5814,
-    "branchMissed": 2445,
-    "branchRatio": 0.704,
-    "branchesAboveGate": 33
+    "lineCovered": 20357,
+    "lineMissed": 3991,
+    "lineRatio": 0.8361,
+    "branchCovered": 5873,
+    "branchMissed": 2444,
+    "branchRatio": 0.7061,
+    "branchesAboveGate": 52
   },
   "thresholdChanged": false
 }
