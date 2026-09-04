@@ -1,211 +1,246 @@
 {
- "slice": "SLICE-V1-003",
- "immutable_prefix": {
-  "first": "0001",
-  "last": "0035",
-  "count": 35
- },
- "slice_migrations": [
-  {
-   "version": "0036",
-   "file": "V0036__create_advertising_identity_and_official_facts.sql",
-   "bytes": 45813,
-   "lines": 832,
-   "sha256": "5f0794654520b3da8671295494735e524e96224558df569edf000cd487b1d9be",
-   "git_blob_sha1": "0085738f2482c287f92d502ef24c5dc86736a804",
-   "introduced_in_commit": "b492f425624a4f7b37676ca5a4b7163190c80b59"
+  "slice": "SLICE-V1-003",
+  "immutable_prefix": {
+    "first": "0001",
+    "last": "0035",
+    "count": 35
   },
-  {
-   "version": "0037",
-   "file": "V0037__create_advertising_conversion_freshness_and_qualification.sql",
-   "bytes": 46515,
-   "lines": 828,
-   "sha256": "0d1288f9392bd619f7dc439730949b8148001261fda1eacb51aa45ad61aea2cc",
-   "git_blob_sha1": "3e9983a425f051e279f8fa691aefb102f83e7120",
-   "introduced_in_commit": "b8c9b972a73be847f79d35e3557a2b4feb97fe3b"
+  "slice_migrations": [
+    {
+      "version": "0036",
+      "file": "V0036__create_advertising_identity_and_official_facts.sql",
+      "bytes": 45813,
+      "lines": 832,
+      "sha256": "5f0794654520b3da8671295494735e524e96224558df569edf000cd487b1d9be",
+      "git_blob_sha1": "0085738f2482c287f92d502ef24c5dc86736a804",
+      "introduced_in_commit": "b492f425624a4f7b37676ca5a4b7163190c80b59"
+    },
+    {
+      "version": "0037",
+      "file": "V0037__create_advertising_conversion_freshness_and_qualification.sql",
+      "bytes": 46751,
+      "lines": 831,
+      "sha256": "dfef833846a96ce32e530979753d9184b73dc862343f56bdd6111f8c54e2258d",
+      "git_blob_sha1": "96a04675f8e8da4bf605458c947a1f382719ae00",
+      "introduced_in_commit": "b8c9b972a73be847f79d35e3557a2b4feb97fe3b"
+    },
+    {
+      "version": "0038",
+      "file": "V0038__create_advertising_case_projection_and_orchestration.sql",
+      "bytes": 42108,
+      "lines": 775,
+      "sha256": "7a0510c0fcd500d51774175fb4ae83419b68996badb569034122ef3be8262b6f",
+      "git_blob_sha1": "83234d726e24b61a33bdae5846651012815792b0",
+      "introduced_in_commit": "093a9561575e01fd3bd51e9daf215a6defc945c2"
+    },
+    {
+      "version": "0039",
+      "file": "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
+      "bytes": 38921,
+      "lines": 685,
+      "sha256": "d5f6e0d55f833fa9013649cf01b93970e17f4ead0104ba571b36e9db435988a0",
+      "git_blob_sha1": "5209df005e86541979f18ab07d6f2c8c0910fbc2",
+      "introduced_in_commit": "2c45276fcae2f234fca5c902d1ef7a22c187fceb"
+    },
+    {
+      "version": "0040",
+      "file": "V0040__widen_write_registry_for_ad_bid_capability.sql",
+      "bytes": 16955,
+      "lines": 316,
+      "sha256": "3e15e423d1e54a9e8a561f080fdeec24a0c38e9b7ed1c84bd4617ef93710db90",
+      "git_blob_sha1": "df35e646b62075e2338fc26564ec71302b6172ca",
+      "introduced_in_commit": "d78402398af0dbc5271f098a466464c48aacfb69"
+    },
+    {
+      "version": "0041",
+      "file": "V0041__create_advertising_containment_and_decision_bundle.sql",
+      "bytes": 41070,
+      "lines": 761,
+      "sha256": "ea799bc30ed860c2fe0a5876b42716fe756567ba48c0fdf05f36ee4dab19786f",
+      "git_blob_sha1": "138e26c2e1e7fe2256d246644e33f81d6ad69436",
+      "introduced_in_commit": "324b1f0855ae65a2d7bbe3704b467a7240788544"
+    },
+    {
+      "version": "0042",
+      "file": "V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+      "bytes": 62390,
+      "lines": 1245,
+      "sha256": "bafc5dc9605635349c3a25976d454124aa4fd5eda074081e7acf43d8b926ccbb",
+      "git_blob_sha1": "4afd2c7474540b139de468b1b7eb9fa2466e63ce",
+      "introduced_in_commit": "b08ec5625bab395c1b4f670930621105060c51ee"
+    },
+    {
+      "version": "0043",
+      "file": "V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
+      "bytes": 25735,
+      "lines": 528,
+      "sha256": "d4faa7672e631f832749a655fb1030e75574b7f95924c851940207acfd727fdf",
+      "git_blob_sha1": "8dabc5122577547ed38e5f06ffedf732982b9c31",
+      "introduced_in_commit": "580b60ee3af1064706c5262b9a60bf0ea4332cc7"
+    },
+    {
+      "version": "0044",
+      "file": "V0044__supersede_advertising_cases_whose_cause_no_longer_holds.sql",
+      "bytes": 2220,
+      "lines": 46,
+      "sha256": "25404a486fc44a36013013653704742a16e3ae545053ef9453700798c09e7050",
+      "git_blob_sha1": "66dda8ac59d12eed79ada87428c88054b6611ba3",
+      "introduced_in_commit": "342c46560e2fcee2484ea30f8139d8a23fdaad03"
+    },
+    {
+      "version": "0045",
+      "file": "V0045__create_ad_bid_command_from_approval.sql",
+      "bytes": 12468,
+      "lines": 251,
+      "sha256": "3125958dcf902bd09918ee58bb87073ccd1ace011bdb3027fc96f1f10ee0e774",
+      "git_blob_sha1": "032cff2364c202bdec1e8b631c16bf9aa3c1f361",
+      "introduced_in_commit": "89f1e1f48dedc1530b459723d97c1ac07d652e9f"
+    },
+    {
+      "version": "0046",
+      "file": "V0046__capture_ad_bid_authority_for_guardrail_evaluation.sql",
+      "bytes": 1184,
+      "lines": 23,
+      "sha256": "f5f694721c6a843498aa49ad1e535a8e67e7e97234c9d94cccb128b68bf76a1a",
+      "git_blob_sha1": "afe9166d45bc6f5e6fe643c4bf1faa01f7ad7470",
+      "introduced_in_commit": "6118a29031b03bf833c599b76ef3e89404385dec"
+    },
+    {
+      "version": "0047",
+      "file": "V0047__refuse_a_zero_target_bid_in_the_parameter_contract.sql",
+      "bytes": 2175,
+      "lines": 43,
+      "sha256": "d339f4ab34329a5cde474825125c8b12f141dd8868fd8e0e9b478f7094495b5a",
+      "git_blob_sha1": "76f7a247b9ea0294da717ecf24f93c88f302f6ab",
+      "introduced_in_commit": "6118a29031b03bf833c599b76ef3e89404385dec"
+    },
+    {
+      "version": "0048",
+      "file": "V0048__serialize_advertising_reservations_against_overlap.sql",
+      "bytes": 8358,
+      "lines": 182,
+      "sha256": "7d176e8c0415b21483cc498e3097669c3ea93a7a5ded4047ef1c90532e4502d1",
+      "git_blob_sha1": "49ec9a20213c8eaaa8d974e44dbc7a01049529a7",
+      "introduced_in_commit": "361ed600a73b17b346f58f1a32ea3628e163e2d7"
+    },
+    {
+      "version": "0049",
+      "file": "V0049__create_advertising_outcome_plan_and_lineage.sql",
+      "bytes": 16437,
+      "lines": 312,
+      "sha256": "2004ff05791dd441edd506abcf1e0ab7a38dafccdbc98db8a99545efa3a5782c",
+      "git_blob_sha1": "4298fc832a4bd87f53f2ca2e4bbd8fceace8ad15",
+      "introduced_in_commit": "b3add43f8719e465ccc63e4b0b43ee0da4c92e27"
+    },
+    {
+      "version": "0050",
+      "file": "V0050__cause_specific_outcomes_and_same_lineage_reopen.sql",
+      "bytes": 12603,
+      "lines": 259,
+      "sha256": "ae376ad2333854034b2522d62cded97e12bdb9ee7ad40960c03a93d95b36b7d9",
+      "git_blob_sha1": "1a2a4394d58fcb0ae546ee891452b7e66b0c7f4d",
+      "introduced_in_commit": "c7cad392aa72e419e27dd62c879f672f15ebc175"
+    },
+    {
+      "version": "0051",
+      "file": "V0051__bind_each_decision_to_its_own_authority.sql",
+      "bytes": 14150,
+      "lines": 267,
+      "sha256": "ded7af2e454aa07c7e6bd10a6ad496449a524249aee1d096d2a78c649231dab4",
+      "git_blob_sha1": "2381c45c8b978cc29cbcfa1a0513027eb2ad6db1",
+      "introduced_in_commit": "efc8a5aebf086db6895414b5f5eb1af44a8e8b06"
+    },
+    {
+      "version": "0052",
+      "file": "V0052__a_guardrail_verdict_names_the_policy_that_authorised_it.sql",
+      "bytes": 3530,
+      "lines": 71,
+      "sha256": "eb9e365bc7cf2ec83bb49ded39112fa6c01f357892c32537482d235cb8e7e137",
+      "git_blob_sha1": "fca823dbd037a0165c6f7f28e034ab4c7b208c83",
+      "introduced_in_commit": "efc8a5aebf086db6895414b5f5eb1af44a8e8b06"
+    },
+    {
+      "version": "0053",
+      "file": "V0053__the_write_gate_must_refuse_rather_than_raise.sql",
+      "bytes": 14978,
+      "lines": 314,
+      "sha256": "ee1ba8318b0fa32efedc40004eb0a5b85510460c82b12028b72e677c8bb26b98",
+      "git_blob_sha1": "f34c45a2adae687f38f69220253b05a844e440c5",
+      "introduced_in_commit": "41105cd54be3e40e0292588b78b0cbce8b3cc987"
+    },
+    {
+      "version": "0054",
+      "file": "V0054__index_the_demand_carry_forward_lookup.sql",
+      "bytes": 1643,
+      "lines": 28,
+      "sha256": "b4661aebcdfb4101a6fbec34d3eea058155614f6badfa3c09c179276722e6856",
+      "git_blob_sha1": "177c280bd040773e1652018acf90c8096956dff7",
+      "introduced_in_commit": "45acaf4c602d833ff4d01fadf168625f5cde42b9"
+    },
+    {
+      "version": "0055",
+      "file": "V0055__record_what_happened_to_a_task_and_who_did_it.sql",
+      "bytes": 10528,
+      "lines": 205,
+      "sha256": "c770a3b884926e24cac010f0579453875ae031451c6bb3bd3b882228bfd6ca08",
+      "git_blob_sha1": "e240803435e35c76643d3e8d007f04e70eb6d88d",
+      "introduced_in_commit": "45acaf4c602d833ff4d01fadf168625f5cde42b9"
+    },
+    {
+      "version": "0056",
+      "file": "V0056__publish_the_daily_brief_and_weekly_review_as_projections.sql",
+      "bytes": 27411,
+      "lines": 507,
+      "sha256": "43b776ed8cb5e5deee10a0fb3bae2ea21a5669e96c48cca2b3d756b132380110",
+      "git_blob_sha1": "4114c63dca8f884018a65394387f4124600c16d6",
+      "introduced_in_commit": "77faa375478acc2878355a72dfac283eaa451d60"
+    }
+  ],
+  "total_migrations": 56,
+  "contiguous": true,
+  "verification": {
+    "immutable_prefix_unmodified_since_protected_main": true,
+    "protected_main": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "applied_migrations_v0001_v0035_modified": 0,
+    "contiguous_versions": true,
+    "clean_install": {
+      "test": "ManagedMigrationRunnerIT#cleanInstallAndReplayValidateAllMigrationsWithoutGivingTheApplicationTheOwningRole",
+      "migrations_applied": 56,
+      "schema_version": "0056",
+      "replay_applied": 0,
+      "application_role_refused_as_migrator": true,
+      "result": "PASS"
+    },
+    "upgrade_from_prior_release": {
+      "test": "ManagedProfileMigrationIT#pg17StandardAndManagedProfilesHaveCanonicalHistoryAndEquivalentApplicationSchemas",
+      "resumed_at_schema_version": "0010",
+      "upgraded_to_schema_version": "0056",
+      "migrations_applied_on_upgrade": 46,
+      "managed_and_standard_catalog_signatures_equal": true,
+      "result": "PASS"
+    },
+    "database_role_boundary": {
+      "test": "AdvertisingPrivilegeBoundaryIT",
+      "advertising_tables_checked": 40,
+      "delete_granted_to_application_role": 0,
+      "command_lineage_writable_by_application_role": false,
+      "state_moving_functions_security_definer": true,
+      "security_definer_functions_without_pinned_search_path": 0,
+      "advertising_tables_owned_by_application_role": 0,
+      "schemas_where_application_role_may_create": 0,
+      "result": "PASS"
+    },
+    "postgres_versions": {
+      "raw_jdbc_integration": "18.4",
+      "spring_integration": "17.6"
+    },
+    "corrected_in_place": {
+      "note": "V0037 and V0043 are unpushed candidate migrations of this branch. Two latent defects found by the first end-to-end run were corrected in the migrations themselves rather than patched forward, so a clean install never applies a statement that cannot succeed. Their checksums below are the corrected bytes; both disposable databases were recreated and clean-install, replay and exact-base-upgrade validation rerun.",
+      "migrations": [
+        "V0037__create_advertising_conversion_freshness_and_qualification.sql",
+        "V0043__create_ad_bid_attempt_lifecycle_and_readback.sql"
+      ]
+    }
   },
-  {
-   "version": "0038",
-   "file": "V0038__create_advertising_case_projection_and_orchestration.sql",
-   "bytes": 42108,
-   "lines": 775,
-   "sha256": "7a0510c0fcd500d51774175fb4ae83419b68996badb569034122ef3be8262b6f",
-   "git_blob_sha1": "83234d726e24b61a33bdae5846651012815792b0",
-   "introduced_in_commit": "093a9561575e01fd3bd51e9daf215a6defc945c2"
-  },
-  {
-   "version": "0039",
-   "file": "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
-   "bytes": 38921,
-   "lines": 685,
-   "sha256": "d5f6e0d55f833fa9013649cf01b93970e17f4ead0104ba571b36e9db435988a0",
-   "git_blob_sha1": "5209df005e86541979f18ab07d6f2c8c0910fbc2",
-   "introduced_in_commit": "2c45276fcae2f234fca5c902d1ef7a22c187fceb"
-  },
-  {
-   "version": "0040",
-   "file": "V0040__widen_write_registry_for_ad_bid_capability.sql",
-   "bytes": 16955,
-   "lines": 316,
-   "sha256": "3e15e423d1e54a9e8a561f080fdeec24a0c38e9b7ed1c84bd4617ef93710db90",
-   "git_blob_sha1": "df35e646b62075e2338fc26564ec71302b6172ca",
-   "introduced_in_commit": "d78402398af0dbc5271f098a466464c48aacfb69"
-  },
-  {
-   "version": "0041",
-   "file": "V0041__create_advertising_containment_and_decision_bundle.sql",
-   "bytes": 41070,
-   "lines": 761,
-   "sha256": "ea799bc30ed860c2fe0a5876b42716fe756567ba48c0fdf05f36ee4dab19786f",
-   "git_blob_sha1": "138e26c2e1e7fe2256d246644e33f81d6ad69436",
-   "introduced_in_commit": "324b1f0855ae65a2d7bbe3704b467a7240788544"
-  },
-  {
-   "version": "0042",
-   "file": "V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
-   "bytes": 62390,
-   "lines": 1245,
-   "sha256": "bafc5dc9605635349c3a25976d454124aa4fd5eda074081e7acf43d8b926ccbb",
-   "git_blob_sha1": "4afd2c7474540b139de468b1b7eb9fa2466e63ce",
-   "introduced_in_commit": "b08ec5625bab395c1b4f670930621105060c51ee"
-  },
-  {
-   "version": "0043",
-   "file": "V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
-   "bytes": 25495,
-   "lines": 525,
-   "sha256": "6d3ecb036f89d9e16c44cf71ef1cf446bc6dd68ac18cb10740ccc89420c28624",
-   "git_blob_sha1": "0f881465923d46f734692610fd7ffde215a636c0",
-   "introduced_in_commit": "580b60ee3af1064706c5262b9a60bf0ea4332cc7"
-  },
-  {
-   "version": "0044",
-   "file": "V0044__supersede_advertising_cases_whose_cause_no_longer_holds.sql",
-   "bytes": 2220,
-   "lines": 46,
-   "sha256": "25404a486fc44a36013013653704742a16e3ae545053ef9453700798c09e7050",
-   "git_blob_sha1": "66dda8ac59d12eed79ada87428c88054b6611ba3",
-   "introduced_in_commit": "342c46560e2fcee2484ea30f8139d8a23fdaad03"
-  },
-  {
-   "version": "0045",
-   "file": "V0045__create_ad_bid_command_from_approval.sql",
-   "bytes": 12468,
-   "lines": 251,
-   "sha256": "3125958dcf902bd09918ee58bb87073ccd1ace011bdb3027fc96f1f10ee0e774",
-   "git_blob_sha1": "032cff2364c202bdec1e8b631c16bf9aa3c1f361",
-   "introduced_in_commit": "89f1e1f48dedc1530b459723d97c1ac07d652e9f"
-  },
-  {
-   "version": "0046",
-   "file": "V0046__capture_ad_bid_authority_for_guardrail_evaluation.sql",
-   "bytes": 1184,
-   "lines": 23,
-   "sha256": "f5f694721c6a843498aa49ad1e535a8e67e7e97234c9d94cccb128b68bf76a1a",
-   "git_blob_sha1": "afe9166d45bc6f5e6fe643c4bf1faa01f7ad7470",
-   "introduced_in_commit": "6118a29031b03bf833c599b76ef3e89404385dec"
-  },
-  {
-   "version": "0047",
-   "file": "V0047__refuse_a_zero_target_bid_in_the_parameter_contract.sql",
-   "bytes": 2175,
-   "lines": 43,
-   "sha256": "d339f4ab34329a5cde474825125c8b12f141dd8868fd8e0e9b478f7094495b5a",
-   "git_blob_sha1": "76f7a247b9ea0294da717ecf24f93c88f302f6ab",
-   "introduced_in_commit": "6118a29031b03bf833c599b76ef3e89404385dec"
-  },
-  {
-   "version": "0048",
-   "file": "V0048__serialize_advertising_reservations_against_overlap.sql",
-   "bytes": 8358,
-   "lines": 182,
-   "sha256": "7d176e8c0415b21483cc498e3097669c3ea93a7a5ded4047ef1c90532e4502d1",
-   "git_blob_sha1": "49ec9a20213c8eaaa8d974e44dbc7a01049529a7",
-   "introduced_in_commit": "361ed600a73b17b346f58f1a32ea3628e163e2d7"
-  },
-  {
-   "version": "0049",
-   "file": "V0049__create_advertising_outcome_plan_and_lineage.sql",
-   "bytes": 16437,
-   "lines": 312,
-   "sha256": "2004ff05791dd441edd506abcf1e0ab7a38dafccdbc98db8a99545efa3a5782c",
-   "git_blob_sha1": "4298fc832a4bd87f53f2ca2e4bbd8fceace8ad15",
-   "introduced_in_commit": "b3add43f8719e465ccc63e4b0b43ee0da4c92e27"
-  },
-  {
-   "version": "0050",
-   "file": "V0050__cause_specific_outcomes_and_same_lineage_reopen.sql",
-   "bytes": 12603,
-   "lines": 259,
-   "sha256": "ae376ad2333854034b2522d62cded97e12bdb9ee7ad40960c03a93d95b36b7d9",
-   "git_blob_sha1": "1a2a4394d58fcb0ae546ee891452b7e66b0c7f4d",
-   "introduced_in_commit": "c7cad392aa72e419e27dd62c879f672f15ebc175"
-  },
-  {
-   "version": "0051",
-   "file": "V0051__bind_each_decision_to_its_own_authority.sql",
-   "bytes": 14150,
-   "lines": 267,
-   "sha256": "ded7af2e454aa07c7e6bd10a6ad496449a524249aee1d096d2a78c649231dab4",
-   "git_blob_sha1": "2381c45c8b978cc29cbcfa1a0513027eb2ad6db1",
-   "introduced_in_commit": "efc8a5aebf086db6895414b5f5eb1af44a8e8b06"
-  },
-  {
-   "version": "0052",
-   "file": "V0052__a_guardrail_verdict_names_the_policy_that_authorised_it.sql",
-   "bytes": 3530,
-   "lines": 71,
-   "sha256": "eb9e365bc7cf2ec83bb49ded39112fa6c01f357892c32537482d235cb8e7e137",
-   "git_blob_sha1": "fca823dbd037a0165c6f7f28e034ab4c7b208c83",
-   "introduced_in_commit": "efc8a5aebf086db6895414b5f5eb1af44a8e8b06"
-  },
-  {
-   "version": "0053",
-   "file": "V0053__the_write_gate_must_refuse_rather_than_raise.sql",
-   "bytes": 14978,
-   "lines": 314,
-   "sha256": "ee1ba8318b0fa32efedc40004eb0a5b85510460c82b12028b72e677c8bb26b98",
-   "git_blob_sha1": "f34c45a2adae687f38f69220253b05a844e440c5",
-   "introduced_in_commit": "pending"
-  }
- ],
- "total_migrations": 53,
- "contiguous": true,
- "verification": {
-  "immutable_prefix_unmodified_since_protected_main": true,
-  "protected_main": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
-  "applied_migrations_v0001_v0035_modified": 0,
-  "contiguous_versions": true,
-  "clean_install": {
-   "test": "ManagedMigrationRunnerIT#cleanInstallAndReplayValidateAllMigrationsWithoutGivingTheApplicationTheOwningRole",
-   "migrations_applied": 53,
-   "schema_version": "0053",
-   "replay_applied": 0,
-   "application_role_refused_as_migrator": true,
-   "result": "PASS"
-  },
-  "upgrade_from_prior_release": {
-   "test": "ManagedProfileMigrationIT#pg17StandardAndManagedProfilesHaveCanonicalHistoryAndEquivalentApplicationSchemas",
-   "resumed_at_schema_version": "0010",
-   "upgraded_to_schema_version": "0053",
-   "migrations_applied_on_upgrade": 43,
-   "managed_and_standard_catalog_signatures_equal": true,
-   "result": "PASS"
-  },
-  "database_role_boundary": {
-   "test": "AdvertisingPrivilegeBoundaryIT",
-   "advertising_tables_checked": 40,
-   "delete_granted_to_application_role": 0,
-   "command_lineage_writable_by_application_role": false,
-   "state_moving_functions_security_definer": true,
-   "security_definer_functions_without_pinned_search_path": 0,
-   "advertising_tables_owned_by_application_role": 0,
-   "schemas_where_application_role_may_create": 0,
-   "result": "PASS"
-  },
-  "postgres_versions": {
-   "raw_jdbc_integration": "18.4",
-   "spring_integration": "17.6"
-  }
- }
+  "head": "77faa375478acc2878355a72dfac283eaa451d60"
 }

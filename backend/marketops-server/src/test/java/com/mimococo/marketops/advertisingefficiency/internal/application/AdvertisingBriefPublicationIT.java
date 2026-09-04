@@ -281,6 +281,64 @@ class AdvertisingBriefPublicationIT {
         }
     }
 
+    @Test
+    @Order(9)
+    @DisplayName("TC-AD-BRIEF-009 the weekly review covers every governance topic it names")
+    void theWeeklyReviewCoversItsTopics() {
+        var published = briefs.publish(graph.organizationId(), "WEEKLY_EVIDENCE_REVIEW", AS_OF,
+                null).orElseThrow();
+        AdvertisingBriefView review = briefs
+                .latest(graph.organizationId(), "WEEKLY_EVIDENCE_REVIEW", published.periodKey())
+                .orElseThrow();
+
+        // Shadow decisions, governed actions, configuration verification, early
+        // guards, the two outcome stages, regression and compensation,
+        // exceptions, both service levels, aggregate exposure, bundle maturity,
+        // gate evidence and the deferred release obligations. Twelve topics, all
+        // emitted — a review that dropped the ones with nothing in them would be
+        // a review of whatever happened to be non-empty.
+        assertThat(review.sections()).extracting(AdvertisingBriefView.Section::sectionCode)
+                .containsExactly("SHADOW_DECISION_REASONS", "GOVERNED_ACTIONS",
+                        "CONFIGURATION_VERIFICATION", "EARLY_GUARDS",
+                        "OPERATIONAL_AND_SETTLED_TRANSITIONS",
+                        "REGRESSION_QUARANTINE_AND_COMPENSATION", "EXCEPTIONS",
+                        "SYSTEM_AND_HUMAN_SLO", "AGGREGATE_EXPOSURE", "POLICY_BUNDLE_MATURITY",
+                        "GATE_EVIDENCE", "DEFERRED_RELEASE_OBLIGATIONS");
+
+        // The week is a period, not a day, and it is named as one.
+        assertThat(published.periodKey()).matches("\\d{4}-W\\d{2}");
+        assertThat(review.periodEndsAt()).isAfter(review.periodStartsAt());
+
+        // The two topics this database holds no source for say so, and the
+        // publication carries their reasons as its own gaps.
+        assertThat(review.fullyCovered()).isFalse();
+        assertThat(review.gapCodes()).contains("NO_CANONICAL_GATE_EVIDENCE_SOURCE");
+        assertThat(review.sections().stream()
+                .filter(section -> !section.complete())
+                .map(AdvertisingBriefView.Section::sectionCode))
+                .containsExactlyInAnyOrder("GATE_EVIDENCE", "DEFERRED_RELEASE_OBLIGATIONS");
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("TC-AD-BRIEF-010 a day the calendar does not operate publishes nothing")
+    void aNonOperatingDayPublishesNothing() {
+        // The calendar names Monday to Friday. A Saturday is not a day this
+        // organization operates, and a brief produced on one would be inventing
+        // a schedule nobody chose — which matters because the brief's period is
+        // what a service level is measured against.
+        Instant saturday = AS_OF.plus(java.time.Duration.ofDays(1));
+        assertThat(saturday.atZone(java.time.ZoneId.of("Europe/Moscow")).getDayOfWeek())
+                .isEqualTo(java.time.DayOfWeek.SATURDAY);
+        assertThat(briefs.publish(graph.organizationId(), "DAILY_ACTION_BRIEF", saturday, null))
+                .isEmpty();
+
+        // The weekly review is not bound to operating days: a week is a week
+        // whichever days inside it were worked.
+        assertThat(briefs.publish(graph.organizationId(), "WEEKLY_EVIDENCE_REVIEW", saturday,
+                null)).isPresent();
+    }
+
     /** One more live case inside the period, as a late fact would deliver it. */
     private void seedLateCase(Instant calculatedAt) {
         UUID caseId = UUID.randomUUID();
