@@ -127,7 +127,8 @@ public final class PlatformHttpAdBidWriteAdapter implements AdBidWritePort {
                             + (query == null || query.isBlank() ? "" : "?" + query)),
                     operation.endpoint().httpMethod(),
                     headers.keySet(),
-                    body == null ? null : body.getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                    body == null ? new byte[0]
+                            : body.getBytes(java.nio.charset.StandardCharsets.UTF_8),
                     operation.endpoint().requestTimeoutMillis(),
                     (int) Math.min(operation.endpoint().maxResponseBytes(), Integer.MAX_VALUE));
 
