@@ -247,7 +247,7 @@ class ManagedProfileMigrationIT {
             var upgraded=ManagedMigrationRunner.migrateManaged(managed,nextRelease,evidence,bootstrapHash,
                     Instant.parse("2026-08-28T00:03:02Z"),"managed-prior-release-upgrade");
             assertThat(upgraded.schemaVersion()).isEqualTo("0052");
-            assertThat(upgraded.migrationsApplied()).isEqualTo(25);
+            assertThat(upgraded.migrationsApplied()).isEqualTo(42);
             assertThat(ManagedMigrationEvidence.sha256(evidence)).isEqualTo(bootstrapHash);
             assertThat(catalogSignature(managed)).isEqualTo(catalogSignature(standard));
             assertThat(attempt(evidenceDirectory,"managed-prior-release-upgrade"))

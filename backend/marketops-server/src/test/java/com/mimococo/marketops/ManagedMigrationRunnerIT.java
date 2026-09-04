@@ -22,7 +22,7 @@ class ManagedMigrationRunnerIT {
 
     @Test
     void cleanInstallAndReplayValidateAllMigrationsWithoutGivingTheApplicationTheOwningRole() throws Exception {
-        assertThat(clean.migrationsApplied()).isEqualTo(35);
+        assertThat(clean.migrationsApplied()).isEqualTo(52);
         assertThat(clean.schemaVersion()).isEqualTo("0052");
         assertThat(ManagedMigrationRunner.migrate(MIGRATION).migrationsApplied()).isZero();
         assertThatThrownBy(() -> ManagedMigrationRunner.migrate(APPLICATION)).isInstanceOf(IllegalStateException.class);
