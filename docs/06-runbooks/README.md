@@ -18,6 +18,17 @@
 | `database-restore-drill.md` | Executed local PG17/object recovery evidence and the pending provider PITR procedure |
 | `yandex-environment-bootstrap.md` | Building an environment from the reviewed infrastructure code — never applied |
 | `availability-risk-blockers.md` | A stockout card that will not resolve: undeclared ownership, blocked policy, censored demand, a provisional answer and blocked profit |
+| `advertising-stale-or-incomplete-data.md` | Advertising evidence that is stale, incomplete or still being corrected |
+| `advertising-mapping-or-linkage-gap.md` | An advertising object whose affected set will not resolve |
+| `advertising-provider-incident.md` | A marketplace not answering, or answering strangely, on the advertising path |
+| `advertising-approval-expiry.md` | An advertising approval that ran out before the command went |
+| `advertising-unknown-result.md` | A bid change whose outcome nobody knows, and why it is never repeated |
+| `advertising-manual-verification.md` | Verifying a manual advertising change somebody made by hand |
+| `advertising-reservation-or-exposure-block.md` | Advertising work blocked by another intervention or by aggregate exposure |
+| `advertising-outcome-regression.md` | A bid change that made things worse, and the lineage it reopens |
+| `advertising-quarantine.md` | Quarantining advertising at the right scope |
+| `advertising-kill-switch.md` | Stopping every advertising write |
+| `advertising-reenablement.md` | Restarting advertising after a stop: five conditions and two people |
 
 Still required before V1 production enablement: credential expiry, schema
 change, inventory drift, finance mismatch and personal-data incident
