@@ -14,6 +14,7 @@ import com.mimococo.marketops.operationsworkflow.ActionKind;
 import com.mimococo.marketops.operationsworkflow.RecommendationState;
 import com.mimococo.marketops.operationsworkflow.RecommendationView;
 import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.RecommendationRepository;
+import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository;
 import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskRepository;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.IdGenerator;
@@ -57,6 +58,7 @@ public class RecommendationService
 
     private final RecommendationRepository recommendations;
     private final WorkTaskRepository tasks;
+    private final WorkTaskEventRepository taskJournal;
     private final MetricQuery metrics;
     private final MetadataAuditRecorder auditRecorder;
     private final IdGenerator idGenerator;
@@ -64,12 +66,14 @@ public class RecommendationService
 
     RecommendationService(RecommendationRepository recommendations,
                           WorkTaskRepository tasks,
+                          WorkTaskEventRepository taskJournal,
                           MetricQuery metrics,
                           MetadataAuditRecorder auditRecorder,
                           IdGenerator idGenerator,
                           Clock clock) {
         this.recommendations = recommendations;
         this.tasks = tasks;
+        this.taskJournal = taskJournal;
         this.metrics = metrics;
         this.auditRecorder = auditRecorder;
         this.idGenerator = idGenerator;
@@ -116,7 +120,7 @@ public class RecommendationService
                 link.metricValueId(), link.findingId(), link.aiClaimId(), link.role()));
 
         if (initial == RecommendationState.TASK_ONLY) {
-            tasks.insert(idGenerator.newId(), organizationId, id,
+            raiseTask(idGenerator.newId(), organizationId, id,
                     taskTitle(actionKind), now.plus(DEFAULT_TASK_DUE), now);
         }
 
@@ -262,7 +266,7 @@ public class RecommendationService
         // change, because the service level being measured is how long a person
         // takes to decide — and that clock starts when the case is raised, not
         // when somebody notices it.
-        tasks.insert(idGenerator.newId(), proposal.organizationId(), id,
+        raiseTask(idGenerator.newId(), proposal.organizationId(), id,
                 taskTitle(ActionKind.AD_BID_CHANGE),
                 now.plus(proposal.humanReviewWindow()), now);
 
@@ -276,6 +280,23 @@ public class RecommendationService
                         "entityVersionDigest", new FieldChange(null, entityVersionDigest)),
                 null, null));
         return id;
+    }
+
+    /**
+     * Raise the task and open its journal in the same breath.
+     *
+     * <p>A journal that could start at the second event would leave the first
+     * question a service level asks — when did this work appear — answerable
+     * only from a row somebody can overwrite. The raise is the entry that makes
+     * every later one measurable from something.
+     */
+    private void raiseTask(UUID taskId, UUID organizationId, UUID recommendationId,
+                           String title, Instant dueAt, Instant now) {
+        tasks.insert(taskId, organizationId, recommendationId, title, dueAt, now);
+        taskJournal.append(new WorkTaskEventRepository.Event(
+                idGenerator.newId(), taskId, organizationId, "RAISED",
+                "recommendation:" + recommendationId, null, null, null, null, null,
+                null, null, null, null, title, now, "recommendation:" + recommendationId));
     }
 
     private static String taskTitle(ActionKind actionKind) {

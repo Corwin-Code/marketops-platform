@@ -84,24 +84,35 @@ public class AvailabilityProjectionWriter {
                 risk.rankScore(), risk.policies().versionDigest(), risk.asOf(), calculatedAt,
                 calculationKind, reconciliationRunId));
 
+        // The supporting detail is collected first and appended once. These are
+        // plain appends inside this method's own transaction, so writing them
+        // together writes exactly the rows a row-at-a-time loop would — and one
+        // variant produces about thirty of them, which at portfolio scale is the
+        // difference between one round trip and thirty.
         List<WrittenChild> written = new ArrayList<>();
+        List<AvailabilityProjectionRepository.FactorRow> factors = new ArrayList<>();
+        List<AvailabilityProjectionRepository.DemandWindowRow> windows = new ArrayList<>();
+        List<AvailabilityProjectionRepository.EvidenceRow> evidence = new ArrayList<>();
         for (VariantRisk.ScoredChild scored : risk.children()) {
             UUID calculationId = ids.newId();
             SustainedRun run = runs.get(scored);
             UUID childId = projection.upsertChild(childRow(risk, cardId, scored, calculationId,
                     calculatedAt, run));
             for (RankFactor factor : scored.ranking().factors()) {
-                projection.insertFactor(ids.newId(), childId, risk.organizationId(), calculationId,
+                factors.add(new AvailabilityProjectionRepository.FactorRow(
+                        ids.newId(), childId, risk.organizationId(), calculationId,
                         factor.code().name(), factor.value(), factor.weight(),
-                        factor.contribution(), factor.displayNote());
+                        factor.contribution(), factor.displayNote()));
             }
             for (DemandWindowEvidence window : scored.windows()) {
-                projection.insertDemandWindow(demandWindowRow(risk, childId, calculationId, window,
-                        ids.newId()));
+                windows.add(demandWindowRow(risk, childId, calculationId, window, ids.newId()));
             }
-            writeEvidence(risk, childId, calculationId, scored);
+            collectEvidence(risk, childId, calculationId, scored, evidence);
             written.add(new WrittenChild(childId, scored, run.cycles(), run.since()));
         }
+        projection.insertFactors(factors);
+        projection.insertDemandWindows(windows);
+        projection.insertEvidence(evidence);
         return new WrittenCard(cardId, risk.parentLane(), List.copyOf(written));
     }
 
@@ -223,8 +234,9 @@ public class AvailabilityProjectionWriter {
      * asking why a company total looks low needs to see the four hundred units
      * that were refused and the reason, not only the twelve that counted.
      */
-    private void writeEvidence(VariantRisk risk, UUID childId, UUID calculationId,
-                               VariantRisk.ScoredChild scored) {
+    private void collectEvidence(VariantRisk risk, UUID childId, UUID calculationId,
+                                 VariantRisk.ScoredChild scored,
+                                 List<AvailabilityProjectionRepository.EvidenceRow> into) {
         ChildRisk child = scored.risk();
         List<String> written = new ArrayList<>();
         for (SupplyComponent component : child.supply().components()) {
@@ -237,41 +249,47 @@ public class AvailabilityProjectionWriter {
             }
             written.add(key);
             boolean inbound = component.source() == SupplyComponent.Source.ELIGIBLE_INBOUND;
-            projection.insertEvidence(ids.newId(), childId, risk.organizationId(), calculationId,
+            into.add(new AvailabilityProjectionRepository.EvidenceRow(
+                    ids.newId(), childId, risk.organizationId(), calculationId,
                     evidenceRole(component), inbound ? null : component.provenanceId(), null,
                     null, inbound ? component.provenanceId() : null,
                     component.observedAt(),
                     component.counted()
                             ? "counted towards proven supply"
-                            : "observed and not counted: " + component.reason().name());
+                            : "observed and not counted: " + component.reason().name()));
         }
         if (child.profit().metricValueId() != null) {
-            projection.insertEvidence(ids.newId(), childId, risk.organizationId(), calculationId,
+            into.add(new AvailabilityProjectionRepository.EvidenceRow(
+                    ids.newId(), childId, risk.organizationId(), calculationId,
                     "PROFIT", null, child.profit().metricValueId(), null, null, null,
-                    child.profit().reason());
+                    child.profit().reason()));
         }
         if (child.leadTime().resolved()) {
-            projection.insertEvidence(ids.newId(), childId, risk.organizationId(), calculationId,
+            into.add(new AvailabilityProjectionRepository.EvidenceRow(
+                    ids.newId(), childId, risk.organizationId(), calculationId,
                     "LEAD_TIME_POLICY", null, null, child.leadTime().policyId(), null, null,
-                    "lead time and safety resolved at scope " + child.leadTime().scopeKind());
+                    "lead time and safety resolved at scope " + child.leadTime().scopeKind()));
         }
         if (risk.policies().demand() != null) {
-            projection.insertEvidence(ids.newId(), childId, risk.organizationId(), calculationId,
+            into.add(new AvailabilityProjectionRepository.EvidenceRow(
+                    ids.newId(), childId, risk.organizationId(), calculationId,
                     "DEMAND_POLICY", null, null, risk.policies().demand().policyId(), null, null,
-                    "demand window selection: " + child.demand().reason());
+                    "demand window selection: " + child.demand().reason()));
         }
         if (risk.policies().priority() != null) {
-            projection.insertEvidence(ids.newId(), childId, risk.organizationId(), calculationId,
+            into.add(new AvailabilityProjectionRepository.EvidenceRow(
+                    ids.newId(), childId, risk.organizationId(), calculationId,
                     "PRIORITY_POLICY", null, null, risk.policies().priority().policyId(),
                     null, null, "queue ordering policy version "
-                            + risk.policies().priority().policyVersion());
+                            + risk.policies().priority().policyVersion()));
         }
         if (risk.policies().returnQuality() != null) {
-            projection.insertEvidence(ids.newId(), childId, risk.organizationId(), calculationId,
+            into.add(new AvailabilityProjectionRepository.EvidenceRow(
+                    ids.newId(), childId, risk.organizationId(), calculationId,
                     "RETURN_QUALITY_POLICY", null, null,
                     risk.policies().returnQuality().policyId(), null, null,
                     "return and retention guardrail version "
-                            + risk.policies().returnQuality().policyVersion());
+                            + risk.policies().returnQuality().policyVersion()));
         }
     }
 

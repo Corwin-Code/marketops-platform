@@ -584,6 +584,8 @@ class MigrationContractTests(unittest.TestCase):
                 "V0051__bind_each_decision_to_its_own_authority.sql",
                 "V0052__a_guardrail_verdict_names_the_policy_that_authorised_it.sql",
                 "V0053__the_write_gate_must_refuse_rather_than_raise.sql",
+                "V0054__index_the_demand_carry_forward_lookup.sql",
+                "V0055__record_what_happened_to_a_task_and_who_did_it.sql",
             ),
             APPROVED_MIGRATIONS,
         )

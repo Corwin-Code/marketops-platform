@@ -243,77 +243,145 @@ public class AvailabilityProjectionRepository {
                 .optional();
     }
 
-    /** Append the visible factors behind one calculation's rank. */
-    public void insertFactor(UUID id, UUID childId, UUID organizationId, UUID calculationId,
-                             String factorCode, BigDecimal value, BigDecimal weight,
-                             BigDecimal contribution, String displayNote) {
-        jdbc.sql("""
-                        INSERT INTO mart.availability_risk_factor
-                            (id, child_id, organization_id, calculation_id, factor_code,
-                             factor_value, factor_weight, contribution, display_note)
-                        VALUES (:id, :childId, :organizationId, :calculationId, :factorCode,
-                                :value, :weight, :contribution, :note)
-                        """)
-                .param("id", id).param("childId", childId).param("organizationId", organizationId)
-                .param("calculationId", calculationId).param("factorCode", factorCode)
-                .param("value", value).param("weight", weight).param("contribution", contribution)
-                .param("note", displayNote)
-                .update();
+    /** One rank factor, as the append below writes it. */
+    public record FactorRow(UUID id, UUID childId, UUID organizationId, UUID calculationId,
+                            String factorCode, BigDecimal value, BigDecimal weight,
+                            BigDecimal contribution, String displayNote) {
     }
 
-    /** Append one demand window's coverage evidence. */
-    public void insertDemandWindow(DemandWindowRow row) {
-        jdbc.sql("""
-                        INSERT INTO mart.demand_window_observation
-                            (id, child_id, organization_id, calculation_id, window_code,
-                             period_start, period_end, completed_units, daily_rate, observed_days,
-                             coverage_ratio, sample_sufficient, censored, censoring_reason,
-                             outlier_share, eligibility)
-                        VALUES (:id, :childId, :organizationId, :calculationId, :windowCode,
-                                :periodStart, :periodEnd, :completedUnits, :dailyRate,
-                                :observedDays, :coverageRatio, :sampleSufficient, :censored,
-                                :censoringReason, :outlierShare, :eligibility)
-                        """)
-                .param("id", row.id()).param("childId", row.childId())
-                .param("organizationId", row.organizationId())
-                .param("calculationId", row.calculationId())
-                .param("windowCode", row.windowCode())
-                .param("periodStart", Timestamp.from(row.periodStart()))
-                .param("periodEnd", Timestamp.from(row.periodEnd()))
-                .param("completedUnits", row.completedUnits())
-                .param("dailyRate", row.dailyRate())
-                .param("observedDays", row.observedDays())
-                .param("coverageRatio", row.coverageRatio())
-                .param("sampleSufficient", row.sampleSufficient())
-                .param("censored", row.censored())
-                .param("censoringReason", row.censoringReason())
-                .param("outlierShare", row.outlierShare())
-                .param("eligibility", row.eligibility())
-                .update();
+    /** One evidence reference, as the append below writes it. */
+    public record EvidenceRow(UUID id, UUID childId, UUID organizationId, UUID calculationId,
+                              String role, UUID provenanceId, UUID metricValueId,
+                              UUID policyReferenceId, UUID attestationVersionId,
+                              Instant observedAt, String note) {
     }
 
-    /** Append one evidence reference behind a child. */
-    public void insertEvidence(UUID id, UUID childId, UUID organizationId, UUID calculationId,
-                               String role, UUID provenanceId, UUID metricValueId,
-                               UUID policyReferenceId, UUID attestationVersionId,
-                               Instant observedAt, String note) {
-        jdbc.sql("""
-                        INSERT INTO mart.availability_risk_evidence
-                            (id, child_id, organization_id, calculation_id, evidence_role,
-                             provenance_id, metric_value_id, policy_reference_id,
-                             attestation_version_id, observed_at, note)
-                        VALUES (:id, :childId, :organizationId, :calculationId, :role,
-                                :provenanceId, :metricValueId, :policyReferenceId,
-                                :attestationVersionId, :observedAt, :note)
-                        """)
-                .param("id", id).param("childId", childId).param("organizationId", organizationId)
-                .param("calculationId", calculationId).param("role", role)
-                .param("provenanceId", provenanceId).param("metricValueId", metricValueId)
-                .param("policyReferenceId", policyReferenceId)
-                .param("attestationVersionId", attestationVersionId)
-                .param("observedAt", observedAt == null ? null : Timestamp.from(observedAt))
-                .param("note", note)
-                .update();
+    /**
+     * Append every visible factor behind one calculation's rank, in one statement.
+     *
+     * <p>One statement rather than one per row. These are plain appends with no
+     * conflict clause, so a multi-row insert writes exactly the rows a loop
+     * would, in the same order, inside the same transaction — and one variant's
+     * recalculation issues ten of these, which at five thousand variants is
+     * fifty thousand round trips the database never needed to be asked for.
+     */
+    public void insertFactors(List<FactorRow> rows) {
+        if (rows.isEmpty()) {
+            return;
+        }
+        var spec = jdbc.sql("""
+                INSERT INTO mart.availability_risk_factor
+                    (id, child_id, organization_id, calculation_id, factor_code,
+                     factor_value, factor_weight, contribution, display_note)
+                VALUES
+                """ + valuesClause(rows.size(),
+                        "id", "childId", "organizationId", "calculationId", "factorCode",
+                        "value", "weight", "contribution", "note"));
+        for (int index = 0; index < rows.size(); index++) {
+            FactorRow row = rows.get(index);
+            spec = spec.param("id" + index, row.id())
+                    .param("childId" + index, row.childId())
+                    .param("organizationId" + index, row.organizationId())
+                    .param("calculationId" + index, row.calculationId())
+                    .param("factorCode" + index, row.factorCode())
+                    .param("value" + index, row.value())
+                    .param("weight" + index, row.weight())
+                    .param("contribution" + index, row.contribution())
+                    .param("note" + index, row.displayNote());
+        }
+        spec.update();
+    }
+
+    /** Append every demand window's coverage evidence, in one statement. */
+    public void insertDemandWindows(List<DemandWindowRow> rows) {
+        if (rows.isEmpty()) {
+            return;
+        }
+        var spec = jdbc.sql("""
+                INSERT INTO mart.demand_window_observation
+                    (id, child_id, organization_id, calculation_id, window_code,
+                     period_start, period_end, completed_units, daily_rate, observed_days,
+                     coverage_ratio, sample_sufficient, censored, censoring_reason,
+                     outlier_share, eligibility)
+                VALUES
+                """ + valuesClause(rows.size(),
+                        "id", "childId", "organizationId", "calculationId", "windowCode",
+                        "periodStart", "periodEnd", "completedUnits", "dailyRate", "observedDays",
+                        "coverageRatio", "sampleSufficient", "censored", "censoringReason",
+                        "outlierShare", "eligibility"));
+        for (int index = 0; index < rows.size(); index++) {
+            DemandWindowRow row = rows.get(index);
+            spec = spec.param("id" + index, row.id())
+                    .param("childId" + index, row.childId())
+                    .param("organizationId" + index, row.organizationId())
+                    .param("calculationId" + index, row.calculationId())
+                    .param("windowCode" + index, row.windowCode())
+                    .param("periodStart" + index, Timestamp.from(row.periodStart()))
+                    .param("periodEnd" + index, Timestamp.from(row.periodEnd()))
+                    .param("completedUnits" + index, row.completedUnits())
+                    .param("dailyRate" + index, row.dailyRate())
+                    .param("observedDays" + index, row.observedDays())
+                    .param("coverageRatio" + index, row.coverageRatio())
+                    .param("sampleSufficient" + index, row.sampleSufficient())
+                    .param("censored" + index, row.censored())
+                    .param("censoringReason" + index, row.censoringReason())
+                    .param("outlierShare" + index, row.outlierShare())
+                    .param("eligibility" + index, row.eligibility());
+        }
+        spec.update();
+    }
+
+    /** Append every evidence reference behind a child, in one statement. */
+    public void insertEvidence(List<EvidenceRow> rows) {
+        if (rows.isEmpty()) {
+            return;
+        }
+        var spec = jdbc.sql("""
+                INSERT INTO mart.availability_risk_evidence
+                    (id, child_id, organization_id, calculation_id, evidence_role,
+                     provenance_id, metric_value_id, policy_reference_id,
+                     attestation_version_id, observed_at, note)
+                VALUES
+                """ + valuesClause(rows.size(),
+                        "id", "childId", "organizationId", "calculationId", "role",
+                        "provenanceId", "metricValueId", "policyReferenceId",
+                        "attestationVersionId", "observedAt", "note"));
+        for (int index = 0; index < rows.size(); index++) {
+            EvidenceRow row = rows.get(index);
+            spec = spec.param("id" + index, row.id())
+                    .param("childId" + index, row.childId())
+                    .param("organizationId" + index, row.organizationId())
+                    .param("calculationId" + index, row.calculationId())
+                    .param("role" + index, row.role())
+                    .param("provenanceId" + index, row.provenanceId())
+                    .param("metricValueId" + index, row.metricValueId())
+                    .param("policyReferenceId" + index, row.policyReferenceId())
+                    .param("attestationVersionId" + index, row.attestationVersionId())
+                    .param("observedAt" + index,
+                            row.observedAt() == null ? null : Timestamp.from(row.observedAt()))
+                    .param("note" + index, row.note());
+        }
+        spec.update();
+    }
+
+    /**
+     * The {@code VALUES} tail for a multi-row insert.
+     *
+     * <p>Every placeholder is a named parameter suffixed by its row index, so
+     * nothing here interpolates a value: the statement text is a function of the
+     * row count and the column names alone, both of which this class writes.
+     */
+    private static String valuesClause(int rows, String... columns) {
+        StringBuilder clause = new StringBuilder();
+        for (int index = 0; index < rows; index++) {
+            clause.append(index == 0 ? "    (" : ",\n    (");
+            for (int column = 0; column < columns.length; column++) {
+                clause.append(column == 0 ? "" : ", ").append(':').append(columns[column])
+                        .append(index);
+            }
+            clause.append(')');
+        }
+        return clause.append('\n').toString();
     }
 
     /**

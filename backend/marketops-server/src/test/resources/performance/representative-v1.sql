@@ -87,14 +87,22 @@ FROM perf_snapshot CROSS JOIN perf_config GROUP BY run,org,days,period_start,per
 CREATE TEMP TABLE perf_metric AS
 SELECT s.*,d.metric_code,d.definition_version,
     md5('performance-v1/metric/'||n||'/'||days||'/'||iteration||'/'||d.metric_code)::uuid AS metric_id
--- Advertising metrics are deliberately excluded. Every value this dataset
--- writes has subject_kind PLATFORM_LISTING_VARIANT, and the product never
--- computes an advertising metric for a listing variant — mart.metric_value
--- does not even admit an advertising subject. Including them fabricated a
--- third more rows than the product would ever produce and inflated the
--- latency measured against them by the same proportion.
+-- Every value this dataset writes is about a listing variant, so it writes one
+-- for every metric the product can compute for one. The ten codes excluded
+-- below are about an advertising object instead — a keyword or a campaign
+-- target — and mart.metric_value does not admit an advertising subject at all,
+-- so a value for one of them here would be a row the product could never
+-- produce. The advertising-domain metrics that ARE about a listing variant,
+-- AD_SPEND and AD_COST_OF_SALE, are written like every other: MetricEngine
+-- computes them for a listing variant and the diagnosis payload shows them.
 FROM perf_snapshot s CROSS JOIN mart.metric_definition d
-WHERE d.status='ACTIVE' AND d.domain <> 'ADVERTISING';
+WHERE d.status='ACTIVE'
+  AND d.metric_code NOT IN (
+        'AD_ELIGIBLE_TRAFFIC', 'PROVIDER_ATTRIBUTED_CONVERSION',
+        'AD_LINKED_ORDER_CONVERSION', 'AD_LINKED_COMPLETED_SALE_CONVERSION',
+        'AD_LINKED_RETAINED_SALE_CONVERSION', 'AD_ATTRIBUTION_GAP_RATIO',
+        'ALLOWABLE_CPA', 'MAX_CPC', 'ADVERTISING_CONTRIBUTION_PROFIT',
+        'CONTRIBUTION_PROFIT_PER_AD_RUB');
 INSERT INTO mart.metric_value(id,organization_id,calculation_run_id,metric_code,definition_version,subject_kind,subject_id,
     window_code,period_start,period_end,value_state,numeric_value,currency_code,confidence_state,estimated,
     oldest_source_time,freshness_seconds,input_digest,computed_at)
