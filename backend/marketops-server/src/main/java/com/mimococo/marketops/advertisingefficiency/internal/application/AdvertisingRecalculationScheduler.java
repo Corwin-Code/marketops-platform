@@ -11,12 +11,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * The two timers.
+ * The timers.
  *
  * <p>They are separate on purpose, and so are their scheduling modes. The scan
  * uses a fixed delay because a slow pass should not pile up behind itself; the
  * sweep uses a fixed rate because its cadence is the Contract's hourly
- * obligation and must not drift with how long a sweep happens to take.
+ * obligation and must not drift with how long a sweep happens to take. The brief
+ * uses a fixed delay and decides for itself whether today is an operating day,
+ * because that is a business fact an owner publishes rather than a cadence this
+ * class may assume.
  *
  * <p>A scan that stops means new facts raise nothing. A sweep that stops means
  * nothing catches what the scan missed. They fail differently, so they are
@@ -36,20 +39,56 @@ class AdvertisingRecalculationScheduler {
     private final AdvertisingTargetedWorker targeted;
     private final AdvertisingReconciliationWorker reconciliation;
     private final AdvertisingOutcomeWorker outcomes;
+    private final AdvertisingBriefService briefs;
     private final AdvertisingRecalculationRepository queue;
     private final AdvertisingWorkerProperties properties;
+    private final java.time.Clock clock;
 
     AdvertisingRecalculationScheduler(
             AdvertisingTargetedWorker targeted,
             AdvertisingReconciliationWorker reconciliation,
             AdvertisingOutcomeWorker outcomes,
+            AdvertisingBriefService briefs,
             AdvertisingRecalculationRepository queue,
-            AdvertisingWorkerProperties properties) {
+            AdvertisingWorkerProperties properties,
+            java.time.Clock clock) {
         this.targeted = targeted;
         this.reconciliation = reconciliation;
         this.outcomes = outcomes;
+        this.briefs = briefs;
         this.queue = queue;
         this.properties = properties;
+        this.clock = clock;
+    }
+
+    /**
+     * Publish the day's brief and the week's review, when the calendar says so.
+     *
+     * <p>A fixed delay rather than a rate, and no cron: which days are operating
+     * days, when the cut falls and in which timezone are facts an owner
+     * publishes. This timer asks; it does not decide. A pass on a day the
+     * calendar does not recognise publishes nothing and says nothing, which is
+     * the correct amount of noise for a Sunday.
+     *
+     * <p>Content-idempotent, so running more often than the cadence is harmless:
+     * a period whose facts have not moved is not restated.
+     */
+    @Scheduled(initialDelayString = "${marketops.advertising.brief-initial-delay:PT5M}",
+            fixedDelayString = "${marketops.advertising.brief-interval:PT30M}")
+    void publishTheBriefsTheCalendarCallsFor() {
+        java.time.Instant now = clock.instant();
+        for (UUID organizationId : queue.activeOrganizations()) {
+            for (String briefKind : java.util.List.of(AdvertisingBriefService.DAILY,
+                    AdvertisingBriefService.WEEKLY)) {
+                briefs.publish(organizationId, briefKind, now, null)
+                        .filter(published -> !published.unchanged())
+                        .ifPresent(published -> log.info(
+                                "event=advertising_brief_published organizationId={} kind={}"
+                                        + " period={} revision={} correlationId={}",
+                                organizationId, published.briefKind(), published.periodKey(),
+                                published.revisionNo(), CorrelationId.current()));
+            }
+        }
     }
 
     /**

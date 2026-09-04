@@ -704,7 +704,10 @@ AS $$
            AND p.effective_from <= p_at
            AND (p.effective_to IS NULL OR p.effective_to > p_at)
     )
-    SELECT count(*) = 4
+    -- Three, not four. The count is over the join below, which yields one row
+    -- per adjacent pair, so four present tiers make three pairs and a missing
+    -- tier removes the pair that would have named it.
+    SELECT count(DISTINCT lower_tier.rank) = 3
        AND bool_and(
                lower_tier.minimum_source_coverage_ratio
                    <= higher_tier.minimum_source_coverage_ratio

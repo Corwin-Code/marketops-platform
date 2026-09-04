@@ -22,8 +22,8 @@ class ManagedMigrationRunnerIT {
 
     @Test
     void cleanInstallAndReplayValidateAllMigrationsWithoutGivingTheApplicationTheOwningRole() throws Exception {
-        assertThat(clean.migrationsApplied()).isEqualTo(55);
-        assertThat(clean.schemaVersion()).isEqualTo("0055");
+        assertThat(clean.migrationsApplied()).isEqualTo(56);
+        assertThat(clean.schemaVersion()).isEqualTo("0056");
         assertThat(ManagedMigrationRunner.migrate(MIGRATION).migrationsApplied()).isZero();
         assertThatThrownBy(() -> ManagedMigrationRunner.migrate(APPLICATION)).isInstanceOf(IllegalStateException.class);
         assertThat(new JdbcTemplate(APPLICATION).queryForObject("SELECT has_schema_privilege(current_user,'public','USAGE')",Boolean.class)).isFalse();

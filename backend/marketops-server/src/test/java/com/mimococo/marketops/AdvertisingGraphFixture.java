@@ -18,7 +18,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
  * deliberately not writable by the application role, and a fixture that used the
  * application role would either fail or quietly prove less than it claims.
  */
-final class AdvertisingGraphFixture {
+public final class AdvertisingGraphFixture {
 
     /** The one semantic profile every fixture object shares. */
     private static final UUID SEMANTIC_PROFILE =
@@ -36,7 +36,7 @@ final class AdvertisingGraphFixture {
     }
 
     /** One advertising object with a case, an affected set and two people. */
-    record Graph(UUID organizationId, UUID legalEntityId, UUID accountId, UUID storeId,
+    public record Graph(UUID organizationId, UUID legalEntityId, UUID accountId, UUID storeId,
                  UUID productVariantId, UUID objectId, UUID affectedSetId, String digest,
                  UUID caseId, UUID configurationId, UUID semanticProfileId,
                  UUID executorUserId, UUID verifierUserId) {
@@ -47,7 +47,7 @@ final class AdvertisingGraphFixture {
             "LEASED", "EXECUTING", "PLATFORM_PENDING", "READBACK_PENDING");
 
     /** One command ready to be leased, with everything it names. */
-    record Command(UUID commandId, UUID capabilityId, UUID bundleId, UUID reservationId,
+    public record Command(UUID commandId, UUID capabilityId, UUID bundleId, UUID reservationId,
                    UUID approvalDecisionId) {
     }
 
@@ -65,7 +65,7 @@ final class AdvertisingGraphFixture {
      * role, is the only way to ask "what would the gate do?" without first
      * making the gate satisfiable — which would mean weakening it.
      */
-    static Command seedCommand(JdbcClient seed, Graph graph, Decision decision, String state) {
+    public static Command seedCommand(JdbcClient seed, Graph graph, Decision decision, String state) {
         // One capability row per platform and capability code, which the schema
         // enforces. Every fixture command shares it, and it is UNVERIFIED
         // because that is what this product actually has.
@@ -343,7 +343,7 @@ final class AdvertisingGraphFixture {
     }
 
     /** One proposed bid change: a target policy, a candidate and a recommendation. */
-    record Decision(UUID targetPolicyId, UUID candidateId, UUID recommendationId,
+    public record Decision(UUID targetPolicyId, UUID candidateId, UUID recommendationId,
                     String entityVersionDigest) {
     }
 
@@ -355,7 +355,7 @@ final class AdvertisingGraphFixture {
      * that value. A fixture that made one up would be testing whether the
      * trigger accepts an arbitrary string.
      */
-    static Decision seedDecision(JdbcClient seed, Graph graph, String direction,
+    public static Decision seedDecision(JdbcClient seed, Graph graph, String direction,
                                  String candidateBasis) {
         boolean causeBound = "CAUSE_BOUND_PROTECTION_STEP".equals(candidateBasis);
         UUID targetPolicy = UUID.randomUUID();
@@ -448,7 +448,7 @@ final class AdvertisingGraphFixture {
         return new Decision(targetPolicy, candidate, recommendation, entityDigest);
     }
 
-    static Graph seed(JdbcClient seed) {
+    public static Graph seed(JdbcClient seed) {
         UUID organization = UUID.randomUUID();
         UUID legalEntity = UUID.randomUUID();
         UUID account = UUID.randomUUID();

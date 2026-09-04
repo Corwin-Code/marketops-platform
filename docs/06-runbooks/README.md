@@ -29,6 +29,8 @@
 | `advertising-quarantine.md` | Quarantining advertising at the right scope |
 | `advertising-kill-switch.md` | Stopping every advertising write |
 | `advertising-reenablement.md` | Restarting advertising after a stop: five conditions and two people |
+| `advertising-task-history.md` | Reading what actually happened to a piece of work, and what a page view is not |
+| `advertising-brief-and-review.md` | A brief that is missing, changed since you read it, or reporting a figure you doubt |
 
 Still required before V1 production enablement: credential expiry, schema
 change, inventory drift, finance mismatch and personal-data incident

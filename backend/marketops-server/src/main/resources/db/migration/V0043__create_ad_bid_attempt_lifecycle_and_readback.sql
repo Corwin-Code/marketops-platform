@@ -317,9 +317,12 @@ BEGIN
             failure := p_error;
         END IF;
     ELSE
-        SELECT jsonb_populate_record(NULL::platform.capability_operation,
-                                     attempt.operation_snapshot -> 'operation')
-          INTO operation;
+        -- Selected from the function, not into a row variable from a single
+        -- expression: PL/pgSQL assigns a select list to a row variable field by
+        -- field, so the composite would land in the first field and fail.
+        SELECT * INTO operation
+          FROM jsonb_populate_record(NULL::platform.capability_operation,
+                                     attempt.operation_snapshot -> 'operation');
         IF NOT EXISTS (SELECT 1 FROM raw.raw_content rc
                         WHERE rc.id = p_content
                           AND rc.hash_value = encode(sha256(p_body), 'hex')) THEN

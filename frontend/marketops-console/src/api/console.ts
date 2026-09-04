@@ -1,6 +1,7 @@
 import type {
   AdvertisingCase,
   AdvertisingContainment,
+  AdvertisingBrief,
   AdvertisingExposure,
   AdvertisingManualPacket,
   AdvertisingOutcome,
@@ -9,6 +10,7 @@ import type {
 import {
   parseAdvertisingCase,
   parseAdvertisingContainment,
+  parseAdvertisingBrief,
   parseAdvertisingExposure,
   parseAdvertisingManualPacket,
   parseAdvertisingOutcome,
@@ -1642,6 +1644,52 @@ export function fetchAdvertisingOutcomes(
     context,
     `/api/v1/console/advertising/commands/${commandId}/outcomes`,
     list(parseAdvertisingOutcome),
+  );
+}
+
+/**
+ * The newest reading of one period's brief.
+ *
+ * There is no route that publishes one. Publication follows a calendar an owner
+ * set, and a report that could be produced on demand would let somebody choose
+ * which cut of the facts to be judged on.
+ */
+export function fetchAdvertisingBrief(
+  context: ConsoleRequest,
+  briefKind: string,
+  periodKey: string,
+): Promise<ConsoleOutcome<AdvertisingBrief>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/briefs/${briefKind}/${periodKey}`,
+    parseAdvertisingBrief,
+  );
+}
+
+/**
+ * The newest published reading of one kind, whatever period it covers.
+ *
+ * Asked for by kind rather than by period because which day a period covers
+ * depends on the owner's reporting timezone and cut minute. A browser deciding
+ * that from its own clock would be inventing the calendar.
+ */
+export function fetchLatestAdvertisingBrief(
+  context: ConsoleRequest,
+  briefKind: string,
+): Promise<ConsoleOutcome<AdvertisingBrief>> {
+  return request(context, `/api/v1/console/advertising/briefs/${briefKind}`, parseAdvertisingBrief);
+}
+
+/** Every reading of one period, oldest first, so a restatement is visible. */
+export function fetchAdvertisingBriefHistory(
+  context: ConsoleRequest,
+  briefKind: string,
+  periodKey: string,
+): Promise<ConsoleOutcome<readonly AdvertisingBrief[]>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/briefs/${briefKind}/${periodKey}/history`,
+    list(parseAdvertisingBrief),
   );
 }
 

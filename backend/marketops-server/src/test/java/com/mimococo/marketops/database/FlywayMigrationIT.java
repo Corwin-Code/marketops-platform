@@ -88,7 +88,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0052__a_guardrail_verdict_names_the_policy_that_authorised_it.sql",
             "V0053__the_write_gate_must_refuse_rather_than_raise.sql",
             "V0054__index_the_demand_carry_forward_lookup.sql",
-            "V0055__record_what_happened_to_a_task_and_who_did_it.sql");
+            "V0055__record_what_happened_to_a_task_and_who_did_it.sql",
+            "V0056__publish_the_daily_brief_and_weekly_review_as_projections.sql");
 
     private static PostgreSQLContainer container;
 
@@ -166,6 +167,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "core.ad_optimization_qualification_policy",
                     "core.ad_outcome_policy",
                     "core.ad_priority_policy",
+                    "core.ad_reporting_calendar",
                     "core.availability_priority_policy",
                     "core.cost_version",
                     "core.demand_observation_policy",
@@ -225,6 +227,9 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ledger.return_inventory_transition",
                     "ledger.return_quality_evidence_snapshot",
                     "ledger.sales_fact",
+                    "mart.ad_brief_delta",
+                    "mart.ad_brief_item",
+                    "mart.ad_brief_section",
                     "mart.ad_case",
                     "mart.ad_case_evidence",
                     "mart.ad_case_rank_factor",
@@ -249,6 +254,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ops.ad_bid_command_attempt",
                     "ops.ad_bid_command_readback",
                     "ops.ad_bid_command_transition",
+                    "ops.ad_brief_publication",
                     "ops.ad_containment",
                     "ops.ad_decision_policy_bundle",
                     "ops.ad_fact_cursor",
@@ -330,7 +336,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "staging.normalization_checkpoint",
                     "staging.normalization_field",
                     "staging.normalization_mapping",
-                    "staging.schema_drift_observation");
+                    "staging.schema_drift_observation"
+            );
         }
     }
 

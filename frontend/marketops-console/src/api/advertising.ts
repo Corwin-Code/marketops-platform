@@ -526,3 +526,164 @@ export function parseAdvertisingManualPacket(body: unknown): AdvertisingManualPa
     verifications,
   };
 }
+
+/**
+ * One published brief, with the sections it covered.
+ *
+ * A report, not an authority. Every item names one canonical row, and the
+ * revision fields are what let a reader see both the reading published on the
+ * day and the reading that supersedes it — a decision taken on the earlier one
+ * cannot be understood from the later one alone.
+ */
+export interface AdvertisingBrief {
+  readonly id: string;
+  readonly briefKind: string;
+  readonly periodKey: string;
+  readonly asOf: string;
+  readonly revisionNo: number;
+  readonly revisionKind: string;
+  readonly supersedesPublicationId: string | undefined;
+  readonly adjustmentReason: string | undefined;
+  readonly lateFactReference: string | undefined;
+  readonly gapCodes: readonly string[];
+  readonly contentDigest: string;
+  readonly publishedAt: string;
+  readonly restatement: boolean;
+  readonly fullyCovered: boolean;
+  readonly sections: readonly AdvertisingBriefSection[];
+}
+
+/** One named topic of a brief, emitted whether or not it found anything. */
+export interface AdvertisingBriefSection {
+  readonly sectionCode: string;
+  readonly ordinal: number;
+  readonly itemCount: number;
+  readonly coverageState: string;
+  readonly blockerCodes: readonly string[];
+  readonly summaryNote: string | undefined;
+  readonly complete: boolean;
+  readonly items: readonly AdvertisingBriefItem[];
+}
+
+/** One line of a brief and the canonical row it points at. */
+export interface AdvertisingBriefItem {
+  readonly subjectKind: string;
+  readonly referenceId: string;
+  readonly lane: string | undefined;
+  readonly causeCode: string | undefined;
+  readonly valueState: string;
+  readonly numericValue: number | undefined;
+  readonly currencyCode: string | undefined;
+  readonly evidenceState: string | undefined;
+  readonly blockerCodes: readonly string[];
+  readonly observedAt: string | undefined;
+}
+
+/** One item, or `undefined` when the body is not one. */
+export function parseAdvertisingBriefItem(body: unknown): AdvertisingBriefItem | undefined {
+  if (typeof body !== 'object' || body === null) {
+    return undefined;
+  }
+  const record = body as Record<string, unknown>;
+  const subjectKind = text(record.subjectKind);
+  const referenceId = text(record.referenceId);
+  const valueState = text(record.valueState);
+  if (subjectKind === undefined || referenceId === undefined || valueState === undefined) {
+    return undefined;
+  }
+  return {
+    subjectKind,
+    referenceId,
+    lane: text(record.lane),
+    causeCode: text(record.causeCode),
+    valueState,
+    numericValue: decimal(record.numericValue),
+    currencyCode: text(record.currencyCode),
+    evidenceState: text(record.evidenceState),
+    blockerCodes: strings(record.blockerCodes),
+    observedAt: text(record.observedAt),
+  };
+}
+
+/** One section, or `undefined` when the body is not one. */
+export function parseAdvertisingBriefSection(body: unknown): AdvertisingBriefSection | undefined {
+  if (typeof body !== 'object' || body === null) {
+    return undefined;
+  }
+  const record = body as Record<string, unknown>;
+  const sectionCode = text(record.sectionCode);
+  const coverageState = text(record.coverageState);
+  if (sectionCode === undefined || coverageState === undefined) {
+    return undefined;
+  }
+  const items = Array.isArray(record.items)
+    ? record.items
+        .map(parseAdvertisingBriefItem)
+        .filter((item): item is AdvertisingBriefItem => item !== undefined)
+    : [];
+  return {
+    sectionCode,
+    ordinal: decimal(record.ordinal) ?? 0,
+    itemCount: decimal(record.itemCount) ?? items.length,
+    coverageState,
+    blockerCodes: strings(record.blockerCodes),
+    summaryNote: text(record.summaryNote),
+    // Re-derived rather than trusted, so a body claiming a topic was covered
+    // while naming a blocker cannot assert it.
+    complete: coverageState === 'COMPLETE',
+    items,
+  };
+}
+
+/**
+ * One brief, or `undefined` when the body is not one.
+ *
+ * The period, the fact cut and the revision are required. A reading that could
+ * not say which period it covered or which cut it read would be unusable for the
+ * one thing a brief is for: knowing what was believed, and when.
+ */
+export function parseAdvertisingBrief(body: unknown): AdvertisingBrief | undefined {
+  if (typeof body !== 'object' || body === null) {
+    return undefined;
+  }
+  const record = body as Record<string, unknown>;
+  const id = text(record.id);
+  const briefKind = text(record.briefKind);
+  const periodKey = text(record.periodKey);
+  const asOf = text(record.asOf);
+  const revisionKind = text(record.revisionKind);
+  if (
+    id === undefined ||
+    briefKind === undefined ||
+    periodKey === undefined ||
+    asOf === undefined ||
+    revisionKind === undefined
+  ) {
+    return undefined;
+  }
+  const sections = Array.isArray(record.sections)
+    ? record.sections
+        .map(parseAdvertisingBriefSection)
+        .filter((section): section is AdvertisingBriefSection => section !== undefined)
+    : [];
+  const supersedesPublicationId = text(record.supersedesPublicationId);
+  return {
+    id,
+    briefKind,
+    periodKey,
+    asOf,
+    revisionNo: decimal(record.revisionNo) ?? 1,
+    revisionKind,
+    supersedesPublicationId,
+    adjustmentReason: text(record.adjustmentReason),
+    lateFactReference: text(record.lateFactReference),
+    gapCodes: strings(record.gapCodes),
+    contentDigest: text(record.contentDigest) ?? '',
+    publishedAt: text(record.publishedAt) ?? '',
+    // Derived from what the body actually carries. A reading that named no
+    // predecessor is not a restatement however it labelled itself.
+    restatement: supersedesPublicationId !== undefined,
+    fullyCovered: sections.every((section) => section.complete),
+    sections,
+  };
+}

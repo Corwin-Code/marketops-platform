@@ -586,6 +586,7 @@ class MigrationContractTests(unittest.TestCase):
                 "V0053__the_write_gate_must_refuse_rather_than_raise.sql",
                 "V0054__index_the_demand_carry_forward_lookup.sql",
                 "V0055__record_what_happened_to_a_task_and_who_did_it.sql",
+                "V0056__publish_the_daily_brief_and_weekly_review_as_projections.sql",
             ),
             APPROVED_MIGRATIONS,
         )
