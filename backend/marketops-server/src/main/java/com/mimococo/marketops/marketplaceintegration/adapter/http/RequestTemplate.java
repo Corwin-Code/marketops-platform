@@ -25,9 +25,19 @@ final class RequestTemplate {
 
     /** A placeholder occurrence in a recorded template. */
     private static final Pattern PLACEHOLDER = Pattern.compile("\\{([a-zA-Z][a-zA-Z0-9]{0,31})}");
+    /**
+     * Every placeholder any recorded template may contain.
+     *
+     * <p>The set is the union across both controlled writes, and it is
+     * deliberately not partitioned here: the capability-shape trigger in the
+     * database already refuses a price operation that mentions a bid and an
+     * advertising operation that mentions a price, and duplicating that rule in
+     * the renderer would give it two places to drift from.
+     */
     private static final java.util.Set<String> ALLOWED = java.util.Set.of(
             "cursor", "limit", "accountKey", "endpointCode", "nativeListingKey", "nativeVariantKey",
-            "targetPrice", "currencyCode", "idempotencyKey", "nativeTaskKey");
+            "targetPrice", "currencyCode", "idempotencyKey", "nativeTaskKey",
+            "nativeCampaignKey", "nativeObjectKey", "targetBid", "bidUnitCode");
 
     /** How a substituted value is escaped for the position it occupies. */
     enum Escaping {
