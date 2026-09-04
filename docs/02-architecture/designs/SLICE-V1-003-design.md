@@ -577,10 +577,54 @@ in `platform.control_route_inventory` and granting per object:
 | `V0042` | outcome evaluation plan, baseline and confounder authority, operational and settled outcome lineage, regression, report projections |
 | `V0043` | remaining vocabulary widenings and the synthetic Ozon/WB fixture profiles marked `UNVERIFIED` (IAM and the audit domain moved forward into `V0036`) |
 
-The exact split may change as implementation proceeds; the constraints that may
-not are: forward-only, contiguous `V%04d__[a-z0-9_]+.sql`, no edit to V0001–V0035,
-every new table in the route inventory with a stated reason, no `DELETE` grant
-anywhere, and every new vocabulary as `text` + named `CHECK`.
+### 6.1 As built
+
+The split above was the plan. What landed differs, and the differences are
+recorded here rather than by editing the plan, because the reasons are the
+useful part:
+
+| Migration | As built |
+| --- | --- |
+| `V0036`–`V0039` | as planned |
+| `V0040` | *not* the command. Widening the **existing** write registry so it can describe an advertising capability, rather than growing a second registry beside the price one. One execution authority was worth more than a clean migration boundary |
+| `V0041` | reservation, exposure envelope, containment, decision policy bundle |
+| `V0042` | the `AD_BID_CHANGE` command, its sixteen states and thirty-three edges, attempt, readback, raw custody, authority snapshot and the write gate's twenty-two reason codes |
+| `V0043` | attempt lifecycle, readback derivation and the write-path evidence functions |
+| `V0044` | case supersession. Found by a flow test that produced two cases after a cause changed: without it a cause that stopped holding left its case in the queue forever |
+| `V0045` | `ops.create_ad_bid_command`, the only way a command comes into existence |
+| `V0046` | `ops.capture_ad_bid_authority_snapshot`. The guardrail needed the advertising authority and its instant together; reading them separately leaves a window in which a fact can move unnoticed |
+| `V0047` | the parameter contract refuses a target bid of zero. Found by the Java/SQL parity test: the pattern admitted `'0'`, and a zero bid withdraws an object from auction, which is a status change this product does not write |
+| `V0048` | taking a reservation becomes one serialized statement and the application role loses `INSERT`/`UPDATE`. Check-then-insert left a window in which two interventions could hold the same product variants |
+| `V0049` | the frozen Outcome Evaluation Plan, the operational and settled lineage, and the early Completed-Sales Guard as a check constraint |
+
+The constraints that did not move: forward-only, contiguous
+`V%04d__[a-z0-9_]+.sql`, no edit to V0001–V0035, every new table in the route
+inventory with a stated reason, no `DELETE` grant anywhere, and every new
+vocabulary as `text` + named `CHECK`.
+
+### 6.2 Module dependency direction
+
+`operationsworkflow` owns approval and execution and knows nothing about bids;
+`advertisingefficiency` knows what a bid decision consists of and nothing about
+approving one. The interfaces that join them — `AdvertisingDecisionAuthority`,
+`AdvertisingRecommendationIntake` and their shapes — are therefore **owned by
+`operationsworkflow`** and implemented by `advertisingefficiency`, the same way
+`AvailabilityCaseIntake` already works.
+
+The first attempt had them the other way round and produced a cycle:
+`advertisingefficiency → availabilityrisk → operationsworkflow →
+advertisingefficiency`. The boundary rules caught it. The direction matters
+beyond that cycle: the workflow is what every other module already depends on,
+so an interface it consumes must not be owned elsewhere.
+
+### 6.3 Two copies of one rule, and the test that keeps them equal
+
+The bid-change parameter contract exists in Java and in SQL. Both are needed —
+the database refuses a row no Java touched, and the Java refuses before a
+transaction opens so an operator gets a reason rather than a constraint
+violation. Two copies drift, so `AdBidParameterContractParityIT` puts one shared
+case list to both implementations and fails on any disagreement. It has already
+paid for itself once, in `V0047`.
 
 ## 7. Frontend
 
