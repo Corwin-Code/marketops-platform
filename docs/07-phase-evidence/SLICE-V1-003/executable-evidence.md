@@ -31,6 +31,7 @@ JAVA_HOME=~/.sdkman/candidates/java/21.0.10-zulu ./backend/marketops-server/mvnw
 | unit | 1406 | domain arithmetic, value states, refusal vocabularies, port contracts |
 | architecture | 71 | module boundaries, no second writer, schema vocabulary agreement |
 | console (vitest) | 262 | evidence vocabulary, the four advertising surfaces, every parser refusal |
+| console (playwright) | 19 | the built console in Chromium against the real backend |
 | `PriceWritePathIT` | 89 | the price controlled-write path, unchanged by this Slice |
 | `AdBidWritePathIT` | 21 | advertising write-path structure: privileges, transition graph, registry shape |
 | `AdvertisingPrivilegeBoundaryIT` | 9 | the application role's actual privileges, asserted from outside |
@@ -143,12 +144,35 @@ Two honest statements follow, and they are different:
 The threshold was not moved. `docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json`
 carries the obligation to establish this on representative hardware.
 
+## The browser run
+
+```bash
+make up
+cd frontend/marketops-console && npm run test:browser
+```
+
+`19 passed (1.2m)`, Chromium, against the real backend the suite starts and a
+disposable PostgreSQL 18.4 the browser fixture refuses to touch unless it is
+empty.
+
+Two things are proven and deliberately kept apart. The three new advertising
+reads are refused by the *running backend* without a token and with a made-up
+one — that is evidence about the backend. What the console renders is asserted
+against bodies supplied through the browser's own network layer; that is
+evidence about the console's presentation and about nothing else. No
+marketplace, advertising platform or identity provider is contacted.
+
+`TC-BROWSER-012`'s corrupt-export case was red before this run, and had been
+since `2229686` put the first advertising panel on the queue view: it asserted
+on a page-wide `getByRole('alert')` while meaning the export panel's own alert,
+and a second panel reporting its own refusal made that query ambiguous. The
+assertion is now scoped to the panel, which is stricter rather than looser — the
+message has to appear in the right place.
+
 ## What has not been run
 
 Named plainly, because a reader should not have to infer it from absence.
 
-- **Browser end-to-end.** The Playwright suite has not been run against the new
-  advertising surfaces.
 - **Mutation and adversarial testing.** Not run for the advertising module.
 - **Advertising capacity and SLO measurement.** `AdvertisingSlo` fixes the bounds
   and `ops.ad_slo_observation` records latencies; no advertising load has been
