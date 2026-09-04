@@ -493,6 +493,108 @@ class AdvertisingEfficiencyFlowIT {
                 + stale + "'")).isEqualTo("FAILED");
     }
 
+    @Test
+    @Order(20)
+    @DisplayName("TC-AD-FLOW-020 two workers cannot hold the same unit of work")
+    void twoWorkersCannotHoldTheSameRequest() {
+        drain();
+        queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
+                UUID.randomUUID(), ORGANIZATION, AD_OBJECT, "AD_SPEND_OR_TRAFFIC",
+                "fact://advertising-loop-it/lease", AS_OF.plusSeconds(10), AS_OF,
+                "advertising-loop-it-lease"));
+        Instant now = Instant.now();
+
+        var first = queue.claim("worker-a", now.plusSeconds(300), 10, now);
+        var second = queue.claim("worker-b", now.plusSeconds(300), 10, now);
+
+        // One object recalculated twice at once would write two calculations for
+        // the same case and leave nobody able to say which one the queue is
+        // showing.
+        assertThat(first).hasSize(1);
+        assertThat(second).isEmpty();
+        queue.finish(first.getFirst().id(), "COMPLETED", null, now);
+    }
+
+    @Test
+    @Order(21)
+    @DisplayName("TC-AD-FLOW-021 a lease that outlived its worker is reclaimed, and the attempt is counted")
+    void anExpiredLeaseIsReclaimed() {
+        drain();
+        queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
+                UUID.randomUUID(), ORGANIZATION, AD_OBJECT, "AD_SPEND_OR_TRAFFIC",
+                "fact://advertising-loop-it/restart", AS_OF.plusSeconds(20), AS_OF,
+                "advertising-loop-it-restart"));
+        Instant now = Instant.now();
+
+        var died = queue.claim("worker-that-died", now.minusSeconds(1), 10, now);
+        assertThat(died).hasSize(1);
+        assertThat(died.getFirst().attemptCount()).isEqualTo(1);
+
+        // The restart property. A worker that died holding a lease must not take
+        // its work with it, and the attempt count is what stops a poisoned item
+        // being retried forever without anybody noticing.
+        var reclaimed = queue.claim("worker-after-restart", now.plusSeconds(300), 10, now);
+
+        assertThat(reclaimed).hasSize(1);
+        assertThat(reclaimed.getFirst().id()).isEqualTo(died.getFirst().id());
+        assertThat(reclaimed.getFirst().attemptCount()).isEqualTo(2);
+        queue.finish(reclaimed.getFirst().id(), "COMPLETED", null, now);
+    }
+
+    @Test
+    @Order(22)
+    @DisplayName("TC-AD-FLOW-022 the same object arriving twice coalesces rather than queueing twice")
+    void asecondFactForTheSameObjectCoalesces() {
+        drain();
+        assertThat(queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
+                UUID.randomUUID(), ORGANIZATION, AD_OBJECT, "AD_SPEND_OR_TRAFFIC",
+                "fact://advertising-loop-it/replay-1", AS_OF.plusSeconds(40), AS_OF,
+                "advertising-loop-it-replay")))
+                .isEqualTo(AdvertisingRecalculationRepository.EnqueueOutcome.CREATED);
+
+        // The hourly sweep visits every object anyway, so anything that grew one
+        // queue row per fact would grow without bound. The earlier instant is
+        // kept, because that is the latency the service level is measured from.
+        assertThat(queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
+                UUID.randomUUID(), ORGANIZATION, AD_OBJECT, "AD_CONFIGURATION",
+                "fact://advertising-loop-it/replay-2", AS_OF.plusSeconds(30), AS_OF,
+                "advertising-loop-it-replay")))
+                .isEqualTo(AdvertisingRecalculationRepository.EnqueueOutcome.COALESCED);
+
+        assertThat(count("SELECT count(*) FROM ops.ad_recalculation_request"
+                + " WHERE organization_id = '" + ORGANIZATION + "'"
+                + " AND state IN ('PENDING', 'LEASED')")).isEqualTo(1);
+        assertThat(count("SELECT count(*) FROM ops.ad_recalculation_request"
+                + " WHERE organization_id = '" + ORGANIZATION + "'"
+                + " AND state IN ('PENDING', 'LEASED')"
+                + " AND fact_accepted_at = '" + AS_OF.plusSeconds(30) + "'")).isEqualTo(1);
+        drain();
+    }
+
+    @Test
+    @Order(23)
+    @DisplayName("TC-AD-FLOW-023 a fact older than an answer already given is suppressed")
+    void areplayedOlderFactIsSuppressed() {
+        drain();
+        // A replayed acquisition page, a re-delivered webhook, a backfill. The
+        // object has already been recalculated from a newer fact, so asking
+        // again would be asking for a stale answer to be written over a fresh
+        // one.
+        assertThat(queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
+                UUID.randomUUID(), ORGANIZATION, AD_OBJECT, "AD_SPEND_OR_TRAFFIC",
+                "fact://advertising-loop-it/stale", AS_OF.minusSeconds(86_400), AS_OF,
+                "advertising-loop-it-stale-fact")))
+                .isEqualTo(AdvertisingRecalculationRepository.EnqueueOutcome.SUPPRESSED);
+    }
+
+    /** Finish whatever is queued, so the next case starts from a known state. */
+    private void drain() {
+        Instant now = Instant.now();
+        for (var claimed : queue.claim("advertising-flow-it-drain", now.plusSeconds(60), 100, now)) {
+            queue.finish(claimed.id(), "COMPLETED", null, now);
+        }
+    }
+
     // ------------------------------------------------------------------
     // Seeding
     // ------------------------------------------------------------------

@@ -39,7 +39,7 @@ JAVA_HOME=~/.sdkman/candidates/java/21.0.10-zulu ./backend/marketops-server/mvnw
 | `AdvertisingAuthorityBindingIT` | 6 | an advertising decision binds to the advertising authority |
 | `AdvertisingReservationIT` | 9 | overlap refusal, containment, multi-party reenablement |
 | `AdvertisingManualShadowIT` | 8 | the Manual Shadow records and never routes |
-| `AdvertisingEfficiencyFlowIT` | 19 | the calculation loop, and the two schedules that drive it |
+| `AdvertisingEfficiencyFlowIT` | 23 | the calculation loop, both schedules, and the queue under concurrency, restart and replay |
 | `AdvertisingDecisionQueryIT` | 4 | the decision-resolution queries against the real schema |
 | `AdBidDispatchAuthorityIT` | 1 | the dispatch-authority query type-checks for all four operations |
 | `AdBidParameterContractParityIT` | 1 | the Java and SQL parameter contracts accept the same shapes |
@@ -66,6 +66,9 @@ JAVA_HOME=~/.sdkman/candidates/java/21.0.10-zulu ./backend/marketops-server/mvnw
 | A trigger no targeted pass reached is repaired by the sweep that covered it | `AdvertisingEfficiencyFlowIT#TC-AD-FLOW-017` |
 | A sweep abandoned mid-portfolio is failed, not left holding the mutex | `AdvertisingEfficiencyFlowIT#TC-AD-FLOW-019` |
 | Every drained request leaves a latency observation behind | `AdvertisingEfficiencyFlowIT#TC-AD-FLOW-015` |
+| Two workers cannot hold the same unit of work | `AdvertisingEfficiencyFlowIT#TC-AD-FLOW-020` |
+| A lease that outlived its worker is reclaimed and the attempt counted | `AdvertisingEfficiencyFlowIT#TC-AD-FLOW-021` |
+| A replayed fact coalesces, and one older than the answer given is suppressed | `AdvertisingEfficiencyFlowIT#TC-AD-FLOW-022,023` |
 | A settled claim cannot outrun the Completed-Sales Guard | `OutcomeEvaluationTest#TC-AD-OUTCOME-007,011` |
 | A fall in spend is the improvement a decrease wanted | `OutcomeEvaluationTest#TC-AD-OUTCOME-003b` |
 | A bid never lands above the intent or off the platform's grid | `BidCandidateTest` (24 cases) |
