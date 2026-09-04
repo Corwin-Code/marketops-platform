@@ -72,7 +72,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0036__create_advertising_identity_and_official_facts.sql",
             "V0037__create_advertising_conversion_freshness_and_qualification.sql",
             "V0038__create_advertising_case_projection_and_orchestration.sql",
-            "V0039__create_advertising_target_materiality_and_manual_shadow.sql");
+            "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
+            "V0040__widen_write_registry_for_ad_bid_capability.sql");
 
     private static PostgreSQLContainer container;
 
