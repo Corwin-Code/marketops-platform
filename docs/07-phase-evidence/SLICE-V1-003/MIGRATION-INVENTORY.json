@@ -158,9 +158,18 @@
       "sha256": "eb9e365bc7cf2ec83bb49ded39112fa6c01f357892c32537482d235cb8e7e137",
       "git_blob_sha1": "fca823dbd037a0165c6f7f28e034ab4c7b208c83",
       "introduced_in_commit": "efc8a5aebf086db6895414b5f5eb1af44a8e8b06"
+    },
+    {
+      "version": "0053",
+      "file": "V0053__the_write_gate_must_refuse_rather_than_raise.sql",
+      "bytes": 14978,
+      "lines": 314,
+      "sha256": "ee1ba8318b0fa32efedc40004eb0a5b85510460c82b12028b72e677c8bb26b98",
+      "git_blob_sha1": "f34c45a2adae687f38f69220253b05a844e440c5",
+      "introduced_in_commit": "pending"
     }
   ],
-  "total_migrations": 52,
+  "total_migrations": 53,
   "contiguous": true,
   "verification": {
     "immutable_prefix_unmodified_since_protected_main": true,
@@ -169,8 +178,8 @@
     "contiguous_versions": true,
     "clean_install": {
       "test": "ManagedMigrationRunnerIT#cleanInstallAndReplayValidateAllMigrationsWithoutGivingTheApplicationTheOwningRole",
-      "migrations_applied": 52,
-      "schema_version": "0052",
+      "migrations_applied": 53,
+      "schema_version": "0053",
       "replay_applied": 0,
       "application_role_refused_as_migrator": true,
       "result": "PASS"
@@ -178,8 +187,8 @@
     "upgrade_from_prior_release": {
       "test": "ManagedProfileMigrationIT#pg17StandardAndManagedProfilesHaveCanonicalHistoryAndEquivalentApplicationSchemas",
       "resumed_at_schema_version": "0010",
-      "upgraded_to_schema_version": "0052",
-      "migrations_applied_on_upgrade": 42,
+      "upgraded_to_schema_version": "0053",
+      "migrations_applied_on_upgrade": 43,
       "managed_and_standard_catalog_signatures_equal": true,
       "result": "PASS"
     },
