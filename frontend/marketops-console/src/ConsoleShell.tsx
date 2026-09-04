@@ -6,6 +6,8 @@ import { DiagnosticExportPanel } from './diagnosis/DiagnosticExportPanel';
 import { AvailabilityCases } from './availability/AvailabilityCases';
 import { AvailabilityQueue } from './availability/AvailabilityQueue';
 import { AvailabilityAuthorityPanel } from './availability/AvailabilityAuthorityPanel';
+import { AdvertisingQueue } from './advertising/AdvertisingQueue';
+import { AdvertisingCaseView } from './advertising/AdvertisingCaseView';
 import { PriorityQueue } from './queue/PriorityQueue';
 import { RecommendationReview } from './workflow/RecommendationReview';
 import type { Session } from './session/session';
@@ -31,7 +33,8 @@ type View =
   | { readonly name: 'queue' }
   | { readonly name: 'diagnosis'; readonly subjectId: string }
   | { readonly name: 'review'; readonly recommendation: Recommendation }
-  | { readonly name: 'command'; readonly commandId: string };
+  | { readonly name: 'command'; readonly commandId: string }
+  | { readonly name: 'advertising-case'; readonly caseId: string };
 
 /**
  * The signed-in console: one journey, in the order the work happens.
@@ -87,6 +90,26 @@ export function ConsoleShell({
       {view.name === 'queue' && <AvailabilityCases context={context} />}
 
       {view.name === 'queue' && <AvailabilityAuthorityPanel context={context} />}
+
+      {view.name === 'queue' && (
+        <AdvertisingQueue
+          context={context}
+          onSelect={(caseId) => {
+            setView({ name: 'advertising-case', caseId });
+          }}
+        />
+      )}
+
+      {view.name === 'advertising-case' && (
+        <AdvertisingCaseView
+          key={view.caseId}
+          context={context}
+          caseId={view.caseId}
+          onBack={() => {
+            setView({ name: 'queue' });
+          }}
+        />
+      )}
 
       {view.name === 'queue' && (
         <PriorityQueue

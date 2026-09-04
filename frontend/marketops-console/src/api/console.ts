@@ -1,3 +1,5 @@
+import type { AdvertisingCase } from './advertising';
+import { parseAdvertisingCase } from './advertising';
 /**
  * Every request the operating console makes, and the parsing that stands
  * between a backend answer and the screen.
@@ -1525,6 +1527,38 @@ export function fetchPriorityQueue(
     context,
     `/api/v1/console/diagnosis/stores/${storeId}/queue?window=${window}`,
     list(parsePrioritySubject),
+  );
+}
+
+/**
+ * The advertising work list, highest rank first.
+ *
+ * The lane filter is a narrowing of what the operator may already see, never a
+ * widening: the backend scopes the queue to the stores and product variants
+ * their grants cover before this parameter is applied.
+ */
+export function fetchAdvertisingQueue(
+  context: ConsoleRequest,
+  lane?: string,
+  limit = 50,
+): Promise<ConsoleOutcome<readonly AdvertisingCase[]>> {
+  const laneParam = lane === undefined ? '' : `lane=${encodeURIComponent(lane)}&`;
+  return request(
+    context,
+    `/api/v1/console/advertising/queue?${laneParam}limit=${limit}`,
+    list(parseAdvertisingCase),
+  );
+}
+
+/** One advertising case with the factors behind its rank. */
+export function fetchAdvertisingCase(
+  context: ConsoleRequest,
+  caseId: string,
+): Promise<ConsoleOutcome<AdvertisingCase>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/cases/${caseId}`,
+    parseAdvertisingCase,
   );
 }
 
