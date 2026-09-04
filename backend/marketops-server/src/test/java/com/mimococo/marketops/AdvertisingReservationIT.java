@@ -63,6 +63,17 @@ class AdvertisingReservationIT {
     private static final UUID SEMANTIC_PROFILE =
             UUID.fromString("aaaaaaaa-0000-4000-8000-00000000ad01");
 
+    /**
+     * The one synthetic identity provider the fixture people belong to.
+     *
+     * <p>Deliberately RETIRED and UNVERIFIED. Nobody in this test authenticates;
+     * the people exist only to be named as an activator, an endorser and an
+     * approver, and an ACTIVE provider would have to claim a verification this
+     * fixture has no evidence for.
+     */
+    private static final UUID IDENTITY_PROVIDER =
+            UUID.fromString("aaaaaaaa-0000-4000-8000-0000000010d1");
+
     @BeforeAll
     static void openSeedConnection() {
         seed = JdbcClient.create(new DriverManagerDataSource(DATABASE.getJdbcUrl(),
@@ -182,6 +193,109 @@ class AdvertisingReservationIT {
 
         assertThat(reservations.activeContainment(fixture.organizationId(), fixture.objectOne(),
                 fixture.storeId(), "OZON", "ad-bid-change", fixture.digestOne())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("TC-AD-CONTAIN-001 a kill switch covers every scope beneath it")
+    void killSwitchCoversTheCapabilityScope() {
+        Fixture fixture = seedFixture();
+        UUID kill = reservations.activate(UUID.randomUUID(), fixture.organizationId(),
+                "KILL_SWITCH_ACTIVE", "PLATFORM_STORE_CAPABILITY", "OZON", null,
+                fixture.storeId(), null, null, "ad-bid-change", null, "BUSINESS_HARM",
+                "synthetic incident", "evidence://fixture/kill", null, "OPERATOR_DECISION",
+                "containment-fixture");
+
+        assertThat(kill).isNotNull();
+        assertThat(reservations.activeContainment(fixture.organizationId(), fixture.objectOne(),
+                fixture.storeId(), "OZON", "ad-bid-change", fixture.digestOne()))
+                .containsExactly("KILL_SWITCH_ACTIVE");
+    }
+
+    @Test
+    @DisplayName("TC-AD-CONTAIN-002 one person cannot lift their own stop")
+    void onePersonCannotLiftTheirOwnStop() {
+        Fixture fixture = seedFixture();
+        UUID activator = seedUser(fixture.organizationId());
+        UUID other = seedUser(fixture.organizationId());
+        UUID containment = reservations.activate(UUID.randomUUID(), fixture.organizationId(),
+                "EMERGENCY_ENTITY_HOLD", "ENTITY", null, null, null, fixture.objectOne(),
+                null, null, null, "BUSINESS_HARM", "synthetic hold",
+                "evidence://fixture/hold", activator, null, "containment-fixture");
+
+        for (String condition : List.of("ROOT_CAUSE_CLASSIFIED", "UNKNOWNS_RESOLVED",
+                "AUTHORITIES_REPLACED", "RESULTS_RECONCILED", "CAPABILITY_EVIDENCE_CURRENT")) {
+            assertThat(reservations.observeReenablementCondition(containment, condition, true))
+                    .isTrue();
+        }
+
+        // Endorser and approver both the activator: refused by the table.
+        assertThatThrownBy(() -> reservations.reenable(containment, activator, activator, "{}"))
+                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+        // One person in both roles: still refused.
+        assertThatThrownBy(() -> reservations.reenable(containment, other, other, "{}"))
+                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+
+        UUID third = seedUser(fixture.organizationId());
+        assertThat(reservations.reenable(containment, other, third, "{\"scope\":\"entity\"}"))
+                .isTrue();
+        assertThat(reservations.activeContainment(fixture.organizationId(), fixture.objectOne(),
+                fixture.storeId(), "OZON", "ad-bid-change", fixture.digestOne())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("TC-AD-CONTAIN-003 a security cause needs an attestation before anything restarts")
+    void securityCauseNeedsAnAttestation() {
+        Fixture fixture = seedFixture();
+        UUID activator = seedUser(fixture.organizationId());
+        UUID endorser = seedUser(fixture.organizationId());
+        UUID approver = seedUser(fixture.organizationId());
+        UUID containment = reservations.activate(UUID.randomUUID(), fixture.organizationId(),
+                "CAPABILITY_QUARANTINED", "PLATFORM_STORE_CAPABILITY", "OZON", null,
+                fixture.storeId(), null, null, "ad-bid-change", null, "CREDENTIAL_OR_SECURITY",
+                "synthetic credential incident", "evidence://fixture/security", activator, null,
+                "containment-fixture");
+
+        for (String condition : List.of("ROOT_CAUSE_CLASSIFIED", "UNKNOWNS_RESOLVED",
+                "AUTHORITIES_REPLACED", "RESULTS_RECONCILED", "CAPABILITY_EVIDENCE_CURRENT")) {
+            reservations.observeReenablementCondition(containment, condition, true);
+        }
+
+        assertThat(reservations.list(fixture.organizationId(), true, 10))
+                .filteredOn(row -> row.id().equals(containment))
+                .singleElement()
+                .satisfies(row -> assertThat(row.outstandingConditions())
+                        .containsExactly("SECURITY_ATTESTATION_PRESENT"));
+        assertThatThrownBy(() -> reservations.reenable(containment, endorser, approver, "{}"))
+                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+
+        reservations.observeReenablementCondition(containment, "SECURITY_ATTESTATION_PRESENT",
+                true);
+        assertThat(reservations.reenable(containment, endorser, approver, "{}")).isTrue();
+    }
+
+    /** One synthetic person who can endorse or approve. */
+    private UUID seedUser(UUID organizationId) {
+        UUID id = UUID.randomUUID();
+        seed.sql("""
+                INSERT INTO iam.identity_provider (id, code, display_name, issuer,
+                        max_auth_age_seconds, verification_state, owner_label, status,
+                        created_at, updated_at)
+                VALUES (:id, 'fixture-idp', 'Fixture provider',
+                        'https://fixture.invalid/issuer', 3600, 'UNVERIFIED', 'fixture',
+                        'RETIRED', now(), now())
+                ON CONFLICT (id) DO NOTHING
+                """).param("id", IDENTITY_PROVIDER).update();
+        seed.sql("""
+                INSERT INTO iam.user_account (id, organization_id, identity_provider_id,
+                        external_subject, display_name, status, credentials_valid_from,
+                        created_at, updated_at)
+                VALUES (:id, :organization, :provider, :subject, 'Fixture person', 'ACTIVE',
+                        now(), now(), now())
+                """).param("id", id).param("organization", organizationId)
+                .param("provider", IDENTITY_PROVIDER)
+                .param("subject", "subject-" + id)
+                .update();
+        return id;
     }
 
     private record Fixture(UUID organizationId, UUID storeId, UUID objectOne, UUID objectTwo,
