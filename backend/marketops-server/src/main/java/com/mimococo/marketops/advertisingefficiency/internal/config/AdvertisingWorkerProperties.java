@@ -21,6 +21,9 @@ public class AdvertisingWorkerProperties {
     private Duration scanInitialDelay = Duration.ofSeconds(20);
     private Duration sweepInterval = Duration.ofHours(1);
     private Duration sweepInitialDelay = Duration.ofMinutes(2);
+    private int outcomesPerPass = 50;
+    private Duration outcomeInterval = Duration.ofMinutes(15);
+    private Duration outcomeInitialDelay = Duration.ofMinutes(3);
 
     public boolean isWorkerEnabled() {
         return workerEnabled;
@@ -64,6 +67,30 @@ public class AdvertisingWorkerProperties {
 
     public Duration getSweepInitialDelay() {
         return sweepInitialDelay;
+    }
+
+    public int getOutcomesPerPass() {
+        return outcomesPerPass;
+    }
+
+    public void setOutcomesPerPass(int outcomesPerPass) {
+        this.outcomesPerPass = outcomesPerPass;
+    }
+
+    public Duration getOutcomeInterval() {
+        return outcomeInterval;
+    }
+
+    public void setOutcomeInterval(Duration outcomeInterval) {
+        this.outcomeInterval = outcomeInterval;
+    }
+
+    public Duration getOutcomeInitialDelay() {
+        return outcomeInitialDelay;
+    }
+
+    public void setOutcomeInitialDelay(Duration outcomeInitialDelay) {
+        this.outcomeInitialDelay = outcomeInitialDelay;
     }
 
     public void setSweepInitialDelay(Duration sweepInitialDelay) {

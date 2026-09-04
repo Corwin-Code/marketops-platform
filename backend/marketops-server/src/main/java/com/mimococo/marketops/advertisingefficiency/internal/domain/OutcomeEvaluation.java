@@ -137,10 +137,17 @@ public record OutcomeEvaluation(
         BigDecimal ratio = observedValue.subtract(baselineValue)
                 .divide(baselineValue.abs(), CONTEXT);
 
+        // The stored ratio is what actually happened; the compared ratio is
+        // oriented toward improvement. For spend a fall is the improvement, and
+        // reading the raw sign as a verdict would report every successful
+        // Protection decrease as a regression.
+        BigDecimal towardImprovement =
+                plan.measure().higherIsBetter() ? ratio : ratio.negate();
+
         Verdict verdict;
-        if (ratio.compareTo(plan.improvementThresholdRatio()) >= 0) {
+        if (towardImprovement.compareTo(plan.improvementThresholdRatio()) >= 0) {
             verdict = Verdict.IMPROVED;
-        } else if (ratio.compareTo(plan.regressionThresholdRatio().negate()) <= 0) {
+        } else if (towardImprovement.compareTo(plan.regressionThresholdRatio().negate()) <= 0) {
             verdict = Verdict.REGRESSED;
         } else {
             verdict = Verdict.UNCHANGED;
@@ -153,13 +160,21 @@ public record OutcomeEvaluation(
         return stage == Stage.SETTLED && guardState == GuardState.SATISFIED;
     }
 
-    /** The thresholds and bounds one plan fixes, before any of it is measured. */
+    /**
+     * The thresholds and bounds one plan fixes, before any of it is measured.
+     *
+     * <p>The measure travels with them because which way is better is a property
+     * of what is being measured, not a separate setting. A plan that could say
+     * "less revenue is an improvement" is a plan somebody can misconfigure.
+     */
     public record OutcomePlan(
+            OutcomeMeasure measure,
             BigDecimal improvementThresholdRatio,
             BigDecimal regressionThresholdRatio,
             long minimumTrafficCount) {
 
         public OutcomePlan {
+            Objects.requireNonNull(measure, "measure");
             Objects.requireNonNull(improvementThresholdRatio, "improvementThresholdRatio");
             Objects.requireNonNull(regressionThresholdRatio, "regressionThresholdRatio");
             if (improvementThresholdRatio.signum() <= 0 || regressionThresholdRatio.signum() <= 0) {

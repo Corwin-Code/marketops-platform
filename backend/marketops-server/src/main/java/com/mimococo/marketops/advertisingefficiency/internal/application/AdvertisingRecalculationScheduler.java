@@ -35,18 +35,38 @@ class AdvertisingRecalculationScheduler {
 
     private final AdvertisingTargetedWorker targeted;
     private final AdvertisingReconciliationWorker reconciliation;
+    private final AdvertisingOutcomeWorker outcomes;
     private final AdvertisingRecalculationRepository queue;
     private final AdvertisingWorkerProperties properties;
 
     AdvertisingRecalculationScheduler(
             AdvertisingTargetedWorker targeted,
             AdvertisingReconciliationWorker reconciliation,
+            AdvertisingOutcomeWorker outcomes,
             AdvertisingRecalculationRepository queue,
             AdvertisingWorkerProperties properties) {
         this.targeted = targeted;
         this.reconciliation = reconciliation;
+        this.outcomes = outcomes;
         this.queue = queue;
         this.properties = properties;
+    }
+
+    /**
+     * The third timer, and the slowest.
+     *
+     * <p>A fixed delay rather than a fixed rate. Nothing is owed a cadence here:
+     * an outcome is due when a window closes, not when a clock ticks, and a pass
+     * that took longer than its interval has nothing to catch up on.
+     */
+    @Scheduled(initialDelayString = "${marketops.advertising.outcome-initial-delay:PT3M}",
+            fixedDelayString = "${marketops.advertising.outcome-interval:PT15M}")
+    void measureWhatAlreadyHappened() {
+        int recorded = outcomes.runOnce(properties.getOutcomesPerPass());
+        if (recorded > 0) {
+            log.info("event=advertising_outcome_pass_completed recorded={} correlationId={}",
+                    recorded, CorrelationId.current());
+        }
     }
 
     @Scheduled(initialDelayString = "${marketops.advertising.scan-initial-delay:PT20S}",

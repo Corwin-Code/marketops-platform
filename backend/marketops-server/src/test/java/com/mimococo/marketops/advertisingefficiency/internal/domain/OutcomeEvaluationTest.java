@@ -24,8 +24,14 @@ import org.junit.jupiter.api.Test;
  */
 class OutcomeEvaluationTest {
 
-    private static final OutcomePlan PLAN =
-            new OutcomePlan(new BigDecimal("0.10000"), new BigDecimal("0.05000"), 100);
+    private static final OutcomePlan PLAN = new OutcomePlan(
+            OutcomeMeasure.ADVERTISING_CONTRIBUTION_PROFIT,
+            new BigDecimal("0.10000"), new BigDecimal("0.05000"), 100);
+
+    /** The same thresholds against a measure where a fall is the improvement. */
+    private static final OutcomePlan SPEND_PLAN = new OutcomePlan(
+            OutcomeMeasure.AD_SPEND,
+            new BigDecimal("0.10000"), new BigDecimal("0.05000"), 100);
 
     private static AdMeasure value(String amount) {
         return AdMeasure.available(new BigDecimal(amount), AdEvidenceState.CANONICAL_CONFIRMED);
@@ -62,6 +68,28 @@ class OutcomeEvaluationTest {
             assertThat(OutcomeEvaluation.evaluate(Stage.OPERATIONAL, value("100"), value("105"),
                     1000L, PLAN, GuardState.NOT_APPLICABLE).verdict())
                     .isEqualTo(Verdict.UNCHANGED);
+        }
+
+        @Test
+        @DisplayName("TC-AD-OUTCOME-003b a fall in spend is the improvement a decrease wanted")
+        void fallInSpendIsAnImprovement() {
+            // The failure this rules out: reporting every successful Protection
+            // decrease as a regression because the raw sign was read as a
+            // verdict.
+            OutcomeEvaluation evaluated = OutcomeEvaluation.evaluate(Stage.OPERATIONAL,
+                    value("1000"), value("800"), 1000L, SPEND_PLAN, GuardState.NOT_APPLICABLE);
+
+            assertThat(evaluated.verdict()).isEqualTo(Verdict.IMPROVED);
+            // The stored ratio is what happened, not what it meant.
+            assertThat(evaluated.changeRatio()).isEqualByComparingTo("-0.2");
+        }
+
+        @Test
+        @DisplayName("TC-AD-OUTCOME-003c spend rising past the regression threshold is a regression")
+        void riseInSpendIsARegression() {
+            assertThat(OutcomeEvaluation.evaluate(Stage.OPERATIONAL, value("1000"),
+                    value("1060"), 1000L, SPEND_PLAN, GuardState.NOT_APPLICABLE).verdict())
+                    .isEqualTo(Verdict.REGRESSED);
         }
 
         @Test
@@ -195,7 +223,7 @@ class OutcomeEvaluationTest {
         @Test
         @DisplayName("TC-AD-OUTCOME-013 a threshold of zero would call every measurement a result")
         void zeroThresholdIsRefused() {
-            assertThatThrownBy(() -> new OutcomePlan(BigDecimal.ZERO,
+            assertThatThrownBy(() -> new OutcomePlan(OutcomeMeasure.AD_SPEND, BigDecimal.ZERO,
                     new BigDecimal("0.05"), 100))
                     .isInstanceOf(IllegalArgumentException.class);
         }

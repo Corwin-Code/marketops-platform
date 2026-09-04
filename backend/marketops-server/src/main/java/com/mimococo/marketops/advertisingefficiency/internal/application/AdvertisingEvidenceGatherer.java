@@ -164,8 +164,13 @@ class AdvertisingEvidenceGatherer {
      * <p>Read through the published metric contract rather than from the ledger,
      * so the number an advertising decision uses is the same number the price
      * decision and the console use, computed once by the authority that owns it.
+     *
+     * <p>Package-private rather than private because the outcome path needs the
+     * same resolution. Two independent readings of unit cost would eventually
+     * disagree, and then a case and its own outcome would be arguing about the
+     * same product.
      */
-    private Map<UUID, VariantEconomics> economicsFor(List<UUID> variantIds) {
+    Map<UUID, VariantEconomics> economicsFor(List<UUID> variantIds) {
         Map<UUID, VariantEconomics> economics = new HashMap<>();
         for (UUID variantId : variantIds) {
             Map<MetricCode, MetricValueView> values = metrics.currentValues(
