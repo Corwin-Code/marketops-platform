@@ -124,16 +124,27 @@ class RecommendationStateTest {
     }
 
     @Nested
-    @DisplayName("TC-WF-004 only one action has a platform write behind it")
+    @DisplayName("TC-WF-004 exactly two actions have a platform write behind them")
     class ActionCapability {
 
         @Test
-        void priceChangeIsTheOnlyWriteCapableAction() {
+        void priceAndBidAreTheOnlyWriteCapableActions() {
             Set<ActionKind> writeCapable = Set.of(ActionKind.values()).stream()
                     .filter(ActionKind::writeCapable)
                     .collect(java.util.stream.Collectors.toSet());
 
-            assertThat(writeCapable).containsExactly(ActionKind.PRICE_CHANGE);
+            assertThat(writeCapable)
+                    .containsExactlyInAnyOrder(ActionKind.PRICE_CHANGE, ActionKind.AD_BID_CHANGE);
+        }
+
+        @Test
+        void advertisingReviewCarriesNoWrite() {
+            // This is where a budget change, a pause and a targeting change
+            // live. If the review ever became write-capable, an approval of one
+            // of them could produce a command, and this product writes no such
+            // thing. The bid change is a separate action for exactly that
+            // reason.
+            assertThat(ActionKind.ADVERTISING_REVIEW.writeCapable()).isFalse();
         }
     }
 }

@@ -4,6 +4,9 @@ import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
+import com.mimococo.marketops.marketplaceintegration.AdBidCommandGateway;
+import com.mimococo.marketops.operationsworkflow.ActionKind;
+import com.mimococo.marketops.operationsworkflow.AdBidImpactPreview;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
 import com.mimococo.marketops.operationsworkflow.ImpactPreview;
 import com.mimococo.marketops.operationsworkflow.RecommendationView;
@@ -48,17 +51,20 @@ class ApprovalConsoleController {
     private final GuardrailService guardrails;
     private final ApprovalService approvals;
     private final ExecutionService execution;
+    private final AdBidCommandGateway adCommands;
     private final BusinessAuthorization authorization;
 
     ApprovalConsoleController(RecommendationService recommendations,
                               GuardrailService guardrails,
                               ApprovalService approvals,
                               ExecutionService execution,
+                              AdBidCommandGateway adCommands,
                               BusinessAuthorization authorization) {
         this.recommendations = recommendations;
         this.guardrails = guardrails;
         this.approvals = approvals;
         this.execution = execution;
+        this.adCommands = adCommands;
         this.authorization = authorization;
     }
 
@@ -75,6 +81,38 @@ class ApprovalConsoleController {
         authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
                 ResourceScope.store(proposal.storeId()));
         return guardrails.preview(proposal, null, GuardrailPurpose.IMPACT_PREVIEW);
+    }
+
+    /**
+     * What changing this bid would do, and whether it is currently allowed.
+     *
+     * <p>A separate route from the price preview rather than a widened one. The
+     * two answer different questions and an operator asking about a bid should
+     * not receive a shape half of which is about margins.
+     *
+     * <p>The gate reasons are only meaningful once a command exists, because the
+     * gate is a question about a command. Before then the list is empty, which
+     * is not the same as "the gate would allow it" — the unresolved reasons and
+     * the verdict are what speak before creation.
+     */
+    @PostMapping(value = "/recommendations/{recommendationId}/ad-bid-impact-preview",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    AdBidImpactPreview previewAdBidChange(AuthenticatedActor actor,
+                                          @PathVariable UUID recommendationId) {
+        RecommendationView proposal = recommendations.require(recommendationId);
+        authorization.require(actor, ActionScopeCode.DIAGNOSTIC_VIEW,
+                ResourceScope.store(proposal.storeId()));
+        if (proposal.actionKind() != ActionKind.AD_BID_CHANGE) {
+            throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                    com.mimococo.marketops.shared.ErrorCode.VALIDATION_FAILED);
+        }
+        AdBidImpactPreview preview =
+                guardrails.previewAdBidChange(proposal, GuardrailPurpose.IMPACT_PREVIEW);
+        List<String> gateReasons = adCommands.forRecommendation(recommendationId)
+                .map(command -> adCommands.gateReasons(command.id()))
+                .orElseGet(List::of);
+        return new AdBidImpactPreview(preview.recommendationId(), preview.projection(),
+                gateReasons, preview.unresolvedReasons(), preview.verdict());
     }
 
     /** A person decides the change may proceed. */

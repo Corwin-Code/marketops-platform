@@ -9,11 +9,17 @@ import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
+import com.mimococo.marketops.marketplaceintegration.AdBidCommandRequest;
+import com.mimococo.marketops.marketplaceintegration.AdBidCommandView;
+import com.mimococo.marketops.marketplaceintegration.AdBidCommandGateway;
 import com.mimococo.marketops.marketplaceintegration.PriceCommandGateway;
 import com.mimococo.marketops.marketplaceintegration.PriceCommandRequest;
 import com.mimococo.marketops.marketplaceintegration.PriceCommandView;
 import com.mimococo.marketops.operatingfacts.OperatingFactQuery;
 import com.mimococo.marketops.operatingfacts.PriceSnapshot;
+import com.mimococo.marketops.operationsworkflow.ActionKind;
+import com.mimococo.marketops.operationsworkflow.AdvertisingDecisionAuthority;
+import com.mimococo.marketops.operationsworkflow.AdvertisingDecisionScope;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
 import com.mimococo.marketops.operationsworkflow.GuardrailVerdict;
 import com.mimococo.marketops.operationsworkflow.RecommendationState;
@@ -45,6 +51,12 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>Creating a command still makes no call. Every condition is evaluated again
  * inside the transaction that claims the command for a worker, so a switch
  * thrown between here and there closes the door.
+ *
+ * <p>Two actions have a platform write behind them, and both come through here.
+ * A second execution service for advertising would be a second place that
+ * decides an approval may be spent, which is exactly the thing this product
+ * does not have. What differs between them is what a command is made of, so the
+ * dispatch below is on the action and everything shared stays shared.
  */
 @Service
 public class ExecutionService {
@@ -55,6 +67,8 @@ public class ExecutionService {
     private final GuardrailService guardrails;
     private final ApprovalRepository approvals;
     private final PriceCommandGateway commands;
+    private final AdBidCommandGateway adCommands;
+    private final AdvertisingDecisionAuthority adDecisions;
     private final ListingIdentityDirectory listings;
     private final OperatingFactQuery facts;
     private final BusinessAuthorization authorization;
@@ -68,6 +82,8 @@ public class ExecutionService {
                      GuardrailService guardrails,
                      ApprovalRepository approvals,
                      PriceCommandGateway commands,
+                     AdBidCommandGateway adCommands,
+                     AdvertisingDecisionAuthority adDecisions,
                      ListingIdentityDirectory listings,
                      OperatingFactQuery facts,
                      BusinessAuthorization authorization,
@@ -77,6 +93,8 @@ public class ExecutionService {
         this.guardrails = guardrails;
         this.approvals = approvals;
         this.commands = commands;
+        this.adCommands = adCommands;
+        this.adDecisions = adDecisions;
         this.listings = listings;
         this.facts = facts;
         this.authorization = authorization;
@@ -95,6 +113,14 @@ public class ExecutionService {
     public Created createCommand(AuthenticatedActor actor, UUID recommendationId,
                                  long expectedVersion) {
         RecommendationView proposal = recommendations.require(recommendationId);
+        if (proposal.actionKind() == ActionKind.AD_BID_CHANGE) {
+            return createAdBidCommand(actor, proposal, expectedVersion);
+        }
+        if (proposal.actionKind() != ActionKind.PRICE_CHANGE) {
+            // Every other action is work a person performs. There is no command
+            // to create, and saying so here is what stops one being invented.
+            throw OperationRejectedException.of(ErrorCode.CAPABILITY_NOT_USABLE);
+        }
         PriceChangeParameterContract.requireValid(proposal.proposedParameters());
         authorization.require(actor, ActionScopeCode.PRICE_CHANGE_APPROVE,
                 ResourceScope.store(proposal.storeId()));
@@ -151,6 +177,74 @@ public class ExecutionService {
         auditRecorder.recordChange(new MetadataAuditChange(
                 AuditSourceDomain.OPERATIONS_WORKFLOW, actor.userId().toString(),
                 AuditAction.COMMAND_TRANSITION, ENTITY_TYPE, recommendationId, null,
+                Map.of(
+                        "commandId", new FieldChange(null, commandId.toString()),
+                        "state", new FieldChange(proposal.state().name(), "COMMAND_CREATED"),
+                        "guardrailEvaluationId", new FieldChange(null,
+                                verdict.evaluationId().toString())),
+                null, null));
+        return new Created(commandId, verdict);
+    }
+
+    /**
+     * Create the advertising command for an authorized proposal.
+     *
+     * <p>The same shape as the price path and for the same reasons: authority
+     * first, version second, approval third, then the execution guardrail, then
+     * the thing that makes the command specific. What differs is the last part.
+     * A bid change is made of a candidate, a reservation and a policy bundle,
+     * and this service does not assemble any of them — it asks the advertising
+     * module for the decision they compose and refuses if it is not complete.
+     *
+     * <p>The database checks every one of those again. This is here so an
+     * operator learns why before pressing the button rather than after.
+     */
+    private Created createAdBidCommand(AuthenticatedActor actor, RecommendationView proposal,
+                                       long expectedVersion) {
+        AdBidChangeParameterContract.requireValid(proposal.proposedParameters());
+        authorization.require(actor, ActionScopeCode.AD_BID_CHANGE_APPROVE,
+                ResourceScope.store(proposal.storeId()));
+        if (proposal.version() != expectedVersion) {
+            throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
+        }
+        if (!proposal.state().authorized()) {
+            throw OperationRejectedException.of(ErrorCode.APPROVAL_REQUIRED);
+        }
+
+        Optional<AdBidCommandView> existing = adCommands.forRecommendation(proposal.id());
+        if (existing.isPresent()) {
+            return new Created(existing.get().id(), null);
+        }
+
+        GuardrailVerdict verdict = guardrails.evaluate(proposal, null,
+                GuardrailPurpose.EXECUTION);
+        if (!verdict.passed()) {
+            throw OperationRejectedException.of(ErrorCode.GUARDRAIL_BLOCKED);
+        }
+
+        AdvertisingDecisionScope scope = adDecisions.decisionScope(proposal.id())
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.CAPABILITY_NOT_USABLE));
+        if (!scope.candidateId().equals(
+                AdBidChangeParameterContract.candidateId(proposal.proposedParameters()))
+                || scope.targetBidAmount().compareTo(
+                        AdBidChangeParameterContract.targetBid(proposal.proposedParameters())) != 0
+                || !scope.direction().equals(
+                        AdBidChangeParameterContract.direction(proposal.proposedParameters()))) {
+            // The approved parameters and the resolved decision describe
+            // different changes. Neither is authoritative on its own, so
+            // neither is used.
+            throw OperationRejectedException.of(ErrorCode.RECOMMENDATION_STALE);
+        }
+
+        UUID commandId = adCommands.submit(new AdBidCommandRequest(
+                proposal.id(), expectedVersion, actor.userId(),
+                scope.reservationId(), scope.bundleId(), scope.approvalExpiresAt()));
+
+        recommendations.transition(actor.userId().toString(), proposal.id(),
+                RecommendationState.COMMAND_CREATED, null, expectedVersion);
+        auditRecorder.recordChange(new MetadataAuditChange(
+                AuditSourceDomain.OPERATIONS_WORKFLOW, actor.userId().toString(),
+                AuditAction.COMMAND_TRANSITION, ENTITY_TYPE, proposal.id(), null,
                 Map.of(
                         "commandId", new FieldChange(null, commandId.toString()),
                         "state", new FieldChange(proposal.state().name(), "COMMAND_CREATED"),

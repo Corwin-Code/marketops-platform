@@ -44,7 +44,8 @@ import org.springframework.transaction.annotation.Transactional;
  * is not that the write is refused later, it is that there is no path to one.
  */
 @Service
-public class RecommendationService {
+public class RecommendationService
+        implements com.mimococo.marketops.operationsworkflow.AdvertisingRecommendationIntake {
 
     static final String ENTITY_TYPE = "recommendation";
 
@@ -208,9 +209,73 @@ public class RecommendationService {
                         ENTITY_TYPE, id, null));
     }
 
+    /**
+     * Propose one advertising bid change.
+     *
+     * <p>Its own method rather than a widened {@code propose}, because almost
+     * nothing is shared. The subject is an advertising object, the metrics that
+     * form the entity digest are the object's rather than a listing variant's,
+     * and the task is due when the advertising service level says rather than in
+     * the workflow's default two days.
+     *
+     * <p>A bid change is write-capable, so it starts as a draft that a person
+     * must review. It never starts as a task somebody merely performs.
+     */
+    @Override
+    @Transactional
+    public UUID proposeBidChange(
+            com.mimococo.marketops.operationsworkflow.AdvertisingBidProposal proposal) {
+        List<UUID> live = recommendations.liveFor(SubjectKind.AD_NATIVE_OBJECT,
+                proposal.adNativeObjectId(), ActionKind.AD_BID_CHANGE);
+        if (!live.isEmpty()) {
+            // One object, one live decision. Returning the existing proposal
+            // rather than refusing means a recalculation that reaches the same
+            // conclusion does not need to know whether it is the first.
+            return live.getFirst();
+        }
+        AdBidChangeParameterContract.requireValid(proposal.parameters());
+        String validRisk = MetadataFieldPolicy.requireText("riskLabel", proposal.riskLabel());
+
+        Instant now = clock.instant();
+        Map<MetricCode, MetricValueView> current = metrics.currentValues(
+                SubjectKind.AD_NATIVE_OBJECT, proposal.adNativeObjectId(), proposal.window());
+
+        UUID id = idGenerator.newId();
+        recommendations.insert(id, proposal.organizationId(), proposal.storeId(),
+                SubjectKind.AD_NATIVE_OBJECT, proposal.adNativeObjectId(),
+                ActionKind.AD_BID_CHANGE, "DETERMINISTIC", null, proposal.caseId(),
+                proposal.window(), RecommendationState.DRAFT, proposal.priorityScore(),
+                proposal.parameters(), proposal.expectedEffect(), validRisk,
+                proposal.validationHorizonDays(), EntityVersion.of(current),
+                now.plus(DEFAULT_VALIDITY), now);
+        proposal.metricValueEvidenceIds().forEach(metricValueId ->
+                recommendations.insertEvidence(idGenerator.newId(), id, metricValueId,
+                        null, null, "SUPPORTING"));
+
+        // The task exists from the start for a bid change, unlike a price
+        // change, because the service level being measured is how long a person
+        // takes to decide — and that clock starts when the case is raised, not
+        // when somebody notices it.
+        tasks.insert(idGenerator.newId(), proposal.organizationId(), id,
+                taskTitle(ActionKind.AD_BID_CHANGE),
+                now.plus(proposal.humanReviewWindow()), now);
+
+        auditRecorder.recordChange(new MetadataAuditChange(
+                AuditSourceDomain.OPERATIONS_WORKFLOW, proposal.operator(), AuditAction.CREATE,
+                ENTITY_TYPE, id, null,
+                Map.of(
+                        "actionKind", new FieldChange(null, ActionKind.AD_BID_CHANGE.name()),
+                        "direction", new FieldChange(null, proposal.direction()),
+                        "state", new FieldChange(null, RecommendationState.DRAFT.name()),
+                        "entityVersionDigest", new FieldChange(null, EntityVersion.of(current))),
+                null, null));
+        return id;
+    }
+
     private static String taskTitle(ActionKind actionKind) {
         return switch (actionKind) {
             case PRICE_CHANGE -> "Review the proposed price change";
+            case AD_BID_CHANGE -> "Review the proposed advertising bid change";
             case RESOLVE_MAPPING -> "Resolve the listing-to-SKU mapping";
             case RESTOCK_REVIEW -> "Review replenishment for this variant";
             case LISTING_CONTENT_REVIEW -> "Review the listing content";

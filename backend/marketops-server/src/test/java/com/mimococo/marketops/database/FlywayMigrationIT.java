@@ -78,7 +78,9 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
             "V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
             "V0044__supersede_advertising_cases_whose_cause_no_longer_holds.sql",
-            "V0045__create_ad_bid_command_from_approval.sql");
+            "V0045__create_ad_bid_command_from_approval.sql",
+            "V0046__capture_ad_bid_authority_for_guardrail_evaluation.sql",
+            "V0047__refuse_a_zero_target_bid_in_the_parameter_contract.sql");
 
     private static PostgreSQLContainer container;
 

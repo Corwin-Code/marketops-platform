@@ -67,6 +67,31 @@ public class GuardrailRepository {
                 .single();
     }
 
+    /**
+     * The advertising authority and the instant it describes.
+     *
+     * <p>Returns the raw document rather than a parsed snapshot. The price
+     * authority is parsed because the engine reads price, economics and
+     * freshness out of it; the advertising verdict reads its inputs from the
+     * case projection instead, so the document here is evidence rather than
+     * input, and parsing it would invent a second reader of the same facts.
+     */
+    public AdvertisingAuthority captureAdBidAuthority(UUID recommendationId) {
+        return jdbc.sql("""
+                        SELECT evaluation_as_of, authority_snapshot::text AS authority_snapshot
+                          FROM ops.capture_ad_bid_authority_snapshot(:id)
+                        """)
+                .param("id", recommendationId)
+                .query((rows, rowNumber) -> new AdvertisingAuthority(
+                        rows.getTimestamp("evaluation_as_of").toInstant(),
+                        rows.getString("authority_snapshot")))
+                .single();
+    }
+
+    /** What the advertising authority was, and when. */
+    public record AdvertisingAuthority(Instant evaluationAsOf, String document) {
+    }
+
     /** Record one verdict. */
     public void insert(UUID id, UUID organizationId, UUID recommendationId, UUID policyId,
                        Integer policyVersion, GuardrailPurpose purpose, boolean passed,

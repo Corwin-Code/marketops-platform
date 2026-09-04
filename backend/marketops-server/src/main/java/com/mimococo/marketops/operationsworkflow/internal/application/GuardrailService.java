@@ -11,6 +11,10 @@ import com.mimococo.marketops.marketplaceintegration.PriceChangeHistory;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
 import com.mimococo.marketops.operationsworkflow.GuardrailReason;
 import com.mimococo.marketops.operationsworkflow.GuardrailVerdict;
+import com.mimococo.marketops.operationsworkflow.ActionKind;
+import com.mimococo.marketops.operationsworkflow.AdBidImpactPreview;
+import com.mimococo.marketops.operationsworkflow.AdvertisingBidProjection;
+import com.mimococo.marketops.operationsworkflow.AdvertisingDecisionAuthority;
 import com.mimococo.marketops.operationsworkflow.ImpactPreview;
 import com.mimococo.marketops.operationsworkflow.RecommendationView;
 import com.mimococo.marketops.operationsworkflow.internal.domain.GuardrailInput;
@@ -53,17 +57,20 @@ public class GuardrailService {
     private final DiagnosisQuery diagnosis;
     private final GuardrailRepository evaluations;
     private final PriceChangeHistory changeHistory;
+    private final AdvertisingDecisionAuthority advertising;
     private final IdGenerator idGenerator;
 
     GuardrailService(MetricQuery metrics,
                      DiagnosisQuery diagnosis,
                      GuardrailRepository evaluations,
                      PriceChangeHistory changeHistory,
+                     AdvertisingDecisionAuthority advertising,
                      IdGenerator idGenerator) {
         this.metrics = metrics;
         this.diagnosis = diagnosis;
         this.evaluations = evaluations;
         this.changeHistory = changeHistory;
+        this.advertising = advertising;
         this.idGenerator = idGenerator;
     }
 
@@ -77,7 +84,165 @@ public class GuardrailService {
     @Transactional
     public GuardrailVerdict evaluate(RecommendationView proposal, BigDecimal authorizationBound,
                                      GuardrailPurpose purpose) {
+        if (proposal.actionKind() == ActionKind.AD_BID_CHANGE) {
+            return previewAdBidChange(proposal, purpose).verdict();
+        }
         return preview(proposal, authorizationBound, purpose).verdict();
+    }
+
+    /**
+     * Evaluate one proposed bid change and project what it would do.
+     *
+     * <p>Structurally the same as the price preview: one evaluation produces
+     * both the verdict and the projection, and the verdict is recorded in the
+     * same table by the same writer. What differs is where the facts come from.
+     * The price engine reads price, cost and stock; there is no equivalent for a
+     * bid, because whether a bid is safe is an advertising question about
+     * conversion, attribution and the set of variants one object reaches.
+     *
+     * <p>So the advertising module's deterministic refusals are carried through
+     * rather than re-derived, and this method adds the refusals that belong to
+     * the workflow: an elapsed proposal, facts that moved since the case, an
+     * approval bound the change exceeds. Neither side overrides the other, and
+     * an empty union is the only way to pass.
+     */
+    @Transactional
+    public AdBidImpactPreview previewAdBidChange(RecommendationView proposal,
+                                                 GuardrailPurpose purpose) {
+        GuardrailRepository.AdvertisingAuthority authority =
+                evaluations.captureAdBidAuthority(proposal.id());
+        Instant now = authority.evaluationAsOf();
+        AdvertisingBidProjection projection =
+                advertising.bidProjection(proposal.id()).orElse(null);
+        List<String> unresolved = advertising.unresolvedReasons(proposal.id());
+
+        List<GuardrailReason> reasons = adBidReasons(proposal, projection, unresolved, now);
+        boolean passed = reasons.isEmpty();
+
+        UUID evaluationId = idGenerator.newId();
+        String inputDigest = adBidDigest(proposal, projection, unresolved, now);
+        evaluations.insert(evaluationId, proposal.organizationId(), proposal.id(),
+                null, null, purpose, passed, reasons, adBidDetail(projection),
+                inputDigest, authority.document(), now, CorrelationId.current());
+
+        GuardrailVerdict verdict = new GuardrailVerdict(evaluationId, purpose, passed,
+                reasons, null, null, adBidDetail(projection), inputDigest);
+        return new AdBidImpactPreview(proposal.id(), projection,
+                List.of(), unresolved, verdict);
+    }
+
+    /**
+     * Everything that refuses this bid change, from both sides.
+     *
+     * <p>The advertising module's blockers are mapped to one reason rather than
+     * copied in one by one, because they are its vocabulary and it owns their
+     * meaning; the detail carries them verbatim so nothing is lost.
+     */
+    private static List<GuardrailReason> adBidReasons(RecommendationView proposal,
+                                                      AdvertisingBidProjection projection,
+                                                      List<String> unresolved, Instant now) {
+        List<GuardrailReason> reasons = new ArrayList<>();
+        if (!proposal.validUntil().isAfter(now)) {
+            reasons.add(GuardrailReason.RECOMMENDATION_EXPIRED);
+        }
+        if (projection == null) {
+            // Nothing is known about the change, so nothing about it can pass.
+            reasons.add(GuardrailReason.ADVERTISING_CASE_BLOCKED);
+            return List.copyOf(reasons);
+        }
+        if (!projection.blockerCodes().isEmpty()) {
+            reasons.add(GuardrailReason.ADVERTISING_CASE_BLOCKED);
+        }
+        if (!java.util.Objects.equals(projection.entityVersionDigest(),
+                proposal.entityVersionDigest())) {
+            reasons.add(GuardrailReason.ENTITY_VERSION_CHANGED);
+        }
+        if (projection.currentBidAmount().compareTo(projection.targetBidAmount()) == 0) {
+            reasons.add(GuardrailReason.NO_CHANGE_PROPOSED);
+        }
+        if (projection.maxCpcAmount() == null) {
+            reasons.add(GuardrailReason.MAX_CPC_UNAVAILABLE);
+        } else if (projection.exceedsMaxCpc()) {
+            reasons.add(GuardrailReason.ABOVE_MAX_CPC);
+        }
+        if (!projection.exhaustedExposureAxes().isEmpty()) {
+            reasons.add(GuardrailReason.EXPOSURE_ENVELOPE_EXHAUSTED);
+        }
+        for (String reason : unresolved) {
+            switch (reason) {
+                case "BID_MOVED_SINCE_CANDIDATE" ->
+                        reasons.add(GuardrailReason.BID_MOVED_SINCE_CANDIDATE);
+                case "CURRENT_BID_NOT_OBSERVED" ->
+                        reasons.add(GuardrailReason.CURRENT_BID_NOT_OBSERVED);
+                case "CONTROL_GRANULARITY_UNPROVEN" ->
+                        reasons.add(GuardrailReason.CONTROL_GRANULARITY_UNPROVEN);
+                case "RESERVATION_NOT_HELD" ->
+                        reasons.add(GuardrailReason.RESERVATION_NOT_HELD);
+                case "BUNDLE_UNRESOLVED", "BUNDLE_AMBIGUOUS" ->
+                        reasons.add(GuardrailReason.AD_POLICY_BUNDLE_UNRESOLVED);
+                case "APPROVAL_LEASE_POLICY_ABSENT" ->
+                        reasons.add(GuardrailReason.APPROVAL_LEASE_POLICY_ABSENT);
+                case "RECOMMENDATION_EXPIRED" ->
+                        reasons.add(GuardrailReason.RECOMMENDATION_EXPIRED);
+                case "NO_CHANGE_PROPOSED" ->
+                        reasons.add(GuardrailReason.NO_CHANGE_PROPOSED);
+                default -> {
+                    // APPROVAL_MISSING and its kin are not guardrail refusals.
+                    // The approval path already refuses them, and repeating them
+                    // here would make an unapproved proposal look guardrailed.
+                }
+            }
+        }
+        return List.copyOf(new java.util.LinkedHashSet<>(reasons));
+    }
+
+    /** What the verdict rests on, in the form the console reads. */
+    private static Map<String, String> adBidDetail(AdvertisingBidProjection projection) {
+        if (projection == null) {
+            return Map.of("projection", "UNAVAILABLE");
+        }
+        Map<String, String> detail = new java.util.LinkedHashMap<>();
+        detail.put("lane", String.valueOf(projection.lane()));
+        detail.put("causeCode", String.valueOf(projection.causeCode()));
+        detail.put("direction", projection.direction());
+        detail.put("currentBid", projection.currentBidAmount().toPlainString());
+        detail.put("targetBid", projection.targetBidAmount().toPlainString());
+        detail.put("currency", String.valueOf(projection.currencyCode()));
+        detail.put("bidUnit", String.valueOf(projection.bidUnitCode()));
+        detail.put("materialityRoute", String.valueOf(projection.materialityRoute()));
+        detail.put("affectedVariantCount",
+                Integer.toString(projection.affectedVariantCount()));
+        detail.put("affectedSetDigest", String.valueOf(projection.affectedSetDigest()));
+        detail.put("maxCpcState", String.valueOf(projection.maxCpcState()));
+        if (!projection.blockerCodes().isEmpty()) {
+            detail.put("advertisingBlockers", String.join(",", projection.blockerCodes()));
+        }
+        if (!projection.exhaustedExposureAxes().isEmpty()) {
+            detail.put("exhaustedExposureAxes",
+                    String.join(",", projection.exhaustedExposureAxes()));
+        }
+        return Map.copyOf(detail);
+    }
+
+    /** Digest exactly what this advertising verdict was made from. */
+    private static String adBidDigest(RecommendationView proposal,
+                                      AdvertisingBidProjection projection,
+                                      List<String> unresolved, Instant now) {
+        List<String> components = new ArrayList<>();
+        components.add(proposal.id().toString());
+        components.add(proposal.entityVersionDigest());
+        components.add(now.toString());
+        components.add(projection == null ? "NO_PROJECTION" : projection.direction());
+        components.add(projection == null
+                ? "NO_PROJECTION" : projection.currentBidAmount().toPlainString());
+        components.add(projection == null
+                ? "NO_PROJECTION" : projection.targetBidAmount().toPlainString());
+        components.add(projection == null
+                ? "NO_PROJECTION" : String.valueOf(projection.affectedSetDigest()));
+        components.add(projection == null
+                ? "NO_PROJECTION" : String.join(",", projection.blockerCodes()));
+        components.add(String.join(",", unresolved));
+        return Digest.ofComponents(components);
     }
 
     /**
