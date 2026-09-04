@@ -3,6 +3,7 @@ package com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdb
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.time.Instant;
+import com.mimococo.marketops.advertisingefficiency.internal.domain.ProviderBidGrid;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -287,6 +288,122 @@ public class AdvertisingPolicyRepository {
                         rs.getString("minimum_confidence_state"),
                         rs.getBoolean("provider_incident_blocks")))
                 .optional();
+    }
+
+    /**
+     * The bounds one decision may move a bid within, for this exact combination.
+     *
+     * <p>Scoped by store, then platform, then organization, like every other
+     * policy here. A store that has been given a tighter step than the rest of
+     * the organization keeps it, and an absent policy resolves to nothing rather
+     * than to a default — there is no bound this code would be entitled to
+     * invent for a real advertising auction.
+     */
+    public Optional<TargetPolicy> resolveBidTargetPolicy(
+            UUID organizationId, String platformCode, UUID storeId, String nativeObjectKind,
+            String direction, String candidateBasis, Instant at) {
+        return jdbc.sql("""
+                SELECT id, policy_version, candidate_count, max_relative_change_ratio,
+                       max_absolute_change_amount, currency_code, ceiling_headroom_ratio,
+                       cause_bound_step_enabled, cause_bound_step_ratio, cause_bound_causes
+                  FROM core.ad_bid_target_policy
+                 WHERE organization_id = :organizationId
+                   AND native_object_kind = :nativeObjectKind
+                   AND direction = :direction
+                   AND candidate_basis = :candidateBasis
+                   AND (scope_kind = 'ORGANIZATION'
+                        OR (scope_kind = 'PLATFORM' AND platform_code = :platformCode)
+                        OR (scope_kind = 'STORE' AND store_ref_id = :storeId))
+                """ + IN_FORCE + """
+                 ORDER BY CASE scope_kind WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END,
+                          effective_from DESC
+                 LIMIT 1
+                """)
+                .param("organizationId", organizationId)
+                .param("platformCode", platformCode)
+                .param("storeId", storeId)
+                .param("nativeObjectKind", nativeObjectKind)
+                .param("direction", direction)
+                .param("candidateBasis", candidateBasis)
+                .param("at", ts(at))
+                .query((ResultSet rs, int index) -> new TargetPolicy(
+                        rs.getObject("id", UUID.class), rs.getInt("policy_version"),
+                        rs.getInt("candidate_count"),
+                        rs.getBigDecimal("max_relative_change_ratio"),
+                        rs.getBigDecimal("max_absolute_change_amount"),
+                        rs.getString("currency_code"),
+                        rs.getBigDecimal("ceiling_headroom_ratio")))
+                .optional();
+    }
+
+    /**
+     * The platform's own bid arithmetic for one advertising object.
+     *
+     * <p>Read from the object's own semantic profile rather than from the
+     * platform, because two object kinds on one marketplace can count in
+     * different units. The verification state travels with it, so the caller
+     * cannot use an unverified description of a real auction by accident.
+     */
+    public Optional<ObjectBidContext> resolveBidGrid(UUID adNativeObjectId) {
+        return jdbc.sql("""
+                SELECT object.native_object_kind, object.control_granularity_state,
+                       profile.bid_unit_code, profile.bid_currency_code, profile.bid_precision,
+                       profile.bid_step, profile.bid_minimum, profile.bid_maximum,
+                       profile.bid_field_present, profile.verification_state
+                  FROM core.ad_native_object object
+                  JOIN platform.ad_semantic_profile profile
+                    ON profile.id = object.semantic_profile_id
+                 WHERE object.id = :objectId AND object.status = 'ACTIVE'
+                """)
+                .param("objectId", adNativeObjectId)
+                .query((ResultSet rs, int index) -> new ObjectBidContext(
+                        rs.getString("native_object_kind"),
+                        rs.getString("control_granularity_state"),
+                        new ProviderBidGrid(
+                                rs.getString("bid_unit_code"),
+                                rs.getString("bid_currency_code"),
+                                integerOrNull(rs, "bid_precision"),
+                                rs.getBigDecimal("bid_step"),
+                                rs.getBigDecimal("bid_minimum"),
+                                rs.getBigDecimal("bid_maximum"),
+                                rs.getBoolean("bid_field_present"),
+                                rs.getString("verification_state"))))
+                .optional();
+    }
+
+    /**
+     * What kind of object this is and how its platform counts bids.
+     *
+     * <p>Both come from the same read because both are properties of the object
+     * at one instant, and asking separately would let a policy be resolved for
+     * one kind while the arithmetic came from another.
+     */
+    public record ObjectBidContext(String nativeObjectKind, String controlGranularityState,
+                                   ProviderBidGrid grid) {
+
+        /** Whether a controlled write may ever consume this object. */
+        public boolean independentlyControllable() {
+            return "PROVEN_INDEPENDENT".equals(controlGranularityState);
+        }
+    }
+
+    /** The bounds one decision may move a bid within. */
+    public record TargetPolicy(
+            UUID id, int policyVersion, int candidateCount,
+            java.math.BigDecimal maxRelativeChangeRatio,
+            java.math.BigDecimal maxAbsoluteChangeAmount, String currencyCode,
+            java.math.BigDecimal ceilingHeadroomRatio) {
+
+        /** The limits as the candidate arithmetic consumes them. */
+        public com.mimococo.marketops.advertisingefficiency.internal.domain.BidStepLimits limits() {
+            return new com.mimococo.marketops.advertisingefficiency.internal.domain.BidStepLimits(
+                    maxRelativeChangeRatio, maxAbsoluteChangeAmount, ceilingHeadroomRatio);
+        }
+    }
+
+    private static Integer integerOrNull(ResultSet rs, String column) throws java.sql.SQLException {
+        int value = rs.getInt(column);
+        return rs.wasNull() ? null : value;
     }
 
     /** The unique complete active decision bundle for one exact scope, if there is one. */

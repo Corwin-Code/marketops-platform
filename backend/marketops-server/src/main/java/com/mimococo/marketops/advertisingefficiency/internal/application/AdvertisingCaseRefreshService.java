@@ -29,16 +29,19 @@ class AdvertisingCaseRefreshService {
 
     private final AdvertisingCaseCalculationService calculation;
     private final AdvertisingProjectionWriter writer;
+    private final AdvertisingProposalService proposals;
     private final AdvertisingTraceRepository trace;
     private final IdGenerator ids;
 
     AdvertisingCaseRefreshService(
             AdvertisingCaseCalculationService calculation,
             AdvertisingProjectionWriter writer,
+            AdvertisingProposalService proposals,
             AdvertisingTraceRepository trace,
             IdGenerator ids) {
         this.calculation = calculation;
         this.writer = writer;
+        this.proposals = proposals;
         this.trace = trace;
         this.ids = ids;
     }
@@ -47,6 +50,7 @@ class AdvertisingCaseRefreshService {
     record RefreshOutcome(
             AdCaseCalculation calculation,
             AdvertisingProjectionWriter.Written written,
+            java.util.List<UUID> proposed,
             String correlationId) {
     }
 
@@ -81,7 +85,18 @@ class AdvertisingCaseRefreshService {
                 correlationId, parentCorrelationId,
                 "{\"laneChanged\":" + written.anyLaneChanged() + "}", asOf);
 
-        return Optional.of(new RefreshOutcome(result, written, correlationId));
+        // Proposing happens inside the same seam and the same transaction, so
+        // the targeted path and the hourly sweep produce the same proposals from
+        // the same evidence rather than one of them producing more.
+        java.util.List<UUID> proposed = proposals.proposeFor(result, written.cases(),
+                correlationId);
+        if (!proposed.isEmpty()) {
+            record(organizationId, objectId, calculationKind, "PROJECTION_WRITTEN", "COMPLETED",
+                    correlationId, parentCorrelationId,
+                    "{\"proposed\":" + proposed.size() + "}", asOf);
+        }
+
+        return Optional.of(new RefreshOutcome(result, written, proposed, correlationId));
     }
 
     private void record(UUID organizationId, UUID objectId, String calculationKind,
