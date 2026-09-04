@@ -59,8 +59,8 @@ class ModulithArchitectureTest {
                 .sorted()
                 .toList();
 
-        assertThat(detected).containsExactly("adminobservability", "aicopilot",
-                "analyticsdecision", "availabilityrisk", "identityaccess",
+        assertThat(detected).containsExactly("adminobservability", "advertisingefficiency",
+                "aicopilot", "analyticsdecision", "availabilityrisk", "identityaccess",
                 "marketplaceintegration", "operatingfacts", "operationsworkflow",
                 "organizationaccount", "productlisting", "shared");
     }
