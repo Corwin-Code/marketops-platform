@@ -29,6 +29,7 @@ public record AdCaseCalculation(
         Instant asOf,
         AdPolicySet policies,
         AffectedSet affectedSet,
+        UUID affectedSetId,
         List<ScoredCase> cases) {
 
     /** One case, its lane decision, its rank and the measures behind both. */

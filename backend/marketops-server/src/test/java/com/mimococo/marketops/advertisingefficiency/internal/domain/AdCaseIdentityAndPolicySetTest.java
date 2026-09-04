@@ -167,7 +167,8 @@ class AdCaseIdentityAndPolicySetTest {
         private static AdCaseCalculation calculation(List<AdCaseCalculation.ScoredCase> cases) {
             return new AdCaseCalculation(ORG, OBJECT, STORE, "OZON", UUID.randomUUID(), 1,
                     Instant.parse("2026-09-04T00:00:00Z"), AdPolicySet.empty(),
-                    AffectedSet.complete(List.of(VARIANT), List.of()), cases);
+                    AffectedSet.complete(List.of(VARIANT), List.of()),
+                    UUID.fromString("00000000-0000-0000-0000-0000000000e5"), cases);
         }
 
         @Test

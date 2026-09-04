@@ -101,6 +101,7 @@ public class AdvertisingQueryRepository {
                 ON a.id = c.affected_set_id AND a.organization_id = c.organization_id
              WHERE c.organization_id = :organizationId
                AND c.store_id = ANY (:permittedStoreIds)
+               AND c.superseded_at IS NULL
             """.formatted(BAND, BAND_EXPRESSION, BAND);
 
     public List<CaseRow> queue(
@@ -203,7 +204,7 @@ public class AdvertisingQueryRepository {
                         rs.getString("basis"),
                         rs.getString("confidence_state"),
                         rs.getBigDecimal("spend_amount"),
-                        (Long) rs.getObject("clicks"),
+                        clicksOf(rs),
                         rs.getBigDecimal("contribution_profit_amount"),
                         rs.getString("currency_code"),
                         rs.getString("sellability_state"),
@@ -238,7 +239,7 @@ public class AdvertisingQueryRepository {
                         rs.getObject("calculation_id", UUID.class),
                         rs.getString("evidence_role"),
                         rs.getObject("reference_id", UUID.class),
-                        rs.getObject("observed_at", Instant.class),
+                        instantOf(rs, "observed_at"),
                         rs.getString("note")))
                 .list();
     }
@@ -286,11 +287,11 @@ public class AdvertisingQueryRepository {
                 rs.getString("affected_set_digest"),
                 rs.getString("resolution_state"),
                 rs.getInt("affected_variant_count"),
-                rs.getObject("as_of", Instant.class),
-                rs.getObject("calculated_at", Instant.class),
+                instantOf(rs, "as_of"),
+                instantOf(rs, "calculated_at"),
                 rs.getString("sustained_lane"),
                 rs.getInt("sustained_cycles"),
-                rs.getObject("sustained_since", Instant.class),
+                instantOf(rs, "sustained_since"),
                 rs.getObject("calculation_id", UUID.class));
     }
 
@@ -302,4 +303,25 @@ public class AdvertisingQueryRepository {
         return List.of((String[]) array.getArray());
     }
 
+
+    /**
+     * Read a timestamp the driver will hand over.
+     *
+     * <p>This driver refuses {@code getObject(column, Instant.class)} against a
+     * {@code timestamptz}, so every read goes through {@link java.sql.Timestamp}
+     * exactly as the rest of this codebase does. Null stays null rather than
+     * becoming the epoch, because an absent observation time and an observation
+     * at the dawn of time are different facts.
+     */
+    private static java.time.Instant instantOf(java.sql.ResultSet rs, String column)
+            throws java.sql.SQLException {
+        java.sql.Timestamp value = rs.getTimestamp(column);
+        return value == null ? null : value.toInstant();
+    }
+
+    /** The variant clicks column, which arrives summed and therefore numeric. */
+    private static Long clicksOf(ResultSet rs) throws SQLException {
+        java.math.BigDecimal value = rs.getBigDecimal("clicks");
+        return value == null ? null : value.longValueExact();
+    }
 }
