@@ -55,7 +55,7 @@ class AdvertisingDecisionServiceTest {
                 ID, ID, "PROTECTION", "PROTECTION_DECREASE", "MAX_CPC_BOUNDED",
                 new BigDecimal("30.0000"), new BigDecimal("20.0000"), "RUB", "CURRENCY_MAJOR",
                 "PROVEN_INDEPENDENT", "ACTIVE", "OZON", new BigDecimal("30.0000"),
-                ID, NOW.plusSeconds(7200), 3600, 1800);
+                ID, NOW.plusSeconds(1800), 3600, 1800);
     }
 
     private void resolving(AdvertisingDecisionRepository.DecisionRow row) {
@@ -76,11 +76,23 @@ class AdvertisingDecisionServiceTest {
             assertThat(service.decisionScope(ID)).hasValueSatisfying(scope -> {
                 assertThat(scope.direction()).isEqualTo("PROTECTION_DECREASE");
                 assertThat(scope.changeAmount()).isEqualByComparingTo("10");
-                // The lease is the shorter of the policy window and the
-                // approval's own expiry, so neither can extend the other.
+                // The repository supplies the deadline already sealed by the
+                // database as the minimum of policy and evidence expiry.
+                // Reading this scope must carry that exact instant through.
                 assertThat(scope.approvalExpiresAt())
                         .isEqualTo(NOW.plusSeconds(1800));
             });
+        }
+
+        @Test
+        @DisplayName("reading the scope later never renews the sealed deadline")
+        void laterScopeReadRetainsTheSealedDeadline() {
+            resolving(complete());
+            var later = new AdvertisingDecisionService(decisions, candidates, reservations,
+                    ids, Clock.fixed(NOW.plusSeconds(600), ZoneOffset.UTC));
+
+            assertThat(later.decisionScope(ID)).hasValueSatisfying(scope ->
+                    assertThat(scope.approvalExpiresAt()).isEqualTo(NOW.plusSeconds(1800)));
         }
 
         @Test

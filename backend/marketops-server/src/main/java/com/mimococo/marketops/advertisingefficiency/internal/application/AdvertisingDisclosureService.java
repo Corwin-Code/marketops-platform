@@ -18,6 +18,7 @@ import com.mimococo.marketops.operationsworkflow.AdvertisingDisclosurePolicy;
 import com.mimococo.marketops.operationsworkflow.RecommendationView;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.OperationRejectedException;
+import java.time.Clock;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -37,12 +38,14 @@ public class AdvertisingDisclosureService implements AdvertisingDisclosurePolicy
     private final BusinessAuthorization authorization;
     private final AdvertisingDisclosureRepository scopes;
     private final ObjectMapper mapper;
+    private final Clock clock;
 
     public AdvertisingDisclosureService(BusinessAuthorization authorization,
-            AdvertisingDisclosureRepository scopes, ObjectMapper mapper) {
+            AdvertisingDisclosureRepository scopes, ObjectMapper mapper, Clock clock) {
         this.authorization = authorization;
         this.scopes = scopes;
         this.mapper = mapper;
+        this.clock = clock;
     }
 
     @Override
@@ -287,7 +290,7 @@ public class AdvertisingDisclosureService implements AdvertisingDisclosurePolicy
         var reference = scopes.packetScope(actor.organizationId(), view.id()).orElse(null);
         if (reference == null || view.proposalId() == null) return List.of();
         if (List.of("MANUAL_PACKET_DRAFT","MANUAL_PACKET_ENDORSED","MANUAL_PACKET_ISSUED").contains(view.state())
-                && (!view.expiresAt().isAfter(java.time.Instant.now())
+                && (!view.expiresAt().isAfter(clock.instant())
                     || !scopes.manualAuthorityCurrent(actor.organizationId(),view.id()))) return List.of();
         List<String> actions = new java.util.ArrayList<>();
         boolean evidence = mayReadDecisionEvidence(actor, reference.objectId(), reference.affectedSetDigest());

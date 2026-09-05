@@ -17,6 +17,7 @@ import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.shared.ConsoleApi;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.OperationRejectedException;
+import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -56,6 +57,7 @@ class AdvertisingOperationsConsoleController {
     private final BusinessAuthorization authorization;
     private final MetadataAuditRecorder audit;
     private final AdvertisingDisclosureService disclosure;
+    private final Clock clock;
     private final com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationSloService slo;
 
     AdvertisingOperationsConsoleController(
@@ -63,17 +65,17 @@ class AdvertisingOperationsConsoleController {
             com.mimococo.marketops.marketplaceintegration.AdBidCommandGateway commands,
             BusinessAuthorization authorization,
             MetadataAuditRecorder audit, AdvertisingDisclosureService disclosure,
-            com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationSloService slo) {
+            com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationSloService slo, Clock clock) {
         this.operations = operations;this.commands=commands;
         this.authorization = authorization;
         this.audit = audit;
-        this.disclosure = disclosure;this.slo=slo;
+        this.disclosure = disclosure;this.slo=slo;this.clock=clock;
     }
 
     @GetMapping("/orchestration")
     @Transactional
     Map<String,Object> orchestration(AuthenticatedActor actor) {
-        var result=slo.snapshot(actor.organizationId(),permittedStores(actor),java.time.Instant.now());
+        var result=slo.snapshot(actor.organizationId(),permittedStores(actor),clock.instant());
         auditRead(actor,"advertising_orchestration",actor.organizationId(),"orchestration");return result;
     }
 

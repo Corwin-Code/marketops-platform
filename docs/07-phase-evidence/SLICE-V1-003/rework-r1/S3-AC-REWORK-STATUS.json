@@ -605,7 +605,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -613,7 +613,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             },
             {
               "path": "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
@@ -763,7 +763,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -771,7 +771,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             },
             {
               "path": "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
@@ -921,7 +921,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -929,7 +929,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             },
             {
               "path": "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
@@ -1023,7 +1023,7 @@
             },
             {
               "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDecisionServiceTest.java",
-              "current_sha256": "50193cf3a09a09d53d243562b6ee6fb9016bfebd7e1b11089fd9a69835d5107a",
+              "current_sha256": "9ba2b6d988101f933a490d8722c24fcb65082eaf844e16939c9ce4e85e69b0dd",
               "method": "controlGranularityUnproven"
             }
           ],
@@ -1068,7 +1068,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -1076,7 +1076,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             },
             {
               "path": "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
@@ -1224,7 +1224,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -1232,7 +1232,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             },
             {
               "path": "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
@@ -1328,7 +1328,7 @@
             },
             {
               "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDecisionServiceTest.java",
-              "current_sha256": "50193cf3a09a09d53d243562b6ee6fb9016bfebd7e1b11089fd9a69835d5107a",
+              "current_sha256": "9ba2b6d988101f933a490d8722c24fcb65082eaf844e16939c9ce4e85e69b0dd",
               "method": "controlGranularityUnproven"
             },
             {
@@ -1382,7 +1382,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -1390,7 +1390,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             },
             {
               "path": "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
@@ -1538,7 +1538,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -1546,7 +1546,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             },
             {
               "path": "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
@@ -1696,7 +1696,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -1704,7 +1704,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             }
           ],
           "test_references": [
@@ -1756,7 +1756,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -1764,7 +1764,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             }
           ],
           "test_references": [
@@ -1816,7 +1816,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -1824,7 +1824,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             }
           ],
           "test_references": [
@@ -1876,7 +1876,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -1884,7 +1884,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             }
           ],
           "test_references": [
@@ -1936,7 +1936,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -1944,7 +1944,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             }
           ],
           "test_references": [
@@ -13997,7 +13997,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
@@ -14097,7 +14097,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
@@ -14197,7 +14197,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
@@ -14316,7 +14316,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
@@ -14440,7 +14440,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
@@ -14554,7 +14554,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
@@ -14663,7 +14663,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
@@ -14763,7 +14763,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
@@ -14926,7 +14926,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingOutcomeRepository.java",
@@ -16027,7 +16027,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "frontend/marketops-console/src/advertising/AdvertisingBriefView.tsx",
@@ -16080,7 +16080,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "frontend/marketops-console/src/advertising/AdvertisingBriefView.tsx",
@@ -16133,7 +16133,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "frontend/marketops-console/src/advertising/AdvertisingBriefView.tsx",
@@ -16186,7 +16186,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "frontend/marketops-console/src/advertising/AdvertisingBriefView.tsx",
@@ -16239,7 +16239,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "frontend/marketops-console/src/advertising/AdvertisingBriefView.tsx",
@@ -16367,7 +16367,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -16375,7 +16375,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             }
           ],
           "test_references": [
@@ -16544,7 +16544,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -16552,7 +16552,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             }
           ],
           "test_references": [
@@ -17514,7 +17514,7 @@
           "source_references": [
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
-              "current_sha256": "fc76317fba6bae8f1d688482c5b60f5ec5a924dbc8bde826089aecf53b7d8f44"
+              "current_sha256": "6669cedfb5906e5a6630adf1db14e858de3ce33e8b37c4a2ee3d1d5e8dde280b"
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
@@ -17522,7 +17522,7 @@
             },
             {
               "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
-              "current_sha256": "f2869deee0b8080bdb74844a99acba5d9ff9e8a2e288e9b47d67fa45969414f2"
+              "current_sha256": "19d2a8a1086eed2539458ba6db3b7fe6542e4bc2bde6bca78ac7b8c8023b1c7b"
             }
           ],
           "test_references": [

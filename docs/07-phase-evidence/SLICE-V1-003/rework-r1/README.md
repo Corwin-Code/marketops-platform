@@ -29,6 +29,8 @@ The reviewed starting Head is `a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb`.
 | [Disclosure and Manual fault assertions](workstreams/disclosure-manual-fault-seeding.md) | Exact role/scope, actor, evidence grade and actual HTTP boundaries. |
 | [Final targeted rerun](workstreams/final-targeted-r34.json) | All 97 selected backend tests pass, including real vertical/concurrent paths, Human16, Disclosure7 and Sealed15; clean full verification remains separate. |
 | [Semantic mapping review](workstreams/human-governance-mapping-review-supplement.md) | Each of 41 human/governance criteria is mapped to actual assertions with explicit domain, PostgreSQL, HTTP and remaining verification limits. |
+| [W2 exact full attempt](workstreams/full-clean-w2/run-receipt.json) | Clean commit b871d637: 1,544 unit tests with three failures; integration/package/capacity phases were not reached. Raw reports remain preserved. |
+| [Post-full repairs](workstreams/post-full-repair-r35.json) | All 39 relevant tests pass after Clock injection and exact snapshot/sealed-expiry fixture corrections; full clean rerun is still required. |
 | [W1 committed identity](workstreams/slice3-r1-w1-identity.json) | Clean implementation checkpoint `60638b1fc1a227b50f4b3ede1ba0bb983407bfdc`, protected authorities/history and all 65 migration identities. |
 | [W1 independent clone](workstreams/fresh-clone-w1.json) | Exact committed source, independent Git objects, no ignored local configuration/build state, and 410 passing governance tests; offline scope only. |
 | [W1 infrastructure](workstreams/infrastructure-w1/receipt.json) | Seven Terraform mock cases and 29 Python cases passed on an exact source copy; local plans only, with raw/compressed hashes. |
