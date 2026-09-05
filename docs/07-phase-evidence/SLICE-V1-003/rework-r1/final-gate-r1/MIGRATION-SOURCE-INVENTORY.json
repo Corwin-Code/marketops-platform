@@ -1,0 +1,718 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "FINAL_GATE_R1_SOURCE_MIGRATION_INVENTORY",
+  "status": "SOURCE_READBACK_ONLY_FULL_VERIFICATION_PENDING",
+  "historicalInventory": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/MIGRATION-INVENTORY.json",
+    "sha256": "921d83417f5fc7e8b447d1b1ad9373b327e0120f994179133400a91f87f34fdb"
+  },
+  "historicalHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+  "sourceHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+  "worktreeModified": true,
+  "preservedCount": 65,
+  "newRange": "0066-0070",
+  "migrationCount": 70,
+  "migrations": [
+    {
+      "version": "0001",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0001__create_foundation_schemas.sql",
+      "bytes": 1674,
+      "lines": 33,
+      "sha256": "7c7f34ba3a3746883e236a5a4e6eb0efc87e58e3b33f895d7f1d71c369d0eb0d",
+      "gitBlobSha1": "3934490585866a91b5446cad6a0381474ca0323e",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0002",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0002__enable_btree_gist_extension.sql",
+      "bytes": 894,
+      "lines": 17,
+      "sha256": "438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16",
+      "gitBlobSha1": "bd3e55ea737ffda9d519a931eea1f3cc58b8c522",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0003",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0003__create_metadata_audit_event.sql",
+      "bytes": 2888,
+      "lines": 60,
+      "sha256": "efbe9ff5bb32fb96011f9d5b80426fb8d4134a2bd2314bb6294d8eb60be8135c",
+      "gitBlobSha1": "33c04aae296a76ad84881d3ad417b95e6458eb68",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0004",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0004__create_core_organization_metadata.sql",
+      "bytes": 14204,
+      "lines": 290,
+      "sha256": "39bff4689febfe3effa1e73953589976fa030c035412263e365f0d1a7be65d2c",
+      "gitBlobSha1": "253aed86291e009277599bbe1f4197db0d91d189",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0005",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0005__create_iam_access_metadata.sql",
+      "bytes": 8692,
+      "lines": 173,
+      "sha256": "51a47d8cf735ff6378e4d0a3d201725b255e8f835e662a7d68b34d6dd51950f1",
+      "gitBlobSha1": "fc3b79fe33fc27b76e978bcd36ed1e4870969fed",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0006",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0006__create_platform_registry_metadata.sql",
+      "bytes": 26224,
+      "lines": 501,
+      "sha256": "7225402b7a77cc04933e5d030772f9f6e2e98f4e552ac577e1254f998d73e902",
+      "gitBlobSha1": "407cdfb1da6bd81e80918e878646d7c513fa160d",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0007",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0007__create_ingestion_control_plane_authority.sql",
+      "bytes": 27435,
+      "lines": 586,
+      "sha256": "83ccccf382389ec62a401393cd85508183240eeb3d94215549a101f6ab5e8781",
+      "gitBlobSha1": "002467375cfe262ba7419322962690589895168f",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0008",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0008__attach_control_epoch_triggers.sql",
+      "bytes": 15001,
+      "lines": 280,
+      "sha256": "8f148e213c8cd2f50c57c0d585708d59677d72663e4d45a6c62000dc663d5fea",
+      "gitBlobSha1": "fb0ff2d29f4b13ddc4abfbdbb9ef5851994c7eb7",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0009",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0009__create_control_boundary_kinds_and_decision_evidence.sql",
+      "bytes": 21831,
+      "lines": 446,
+      "sha256": "9b906c8e732aec72b7f069c5374cb0dc9894071e18e091281b9c28785336885d",
+      "gitBlobSha1": "1d26c6660c8534bf14b5af90349b9b257f65a6f1",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0010",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql",
+      "bytes": 38681,
+      "lines": 827,
+      "sha256": "a3b8ca08b796c1d211f17a042a8ec546cd0009d4457e2d68dcd930dfc36a13d9",
+      "gitBlobSha1": "a254326219cbc2d3ff6255640a3cd0c1f16dacc9",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0011",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0011__create_human_identity_and_business_authorization.sql",
+      "bytes": 24177,
+      "lines": 471,
+      "sha256": "d5312e5c2348e8abe0fb445652567ad9a0e9ad1b7ce6eeb3a5202bb58af94555",
+      "gitBlobSha1": "d0f3250ed98113a4dec5fbb466085229b7561515",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0012",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0012__create_product_listing_identity_and_mapping.sql",
+      "bytes": 20276,
+      "lines": 382,
+      "sha256": "e6ea3caa30f69e9f533a69cb1387e25396c15f3f0fce1f0bcdced00c30522bb7",
+      "gitBlobSha1": "44fb0959f9f96d20a60bd09e99ced2b56d32d496",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0013",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0013__create_cross_domain_operating_facts.sql",
+      "bytes": 27254,
+      "lines": 501,
+      "sha256": "db63fd8a4e50ceb39c78b58856a44ff4b4eed8e758a3975bc96fe9c439aad552",
+      "gitBlobSha1": "0db4d66a009effe082f8b0f9c44886314975ed5d",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0014",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0014__create_internal_fact_intake_and_file_import.sql",
+      "bytes": 25308,
+      "lines": 481,
+      "sha256": "f0649d939caab975ff796b2e257ea1e642f9e7bf851bd7616171ac82e0a0b42a",
+      "gitBlobSha1": "2a94cc24d0ec61bdd9ffb27cb56d5aa821c02020",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0015",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0015__create_canonical_metric_definitions_and_values.sql",
+      "bytes": 17728,
+      "lines": 322,
+      "sha256": "cc695d22a1249b3e3520e359e75cdbfe7a90fb7519f0cc6e0b74369bdbdbed9b",
+      "gitBlobSha1": "f0ab7af933e8d5424ba6d841373a469fdf5613f4",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0016",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0016__create_deterministic_diagnosis_rules_and_findings.sql",
+      "bytes": 11785,
+      "lines": 231,
+      "sha256": "9a7b8efa5d1948d3d5ca8522b6d5dd011eb4be2e16f53145c7c7364ae831056c",
+      "gitBlobSha1": "0fd549d8cc9d51adcf7dbedc0334172b76116755",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0017",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0017__create_ai_projection_invocation_and_output.sql",
+      "bytes": 24422,
+      "lines": 444,
+      "sha256": "b20b7138b2e177b87ec1a579cbdcdd13c60b4ed045b6721463c5496f974e74ff",
+      "gitBlobSha1": "baf224b92635ccec3999215d17211ec94f6819c4",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0018",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0018__create_recommendation_task_and_approval_workflow.sql",
+      "bytes": 13582,
+      "lines": 257,
+      "sha256": "1df2c7fd599354dce06cd8f3a4d6363a88c65fa2c02446cbe569d56b333422d1",
+      "gitBlobSha1": "aebda29c1829bead7d72d6bf2685ed5b49f06b6d",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0019",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0019__create_commercial_policy_and_guardrails.sql",
+      "bytes": 23813,
+      "lines": 477,
+      "sha256": "ba6916d059cb5586bfe784e261a0243832acf97b097c112072899b5d01526e58",
+      "gitBlobSha1": "c4e49c5ad219bf9d0a2eab2a508accd96703e4e5",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0020",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0020__create_price_command_outbox_readback_and_write_gate.sql",
+      "bytes": 55450,
+      "lines": 1103,
+      "sha256": "8437316450f3bae2e5ef532d360121ad825d25cac2cd67cb840cc31683d6721d",
+      "gitBlobSha1": "3d32a9826464f52a640841e21b08dc30b2b44734",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0021",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0021__create_platform_api_profile_and_request_shape.sql",
+      "bytes": 14712,
+      "lines": 298,
+      "sha256": "b67375962b84a3f37becd968af7f2aaf97df7b75760ce69748a1f4895a9fc97a",
+      "gitBlobSha1": "852fc44e7e2f2fcf85962c9ac7ec6432653d6d8d",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0022",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0022__create_ingestion_run_lifecycle_and_replay_guard.sql",
+      "bytes": 27537,
+      "lines": 618,
+      "sha256": "9a93dcaaafca30b9f738129974babe46509784c232854337ea023200d7c33f6e",
+      "gitBlobSha1": "376e74871fa776eb3f4269738ad5797bc070d0b7",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0023",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0023__create_declared_normalization_and_drift_observation.sql",
+      "bytes": 20682,
+      "lines": 374,
+      "sha256": "6fdc3d7bef0b4f0e395a73bac1a7553b134668dd8a684224a74aeaa04f0df0fb",
+      "gitBlobSha1": "bc3383831b793a25f5348a0cb2e4c5c56194096f",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0024",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0024__create_capability_write_operation_shape.sql",
+      "bytes": 14381,
+      "lines": 249,
+      "sha256": "55db8c34247172c1746439bb41a9cd376b4ad70e5e256ef0fbf0c5ee2ff80e2b",
+      "gitBlobSha1": "8933413ae1bcb5b82762fa71a6704043aa67f28a",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0025",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0025__create_price_command_attempt_completion_and_lease_recovery.sql",
+      "bytes": 34081,
+      "lines": 666,
+      "sha256": "5039cdbf120e4db29d642d8d22dc3f952119921f04f3568eb367f15b9f8fdfa7",
+      "gitBlobSha1": "e7fcc1068d8d0f734643808b125e28b1c704e387",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0026",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0026__rename_operational_capability_column_to_action_kind.sql",
+      "bytes": 9249,
+      "lines": 238,
+      "sha256": "82f42eea7990dc6502447d4832a08ca107830495f8f9d249e9d4b09c088b4df2",
+      "gitBlobSha1": "84b0b3342bdf6c8598e562ab053b34ea4e35732d",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0027",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0027__create_account_bound_registry_verification.sql",
+      "bytes": 34485,
+      "lines": 425,
+      "sha256": "fbdd185d03324d145793ec7844ebc17aa02b844f8aaffe89579b5df1f6479ba1",
+      "gitBlobSha1": "d7131d3eb73eb9b252cb2f916f629d3cd50b6bdf",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0028",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0028__create_bounded_diagnostic_export.sql",
+      "bytes": 23858,
+      "lines": 347,
+      "sha256": "43170cf370079706ed8b39792815a5ec2bb447fae2d876afcd830cf7e30a1acf",
+      "gitBlobSha1": "8cbf484d7ac2d333fcfdf271c17739cb47bc5925",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0029",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0029__version_profit_economics_and_commercial_inputs.sql",
+      "bytes": 53562,
+      "lines": 987,
+      "sha256": "5ca31479f5230abb30c1607ac25f2c819145eebab0bcfed7c27750cc90968d03",
+      "gitBlobSha1": "da9b7c069caa69ceacbc66a08d93689006fe9cc6",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0030",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0030__create_availability_risk_policy_inbound_and_case.sql",
+      "bytes": 82782,
+      "lines": 1527,
+      "sha256": "6ad81c234c20134c5444f8b2a7606977fed5661987cd0354ab9ccfd2dda18e3d",
+      "gitBlobSha1": "6d41a94b4dab60f32b17c6619e3b0de42e3c04cc",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0031",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0031__track_sustained_availability_lane.sql",
+      "bytes": 1907,
+      "lines": 35,
+      "sha256": "4322ccbbf2ae5e32724c29e4160bdcbacec798932fe6b8fd7be258861435042b",
+      "gitBlobSha1": "36edca1d69e18bf43981040c713b451290406791",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0032",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0032__create_availability_fact_feed_cursor.sql",
+      "bytes": 1819,
+      "lines": 34,
+      "sha256": "72fef0835de8d294ae92351758ba05931a9eafc7b38c4cd996720a743d4eec0e",
+      "gitBlobSha1": "5a838135069e519221267243e5856e2effab9370",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0033",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0033__track_case_improvement_observation.sql",
+      "bytes": 1567,
+      "lines": 28,
+      "sha256": "767b3e79a6f17780940a18d323371757e04a82479f7d9882f6d140387619e7f2",
+      "gitBlobSha1": "1b746111ee63c384a0c0133a00417a38b42b20cb",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0034",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0034__close_availability_deep_review_findings.sql",
+      "bytes": 22094,
+      "lines": 443,
+      "sha256": "c7be2f0b6ae9444287875bdfccf4f9bc997e3080ff8689c77e6b6d80a33551b1",
+      "gitBlobSha1": "8712a0b7623c2f13eab3035ab4a3667073981f5e",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0035",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0035__close_availability_targeted_findings.sql",
+      "bytes": 18649,
+      "lines": 361,
+      "sha256": "e3ce956b28fa60a82aa4f6bce5f760bd803fd9222e5eed04777b6a03753532a7",
+      "gitBlobSha1": "a5da4812600db2b58ec95ef183eee45816f6733b",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0036",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0036__create_advertising_identity_and_official_facts.sql",
+      "bytes": 47196,
+      "lines": 852,
+      "sha256": "923baf8f50882125167d31bb4ea07253984f556846fb17243dbddfd93b4f5f6d",
+      "gitBlobSha1": "621d3337672ed8923e178ebb1228e6f68dd3c85b",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0037",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0037__create_advertising_conversion_freshness_and_qualification.sql",
+      "bytes": 47855,
+      "lines": 850,
+      "sha256": "530e135f2f94073eea1271b2c0b47d7348dcc06c2c090791ab082b276eec7658",
+      "gitBlobSha1": "9bc88dc8224d40168f0884aca4b31331c94f6ad5",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0038",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
+      "bytes": 44973,
+      "lines": 824,
+      "sha256": "aa9a8b939d5301d42f13c4eb07b933dfeb052aec21d25c0fc0ebe6e2df3e1f27",
+      "gitBlobSha1": "cbd095f98faeab440aa1334d78810b0f91fe29ea",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0039",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0039__create_advertising_target_materiality_and_manual_shadow.sql",
+      "bytes": 38921,
+      "lines": 685,
+      "sha256": "d5f6e0d55f833fa9013649cf01b93970e17f4ead0104ba571b36e9db435988a0",
+      "gitBlobSha1": "5209df005e86541979f18ab07d6f2c8c0910fbc2",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0040",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0040__widen_write_registry_for_ad_bid_capability.sql",
+      "bytes": 17636,
+      "lines": 327,
+      "sha256": "be93a31c395c68c5e2f520b5141cb72d1fa03b1fa467f200a87973041342b4e1",
+      "gitBlobSha1": "129bcc9fabd01845e298442dd687161101d7ae45",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0041",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0041__create_advertising_containment_and_decision_bundle.sql",
+      "bytes": 41895,
+      "lines": 770,
+      "sha256": "e9bbb8c17df6b9894d3ead2e9f0ff9cb116ad7a82c7ec5ac03189ab662f098b8",
+      "gitBlobSha1": "bde261aeeea233e7986379d235eb7cb794b36f37",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0042",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+      "bytes": 65619,
+      "lines": 1294,
+      "sha256": "5b0acaf803755c6e20ee407e539090ae1528d468224274b3e15c42473d73eb37",
+      "gitBlobSha1": "26a59e1823f9b2e57ab1ded345ff1fd4096714ce",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0043",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
+      "bytes": 29526,
+      "lines": 582,
+      "sha256": "128374ef80ab98ae8f2b803624814c1f019489deb5b69b4892b4dd7b935fc3c4",
+      "gitBlobSha1": "fb59def02b0e3490dd4fc29ae8e5b40fe2fae5b0",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0044",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0044__supersede_advertising_cases_whose_cause_no_longer_holds.sql",
+      "bytes": 2220,
+      "lines": 46,
+      "sha256": "25404a486fc44a36013013653704742a16e3ae545053ef9453700798c09e7050",
+      "gitBlobSha1": "66dda8ac59d12eed79ada87428c88054b6611ba3",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0045",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0045__create_ad_bid_command_from_approval.sql",
+      "bytes": 15420,
+      "lines": 286,
+      "sha256": "89cdd51222a110ae8aa4e844a8654268fa3ecc1a7d1ba3ff170d24ce05364398",
+      "gitBlobSha1": "99769942e52f3f5283f37f567d406886156dfa23",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0046",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0046__capture_ad_bid_authority_for_guardrail_evaluation.sql",
+      "bytes": 1184,
+      "lines": 23,
+      "sha256": "f5f694721c6a843498aa49ad1e535a8e67e7e97234c9d94cccb128b68bf76a1a",
+      "gitBlobSha1": "afe9166d45bc6f5e6fe643c4bf1faa01f7ad7470",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0047",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0047__refuse_a_zero_target_bid_in_the_parameter_contract.sql",
+      "bytes": 2175,
+      "lines": 43,
+      "sha256": "d339f4ab34329a5cde474825125c8b12f141dd8868fd8e0e9b478f7094495b5a",
+      "gitBlobSha1": "76f7a247b9ea0294da717ecf24f93c88f302f6ab",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0048",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0048__serialize_advertising_reservations_against_overlap.sql",
+      "bytes": 8358,
+      "lines": 182,
+      "sha256": "7d176e8c0415b21483cc498e3097669c3ea93a7a5ded4047ef1c90532e4502d1",
+      "gitBlobSha1": "49ec9a20213c8eaaa8d974e44dbc7a01049529a7",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0049",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0049__create_advertising_outcome_plan_and_lineage.sql",
+      "bytes": 16437,
+      "lines": 312,
+      "sha256": "2004ff05791dd441edd506abcf1e0ab7a38dafccdbc98db8a99545efa3a5782c",
+      "gitBlobSha1": "4298fc832a4bd87f53f2ca2e4bbd8fceace8ad15",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0050",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0050__cause_specific_outcomes_and_same_lineage_reopen.sql",
+      "bytes": 12603,
+      "lines": 259,
+      "sha256": "ae376ad2333854034b2522d62cded97e12bdb9ee7ad40960c03a93d95b36b7d9",
+      "gitBlobSha1": "1a2a4394d58fcb0ae546ee891452b7e66b0c7f4d",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0051",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0051__bind_each_decision_to_its_own_authority.sql",
+      "bytes": 14150,
+      "lines": 267,
+      "sha256": "ded7af2e454aa07c7e6bd10a6ad496449a524249aee1d096d2a78c649231dab4",
+      "gitBlobSha1": "2381c45c8b978cc29cbcfa1a0513027eb2ad6db1",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0052",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0052__a_guardrail_verdict_names_the_policy_that_authorised_it.sql",
+      "bytes": 3530,
+      "lines": 71,
+      "sha256": "eb9e365bc7cf2ec83bb49ded39112fa6c01f357892c32537482d235cb8e7e137",
+      "gitBlobSha1": "fca823dbd037a0165c6f7f28e034ab4c7b208c83",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0053",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0053__the_write_gate_must_refuse_rather_than_raise.sql",
+      "bytes": 13215,
+      "lines": 275,
+      "sha256": "71638012aa3f4250f3bd96ba5955b1e5c7549f1cef3b9a31a69f3c2fd799fdda",
+      "gitBlobSha1": "93ef85e255e82b6453ce76120050eb565c88d3aa",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0054",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0054__index_the_demand_carry_forward_lookup.sql",
+      "bytes": 1643,
+      "lines": 28,
+      "sha256": "b4661aebcdfb4101a6fbec34d3eea058155614f6badfa3c09c179276722e6856",
+      "gitBlobSha1": "177c280bd040773e1652018acf90c8096956dff7",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0055",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0055__record_what_happened_to_a_task_and_who_did_it.sql",
+      "bytes": 10528,
+      "lines": 205,
+      "sha256": "c770a3b884926e24cac010f0579453875ae031451c6bb3bd3b882228bfd6ca08",
+      "gitBlobSha1": "e240803435e35c76643d3e8d007f04e70eb6d88d",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0056",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0056__publish_the_daily_brief_and_weekly_review_as_projections.sql",
+      "bytes": 27411,
+      "lines": 507,
+      "sha256": "43b776ed8cb5e5deee10a0fb3bae2ea21a5669e96c48cca2b3d756b132380110",
+      "gitBlobSha1": "4114c63dca8f884018a65394387f4124600c16d6",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0057",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0057__bind_advertising_responsibility_and_human_decisions.sql",
+      "bytes": 10884,
+      "lines": 175,
+      "sha256": "3f594755b354a7e1cf351fcc20541ed1bc9997bbedc1c131d5ac25999f136813",
+      "gitBlobSha1": "b480c2080dc31c46545e7443031d4700574f12f1",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0058",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+      "bytes": 163855,
+      "lines": 2043,
+      "sha256": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5",
+      "gitBlobSha1": "04bde829bb3ec2b9c0e6d0e5d071e9641eaa3a18",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0059",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+      "bytes": 36011,
+      "lines": 466,
+      "sha256": "a3ce59928d89130734c0e0ff61e6b12ff1330102d6e4043f55c3a6b377a6ef56",
+      "gitBlobSha1": "9c3113c38bd18fe904a875f9317790d179db3cbf",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0060",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+      "bytes": 36670,
+      "lines": 420,
+      "sha256": "ccf8498c7a68a3aac2e1960d341095cea03fddcfe618d83dc5745d8f2b78cd0c",
+      "gitBlobSha1": "7095ea2e3a2d3dbc034d4b6de7a35410e73d3e62",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0061",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0061__bind_advertising_exception_risk_and_preview_evidence.sql",
+      "bytes": 10139,
+      "lines": 131,
+      "sha256": "5f6ead6500e6e8f1480678816d20c90ff4c56475f9ccf165d3ce5209c1d8147b",
+      "gitBlobSha1": "72dfe0e827a7d218fdef3eb30d64e9c3bbee4b0c",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0062",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0062__share_frozen_outcome_authority_with_governed_manual.sql",
+      "bytes": 5099,
+      "lines": 72,
+      "sha256": "72b3d30ac503a1e7768545703e55520f93197cf2bf3286bdc2d1b294022419c8",
+      "gitBlobSha1": "d0969239b12ab5b18936c185abd86fcf7915a3c9",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0063",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+      "bytes": 19358,
+      "lines": 283,
+      "sha256": "bf95f43f036b7fbe61faf2e461c9da1f03b24055143ca5b2b42d8f8ce123b26f",
+      "gitBlobSha1": "75d51f2a99d1fb9858d56320f165268163ac9f7c",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0064",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql",
+      "bytes": 17224,
+      "lines": 216,
+      "sha256": "42e91b569f88dbbeb16f85ffbf10f3b5fee56fbdf06f47fb0d3744472f856116",
+      "gitBlobSha1": "d2be495763f920920b0dff0ff9e636714ee4c1c3",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0065",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0065__route_settled_advertising_contradictions_to_finance_review.sql",
+      "bytes": 7417,
+      "lines": 99,
+      "sha256": "58811f26e8215fb227655baf1fb006d16d5ff155dcce0751c94ef844c118a3cc",
+      "gitBlobSha1": "0f69d1ae13c753ca4ef808e9604bde21afd839a6",
+      "historicalW10ByteEqual": true,
+      "scope": "PRESERVED_W10"
+    },
+    {
+      "version": "0066",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0066__qualify_economic_cause_bound_protection.sql",
+      "bytes": 8880,
+      "lines": 116,
+      "sha256": "a2797adb0f0a2b7dd6c990e39d43104cd8c9315359fe383f14537dbfde19b78a",
+      "gitBlobSha1": "0f239e12d52fefe222f6a213fde2b1f4a3e097e7",
+      "historicalW10ByteEqual": null,
+      "scope": "FINAL_GATE_R1_FORWARD_MIGRATION"
+    },
+    {
+      "version": "0067",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0067__validate_frozen_outcome_input_profiles.sql",
+      "bytes": 36873,
+      "lines": 413,
+      "sha256": "9944b6e8b1345fb90c03d19a544a034026fc5054c0854da1e9950d8d54831dd7",
+      "gitBlobSha1": "8fea93635d757c3cfd456ae206e8320c76c3e2b3",
+      "historicalW10ByteEqual": null,
+      "scope": "FINAL_GATE_R1_FORWARD_MIGRATION"
+    },
+    {
+      "version": "0068",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0068__preserve_critical_sales_guard_case_evidence.sql",
+      "bytes": 728,
+      "lines": 12,
+      "sha256": "bcfb4d15ea17fbd819e3a9c6b2227b83a300f80eb389b0a72875de3199dd837d",
+      "gitBlobSha1": "c18e03bbae6a937ac8badead53caea2742ecca27",
+      "historicalW10ByteEqual": null,
+      "scope": "FINAL_GATE_R1_FORWARD_MIGRATION"
+    },
+    {
+      "version": "0069",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0069__reopen_invalidated_protection_outcomes.sql",
+      "bytes": 7654,
+      "lines": 90,
+      "sha256": "6277c208245ac200781ca5afc246f6f4908d4bb3f8733e73b20182d53298f441",
+      "gitBlobSha1": "49d5dfdcacd810a06074992f0c455d7217b76783",
+      "historicalW10ByteEqual": null,
+      "scope": "FINAL_GATE_R1_FORWARD_MIGRATION"
+    },
+    {
+      "version": "0070",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0070__record_canonical_metric_reevaluation_proofs.sql",
+      "bytes": 19025,
+      "lines": 221,
+      "sha256": "12c0f11614ef668b8340eddbecccc6b058d607a777c311d3ee1cac6b78a5738b",
+      "gitBlobSha1": "ecc7b60339ef19076c851020d51a4ef7bad7cacc",
+      "historicalW10ByteEqual": null,
+      "scope": "FINAL_GATE_R1_FORWARD_MIGRATION"
+    }
+  ],
+  "production_write_enabled": false
+}

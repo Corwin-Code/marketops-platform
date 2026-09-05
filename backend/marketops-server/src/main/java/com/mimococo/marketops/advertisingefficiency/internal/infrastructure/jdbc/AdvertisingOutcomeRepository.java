@@ -36,11 +36,10 @@ public class AdvertisingOutcomeRepository {
     /**
      * Commands whose next outcome stage is due.
      *
-     * <p>Three disjoint reasons a command appears: its operational window has
-     * closed and nothing operational has been written; its settlement window has
-     * closed and nothing settled has been written; or a settled view exists and
-     * the facts underneath it have been restated since. The third is the late
-     * adjustment, and it is why this is a query rather than a queue.
+     * <p>A mature stage appears when it has no observation, or its exact scoped
+     * source/qualification state differs from the last immutable axes receipt.
+     * Source acceptance, expiry and authority withdrawal can therefore revise
+     * any stage once without manufacturing repeated revisions on an unchanged sweep.
      */
     public List<DueRow> due(Instant now, int limit) { return due(null,null,now,limit); }
     public List<DueRow> due(UUID organization,UUID object,Instant now,int limit) {
@@ -63,7 +62,9 @@ public class AdvertisingOutcomeRepository {
                 JOIN ops.ad_bid_candidate candidate ON candidate.id=c.candidate_id
                 JOIN ops.ad_outcome_baseline b ON b.id=c.outcome_baseline_id
                 JOIN ops.ad_outcome_stage_baseline stage ON stage.outcome_baseline_id=b.id
-                LEFT JOIN LATERAL (SELECT o.id,o.revision_no,o.evaluated_at FROM ops.ad_outcome_observation o
+                LEFT JOIN LATERAL (SELECT o.id,o.revision_no,o.evaluated_at,axes.input_snapshot,
+                    axes.input_snapshot->>'sourceRevisionDigest' source_revision_digest FROM ops.ad_outcome_observation o
+                    LEFT JOIN ops.ad_outcome_axes axes ON axes.observation_id=o.id
                     WHERE o.command_id=c.id AND o.outcome_stage IN(stage.stage,stage.stage||'_REVISED')
                     ORDER BY o.revision_no DESC LIMIT 1) latest ON true
                 WHERE c.direction<>'EXACT_PRIOR_BID_COMPENSATION'
@@ -71,17 +72,8 @@ public class AdvertisingOutcomeRepository {
                     AND (CAST(:object AS uuid) IS NULL OR c.ad_native_object_id=:object)
                     AND :now>=l.landed_at+make_interval(mins=>(b.plan_snapshot->>'observationStartsMinutes')::integer)
                         +make_interval(hours=>stage.window_hours)
-                    AND (latest.id IS NULL OR EXISTS (SELECT 1 FROM ledger.ad_object_fact f
-                            WHERE f.organization_id=c.organization_id AND f.ad_native_object_id=c.ad_native_object_id
-                              AND f.recorded_at>latest.evaluated_at)
-                        OR EXISTS(SELECT 1 FROM ledger.ad_linked_sale_event e WHERE e.organization_id=c.organization_id
-                            AND e.ad_native_object_id=c.ad_native_object_id AND e.recorded_at>latest.evaluated_at)
-                        OR EXISTS(SELECT 1 FROM ledger.sales_fact f JOIN core.fact_provenance p ON p.id=f.provenance_id
-                            WHERE f.organization_id=c.organization_id AND f.platform_listing_variant_id=ANY(b.listing_variant_ids)
-                              AND p.ingestion_time>latest.evaluated_at)
-                        OR EXISTS(SELECT 1 FROM ledger.ad_settlement_attribution a JOIN ledger.ad_linked_sale_event e ON e.id=a.ad_linked_sale_event_id
-                            WHERE a.organization_id=c.organization_id AND e.ad_native_object_id=c.ad_native_object_id
-                              AND a.accepted_at>latest.evaluated_at))
+                    AND (latest.id IS NULL OR (:now>=latest.evaluated_at AND latest.source_revision_digest IS DISTINCT FROM
+                        ops.ad_outcome_input_state_digest(latest.id,latest.input_snapshot,:now)))
                 ORDER BY l.landed_at, CASE stage.stage WHEN 'OPERATIONAL' THEN 1 WHEN 'RETAINED' THEN 2 ELSE 3 END
                 LIMIT :limit
                 """).param("organization",organization).param("object",object).param("now",ts(now)).param("limit",limit).query(AdvertisingOutcomeRepository::mapDue).list();
@@ -111,23 +103,17 @@ public class AdvertisingOutcomeRepository {
                 JOIN ops.ad_manual_configuration_verification proof ON proof.id=p.current_proof_id AND proof.proves_configuration
                 JOIN ops.ad_outcome_baseline b ON b.id=p.outcome_baseline_id
                 JOIN ops.ad_outcome_stage_baseline stage ON stage.outcome_baseline_id=b.id
-                LEFT JOIN LATERAL(SELECT o.id,o.revision_no,o.evaluated_at FROM ops.ad_outcome_observation o
+                LEFT JOIN LATERAL(SELECT o.id,o.revision_no,o.evaluated_at,axes.input_snapshot,
+                    axes.input_snapshot->>'sourceRevisionDigest' source_revision_digest FROM ops.ad_outcome_observation o
+                    LEFT JOIN ops.ad_outcome_axes axes ON axes.observation_id=o.id
                     WHERE o.manual_packet_id=p.id AND o.outcome_stage IN(stage.stage,stage.stage||'_REVISED')
                     ORDER BY o.revision_no DESC LIMIT 1) latest ON true
                 WHERE p.state='MANUAL_CONFIGURATION_VERIFIED' AND (CAST(:organization AS uuid) IS NULL OR p.organization_id=:organization)
                     AND (CAST(:packet AS uuid) IS NULL OR p.id=:packet)
                     AND (CAST(:object AS uuid) IS NULL OR p.ad_native_object_id=:object) AND (:dueOnly OR stage.stage='OPERATIONAL')
                     AND (NOT :dueOnly OR :now>=proof.observed_at+make_interval(mins=>(b.plan_snapshot->>'observationStartsMinutes')::integer,hours=>stage.window_hours))
-                    AND (NOT :dueOnly OR latest.id IS NULL OR EXISTS(SELECT 1 FROM ledger.ad_object_fact f
-                        WHERE f.organization_id=p.organization_id AND f.ad_native_object_id=p.ad_native_object_id AND f.recorded_at>latest.evaluated_at)
-                      OR EXISTS(SELECT 1 FROM ledger.ad_linked_sale_event e WHERE e.organization_id=p.organization_id
-                        AND e.ad_native_object_id=p.ad_native_object_id AND e.recorded_at>latest.evaluated_at)
-                      OR EXISTS(SELECT 1 FROM ledger.sales_fact f JOIN core.fact_provenance provenance ON provenance.id=f.provenance_id
-                        WHERE f.organization_id=p.organization_id AND f.platform_listing_variant_id=ANY(b.listing_variant_ids)
-                          AND provenance.ingestion_time>latest.evaluated_at)
-                      OR EXISTS(SELECT 1 FROM ledger.ad_settlement_attribution attribution JOIN ledger.ad_linked_sale_event event
-                        ON event.id=attribution.ad_linked_sale_event_id WHERE attribution.organization_id=p.organization_id
-                          AND event.ad_native_object_id=p.ad_native_object_id AND attribution.accepted_at>latest.evaluated_at))
+                    AND (NOT :dueOnly OR latest.id IS NULL OR (:now>=latest.evaluated_at AND latest.source_revision_digest IS DISTINCT FROM
+                        ops.ad_outcome_input_state_digest(latest.id,latest.input_snapshot,:now)))
                 ORDER BY proof.observed_at,CASE stage.stage WHEN 'OPERATIONAL' THEN 1 WHEN 'RETAINED' THEN 2 ELSE 3 END
                 LIMIT :limit
                 """).param("organization",organization).param("packet",packet).param("object",object).param("now",ts(now)).param("dueOnly",dueOnly)
@@ -159,7 +145,9 @@ public class AdvertisingOutcomeRepository {
                 INSERT INTO ops.ad_outcome_axes(observation_id,outcome_baseline_id,dual_axis_verdict,sales_preservation_verdict,
                     baseline_absolute_profit,observed_absolute_profit,baseline_profit_per_rub,observed_profit_per_rub,
                     company_baseline_sales,company_observed_sales,currency_code,input_snapshot,business_outcome)
-                VALUES(:observation,:baseline,:dual,:sales,:beforeProfit,:afterProfit,:beforePerRub,:afterPerRub,:beforeSales,:afterSales,:currency,CAST(:snapshot AS jsonb),:business)
+                VALUES(:observation,:baseline,:dual,:sales,:beforeProfit,:afterProfit,:beforePerRub,:afterPerRub,:beforeSales,:afterSales,:currency,
+                    jsonb_set(CAST(:snapshot AS jsonb),'{sourceRevisionDigest}',to_jsonb(ops.ad_outcome_input_state_digest(
+                        :observation,CAST(:snapshot AS jsonb),(SELECT evaluated_at FROM ops.ad_outcome_observation WHERE id=:observation)))),:business)
                 """).param("observation",observation).param("baseline",baseline).param("dual",dual).param("sales",sales)
                 .param("beforeProfit",beforeProfit).param("afterProfit",afterProfit).param("beforePerRub",beforePerRub).param("afterPerRub",afterPerRub)
                 .param("beforeSales",beforeSales).param("afterSales",afterSales).param("currency",currency).param("snapshot",snapshot).param("business",businessOutcome).update();
@@ -253,6 +241,10 @@ public class AdvertisingOutcomeRepository {
      * resolver reads on the next calculation, so the case that appears is
      * produced by the same authority every other case is.
      */
+    public boolean protectionOutcomeInvalidated(UUID observationId) {
+        return jdbc.sql("SELECT ops.ad_protection_outcome_invalidated(:id)").param("id",observationId).query(Boolean.class).single();
+    }
+
     public UUID reopenAfterRegression(UUID containmentId,UUID observationId,String accountableRoleCode,String correlationId) {
         return jdbc.sql("SELECT ops.activate_ad_regression_containment(:observation)")
                 .param("observation",observationId).query(UUID.class).single();

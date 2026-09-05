@@ -83,7 +83,15 @@ public class AdvertisingPolicyRepository {
             int expectedPublicationLagMinutes, int correctionWindowMinutes,
             boolean requiresWindowComplete, boolean requiresCorrectionWindowClosed,
             BigDecimal minimumCoverageRatio, String minimumConfidenceState,
-            boolean providerIncidentBlocks, Instant effectiveTo) {
+            boolean providerIncidentBlocks, Instant effectiveTo, String authorityDigest) {
+        public FreshnessProfile(UUID id,int version,String evidenceKind,String decisionPurpose,Integer sourceMaxAgeMinutes,
+                Integer acceptedFactMaxAgeMinutes,int expectedPublicationLagMinutes,int correctionWindowMinutes,
+                boolean requiresWindowComplete,boolean requiresCorrectionWindowClosed,BigDecimal minimumCoverageRatio,
+                String minimumConfidenceState,boolean providerIncidentBlocks,Instant effectiveTo) {
+            this(id,version,evidenceKind,decisionPurpose,sourceMaxAgeMinutes,acceptedFactMaxAgeMinutes,expectedPublicationLagMinutes,
+                    correctionWindowMinutes,requiresWindowComplete,requiresCorrectionWindowClosed,minimumCoverageRatio,
+                    minimumConfidenceState,providerIncidentBlocks,effectiveTo,null);
+        }
         public FreshnessProfile(UUID id, int version, String evidenceKind, String decisionPurpose,
                 Integer sourceMaxAgeMinutes, Integer acceptedFactMaxAgeMinutes, int expectedPublicationLagMinutes,
                 int correctionWindowMinutes, boolean requiresWindowComplete, boolean requiresCorrectionWindowClosed,
@@ -337,7 +345,7 @@ public class AdvertisingPolicyRepository {
                        source_max_age_minutes, accepted_fact_max_age_minutes,
                        expected_publication_lag_minutes, correction_window_minutes,
                        requires_window_complete, requires_correction_window_closed,
-                       minimum_coverage_ratio, minimum_confidence_state, provider_incident_blocks, effective_to
+                       minimum_coverage_ratio, minimum_confidence_state, provider_incident_blocks, effective_to, ops.ad_outcome_freshness_snapshot(id)->>'authorityDigest' AS authority_digest
                   FROM core.ad_freshness_profile
                  WHERE organization_id = :organizationId
                    AND evidence_kind = :evidenceKind AND decision_purpose = :decisionPurpose
@@ -369,7 +377,7 @@ public class AdvertisingPolicyRepository {
                         rs.getBigDecimal("minimum_coverage_ratio"),
                         rs.getString("minimum_confidence_state"),
                         rs.getBoolean("provider_incident_blocks"), rs.getTimestamp("effective_to") == null
-                                ? null : rs.getTimestamp("effective_to").toInstant()))
+                                ? null : rs.getTimestamp("effective_to").toInstant(), rs.getString("authority_digest")))
                 .optional();
     }
 

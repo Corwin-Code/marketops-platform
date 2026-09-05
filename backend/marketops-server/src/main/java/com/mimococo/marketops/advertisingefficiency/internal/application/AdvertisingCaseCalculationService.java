@@ -95,7 +95,7 @@ class AdvertisingCaseCalculationService {
                         "CRITICAL_SALES_UNIT_AT_RISK", List.of("FRESH_FROZEN_REQUIRED_UNIT_REGRESSION"),
                         evidence.authorities().criticalSignals().unknown() ? List.of("OTHER_CRITICAL_UNIT_UNKNOWN") : List.of(), false)
                         : OneSidedDangerProof.none(),
-                economicHarm(evidence, profit, officialSpend),
+                economicHarm(evidence, profit, officialSpend, conversion),
                 OneSidedDangerProof.none(),
                 dataDefect,
                 List.copyOf(blockers),
@@ -426,18 +426,18 @@ class AdvertisingCaseCalculationService {
      * if it did.
      */
     private static OneSidedDangerProof economicHarm(AdvertisingEvidenceGatherer.Evidence evidence,
-            AdvertisingContributionProfit profit, AdMeasure officialSpend) {
+            AdvertisingContributionProfit profit, AdMeasure officialSpend, AdLinkedConversion conversion) {
         if (!AdvertisingPurposeFreshness.failures(evidence, "PROTECTION_RECOMMENDATION",
                 List.of("OFFICIAL_AD_SPEND", "COST_AND_FEE", "AD_LINKED_SALE_EVENT")).isEmpty()) {
             return OneSidedDangerProof.none();
         }
-        if (!profit.provenLoss() || !officialSpend.present()
+        if (!profit.provenLoss() || !profit.absoluteProfit().sufficientForWrite() || !officialSpend.present()
                 || officialSpend.value().signum() <= 0 || !officialSpend.sufficientForWrite()) {
             return OneSidedDangerProof.none();
         }
         return OneSidedDangerProof.of("PROVEN_ADVERTISING_LOSS",
                 List.of("RESOLVED_NEGATIVE_CONTRIBUTION_PROFIT", "OFFICIAL_SPEND_CONTINUING"),
-                List.of(), false);
+                conversion.writeGrade() ? List.of() : List.of("AD_LINKED_CONVERSION"), false);
     }
 
     // ----------------------------------------------------------------------

@@ -1,0 +1,20 @@
+{
+  "kind": "EVIDENCE_PUBLICATION_PATTERN_SCAN",
+  "scope": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1",
+  "decodedMembers": 2607,
+  "decodedBytes": 52463009,
+  "patterns": [
+    "privateKey",
+    "githubToken",
+    "jwt",
+    "signedQuery"
+  ],
+  "matchCounts": {
+    "privateKey": 0,
+    "githubToken": 0,
+    "jwt": 0,
+    "signedQuery": 0
+  },
+  "result": "PASS",
+  "limitation": "Pattern scan of publication evidence; no production access or authority determination."
+}

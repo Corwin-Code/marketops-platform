@@ -46,7 +46,8 @@ class AdvertisingOutcomeService {
         Instant to = due.windowEndsAt(stage);
         var observed = evidence.snapshot(due.organizationId(), due.adNativeObjectId(), frozen.get().affectedSetId(), stage,
                 baseline.units().stream().map(AdvertisingOutcomeEvidenceService.UnitSales::unit).toList(),
-                from, to, now, baseline.freshnessProfile());
+                from, to, now, baseline.freshnessProfiles());
+        observed=evidence.bindOriginalIdentity(due.organizationId(),due.adNativeObjectId(),observed,baseline.originalIdentity(),now);
         var assessment = AdvertisingOutcomeAssessment.evaluate(baseline, observed, policy, !now.isBefore(to));
         boolean revised = due.nextStage().endsWith("_REVISED");
         int revision = revised ? due.latestSettledRevision() + 1 : 1;
@@ -63,14 +64,14 @@ class AdvertisingOutcomeService {
                 baseline.profit().absoluteProfit().orElse(null), observed.profit().absoluteProfit().orElse(null),
                 baseline.profit().profitPerAdRub().orElse(null), observed.profit().profitPerAdRub().orElse(null),
                 baseline.companySales().orElse(null), observed.companySales().orElse(null), observed.profit().currencyCode(), input,
-                AdvertisingOutcomeAssessment.businessOutcome(due.causeCode(),due.direction().startsWith("PROTECTION"),baseline,observed,policy,assessment,!now.isBefore(to)));
+                AdvertisingOutcomeAssessment.businessOutcome(baseline.originalCause()==null?"UNRESOLVED_ORIGINAL_ACTION_CAUSE":baseline.originalCause(),due.direction().startsWith("PROTECTION"),baseline,observed,policy,assessment,!now.isBefore(to)));
         for (var unit : assessment.critical()) {
             outcomes.recordCriticalGuard(frozen.get().id(), unit.unit().productVariantId(), unit.unit().listingVariantId(),
                     unit.state(), now, id, unit.baseline().orElse(null), unit.observed() == null ? null : unit.observed().orElse(null));
         }
         reviews.record(id);
         outcomes.tryReleaseReservation(id);
-        UUID containment = assessment.evaluation().verdict() == OutcomeEvaluation.Verdict.REGRESSED
+        UUID containment = (assessment.evaluation().verdict() == OutcomeEvaluation.Verdict.REGRESSED || outcomes.protectionOutcomeInvalidated(id))
                 ? outcomes.reopenAfterRegression(ids.newId(), id, "OPS_LEAD", CorrelationId.current()) : null;
         return Optional.of(new Result(id, due.nextStage(), revision, assessment.evaluation(), containment));
     }

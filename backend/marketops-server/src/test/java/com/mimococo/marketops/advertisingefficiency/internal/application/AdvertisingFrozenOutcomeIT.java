@@ -130,7 +130,7 @@ class AdvertisingFrozenOutcomeIT {
                 .param("to",Timestamp.from(to)).param("read",Timestamp.from(read)).update();
     }
     AdvertisingOutcomeRepository.DueRow due() {
-        return outcomes.due(read,100).stream().filter(value->command.equals(value.commandId())).findFirst().orElseThrow();
+        return outcomes.due(graph.id("organization"),graph.id("object"),read,100).stream().filter(value->command.equals(value.commandId())).findFirst().orElseThrow();
     }
     String reservationState() { return seed.sql("SELECT state FROM ops.ad_action_reservation WHERE id=:id").param("id",graph.id("reservation")).query(String.class).single(); }
     @Test void actualCompanyAndEveryCriticalUnitReleaseOnlyEarlySafetyWithoutProfitSuccess() {
@@ -212,7 +212,7 @@ class AdvertisingFrozenOutcomeIT {
         assertThat(axis(settled.observationId(),"company_observed_sales")).isEqualByComparingTo("1100");
         assertThat(outcomes.forCommand(command)).extracting(AdvertisingOutcomeRepository.ObservationRow::outcomeStage).contains("RETAINED","SETTLED");
         assertThat(seed.sql("SELECT verdict FROM ops.ad_outcome_observation WHERE id=:id").param("id",retained.observationId()).query(String.class).single()).isEqualTo("UNCHANGED");
-        assertThat(outcomes.due(read,100)).noneMatch(row->command.equals(row.commandId()) && row.nextStage().startsWith("SETTLED"));
+        assertThat(outcomes.due(graph.id("organization"),graph.id("object"),read,100)).noneMatch(row->command.equals(row.commandId()) && row.nextStage().startsWith("SETTLED"));
     }
     @Test void matureActualSettlementContradictionDoesNotOverwritePriorRetainedSuccess() {
         var retained=retainedGolden("70");
@@ -284,10 +284,12 @@ class AdvertisingFrozenOutcomeIT {
                 .param("org",graph.id("organization")).param("event",retainedEvent).param("financial",financial).param("at",Timestamp.from(read)).update();
         seed.sql("""
                 INSERT INTO ledger.ad_object_fact(id,organization_id,provenance_id,ad_native_object_id,store_id,source_fact_key,period_start,period_end,
-                    currency_code,spend_amount,clicks,report_window_complete,correction_window_open,source_time,recorded_at)
-                VALUES(gen_random_uuid(),:org,:source,:object,:store,:key,:from,:to,'RUB',0,0,true,false,:at,:at)
+                    currency_code,spend_amount,clicks,report_window_complete,correction_window_open,source_time,recorded_at,supersedes_fact_id,adjustment_kind)
+                SELECT gen_random_uuid(),:org,:source,:object,:store,:key,:from,:to,'RUB',100,100,true,false,:at,:at,id,'CORRECTION'
+                FROM ledger.ad_object_fact f WHERE f.ad_native_object_id=:object AND f.period_start=:from
+                    AND NOT EXISTS(SELECT 1 FROM ledger.ad_object_fact newer WHERE newer.supersedes_fact_id=f.id)
                 """).param("org",graph.id("organization")).param("source",graph.id("provenance")).param("object",graph.id("object"))
-                .param("store",graph.id("store")).param("key",UUID.randomUUID().toString()).param("from",Timestamp.from(half)).param("to",Timestamp.from(to)).param("at",Timestamp.from(read)).update();
+                .param("store",graph.id("store")).param("key",UUID.randomUUID().toString()).param("from",Timestamp.from(from)).param("to",Timestamp.from(to)).param("at",Timestamp.from(read)).update();
         seed.sql("""
                 INSERT INTO ledger.return_quality_evidence_snapshot(id,organization_id,platform_listing_variant_id,report_window_start,report_window_end,
                     completed_coverage,retained_coverage,return_coverage,qc_coverage,completed_source_updated_at,retained_source_updated_at,
@@ -296,7 +298,31 @@ class AdvertisingFrozenOutcomeIT {
                     'fixture://sixty-day-financial-window',:at,'actual-financial-outcome')
                 """).param("org",graph.id("organization")).param("listing",graph.id("listingVariant")).param("from",Timestamp.from(from))
                 .param("to",Timestamp.from(to)).param("at",Timestamp.from(read)).update();
-        context();
+        context();refreshCostProof();
+    }
+    void refreshCostProof() {
+        UUID run=UUID.randomUUID();
+        seed.sql("""
+            INSERT INTO mart.calculation_run(id,organization_id,trigger_kind,scope_kind,window_code,period_start,period_end,
+                definition_set_digest,state,subject_count,value_count,started_at,completed_at,correlation_id)
+            VALUES(:run,:org,'BACKFILL','ORGANIZATION','D30',:from,:to,repeat('a',64),'SUCCEEDED',1,4,:at,:at,'synthetic-refreshed-effective-cost-proof')
+            """).param("run",run).param("org",graph.id("organization")).param("from",Timestamp.from(from))
+            .param("to",Timestamp.from(from.plusSeconds(720*3600L))).param("at",Timestamp.from(read)).update();
+        for(String code:List.of("UNIT_COST","PLATFORM_FEES_PER_UNIT","RETURN_LOSS_PER_UNIT","VARIABLE_TAX_PER_UNIT")) {
+            UUID metric=UUID.randomUUID();
+            seed.sql("""
+                INSERT INTO mart.metric_value(id,organization_id,calculation_run_id,metric_code,definition_version,subject_kind,subject_id,
+                    window_code,period_start,period_end,value_state,numeric_value,currency_code,confidence_state,estimated,oldest_source_time,
+                    freshness_seconds,input_digest,computed_at)
+                SELECT :id,organization_id,:run,metric_code,definition_version,subject_kind,subject_id,window_code,period_start,period_end,
+                    value_state,numeric_value,currency_code,confidence_state,estimated,oldest_source_time,0,:digest,:at
+                FROM mart.metric_value WHERE organization_id=:org AND subject_id=:listing AND metric_code=:code
+                ORDER BY computed_at DESC LIMIT 1
+                """).param("id",metric).param("run",run).param("digest",com.mimococo.marketops.shared.Digest.ofText(metric.toString()))
+                .param("at",Timestamp.from(read)).param("org",graph.id("organization")).param("listing",graph.id("listingVariant")).param("code",code).update();
+            seed.sql("INSERT INTO mart.metric_input_reference VALUES(gen_random_uuid(),:id,'FACT_PROVENANCE',:source)")
+                .param("id",metric).param("source",graph.id("provenance")).update();
+        }
     }
     UUID companyStage(String stage,String amount,Instant occurred) {
         UUID id=UUID.randomUUID(),provenance=UUID.randomUUID();
@@ -314,7 +340,10 @@ class AdvertisingFrozenOutcomeIT {
         return id;
     }
     void context() {
-        var source=graph.id("provenance");var at=Timestamp.from(read.minusSeconds(1));
+        UUID source=UUID.randomUUID();
+        seed.sql("INSERT INTO core.fact_provenance(id,organization_id,source_kind,source_time,ingestion_time,recorded_by_user_id,evidence_note) VALUES(:id,:org,'MANUAL_ENTRY',:at,:at,:actor,'synthetic refreshed source report for the exact historical safety window')")
+            .param("id",source).param("org",graph.id("organization")).param("at",Timestamp.from(read)).param("actor",graph.id("ownerUser")).update();
+        var at=Timestamp.from(from.minusSeconds(1));
         seed.sql("INSERT INTO core.listing_price_observation(id,organization_id,provenance_id,platform_listing_variant_id,source_fact_key,observed_at,currency_code,selling_price,promotion_active) VALUES(gen_random_uuid(),:org,:source,:listing,:key,:at,'RUB',100,'NO')")
             .param("org",graph.id("organization")).param("source",source).param("listing",graph.id("listingVariant")).param("key",UUID.randomUUID().toString()).param("at",at).update();
         seed.sql("INSERT INTO core.listing_health_observation(id,organization_id,provenance_id,platform_listing_variant_id,source_fact_key,observed_at,sellable) VALUES(gen_random_uuid(),:org,:source,:listing,:key,:at,'YES')")
@@ -323,7 +352,7 @@ class AdvertisingFrozenOutcomeIT {
             .param("org",graph.id("organization")).param("source",source).param("listing",graph.id("listingVariant")).param("key",UUID.randomUUID().toString()).param("at",at).update();
     }
     AdvertisingOutcomeRepository.DueRow dueStage(String stage) {
-        return outcomes.due(read,100).stream().filter(row->command.equals(row.commandId()) && row.nextStage().equals(stage)).findFirst().orElseThrow();
+        return outcomes.due(graph.id("organization"),graph.id("object"),read,100).stream().filter(row->command.equals(row.commandId()) && row.nextStage().equals(stage)).findFirst().orElseThrow();
     }
     BigDecimal axis(UUID observation,String column) {
         if(!List.of("observed_absolute_profit","observed_profit_per_rub","company_observed_sales").contains(column)) throw new IllegalArgumentException();

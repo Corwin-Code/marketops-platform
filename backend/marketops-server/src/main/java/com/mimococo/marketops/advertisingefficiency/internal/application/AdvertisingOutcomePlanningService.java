@@ -30,7 +30,8 @@ class AdvertisingOutcomePlanningService implements AdvertisingOutcomePlanning {
     }
     record Scope(UUID organization, UUID candidate, UUID object, UUID caseId, UUID calculation,
                  UUID affectedSet, String affectedDigest, List<UUID> products, List<UUID> listings,
-                 String policyDigest, String platform, UUID store, UUID semanticProfile, Policy policy, Instant expiresAt, String direction) { }
+                 String policyDigest, String platform, UUID store, UUID semanticProfile, Policy policy, Instant expiresAt, String direction, String cause, int lineageGeneration) { }
+    private final AdvertisingOutcomeFreshness freshnessRules;
     private final JdbcClient jdbc;
     private final AdvertisingOutcomeEvidenceService evidence;
     private final AdvertisingPolicyRepository policies;
@@ -39,15 +40,15 @@ class AdvertisingOutcomePlanningService implements AdvertisingOutcomePlanning {
     private final AdvertisingOutcomeService observations;
     private final AdvertisingOutcomePlanAttestor attestor;
     AdvertisingOutcomePlanningService(JdbcClient jdbc, AdvertisingOutcomeEvidenceService evidence,
-            AdvertisingPolicyRepository policies, ObjectMapper json, IdGenerator ids, AdvertisingOutcomeService observations, AdvertisingOutcomePlanAttestor attestor) {
-        this.jdbc=jdbc; this.evidence=evidence; this.policies=policies; this.json=json; this.ids=ids; this.observations=observations;this.attestor=attestor;
+            AdvertisingPolicyRepository policies, ObjectMapper json, IdGenerator ids, AdvertisingOutcomeService observations, AdvertisingOutcomePlanAttestor attestor, AdvertisingOutcomeFreshness freshnessRules) {
+        this.jdbc=jdbc; this.evidence=evidence; this.policies=policies; this.json=json; this.ids=ids; this.observations=observations;this.attestor=attestor;this.freshnessRules=freshnessRules;
     }
 
     @Override @Transactional
     public UUID prepare(UUID organizationId, UUID candidateId, Instant at) {
         List<Scope> scopes = jdbc.sql("""
-                SELECT c.id AS candidate_id,c.case_id,c.ad_native_object_id,c.semantic_profile_id,
-                    k.calculation_id,k.policy_version_digest,k.platform_code,k.store_id,
+                SELECT c.id AS candidate_id,c.case_id,c.ad_native_object_id,c.semantic_profile_id,c.cause_code,
+                    k.calculation_id,k.policy_version_digest,k.platform_code,k.store_id,k.lineage_generation,
                     a.id AS affected_set_id,a.affected_set_digest,a.product_variant_ids,a.platform_listing_variant_ids,
                     p.*, least(required.expires_at,p.effective_to) AS expires_at
                 FROM ops.ad_bid_candidate c JOIN mart.ad_case k ON k.id=c.case_id
@@ -67,6 +68,7 @@ class AdvertisingOutcomePlanningService implements AdvertisingOutcomePlanning {
                 WHERE c.id=:candidate AND c.organization_id=:organization
                   AND c.affected_set_digest=a.affected_set_digest AND a.resolution_state='COMPLETE'
                   AND k.superseded_at IS NULL
+                  AND cardinality(ops.ad_economic_cause_bound_failures(c.id,:at))=0
                   AND p.status IN('ACTIVE','RETIRED') AND p.effective_from<=:at AND (p.effective_to IS NULL OR p.effective_to>:at)
                   AND (p.scope_kind='ORGANIZATION' OR (p.scope_kind='PLATFORM' AND p.platform_code=k.platform_code)
                     OR (p.scope_kind='STORE' AND p.store_ref_id=k.store_id))
@@ -90,7 +92,7 @@ class AdvertisingOutcomePlanningService implements AdvertisingOutcomePlanning {
                                 rs.getLong("minimum_traffic_count"),rs.getBoolean("critical_unit_definition_complete"),
                                 rs.getBigDecimal("non_worsening_profit_band"),rs.getBigDecimal("non_worsening_per_rub_band"),rs.getBigDecimal("minimum_ad_spend_denominator"),
                                 rs.getObject("comparison_scale",Integer.class),rs.getString("comparison_rounding_mode"),rs.getObject("material_boundary_inclusive",Boolean.class),rs.getString("negative_profit_terminal")),
-                        rs.getTimestamp("expires_at")==null?null:rs.getTimestamp("expires_at").toInstant(),rs.getString("direction"))).list();
+                        rs.getTimestamp("expires_at")==null?null:rs.getTimestamp("expires_at").toInstant(),rs.getString("direction"),rs.getString("cause_code"),rs.getInt("lineage_generation"))).list();
         if(scopes.size()!=1) { return null; }
         return freeze(scopes.getFirst(), at, null);
     }
@@ -132,10 +134,11 @@ class AdvertisingOutcomePlanningService implements AdvertisingOutcomePlanning {
             int hours=stage.equals("OPERATIONAL")?scope.policy().operationalHours():stage.equals("RETAINED")?720:scope.policy().settledHours();
             String purpose=stage.equals("OPERATIONAL")?"EARLY_COMPLETED_SALES_OUTCOME":stage.equals("RETAINED")?"FINAL_RETAINED_SALES_OUTCOME":"SETTLED_FINANCIAL_OUTCOME";
             String kind=stage.equals("OPERATIONAL")?"COMPANY_COMPLETED_SALE":stage.equals("RETAINED")?"COMPANY_RETAINED_SALE":"SETTLEMENT";
-            var freshness=policies.resolveFreshness(organizationId,kind,purpose,scope.platform(),scope.store(),scope.semanticProfile(),at);
-            if(freshness.isEmpty()) { blockers.add("OUTCOME_FRESHNESS_PROFILE_UNRESOLVED:"+stage); }
+            var freshness=freshnessRules.resolve(policies,organizationId,stage,scope.platform(),scope.store(),scope.semanticProfile(),at);
+            if(!freshness.containsKey(kind)) { blockers.add("OUTCOME_FRESHNESS_PROFILE_UNRESOLVED:"+stage); }
             snapshots.add(evidence.snapshot(organizationId,scope.object(),scope.affectedSet(),stage,units,
-                    at.minus(Duration.ofHours(hours)),at,at,freshness.orElse(null)));
+                    at.minus(Duration.ofHours(hours)),at,at,freshness).withCause(scope.cause())
+                    .withIdentity(new AdvertisingOutcomeEvidenceService.ActionIdentity(scope.semanticProfile(),scope.lineageGeneration())));
         }
         for(var snapshot:snapshots) {
             if(snapshot.stage().equals("OPERATIONAL") && (!snapshot.companySales().sufficientForWrite()
@@ -151,7 +154,7 @@ class AdvertisingOutcomePlanningService implements AdvertisingOutcomePlanning {
             }
         }
         Instant frozenExpiry=java.util.stream.Stream.concat(java.util.stream.Stream.of(scope.expiresAt()),
-            snapshots.stream().map(AdvertisingOutcomeEvidenceService.Snapshot::freshnessProfile).filter(java.util.Objects::nonNull)
+            snapshots.stream().flatMap(snapshot->snapshot.freshnessProfiles().values().stream())
                 .map(AdvertisingPolicyRepository.FreshnessProfile::effectiveTo).filter(java.util.Objects::nonNull)).min(Instant::compareTo).orElseThrow();
         if(!frozenExpiry.isAfter(at)) return null;
         String planJson=json.writeValueAsString(scope.policy());
@@ -189,7 +192,7 @@ class AdvertisingOutcomePlanningService implements AdvertisingOutcomePlanning {
     @Override @Transactional
     public UUID prepareManual(UUID organizationId, UUID proposalId, Instant at) {
         var scope=jdbc.sql("""
-                SELECT proposal.case_id,proposal.ad_native_object_id,k.calculation_id,k.policy_version_digest,k.platform_code,k.store_id,k.semantic_profile_id,
+                SELECT proposal.case_id,proposal.ad_native_object_id,k.cause_code,k.calculation_id,k.policy_version_digest,k.platform_code,k.store_id,k.semantic_profile_id,k.lineage_generation,
                     a.id affected_set_id,a.affected_set_digest,a.product_variant_ids,a.platform_listing_variant_ids,p.*,
                     least(proposal.expires_at,manual.effective_to,p.effective_to) expires_at
                 FROM ops.ad_manual_proposal proposal JOIN mart.ad_case k ON k.id=proposal.case_id
@@ -218,7 +221,7 @@ class AdvertisingOutcomePlanningService implements AdvertisingOutcomePlanning {
                             rs.getBigDecimal("sales_preservation_tolerance_ratio"),rs.getBigDecimal("minimum_settled_coverage_ratio"),rs.getLong("minimum_traffic_count"),
                             rs.getBoolean("critical_unit_definition_complete"),rs.getBigDecimal("non_worsening_profit_band"),rs.getBigDecimal("non_worsening_per_rub_band"),
                             rs.getBigDecimal("minimum_ad_spend_denominator"),rs.getObject("comparison_scale",Integer.class),rs.getString("comparison_rounding_mode"),
-                            rs.getObject("material_boundary_inclusive",Boolean.class),rs.getString("negative_profit_terminal")),rs.getTimestamp("expires_at").toInstant(),rs.getString("direction"))).optional();
+                            rs.getObject("material_boundary_inclusive",Boolean.class),rs.getString("negative_profit_terminal")),rs.getTimestamp("expires_at").toInstant(),rs.getString("direction"),rs.getString("cause_code"),rs.getInt("lineage_generation"))).optional();
         return scope.map(value->freeze(value,at,proposalId)).orElse(null);
     }
 

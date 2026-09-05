@@ -76,6 +76,63 @@ public final class AdvertisingR1Fixture {
     public static Graph seedOutcome(DataSource migration, java.util.function.UnaryOperator<String> customize) throws Exception {
         return seed(migration,true,true,null,customize);
     }
+    /**
+     * Add an independent synthetic object/action graph to an existing fixture's exact
+     * organization, store, product, policies and fictional Provider. The existing
+     * application seal/create functions still authorize every command; this method
+     * only supplies the same trusted pre-action test oracle as {@link #seedOutcome}.
+     */
+    public static Graph forkOutcomeObject(DataSource migration, Graph shared,
+            java.util.function.UnaryOperator<String> customize) throws Exception {
+        Map<String,UUID> named=new HashMap<>(shared.ids());
+        for(String name:java.util.List.of("object","affectedSet","caseId","configuration","calculationId",
+                "candidate","recommendation","calculationRun","approval","reservation","selection","endorsement","baseline"))
+            named.put(name,UUID.randomUUID());
+        Map<String,UUID> replacements=new HashMap<>();
+        TEMPLATE_IDS.forEach((name,id)->replacements.put(id.toString(),named.get(name)));
+        String source=customize.apply(new ClassPathResource("advertising/r1-fictional-positive.sql")
+                .getContentAsString(StandardCharsets.UTF_8));
+        StringBuilder selected=new StringBuilder();
+        boolean purposesCopied=false;
+        for(String part:source.replaceAll("(?m)^\\s*--.*$", "").split(";")) {
+            String statement=part.strip();
+            if(statement.startsWith("INSERT INTO mart.ad_case_purpose_evidence")) {
+                if(!purposesCopied) {
+                    selected.append("INSERT INTO mart.ad_case_purpose_evidence SELECT clone.* FROM mart.ad_case_purpose_evidence base "
+                            +"CROSS JOIN LATERAL jsonb_populate_record(NULL::mart.ad_case_purpose_evidence,to_jsonb(base)||jsonb_build_object("
+                            +"'case_id','"+named.get("caseId")+"','calculation_id','"+named.get("calculationId")+"')) clone "
+                            +"WHERE base.case_id='"+shared.id("caseId")+"';");
+                    purposesCopied=true;
+                }
+                continue;
+            }
+            String rawStatement=statement;
+            boolean objectStatement=java.util.List.of("core.ad_native_object","core.ad_affected_set",
+                    "core.ad_object_configuration_observation","mart.ad_case","ops.ad_bid_candidate",
+                    "mart.calculation_run","ops.recommendation","ledger.ad_object_fact",
+                    "ops.ad_candidate_selection","ops.ad_candidate_endorsement","ops.ad_outcome_baseline",
+                    "ops.ad_outcome_stage_baseline","ops.ad_outcome_baseline_attestation",
+                    "ops.guardrail_evaluation","ops.approval_decision").stream()
+                    .anyMatch(table->rawStatement.startsWith("INSERT INTO "+table+" ")
+                            || rawStatement.startsWith("INSERT INTO "+table+"("));
+            if(!objectStatement && !statement.startsWith("UPDATE core.ad_native_object ")
+                    && !statement.startsWith("UPDATE mart.ad_case ")
+                    && !statement.startsWith("UPDATE ops.recommendation ")) continue;
+            var uuid=Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}").matcher(statement);
+            statement=uuid.replaceAll(match->replacements.computeIfAbsent(match.group(),ignored->UUID.randomUUID()).toString())
+                    .replace("SYNTHETIC_AD",shared.platform())
+                    .replace("fictional-native-object","mixed-object-"+named.get("object"))
+                    .replace("fictional:1:PROVEN_ADVERTISING_LOSS","mixed:"+named.get("object")+":1:PROVEN_ADVERTISING_LOSS")
+                    .replace("fictional-spend","mixed-spend-"+named.get("object"));
+            selected.append(statement).append(';');
+        }
+        try(Connection connection=migration.getConnection()) {
+            connection.setAutoCommit(false);
+            ScriptUtils.executeSqlScript(connection,new ByteArrayResource(selected.toString().getBytes(StandardCharsets.UTF_8)));
+            connection.commit();
+        }
+        return new Graph(Map.copyOf(named),shared.platform());
+    }
     public static Graph seedBrowser(DataSource migration, UUID storeId) throws Exception { return seed(migration,true,false,storeId,java.util.function.UnaryOperator.identity()); }
     public static Graph seed(DataSource migration, boolean apiVerified, boolean preapproved) throws Exception {
         return seed(migration,apiVerified,preapproved,null,java.util.function.UnaryOperator.identity());

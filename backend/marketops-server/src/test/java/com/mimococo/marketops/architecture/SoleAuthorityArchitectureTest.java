@@ -1,6 +1,7 @@
 package com.mimococo.marketops.architecture;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -56,6 +57,7 @@ class SoleAuthorityArchitectureTest {
             Map.entry("ops.price_command", "marketplaceintegration PriceCommandRepository"),
             Map.entry("raw.ad_bid_response_observation", "marketplaceintegration RawCustody"),
             Map.entry("mart.metric_value", "analyticsdecision"),
+            Map.entry("mart.metric_value_evaluation", "analyticsdecision"),
             Map.entry("mart.diagnosis_finding", "analyticsdecision"),
             Map.entry("ops.metadata_audit_event", "adminobservability MetadataAuditRecorder"));
 
@@ -97,17 +99,25 @@ class SoleAuthorityArchitectureTest {
             List<String> violations = new ArrayList<>();
             for (Path file : javaFilesUnder(SOURCE_ROOT.resolve("advertisingefficiency"))) {
                 String source = Files.readString(file, StandardCharsets.UTF_8);
-                var matcher = WRITE_STATEMENT.matcher(source);
-                while (matcher.find()) {
-                    String table = matcher.group(2).toLowerCase(Locale.ROOT);
-                    String owner = OWNED_ELSEWHERE.get(table);
-                    if (owner != null) {
-                        violations.add(file.getFileName() + " writes " + table
-                                + ", which is written by " + owner);
-                    }
-                }
+                violations.addAll(foreignWriteViolations(file, source));
             }
             assertThat(violations).isEmpty();
+        }
+
+        @Test
+        @DisplayName("the same ownership gate rejects a second writer of canonical reevaluation proof")
+        void aForeignMetricProofInsertIsRejectedWhileItsReadIsAllowed() {
+            Path foreignWriter = Path.of("AdvertisingMetricProofRepository.java");
+            String write = """
+                    jdbc.sql("INSERT INTO mart.metric_value_evaluation(metric_value_id,calculation_run_id,evaluated_at) VALUES(:value,:run,:at)").update();
+                    """;
+            assertThatThrownBy(() -> assertThat(foreignWriteViolations(foreignWriter, write)).isEmpty())
+                    .isInstanceOf(AssertionError.class)
+                    .hasMessageContaining("AdvertisingMetricProofRepository.java writes mart.metric_value_evaluation")
+                    .hasMessageContaining("analyticsdecision");
+            assertThat(foreignWriteViolations(foreignWriter,
+                    "jdbc.sql(\"SELECT metric_value_id FROM mart.metric_value_evaluation\").query();"))
+                    .isEmpty();
         }
 
         @Test
@@ -221,5 +231,20 @@ class SoleAuthorityArchitectureTest {
         try (Stream<Path> walk = Files.walk(root)) {
             return walk.filter(p -> p.toString().endsWith(".java")).toList();
         }
+    }
+
+    /** Shared by the actual source scan and its deliberate forbidden-writer example. */
+    private static List<String> foreignWriteViolations(Path file, String source) {
+        List<String> violations = new ArrayList<>();
+        var matcher = WRITE_STATEMENT.matcher(source);
+        while (matcher.find()) {
+            String table = matcher.group(2).toLowerCase(Locale.ROOT);
+            String owner = OWNED_ELSEWHERE.get(table);
+            if (owner != null) {
+                violations.add(file.getFileName() + " writes " + table
+                        + ", which is written by " + owner);
+            }
+        }
+        return List.copyOf(violations);
     }
 }

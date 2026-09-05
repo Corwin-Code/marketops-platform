@@ -34,6 +34,11 @@ import xml.etree.ElementTree as ElementTree
 from dataclasses import dataclass, field
 from pathlib import Path
 
+if __package__:
+    from .validation.finalize_slice3_rework_assessment import validated_current_phase
+else:
+    from validation.finalize_slice3_rework_assessment import validated_current_phase
+
 ROOT = Path(__file__).resolve().parents[1]
 
 BACKEND = "backend/marketops-server"
@@ -166,6 +171,11 @@ APPROVED_MIGRATIONS = (
     "V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
     "V0064__reconcile_expired_advertising_authority.sql",
     "V0065__route_settled_advertising_contradictions_to_finance_review.sql",
+    "V0066__qualify_economic_cause_bound_protection.sql",
+    "V0067__validate_frozen_outcome_input_profiles.sql",
+    "V0068__preserve_critical_sales_guard_case_evidence.sql",
+    "V0069__reopen_invalidated_protection_outcomes.sql",
+    "V0070__record_canonical_metric_reevaluation_proofs.sql",
 )
 
 DEFERRED_EVIDENCE_REGISTER = (
@@ -451,7 +461,6 @@ COMPLETION_STATE_TOKENS = (
     "d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d",
     "active_slice_amendment: NONE_ACCEPTED",
     "active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN",
-    "active_gate: CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION",
     "authorization: FULL_SCOPE_IMPLEMENTATION",
     "slice_v1_002_contract_sha256: "
     "d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e",
@@ -555,11 +564,13 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33",
     "closure_snapshot_before_next_slice: SATISFIED_EXACT_OWNER_ACCEPTED",
     "merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED",
-    "slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_CLOSURE_REVIEW_PENDING",
-    "slice_v1_003_engineering_closure_claim: CODEX_ENGINEERING_ASSESSMENT_ONLY_CONTROLLER_PENDING",
-    "slice_v1_003_controller_verdict: PENDING_INDEPENDENT_REVIEW",
+    "slice_v1_003_rework_authorization: OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1",
+    "slice_v1_003_rework_authorization_evidence_sha256: 23a2954d68abeebf87d7710f3ab749af5246cdfcbe4a3029dde73dbb34647a11",
+    "slice_v1_003_historical_controller_verdict: NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED",
+    "slice_v1_003_historical_controller_reviewed_head: 3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+    "slice_v1_003_historical_controller_report_sha256: 6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127",
+    "slice_v1_003_historical_controller_report: docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/controller-package/VERIFICATION-RESULT.json",
     "gate_ev: NOT_AUTHORIZED",
-    "next_authorized_actor: CONTROLLER",
     "production_write_enabled: false",
     "bounded_real_write_verification_authorization: NONE",
     "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",
@@ -570,6 +581,25 @@ COMPLETION_STATE_TOKENS = (
     "pilot: NOT_AUTHORIZED",
     "release_v1_001: RESERVED_NOT_ACTIVATED",
 )
+
+
+def completion_state_violations(text: str) -> list[str]:
+    """Keep fixed authority and the evidence-admitted phase exact and unique."""
+    expected = dict(token.split(": ", 1) for token in COMPLETION_STATE_TOKENS)
+    violations = []
+    try:
+        expected.update(validated_current_phase())
+    except (OSError, ValueError, KeyError, TypeError, AttributeError, SyntaxError) as error:
+        violations.append(f"SLICE-V1-003 current phase evidence is invalid: {error}")
+    metadata = re.search(r"(?ms)^```yaml\s*\n(.*?)^```", text)
+    if metadata is None:
+        return violations + ["CURRENT_STATE requires its fenced YAML metadata"]
+    for field, value in expected.items():
+        actual = re.findall(rf"(?m)^{re.escape(field)}: ([^\n]*)$", metadata.group(1))
+        if actual != [value]:
+            violations.append(f"CURRENT_STATE {field} must be exactly: {value}")
+    return violations
+
 
 COMPLETED_WORK_PACKAGE_TOKENS = (
     "| Status | COMPLETED |",
@@ -1248,12 +1278,9 @@ def check_repository_contracts(report: Report) -> None:
         ("MARKETOPS_BUILD_VERSION", "github.ref_name"),
     )
 
-    require_tokens(
-        report,
-        rule,
-        ROOT / "docs/00-governance/CURRENT_STATE.md",
-        COMPLETION_STATE_TOKENS,
-    )
+    current_state_path = ROOT / "docs/00-governance/CURRENT_STATE.md"
+    for detail in completion_state_violations(read_text(current_state_path) or ""):
+        report.add(rule, current_state_path, 0, detail)
     require_tokens(
         report,
         rule,

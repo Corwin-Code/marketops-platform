@@ -27,6 +27,7 @@ class AdvertisingOutcomeReviewService implements AdvertisingOutcomeReviewIntake 
 
     @Override @Transactional
     public UUID record(UUID observationId) {
+        recordProtectionInvalidation(observationId);
         var found=jdbc.sql("SELECT * FROM ops.ad_settled_review_context(:id)").param("id",observationId)
                 .query((rs,n)->new Context(rs.getObject("organization_id",UUID.class),rs.getObject("case_id",UUID.class),
                         rs.getObject("outcome_baseline_id",UUID.class),rs.getObject("action_id",UUID.class),
@@ -75,6 +76,35 @@ class AdvertisingOutcomeReviewService implements AdvertisingOutcomeReviewIntake 
         } else event(primary.id(),context,"ESCALATED",null,clock.instant());
         return taskId;
     }
+
+    private void recordProtectionInvalidation(UUID observation) {
+        var context=jdbc.sql("""
+            SELECT o.organization_id,coalesce(candidate.case_id,proposal.case_id) case_id,r.task_id,o.correlation_id,o.evaluated_at
+            FROM ops.ad_outcome_observation o JOIN ops.ad_outcome_axes a ON a.observation_id=o.id
+            JOIN ops.ad_outcome_baseline b ON b.id=a.outcome_baseline_id
+            LEFT JOIN ops.ad_bid_candidate candidate ON candidate.id=b.candidate_id
+            LEFT JOIN ops.ad_manual_proposal proposal ON proposal.id=b.manual_proposal_id
+            JOIN ops.ad_case_responsibility r ON r.case_id=coalesce(candidate.case_id,proposal.case_id)
+            WHERE o.id=:id AND ops.ad_protection_outcome_invalidated(o.id)
+            """).param("id",observation).query((rs,n)->new ProtectionContext(rs.getObject("organization_id",UUID.class),
+                rs.getObject("case_id",UUID.class),rs.getObject("task_id",UUID.class),rs.getString("correlation_id"),
+                rs.getTimestamp("evaluated_at").toInstant())).optional();
+        if(context.isEmpty()) return;
+        var c=context.get();
+        jdbc.sql("SELECT id FROM ops.work_task WHERE id=:id FOR UPDATE").param("id",c.task()).query(UUID.class).single();
+        boolean recorded=jdbc.sql("SELECT EXISTS(SELECT 1 FROM ops.work_task_event WHERE task_id=:task AND outcome_reference=:reference AND event_kind='OUTCOME_OBSERVED')")
+                .param("task",c.task()).param("reference","ad-outcome:"+observation).query(Boolean.class).single();
+        if(recorded) return;
+        var task=tasks.find(c.task()).orElseThrow();
+        boolean closed=java.util.List.of("DONE","CANCELLED").contains(task.state());
+        if(closed) tasks.reopen(c.task(),clock.instant(),task.version());
+        String reason="Fresh action-window evidence invalidated the prior Protection terminal; original advertising responsibility continues";
+        journal.append(new WorkTaskEventRepository.Event(ids.newId(),c.task(),c.organization(),closed?"REOPENED":"ESCALATED",
+                "advertising-case:"+c.caseId(),null,null,null,null,null,null,null,null,null,reason,clock.instant(),c.correlation()));
+        journal.append(new WorkTaskEventRepository.Event(ids.newId(),c.task(),c.organization(),"OUTCOME_OBSERVED",
+                "advertising-case:"+c.caseId(),null,null,null,"REGRESSION","ad-outcome:"+observation,null,null,null,null,reason,c.at(),c.correlation()));
+    }
+    private record ProtectionContext(UUID organization,UUID caseId,UUID task,String correlation,Instant at) { }
 
     private void event(UUID task,Context context,String kind,String role,Instant at) {
         journal.append(new WorkTaskEventRepository.Event(ids.newId(),task,context.organization(),kind,

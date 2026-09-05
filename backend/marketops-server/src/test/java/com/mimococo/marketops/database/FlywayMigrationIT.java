@@ -98,7 +98,12 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0062__share_frozen_outcome_authority_with_governed_manual.sql",
             "V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
             "V0064__reconcile_expired_advertising_authority.sql",
-            "V0065__route_settled_advertising_contradictions_to_finance_review.sql");
+            "V0065__route_settled_advertising_contradictions_to_finance_review.sql",
+            "V0066__qualify_economic_cause_bound_protection.sql",
+            "V0067__validate_frozen_outcome_input_profiles.sql",
+            "V0068__preserve_critical_sales_guard_case_evidence.sql",
+            "V0069__reopen_invalidated_protection_outcomes.sql",
+            "V0070__record_canonical_metric_reevaluation_proofs.sql");
 
     private static PostgreSQLContainer container;
 
@@ -263,6 +268,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "mart.metric_definition",
                     "mart.metric_input_reference",
                     "mart.metric_value",
+                    "mart.metric_value_evaluation",
                     "ops.ad_accepted_exception",
                     "ops.ad_action_authorization",
                     "ops.ad_action_reservation",

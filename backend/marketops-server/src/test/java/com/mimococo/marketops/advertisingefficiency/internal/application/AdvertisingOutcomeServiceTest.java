@@ -31,7 +31,10 @@ class AdvertisingOutcomeServiceTest {
         return new AdvertisingOutcomeEvidenceService.Snapshot(stage,LANDED.minusSeconds(86400),LANDED,
                 new AdvertisingContributionProfit(amount(profit),amount(perRub),"RUB",List.of()),amount(total),
                 List.of(new AdvertisingOutcomeEvidenceService.UnitSales(new AdvertisingOutcomeEvidenceService.Unit(HERO,HERO,ID,ID),amount(hero))),
-                1000L,BigDecimal.ONE,"same-context",List.of(ID),List.of(),FRESHNESS,amount("100"));
+                1000L,BigDecimal.ONE,"same-context",List.of(ID),List.of(),FRESHNESS,amount("100"),profiles(stage),List.of(),new AdvertisingOutcomeEvidenceService.ProtectionEvidence(true,true,true,true),"PROVEN_ADVERTISING_LOSS");
+    }
+    static java.util.Map<String,AdvertisingPolicyRepository.FreshnessProfile> profiles(String stage) {
+        return AdvertisingOutcomeFreshness.kinds(stage).stream().collect(java.util.stream.Collectors.toMap(kind->kind,kind->FRESHNESS));
     }
     static AdvertisingOutcomeRepository.DueRow due(String stage) {
         return new AdvertisingOutcomeRepository.DueRow(ID,ID,ID,"OZON",ID,"a".repeat(64),"PROTECTION_DECREASE",LANDED,
@@ -98,17 +101,18 @@ class AdvertisingOutcomeServiceTest {
     @Test void usesFrozenBaselineWithoutReadingItAgainAndAppendsRevision() {
         var repo=mock(AdvertisingOutcomeRepository.class);
         var evidence=mock(AdvertisingOutcomeEvidenceService.class);
+        when(evidence.bindOriginalIdentity(any(),any(),any(),any(),any())).thenAnswer(invocation->invocation.getArgument(2));
         var ids=mock(IdGenerator.class);
         var json=JsonMapper.builder().build();
         when(ids.newId()).thenReturn(ID);
         var baseline=snapshot("SETTLED","100","1","1000","100");
         when(repo.frozenBaseline(ID,"SETTLED")).thenReturn(Optional.of(new AdvertisingOutcomeRepository.FrozenBaseline(
                 ID,ID,json.writeValueAsString(POLICY),json.writeValueAsString(baseline))));
-        when(evidence.snapshot(eq(ID),eq(ID),eq(ID),eq("SETTLED"),anyList(),any(),any(),eq(NOW),eq(FRESHNESS)))
+        when(evidence.snapshot(eq(ID),eq(ID),eq(ID),eq("SETTLED"),anyList(),any(),any(),eq(NOW),anyMap()))
                 .thenReturn(snapshot("SETTLED","200","2","1000","100"));
         var result=new AdvertisingOutcomeService(repo,evidence,json,ids,mock(com.mimococo.marketops.operationsworkflow.AdvertisingOutcomeReviewIntake.class)).evaluate(due("SETTLED_REVISED"),NOW).orElseThrow();
         assertThat(result.revisionNo()).isEqualTo(3);
-        verify(evidence,times(1)).snapshot(eq(ID),eq(ID),eq(ID),eq("SETTLED"),anyList(),eq(due("SETTLED").windowStartsAt()),eq(due("SETTLED").windowEndsAt("SETTLED")),eq(NOW),eq(FRESHNESS));
+        verify(evidence,times(1)).snapshot(eq(ID),eq(ID),eq(ID),eq("SETTLED"),anyList(),eq(due("SETTLED").windowStartsAt()),eq(due("SETTLED").windowEndsAt("SETTLED")),eq(NOW),anyMap());
         verify(repo).record(eq(ID),any(),eq("SETTLED_REVISED"),eq(3),eq(HERO),contains("restated"),any(),any(),any(),any(),any(),any(),any(),any(),anyString(),any());
         verify(repo,never()).reopenAfterRegression(any(),any(),any(),any());
     }
@@ -122,7 +126,7 @@ class AdvertisingOutcomeServiceTest {
         var before=snapshot("OPERATIONAL","-100","-1","1000","100");
         var sample=snapshot("OPERATIONAL",null,null,null,null);
         var after=new AdvertisingOutcomeEvidenceService.Snapshot(sample.stage(),sample.from(),sample.to(),sample.profit(),sample.companySales(),
-                sample.units(),sample.traffic(),sample.coverage(),sample.confounderDigest(),sample.evidenceIds(),sample.blockers(),FRESHNESS,amount("0"));
+                sample.units(),sample.traffic(),sample.coverage(),sample.confounderDigest(),sample.evidenceIds(),sample.blockers(),FRESHNESS,amount("0"),null,List.of(),new AdvertisingOutcomeEvidenceService.ProtectionEvidence(true,true,false,false),"PROVEN_ADVERTISING_LOSS");
         var result=AdvertisingOutcomeAssessment.evaluate(before,after,POLICY,true);
         assertThat(result.sales().preserved()).isFalse();assertThat(result.dualAxis().healthy()).isFalse();
         assertThat(AdvertisingOutcomeAssessment.businessOutcome("PROVEN_ADVERTISING_LOSS",true,before,after,POLICY,result,true))
@@ -169,13 +173,14 @@ class AdvertisingOutcomeServiceTest {
     private void verifyStageTransition(String retainedProfit,String retainedRatio,String settledProfit,String settledRatio,
             OutcomeEvaluation.Verdict retainedVerdict,OutcomeEvaluation.Verdict settledVerdict,boolean regression) {
         var repo=mock(AdvertisingOutcomeRepository.class);var evidence=mock(AdvertisingOutcomeEvidenceService.class);
+        when(evidence.bindOriginalIdentity(any(),any(),any(),any(),any())).thenAnswer(invocation->invocation.getArgument(2));
         var ids=mock(IdGenerator.class);when(ids.newId()).thenReturn(ID,HERO,UUID.randomUUID());
         var json=JsonMapper.builder().build();
         for(String stage:List.of("RETAINED","SETTLED")) when(repo.frozenBaseline(ID,stage)).thenReturn(Optional.of(new AdvertisingOutcomeRepository.FrozenBaseline(
                 ID,ID,json.writeValueAsString(POLICY),json.writeValueAsString(snapshot(stage,"100","1","1000","100")))));
-        when(evidence.snapshot(eq(ID),eq(ID),eq(ID),eq("RETAINED"),anyList(),any(),any(),eq(NOW),eq(FRESHNESS)))
+        when(evidence.snapshot(eq(ID),eq(ID),eq(ID),eq("RETAINED"),anyList(),any(),any(),eq(NOW),anyMap()))
                 .thenReturn(snapshot("RETAINED",retainedProfit,retainedRatio,"1000","100"));
-        when(evidence.snapshot(eq(ID),eq(ID),eq(ID),eq("SETTLED"),anyList(),any(),any(),eq(NOW),eq(FRESHNESS)))
+        when(evidence.snapshot(eq(ID),eq(ID),eq(ID),eq("SETTLED"),anyList(),any(),any(),eq(NOW),anyMap()))
                 .thenReturn(snapshot("SETTLED",settledProfit,settledRatio,"1000","100"));
         var service=new AdvertisingOutcomeService(repo,evidence,json,ids,mock(com.mimococo.marketops.operationsworkflow.AdvertisingOutcomeReviewIntake.class));
         var retained=service.evaluate(due("RETAINED"),NOW).orElseThrow();

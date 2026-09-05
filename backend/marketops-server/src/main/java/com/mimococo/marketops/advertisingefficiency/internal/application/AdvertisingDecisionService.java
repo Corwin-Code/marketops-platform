@@ -115,6 +115,7 @@ public class AdvertisingDecisionService implements AdvertisingDecisionAuthority 
         var blockers = new ArrayList<>(com.mimococo.marketops.advertisingefficiency.internal.domain.AdActionDependencyPolicy
                 .actionBlockers(row.candidateBasis(),row.causeCode(),row.blockerCodes()));
         blockers.addAll(decisions.isolationFailures(row.recommendationId(),clock.instant()));
+        blockers.addAll(decisions.economicCauseBoundFailures(row.recommendationId(),clock.instant()));
         return blockers.stream().distinct().toList();
     }
 

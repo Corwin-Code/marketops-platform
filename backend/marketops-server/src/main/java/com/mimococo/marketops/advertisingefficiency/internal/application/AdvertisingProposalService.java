@@ -133,8 +133,8 @@ class AdvertisingProposalService {
         if (generated == null && causeBoundQualified
                 && direction.get() == BidDirection.PROTECTION_DECREASE) {
             // The cause-bound route. Only for a decrease, only where a policy
-            // names this exact cause, and only because for these causes the
-            // spend is wasted whether or not any conversion figure exists.
+            // names this exact cause, and only when the complete cause evidence
+            // proves harm independently of an unavailable conversion rate.
             generated = generate(calculation, scored, direction.get(), objectKind,
                     BidCandidate.CAUSE_BOUND_PROTECTION_STEP, grid, asOf,
                     (limits, policy) -> policy.allowsCauseBoundStep(causeCode)

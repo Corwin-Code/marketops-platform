@@ -47,6 +47,24 @@ replay selects canonical Metric versions whose computed time is at or before the
 captured decision instant. A later Metric does not replace that earlier input or
 make it disappear; corrected facts and later calculations remain separate history.
 
+For a historical cohort, the same canonical calculation service can re-evaluate
+its exact aligned named window. Inspect `mart.metric_value_evaluation` together
+with the exact Metric value and calculation run. An identical input digest reuses
+the value and appends a run/value proof; it does not rewrite `computed_at`.
+`MetricQuery` exposes `verifiedAt` and `verificationRunId` separately. A matching
+successful run completed by the captured reading instant can refresh validation;
+a failed, future, incomplete or unrelated run cannot. The latest unavailable
+value remains visible. The frozen cost Profile still applies to the oldest
+required validation proof, and an effective Cost Version still needs its exact
+canonical validity, version and provenance. Never create a completed-run receipt
+or copy a value to manufacture freshness.
+
+Each Outcome stage freezes the Profile for every consumed purpose/input kind.
+It checks all contributing source/acceptance timestamps, complete coverage,
+correction state, maturity and incidents. A newer segment does not refresh an
+older segment. Revisions reuse these frozen Profiles, including their expiry;
+a newly favorable Owner Profile does not rebind an existing plan.
+
 ## Check the acquisition and calculation
 
 ```sql
@@ -75,6 +93,14 @@ configuration, complete affected set and the matching sellability or availabilit
 proof. Missing conversion and economic facts do not suppress that one-sided harm,
 but unresolved critical-sales safety or another independent control still blocks
 writing. A separate accountable DataRepair case retains the missing evidence.
+The published `PROVEN_ADVERTISING_LOSS` economic cause-bound rule additionally
+requires complete canonical linked sales, effective costs and fees, fresh official
+spend, exact configuration and affected set, plus qualified sellability and
+availability. It can tolerate unresolved conversion only when the precise Owner
+rule allows that dependency set. Planner, preview, sealing and the write gate
+consume the same canonical purpose evidence. Critical company sales, inventory,
+roles, approvals and every independent control remain required.
+
 Task activation and write qualification use their own published closed-window
 thresholds; a visible Task is not authorization to write.
 

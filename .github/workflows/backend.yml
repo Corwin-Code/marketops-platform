@@ -110,6 +110,9 @@ jobs:
             backend/marketops-server/target/advertising-capacity-receipt.json
             backend/marketops-server/target/advertising-capacity-dataset.json
             backend/marketops-server/target/advertising-capacity-source-inputs.json
+            backend/marketops-server/target/advertising-mixed-capacity-receipt.json
+            backend/marketops-server/target/advertising-mixed-capacity-dataset.json
+            backend/marketops-server/target/advertising-mixed-capacity-source-inputs.json
             build/slice3-runtime-resources.json
             build/migration-runtime-evidence/
 
@@ -187,4 +190,7 @@ jobs:
             backend/marketops-server/target/advertising-capacity-receipt.json
             backend/marketops-server/target/advertising-capacity-dataset.json
             backend/marketops-server/target/advertising-capacity-source-inputs.json
+            backend/marketops-server/target/advertising-mixed-capacity-receipt.json
+            backend/marketops-server/target/advertising-mixed-capacity-dataset.json
+            backend/marketops-server/target/advertising-mixed-capacity-source-inputs.json
             build/slice3-runtime-resources.json

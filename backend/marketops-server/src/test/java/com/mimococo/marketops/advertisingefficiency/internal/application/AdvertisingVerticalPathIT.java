@@ -196,6 +196,17 @@ class AdvertisingVerticalPathIT {
     }
 
     @Test void acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory() {
+        // This positive vertical fixture declares one unchanged mapping and
+        // context through every pre-action comparison window, before freezing.
+        Instant historyStart=start.minus(Duration.ofDays(70));
+        sql("UPDATE core.listing_mapping SET effective_from=:history WHERE organization_id=:org")
+                .param("history",Timestamp.from(historyStart)).update();
+        context(historyStart);
+        // The 60-day Settled baseline needs an explicit official zero report
+        // for its older half; absence of a report cannot mean zero spending.
+        // Accept this before selection freezes the baseline, retaining the
+        // original last-30-day amount, clicks and sales events unchanged.
+        report(start.minus(Duration.ofDays(60)),start.minus(Duration.ofDays(30)),"0",0);
         acceptPreActionFacts(true);
         var canonical=metrics.currentValues(SubjectKind.PLATFORM_LISTING_VARIANT,graph.id("listingVariant"),MetricWindow.D30);
         for(MetricCode code:List.of(MetricCode.UNIT_COST,MetricCode.PLATFORM_FEES_PER_UNIT,MetricCode.RETURN_LOSS_PER_UNIT,MetricCode.VARIABLE_TAX_PER_UNIT))
@@ -416,6 +427,11 @@ class AdvertisingVerticalPathIT {
         return id;
     }
     UUID linked(String amount,int quantity,Instant from,Instant to,Instant occurred) {
+        // Canonical metrics evaluate the last completed hour. These synthetic
+        // events occurred before that boundary; their cohort must not claim
+        // an unevaluated partial hour beyond the actual Metric business window.
+        Instant cohortTo=to.truncatedTo(java.time.temporal.ChronoUnit.HOURS);
+        assertThat(occurred).isAfterOrEqualTo(from).isBefore(cohortTo);
         UUID id=UUID.randomUUID();
         sql("""
           INSERT INTO ledger.ad_linked_sale_event(id,organization_id,provenance_id,ad_native_object_id,affected_set_id,platform_listing_variant_id,
@@ -424,7 +440,7 @@ class AdvertisingVerticalPathIT {
           VALUES(:id,:org,:source,:object,:set,:listing,:conversion,'CANONICAL_AD_LINKED_RETAINED_SALE','DETERMINISTIC_OBJECT_LINKAGE',
             'fixture://vertical/exact-link',:quantity,:money,'RUB',:occurred,:from,:to,:at,:at)
           """).param("id",id).param("quantity",quantity).param("money",new BigDecimal(amount)).param("occurred",Timestamp.from(occurred))
-            .param("from",Timestamp.from(from)).param("to",Timestamp.from(to)).update();return id;
+            .param("from",Timestamp.from(from)).param("to",Timestamp.from(cohortTo)).update();return id;
     }
     void report(Instant from,Instant to,String amount,int clicks) {
         sql("""
@@ -450,6 +466,27 @@ class AdvertisingVerticalPathIT {
         sql("INSERT INTO core.listing_price_observation(id,organization_id,provenance_id,platform_listing_variant_id,source_fact_key,observed_at,currency_code,selling_price,promotion_active) VALUES(gen_random_uuid(),:org,:source,:listing,:key,:observed,'RUB',1000,'NO')").param("key",UUID.randomUUID().toString()).param("observed",Timestamp.from(at)).update();
         sql("INSERT INTO core.listing_health_observation(id,organization_id,provenance_id,platform_listing_variant_id,source_fact_key,observed_at,sellable) VALUES(gen_random_uuid(),:org,:source,:listing,:key,:observed,'YES')").param("key",UUID.randomUUID().toString()).param("observed",Timestamp.from(at)).update();
         sql("INSERT INTO core.listing_stock_observation(id,organization_id,provenance_id,platform_listing_variant_id,source_fact_key,observed_at,fulfillment_mode_code,available_quantity) VALUES(gen_random_uuid(),:org,:source,:listing,:key,:observed,'SELLER_FULFILLED',100)").param("key",UUID.randomUUID().toString()).param("observed",Timestamp.from(at)).update();
+    }
+    void republishConsumedWindow(Instant from,Instant to) {
+        // A new source publication confirms the same business intervals and
+        // values. Appending these revisions preserves every earlier receipt.
+        UUID provenance=UUID.randomUUID();
+        sql("INSERT INTO core.fact_provenance(id,organization_id,source_kind,source_time,ingestion_time,recorded_by_user_id,evidence_note) VALUES(:id,:org,'MANUAL_ENTRY',:at,:at,:owner,'Synthetic current publication of unchanged historical windows')")
+                .param("id",provenance).update();
+        sql("""
+            INSERT INTO ledger.ad_object_fact
+            SELECT (jsonb_populate_record(NULL::ledger.ad_object_fact,to_jsonb(f)||jsonb_build_object(
+              'id',gen_random_uuid(),'provenance_id',CAST(:published AS uuid),'source_fact_key',gen_random_uuid()::text,
+              'source_time',CAST(:at AS timestamptz),'recorded_at',CAST(:at AS timestamptz),
+              'supersedes_fact_id',f.id,'adjustment_kind','CORRECTION'))).*
+            FROM ledger.ad_object_fact f WHERE f.ad_native_object_id=:object AND f.period_start>=:from AND f.period_end<=:to
+              AND NOT EXISTS(SELECT 1 FROM ledger.ad_object_fact n WHERE n.supersedes_fact_id=f.id)
+            """).param("published",provenance).param("from",Timestamp.from(from)).param("to",Timestamp.from(to)).update();
+        for(String table:List.of("listing_price_observation","listing_health_observation","listing_stock_observation"))
+            sql("INSERT INTO core."+table+" SELECT (jsonb_populate_record(NULL::core."+table+",to_jsonb(o)||jsonb_build_object("
+                +"'id',gen_random_uuid(),'provenance_id',CAST(:published AS uuid),'source_fact_key',gen_random_uuid()::text))).* "
+                +"FROM core."+table+" o WHERE o.organization_id=:org AND o.platform_listing_variant_id=:listing AND o.observed_at<=:to")
+                .param("published",provenance).param("to",Timestamp.from(to)).update();
     }
     void economicsAuthority() {
         UUID profile=UUID.randomUUID();
@@ -560,24 +597,32 @@ class AdvertisingVerticalPathIT {
         company("RETAINED","10000",10,from.plus(Duration.ofDays(1)),"after",null);
         UUID retainedEvent=linked("10000",10,from,retainedTo,from.plus(Duration.ofDays(1)));
         coverage(from,retainedTo,true);report(earlyTo,retainedTo,"950",90);context(clock.instant().minusSeconds(1));
+        republishConsumedWindow(from,retainedTo);
         UUID costSource=UUID.randomUUID();
         sql("INSERT INTO core.fact_provenance(id,organization_id,source_kind,source_time,ingestion_time,recorded_by_user_id,evidence_note) VALUES(:id,:org,'MANUAL_ENTRY',:at,:at,:owner,'Synthetic current publication of unchanged unit cost')").param("id",costSource).update();
         sql("UPDATE core.cost_version SET effective_to=CAST(:at AS timestamptz)-interval '6 hours',updated_at=:at WHERE organization_id=:org AND effective_to IS NULL").update();
         sql("INSERT INTO core.cost_version(id,organization_id,product_variant_id,cost_kind,currency_code,unit_cost,provenance_id,effective_from,status,created_at,updated_at) VALUES(gen_random_uuid(),:org,:variant,'PURCHASE','RUB',500,:source,CAST(:at AS timestamptz)-interval '6 hours','ACTIVE',:at,:at)").param("source",costSource).update();
         economicFacts(from.plus(Duration.ofDays(1)));
-        analytics.run(graph.id("store"),MetricWindow.D30,"SCHEDULED",null);
+        var cohortMetricWindow=com.mimococo.marketops.operatingfacts.FactWindow.alignedEndingAt(retainedTo,MetricWindow.D30.length());
+        analytics.runForWindow(graph.id("store"),MetricWindow.D30,cohortMetricWindow,"BACKFILL",null);
         for(MetricCode code:List.of(MetricCode.UNIT_COST,MetricCode.PLATFORM_FEES_PER_UNIT,MetricCode.RETURN_LOSS_PER_UNIT,MetricCode.VARIABLE_TAX_PER_UNIT))
             assertThat(metrics.currentValues(SubjectKind.PLATFORM_LISTING_VARIANT,graph.id("listingVariant"),MetricWindow.D30).get(code).confidenceState().name())
                 .as("Mature canonical "+code).isEqualTo("CANONICAL_CONFIRMED");
         var retained=outcomeService.evaluate(due("RETAINED"),clock.instant()).orElseThrow();
-        assertThat(retained.evaluation().verdict()).as(retained.toString()).isEqualTo(OutcomeEvaluation.Verdict.IMPROVED);
+        assertThat(retained.evaluation().verdict()).as("%s actual snapshot %s",retained,
+            seed.sql("SELECT input_snapshot::text FROM ops.ad_outcome_axes WHERE observation_id=:id")
+                .param("id",retained.observationId()).query(String.class).single()).isEqualTo(OutcomeEvaluation.Verdict.IMPROVED);
         clock.at=settledTo.plusSeconds(60);
         UUID settled=company("SETTLED","10000",10,settledTo.minusSeconds(1),"after",null);
         sql("INSERT INTO ledger.ad_settlement_attribution VALUES(gen_random_uuid(),:org,:event,:financial,'fixture://vertical/actual-financial',:at)")
           .param("event",retainedEvent).param("financial",settled).update();
         coverage(from,settledTo,true);report(retainedTo,settledTo,"0",0);context(clock.instant().minusSeconds(1));
+        republishConsumedWindow(from,settledTo);
+        analytics.runForWindow(graph.id("store"),MetricWindow.D30,cohortMetricWindow,"BACKFILL",null);
         var financial=outcomeService.evaluate(due("SETTLED"),clock.instant()).orElseThrow();
-        assertThat(financial.evaluation().verdict()).as(financial.toString()).isEqualTo(OutcomeEvaluation.Verdict.IMPROVED);
+        assertThat(financial.evaluation().verdict()).as("%s actual snapshot %s",financial,
+            seed.sql("SELECT input_snapshot::text FROM ops.ad_outcome_axes WHERE observation_id=:id")
+                .param("id",financial.observationId()).query(String.class).single()).isEqualTo(OutcomeEvaluation.Verdict.IMPROVED);
         clock.at=clock.instant().plusSeconds(60);
         UUID corrected=company("SETTLED","8000",10,settledTo.minusSeconds(1),"after",settled);
         sql("INSERT INTO ledger.ad_settlement_attribution VALUES(gen_random_uuid(),:org,:event,:financial,'fixture://vertical/late-correction',:at)")
@@ -621,8 +666,11 @@ class AdvertisingVerticalPathIT {
         }
     }
     @TestConfiguration(proxyBeanMethods=false) static class Runtime {
+        // These Spring contexts share DATABASE. Custodied bytes must have the
+        // same lifetime as its content-addressed records across those contexts.
+        private static final ObjectStoragePort OBJECTS=new InMemoryObjectStoragePort();
         @Bean @Primary MutableClock fixedLogicalClock() { return new MutableClock(); }
         @Bean @Primary FixturePort fixtureAdBidPort() { return new FixturePort(); }
-        @Bean @Primary ObjectStoragePort fixtureObjects() { return new InMemoryObjectStoragePort(); }
+        @Bean @Primary ObjectStoragePort fixtureObjects() { return OBJECTS; }
     }
 }

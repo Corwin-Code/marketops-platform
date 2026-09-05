@@ -1,0 +1,161 @@
+{
+  "kind": "SLICE3_R1_CODEX_ENGINEERING_VERIFICATION",
+  "status": "ENGINEERING_COMPLETE_CONTROLLER_AND_CONTAINING_COMMIT_READBACK_PENDING",
+  "authorities": {
+    "acceptedContractSha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c",
+    "frozenFindingSetMarkdownSha256": "15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1",
+    "frozenFindingSetJsonSha256": "f4af74f5086772dc70c3ec3cc7aa8808e9441e96109d301b145e70c18f6131a0"
+  },
+  "assessedSource": {
+    "backendHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+    "backendTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+    "frontendAndW9RemoteHead": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+    "frontendAndW9RemoteTree": "5eb85b0bf309d39fd9798c9b8b2186371710fecc",
+    "containingCommit": "SUPPLIED_BY_FINAL_APPEND_ONLY_GIT_AND_CI_READBACK"
+  },
+  "dispositionCounts": {
+    "findingsClosedWithEvidenceByCodex": 22,
+    "frozenClausesEngineeringVerified": 115,
+    "criteriaVerified": 199,
+    "criterion200CandidatePrerequisites": 1,
+    "individualCriterionContributions": 260,
+    "deferredProductionObligationsUnchanged": 24
+  },
+  "assessmentArtifacts": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/engineering-assessment-w9/ui81-current.json",
+      "sha256": "b1a7f4207717236f7bad16f10d39909599737bead9cb52b6b900f4fb32812a51"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/engineering-assessment-w9/criterion-engineering-assessment.json",
+      "sha256": "f2433ea4281d575e20822b38fed90d6a525f48c750c4fe20bc9052f2badc8c14"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/engineering-assessment-w9/finding-engineering-assessment.json",
+      "sha256": "49e5008658af18f1471dca7c6a8abca4c57aa79b762ccd669808b053c3ec4fb7"
+    }
+  ],
+  "execution": {
+    "localBackendW8": {
+      "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+      "actualTestcaseNodes": 2484,
+      "unitConsoleCases": 1560,
+      "integrationCases": 924,
+      "xmlReports": 189,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "receipt": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w8/run-receipt.json",
+        "bytes": 12552,
+        "sha256": "eca4c0db03e73e68c4c5e7c3737fd8f1068f6d2d71940128da1dbaf4e9c5f1a0"
+      }
+    },
+    "namedBackend": {
+      "methods": 390,
+      "expandedNodes": 522,
+      "allPassedAndSourceBound": true,
+      "catalog": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/current-named-backend/current-named-backend-evidence.json",
+        "bytes": 811814,
+        "sha256": "d92ab91ebb31722b1557c8a552cdcf30b31e244ae307640079e68dadee50e0a1"
+      }
+    },
+    "frontendW9": {
+      "unitSuites": 77,
+      "unitTests": 327,
+      "sloDisplayAssertions": 19,
+      "localAdvertisingBrowserJourneys": 12,
+      "remoteAdvertisingBrowserJourneys": 12,
+      "localQuality": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/ui-slo-repair-w9/quality-r4/receipt.json",
+        "bytes": 6628,
+        "sha256": "3eeed92f87c4e9672d7e6e3fc86049f411b741117bd372cff2457bd2dbbc8e47"
+      },
+      "localBrowser": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-w9/receipt.json",
+        "bytes": 14612,
+        "sha256": "35f41246a0d54cd08b3cb971d7eac7769548697b29c7594a2384e275850be282"
+      }
+    },
+    "remoteW9": {
+      "requiredContexts": 12,
+      "allRequiredPassed": true,
+      "aggregateCodeQLPassed": true,
+      "actualBackendNodes": 2484,
+      "governanceTests": 410,
+      "infrastructurePython": 22,
+      "infrastructureTerraformScenarios": 7,
+      "receipt": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/ci-w9/summary.json",
+        "bytes": 16416,
+        "sha256": "eca10cec8329b68ea148a173507a8d9faa33c55d77617ab4235e23821faf54a0"
+      }
+    },
+    "frontendDistribution": {
+      "w9DefectPreserved": {
+        "artifactId": 9970996125,
+        "artifactSha256": "b59186df1567ba3af9e9c514fa5051415b276ff6e0859958dc6c6d331e102458",
+        "containsExpectedHead": false,
+        "containsUnknownBuildCommit": true,
+        "publishedEnvironmentTokens": [
+          "published-b616ded9-f249-485c-ada4-7c191c88cb71"
+        ],
+        "result": "W9_ARTIFACT_PROVENANCE_DEFECT_CONFIRMED_REPAIRED_BY_LATER_WORKFLOW_ORDER_CHANGE",
+        "boundary": "This preserves the W9 failure. Final-head CI must prove the corrected uploaded artifact independently."
+      },
+      "localOrderRepair": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/frontend-distribution-order-repair/receipt.json",
+        "bytes": 2160,
+        "sha256": "59217a105f4244773529189b202a1c5d836ef3523081b6e0967e680c8749bedf"
+      },
+      "finalRemoteArtifactRequirement": "Exact containing-Head, ci, loopback API, no published/canary UUID, and no unknown build-commit initializer."
+    },
+    "frontendSupplyChain": {
+      "cycloneDxSpecVersion": "1.6",
+      "jsonValidatorDependenciesPinned": [
+        "ajv@8.20.0",
+        "ajv-formats@3.0.1",
+        "ajv-formats-draft2019@1.6.1"
+      ],
+      "skipDiagnosticIsFatal": true,
+      "localAndFinalCiRequirement": "CycloneDX JSON schema validation PASS"
+    }
+  },
+  "capacityBoundary": {
+    "nativeObjects": 1000,
+    "criticalObjects": 200,
+    "tasks": 1200,
+    "criticalP95Milliseconds": 30789,
+    "maximumMilliseconds": 239115,
+    "targetedWallMilliseconds": 237495,
+    "fullSweepMilliseconds": 109169,
+    "hardBoundMarginMilliseconds": 3490831,
+    "droppedCorrectionRecovered": 1,
+    "admittedCommands": 0,
+    "matureOutcomePopulation": 0,
+    "topology": "one synthetic organization/store/shared product/variant/listing; UNVERIFIED native objects",
+    "claimsExcluded": [
+      "APPLY throughput",
+      "mature Outcome throughput",
+      "multi-store scale"
+    ]
+  },
+  "securityBoundary": {
+    "w9CodeQLVersion": "2.26.4",
+    "fixedAlerts": 12,
+    "openQualityNotes": 76,
+    "openQualityWarnings": 11,
+    "openSecuritySeverity": 0,
+    "historicalDismissedHigh": 5
+  },
+  "authorityBoundary": {
+    "controllerVerdict": "PENDING_INDEPENDENT_REVIEW",
+    "draftPrOnly": true,
+    "readyOrMergeAuthorized": false,
+    "realProviderOrSharedProductionAccess": false,
+    "productionWriteEnabled": false,
+    "all24ReleaseObligations": "DEFERRED_PRODUCTION_BLOCKING"
+  }
+}

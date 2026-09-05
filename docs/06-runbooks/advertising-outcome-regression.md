@@ -66,6 +66,21 @@ The business outcome distinguishes `OUTCOME_PENDING`, `PROTECTION_IN_PROGRESS`,
 cleared loss is a narrower fact than verified efficiency success and does not
 waive sales safety. Configuration verification alone is not a business outcome.
 
+Exposure stopped requires exact action identity and affected scope, verified
+configuration and canonical complete closed zero-spend coverage of the whole
+window. Physical risk clearance requires the original sellability or availability
+cause to be resolved throughout a complete qualified safety window; missing
+profit attribution does not invent either financial success or physical harm.
+Economic risk clearance requires the original loss to be resolved with canonical
+nonnegative profit and preserved sales under the frozen stage rules.
+
+If a same-window correction invalidates a prior verified terminal proof, the
+existing responsibility reopens and its authority remains invalidated. Across
+stages, a new unknown financial observation alone does not erase an earlier
+verified safety window; actual renewed exposure or cause-specific harm does.
+Repeated observations reuse the same Task and observation links. These changes
+do not fabricate a financial regression or an automatic compensation command.
+
 ## Containment and release
 
 The database derives automatic regression containment from the actual immutable

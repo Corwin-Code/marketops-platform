@@ -29,6 +29,17 @@ public class AdvertisingDecisionRepository {
         this.jdbc = jdbc;
     }
 
+    public List<String> economicCauseBoundFailures(UUID recommendationId, Instant at) {
+        return jdbc.sql("""
+                SELECT unnest(ops.ad_economic_cause_bound_failures(candidate.id,:at))
+                FROM ops.recommendation recommendation JOIN ops.ad_bid_candidate candidate
+                  ON candidate.id=CASE WHEN ops.ad_bid_parameter_contract_is_valid(recommendation.proposed_parameters)
+                    THEN (recommendation.proposed_parameters->>'candidateId')::uuid END
+                  AND candidate.organization_id=recommendation.organization_id
+                WHERE recommendation.id=:recommendation
+                """).param("recommendation",recommendationId).param("at",Timestamp.from(at)).query(String.class).list();
+    }
+
     /**
      * The decision scope for one recommendation, with unresolved elements null.
      *

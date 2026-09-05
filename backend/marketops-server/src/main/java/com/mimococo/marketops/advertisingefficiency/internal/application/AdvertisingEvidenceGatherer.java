@@ -280,9 +280,18 @@ class AdvertisingEvidenceGatherer {
                 .filter(candidate -> from.plus(candidate.length()).equals(to)).findFirst()
                 .or(() -> Optional.of(MetricWindow.D30));
         if (sales.isEmpty()) { return Map.of(); }
-        for (var line : sales.get().lines()) {
-            Map<MetricCode, MetricValueView> values = metrics.currentValuesAt(
-                    SubjectKind.PLATFORM_LISTING_VARIANT, line.platformListingVariantId(), window.get(), readAt);
+        var cohorts = sales.get().lines().stream().filter(line -> line.platformListingVariantId() != null)
+                .collect(java.util.stream.Collectors.groupingBy(AdvertisingEvidenceRepository.LinkedSaleLine::platformListingVariantId));
+        for (var cohort : cohorts.values()) {
+            if (cohort.stream().anyMatch(line -> line.periodStart() == null || line.periodEnd() == null
+                    || !line.periodStart().isBefore(line.periodEnd()))) continue;
+            var line = cohort.getFirst();
+            Instant cohortFrom = cohort.stream().map(AdvertisingEvidenceRepository.LinkedSaleLine::periodStart)
+                    .min(Instant::compareTo).orElseThrow();
+            Instant cohortTo = cohort.stream().map(AdvertisingEvidenceRepository.LinkedSaleLine::periodEnd)
+                    .max(Instant::compareTo).orElseThrow();
+            Map<MetricCode, MetricValueView> values = metrics.currentValuesCoveringAt(
+                    SubjectKind.PLATFORM_LISTING_VARIANT, line.platformListingVariantId(), window.get(), cohortFrom, cohortTo, readAt);
             List<MetricCode> required = List.of(MetricCode.UNIT_COST, MetricCode.PLATFORM_FEES_PER_UNIT,
                     MetricCode.RETURN_LOSS_PER_UNIT, MetricCode.VARIABLE_TAX_PER_UNIT);
             boolean valid = required.stream().map(values::get).allMatch(value -> value != null
@@ -291,7 +300,9 @@ class AdvertisingEvidenceGatherer {
                     && value.periodStart().plus(window.get().length()).equals(value.periodEnd())
                     && !value.periodEnd().isAfter(readAt)
                     && !value.computedAt().isAfter(readAt) && value.inputDigest() != null
-                    && !value.evidenceRefs().isEmpty() && java.util.Objects.equals(value.currencyCode(), line.currencyCode()));
+                    && !value.evidenceRefs().isEmpty() && cohort.stream().allMatch(consumed ->
+                        !value.periodStart().isAfter(consumed.periodStart()) && !value.periodEnd().isBefore(consumed.periodEnd())
+                        && java.util.Objects.equals(value.currencyCode(), consumed.currencyCode())));
             if (!valid) { continue; }
             result.put(line.platformListingVariantId(), new VariantEconomics(
                     measure(values.get(MetricCode.UNIT_COST)), measure(values.get(MetricCode.PLATFORM_FEES_PER_UNIT)),

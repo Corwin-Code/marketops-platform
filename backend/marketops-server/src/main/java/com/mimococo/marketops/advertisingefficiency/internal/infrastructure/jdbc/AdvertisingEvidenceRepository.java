@@ -89,7 +89,10 @@ public class AdvertisingEvidenceRepository {
     public record AffectedSetRow(
             UUID id, String digest, List<UUID> productVariantIds,
             List<UUID> platformListingVariantIds, String resolutionState,
-            List<String> unresolvedReasonCodes, Instant resolvedAt) {
+            List<String> unresolvedReasonCodes, Instant resolvedAt, Instant acceptedAt) {
+        public AffectedSetRow(UUID id,String digest,List<UUID> products,List<UUID> listings,String state,List<String> reasons,Instant resolvedAt) {
+            this(id,digest,products,listings,state,reasons,resolvedAt,resolvedAt);
+        }
     }
 
     public Optional<AffectedSetRow> affectedSet(UUID organizationId, UUID objectId) {
@@ -100,10 +103,10 @@ public class AdvertisingEvidenceRepository {
         return jdbc.sql("""
                 SELECT id, affected_set_digest, product_variant_ids,
                        platform_listing_variant_ids, resolution_state,
-                       unresolved_reason_codes, resolved_at
+                       unresolved_reason_codes, resolved_at, created_at
                   FROM core.ad_affected_set
                  WHERE organization_id = :organizationId AND ad_native_object_id = :objectId
-                 AND (CAST(:at AS timestamptz) IS NULL OR resolved_at <= :at)
+                 AND (CAST(:at AS timestamptz) IS NULL OR resolved_at <= :at AND created_at<=:at)
                  ORDER BY resolved_at DESC, id DESC
                  LIMIT 1
                 """)
@@ -117,7 +120,7 @@ public class AdvertisingEvidenceRepository {
                         uuidArray(rs, "platform_listing_variant_ids"),
                         rs.getString("resolution_state"),
                         textArray(rs, "unresolved_reason_codes"),
-                        instantOf(rs, "resolved_at")))
+                        instantOf(rs, "resolved_at"),instantOf(rs,"created_at")))
                 .optional();
     }
 
@@ -126,7 +129,11 @@ public class AdvertisingEvidenceRepository {
             UUID id, UUID provenanceId, UUID semanticProfileId, int lineageGeneration,
             BigDecimal observedBidAmount, String bidCurrencyCode, String bidUnitCode,
             String observedStatus, String observedBiddingMode, String evidenceGrade,
-            Instant observedAt, Instant sourceTime) {
+            Instant observedAt, Instant sourceTime, Instant acceptedAt) {
+        public ConfigurationRow(UUID id,UUID provenanceId,UUID semanticProfileId,int lineageGeneration,
+                BigDecimal bid,String currency,String unit,String status,String mode,String grade,Instant observedAt,Instant sourceTime) {
+            this(id,provenanceId,semanticProfileId,lineageGeneration,bid,currency,unit,status,mode,grade,observedAt,sourceTime,observedAt);
+        }
     }
 
     public Optional<ConfigurationRow> currentConfiguration(UUID organizationId, UUID objectId) {
@@ -138,14 +145,19 @@ public class AdvertisingEvidenceRepository {
                 SELECT c.id, c.provenance_id, c.semantic_profile_id, c.lineage_generation,
                        c.observed_bid_amount, c.bid_currency_code, c.bid_unit_code,
                        c.observed_status, c.observed_bidding_mode, c.evidence_grade,
-                       c.observed_at, c.source_time
+                       c.observed_at, c.source_time,provenance.ingestion_time AS accepted_at
                   FROM core.ad_object_configuration_observation c
+                  JOIN core.fact_provenance provenance ON provenance.id=c.provenance_id
                  WHERE c.organization_id = :organizationId
                    AND c.ad_native_object_id = :objectId
                    AND (CAST(:at AS timestamptz) IS NULL OR c.observed_at <= :at)
+                   AND (CAST(:at AS timestamptz) IS NULL OR EXISTS(SELECT 1 FROM core.fact_provenance p
+                       WHERE p.id=c.provenance_id AND p.ingestion_time<=:at))
                    AND NOT EXISTS (SELECT 1 FROM core.ad_object_configuration_observation later
                                     WHERE later.supersedes_observation_id = c.id
-                                      AND (CAST(:at AS timestamptz) IS NULL OR later.observed_at <= :at))
+                                      AND (CAST(:at AS timestamptz) IS NULL OR later.observed_at <= :at)
+                                      AND (CAST(:at AS timestamptz) IS NULL OR EXISTS(SELECT 1 FROM core.fact_provenance p
+                                          WHERE p.id=later.provenance_id AND p.ingestion_time<=:at)))
                  ORDER BY c.observed_at DESC, c.id DESC
                  LIMIT 1
                 """)
@@ -164,7 +176,7 @@ public class AdvertisingEvidenceRepository {
                         rs.getString("observed_bidding_mode"),
                         rs.getString("evidence_grade"),
                         instantOf(rs, "observed_at"),
-                        instantOf(rs, "source_time")))
+                        instantOf(rs, "source_time"),instantOf(rs,"accepted_at")))
                 .optional();
     }
 
@@ -182,7 +194,16 @@ public class AdvertisingEvidenceRepository {
             boolean everyWindowComplete, boolean anyCorrectionWindowOpen,
             Instant earliestSourceTime, Instant latestSourceTime, int factCount,
             UUID latestFactId, BigDecimal coverageRatio, Instant acceptedAt,
-            Instant coveredFrom, Instant coveredTo) {
+            Instant coveredFrom, Instant coveredTo, Instant oldestAcceptedAt) {
+        public ObjectFactAggregate(BigDecimal spendAmount, String currencyCode, Long impressions,
+                Long views, Long clicks, Long providerAttributedOrders, BigDecimal providerAttributedRevenue,
+                boolean everyWindowComplete, boolean anyCorrectionWindowOpen, Instant earliestSourceTime,
+                Instant latestSourceTime, int factCount, UUID latestFactId, BigDecimal coverageRatio,
+                Instant acceptedAt, Instant coveredFrom, Instant coveredTo) {
+            this(spendAmount,currencyCode,impressions,views,clicks,providerAttributedOrders,providerAttributedRevenue,
+                    everyWindowComplete,anyCorrectionWindowOpen,earliestSourceTime,latestSourceTime,factCount,latestFactId,
+                    coverageRatio,acceptedAt,coveredFrom,coveredTo,acceptedAt);
+        }
         public ObjectFactAggregate(BigDecimal spendAmount, String currencyCode, Long impressions,
                 Long views, Long clicks, Long providerAttributedOrders, BigDecimal providerAttributedRevenue,
                 boolean everyWindowComplete, boolean anyCorrectionWindowOpen, Instant earliestSourceTime,
@@ -224,6 +245,7 @@ public class AdvertisingEvidenceRepository {
                           FROM unnest(range_agg(tstzrange(f.period_start, f.period_end, '[)'))) part) /
                            NULLIF(extract(epoch FROM (CAST(:to AS timestamptz) - CAST(:from AS timestamptz))), 0) AS coverage_ratio,
                        max(f.recorded_at) AS accepted_at,
+                       min(f.recorded_at) AS oldest_accepted_at,
                        min(f.period_start) AS covered_from, max(f.period_end) AS covered_to,
                        (SELECT latest.id FROM ledger.ad_object_fact latest
                          WHERE latest.ad_native_object_id = :objectId
@@ -262,7 +284,7 @@ public class AdvertisingEvidenceRepository {
                         instantOf(rs, "latest_source_time"),
                         rs.getInt("fact_count"),
                         rs.getObject("latest_fact_id", UUID.class), rs.getBigDecimal("coverage_ratio"),
-                        instantOf(rs, "accepted_at"), instantOf(rs, "covered_from"), instantOf(rs, "covered_to")))
+                        instantOf(rs, "accepted_at"), instantOf(rs, "covered_from"), instantOf(rs, "covered_to"), instantOf(rs, "oldest_accepted_at")))
                 .optional()
                 .filter(aggregate -> aggregate.factCount() > 0);
     }
@@ -633,7 +655,8 @@ public class AdvertisingEvidenceRepository {
                     WHERE object.id = :object AND object.organization_id = :organization
                       AND incident.organization_id = :organization
                       AND (incident.store_id IS NULL OR incident.store_id = object.store_id)
-                      AND incident.observed_at <= :at AND incident.valid_until > :at AND incident.incident_open)
+                      AND incident.observed_at <= :at AND incident.valid_until > :at AND incident.incident_open
+                      AND EXISTS(SELECT 1 FROM core.fact_provenance p WHERE p.id=incident.provenance_id AND p.ingestion_time<=:at))
                 """).param("organization", organization).param("object", object).param("at", ts(at)).query(Boolean.class).single();
     }
 

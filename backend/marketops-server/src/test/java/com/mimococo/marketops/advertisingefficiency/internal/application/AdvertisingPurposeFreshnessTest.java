@@ -61,6 +61,26 @@ class AdvertisingPurposeFreshnessTest {
         assertThat(result.expiresAt()).isNull();
         assertThat(result.reasonCodes()).containsExactly("FRESHNESS_PROFILE_UNRESOLVED:TASK_ACTIVATION:OFFICIAL_AD_SPEND");
     }
+    @Test void unboundedSourceAgeStillRejectsFutureOrMissingSourceTime() {
+        var profile = new FreshnessProfile(ID, 1, KIND, "PROTECTION_BID_WRITE", null, 30, 0, 0,
+                true, true, BigDecimal.ONE, "CANONICAL_CONFIRMED", false);
+        for (Instant source : new Instant[] {AT.plusSeconds(1), null}) {
+            assertThat(AdvertisingPurposeFreshness.bounds(profile, source, AT, true, true, BigDecimal.ONE, AT))
+                    .contains("FRESHNESS_BOUND_UNMET:PROTECTION_BID_WRITE:OFFICIAL_AD_SPEND");
+        }
+        assertThat(AdvertisingPurposeFreshness.bounds(profile, AT.minusSeconds(86400), AT,
+                true, true, BigDecimal.ONE, AT)).isEmpty();
+    }
+    @Test void unboundedAcceptanceAgeStillRejectsFutureOrMissingAcceptanceTime() {
+        var profile = new FreshnessProfile(ID, 1, KIND, "PROTECTION_BID_WRITE", 30, null, 0, 0,
+                true, true, BigDecimal.ONE, "CANONICAL_CONFIRMED", false);
+        for (Instant accepted : new Instant[] {AT.plusSeconds(1), null}) {
+            assertThat(AdvertisingPurposeFreshness.bounds(profile, AT, accepted, true, true, BigDecimal.ONE, AT))
+                    .contains("FRESHNESS_BOUND_UNMET:PROTECTION_BID_WRITE:OFFICIAL_AD_SPEND");
+        }
+        assertThat(AdvertisingPurposeFreshness.bounds(profile, AT, AT.minusSeconds(86400),
+                true, true, BigDecimal.ONE, AT)).isEmpty();
+    }
     @Test void oldEffectiveCostIsNotStaleWhenCanonicalMetricReconfirmedItsExactApplicability() {
         var original=evidence(AT,false,BigDecimal.ONE,Map.of());
         var amount=com.mimococo.marketops.advertisingefficiency.internal.domain.AdMeasure.available(BigDecimal.TEN,

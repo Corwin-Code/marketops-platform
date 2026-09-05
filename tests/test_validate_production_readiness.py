@@ -29,6 +29,7 @@ from scripts.validate_production_readiness import (
     BASE_HIKARI_AUTOCOMMIT_TOKENS,
     COMPLETED_WORK_PACKAGE_TOKENS,
     COMPLETION_STATE_TOKENS,
+    completion_state_violations,
     ECS_CORRELATION_CUSTOMIZER_TOKENS,
     LOCAL_LOGGING_TOKENS,
     PATH_RESTRICTION,
@@ -352,13 +353,20 @@ class RepositoryContractPatternTests(unittest.TestCase):
 
     def test_slice3_engineering_result_keeps_controller_and_production_boundaries(self) -> None:
         current = (ROOT / "docs/00-governance/CURRENT_STATE.md").read_text()
-        self.assertEqual([], contract_token_violations(current, required=COMPLETION_STATE_TOKENS))
+        self.assertEqual([], completion_state_violations(current))
+        current_line = lambda field: next(line for line in current.splitlines() if line.startswith(field + ": "))
         for before, after in (
-            ("slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_CLOSURE_REVIEW_PENDING",
+            (current_line("slice_v1_003_rework_status"),
              "slice_v1_003_rework_status: FORMALLY_CLOSED"),
-            ("slice_v1_003_controller_verdict: PENDING_INDEPENDENT_REVIEW",
+            (current_line("slice_v1_003_controller_verdict"),
              "slice_v1_003_controller_verdict: APPROVE_FOR_HUMAN_MERGE"),
-            ("next_authorized_actor: CONTROLLER", "next_authorized_actor: CODEX"),
+            ("slice_v1_003_historical_controller_verdict: NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED",
+             "slice_v1_003_historical_controller_verdict: PASS"),
+            ("slice_v1_003_historical_controller_reviewed_head: 3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+             "slice_v1_003_historical_controller_reviewed_head: 0000000000000000000000000000000000000000"),
+            ("slice_v1_003_historical_controller_report_sha256: 6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127",
+             "slice_v1_003_historical_controller_report_sha256: altered"),
+            (current_line("next_authorized_actor"), "next_authorized_actor: IMPLEMENTER_SELF_APPROVAL"),
             ("production_write_enabled: false", "production_write_enabled: true"),
             ("gate_ev: NOT_AUTHORIZED", "gate_ev: AUTHORIZED"),
         ):
@@ -366,7 +374,7 @@ class RepositoryContractPatternTests(unittest.TestCase):
                 self.assertIn(before, current)
                 mutated = current.replace(before, after, 1)
                 self.assertNotEqual(current, mutated)
-                violations = contract_token_violations(mutated, required=COMPLETION_STATE_TOKENS)
+                violations = completion_state_violations(mutated)
                 self.assertTrue(any(before.split(":", 1)[0] in item for item in violations))
 
     def test_enabled_production_write_is_rejected(self) -> None:
@@ -615,6 +623,11 @@ class MigrationContractTests(unittest.TestCase):
                 "V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
                 "V0064__reconcile_expired_advertising_authority.sql",
                 "V0065__route_settled_advertising_contradictions_to_finance_review.sql",
+                "V0066__qualify_economic_cause_bound_protection.sql",
+                "V0067__validate_frozen_outcome_input_profiles.sql",
+                "V0068__preserve_critical_sales_guard_case_evidence.sql",
+                "V0069__reopen_invalidated_protection_outcomes.sql",
+                "V0070__record_canonical_metric_reevaluation_proofs.sql",
             ),
             APPROVED_MIGRATIONS,
         )

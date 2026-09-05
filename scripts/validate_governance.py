@@ -11,6 +11,11 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
+if __package__:
+    from .validation.finalize_slice3_rework_assessment import validated_current_phase
+else:
+    from validation.finalize_slice3_rework_assessment import validated_current_phase
+
 ROOT = Path(__file__).resolve().parents[1]
 
 DR0003_R1_REVIEW_RELATIVE_PATH = (
@@ -397,7 +402,6 @@ V1_ACTIVE_STATE = {
     "active_slice_amendment": "NONE_ACCEPTED",
     "active_slice_contract_bytes": V1_SLICE_003_CONTRACT_BYTES,
     "active_slice_contract_lines": V1_SLICE_003_CONTRACT_LINES,
-    "active_gate": "CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION",
     "authorization": "FULL_SCOPE_IMPLEMENTATION",
     "slice_v1_003_owner_acceptance": "HUMAN_OWNER_ACCEPTED_EXACT",
     "slice_v1_003_owner_acceptance_statement_sha256": (
@@ -614,20 +618,16 @@ V1_ACTIVE_STATE = {
     "slice_v1_002_deferred_release_register": (
         "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json"
     ),
-    "slice_v1_003_rework_status": "CODEX_ENGINEERING_COMPLETE_CONTROLLER_CLOSURE_REVIEW_PENDING",
-    "slice_v1_003_implementation_state": "ENGINEERING_REWORK_IMPLEMENTED_AND_VERIFIED",
-    "slice_v1_003_engineering_closure_claim": "CODEX_ENGINEERING_ASSESSMENT_ONLY_CONTROLLER_PENDING",
-    "slice_v1_003_controller_verdict": "PENDING_INDEPENDENT_REVIEW",
+    "slice_v1_003_historical_controller_verdict": "NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED",
+    "slice_v1_003_historical_controller_reviewed_head": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+    "slice_v1_003_historical_controller_report_sha256": "6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127",
+    "slice_v1_003_historical_controller_report": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/controller-package/VERIFICATION-RESULT.json",
     "slice_v1_003_rework_authorization": "OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1",
     "slice_v1_003_rework_authorization_evidence_sha256":
         "23a2954d68abeebf87d7710f3ab749af5246cdfcbe4a3029dde73dbb34647a11",
     "slice_v1_003_rework_starting_head": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
     "slice_v1_003_frozen_findings_sha256":
         "15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1",
-    "next_authorized_actor": "CONTROLLER",
-    "next_action": (
-        "INDEPENDENT_FINAL_CLOSURE_VERIFICATION_OF_EXACT_DRAFT_PR_HEAD"
-    ),
     "slice_v1_001_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_001_rework_phase": "R2_FORMAL_CLOSURE_ACCEPTED",
     "slice_v1_001_pr": "22",
@@ -717,9 +717,6 @@ V1_ACTIVE_STATE = {
     ),
     "slice_v1_001_handoff_pending": (
         "CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK"
-    ),
-    "candidate_state_scope": (
-        "SLICE_V1_003_ENGINEERING_ASSESSED_CONTROLLER_CLOSURE_REVIEW_PENDING"
     ),
     "merge_authorization": (
         "NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED"
@@ -4883,7 +4880,12 @@ def validate_v1_current_state_text(
         for relative in SLICE3_R1_AUTHORITY_HASHES
         if (path := ROOT / relative).is_file()
     })
-    for field, expected in V1_ACTIVE_STATE.items():
+    try:
+        phase = validated_current_phase()
+    except (OSError, ValueError, KeyError, TypeError, AttributeError, SyntaxError) as error:
+        errors.append(f"SLICE-V1-003 current phase evidence is invalid: {error}")
+        phase = {}
+    for field, expected in {**V1_ACTIVE_STATE, **phase}.items():
         actual = unique_yaml_value(metadata, field)
         if actual != expected:
             errors.append(f"CURRENT_STATE {field} must be exactly: {expected}")

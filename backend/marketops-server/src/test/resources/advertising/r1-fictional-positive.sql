@@ -483,6 +483,23 @@ INSERT INTO core.ad_freshness_profile(id,organization_id,profile_version,evidenc
  ('01230123-0123-4123-8123-012301230002'::uuid,'COMPANY_RETAINED_SALE','FINAL_RETAINED_SALES_OUTCOME'),
  ('01230123-0123-4123-8123-012301230003'::uuid,'SETTLEMENT','SETTLED_FINANCIAL_OUTCOME')) purpose(id,kind,purpose);
 
+-- Each Outcome input has its own synthetic, purpose-specific frozen authority.
+-- Long-lived mapping/configuration applicability is separate from report freshness.
+UPDATE core.ad_freshness_profile SET effective_to=now()+interval '180 days'
+ WHERE id IN('01230123-0123-4123-8123-012301230001','01230123-0123-4123-8123-012301230002','01230123-0123-4123-8123-012301230003');
+INSERT INTO core.ad_freshness_profile(id,organization_id,profile_version,evidence_kind,decision_purpose,
+ scope_kind,source_max_age_minutes,accepted_fact_max_age_minutes,expected_publication_lag_minutes,correction_window_minutes,
+ requires_window_complete,requires_correction_window_closed,minimum_coverage_ratio,minimum_confidence_state,provider_incident_blocks,
+ owner_user_id,reason,evidence_reference,effective_from,effective_to,status,created_at)
+ SELECT gen_random_uuid(),f.organization_id,1,k.kind,f.decision_purpose,'ORGANIZATION',
+ CASE WHEN k.kind IN('AFFECTED_SET','AD_OBJECT_CONFIGURATION') THEN 259200 ELSE 1440 END,
+ CASE WHEN k.kind IN('AFFECTED_SET','AD_OBJECT_CONFIGURATION') THEN 259200 ELSE 1440 END,
+ 0,0,true,true,1,'CANONICAL_CONFIRMED',true,f.owner_user_id,'synthetic independent Outcome source bounds',
+ 'fixture://outcome-input-profile',f.effective_from,f.effective_to,'ACTIVE',now()
+ FROM core.ad_freshness_profile f CROSS JOIN (VALUES('OFFICIAL_AD_SPEND'),('OFFICIAL_AD_TRAFFIC'),
+ ('AD_LINKED_SALE_EVENT'),('COST_AND_FEE'),('AD_OBJECT_CONFIGURATION'),('AFFECTED_SET'),('SELLABILITY'),('AVAILABILITY'),('PRICE_AND_PROMOTION')) k(kind)
+ WHERE f.id IN('01230123-0123-4123-8123-012301230001','01230123-0123-4123-8123-012301230002','01230123-0123-4123-8123-012301230003');
+
 INSERT INTO ops.ad_candidate_selection(id,organization_id,case_id,candidate_id,recommendation_id,maker_user_id,selected_at,reason,bundle_id,bundle_version,affected_set_digest,authority_snapshot,outcome_baseline_id) VALUES('4c64af52-0a4e-5647-8141-afe1b422dc9a','8689c119-8fa0-50b7-8ba2-f9bf3039d336','6c4036a0-266a-5a8f-9695-41a160fc74d7','26d942fe-00b2-5242-a3e3-a667e3f6339b','60cb55d4-9471-5910-b63b-78afb479a8aa','0998716b-6f78-56da-bbea-554b20cfd093',
  now(),'fictional exact candidate','cacdad4e-1a61-5901-b7f9-68062f95d854',1,'bc2143351b311308437a062a6dd1da614a56480a33d18c1c6fbcc61e88261fae',jsonb_build_object('bid',ops.ad_bid_authority_snapshot('60cb55d4-9471-5910-b63b-78afb479a8aa'),'bundle',ops.ad_bundle_authority_snapshot('cacdad4e-1a61-5901-b7f9-68062f95d854')),'d0fa7daf-0724-5272-a691-bc0400c23766');
 
@@ -498,7 +515,10 @@ INSERT INTO ops.ad_outcome_baseline(id,organization_id,candidate_id,ad_native_ob
 -- Complete synthetic trusted Planner oracle. Unknown economics stay unavailable.
 INSERT INTO ops.ad_outcome_stage_baseline(outcome_baseline_id,stage,window_hours,snapshot)
  SELECT baseline.id,stage.code,stage.hours,jsonb_build_object(
- 'stage',stage.code,'from',baseline.prepared_at-make_interval(hours=>stage.hours),'to',baseline.prepared_at,
+ 'stage',stage.code,'originalCause',(SELECT cause_code FROM ops.ad_bid_candidate WHERE id=baseline.candidate_id),
+ 'originalIdentity',(SELECT jsonb_build_object('semanticProfileId',candidate.semantic_profile_id,'lineageGeneration',kase.lineage_generation)
+   FROM ops.ad_bid_candidate candidate JOIN mart.ad_case kase ON kase.id=candidate.case_id WHERE candidate.id=baseline.candidate_id),
+ 'from',baseline.prepared_at-make_interval(hours=>stage.hours),'to',baseline.prepared_at,
  'profit',jsonb_build_object('absoluteProfit',missing.value,'profitPerAdRub',missing.value,'currencyCode','RUB',
    'missingComponentCodes',jsonb_build_array('PRE_ACTION_PROFIT_UNRESOLVED')),
  'companySales',CASE WHEN stage.code='OPERATIONAL' THEN available.value ELSE missing.value END,
@@ -508,17 +528,15 @@ INSERT INTO ops.ad_outcome_stage_baseline(outcome_baseline_id,stage,window_hours
    'sales',CASE WHEN stage.code='OPERATIONAL' THEN available.value ELSE missing.value END)),
  'traffic',NULL,'coverage',NULL,'confounderDigest',repeat('c',64),'evidenceIds',jsonb_build_array(),
  'blockers',jsonb_build_array('PRE_ACTION_PROFIT_UNRESOLVED'),
- 'freshnessProfile',jsonb_build_object('id',profile.id,'version',profile.profile_version,'evidenceKind',profile.evidence_kind,
-   'decisionPurpose',profile.decision_purpose,'sourceMaxAgeMinutes',profile.source_max_age_minutes,
-   'acceptedFactMaxAgeMinutes',profile.accepted_fact_max_age_minutes,'expectedPublicationLagMinutes',profile.expected_publication_lag_minutes,
-   'correctionWindowMinutes',profile.correction_window_minutes,'requiresWindowComplete',profile.requires_window_complete,
-   'requiresCorrectionWindowClosed',profile.requires_correction_window_closed,'minimumCoverageRatio',profile.minimum_coverage_ratio,
-   'minimumConfidenceState',profile.minimum_confidence_state,'providerIncidentBlocks',profile.provider_incident_blocks,'effectiveTo',profile.effective_to),
+ 'freshnessProfile',ops.ad_outcome_freshness_snapshot(profile.id),
+ 'freshnessProfiles',(SELECT jsonb_object_agg(fp.evidence_kind,ops.ad_outcome_freshness_snapshot(fp.id))
+   FROM core.ad_freshness_profile fp WHERE fp.organization_id=baseline.organization_id AND fp.decision_purpose=stage.purpose AND fp.status='ACTIVE'),
+ 'purposeEvidence',jsonb_build_array(), 'protectionEvidence',NULL,
  'officialSpend',missing.value)
  FROM ops.ad_outcome_baseline baseline JOIN core.ad_outcome_policy policy ON policy.id=baseline.outcome_policy_id
  CROSS JOIN LATERAL (VALUES('OPERATIONAL',policy.completed_sales_guard_hours,'EARLY_COMPLETED_SALES_OUTCOME'),
    ('RETAINED',720,'FINAL_RETAINED_SALES_OUTCOME'),('SETTLED',greatest(720,policy.settlement_window_hours),'SETTLED_FINANCIAL_OUTCOME')) stage(code,hours,purpose)
- JOIN core.ad_freshness_profile profile ON profile.organization_id=baseline.organization_id AND profile.decision_purpose=stage.purpose
+ JOIN core.ad_freshness_profile profile ON profile.organization_id=baseline.organization_id AND profile.decision_purpose=stage.purpose AND profile.evidence_kind=CASE stage.code WHEN 'OPERATIONAL' THEN 'COMPANY_COMPLETED_SALE' WHEN 'RETAINED' THEN 'COMPANY_RETAINED_SALE' ELSE 'SETTLEMENT' END
  CROSS JOIN LATERAL (SELECT jsonb_build_object('valueState','NOT_AVAILABLE','value',NULL,'evidenceState','INCOMPLETE') value) missing
  CROSS JOIN LATERAL (SELECT jsonb_build_object('valueState','AVAILABLE','value',1000,'evidenceState','CANONICAL_CONFIRMED') value) available
  WHERE baseline.id='d0fa7daf-0724-5272-a691-bc0400c23766';

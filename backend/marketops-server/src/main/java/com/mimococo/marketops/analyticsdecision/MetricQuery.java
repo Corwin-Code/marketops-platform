@@ -38,6 +38,14 @@ public interface MetricQuery {
                                                      MetricWindow window,
                                                      Instant at);
 
+    /** Latest values whose canonical business window covers the complete consumed cohort. */
+    Map<MetricCode, MetricValueView> currentValuesCoveringAt(SubjectKind subjectKind,
+                                                            UUID subjectId,
+                                                            MetricWindow window,
+                                                            Instant cohortFrom,
+                                                            Instant cohortTo,
+                                                            Instant at);
+
     /**
      * Every stored value of one metric for one subject, newest first.
      *

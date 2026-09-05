@@ -2901,6 +2901,9 @@ class V1CurrentStateContractTests(unittest.TestCase):
     def current(self) -> str:
         return repository_governance_text("docs/00-governance/CURRENT_STATE.md")
 
+    def current_line(self, field: str) -> str:
+        return next(line for line in self.current().splitlines() if line.startswith(field + ": "))
+
     def charter(self) -> str:
         return repository_governance_text("docs/00-governance/PROJECT_CHARTER.md")
 
@@ -2965,7 +2968,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "active_slice_contract",
             ),
             (
-                "active_gate: CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION",
+                self.current_line("active_gate"),
                 "active_gate: READY_FOR_DESIGN",
                 "active_gate",
             ),
@@ -3163,7 +3166,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
     def test_rework_identity_phase_and_actor_cannot_drift(self) -> None:
         mutations = (
             (
-                "next_authorized_actor: CONTROLLER",
+                "next_authorized_actor: CODEX",
                 "next_authorized_actor: SOMEBODY_ELSE",
             ),
             (
@@ -3184,7 +3187,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "slice_v1_001_closure_claim: OWNER_FORMALLY_CLOSED",
             ),
             (
-                "candidate_state_scope: SLICE_V1_003_ENGINEERING_ASSESSED_CONTROLLER_CLOSURE_REVIEW_PENDING",
+                "candidate_state_scope: SLICE_V1_003_RESIDUAL_REWORK_NOT_CONTROLLER_APPROVED",
                 "candidate_state_scope: PRODUCTION_READY",
             ),
             (
@@ -3218,15 +3221,21 @@ class V1CurrentStateContractTests(unittest.TestCase):
         current = self.current()
         self.assertEqual([], self.validate(current=current, slice_contract_bytes=self.slice_contract_bytes()))
         mutations = (
-            ("slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_CLOSURE_REVIEW_PENDING",
+            (self.current_line("slice_v1_003_rework_status"),
              "slice_v1_003_rework_status: CONTROLLER_VERIFIED"),
-            ("slice_v1_003_engineering_closure_claim: CODEX_ENGINEERING_ASSESSMENT_ONLY_CONTROLLER_PENDING",
+            (self.current_line("slice_v1_003_engineering_closure_claim"),
              "slice_v1_003_engineering_closure_claim: OWNER_FORMALLY_CLOSED"),
-            ("slice_v1_003_controller_verdict: PENDING_INDEPENDENT_REVIEW",
+            (self.current_line("slice_v1_003_controller_verdict"),
              "slice_v1_003_controller_verdict: APPROVE_FOR_HUMAN_MERGE"),
-            ("active_gate: CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION",
+            ("slice_v1_003_historical_controller_verdict: NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED",
+             "slice_v1_003_historical_controller_verdict: PASS"),
+            ("slice_v1_003_historical_controller_reviewed_head: 3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+             "slice_v1_003_historical_controller_reviewed_head: 0000000000000000000000000000000000000000"),
+            ("slice_v1_003_historical_controller_report_sha256: 6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127",
+             "slice_v1_003_historical_controller_report_sha256: altered"),
+            (self.current_line("active_gate"),
              "active_gate: READY_FOR_MERGE"),
-            ("next_action: INDEPENDENT_FINAL_CLOSURE_VERIFICATION_OF_EXACT_DRAFT_PR_HEAD",
+            (self.current_line("next_action"),
              "next_action: MARK_READY_AND_MERGE"),
             ("merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED",
              "merge_authorization: AUTHORIZED"),

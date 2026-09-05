@@ -121,13 +121,14 @@ public record AdCaseCalculation(
         if (scored.decision().lane() != AdvertisingLane.PROTECTION || scored.maxCpc().writeGrade()
                 || !affectedSet.sufficientForWrite() || !scored.currentBid().sufficientForWrite()
                 || !scored.officialSpend().sufficientForWrite() || scored.officialSpend().value().signum() <= 0) return false;
-        String dangerKind = switch(scored.identity().cause()) {
-            case PROMOTED_VARIANT_NOT_SELLABLE -> "SELLABILITY";
-            case PROMOTED_VARIANT_UNAVAILABLE -> "AVAILABILITY";
-            default -> null;
-        };
-        if(dangerKind==null || scored.decision().blockerCodes().contains("CRITICAL_SALES_GUARD_EVIDENCE_UNRESOLVED")) return false;
-        return List.of("OFFICIAL_AD_SPEND","AD_OBJECT_CONFIGURATION","AFFECTED_SET",dangerKind).stream()
+        var required = AdActionDependencyPolicy.requiredEvidenceKinds(BidCandidate.CAUSE_BOUND_PROTECTION_STEP,
+                scored.identity().cause().name());
+        if(required.isEmpty() || scored.decision().blockerCodes().contains("CRITICAL_SALES_GUARD_EVIDENCE_UNRESOLVED")) return false;
+        if (scored.identity().cause() == com.mimococo.marketops.advertisingefficiency.AdvertisingCause.PROVEN_ADVERTISING_LOSS
+                && (!scored.contributionProfit().sufficientForWrite() || scored.contributionProfit().value().signum() >= 0
+                    || !AdActionDependencyPolicy.actionBlockers(BidCandidate.CAUSE_BOUND_PROTECTION_STEP,
+                            scored.identity().cause().name(),scored.decision().blockerCodes()).isEmpty())) return false;
+        return required.stream()
                 .allMatch(kind -> {
                     var exact=purposeEvidence.stream().filter(evidence -> evidence.purpose().equals("PROTECTION_BID_WRITE") && evidence.kind().equals(kind)).toList();
                     return exact.size()==1 && exact.getFirst().eligible() && exact.getFirst().expiresAt()!=null && exact.getFirst().expiresAt().isAfter(asOf);

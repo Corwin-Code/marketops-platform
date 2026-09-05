@@ -74,6 +74,13 @@ final class AdvertisingOutcomeAssessment {
                 : !due ? OutcomeEvaluation.GuardState.SALES_TOO_RECENT : covered
                 ? OutcomeEvaluation.GuardState.SATISFIED : OutcomeEvaluation.GuardState.COVERAGE_INSUFFICIENT;
         if (!policy.complete()) { reasons.add("OUTCOME_POLICY_INCOMPLETE"); }
+        if(!before.freshnessProfiles().keySet().containsAll(List.of(AdvertisingOutcomeFreshness.companyKind(before.stage()),
+                "OFFICIAL_AD_SPEND","OFFICIAL_AD_TRAFFIC","AD_LINKED_SALE_EVENT","COST_AND_FEE"))) {
+            reasons.add("FROZEN_BASELINE_INPUT_PROFILES_INCOMPLETE");
+        }
+        if(after.protectionEvidence()==null || !after.protectionEvidence().exactAffectedScope()) {
+            reasons.add("OUTCOME_AFFECTED_SCOPE_UNRESOLVED");
+        }
         if (policy.minimumAdSpend()==null || before.officialSpend()==null || after.officialSpend()==null
                 || !before.officialSpend().sufficientForWrite() || !after.officialSpend().sufficientForWrite()
                 || before.officialSpend().value().compareTo(policy.minimumAdSpend())<0
@@ -108,14 +115,31 @@ final class AdvertisingOutcomeAssessment {
             AdvertisingOutcomeEvidenceService.Snapshot after,AdvertisingOutcomePlanningService.Policy policy,Assessment result,boolean due) {
         if(!due || !policy.complete()) return "OUTCOME_PENDING";
         boolean completeWindow=after.coverage()!=null && after.coverage().compareTo(policy.minimumCoverage())>=0;
-        if(completeWindow && after.officialSpend()!=null && after.officialSpend().sufficientForWrite() && after.officialSpend().value().signum()==0) {
+        var protectionProof=after.protectionEvidence();
+        boolean exactScope=protectionProof!=null && protectionProof.exactAffectedScope();
+        if(protection && exactScope && protectionProof.configurationVerified()
+                && after.coverage()!=null && after.coverage().compareTo(BigDecimal.ONE)==0
+                && after.officialSpend()!=null && after.officialSpend().sufficientForWrite() && after.officialSpend().value().signum()==0) {
+            // Spend is read only from facts wholly inside the frozen observation
+            // window. Late charges for prior periods cannot be counted as new exposure.
             return "VERIFIED_AD_EXPOSURE_STOPPED";
+        }
+        if(protection && List.of("PROMOTED_VARIANT_NOT_SELLABLE","PROMOTED_VARIANT_UNAVAILABLE").contains(cause)) {
+            boolean cleared=exactScope && switch(cause) {
+                case "PROMOTED_VARIANT_NOT_SELLABLE" -> protectionProof.sellabilityCleared();
+                case "PROMOTED_VARIANT_UNAVAILABLE" -> protectionProof.availabilityCleared();
+                default -> false;
+            };
+            // The original cause is frozen on the action. Profit uncertainty or
+            // the expected recovery of this cause is not an efficiency verdict.
+            return cleared?"VERIFIED_AD_RISK_CLEARED":"PROTECTION_IN_PROGRESS";
         }
         if(result.dualAxis().healthy()) return "VERIFIED_EFFICIENCY_SUCCESS";
         if(result.dualAxis().outcome()==DualAxisVerdict.Outcome.IMPROVED_NOT_HEALTHY) return "IMPROVED_NOT_HEALTHY";
         boolean comparable=before.confounderDigest().equals(after.confounderDigest())
                 && java.util.stream.Stream.concat(before.blockers().stream(),after.blockers().stream()).noneMatch(value->value.startsWith("CONFOUNDER_"));
-        if("PROVEN_ADVERTISING_LOSS".equals(cause) && "RETAINED".equals(after.stage()) && comparable && completeWindow
+        if(protection && "PROVEN_ADVERTISING_LOSS".equals(cause) && List.of("RETAINED","SETTLED").contains(after.stage())
+                && exactScope && comparable && completeWindow && after.officialSpend().sufficientForWrite()
                 && after.profit().absoluteProfit().sufficientForWrite() && after.profit().absoluteProfit().value().signum()>=0) {
             return "VERIFIED_AD_RISK_CLEARED";
         }
