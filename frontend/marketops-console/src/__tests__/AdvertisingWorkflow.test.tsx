@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { AdvertisingWorkflow } from '../advertising/AdvertisingWorkflow';
 import { AdvertisingTimestamp } from '../advertising/AdvertisingTimestamp';
@@ -261,4 +261,215 @@ describe('advertising workflow through service contracts', () => {
       ).toBe(2);
     });
   });
+});
+
+const establishedSlo = {
+  coverageState: 'IN_COVERAGE',
+  acknowledgementDueAt: '2026-09-04T01:00:00Z',
+  actionDueAt: '2026-09-04T03:00:00Z',
+  escalationDueAt: '2026-09-04T04:00:00Z',
+  nextStaffedResponseAt: '2026-09-04T00:00:00Z',
+  acknowledgedAt: null,
+  firstAttributableActionAt: null,
+  acknowledgementBreached: false,
+  actionBreached: false,
+  actionPaused: false,
+  wallClockExposureAgeSeconds: 42,
+};
+
+async function showResponseTiming(slo: unknown) {
+  const { context } = setup({ ...workflow, allowedActions: ['TASK_ACKNOWLEDGE'], slo });
+  render(<AdvertisingWorkflow context={context} caseId="case-1" timezone="Europe/Moscow" />);
+  return within(await screen.findByRole('group', { name: 'Advertising response timing' }));
+}
+
+describe('advertising response evidence stays distinct from staffed-clock evaluability', () => {
+  it('keeps missing-profile false flags unresolved without hiding the Task or borrowing legacy dates', async () => {
+    const timing = await showResponseTiming({
+      ...establishedSlo,
+      coverageState: 'PROFILE_OR_CALENDAR_MISSING',
+      acknowledgementDueAt: null,
+      actionDueAt: null,
+      escalationDueAt: null,
+      nextStaffedResponseAt: null,
+    });
+    expect(screen.getByText(/Task task-1/u)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Acknowledge responsibility' })).toBeInTheDocument();
+    expect(screen.queryByText(/2026-09-04T01:00:00.000Z/u)).not.toBeInTheDocument();
+    expect(timing.getByLabelText('Acknowledgement completion')).toHaveTextContent('UNRESOLVED');
+    expect(timing.getByLabelText('Action-stage completion')).toHaveTextContent('UNRESOLVED');
+    expect(timing.getByLabelText('Acknowledgement timeliness')).toHaveTextContent('UNRESOLVED');
+    expect(timing.getByLabelText('Action timeliness')).toHaveTextContent('UNRESOLVED');
+    expect(timing.getByLabelText('Action clock state')).toHaveTextContent(
+      'Action clock: UNRESOLVED',
+    );
+    expect(
+      timing.queryByText(/NOT_BREACHED|within current|not recorded|Action clock: active/u),
+    ).not.toBeInTheDocument();
+    expect(timing.getByText('Exposure age 42 seconds')).toBeInTheDocument();
+  });
+
+  it.each([
+    ['missing', undefined],
+    ['array', []],
+    ['unrecognized coverage', { ...establishedSlo, coverageState: 'STAFFED' }],
+  ] as const)(
+    'preserves the Task when the live SLO is %s instead of inventing a running clock',
+    async (_label, slo) => {
+      const timing = await showResponseTiming(slo);
+      expect(screen.getByText(/Task task-1/u)).toBeInTheDocument();
+      expect(timing.getByLabelText('Acknowledgement timeliness')).toHaveTextContent('UNRESOLVED');
+      expect(timing.getByLabelText('Action timeliness')).toHaveTextContent('UNRESOLVED');
+      expect(timing.getByLabelText('Action clock state')).toHaveTextContent(
+        'Action clock: UNRESOLVED',
+      );
+    },
+  );
+
+  it('shows an active staffed clock only for an established pending server response', async () => {
+    const timing = await showResponseTiming(establishedSlo);
+    expect(timing.getByLabelText('Acknowledgement timeliness')).toHaveTextContent(
+      'NOT_BREACHED as of this response',
+    );
+    expect(timing.getByLabelText('Action timeliness')).toHaveTextContent(
+      'NOT_BREACHED as of this response',
+    );
+    expect(timing.getByLabelText('Acknowledgement completion')).toHaveTextContent(
+      'not recorded as of this response',
+    );
+    expect(timing.getByLabelText('Action-stage completion')).toHaveTextContent(
+      'not recorded as of this response',
+    );
+    expect(timing.getByLabelText('Action clock state')).toHaveTextContent('Action clock: active');
+  });
+
+  it.each([null, '', 'not-an-instant'])(
+    'does not use the ACK deadline to resolve a missing or invalid Action deadline %s',
+    async (actionDueAt) => {
+      const timing = await showResponseTiming({ ...establishedSlo, actionDueAt });
+      expect(timing.getByLabelText('Acknowledgement timeliness')).toHaveTextContent(
+        'NOT_BREACHED as of this response',
+      );
+      expect(timing.getByLabelText('Action timeliness')).toHaveTextContent('UNRESOLVED');
+      expect(timing.getByLabelText('Action clock state')).toHaveTextContent(
+        'Action clock: UNRESOLVED',
+      );
+    },
+  );
+
+  it.each([
+    ['unknown breach', { actionBreached: null }],
+    ['unknown pause', { actionPaused: null }],
+    ['invalid completion evidence', { firstAttributableActionAt: 'invalid' }],
+  ] as const)('does not turn %s into an active clock', async (_label, delta) => {
+    const timing = await showResponseTiming({ ...establishedSlo, ...delta });
+    expect(timing.getByLabelText('Action clock state')).toHaveTextContent(
+      'Action clock: UNRESOLVED',
+    );
+  });
+
+  it.each(['OUT_OF_COVERAGE', 'OUT_OF_COVERAGE_ACTIVE_HARM'])(
+    'keeps %s exposure visible while waiting for staffing instead of claiming active coverage',
+    async (coverageState) => {
+      const timing = await showResponseTiming({
+        ...establishedSlo,
+        coverageState,
+        wallClockExposureAgeSeconds: 7200,
+      });
+      expect(screen.getByText(coverageState)).toBeInTheDocument();
+      expect(screen.getByText('Next staffed response').nextElementSibling).toHaveTextContent(
+        '2026-09-04T00:00:00.000Z',
+      );
+      expect(timing.getByLabelText('Action clock state')).toHaveTextContent(
+        'awaiting staffed coverage',
+      );
+      expect(timing.getByLabelText('Action timeliness')).toHaveTextContent(
+        'NOT_BREACHED as of this response',
+      );
+      expect(timing.getByText('Exposure age 7200 seconds')).toBeInTheDocument();
+    },
+  );
+
+  it('preserves reported breaches and a current pause even when deadline authority is unresolved', async () => {
+    const timing = await showResponseTiming({
+      ...establishedSlo,
+      coverageState: 'PROFILE_OR_CALENDAR_MISSING',
+      acknowledgementDueAt: null,
+      actionDueAt: null,
+      acknowledgementBreached: true,
+      actionBreached: true,
+      actionPaused: true,
+    });
+    expect(timing.getByLabelText('Acknowledgement timeliness')).toHaveTextContent(
+      'Acknowledgement timeliness: BREACHED',
+    );
+    expect(timing.getByLabelText('Action timeliness')).toHaveTextContent(
+      'Action timeliness: BREACHED',
+    );
+    expect(timing.getByLabelText('Action clock state')).toHaveTextContent('Action clock: paused');
+    expect(timing.getByText(/exposure age continues/u)).toBeInTheDocument();
+  });
+
+  it('preserves historical late completion and a reported pause without restarting the completed stage', async () => {
+    const timing = await showResponseTiming({
+      ...establishedSlo,
+      coverageState: 'ACCEPTED_EXCEPTION_ACTIVE',
+      acknowledgedAt: '2026-09-04T00:30:00Z',
+      firstAttributableActionAt: '2026-09-04T03:30:00Z',
+      actionBreached: true,
+      actionPaused: true,
+    });
+    expect(timing.getByLabelText('Acknowledgement completion')).toHaveTextContent(
+      '2026-09-04T00:30:00.000Z',
+    );
+    expect(timing.getByLabelText('Acknowledgement timeliness')).toHaveTextContent(
+      'NOT_BREACHED as of this response',
+    );
+    expect(timing.getByLabelText('Action-stage completion')).toHaveTextContent(
+      '2026-09-04T03:30:00.000Z',
+    );
+    expect(timing.getByLabelText('Action timeliness')).toHaveTextContent(
+      'Action timeliness: BREACHED',
+    );
+    expect(timing.getByLabelText('Action clock state')).toHaveTextContent('stage completed');
+    expect(timing.getByText(/exposure age continues/u)).toBeInTheDocument();
+  });
+
+  it('does not turn an acknowledgement into an attributable Action-stage completion', async () => {
+    const timing = await showResponseTiming({
+      ...establishedSlo,
+      acknowledgedAt: '2026-09-04T00:30:00Z',
+    });
+    expect(timing.getByLabelText('Acknowledgement completion')).toHaveTextContent('recorded at');
+    expect(timing.getByLabelText('Action-stage completion')).toHaveTextContent(
+      'not recorded as of this response',
+    );
+    expect(timing.getByLabelText('Action clock state')).toHaveTextContent('Action clock: active');
+  });
+
+  it('keeps a supplied completion fact separate from unknown timeliness and a missing age', async () => {
+    const timing = await showResponseTiming({
+      ...establishedSlo,
+      coverageState: 'PROFILE_OR_CALENDAR_MISSING',
+      actionDueAt: null,
+      firstAttributableActionAt: '2026-09-04T03:30:00Z',
+      wallClockExposureAgeSeconds: null,
+    });
+    expect(timing.getByLabelText('Action-stage completion')).toHaveTextContent('recorded at');
+    expect(timing.getByLabelText('Action timeliness')).toHaveTextContent('UNRESOLVED');
+    expect(timing.getByLabelText('Action clock state')).toHaveTextContent('stage completed');
+    expect(timing.getByText('Exposure age UNRESOLVED seconds')).toBeInTheDocument();
+  });
+
+  it.each([-1, 0])(
+    'does not conflate negative exposure age %s with an established zero',
+    async (wallClockExposureAgeSeconds) => {
+      const timing = await showResponseTiming({ ...establishedSlo, wallClockExposureAgeSeconds });
+      expect(
+        timing.getByText(
+          `Exposure age ${wallClockExposureAgeSeconds < 0 ? 'UNRESOLVED' : '0'} seconds`,
+        ),
+      ).toBeInTheDocument();
+    },
+  );
 });

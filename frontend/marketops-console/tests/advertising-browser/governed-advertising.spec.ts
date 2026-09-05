@@ -299,6 +299,56 @@ test('all four real HTTP lane projections preserve unknown values and expose no 
         owner.page.getByRole('button', { name: 'Select exact candidate', exact: true }),
       ).toHaveCount(0);
     }
+    if (lane === 'DATA_REPAIR' || lane === 'OPTIMIZATION') {
+      await test.step(`${lane}: missing staffed authority remains unresolved despite false breach flags`, async () => {
+        const response = await request.get(
+          `${API}/api/v1/console/advertising/cases/${id ?? ''}/workflow`,
+          {
+            headers: { Authorization: `Bearer ${owner.data.accessToken}` },
+          },
+        );
+        expect(response.ok()).toBe(true);
+        const actual = (await response.json()) as {
+          slo: {
+            coverageState: string;
+            acknowledgementDueAt: string | null;
+            actionDueAt: string | null;
+            acknowledgedAt: string | null;
+            firstAttributableActionAt: string | null;
+            acknowledgementBreached: boolean;
+            actionBreached: boolean;
+            actionPaused: boolean;
+          };
+        };
+        expect(actual.slo.coverageState).toBe('PROFILE_OR_CALENDAR_MISSING');
+        expect(actual.slo.acknowledgementDueAt).toBeNull();
+        expect(actual.slo.actionDueAt).toBeNull();
+        expect(actual.slo.acknowledgedAt).toBeNull();
+        expect(actual.slo.firstAttributableActionAt).toBeNull();
+        expect(actual.slo.acknowledgementBreached).toBe(false);
+        expect(actual.slo.actionBreached).toBe(false);
+        expect(actual.slo.actionPaused).toBe(false);
+        const timing = owner.page.getByRole('group', { name: 'Advertising response timing' });
+        await expect(timing.getByLabel('Acknowledgement completion')).toHaveText(
+          'Acknowledgement completion: UNRESOLVED',
+        );
+        await expect(timing.getByLabel('Action-stage completion')).toHaveText(
+          'Action-stage completion: UNRESOLVED',
+        );
+        await expect(timing.getByLabel('Acknowledgement timeliness')).toHaveText(
+          'Acknowledgement timeliness: UNRESOLVED',
+        );
+        await expect(timing.getByLabel('Action timeliness')).toHaveText(
+          'Action timeliness: UNRESOLVED',
+        );
+        await expect(timing.getByLabel('Action clock state')).toHaveText(
+          'Action clock: UNRESOLVED',
+        );
+        await expect(timing).not.toContainText('within current staffed clock');
+        await expect(timing).not.toContainText('NOT_BREACHED');
+        await expect(timing).not.toContainText('Action clock: active');
+      });
+    }
     await owner.page.screenshot({
       path: testInfo.outputPath(`${lane}-actual-http-projection.png`),
       fullPage: true,
@@ -526,6 +576,14 @@ test('real keyboard navigation and scoped HTTP pagination preserve page boundari
   expect(responsibility.slo.acknowledgedAt).not.toBeNull();
   // Keyboard ACK proves acknowledgement only; it must not start the Action-stage clock.
   expect(responsibility.slo.firstAttributableActionAt).toBeNull();
+  await test.step('keyboard ACK renders its own completion without completing Action', async () => {
+    const timing = maker.page.getByRole('group', { name: 'Advertising response timing' });
+    await expect(timing.getByLabel('Acknowledgement completion')).toContainText('recorded at');
+    await expect(timing.getByLabel('Action-stage completion')).toHaveText(
+      'Action-stage completion: not recorded as of this response',
+    );
+    await expect(timing.getByLabel('Action clock state')).not.toContainText('stage completed');
+  });
   await maker.page.screenshot({
     path: testInfo.outputPath('keyboard-acknowledgement-not-action.png'),
     fullPage: true,

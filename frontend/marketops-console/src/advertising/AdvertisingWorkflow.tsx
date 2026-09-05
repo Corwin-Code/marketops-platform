@@ -49,6 +49,102 @@ function candidateActions(
   return actions.filter((action) => allowed.includes(action));
 }
 
+const KNOWN_STAFFED_COVERAGE = new Set([
+  'IN_COVERAGE',
+  'OUT_OF_COVERAGE',
+  'OUT_OF_COVERAGE_ACTIVE_HARM',
+  'ACCEPTED_EXCEPTION_ACTIVE',
+]);
+
+function responseInstant(value: unknown): string | undefined {
+  return typeof value === 'string' &&
+    value.trim().length > 0 &&
+    Number.isFinite(new Date(value).getTime())
+    ? value
+    : undefined;
+}
+
+/** Display the server snapshot; never derive a staffed deadline from browser time. */
+function AdvertisingResponseTiming({
+  slo,
+  timezone,
+}: {
+  readonly slo: Workflow['slo'];
+  readonly timezone: string | undefined;
+}): React.JSX.Element {
+  const current = Array.isArray(slo) ? undefined : slo;
+  const coverage = current?.coverageState;
+  const knownCoverage = typeof coverage === 'string' && KNOWN_STAFFED_COVERAGE.has(coverage);
+  const ackDue = responseInstant(current?.acknowledgementDueAt);
+  const actionDue = responseInstant(current?.actionDueAt);
+  const acknowledgedAt = responseInstant(current?.acknowledgedAt);
+  const actedAt = responseInstant(current?.firstAttributableActionAt);
+  const timeliness = (breached: unknown, due: string | undefined): string =>
+    breached === true
+      ? 'BREACHED'
+      : breached === false && knownCoverage && due !== undefined
+        ? 'NOT_BREACHED as of this response'
+        : 'UNRESOLVED';
+  const completion = (
+    value: string | undefined,
+    raw: unknown,
+    due: string | undefined,
+  ): React.JSX.Element =>
+    value !== undefined ? (
+      <>
+        recorded at <AdvertisingTimestamp value={value} timezone={timezone} />
+      </>
+    ) : (
+      <>
+        {raw === null && knownCoverage && due !== undefined
+          ? 'not recorded as of this response'
+          : 'UNRESOLVED'}
+      </>
+    );
+  let actionClock = 'UNRESOLVED';
+  if (actedAt !== undefined) actionClock = 'stage completed';
+  else if (current?.actionPaused === true) actionClock = 'paused';
+  else if (
+    knownCoverage &&
+    actionDue !== undefined &&
+    typeof current?.actionBreached === 'boolean' &&
+    current.actionPaused === false &&
+    current.firstAttributableActionAt === null
+  ) {
+    if (coverage === 'IN_COVERAGE') actionClock = 'active';
+    else if (coverage === 'OUT_OF_COVERAGE' || coverage === 'OUT_OF_COVERAGE_ACTIVE_HARM')
+      actionClock = 'awaiting staffed coverage';
+  }
+  const age = current?.wallClockExposureAgeSeconds;
+
+  return (
+    <div role="group" aria-label="Advertising response timing">
+      <p aria-label="Acknowledgement completion">
+        Acknowledgement completion: {completion(acknowledgedAt, current?.acknowledgedAt, ackDue)}
+      </p>
+      <p aria-label="Action-stage completion">
+        Action-stage completion:{' '}
+        {completion(actedAt, current?.firstAttributableActionAt, actionDue)}
+      </p>
+      <p aria-label="Acknowledgement timeliness">
+        Acknowledgement timeliness: {timeliness(current?.acknowledgementBreached, ackDue)}
+      </p>
+      <p aria-label="Action timeliness">
+        Action timeliness: {timeliness(current?.actionBreached, actionDue)}
+      </p>
+      <p aria-label="Action clock state">Action clock: {actionClock}</p>
+      {current?.actionPaused === true && (
+        <p>Current action pause is reported; exposure age continues.</p>
+      )}
+      <p>
+        Exposure age{' '}
+        {typeof age === 'number' && Number.isSafeInteger(age) && age >= 0 ? age : 'UNRESOLVED'}{' '}
+        seconds
+      </p>
+    </div>
+  );
+}
+
 /** Each interaction round-trips through the existing workflow authority. */
 export function AdvertisingWorkflow({
   context,
@@ -181,31 +277,7 @@ export function AdvertisingWorkflow({
               />
             </dd>
           </dl>
-          {workflow.slo !== undefined && (
-            <p>
-              Acknowledgement:{' '}
-              {workflow.slo.acknowledgementBreached === true
-                ? 'BREACHED'
-                : workflow.slo.acknowledgementBreached === false
-                  ? 'within current staffed clock'
-                  : 'UNRESOLVED'}{' '}
-              · Action:{' '}
-              {workflow.slo.actionBreached === true
-                ? 'BREACHED'
-                : workflow.slo.actionBreached === false
-                  ? 'within current staffed clock'
-                  : 'UNRESOLVED'}{' '}
-              ·
-              {workflow.slo.actionPaused === true
-                ? 'action clock paused; exposure age continues'
-                : 'action clock active'}{' '}
-              · Exposure age{' '}
-              {typeof workflow.slo.wallClockExposureAgeSeconds === 'number'
-                ? workflow.slo.wallClockExposureAgeSeconds
-                : 'UNRESOLVED'}{' '}
-              seconds
-            </p>
-          )}
+          <AdvertisingResponseTiming slo={workflow.slo} timezone={timezone} />
           <AdvertisingResponsibilityControls
             context={context}
             workflow={workflow}

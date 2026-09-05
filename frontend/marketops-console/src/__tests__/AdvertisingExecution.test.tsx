@@ -533,6 +533,9 @@ describe('the outcome history', () => {
     );
 
     const outcome = await screen.findByLabelText('Outcome');
+    await waitFor(() => {
+      expect(outcome).toHaveAttribute('data-state', 'loaded');
+    });
     // Two readings, two verdicts, and the one that disagrees is still there.
     // A single "result" would show whichever was written last.
     expect(within(outcome).getAllByRole('listitem')).toHaveLength(2);
@@ -559,6 +562,9 @@ describe('the outcome history', () => {
     );
 
     const outcome = await screen.findByLabelText('Outcome');
+    await waitFor(() => {
+      expect(outcome).toHaveAttribute('data-state', 'loaded');
+    });
     expect(within(outcome).getAllByRole('listitem')).toHaveLength(2);
     // That the answer changed is itself something an operator needs to see.
     expect(outcome.textContent).toContain('restatement 2');
@@ -574,6 +580,9 @@ describe('the outcome history', () => {
     );
 
     const outcome = await screen.findByLabelText('Outcome');
+    await waitFor(() => {
+      expect(outcome).toHaveAttribute('data-state', 'empty');
+    });
     expect(outcome.getAttribute('data-state')).toBe('empty');
     expect(outcome.textContent).toContain('not a neutral one');
   });
@@ -631,6 +640,9 @@ describe('the manual shadow', () => {
     );
 
     const manual = await screen.findByLabelText('Manual execution');
+    await waitFor(() => {
+      expect(manual).toHaveAttribute('data-state', 'loaded');
+    });
     expect(manual.querySelector('[data-proves="false"]')?.textContent).toContain(
       'a report, not a proof',
     );
@@ -665,6 +677,9 @@ describe('the manual shadow', () => {
     );
 
     const manual = await screen.findByLabelText('Manual execution');
+    await waitFor(() => {
+      expect(manual).toHaveAttribute('data-state', 'loaded');
+    });
     expect(manual.querySelector('[data-proven="true"]')).not.toBeNull();
     expect(manual.textContent).toContain('has been established');
   });
@@ -678,6 +693,9 @@ describe('the manual shadow', () => {
     );
 
     const manual = await screen.findByLabelText('Manual execution');
+    await waitFor(() => {
+      expect(manual).toHaveAttribute('data-state', 'loaded');
+    });
     // Budget and pause work lives entirely on this surface. The page has to say
     // so, because an operator who thought it queued a command would wait.
     expect(manual.textContent).toContain('Nothing here reaches a marketplace by itself');

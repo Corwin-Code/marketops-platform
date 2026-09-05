@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { AdvertisingBriefView } from '../advertising/AdvertisingBriefView';
 import { parseAdvertisingBrief, parseAdvertisingBriefSection } from '../api/advertising';
@@ -118,6 +118,9 @@ describe('the published brief', () => {
     );
 
     const brief = await screen.findByLabelText('Advertising brief');
+    await waitFor(() => {
+      expect(brief).toHaveAttribute('data-state', 'loaded');
+    });
     // A section that vanished when empty would make "we looked and there was
     // nothing" and "we never looked" the same page.
     expect(brief.querySelectorAll('[data-section]')).toHaveLength(3);
@@ -152,6 +155,9 @@ describe('the published brief', () => {
     );
 
     const brief = await screen.findByLabelText('Advertising brief');
+    await waitFor(() => {
+      expect(brief).toHaveAttribute('data-state', 'loaded');
+    });
     // Somebody acted on the earlier reading. Replacing it silently would make
     // that decision impossible to understand afterwards.
     const earlier = within(brief).getByLabelText('Earlier readings');
@@ -171,6 +177,9 @@ describe('the published brief', () => {
     );
 
     const brief = await screen.findByLabelText('Advertising brief');
+    await waitFor(() => {
+      expect(brief).toHaveAttribute('data-state', 'loaded');
+    });
     const item = brief.querySelector('[data-subject="AD_CASE"]');
     expect(item?.getAttribute('data-value-state')).toBe('AVAILABLE');
     expect(item?.textContent).toContain('RUB');
