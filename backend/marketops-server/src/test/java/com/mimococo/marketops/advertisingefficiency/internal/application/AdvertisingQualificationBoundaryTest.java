@@ -29,7 +29,9 @@ class AdvertisingQualificationBoundaryTest {
         var fact=mock(AdvertisingEvidenceRepository.ObjectFactAggregate.class);
         when(fact.currencyCode()).thenReturn("RUB");when(fact.coverageRatio()).thenReturn(BigDecimal.ONE);
         when(fact.spendAmount()).thenReturn(new BigDecimal("100"));when(fact.clicks()).thenReturn(100L);
-        when(fact.everyWindowComplete()).thenReturn(true);when(fact.latestSourceTime()).thenReturn(AT);when(fact.acceptedAt()).thenReturn(AT);
+        when(fact.everyWindowComplete()).thenReturn(true);
+        when(fact.earliestSourceTime()).thenReturn(AT);when(fact.latestSourceTime()).thenReturn(AT);
+        when(fact.oldestAcceptedAt()).thenReturn(AT);when(fact.acceptedAt()).thenReturn(AT);
         when(evidence.objectFacts()).thenReturn(Optional.of(fact));
         var line=mock(AdvertisingEvidenceRepository.LinkedSaleLine.class);
         when(line.saleStage()).thenReturn("CANONICAL_AD_LINKED_RETAINED_SALE");when(line.productVariantId()).thenReturn(ID);
@@ -39,9 +41,12 @@ class AdvertisingQualificationBoundaryTest {
         when(evidence.completedSales()).thenReturn(Optional.of(selectedRetained));
         when(evidence.retainedSales()).thenReturn(Optional.of(selectedRetained));
         var set=mock(AdvertisingEvidenceRepository.AffectedSetRow.class);
-        when(set.resolutionState()).thenReturn("COMPLETE");when(set.resolvedAt()).thenReturn(AT);when(evidence.affectedSet()).thenReturn(Optional.of(set));
+        when(set.id()).thenReturn(ID);when(set.productVariantIds()).thenReturn(List.of(ID));
+        when(set.resolutionState()).thenReturn("COMPLETE");when(set.resolvedAt()).thenReturn(AT);
+        when(set.acceptedAt()).thenReturn(AT);when(evidence.affectedSet()).thenReturn(Optional.of(set));
         var metric=mock(MetricValueView.class);when(metric.available()).thenReturn(true);
         when(metric.confidenceState()).thenReturn(ConfidenceState.CANONICAL_CONFIRMED);when(metric.computedAt()).thenReturn(AT);
+        when(metric.metricValueId()).thenReturn(ID);when(metric.verifiedAt()).thenReturn(AT);when(metric.verificationRunId()).thenReturn(ID);
         when(evidence.economics()).thenReturn(Map.of(ID,new AdvertisingEvidenceGatherer.VariantEconomics(SPEND,SPEND,SPEND,SPEND,"RUB",List.of(metric))));
         Map<String,AdvertisingPolicyRepository.FreshnessProfile> freshness=new HashMap<>();
         for(String kind:List.of("OFFICIAL_AD_SPEND","OFFICIAL_AD_TRAFFIC","AD_LINKED_SALE_EVENT","COST_AND_FEE","AFFECTED_SET")) {
@@ -56,19 +61,34 @@ class AdvertisingQualificationBoundaryTest {
                 10,BigDecimal.ONE,BigDecimal.ONE,AdEvidenceState.CANONICAL_CONFIRMED);
     }
     @Test void aRetainedConversionStillUsesTheIndependentlyMeasuredCompletedCount() {
-        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence(20,true,false),policy(20,10,100,"100",30),conversion(),SPEND,PROFIT)).isTrue();
+        var eligible=evidence(20,true,false);
+        assertCanonicalPurposeProofs(eligible);
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(eligible,policy(20,10,100,"100",30),conversion(),SPEND,PROFIT)).isTrue();
         assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence(19,true,false),policy(20,10,100,"100",30),conversion(),SPEND,PROFIT)).isFalse();
         assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence(0,true,false),policy(1,10,100,"100",30),conversion(),SPEND,PROFIT)).isFalse();
     }
     @Test void everyPublishedSampleSpendAndWindowBoundaryMustIndependentlyPass() {
         var evidence=evidence(20,true,false);
+        assertCanonicalPurposeProofs(evidence);
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,policy(20,10,100,"100",30),conversion(),SPEND,PROFIT)).isTrue();
         for(var policy:List.of(policy(21,10,100,"100",30),policy(20,11,100,"100",30),policy(20,10,101,"100",30),
                 policy(20,10,100,"100.0001",30),policy(20,10,100,"100",29))) {
             assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,policy,conversion(),SPEND,PROFIT)).as(policy.toString()).isFalse();
         }
     }
     @Test void goodSamplesCannotOverrideMissingComparableHistoryOrAProviderIncident() {
+        var eligible=evidence(20,true,false);
+        assertCanonicalPurposeProofs(eligible);
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(eligible,policy(20,10,100,"100",30),conversion(),SPEND,PROFIT)).isTrue();
         assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence(20,false,false),policy(20,10,100,"100",30),conversion(),SPEND,PROFIT)).isFalse();
         assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence(20,true,true),policy(20,10,100,"100",30),conversion(),SPEND,PROFIT)).isFalse();
+    }
+    static void assertCanonicalPurposeProofs(AdvertisingEvidenceGatherer.Evidence evidence) {
+        var proofs=AdvertisingPurposeFreshness.assess(evidence,"OPTIMIZATION_BID_WRITE",List.of(
+                "OFFICIAL_AD_SPEND","OFFICIAL_AD_TRAFFIC","AD_LINKED_SALE_EVENT","COST_AND_FEE","AFFECTED_SET"));
+        assertThat(proofs).hasSize(5).allSatisfy(proof->{
+            assertThat(proof.eligible()).as(proof.kind()+" "+proof.reasonCodes()).isTrue();
+            assertThat(proof.reasonCodes()).isEmpty();
+        });
     }
 }
