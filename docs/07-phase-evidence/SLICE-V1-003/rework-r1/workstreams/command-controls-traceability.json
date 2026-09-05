@@ -2477,7 +2477,8 @@
         "finalUnselectedFull": "PENDING",
         "exactPrCi": "PENDING",
         "controllerVerdict": null
-      }
+      },
+      "supplementaryReadIdentityReview": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-principal/review.json"
     },
     {
       "id": "S3-DR-012",
@@ -79551,5 +79552,26 @@
     "currentNamedScope": "Five complete classes after the bounded missing-Bundle guard fix; see currentControlRunReceipts for exact archived member identities.",
     "finalUnselectedFull": "PENDING",
     "exactPrCi": "PENDING"
+  },
+  "postW5SecurityPrincipalReview": {
+    "review": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-principal/review.json",
+    "note": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-principal/README.md",
+    "testReferences": [
+      {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+        "method": "theSameSignedPrincipalCannotReuseAnAdvertisingGrantAfterRevocation"
+      },
+      {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+        "method": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields"
+      },
+      {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+        "method": "requestIdentityAndRoleFieldsCannotBorrowTheOwnersReadGrant"
+      }
+    ],
+    "measurement": "R23 Principal 3/3 PASS; all seven routes per method; whole selected run 175/175 PASS",
+    "scope": "Read identity supplement only; existing F010 command creator/issuer authorization proof remains separately required.",
+    "status": "FINAL_CLEAN_FULL_AND_LATEST_CI_PENDING"
   }
 }

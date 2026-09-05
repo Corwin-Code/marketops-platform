@@ -263,7 +263,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
-          "sha256": "14a2522fe92cc354dd13c1441bf1b4a84a183e1c71795b2a6d0b5445d505e603",
+          "sha256": "c14014277cb9f6b7e1d71ebc60a49f4b7fe434a4501d58665c7e499d84464fd4",
           "row_id": "S3-DR-001"
         }
       ],
@@ -2059,7 +2059,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
-          "sha256": "27feb7145ffc4987ef8f42a2f6123209e20dc14002e13c84d997ec133a393226",
+          "sha256": "efa0f6f09a897d895eb27309f566dab11fb8a9f93b9ef22077a1def4baeaddda",
           "row_id": "S3-DR-007"
         }
       ],
@@ -3403,7 +3403,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "f1e6d7ac26439dfa253b42a8427c79c6542fb755686815d77926a1ec49105fd5",
+          "sha256": "8cf7e6127f043718430c642020e77b5c821d97d7bfcbf12b6a63fd6c5b963e4a",
           "row_id": "S3-DR-009"
         }
       ],
@@ -4188,7 +4188,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "f1e6d7ac26439dfa253b42a8427c79c6542fb755686815d77926a1ec49105fd5",
+          "sha256": "8cf7e6127f043718430c642020e77b5c821d97d7bfcbf12b6a63fd6c5b963e4a",
           "row_id": "S3-DR-010"
         }
       ],
@@ -6710,7 +6710,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "f1e6d7ac26439dfa253b42a8427c79c6542fb755686815d77926a1ec49105fd5",
+          "sha256": "8cf7e6127f043718430c642020e77b5c821d97d7bfcbf12b6a63fd6c5b963e4a",
           "row_id": "S3-DR-012"
         }
       ],
@@ -7268,7 +7268,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "f1e6d7ac26439dfa253b42a8427c79c6542fb755686815d77926a1ec49105fd5",
+          "sha256": "8cf7e6127f043718430c642020e77b5c821d97d7bfcbf12b6a63fd6c5b963e4a",
           "row_id": "S3-DR-013"
         }
       ],
@@ -10237,7 +10237,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "f1e6d7ac26439dfa253b42a8427c79c6542fb755686815d77926a1ec49105fd5",
+          "sha256": "8cf7e6127f043718430c642020e77b5c821d97d7bfcbf12b6a63fd6c5b963e4a",
           "row_id": "S3-DR-014"
         }
       ],
@@ -13937,7 +13937,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "f1e6d7ac26439dfa253b42a8427c79c6542fb755686815d77926a1ec49105fd5",
+          "sha256": "8cf7e6127f043718430c642020e77b5c821d97d7bfcbf12b6a63fd6c5b963e4a",
           "row_id": "S3-DR-016"
         }
       ],
@@ -16151,7 +16151,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "f1e6d7ac26439dfa253b42a8427c79c6542fb755686815d77926a1ec49105fd5",
+          "sha256": "8cf7e6127f043718430c642020e77b5c821d97d7bfcbf12b6a63fd6c5b963e4a",
           "row_id": "S3-DR-017"
         }
       ],
@@ -17086,7 +17086,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
-          "sha256": "27feb7145ffc4987ef8f42a2f6123209e20dc14002e13c84d997ec133a393226",
+          "sha256": "efa0f6f09a897d895eb27309f566dab11fb8a9f93b9ef22077a1def4baeaddda",
           "row_id": "S3-DR-018"
         }
       ],
@@ -17925,7 +17925,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
-          "sha256": "27feb7145ffc4987ef8f42a2f6123209e20dc14002e13c84d997ec133a393226",
+          "sha256": "efa0f6f09a897d895eb27309f566dab11fb8a9f93b9ef22077a1def4baeaddda",
           "row_id": "S3-DR-019"
         }
       ],
@@ -18495,7 +18495,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
-          "sha256": "27feb7145ffc4987ef8f42a2f6123209e20dc14002e13c84d997ec133a393226",
+          "sha256": "efa0f6f09a897d895eb27309f566dab11fb8a9f93b9ef22077a1def4baeaddda",
           "row_id": "S3-DR-020"
         }
       ],
@@ -19509,7 +19509,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
-          "sha256": "27feb7145ffc4987ef8f42a2f6123209e20dc14002e13c84d997ec133a393226",
+          "sha256": "efa0f6f09a897d895eb27309f566dab11fb8a9f93b9ef22077a1def4baeaddda",
           "row_id": "S3-DR-021"
         }
       ],
@@ -19554,7 +19554,8 @@
       ],
       "root_cause": "Acceptance, runtime evidence and Git publication did not share a measured input identity; aggregate tests were used despite incomplete named behaviors and verification classes.",
       "same_class_scan": [
-        "Scanned every AC against all six current source/test shards and all 22 Frozen findings. The prior vertical bypass has been replaced with an actual accepted Canonical-to-Metric-to-calculation-to-human-to-command/readback-to-Outcome path; complete targeted execution passes in r34, while full immutable verification is pending."
+        "Scanned every AC against all six current source/test shards and all 22 Frozen findings. The prior vertical bypass has been replaced with an actual accepted Canonical-to-Metric-to-calculation-to-human-to-command/readback-to-Outcome path; complete targeted execution passes in r34, while full immutable verification is pending.",
+        "Reviewed all 99 exact analyzed CodeQL alerts with individual locations/source hashes and all five synthetic issuer SQL concatenations. Explicitly scanned specialized R1 fixtures for duplicated Maker role/grant setup and broad scope that would invalidate scoped browser assertions; the exact review is separately retained."
       ],
       "changed_files": [
         {
@@ -19572,6 +19573,22 @@
         {
           "path": "docs/00-governance/CURRENT_STATE.md",
           "sha256_at_receipt": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+          "sha256_at_receipt": "b3ba3341fa2920a16e6341af1f1caf082675ec9e4afdc0f381d55e95c5b52b13"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java",
+          "sha256_at_receipt": "5cb311838dc236a5dc076348446817daa9cd2742d115bde6ff6347c454af27ba"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCapacityEvidence.java",
+          "sha256_at_receipt": "a371d61e88d2c5c2754237b2c1a6d8b4cd3dfaf5c463793cdb3e756e395d540c"
+        },
+        {
+          "path": "frontend/marketops-console/package-lock.json",
+          "sha256_at_receipt": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4"
         }
       ],
       "fix_commits": [],
@@ -19631,6 +19648,14 @@
               "self.assertEqual([], errors)",
               "self.assertTrue(any(('infrastructure-validation' in error for error in errors)))"
             ]
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+            "method": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+            "method": "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents"
           }
         ],
         "negative": [
@@ -19763,13 +19788,33 @@
               "self.assertEqual([], errors)",
               "self.assertTrue(any(('infrastructure-validation' in error for error in errors)))"
             ]
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+            "method": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+            "method": "requestIdentityAndRoleFieldsCannotBorrowTheOwnersReadGrant"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+            "method": "theSameSignedPrincipalCannotReuseAnAdvertisingGrantAfterRevocation"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+            "method": "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+            "method": "applicationRoleCannotChangeTheIssuerPasswordOrItsPrivileges"
           }
         ]
       },
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
-          "sha256": "14a2522fe92cc354dd13c1441bf1b4a84a183e1c71795b2a6d0b5445d505e603",
+          "sha256": "c14014277cb9f6b7e1d71ebc60a49f4b7fe434a4501d58665c7e499d84464fd4",
           "row_id": "S3-DR-022"
         }
       ],

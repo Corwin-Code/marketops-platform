@@ -21,6 +21,7 @@ import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,7 +75,8 @@ class AdvertisingOperationsConsoleController {
 
     @GetMapping("/orchestration")
     @Transactional
-    Map<String,Object> orchestration(AuthenticatedActor actor) {
+    Map<String,Object> orchestration(Authentication authentication) {
+        AuthenticatedActor actor = requireActor(authentication);
         var result=slo.snapshot(actor.organizationId(),permittedStores(actor),clock.instant());
         auditRead(actor,"advertising_orchestration",actor.organizationId(),"orchestration");return result;
     }
@@ -82,9 +84,10 @@ class AdvertisingOperationsConsoleController {
     @GetMapping("/reservations")
     @Transactional
     List<ObjectNode> reservations(
-            AuthenticatedActor actor,
+            Authentication authentication,
             @RequestParam(defaultValue = "true") boolean holdingOnly,
             @RequestParam(defaultValue = "50") int limit) {
+        AuthenticatedActor actor = requireActor(authentication);
         List<UUID> stores = permittedStores(actor);
         List<AdvertisingReservationView> result =
                 operations.reservations(actor.organizationId(), stores, holdingOnly, limit);
@@ -94,7 +97,8 @@ class AdvertisingOperationsConsoleController {
 
     @GetMapping("/exposure")
     @Transactional
-    ObjectNode exposure(AuthenticatedActor actor) {
+    ObjectNode exposure(Authentication authentication) {
+        AuthenticatedActor actor = requireActor(authentication);
         permittedStores(actor);
         ObjectNode result = disclosure.organizationView(actor) && disclosure.organizationEvidence(actor)
                 ? disclosure.full(operations.exposure(actor.organizationId())) : disclosure.maskedExposure();
@@ -105,9 +109,10 @@ class AdvertisingOperationsConsoleController {
     @GetMapping("/containments")
     @Transactional
     List<ObjectNode> containments(
-            AuthenticatedActor actor,
+            Authentication authentication,
             @RequestParam(defaultValue = "true") boolean holdingOnly,
             @RequestParam(defaultValue = "50") int limit) {
+        AuthenticatedActor actor = requireActor(authentication);
         List<UUID> stores = permittedStores(actor);
         List<AdvertisingContainment> result =
                 operations.scopedContainments(actor.organizationId(), stores, holdingOnly, limit);
@@ -118,9 +123,10 @@ class AdvertisingOperationsConsoleController {
     @GetMapping("/objects/{objectId}/manual-packets")
     @Transactional
     List<ObjectNode> manualPackets(
-            AuthenticatedActor actor,
+            Authentication authentication,
             @PathVariable UUID objectId,
             @RequestParam(defaultValue = "20") int limit) {
+        AuthenticatedActor actor = requireActor(authentication);
         List<UUID> stores = permittedStores(actor);
         List<ManualExecutionPacketView> result =
                 operations.manualPackets(actor.organizationId(), objectId, stores, limit);
@@ -131,7 +137,8 @@ class AdvertisingOperationsConsoleController {
 
     @GetMapping("/commands/{commandId}")
     @Transactional
-    ObjectNode command(AuthenticatedActor actor,@PathVariable UUID commandId) {
+    ObjectNode command(Authentication authentication,@PathVariable UUID commandId) {
+        AuthenticatedActor actor = requireActor(authentication);
         disclosure.requireCommandRead(actor,commandId);
         var command=commands.command(commandId).orElseThrow(()->OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
         auditRead(actor,"advertising_command",commandId,"command_timeline");
@@ -140,13 +147,23 @@ class AdvertisingOperationsConsoleController {
 
     @GetMapping("/commands/{commandId}/outcomes")
     @Transactional
-    List<ObjectNode> outcomes(AuthenticatedActor actor, @PathVariable UUID commandId) {
+    List<ObjectNode> outcomes(Authentication authentication, @PathVariable UUID commandId) {
+        AuthenticatedActor actor = requireActor(authentication);
         disclosure.requireCommandRead(actor,commandId);
         List<UUID> stores = permittedStores(actor);
         List<AdvertisingOutcomeView> result =
                 operations.outcomes(actor.organizationId(), commandId, stores);
         auditRead(actor, "advertising_outcome", commandId, "outcomes");
         return result.stream().map(view -> disclosure.outcome(actor, view)).toList();
+    }
+
+    /** The servlet principal is supplied by Spring Security, never by request binding. */
+    private static AuthenticatedActor requireActor(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()
+                && authentication.getPrincipal() instanceof AuthenticatedActor actor) {
+            return actor;
+        }
+        throw OperationRejectedException.of(ErrorCode.AUTHENTICATION_REQUIRED);
     }
 
     /**

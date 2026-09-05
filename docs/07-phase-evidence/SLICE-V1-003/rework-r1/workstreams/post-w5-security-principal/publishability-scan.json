@@ -1,0 +1,41 @@
+{
+  "kind": "GOVERNANCE_SECRET_AND_JWT_SHAPE_SCAN",
+  "patternsSource": {
+    "path": "scripts/validate_governance.py",
+    "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+  },
+  "governancePatternCount": 7,
+  "additionalJwtShapeRule": true,
+  "storedAndDecodedRawEvidencePreserved": true,
+  "results": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-principal/README.md",
+      "storedSha256": "42b56aa70a9792df4569a7c9fdf801bc8387db72a767f6709486d181a52edc00",
+      "scannedSha256": "42b56aa70a9792df4569a7c9fdf801bc8387db72a767f6709486d181a52edc00",
+      "decodedGzip": false,
+      "matches": []
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-principal/codeql-2.26.4-SpringController.qll.gz",
+      "storedSha256": "c6d7f35d56074e25123b16df2dff350c09ed53ed2304ecaccdf71eb1ee55f4e8",
+      "scannedSha256": "1031e1ab151b2b235f5286eae143487ef437dd787f8444f4228ad3a4dcbf8d3c",
+      "decodedGzip": true,
+      "matches": []
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-principal/java-analysis-1729021395.sarif.gz",
+      "storedSha256": "389021fdc3c4397e5a1162d85a829c544e6c1c5059c15f0b36d6735cf3dfe5b3",
+      "scannedSha256": "88ff88fb2d5b89acbb72c5669f88baa3186f1c6d804a0348fd1082dce1a6b2eb",
+      "decodedGzip": true,
+      "matches": []
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-principal/review.json",
+      "storedSha256": "1fcaf9fe534f893d777fad06ceb3be479b5d16acde4448377406049a2d0c139f",
+      "scannedSha256": "1fcaf9fe534f893d777fad06ceb3be479b5d16acde4448377406049a2d0c139f",
+      "decodedGzip": false,
+      "matches": []
+    }
+  ],
+  "matchCount": 0
+}

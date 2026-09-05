@@ -1,0 +1,13 @@
+# PR #30 security review at published Head 247e
+
+This is historical security evidence for Head `247ea5ced6cd0ac110314db9fa606d8995c85cac`, Base `08ad7da7d9e75b4ddd1c387a22ac0affba9e1430` and analyzed test merge `4c1aaa695892f70fe6966d8076b2b05e338c32be`. It does not certify the later repaired Head or close any GitHub alert.
+
+`summary.json` and `summary.md` bind the four existing HIGH fast-uri advisories, identical Base/Head lock bytes, official advisory/registry metadata, the authorized three-field 3.1.6 patch and actual zero-vulnerability npm audit. The rejected intermediate npm-selected 3.1.7 lock remains in the raw archive. The default-main alerts were not modified. The local lock repair requires new-checkpoint frontend/security evidence; subsequent UI r5 evidence is owned and archived separately by the UI workstream.
+
+`codeql-99-triage.json` records all 99 original alerts with exact source locations, source hashes, Base comparisons and individual engineering assessments. The Security jobs succeeded, but the aggregate CodeQL check **failed**. Eleven HIGH repairs belong to the separately authorized control/UI changes. No additional proven BLOCKER/MAJOR was identified by the bounded review of the other 88 alerts; this is not an alert dismissal or a Controller verdict. MEDIUM #129 remains represented as an actual test-runner PATH risk at the scanned Head. `git-executable-path-evidence.json` supplies observed `/usr/bin/git` evidence on local macOS and the exact PR GitHub Ubuntu checkout for Root's narrow subsequent repair.
+
+`raw-evidence.tar.gz` preserves original API responses, request metadata, intermediate and final result snapshots, exact source copies and command logs. `manifest.json` lists each uncompressed evidence path, original size and SHA-256. Disposable npm/gh caches are excluded. The first gh log retrieval failed solely when creating the default cache; its error is retained, and the successful read used a writable `/tmp` cache. `publishability-scan.json` binds a zero-match credentials/JWT-pattern scan over every raw archive member.
+
+AC200 remains pending the final exact-Head full regression, security scan/alert readback and Controller adjudication. Production write enablement and real Provider access remain prohibited.
+
+Root subsequently changed only the fixed executable string to `/usr/bin/git` after R23 completed. `capacity-git-path-repair.json` and `capacity-git-path.patch` bind that one-line change, an actual backend-directory HEAD probe and the unchanged timeout/error behavior. R23 is **not** evidence for this later change; final clean capacity execution and new-Head CodeQL remain pending.

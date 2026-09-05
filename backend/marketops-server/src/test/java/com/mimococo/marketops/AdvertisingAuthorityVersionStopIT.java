@@ -61,8 +61,8 @@ class AdvertisingAuthorityVersionStopIT {
             VALUES(gen_random_uuid(),:org,:actor,'ADVERTISING_POLICY_MANAGE',:store,now()-interval '1 day','ACTIVE',
               'Synthetic Store scope cannot imply organization authority',now(),now())
             """).param("org",graph.id("organization")).param("actor",graph.id(person)).param("store",graph.id("store")).update();
-        try(var connection=admin.getConnection();var statement=connection.createStatement()) {
-            statement.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'");
+        try(var connection=admin.getConnection()) {
+            TestDatabase.enableSyntheticIdentityIssuer(connection,ISSUER_PASSWORD);
         }
     }
     @ParameterizedTest @ValueSource(strings={"ownerUser","verifierUser"})

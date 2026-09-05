@@ -951,7 +951,8 @@
       "rootCause": "Acceptance, runtime evidence and Git publication did not share a measured input identity; aggregate tests were used despite incomplete named behaviors and verification classes.",
       "implementedBehavior": "All 200 exact criteria are mapped to actual current source and named tests; mapping cannot assert PASS. Complete per-finding fault, integration, capacity, browser, migration and remote CI results remain separate evidence obligations.",
       "sameClassScan": [
-        "Scanned every AC against all six current source/test shards and all 22 Frozen findings. The prior vertical bypass has been replaced with an actual accepted Canonical-to-Metric-to-calculation-to-human-to-command/readback-to-Outcome path; complete targeted execution passes in r34, while full immutable verification is pending."
+        "Scanned every AC against all six current source/test shards and all 22 Frozen findings. The prior vertical bypass has been replaced with an actual accepted Canonical-to-Metric-to-calculation-to-human-to-command/readback-to-Outcome path; complete targeted execution passes in r34, while full immutable verification is pending.",
+        "Reviewed all 99 exact analyzed CodeQL alerts with individual locations/source hashes and all five synthetic issuer SQL concatenations. Explicitly scanned specialized R1 fixtures for duplicated Maker role/grant setup and broad scope that would invalidate scoped browser assertions; the exact review is separately retained."
       ],
       "transitiveImpact": [
         "The full clean regression and runtime artifact receipts must bind a measured commit; final evidence-only changes require runtime input comparison and final remote CI."
@@ -972,6 +973,22 @@
         {
           "path": "docs/00-governance/CURRENT_STATE.md",
           "sha256_at_receipt": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+          "sha256_at_receipt": "b3ba3341fa2920a16e6341af1f1caf082675ec9e4afdc0f381d55e95c5b52b13"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java",
+          "sha256_at_receipt": "5cb311838dc236a5dc076348446817daa9cd2742d115bde6ff6347c454af27ba"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCapacityEvidence.java",
+          "sha256_at_receipt": "a371d61e88d2c5c2754237b2c1a6d8b4cd3dfaf5c463793cdb3e756e395d540c"
+        },
+        {
+          "path": "frontend/marketops-console/package-lock.json",
+          "sha256_at_receipt": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4"
         }
       ],
       "positiveTests": [
@@ -1029,6 +1046,14 @@
             "self.assertEqual([], errors)",
             "self.assertTrue(any(('infrastructure-validation' in error for error in errors)))"
           ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+          "method": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+          "method": "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents"
         }
       ],
       "negativeTests": [
@@ -1161,6 +1186,26 @@
             "self.assertEqual([], errors)",
             "self.assertTrue(any(('infrastructure-validation' in error for error in errors)))"
           ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+          "method": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+          "method": "requestIdentityAndRoleFieldsCannotBorrowTheOwnersReadGrant"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+          "method": "theSameSignedPrincipalCannotReuseAnAdvertisingGrantAfterRevocation"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+          "method": "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+          "method": "applicationRoleCannotChangeTheIssuerPasswordOrItsPrivileges"
         }
       ],
       "testClassification": "Reviewed named methods preserve exact assertions and limits; no static check substitutes for actual identity/clone/remote CI receipts.",
@@ -1168,7 +1213,24 @@
       "evidenceLimits": [
         "Current governance run passes 410 tests; this is not full local verification or remote CI.",
         "Exact clean measured commit, one Draft PR, final Head CI and Controller verdict remain pending."
-      ]
+      ],
+      "postW5SecurityEvidence": {
+        "scannedHead": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+        "findingScope": "Existing F022 complete regression and security proof; neither frozen authority nor finding text changed.",
+        "originalResult": "Security workflow jobs succeeded; aggregate CodeQL failed with 99 alerts including 11 HIGH. Existing Base/Head fast-uri lock was affected by four HIGH advisories. No aggregate green claim is inferred.",
+        "repairs": "Fixed compatible transitive package; explicit standard principal handling with unchanged live SQL authorization; bound and safely quoted synthetic issuer DDL; fixed absolute Git executable in capacity evidence.",
+        "evidenceReferences": [
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-pr30-247e/artifact-index.json",
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-pr30-247e/codeql-99-triage.json",
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-pr30-247e/capacity-git-path-repair.json",
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-principal/review.json",
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-issuer/repair.json",
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/receipt.json",
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/receipt.json"
+        ],
+        "measuredResults": "R23 passes 175 actual cases in 15 complete classes, including five new signed-HTTP/PG security methods; current frontend r5 passes 308 with actual optional schema validator and SBOM validation; current-lock npm audit has zero vulnerabilities. The subsequent one-line capacity Git-path change is not covered by R23.",
+        "remaining": "New exact-Head CodeQL/alert and complete CI readback, browser, clean full regression and actual capacity remain required. Independent Controller decides final closure; default-main alerts were not dismissed."
+      }
     }
   ],
   "schemaVersion": "1.1",

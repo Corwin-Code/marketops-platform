@@ -51,7 +51,7 @@ final class AdvertisingCapacityEvidence {
         result.put("datasetPath",datasetPath.toString());result.put("datasetSha256",sha(datasetPath));
         result.put("sourceInputsPath",sourcesPath.toString());result.put("sourceInputsSha256",sha(sourcesPath));
         result.put("startedAt",startedAt.toString());result.put("datasetCapturedAt",Instant.now().toString());
-        Process git=new ProcessBuilder("git","rev-parse","HEAD").redirectErrorStream(true).start();
+        Process git=new ProcessBuilder("/usr/bin/git","rev-parse","HEAD").redirectErrorStream(true).start();
         if(git.waitFor(5,TimeUnit.SECONDS) && git.exitValue()==0)
             result.put("measuredLocalGitHead",new String(git.getInputStream().readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).trim());
         else {git.destroyForcibly();result.put("measuredLocalGitHead","UNAVAILABLE");}

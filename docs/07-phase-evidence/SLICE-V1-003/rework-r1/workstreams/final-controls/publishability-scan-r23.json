@@ -1,0 +1,117 @@
+{
+  "kind": "PUBLISHABLE_EVIDENCE_SECRET_SHAPE_SCAN",
+  "utc": "2026-09-05T10:49:11.167680+00:00",
+  "basis": "Repository SECRET_PATTERNS plus JWT shape; all text/archive members in explicit input paths, no matched values printed",
+  "inputPaths": [
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23"
+  ],
+  "files": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/archive-index.json",
+      "sha256": "8be25afefc6c7803864e8ebc4e17aee9de564c074b9c744d341b1ee8c7afb56f",
+      "bytes": 5292
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/maven.log.gz!uncompressed",
+      "sha256": "2c68f2aec3656c444f85aba92a695837a79f33b4d99b111d0a3dd424bd6d8c00",
+      "bytes": 287040
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.AdvertisingAuthorityVersionStopIT.xml",
+      "sha256": "84a2eb5bbca049c0cd68875649fcf1617a4a1e8e85c57037321da376efb55e8a",
+      "bytes": 50028
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.AdvertisingDisclosureIT.xml",
+      "sha256": "bf76521397f8b60b96bb5ad25e5a9819c6b393ca455e72db87cf44ac11580cd4",
+      "bytes": 104612
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+      "sha256": "71b6e5a8ea1d1b7e1d0e102b76b322e3a0fd606999b4390f6513fa9dd319bebc",
+      "bytes": 62287
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.AdvertisingManualWorkflowIT.xml",
+      "sha256": "995a5021591b59bb01581364119039795492916314e6dcc485d997f3c9bf670b",
+      "bytes": 43585
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.AdvertisingOperationsPrincipalIT.xml",
+      "sha256": "8594ea6d8428d8cc62ee5ecf29ce6eba3d0eecc92ff7ee172d9c3a3b96e7c100",
+      "bytes": 94532
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.AdvertisingOperationsReadIT.xml",
+      "sha256": "79aff5af6ee8f3e2fd6ebd8648fe3068e25c725e909a9a766b9a9c225e3625c3",
+      "bytes": 42547
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.AdvertisingOrdinaryApprovalIT.xml",
+      "sha256": "ff23542f9d5600e5b6c60e0b85f9b62beb16d72bb71f2cc04d537115f4703a0a",
+      "bytes": 50815
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.TestDatabaseIssuerIT.xml",
+      "sha256": "1189ea2882f4a9eafbe96aebff9a1f0324a28ac6a144a16e8f053f4e6e81109c",
+      "bytes": 39771
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT.xml",
+      "sha256": "641d0c042a78e929a38051399bf1571c98b1bbcb893ecc0896dc07756c8579fd",
+      "bytes": 53638
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest.xml",
+      "sha256": "dd69b3ebf7df0766b3f21cc4b83bb8881e8b9885aa81982cef22e6a271ee310e",
+      "bytes": 43652
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest.xml",
+      "sha256": "a2fe0182764f06c123edebfdb56bda99caa04c321c13f46b637b5c1f410f0a39",
+      "bytes": 41130
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.architecture.ModulithArchitectureTest.xml",
+      "sha256": "71b5b88d0a1e619c682a4dc28a1a19139d2a4f12e4e7d961a6264a98b34f1477",
+      "bytes": 39749
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest.xml",
+      "sha256": "933e0c09db33c8c1eb8adced8a5167e2619add5f7fdc5f2f53046eeac0e0f194",
+      "bytes": 41796
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest.xml",
+      "sha256": "ff7b5fc8fd83e1a37a77de9e8250b590c4481ce5ad99197ae922864d27dede6c",
+      "bytes": 40358
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz!/reports/TEST-com.mimococo.marketops.identityaccess.internal.web.SignedBearerIdentityIT.xml",
+      "sha256": "6129dcefb78d84955653916069a17da8c1e3ea48fd4100a68eab48c1310acd14",
+      "bytes": 139314
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/receipt.json",
+      "sha256": "b06cbafe39a91c77937e1ebb9fb2307ac94e69c2444e2ada7ff79f8c41b6d5f8",
+      "bytes": 12162
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/runtime-resources.json",
+      "sha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+      "bytes": 591
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/source-after.json",
+      "sha256": "b2891899a65f60fe655bf9fc155636021e1a9d13d57f26e7adcea289f4fb35bd",
+      "bytes": 198505
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/source-before.json",
+      "sha256": "b2891899a65f60fe655bf9fc155636021e1a9d13d57f26e7adcea289f4fb35bd",
+      "bytes": 198505
+    }
+  ],
+  "findings": [],
+  "pass": true
+}

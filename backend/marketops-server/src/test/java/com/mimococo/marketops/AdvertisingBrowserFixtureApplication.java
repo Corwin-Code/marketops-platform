@@ -68,10 +68,12 @@ public final class AdvertisingBrowserFixtureApplication {
             var ids=Map.of("MAKER",graph.id("executorUser"),"OPS_LEAD",graph.id("verifierUser"),"OWNER",graph.id("ownerUser"));
             for(var entry:roles.entrySet()) {
                 UUID user=ids.get(entry.getKey());
-                if(entry.getValue()==BusinessRoleCode.MARKETPLACE_OPERATOR) users.assignRole("synthetic-ad-browser",user,entry.getValue(),null);
                 for(var action:List.of(ActionScopeCode.ADVERTISING_VIEW,ActionScopeCode.ADVERTISING_TASK_ACT,
-                        ActionScopeCode.ADVERTISING_EXCEPTION_REQUEST))
+                        ActionScopeCode.ADVERTISING_EXCEPTION_REQUEST)) {
+                    // The canonical synthetic Maker already has this role and exact task scope.
+                    if(entry.getValue()==BusinessRoleCode.MARKETPLACE_OPERATOR && action==ActionScopeCode.ADVERTISING_TASK_ACT) continue;
                     users.grantScope("synthetic-ad-browser",user,action,ResourceScopeType.ORGANIZATION,graph.id("organization"),null);
+                }
                 if(entry.getValue()!=BusinessRoleCode.MARKETPLACE_OPERATOR)
                     users.grantScope("synthetic-ad-browser",user,ActionScopeCode.ADVERTISING_DECISION_EVIDENCE_VIEW,
                             ResourceScopeType.ORGANIZATION,graph.id("organization"),null);
@@ -183,9 +185,10 @@ public final class AdvertisingBrowserFixtureApplication {
             UUID user=graph.id(name);
             jdbc.sql("UPDATE iam.user_account SET identity_provider_id=:provider,external_subject=:subject,credentials_valid_from=now()-interval '1 day' WHERE id=:id")
                     .param("provider",graph.id("provider")).param("subject","synthetic-"+graph.id("organization")+"-"+name).param("id",user).update();
-            if(name.equals("executorUser")) users.assignRole("synthetic-manual-browser",user,BusinessRoleCode.MARKETPLACE_OPERATOR,null);
-            for(var action:List.of(ActionScopeCode.ADVERTISING_VIEW,ActionScopeCode.ADVERTISING_TASK_ACT,ActionScopeCode.ADVERTISING_EXCEPTION_REQUEST))
+            for(var action:List.of(ActionScopeCode.ADVERTISING_VIEW,ActionScopeCode.ADVERTISING_TASK_ACT,ActionScopeCode.ADVERTISING_EXCEPTION_REQUEST)) {
+                if(name.equals("executorUser") && action==ActionScopeCode.ADVERTISING_TASK_ACT) continue;
                 users.grantScope("synthetic-manual-browser",user,action,ResourceScopeType.ORGANIZATION,graph.id("organization"),null);
+            }
             List<ActionScopeCode> manualActions=name.equals("executorUser")?List.of(ActionScopeCode.ADVERTISING_MANUAL_EXECUTE)
                     :name.equals("verifierUser")?List.of(ActionScopeCode.ADVERTISING_MANUAL_ENDORSE,ActionScopeCode.ADVERTISING_MANUAL_VERIFY,ActionScopeCode.ADVERTISING_DECISION_EVIDENCE_VIEW)
                     :List.of(ActionScopeCode.ADVERTISING_MANUAL_APPROVE,ActionScopeCode.ADVERTISING_POLICY_MANAGE,ActionScopeCode.ADVERTISING_DECISION_EVIDENCE_VIEW);
@@ -198,8 +201,17 @@ public final class AdvertisingBrowserFixtureApplication {
             UUID user=graph.id(name);
             jdbc.sql("UPDATE iam.user_account SET identity_provider_id=:provider,external_subject=:subject,credentials_valid_from=now()-interval '1 day' WHERE id=:id")
                     .param("provider",graph.id("provider")).param("subject","synthetic-pagination-"+graph.id("organization")+"-"+name).param("id",user).update();
-            if(name.equals("executorUser")) users.assignRole("synthetic-pagination-browser",user,BusinessRoleCode.MARKETPLACE_OPERATOR,null);
-            // Deliberately no organization/account grant: SQL must filter the hidden Store before LIMIT/OFFSET.
+            // Revoke the seed's broad task permission through the actual administration service;
+            // preserve its audit/history before granting only this Store and ProductVariant.
+            for(var grant:users.listGrants(user)) {
+                if(grant.action()==ActionScopeCode.ADVERTISING_TASK_ACT
+                        && grant.resourceType()==ResourceScopeType.ORGANIZATION
+                        && grant.resourceId().equals(graph.id("organization"))
+                        && grant.status().name().equals("ACTIVE"))
+                    users.revokeScope("synthetic-pagination-browser",grant.id(),
+                            "Pagination fixture exercises only explicit Store and ProductVariant authority",grant.version());
+            }
+            // No broad ADVERTISING_VIEW/TASK_ACT grant: SQL must filter the hidden Store before LIMIT/OFFSET.
             for(var action:List.of(ActionScopeCode.ADVERTISING_VIEW,ActionScopeCode.ADVERTISING_TASK_ACT)) {
                 users.grantScope("synthetic-pagination-browser",user,action,ResourceScopeType.STORE,graph.id("store"),null);
                 users.grantScope("synthetic-pagination-browser",user,action,ResourceScopeType.PRODUCT_VARIANT,graph.id("productVariant"),null);

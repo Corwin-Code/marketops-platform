@@ -1,0 +1,9 @@
+# Post-W5 advertising principal security verification
+
+R23 passed all 175 actual test cases across 15 complete classes, including all 3 `AdvertisingOperationsPrincipalIT` methods. The seven operations read routes accept the signed authorized principal, refuse anonymous identity fields, refuse a signed Maker spoofing Owner identity/roles, and refuse the same bearer token after its live advertising read grant is revoked. The original R23 receipt and XML archive bind these results to the exact source manifest; this was W5 plus the recorded repairs.
+
+The six original CodeQL HIGH alerts (#118–123) all describe the unannotated `AuthenticatedActor` parameter entering `permittedStores`. The actual custom resolver obtains that actor from the authenticated SecurityContext before model binding, and the permission code is fixed. CodeQL 2.26.4 treats an unmatched handler parameter type as request input. The narrow repair accepts the standard Spring `Authentication` principal in this controller and preserves the authenticated/type checks and every live business permission. It does not suppress or lower the rule.
+
+[review.json](review.json) contains the exact Head/test-merge/analysis identities, raw SARIF and model hashes, source bindings, and the three named R23 results. Original raw evidence is stored once as losslessly verified gzip. [R23 receipt](../final-controls/r23/receipt.json) records 175 passed, zero failed/errors/skipped, and source stability; the principal XML member hash is `8594ea6d8428d8cc62ee5ecf29ce6eba3d0eecc92ff7ee172d9c3a3b96e7c100`.
+
+Latest exact-source CI/CodeQL and complete clean unselected verification remain pending. The captured original alerts remain open evidence; original workflow success is not their closure. This supplement makes no Controller approval or production authorization claim.

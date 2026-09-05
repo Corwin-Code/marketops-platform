@@ -1,0 +1,386 @@
+[
+  {
+    "path": "frontend/marketops-console/.env.example",
+    "sha256": "fc91a9a0e22e291b4bd08a300bf3c61a86d7a38789dfd965762e7ed92eb38d79"
+  },
+  {
+    "path": "frontend/marketops-console/.gitignore",
+    "sha256": "aecc0808636620b8d6b82a5c8b4f705eddedf6717f4c3aa25c58a9f21ea8c116"
+  },
+  {
+    "path": "frontend/marketops-console/.node-version",
+    "sha256": "7e8a2fa94951112b894a3dbe3d05efef5e9263741fa49125f0a70f40fedab4cc"
+  },
+  {
+    "path": "frontend/marketops-console/.npmrc",
+    "sha256": "63e233d10de31340e354067fd02fb542b13607dee24a60e058b891568303f339"
+  },
+  {
+    "path": "frontend/marketops-console/.prettierignore",
+    "sha256": "5f944a45f351c455a6aa62e97f47fb2b31ad201fe369efadd44d2234ae2b9b8c"
+  },
+  {
+    "path": "frontend/marketops-console/.prettierrc.json",
+    "sha256": "549d5cd816b8785f92a8d07df1f0567b1d916e15d665bd800c1a2aeabf53833c"
+  },
+  {
+    "path": "frontend/marketops-console/eslint.config.js",
+    "sha256": "8a4b2b599fc57dd51adef0db2c99be6122cc27b46e4356b44ffbe2ef0f7777fb"
+  },
+  {
+    "path": "frontend/marketops-console/index.html",
+    "sha256": "c8bf9526db8255af28b47781405c59317b97727479b433bc82d755f0811f6545"
+  },
+  {
+    "path": "frontend/marketops-console/package-lock.json",
+    "sha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4"
+  },
+  {
+    "path": "frontend/marketops-console/package.json",
+    "sha256": "05567a1f945b783ae8f6d28e15816f2cfee414706c21982b7c1afe4f4539e8d2"
+  },
+  {
+    "path": "frontend/marketops-console/playwright.advertising.config.ts",
+    "sha256": "65f51fffe04a5c23c09613ecf4e2b008995e6b18af41ea5ae4821137fc37a0a9"
+  },
+  {
+    "path": "frontend/marketops-console/playwright.config.ts",
+    "sha256": "cb6406becef93b5470c3f7130029ed5cded391c608158048ff33c5864ce98020"
+  },
+  {
+    "path": "frontend/marketops-console/scripts/prepare-sbom-output.mjs",
+    "sha256": "48d3880a79111dd2a7a9b0b8aea5f7ce2997f8a1cba3c90b685d99b67416617a"
+  },
+  {
+    "path": "frontend/marketops-console/scripts/verify-bundle-isolation.mjs",
+    "sha256": "5bb70e0c9a2ccf2d6029ae27b11b7db4fd7294d67372e9f0be14079a11240a47"
+  },
+  {
+    "path": "frontend/marketops-console/src/App.tsx",
+    "sha256": "1baffee5c7dce44c730b4e9a69c58e51d961a77420bce6688d1002616c9c4b7c"
+  },
+  {
+    "path": "frontend/marketops-console/src/ConsoleShell.tsx",
+    "sha256": "78b8bda7e8c9bc3f8e16350d2fbe4754993467ab359b65272f9587f944a85e7c"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx",
+    "sha256": "338f23bae7d5aadafd05cefd0eaa2d57bf2568934e8e1c4dc37658e231336028"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+    "sha256": "98ca03d95da591ffedafc691e7b61a9b91cb3ec00792cf70090250c8f33928e6"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+    "sha256": "aa30f489eaf8ee4c1012d337b01db7fdecaac1879086a03a0960b5ffd6cada6e"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+    "sha256": "72bc072528cd7292f4dc68522d1285dd09076cdaf3f0d3bec7d5640f93aec50c"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/AdvertisingRecoveryWorkflow.test.tsx",
+    "sha256": "94895201e2d9c297d6461eb7ffb9f8b4cf63e494a497bdab52e167fb3a525f87"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+    "sha256": "03d4ad863ee0a24a36b9a03f0385b354b3161325b2d90ab3452749312896c5a6"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/App.test.tsx",
+    "sha256": "75896080df69b887e9be6c01302b221430dd4e2f388493e57b0b356e1b3b3c84"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/AppSession.test.tsx",
+    "sha256": "e7b1f28d0c88d80c5a8aac4352c2ff500193820c9bf333661a76e8ab995b6779"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/AvailabilityAuthorityPanel.test.tsx",
+    "sha256": "00ac88d5293ac202b461da86fdd3565545e5b47573e3f4fb8fd2de85cbeac78b"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/AvailabilityCases.test.tsx",
+    "sha256": "77c6025061bfe5325930726e448876ae05e817885ea1c7f6622828696b906e64"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/AvailabilityQueue.test.tsx",
+    "sha256": "e698c4a9817a90bee2f77c723821ff4aec6098088f8bfc7db76af4c105756243"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/ConsoleJourney.test.tsx",
+    "sha256": "86d5b78f7e775db8a31c7277eb830da4a6ca08583400a39c9a65283af0a9a27b"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/HealthShell.test.tsx",
+    "sha256": "0c7d36ee6034c1cb0596619dffc2ce020a7bd5871108c333e96c1f1e5e3edb54"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/buildInfo.test.ts",
+    "sha256": "9ac0934d9647f3f89786f35cbda78b26f4d5951b90badbf833a9ddd10042ca35"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/confidence.test.ts",
+    "sha256": "0113e5b1a90dcd5b695689c21892be68127c1fc6c93f0739b2e2cc942a8ecb0d"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/config.test.ts",
+    "sha256": "2eb763b1dd56da875cf3584d7a0f2a1d7bf6b214a0e25909a1a9ac17e9781e1d"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/consoleApi.test.ts",
+    "sha256": "165a33bbecff528d2572c1f14aaf7ba7ccac309f2c2a24d679aa911099653fd1"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/healthState.test.ts",
+    "sha256": "b245c6ace5f2d854635835acc4d92559a06db051bbb6b44194205da18b773611"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/metaStatus.test.ts",
+    "sha256": "5930543b045fe7a743c7abf703a8c4f8b8620a59fb94f5ce14bc1e305a64af14"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/oidc.test.ts",
+    "sha256": "4eef1528e58c92dbb1381e71333a3668a9657827270dd41d1f4236d222b7f517"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/setup.ts",
+    "sha256": "ddafc7e30f65fc60ae3390b2bed16a74456d43c0c8dca0e448a2ac3b1ef2f1b3"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/sourceIdentity.test.ts",
+    "sha256": "87ab87f7d39b847c3d22d98395aaa98885f87e9985bb5c0f91185c1b8343422c"
+  },
+  {
+    "path": "frontend/marketops-console/src/__tests__/viteConfig.test.ts",
+    "sha256": "fe5e3325e97b2d0f0fbc61b976097fa9627f280260d3f445f70f6e92b753cc20"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingBriefView.tsx",
+    "sha256": "938cd6958d37d9729c47743a63f668c04a49b80dda4508b280a35a401f756953"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
+    "sha256": "090f94fe8dfef39af895629d1d6fa8c289a1a5594933e48409a9cabb6fe9717e"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingCommandTimeline.tsx",
+    "sha256": "f02237f0a69248cd31a1e4e6b7a442ded052eff8d789caf8aef766dbccf15a68"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingCompensation.tsx",
+    "sha256": "66313621cf475bfadf101998295fa92c8aa610c245d2d4f9f7a34726544b5ef1"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingContainmentControls.tsx",
+    "sha256": "6f6dc95e7fc91e4df800198ddf1bc61f95a6172839be7995a2b62213d12e26fe"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingEvidenceDetails.tsx",
+    "sha256": "431b41482e0704dbd0b38f1356ae97f0fe703348059c5fb065fda24581dd01bb"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingManualControls.tsx",
+    "sha256": "d5ff7444e5814db0af631f42bac26416f0ddb97cb1c15b09d84fd07de056f13d"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingManualShadow.tsx",
+    "sha256": "08d02caf8f64e7a431daf324b7d00951cf3e99fba53b0bb947cffe1fbf1e0477"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingOperations.tsx",
+    "sha256": "8fbf54edbdce1a65153a931f12721198dd9dd9027b4e08bf86cbf60851c02a46"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingOrchestration.tsx",
+    "sha256": "aae9841996ce58df1078588912141c9eefdf2a1c4bdcdcf925aaed8c3a7ee8fd"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingOutcomeHistory.tsx",
+    "sha256": "0676ecdfcd99c6464c4ee59c557c36b3c114c43e99458835d61c18d3c88b0942"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingQueue.tsx",
+    "sha256": "eb41004827cab5a930b02812c821e15b4bd2ec2b1c18a0caf7c4e74df842d3af"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingResponsibilityControls.tsx",
+    "sha256": "276049ce3b78d4338895c49016b00fbdd8c371612e71f153963e5be8adfb7f3f"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingTimestamp.tsx",
+    "sha256": "61cff677b97a4145196454cb35a6e7b7cef3c3593ce02152f6c5c28854e72094"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx",
+    "sha256": "ee45398e237631a12adaba76d64b9daa1ee3beeed81253d9a7030b7a702eff9f"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/EvidenceChip.tsx",
+    "sha256": "0a1dc0e4433b8ae3694a83d10415dcb7cdae41268d22f48010567f5c8dd4e512"
+  },
+  {
+    "path": "frontend/marketops-console/src/advertising/evidencePresentation.ts",
+    "sha256": "d5f859276c250c85240be18517a3cbdff41d816851d5ca4d09cb99c57400eae0"
+  },
+  {
+    "path": "frontend/marketops-console/src/api/advertising.ts",
+    "sha256": "ddcb09ab7af193001b3f7c89c1bc68090b152fa0e7c34ce95ae1aa4c87849091"
+  },
+  {
+    "path": "frontend/marketops-console/src/api/console.ts",
+    "sha256": "9f629d362ad6c5a24a07a50f2e643baab3be15cca94897c00a3a692c90694ae2"
+  },
+  {
+    "path": "frontend/marketops-console/src/api/diagnosticExport.ts",
+    "sha256": "c49c98a9e9ebae80a18440be9aba465f109f378295727feb7dd4620107407d52"
+  },
+  {
+    "path": "frontend/marketops-console/src/api/metaStatus.ts",
+    "sha256": "ad88992ce3f8c6132a0947dd0e968c63a1cf6f9577ff100e7a228c5f0578bc68"
+  },
+  {
+    "path": "frontend/marketops-console/src/availability/AvailabilityAuthorityPanel.tsx",
+    "sha256": "b11f846fe4a31f709eb366e28afa06ac2a64cad6bf0b5eeae22ff14247a4b10f"
+  },
+  {
+    "path": "frontend/marketops-console/src/availability/AvailabilityCases.tsx",
+    "sha256": "d1823396aca8f51889a8bbfb316dc48efc0b3e4667fb7943477fc2ef9fa143c3"
+  },
+  {
+    "path": "frontend/marketops-console/src/availability/AvailabilityQueue.tsx",
+    "sha256": "c0cf610491a2655e8bde1ab6975ff3980747605282aef797da30c198ffc292e6"
+  },
+  {
+    "path": "frontend/marketops-console/src/availability/casePresentation.ts",
+    "sha256": "82c23e4143774a9793209d70a8616c2c45df06f8648ddd3827b8896caa9fc564"
+  },
+  {
+    "path": "frontend/marketops-console/src/availability/riskPresentation.ts",
+    "sha256": "7ccdf34096f49aedeb263c9e6d5536e1b61d7fd7acc69b689c26fc3e29253923"
+  },
+  {
+    "path": "frontend/marketops-console/src/buildInfo.ts",
+    "sha256": "956c28f180f5563110cde45a6a2bc04e07f57d5836359dbdef55eb682b438821"
+  },
+  {
+    "path": "frontend/marketops-console/src/commands/CommandTimeline.tsx",
+    "sha256": "8da3f17724a24d1718ba5f9a26b79e470e128430d6c110874e0ad13748244174"
+  },
+  {
+    "path": "frontend/marketops-console/src/config.ts",
+    "sha256": "fa4aa3c34f5551d10eff63f654a2665236435fa5244eb3d5ac8e1bb9ead2d3e3"
+  },
+  {
+    "path": "frontend/marketops-console/src/diagnosis/AiExplanationPanel.tsx",
+    "sha256": "155ca5497a183f79974da07c905b6b0c4fdeb2d044ac49481185552e40257b7b"
+  },
+  {
+    "path": "frontend/marketops-console/src/diagnosis/DiagnosticExportPanel.tsx",
+    "sha256": "6db170a03f50e714f396163add13c91a359e6026d1c18bd6e3fef0ccc64b1e13"
+  },
+  {
+    "path": "frontend/marketops-console/src/diagnosis/MetricEvidencePanel.tsx",
+    "sha256": "b8a2887f8ea3f74f270749a1c4cd46e41623ac3b0daa88c4509c1709c8d60fff"
+  },
+  {
+    "path": "frontend/marketops-console/src/diagnosis/SubjectDiagnosisView.tsx",
+    "sha256": "1dee130df59cdeb92ff6c4bf6898b1e5de8fe82cb482ab85ac382c21e885e7d6"
+  },
+  {
+    "path": "frontend/marketops-console/src/health/HealthShell.tsx",
+    "sha256": "2c0bb0770fa5eed45964529c1af2b65e56f35e9e1d4d1b1deaf2c5b9113d7fff"
+  },
+  {
+    "path": "frontend/marketops-console/src/health/healthState.ts",
+    "sha256": "dddc34c1707e503ab1993af5a945dd2f1d4fd03773e1b05f45662cffcef3e7d8"
+  },
+  {
+    "path": "frontend/marketops-console/src/main.tsx",
+    "sha256": "31e47e292d319b8baad9f3ff04c991ad7cd507a411e0900920746035bab1c9b1"
+  },
+  {
+    "path": "frontend/marketops-console/src/queue/PriorityQueue.tsx",
+    "sha256": "b1e24c1b7c5a50c36c9d2203e39a25871f65463e4583e3366e4da958adf0c4b4"
+  },
+  {
+    "path": "frontend/marketops-console/src/session/SignIn.tsx",
+    "sha256": "513b77991235ff56fc294c5126f2c197410a4500e42e857553c563042af9ce8d"
+  },
+  {
+    "path": "frontend/marketops-console/src/session/oidc.ts",
+    "sha256": "e93e06b1b04b015182a800f5a19c2097545f02f03f1f643d6953162fc000a6fe"
+  },
+  {
+    "path": "frontend/marketops-console/src/session/pkce.ts",
+    "sha256": "f96df514ebc69ea8b8dba2e2dd293046cc8e302ac1245147ca9d500983719d9d"
+  },
+  {
+    "path": "frontend/marketops-console/src/session/session.ts",
+    "sha256": "1f677178be0d90210629384f2aa1d1fc94790d3c41d2245e44216484a9f04bee"
+  },
+  {
+    "path": "frontend/marketops-console/src/state/ValueCell.tsx",
+    "sha256": "e1ef999d400437c2457bb84ae4fae18ec8092c7af77db51892da0c1d7855fe7c"
+  },
+  {
+    "path": "frontend/marketops-console/src/state/confidence.ts",
+    "sha256": "0a88cdb655939a955831097f33de4432a1ded1d0707032c2dcf67122ea4747cf"
+  },
+  {
+    "path": "frontend/marketops-console/src/vite-env.d.ts",
+    "sha256": "46d36b13525d106f145d42bcb0e1ae6d1d3f7ddd4029e100bcf2863857a07de1"
+  },
+  {
+    "path": "frontend/marketops-console/src/workflow/RecommendationReview.tsx",
+    "sha256": "32e524b5420fa7adcba0361ad22101c7c3f1bb3ef560c337f76e55df06bc5edd"
+  },
+  {
+    "path": "frontend/marketops-console/src/workflow/SubjectRecommendations.tsx",
+    "sha256": "6222908bb70b217c16c6f4a01612beec04b519d3cf5cfb838754da47dddf3160"
+  },
+  {
+    "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+    "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814"
+  },
+  {
+    "path": "frontend/marketops-console/tests/browser/advertising-brief.spec.ts",
+    "sha256": "256efe8fc02270e0eb1e16dffba70fb7761cf1593d92717f11d5d3a0a97910fd"
+  },
+  {
+    "path": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+    "sha256": "5b2d0c7e6614f3ce40a9b44536abed2b68c432ce74f2703a32a94f17497aace9"
+  },
+  {
+    "path": "frontend/marketops-console/tests/browser/availability-journey.spec.ts",
+    "sha256": "5b5d7841e53ce28a44e75273b88391d1d175fc56c536b1227f063362e0b1a66d"
+  },
+  {
+    "path": "frontend/marketops-console/tests/browser/business-journey.spec.ts",
+    "sha256": "cf1bb00fff867470634e6bca683dbd2c9371d6a38abd9a0c3fcc0a153fca4adf"
+  },
+  {
+    "path": "frontend/marketops-console/tests/browser/health-shell.spec.ts",
+    "sha256": "913648b162fb0527fe0ee99831add3c5abdb986456309e59965aa1dfb07a0059"
+  },
+  {
+    "path": "frontend/marketops-console/tests/browser/operating-console.spec.ts",
+    "sha256": "b39e0092f9f6ec086d30d44f300fcc6449f19cf4d07752ce341a5e13a345369d"
+  },
+  {
+    "path": "frontend/marketops-console/tests/browser/sourceIdentity.ts",
+    "sha256": "f5ac6025c683b699621658ab86b837cb083f10f80c54042bd870dfc7455f2f70"
+  },
+  {
+    "path": "frontend/marketops-console/tsconfig.json",
+    "sha256": "0ef724117eea1947c47416ae58117cca92d59fbd7b84dcc1a99d8c1fed543b0e"
+  },
+  {
+    "path": "frontend/marketops-console/vite.config.ts",
+    "sha256": "387db124b1cb9c929f9609872c48186df08e6858d0cfe7aeccb01c3dec086638"
+  },
+  {
+    "path": "frontend/marketops-console/vite.constants.ts",
+    "sha256": "f19f1854341bd6f56ee0287dec71c191e6c8e9b4a59deab002749a9d31430e89"
+  }
+]

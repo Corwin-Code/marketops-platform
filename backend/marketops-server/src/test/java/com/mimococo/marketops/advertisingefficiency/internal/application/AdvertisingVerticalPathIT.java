@@ -74,7 +74,7 @@ class AdvertisingVerticalPathIT {
         start=Instant.now().truncatedTo(java.time.temporal.ChronoUnit.MICROS).minusSeconds(2);clock.at=start;provider.calls.clear();
         var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
         seed=JdbcClient.create(migration);graph=AdvertisingR1Fixture.seedUnapproved(migration,this::authorityOnly);
-        try(var admin=DATABASE.createConnection("");var s=admin.createStatement()) { s.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'"); }
+        try(var admin=DATABASE.createConnection("")) { TestDatabase.enableSyntheticIdentityIssuer(admin,ISSUER_PASSWORD); }
         role("executorUser","MARKETPLACE_OPERATOR");
         for(String user:List.of("executorUser","verifierUser","ownerUser"))
             for(String action:List.of("ADVERTISING_VIEW","ADVERTISING_TASK_ACT")) scope(user,action);

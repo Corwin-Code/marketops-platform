@@ -75,7 +75,7 @@ class AdvertisingHumanWorkflowIT {
         var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
         seed=JdbcClient.create(migration);graph=AdvertisingR1Fixture.seedUnapproved(migration);
         try(var admin=DATABASE.createConnection("")) {
-            try(var statement=admin.createStatement()) { statement.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'"); }
+            TestDatabase.enableSyntheticIdentityIssuer(admin,ISSUER_PASSWORD);
         }
         role("executorUser","MARKETPLACE_OPERATOR");
         for(String user:List.of("executorUser","verifierUser","ownerUser")) {

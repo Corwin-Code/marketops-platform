@@ -42,10 +42,18 @@ The reviewed starting Head is `a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb`.
 | [Post-W4 final control runs](workstreams/final-controls/index.json) | R21 executes 289 actual cases: all nine actual worker, twelve authority-version, twenty-five Gate E and twenty-one cross-domain cases pass; the containing run has one missing-Bundle diagnostic failure. Its one-line correction passes all 83 related cases in R22. R15 separately proves 17 real minimum-expiry boundaries. Original failures, exact source deltas, manifests and raw reports remain preserved. |
 | [Post-W4 control repairs](workstreams/post-w4-control-rework.md) | Causal changes, exact R15–R22 measured boundaries and remaining full-source requirements; selected tests do not substitute for final clean regression or CI. |
 | [Six-axis frontend quality](workstreams/post-w4-ui/exposure-quality-r3/receipt.json) | All 308 frontend tests and complete format/lint/type/build/coverage/bundle/SBOM checks pass at an exact stable source fingerprint. The legacy fixture now matches the six-axis contract; its four real HTTP refusal tests remain byte-identical. Browser runtime verification is still pending. |
+| [W5 committed identity](workstreams/slice3-r1-w5-identity.json) | Clean published Head 247ea5c binds the W5 runtime repair and original-log supplement. Later principal, synthetic SQL, dependency and fixture corrections need a new checkpoint. |
+| [Draft PR publication](workstreams/publication-w5/receipt.json) | Ordinary append-only publication and unique Draft PR #30, exact source/tree and unmerged/no-auto-merge readback; implementation verification remains in progress. |
+| [Initial W5 CI](workstreams/ci-w5-initial/receipt.json) | Exact tested merge and 12 required contexts at the first snapshot. This is an unfinished historical snapshot, not final CI evidence. |
+| [Actual W5 security review](workstreams/security-pr30-247e/artifact-index.json) | Four existing dependency advisories and all 99 analyzed CodeQL alerts; the aggregate CodeQL check failed despite successful scanner jobs. Original API/source/log evidence, individual triage and narrow repairs remain distinct from final rescan. |
+| [Principal boundary verification](workstreams/post-w5-security-principal/review.json) | Real HTTP tests cover all seven reads with authenticated, anonymous, spoofed and revoked identity/scope inputs. R23 passes 175 cases in all 15 related full classes. |
+| [Synthetic issuer SQL verification](workstreams/post-w5-security-issuer/repair.json) | Bound PostgreSQL quoting replaces five test-only SQL concatenations; actual hostile-shape synthetic password and application-role negatives pass. Latest CodeQL remains required. |
+| [Repaired-lock frontend verification](workstreams/post-w4-ui/exposure-quality-r5/receipt.json) | Fresh dependency installation, all 308 tests and actual SBOM schema validation pass. R4's skipped validator is preserved as incomplete. |
 | [W4 complete clean verification](workstreams/full-clean-w4/run-receipt.json) | Clean commit 4e101ca4: all 2,264 actual cases pass (1,546 unit, 718 integration), zero failures/errors/skips, JaCoCo passes, representative capacity 810 seconds and all three advertising capacity cases 356.931 seconds. Full run 1,724.270 seconds; 175 original XML reports, resources, actual PostgreSQL image identities and embedded JAR identity are preserved. |
 | [W4 committed identity](workstreams/slice3-r1-w4-identity.json) | Exact measured clean Head/tree, unchanged authorities/history and all 65 migration identities. Later F014/F005 runtime and F003/F021 test supplements require a new complete source measurement. |
 | [W4 named backend results](workstreams/slice3-r1-named-junit-w4.json) | 236 Java test references match actual passing cases in the archived W4 reports. Python and frontend/browser references remain separately measured; this index does not automatically close criteria or findings. |
 | [W4 evidence scan](workstreams/full-clean-w4-publishability-scan.json) | All 2,078 text files/archive members, 43,902,245 bytes, scanned against repository secret patterns and JWT shapes; zero matches. |
+| [Pre-W6 named governance](workstreams/pre-w6-governance/receipt.json) | All 410 actual methods pass, zero failures/errors/skips, with the principal, dependency and synthetic SQL repairs included in a stable measured worktree. |
 | [Pre-W5 named governance](workstreams/pre-w5-governance/receipt.json) | Complete governance passes all 410 actual methods, zero failures/errors/skips, on the frozen post-repair worktree; source boundary remains stable. This is preparatory verification for the next clean checkpoint. |
 | [Pre-W4 named governance](workstreams/pre-w4-governance/receipt.json) | Complete governance passes 410 methods with no failures, errors or skips, on the explicitly frozen pre-W4 worktree. Named Python references are indexed to actual results. |
 | [Named governance proof review](workstreams/f001-f022-governance-proof-review.json) | F001/F022 map to actual named positive and negative assertions with their limits; static tests cannot substitute for real Git, PR or CI observations. |
@@ -62,8 +70,9 @@ evidence additions require their own checkpoint and final verification binding.
 W4 full clean verification passes. Subsequent bounded facts, priority, expiry,
 retry, actor-revocation, exposure, isolation and Gate scope repairs and their
 proof supplements require a new clean full run. Final isolated browser,
-packaged migration, append-only publication, one Draft PR and exact latest-Head
-CI remain pending.
+packaged migration and exact latest-Head CI remain pending. The named branch
+is published and the unique Draft PR #30 is open; subsequent verified repairs
+will be appended to that same PR.
 
 `scripts/validation/assemble_slice3_rework_evidence.py` derives the central 200-AC
 index from the six named workstream shards. It checks exact accepted text and

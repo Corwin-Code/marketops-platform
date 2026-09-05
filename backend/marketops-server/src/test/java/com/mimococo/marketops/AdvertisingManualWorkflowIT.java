@@ -54,8 +54,8 @@ class AdvertisingManualWorkflowIT {
         admin=new DriverManagerDataSource(DATABASE.getJdbcUrl(),DATABASE.getUsername(),DATABASE.getPassword());
         seed=JdbcClient.create(migration);
         graph=AdvertisingR1Fixture.seedManual(migration);
-        try(var connection=admin.getConnection();var statement=connection.createStatement()) {
-            statement.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'");
+        try(var connection=admin.getConnection()) {
+            TestDatabase.enableSyntheticIdentityIssuer(connection,ISSUER_PASSWORD);
         }
         seedOutcomeAuthority();
         role("executorUser","MARKETPLACE_OPERATOR");

@@ -209,6 +209,22 @@
       "startedAtUTC": "2026-09-05T10:09:16.992573+00:00",
       "finishedAtUTC": "2026-09-05T10:10:23.646008+00:00",
       "logSha256": "696b5e1c981060b0365751d066d6ec3d5e978eff69cd57fb1bd6abc677215053"
+    },
+    {
+      "run": "r23",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/receipt.json",
+      "receiptSha256": "b06cbafe39a91c77937e1ebb9fb2307ac94e69c2444e2ada7ff79f8c41b6d5f8",
+      "counts": {
+        "tests": 175,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": true,
+      "startedAtUTC": "2026-09-05T10:42:33.942996+00:00",
+      "finishedAtUTC": "2026-09-05T10:45:33.403956+00:00",
+      "logSha256": "2c68f2aec3656c444f85aba92a695837a79f33b4d99b111d0a3dd424bd6d8c00"
     }
   ]
 }

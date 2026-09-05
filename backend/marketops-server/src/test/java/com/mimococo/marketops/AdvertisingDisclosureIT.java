@@ -194,7 +194,6 @@ class AdvertisingDisclosureIT {
         users.grantScope("disclosure-fixture", reviewer, ActionScopeCode.ADVERTISING_VIEW,
                 ResourceScopeType.ORGANIZATION, candidateGraph.id("organization"), null);
         UUID candidateMaker=candidateGraph.id("executorUser");
-        users.assignRole("disclosure-fixture",candidateMaker,BusinessRoleCode.MARKETPLACE_OPERATOR,null);
         users.grantScope("disclosure-fixture",candidateMaker,ActionScopeCode.ADVERTISING_VIEW,
                 ResourceScopeType.ORGANIZATION,candidateGraph.id("organization"),null);
         users.grantScope("disclosure-fixture", reviewer, ActionScopeCode.ADVERTISING_DECISION_EVIDENCE_VIEW,
@@ -224,7 +223,7 @@ class AdvertisingDisclosureIT {
             String proof=AdvertisingR1Fixture.proof(admin,connection,actual,actual.id("ownerUser"),null,actual.id("recommendation"),actual.id("approval"));
             AdvertisingR1Fixture.seal(connection,actual,proof);command=AdvertisingR1Fixture.createCommand(connection,actual);connection.commit();
         }
-        UUID user=actual.id("executorUser");users.assignRole("disclosure-fixture",user,BusinessRoleCode.MARKETPLACE_OPERATOR,null);
+        UUID user=actual.id("executorUser");
         users.grantScope("disclosure-fixture",user,ActionScopeCode.ADVERTISING_VIEW,ResourceScopeType.STORE,actual.id("store"),null);
         var actor=new AuthenticatedActor(user,actual.id("organization"),actual.id("provider"),"https://fixture.invalid/issuer",
                 "Synthetic native reader","0".repeat(64),null,Instant.now(),Instant.now().plusSeconds(3600),true,Set.of(BusinessRoleCode.MARKETPLACE_OPERATOR));
@@ -318,11 +317,8 @@ class AdvertisingDisclosureIT {
         var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
         var manual=AdvertisingR1Fixture.seedManual(migration);
         UUID user=manual.id("executorUser");
-        users.assignRole("manual-disclosure-fixture",user,BusinessRoleCode.MARKETPLACE_OPERATOR,null);
         users.grantScope("manual-disclosure-fixture",user,ActionScopeCode.ADVERTISING_VIEW,
                 ResourceScopeType.STORE,manual.id("store"),null);
-        users.grantScope("manual-disclosure-fixture",user,ActionScopeCode.ADVERTISING_TASK_ACT,
-                ResourceScopeType.ORGANIZATION,manual.id("organization"),null);
         String jwt=browserToken(manual.id("provider"),user);
         // Native option read oracles only: no proposal, packet, approval, command or action authority.
         for(String kind:List.of("AD_BID_CHANGE","AD_BUDGET_CHANGE","AD_STATUS_CHANGE")) {

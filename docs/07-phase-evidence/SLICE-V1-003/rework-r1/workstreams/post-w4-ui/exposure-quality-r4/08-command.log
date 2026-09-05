@@ -1,0 +1,10 @@
+
+> marketops-console@0.1.0 presbom
+> node scripts/prepare-sbom-output.mjs
+
+
+> marketops-console@0.1.0 sbom
+> cyclonedx-npm --output-file ../../build/supply-chain/frontend-sbom.json --spec-version 1.6 --output-reproducible --validate
+
+WARN  | skipped validating BOM: No JsonValidator available.
+Please install one of the optional dependencies: ( ajv && ajv-formats && ajv-formats-draft2019 )

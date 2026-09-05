@@ -61,8 +61,8 @@ class AdvertisingOrdinaryApprovalIT {
         var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
         seed=JdbcClient.create(migration);
         graph=AdvertisingMaterialityFixture.seedUnapproved(migration);
-        try(var admin=DATABASE.createConnection("");var statement=admin.createStatement()) {
-            statement.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'");
+        try(var admin=DATABASE.createConnection("")) {
+            TestDatabase.enableSyntheticIdentityIssuer(admin,ISSUER_PASSWORD);
         }
         role("executorUser","MARKETPLACE_OPERATOR");
         for(String user:List.of("executorUser","verifierUser")) {
