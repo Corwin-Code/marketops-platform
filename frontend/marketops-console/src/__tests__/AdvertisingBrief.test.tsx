@@ -197,3 +197,19 @@ describe('the published brief', () => {
     expect(parseAdvertisingBrief(withoutCut)).toBeUndefined();
   });
 });
+
+describe('brief completeness cannot erase gaps', () => {
+  it('an empty publication is never complete', () => {
+    expect(
+      parseAdvertisingBrief({
+        id: 'test',
+        briefKind: 'DAILY_ACTION_BRIEF',
+        periodKey: '2026-09-04',
+        asOf: '2026-09-04T00:00:00Z',
+        revisionKind: 'ORIGINAL',
+        gapCodes: [],
+        sections: [],
+      })?.fullyCovered,
+    ).toBe(false);
+  });
+});

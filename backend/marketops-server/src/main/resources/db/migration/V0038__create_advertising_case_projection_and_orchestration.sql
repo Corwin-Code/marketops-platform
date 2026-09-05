@@ -428,7 +428,7 @@ CREATE TABLE mart.ad_case_rank_factor (
     organization_id uuid          NOT NULL,
     calculation_id uuid           NOT NULL,
     factor_code    text           NOT NULL,
-    factor_value   numeric(18, 4) NOT NULL,
+    factor_value   numeric(18, 4),
     factor_weight  numeric(9, 4)  NOT NULL,
     contribution   numeric(18, 4) NOT NULL,
     display_note   text,
@@ -441,7 +441,10 @@ CREATE TABLE mart.ad_case_rank_factor (
         CHECK (factor_code IN (
             'CONFIRMED_PROFIT_LOSS_RATE', 'CRITICAL_SALES_EXPOSURE',
             'OFFICIAL_SPEND_EXPOSURE', 'RECOVERABLE_CONTRIBUTION_PROFIT',
-            'EVIDENCE_MATURITY', 'CASE_AGE', 'CONFIDENCE_PENALTY')),
+            'EVIDENCE_MATURITY', 'CASE_AGE', 'CONFIDENCE_PENALTY', 'HUMAN_SLO_URGENCY',
+            'BLOCKED_PROTECTION', 'BLAST_RADIUS', 'BLOCKED_WORK', 'DUAL_AXIS_GAP', 'DUAL_AXIS_PER_RUB_GAP', 'CRITICAL_SALES_HEADROOM')),
+    CONSTRAINT ad_case_rank_factor_absent_ck
+        CHECK (factor_value IS NOT NULL OR display_note LIKE 'UNRESOLVED:%'),
     CONSTRAINT ad_case_rank_factor_note_ck
         CHECK (display_note IS NULL OR length(btrim(display_note)) BETWEEN 1 AND 256)
 );
@@ -773,3 +776,42 @@ GRANT SELECT, INSERT, UPDATE ON ops.ad_reconciliation_run TO marketops_app;
 GRANT SELECT, INSERT, UPDATE ON ops.ad_fact_cursor TO marketops_app;
 GRANT SELECT, INSERT ON ops.ad_slo_observation TO marketops_app;
 GRANT SELECT, INSERT ON ops.ad_trace_event TO marketops_app;
+
+-- Qualification counts distinct, consecutive, complete policy windows; replaying
+-- a targeted refresh cannot manufacture another sustained period.
+CREATE TABLE mart.ad_qualification_period (
+    organization_id uuid NOT NULL REFERENCES core.organization(id),
+    ad_native_object_id uuid NOT NULL,
+    qualification_policy_id uuid NOT NULL,
+    period_start timestamptz NOT NULL,
+    period_end timestamptz NOT NULL,
+    qualified boolean NOT NULL,
+    evaluated_at timestamptz NOT NULL,
+    PRIMARY KEY (organization_id, ad_native_object_id, qualification_policy_id, period_start, period_end),
+    FOREIGN KEY (ad_native_object_id, organization_id) REFERENCES core.ad_native_object(id, organization_id),
+    FOREIGN KEY (qualification_policy_id, organization_id) REFERENCES core.ad_optimization_qualification_policy(id, organization_id),
+    CHECK (period_start < period_end)
+);
+GRANT SELECT, INSERT, UPDATE ON mart.ad_qualification_period TO marketops_app;
+
+CREATE TABLE mart.ad_case_purpose_evidence (
+    case_id uuid NOT NULL,
+    organization_id uuid NOT NULL,
+    calculation_id uuid NOT NULL,
+    decision_purpose text NOT NULL,
+    evidence_kind text NOT NULL,
+    freshness_profile_id uuid REFERENCES core.ad_freshness_profile(id),
+    source_time timestamptz,
+    accepted_at timestamptz,
+    expires_at timestamptz,
+    eligible boolean NOT NULL,
+    reason_codes text[] NOT NULL,
+    PRIMARY KEY (case_id, calculation_id, decision_purpose, evidence_kind),
+    FOREIGN KEY (case_id, organization_id) REFERENCES mart.ad_case(id, organization_id),
+    CHECK (NOT eligible OR (freshness_profile_id IS NOT NULL AND expires_at IS NOT NULL AND cardinality(reason_codes) = 0))
+);
+GRANT SELECT, INSERT ON mart.ad_case_purpose_evidence TO marketops_app;
+
+INSERT INTO platform.control_route_inventory (schema_name,table_name,route_kind,scope_kind,routing_note)
+VALUES ('mart','ad_qualification_period','NO_ROUTE',NULL,'rebuildable distinct-window qualification history'),
+       ('mart','ad_case_purpose_evidence','NO_ROUTE',NULL,'purpose-bound actual evidence times and deadlines');

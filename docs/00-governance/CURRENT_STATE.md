@@ -140,11 +140,11 @@ slice_v1_002_r1_finding_closure: docs/07-phase-evidence/SLICE-V1-002/r1-finding-
 slice_v1_002_r1_final_handoff: docs/07-phase-evidence/SLICE-V1-002/r1-final-handoff.md
 slice_v1_002_deferred_release_register: docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json
 slice_v1_003_as_built_design: docs/02-architecture/designs/SLICE-V1-003-design.md
-slice_v1_003_acceptance_status: docs/07-phase-evidence/SLICE-V1-003/acceptance-status.md
-slice_v1_003_acceptance_status_machine_readable: docs/07-phase-evidence/SLICE-V1-003/S3-AC-STATUS.json
-slice_v1_003_executable_evidence: docs/07-phase-evidence/SLICE-V1-003/executable-evidence.md
-slice_v1_003_migration_inventory: docs/07-phase-evidence/SLICE-V1-003/MIGRATION-INVENTORY.json
-slice_v1_003_deferred_release_register: docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json
+slice_v1_003_acceptance_status: docs/07-phase-evidence/SLICE-V1-003/rework-r1/README.md
+slice_v1_003_acceptance_status_machine_readable: docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-AC-REWORK-STATUS.json
+slice_v1_003_executable_evidence: docs/07-phase-evidence/SLICE-V1-003/rework-r1/README.md
+slice_v1_003_migration_inventory: docs/07-phase-evidence/SLICE-V1-003/rework-r1/MIGRATION-INVENTORY.json
+slice_v1_003_deferred_release_register: docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-REL-DEFERRED-REGISTER.json
 slice_v1_003_measurements: docs/07-phase-evidence/SLICE-V1-003/measurements/
 slice_v1_003_runbooks: docs/06-runbooks/
 slice_v1_003_engineering_closure_claim: NOT_MADE
@@ -225,7 +225,7 @@ slice_v1_001_snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e8482
 slice_v1_001_owner_acceptance_comment: 5469935477
 slice_v1_001_owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
 slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33
-candidate_state_scope: PROTECTED_MAIN_SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION_LOCAL_CHECKPOINT
+candidate_state_scope: SLICE_V1_003_AUTHORIZED_R1_REWORK_PENDING_FULL_VERIFICATION
 merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED
 production_deployment: NOT_AUTHORIZED
 gate_ev: NOT_AUTHORIZED
@@ -234,8 +234,8 @@ slice_v1_001_as_built_design: docs/02-architecture/designs/SLICE-V1-001-design.m
 slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
-next_authorized_actor: Claude Fable 5 / Claude Code
-next_action: SOURCE_UNDERSTANDING_DETAILED_DESIGN_FULL_SCOPE_IMPLEMENTATION_TESTS_EVIDENCE_AND_EXACT_LOCAL_CHECKPOINT
+next_authorized_actor: CODEX
+next_action: ROOT_CAUSE_REWORK_VERIFY_APPEND_ONLY_NAMED_BRANCH_DRAFT_PR_AND_CI
 slice_v1_001_handoff_pending: CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
@@ -623,31 +623,25 @@ capability anywhere in the module or in any migration.
 
 ## Next authorized action
 
-The repository gate is `SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION`. The exact next
-authorized action is source understanding, evolvable Detailed Design, Full-Scope
-backend and frontend implementation, forward-only migrations, the complete test
-and isolated-runtime evidence set, canonical documentation synchronization and an
-exact local Git commit/tree with a clean worktree, performed by
-`Claude Fable 5 / Claude Code` on branch
-`feat/SLICE-V1-003-advertising-traffic-efficiency` from protected `main`
-`08ad7da7d9e75b4ddd1c387a22ac0affba9e1430`.
+The repository gate remains `SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION`. Codex is
+executing the continuous root-cause rework authorized by
+`OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1`, bound to the exact 22-item Frozen
+Finding Set and the unchanged accepted Contract. The current work covers coherent
+source/migration/test repairs, same-class and transitive review, complete isolated
+verification, canonical evidence, append-only push on
+`feat/SLICE-V1-003-advertising-traffic-efficiency`, one Draft PR and exact current
+Head CI. The original Maker's local-only execution instruction remains historical;
+it is not the active R1 entry point.
 
-That authority is bounded by `EXECUTION_ENVELOPE_V1` Level 1. It does not
-authorize remote Git push, branch/tag mutation, PR create/update or merge; a
-shared non-production or production database; migration execution outside an
-isolated ephemeral development database; real Credential, Secret or OIDC/Yandex
-activation; any real Ozon or Wildberries read or write; deployment or Terraform
-apply; Gate EV; Gate E; Pilot; or any production business side effect. Remote
-publication remains a separately authorized Codex/Owner-delegate transport
-operation over an exact local checkpoint.
-
-The permitted engineering closure claim for this Slice is
-`CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS`. The Controller's next
-engineering decision point is a one-shot independent Deep Review over the exact
-published implementation candidate.
-
-Nothing here activates `RELEASE-V1-001`. Deployment, real credentials, provider
-calls, Gate EV, Gate E, Pilot and production writes remain unauthorized.
+The new authority does not permit mark Ready, merge, self-approval, force-push,
+direct main publication, shared or production environment access, real Provider
+calls, credential provisioning, deployment, Terraform apply, Gate EV, Gate E,
+Pilot or production enablement. `production_write_enabled=false` remains in force.
+The work-in-progress evidence index is
+[Codex R1](../07-phase-evidence/SLICE-V1-003/rework-r1/README.md). No inherited test
+count, earlier green CI, local partial batch or frozen-finding repair claim is an
+independent Controller closure verdict. Controller Final Closure Verification
+remains pending on the final exact published Head after all engineering checks.
 
 ## SLICE-V1-003 Codex R1 execution record
 

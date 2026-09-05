@@ -29,7 +29,26 @@ public record AdPolicySet(
         UUID materialityPolicyId, Integer materialityPolicyVersion,
         UUID exposureEnvelopeId, Integer exposureEnvelopeVersion,
         UUID semanticProfileId, Integer semanticProfileVersion,
+        UUID bundleId, Integer bundleVersion, List<String> additionalVersions, List<InputReference> inputReferences) {
+    public AdPolicySet(
+        UUID conversionDefinitionId, Integer conversionDefinitionVersion,
+        UUID allowableCpaDefinitionId, Integer allowableCpaDefinitionVersion,
+        UUID qualificationPolicyId, Integer qualificationPolicyVersion,
+        UUID priorityPolicyId, Integer priorityPolicyVersion,
+        UUID humanSloProfileId, Integer humanSloProfileVersion,
+        UUID targetPolicyId, Integer targetPolicyVersion,
+        UUID materialityPolicyId, Integer materialityPolicyVersion,
+        UUID exposureEnvelopeId, Integer exposureEnvelopeVersion,
+        UUID semanticProfileId, Integer semanticProfileVersion,
         UUID bundleId, Integer bundleVersion) {
+        this(conversionDefinitionId, conversionDefinitionVersion, allowableCpaDefinitionId, allowableCpaDefinitionVersion, qualificationPolicyId, qualificationPolicyVersion, priorityPolicyId, priorityPolicyVersion, humanSloProfileId, humanSloProfileVersion, targetPolicyId, targetPolicyVersion, materialityPolicyId, materialityPolicyVersion, exposureEnvelopeId, exposureEnvelopeVersion, semanticProfileId, semanticProfileVersion, bundleId, bundleVersion, List.of(), List.of());
+    }
+    public AdPolicySet {
+        additionalVersions = List.copyOf(additionalVersions);
+        inputReferences = List.copyOf(inputReferences);
+    }
+    public record InputReference(String role, UUID id, Integer version, String digest, java.time.Instant observedAt) { }
+
 
     /** Nothing resolved. Every purpose that consumes a version fails closed. */
     public static AdPolicySet empty() {
@@ -78,6 +97,7 @@ public record AdPolicySet(
         append(components, "exposure", exposureEnvelopeId, exposureEnvelopeVersion);
         append(components, "semanticProfile", semanticProfileId, semanticProfileVersion);
         append(components, "bundle", bundleId, bundleVersion);
+        components.addAll(additionalVersions.stream().sorted().toList());
         return Digest.ofComponents(components);
     }
 

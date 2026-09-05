@@ -57,18 +57,18 @@ public class AdvertisingTraceRepository {
     public void recordSlo(UUID id, UUID organizationId, UUID adNativeObjectId, UUID caseId,
             String lane, String pathKind, Instant sourceEventTime, Instant sourceUpdatedAt,
             Instant ingestedAt, Instant factAcceptedAt, Instant calculatedAt,
-            Instant caseUpdatedAt, long internalLatencyMillis, Long sourceLatencyMillis,
+            Instant caseUpdatedAt, Long internalLatencyMillis, Long sourceLatencyMillis,
             boolean breached, String correlationId) {
         jdbc.sql("""
                 INSERT INTO ops.ad_slo_observation (
                     id, organization_id, ad_native_object_id, case_id, lane, path_kind,
                     source_event_time, source_updated_at, ingested_at, fact_accepted_at,
                     calculated_at, case_updated_at, internal_latency_ms, source_latency_ms,
-                    breached, correlation_id)
+                    breached, correlation_id,clock_state)
                 VALUES (:id, :organizationId, :adNativeObjectId, :caseId, :lane, :pathKind,
                     :sourceEventTime, :sourceUpdatedAt, :ingestedAt, :factAcceptedAt,
                     :calculatedAt, :caseUpdatedAt, :internalLatencyMillis, :sourceLatencyMillis,
-                    :breached, :correlationId)
+                    :breached, :correlationId,CASE WHEN :calculatedAt<:factAcceptedAt THEN 'CLOCK_INCONSISTENT' ELSE 'VALID' END)
                 """)
                 .param("id", id).param("organizationId", organizationId)
                 .param("adNativeObjectId", adNativeObjectId).param("caseId", caseId)

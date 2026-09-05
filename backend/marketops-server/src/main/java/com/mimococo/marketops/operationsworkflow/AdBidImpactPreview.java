@@ -31,7 +31,13 @@ public record AdBidImpactPreview(
         AdvertisingBidProjection projection,
         List<String> gateReasons,
         List<String> unresolvedReasons,
-        GuardrailVerdict verdict) {
+        GuardrailVerdict verdict,
+        tools.jackson.databind.JsonNode evidence) {
+
+    public AdBidImpactPreview(UUID recommendationId,AdvertisingBidProjection projection,List<String> gateReasons,
+            List<String> unresolvedReasons,GuardrailVerdict verdict) {
+        this(recommendationId,projection,gateReasons,unresolvedReasons,verdict,null);
+    }
 
     public AdBidImpactPreview {
         Objects.requireNonNull(recommendationId, "recommendationId");

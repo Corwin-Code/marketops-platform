@@ -51,6 +51,7 @@ public record ProviderBidGrid(
      */
     public boolean usable() {
         return bidFieldPresent
+                && java.util.Set.of("CURRENCY_MAJOR","CURRENCY_MINOR").contains(bidUnitCode)
                 && "VERIFIED".equals(verificationState)
                 && step != null && step.signum() > 0
                 && minimum != null && minimum.signum() > 0

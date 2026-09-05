@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { fetchAdvertisingOutcomes } from '../api/console';
+import { fetchAdvertisingOutcomes, fetchAdvertisingManualOutcomes } from '../api/console';
 import type { AdvertisingOutcome } from '../api/advertising';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
+import { AdvertisingEvidenceDetails } from './AdvertisingEvidenceDetails';
 import { AdvertisingProblem } from './AdvertisingQueue';
 
 /** What the outcome history needs in order to load itself. */
@@ -9,17 +10,15 @@ export interface AdvertisingOutcomeHistoryProps {
   /** Where to send the request and who is asking. */
   readonly context: ConsoleRequest;
   /** The command whose outcome is being read. */
-  readonly commandId: string;
+  readonly commandId?: string;
+  readonly manualPacketId?: string;
 }
 
 /**
  * What one bid change actually did, stage by stage.
  *
- * Never one number. An operational reading counts orders and arrives within
- * days; a settled reading counts what the buyer kept and does not arrive until
- * returns have run their course. They are different claims about the same
- * change, and a console showing a single figure labelled &ldquo;result&rdquo;
- * would be showing whichever of the two happened to be written last.
+ * Completed, 30-day retained and settled stages carry independent sales and
+ * economic observations. Unknown axes remain unresolved at every stage.
  *
  * Restatements are shown in place rather than replacing what they restate. A
  * settled figure can change when a late return arrives, and the fact that the
@@ -29,13 +28,19 @@ export interface AdvertisingOutcomeHistoryProps {
 export function AdvertisingOutcomeHistory({
   context,
   commandId,
+  manualPacketId,
 }: AdvertisingOutcomeHistoryProps): React.JSX.Element {
   const [outcomes, setOutcomes] = useState<readonly AdvertisingOutcome[] | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
 
   useEffect(() => {
     let active = true;
-    void fetchAdvertisingOutcomes(context, commandId).then((outcome) => {
+    if (commandId === undefined && manualPacketId === undefined) return;
+    const pending =
+      manualPacketId !== undefined
+        ? fetchAdvertisingManualOutcomes(context, manualPacketId)
+        : fetchAdvertisingOutcomes(context, commandId ?? '');
+    void pending.then((outcome) => {
       if (!active) {
         return;
       }
@@ -50,7 +55,7 @@ export function AdvertisingOutcomeHistory({
     return () => {
       active = false;
     };
-  }, [context, commandId]);
+  }, [context, commandId, manualPacketId]);
 
   if (failure !== undefined) {
     return <AdvertisingProblem failure={failure} />;
@@ -87,9 +92,11 @@ export function AdvertisingOutcomeHistory({
             data-revision={observation.revisionNo}
           >
             <h4>
-              {observation.settled
-                ? 'Settled — what the buyer kept'
-                : 'Operational — what was ordered'}
+              {observation.outcomeStage.startsWith('SETTLED')
+                ? 'Settled — matured RetainedSales'
+                : observation.outcomeStage.startsWith('RETAINED')
+                  ? 'RetainedSales — 30 days'
+                  : 'CompletedSales — operational observation'}
               {observation.revisionNo > 1 ? ` (restatement ${String(observation.revisionNo)})` : ''}
             </h4>
             <p data-verdict={observation.verdict}>
@@ -114,6 +121,12 @@ export function AdvertisingOutcomeHistory({
                 </>
               ) : null}
             </dl>
+            {observation.axes !== undefined && (
+              <AdvertisingEvidenceDetails
+                value={observation.axes}
+                label="Dual economics and sales preservation"
+              />
+            )}
             {observation.adjustmentReason === undefined ? null : (
               <p data-adjustment="true">Restated because: {observation.adjustmentReason}</p>
             )}

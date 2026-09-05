@@ -626,6 +626,7 @@ DECLARE
     cpa               core.ad_allowable_cpa_definition%ROWTYPE;
     target            core.ad_bid_target_policy%ROWTYPE;
     profile           platform.ad_semantic_profile%ROWTYPE;
+    qualification     core.ad_optimization_qualification_policy%ROWTYPE;
     failures          text[] := '{}';
     freshness_gaps    text[];
 BEGIN
@@ -642,40 +643,42 @@ BEGIN
         WHERE id = bundle.target_policy_id;
     SELECT * INTO profile FROM platform.ad_semantic_profile
         WHERE id = bundle.semantic_profile_id;
+    SELECT * INTO qualification FROM core.ad_optimization_qualification_policy
+        WHERE id = bundle.qualification_policy_id;
 
     -- Every referenced version must still be in force at the bundle's own start.
     IF conversion.status NOT IN ('ACTIVE', 'RETIRED')
         OR conversion.effective_from > bundle.effective_from
         OR (conversion.effective_to IS NOT NULL
             AND conversion.effective_to <= bundle.effective_from) THEN
-        failures := failures || 'CONVERSION_DEFINITION_NOT_IN_FORCE';
+        failures := array_append(failures, 'CONVERSION_DEFINITION_NOT_IN_FORCE');
     END IF;
     IF cpa.status NOT IN ('ACTIVE', 'RETIRED')
         OR cpa.effective_from > bundle.effective_from
         OR (cpa.effective_to IS NOT NULL AND cpa.effective_to <= bundle.effective_from) THEN
-        failures := failures || 'ALLOWABLE_CPA_DEFINITION_NOT_IN_FORCE';
+        failures := array_append(failures, 'ALLOWABLE_CPA_DEFINITION_NOT_IN_FORCE');
     END IF;
     IF target.status NOT IN ('ACTIVE', 'RETIRED')
         OR target.effective_from > bundle.effective_from
         OR (target.effective_to IS NOT NULL AND target.effective_to <= bundle.effective_from) THEN
-        failures := failures || 'TARGET_POLICY_NOT_IN_FORCE';
+        failures := array_append(failures, 'TARGET_POLICY_NOT_IN_FORCE');
     END IF;
 
     -- The stage rule, checked where the two definitions meet. This is the
     -- combination that produces a Max CPC, and a mismatch here is the one the
     -- Contract cares most about.
     IF conversion.sale_stage IS DISTINCT FROM cpa.sale_stage THEN
-        failures := failures || 'CONVERSION_AND_ALLOWABLE_CPA_STAGE_MISMATCH';
+        failures := array_append(failures, 'CONVERSION_AND_ALLOWABLE_CPA_STAGE_MISMATCH');
     END IF;
     IF conversion.sale_stage = 'PROVIDER_NATIVE_OBSERVATION' THEN
-        failures := failures || 'CONVERSION_STAGE_IS_PROVIDER_OBSERVATION';
+        failures := array_append(failures, 'CONVERSION_STAGE_IS_PROVIDER_OBSERVATION');
     END IF;
 
     -- The target policy must be the one this bundle's scope actually describes.
     IF target.direction IS DISTINCT FROM bundle.direction
         OR target.candidate_basis IS DISTINCT FROM bundle.candidate_basis
         OR target.native_object_kind IS DISTINCT FROM bundle.native_object_kind THEN
-        failures := failures || 'TARGET_POLICY_SCOPE_MISMATCH';
+        failures := array_append(failures, 'TARGET_POLICY_SCOPE_MISMATCH');
     END IF;
 
     -- Provider semantics must be able to express an exact bid at all. An
@@ -687,24 +690,30 @@ BEGIN
         OR profile.bid_step IS NULL
         OR profile.bid_precision IS NULL
         OR profile.readback_semantics IN ('NOT_AVAILABLE', 'UNKNOWN') THEN
-        failures := failures || 'SEMANTIC_PROFILE_NOT_WRITE_CAPABLE';
+        failures := array_append(failures, 'SEMANTIC_PROFILE_NOT_WRITE_CAPABLE');
     END IF;
 
     -- Purpose monotonicity, delegated to the authority that owns it.
     freshness_gaps := core.ad_freshness_purpose_violations(
         bundle.organization_id, bundle.effective_from);
     IF cardinality(freshness_gaps) > 0 THEN
-        failures := failures || 'FRESHNESS_PURPOSE_MONOTONICITY_VIOLATED';
+        failures := array_append(failures, 'FRESHNESS_PURPOSE_MONOTONICITY_VIOLATED');
     END IF;
     IF NOT core.ad_qualification_tier_is_monotonic(
-            bundle.organization_id, 'ORGANIZATION', NULL, NULL, bundle.effective_from) THEN
-        failures := failures || 'QUALIFICATION_TIER_MONOTONICITY_VIOLATED';
+            bundle.organization_id, qualification.scope_kind, qualification.platform_code,
+            qualification.store_ref_id, bundle.effective_from) THEN
+        failures := array_append(failures, 'QUALIFICATION_TIER_MONOTONICITY_VIOLATED');
     END IF;
 
     -- An ordinary route only exists where a promotion record says it does. This
     -- Slice creates no promotion record, so a bundle claiming one fails here.
-    IF bundle.ordinary_promotion_id IS NOT NULL THEN
-        failures := failures || 'ORDINARY_ROUTE_PROMOTION_NOT_RECOGNISED';
+    IF bundle.ordinary_promotion_id IS NOT NULL AND NOT EXISTS (
+        SELECT 1 FROM ops.ad_ordinary_promotion promotion JOIN ops.ad_gate_authority gate
+        ON gate.id=promotion.gate_authority_id WHERE promotion.id=bundle.ordinary_promotion_id
+        AND promotion.bundle_id=bundle.id AND promotion.status='ACTIVE'
+        AND gate.gate_kind='GATE_E' AND gate.status='ACTIVE'
+        AND promotion.valid_until>statement_timestamp() AND gate.valid_until>statement_timestamp()) THEN
+        failures := array_append(failures, 'ORDINARY_ROUTE_PROMOTION_NOT_RECOGNISED');
     END IF;
 
     RETURN failures;

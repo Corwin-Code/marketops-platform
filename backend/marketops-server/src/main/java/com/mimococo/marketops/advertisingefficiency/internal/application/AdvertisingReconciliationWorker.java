@@ -52,6 +52,9 @@ class AdvertisingReconciliationWorker {
     private final AdvertisingTraceRepository trace;
     private final IdGenerator ids;
     private final Clock clock;
+    private final com.mimococo.marketops.operationsworkflow.AdvertisingReconciliationMaintenance maintenance;
+    private final AdvertisingOutcomeWorker outcomes;
+    private final AdvertisingOrchestrationSloService slo;
 
     AdvertisingReconciliationWorker(
             AdvertisingRecalculationRepository queue,
@@ -59,13 +62,15 @@ class AdvertisingReconciliationWorker {
             AdvertisingCaseRefreshService refresh,
             AdvertisingTraceRepository trace,
             IdGenerator ids,
-            Clock clock) {
+            Clock clock,
+            com.mimococo.marketops.operationsworkflow.AdvertisingReconciliationMaintenance maintenance,
+            AdvertisingOutcomeWorker outcomes,AdvertisingOrchestrationSloService slo) {
         this.queue = queue;
         this.facts = facts;
         this.refresh = refresh;
         this.trace = trace;
         this.ids = ids;
-        this.clock = clock;
+        this.clock = clock;this.maintenance=maintenance;this.outcomes=outcomes;this.slo=slo;
     }
 
     /** What one sweep did. */
@@ -96,6 +101,8 @@ class AdvertisingReconciliationWorker {
                 "OBSERVED", correlationId, null, null,
                 "{\"pending\":" + backlog.pending() + "}", asOf);
 
+        var maintained=maintenance.reconcile(organizationId,asOf);
+        queue.deliverDue(asOf,10000);
         List<UUID> visited = new ArrayList<>();
         int changed = 0;
         int failed = 0;
@@ -111,11 +118,23 @@ class AdvertisingReconciliationWorker {
             for (AdvertisingEvidenceRepository.ObjectRow object : page) {
                 after = object.id();
                 try {
+                    var outcomeBatch=outcomes.runForObject(organizationId,object.id(),asOf,1000);
+                    if(outcomeBatch.remaining()) throw new IllegalStateException("AD_OUTCOME_BACKLOG_REMAINS");
                     Optional<AdvertisingCaseRefreshService.RefreshOutcome> outcome =
                             refresh.refresh(organizationId, object.id(), asOf,
                                     AdvertisingProjectionWriter.RECONCILIATION, runId,
                                     correlationId);
                     visited.add(object.id());
+                    Instant observedAt=clock.instant();
+                    var firstCase=outcome.stream().flatMap(value->value.written().cases().stream())
+                            .sorted(java.util.Comparator.comparing(value->!"PROTECTION".equals(value.lane()))).findFirst();
+                    for(var unanswered:queue.unanswered(organizationId,object.id(),asOf)) {
+                        long latency=Duration.between(unanswered.acceptedAt(),observedAt).toMillis();
+                        trace.recordSlo(ids.newId(),organizationId,object.id(),firstCase.map(value->value.caseId()).orElse(null),
+                                firstCase.map(value->value.lane()).orElse("WATCH"),"RECONCILIATION",null,null,null,
+                                unanswered.acceptedAt(),observedAt,observedAt,latency<0?null:latency,null,
+                                latency<0||latency>900000,correlationId+":"+unanswered.id());
+                    }
                     if (outcome.map(result -> result.written().anyLaneChanged()).orElse(false)) {
                         changed++;
                     }
@@ -132,11 +151,12 @@ class AdvertisingReconciliationWorker {
             queue.recordRunProgress(runId, after, visited.size(), changed, failed);
         }
 
-        int repaired = queue.repairCoveredRequests(organizationId, visited, clock.instant());
+        int repaired = queue.repairCoveredRequests(organizationId, visited, asOf,clock.instant());
+        int released=queue.releaseProvenReservations(organizationId);
         Instant completedAt = clock.instant();
         queue.finishRun(new AdvertisingRecalculationRepository.RunOutcome(
                 runId, completed ? "COMPLETED" : "FAILED", visited.size(), changed, repaired,
-                0, 0, 0, failed, after,
+                maintained.expiredExceptions(), maintained.expiredApprovals(), released, failed, after,
                 completed ? null : "ADVERTISING_SWEEP_INCOMPLETE", completedAt));
         trace.record(ids.newId(), organizationId, null, "RECONCILIATION",
                 completed ? "SWEEP_COMPLETED" : "SWEEP_FAILED",
@@ -145,6 +165,7 @@ class AdvertisingReconciliationWorker {
                         + ",\"repaired\":" + repaired + ",\"failed\":" + failed + "}",
                 completedAt);
 
+        slo.record(organizationId);
         return Optional.of(new SweepResult(
                 runId, completed, visited.size(), changed, repaired, failed));
     }

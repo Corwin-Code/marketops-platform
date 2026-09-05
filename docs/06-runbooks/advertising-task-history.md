@@ -1,90 +1,99 @@
-# Reading what actually happened to a piece of work
+# Advertising responsibility and response history
 
-`ops.work_task` says who holds a task and whether it is closed. It cannot tell
-you when somebody first looked at it, whether looking was the same as taking it
-on, whether taking it on was the same as doing anything, or how old the work
-really is after it changed hands twice. Those are the questions a service level
-is made of, and they are answered by `ops.work_task_event`.
+Use the governed Case workflow and Task journal to establish who is accountable,
+what was decided and which response stage has been met. This R1 runbook is an
+operating description, not permission to access a shared environment. Local
+verification uses isolated fictional fixtures; production writes remain disabled.
 
-## The four distinctions, and why they are not conveniences
+## One responsibility per cause
 
-A page open is not an acknowledgement. `VIEWED` may carry no actor decision, no
-action and no evidence, so a console that logged every render could not present
-that as somebody engaging with the work.
+An actionable non-Watch Case receives its own Task even when evidence blocks all
+candidates. Two independent causes on one native object may have two Tasks;
+three finite candidate choices for one cause still have one responsibility.
+Recalculation, reassignment, an ended exception and recurring harm keep the
+original Task and first-raised time. A response breach escalates work and cannot
+authorize a bid change.
 
-An acknowledgement is not an action. `ACKNOWLEDGED` names a person and nothing
-else. `ACTION_RECORDED` must carry a structured action, evidence with a
-reference, and the person who did it — the schema refuses any of the three
-missing. This is the property that stops "I have seen it" satisfying an action
-stage.
+The workflow supplies the current `allowedActions`. Read
+`GET /api/v1/console/advertising/cases/{caseId}/workflow` before acting. Selection,
+endorsement, approval, execution and accepted risk use their governed endpoints;
+generic work-queue recommendation transitions refuse the advertising action.
 
-An action is not an outcome. `OUTCOME_OBSERVED` must name the observation it
-read, and no action event may carry one. "We did it" and "it worked" are
-different claims, and only the first can be made at the time of doing.
+## Distinguish the four events
 
-A reassignment is not a new task. `REASSIGNED` names who held it and who holds it
-now, and the two must differ. `ops.work_task.first_raised_at` is set once by a
-trigger that refuses to move it, so the age a queue reports is the age of the
-work rather than the age of the current holder's involvement.
+| Event | What it establishes |
+| --- | --- |
+| `VIEWED` | A page was read; no acknowledgement or action. |
+| `ACKNOWLEDGED` | A named authorized person acknowledged the work. |
+| `ACTION_RECORDED` | An attributable action with an actual supported evidence record. |
+| `OUTCOME_OBSERVED` | A canonical observation, separate from execution or success claims. |
 
-## Reading one task's history
+The console Task endpoints have the prefix
+`/api/v1/console/advertising/tasks/{taskId}`: `/view`, `/acknowledgement`,
+`/action`, `/reopen` and `/journal`. A repair action must cite the actual canonical
+repair record. Arbitrary text or a UUID that does not resolve cannot meet the
+Action stage. Governed Manual issuance/configuration proof and controlled command
+creation append their own attributable events. Assignment validates the
+assignee's current role and complete store/variant scope.
 
-```sql
-SELECT sequence_no, event_kind, action_kind, outcome_kind,
-       from_assignee_user_id, to_assignee_user_id, actor_user_id, reason,
-       occurred_at
-  FROM ops.work_task_event
- WHERE task_id = '<task>'
- ORDER BY sequence_no;
-```
-
-The sequence number is allocated inside the insert, so two appends racing for
-the same task collide on the unique constraint rather than both claiming to be
-third. A gap in the sequence means a transaction rolled back, not that an event
-was removed — nothing can be removed.
-
-## Reading a lineage across reopens
-
-A task reopened for the same recommendation continues its lineage. A recurring
-fault therefore reads as one story rather than as a series of unrelated first
-occurrences:
+For an authorized read-only investigation, inspect the journal by identity:
 
 ```sql
-SELECT task_id, sequence_no, event_kind, occurred_at, reason
-  FROM ops.work_task_event
- WHERE organization_id = '<organization>'
-   AND lineage_key = 'recommendation:<recommendation>'
- ORDER BY occurred_at, sequence_no;
+SELECT sequence_no, event_kind, action_kind, evidence_reference,
+       outcome_kind, outcome_reference, actor_user_id, actor_role_code,
+       from_assignee_user_id, to_assignee_user_id, occurred_at
+FROM ops.work_task_event WHERE task_id = :task_id ORDER BY sequence_no;
 ```
 
-If you are investigating why the same problem keeps coming back, this is the
-query. Several `REOPENED` events in one lineage is the signal; several separate
-lineages for what looks like the same problem means the cause key is wrong and
-that is itself the finding.
+Appending locks the Task before selecting the next sequence. Concurrent appends
+serialize. The journal is append-only; neither application nor operator should
+repair a response metric by rewriting history. Financially restricted viewers
+receive the same masked journal projection as other delivery channels.
 
-## When a service level looks met and you doubt it
+## Read the actual response clock
 
-Ask whether the action stage was satisfied by an action:
+Acknowledgement and Action deadlines use the frozen Owner SLO profile and
+staffed calendar, with the original first-raised time. Missing or conflicting
+profile/calendar authority produces `PROFILE_OR_CALENDAR_MISSING`, unknown
+deadlines and escalation. It cannot produce an on-time result from a numeric
+default. If the missing authority later becomes available, the same binding
+retains its unresolved original and resolution timestamp. Historical queries
+exclude bindings recorded after their as-of and use the unresolved snapshot
+before resolution.
 
 ```sql
-SELECT count(*) FILTER (WHERE event_kind = 'VIEWED')          AS views,
-       count(*) FILTER (WHERE event_kind = 'ACKNOWLEDGED')    AS acknowledgements,
-       count(*) FILTER (WHERE event_kind = 'ACTION_RECORDED') AS actions
-  FROM ops.work_task_event
- WHERE task_id = '<task>';
+SELECT case_id, task_id, owner_role_code, first_raised_at, recorded_at,
+       slo_profile_id, slo_profile_version, calendar_id, calendar_version,
+       coverage_state, acknowledgement_due_at, action_due_at,
+       escalation_due_at, next_staffed_response_at
+FROM ops.ad_case_responsibility WHERE case_id = :case_id;
 ```
 
-A task with views and acknowledgements and no action has not been acted on,
-whatever a dashboard says. The schema guarantees the counts mean what they say:
-an `ACTION_RECORDED` row cannot exist without its action kind, its evidence and
-its actor.
+The stored deadlines are the original binding. The API computes the current
+Action deadline from valid accepted-risk pauses and actual journal events.
+Outside staffed coverage, continuing harm and wall-clock exposure remain visible.
+A valid pause affects only the Action stage, never acknowledgement or harm age.
 
-## What this journal is not
+## Accepted risk and recurrence
 
-It is not an authority. It records what happened to a task; it does not decide
-what may happen next, and nothing reads it before permitting a write. If you find
-yourself wanting to change a row here to make a queue look right, the queue is
-wrong and the journal is the evidence of it.
+A live selected candidate, endorsed/issued Manual intent, in-progress Task or
+active command/reservation prevents accepting a competing exception. An active
+exception prevents new action intent and Task reopen. It requires exact bounded
+risk, distinct Ops endorsement and Owner approval, complete live authority,
+review date and expiry. End it through the governed action before preparing a
+new decision; ending invalidates old unexecuted candidates.
 
-The application role holds `SELECT` and `INSERT` and nothing else. There is no
-`UPDATE` to grant and no correction to make.
+Missed review, expiry, changed scope/policy/Bundle, worsening exposure/profit,
+unknown or regressed critical sales, conflict or lost IAM authority invalidates
+the exception and reopens this same Task. Revoke-and-restore cannot resurrect
+its authority. Check `REOPENED` and `ESCALATED` events and the latest workflow
+state. A closed Task is permitted only when the canonical cause is superseded;
+manual closure cannot conceal continuing risk.
+
+## Verification references
+
+`AdvertisingHumanWorkflowIT` exercises actual IAM/service/PostgreSQL decisions,
+missing-profile recovery, permanent invalidation, concurrent responsibility and
+finite-choice identity. `StaffedResponseClockTest` checks staffed time and pause
+arithmetic. Actual run results, source Head and outstanding verification belong
+in `docs/07-phase-evidence/SLICE-V1-003/rework-r1/`, not in assumed runbook claims.

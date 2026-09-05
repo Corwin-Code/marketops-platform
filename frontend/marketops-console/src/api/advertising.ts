@@ -16,6 +16,107 @@ export interface AdvertisingRankFactor {
   readonly absenceReason: string | undefined;
 }
 
+export interface AdvertisingWorkflowCandidate {
+  readonly id: string;
+  readonly ordinal: number;
+  readonly currentBidAmount: number | undefined;
+  readonly targetBidAmount: number | undefined;
+  readonly currency: string | undefined;
+  readonly unit: string | undefined;
+  readonly basis: string;
+  readonly recommendationId: string;
+  readonly state: string;
+  readonly version: number;
+  readonly makerUserId: string | undefined;
+  readonly endorserUserId: string | undefined;
+  readonly commandId?: string;
+}
+
+export interface AdvertisingWorkflow {
+  readonly caseId: string;
+  readonly taskId: string | undefined;
+  readonly taskState: string;
+  readonly operatingDisposition: string;
+  readonly taskVersion: number | undefined;
+  readonly accountableRole: string;
+  readonly firstRaisedAt: string | undefined;
+  readonly acknowledgementDueAt: string | undefined;
+  readonly actionDueAt: string | undefined;
+  readonly escalationDueAt: string | undefined;
+  readonly coverageState: string;
+  readonly nextStaffedResponseAt: string | undefined;
+  readonly slo: Readonly<Record<string, unknown>> | undefined;
+  readonly candidates: readonly AdvertisingWorkflowCandidate[];
+  readonly allowedActions: readonly string[];
+}
+
+export function parseAdvertisingWorkflow(body: unknown): AdvertisingWorkflow | undefined {
+  if (typeof body !== 'object' || body === null) return undefined;
+  const record = body as Record<string, unknown>;
+  const caseId = text(record.caseId);
+  if (
+    caseId === undefined ||
+    !Array.isArray(record.candidates) ||
+    !Array.isArray(record.allowedActions)
+  )
+    return undefined;
+  const candidates: AdvertisingWorkflowCandidate[] = [];
+  for (const item of record.candidates) {
+    if (typeof item !== 'object' || item === null) return undefined;
+    const row = item as Record<string, unknown>;
+    const id = text(row.id),
+      recommendationId = text(row.recommendationId),
+      commandId = text(row.commandId);
+    const state = text(row.state),
+      version = decimal(row.version),
+      ordinal = decimal(row.ordinal);
+    if (
+      id === undefined ||
+      recommendationId === undefined ||
+      state === undefined ||
+      version === undefined ||
+      !Number.isSafeInteger(version) ||
+      ordinal === undefined
+    )
+      return undefined;
+    candidates.push({
+      id,
+      recommendationId,
+      state,
+      version,
+      ordinal,
+      currentBidAmount: decimal(row.currentBidAmount),
+      targetBidAmount: decimal(row.targetBidAmount),
+      currency: text(row.currency),
+      unit: text(row.unit),
+      basis: text(row.basis) ?? 'UNRESOLVED',
+      makerUserId: text(row.makerUserId),
+      endorserUserId: text(row.endorserUserId),
+      ...(commandId === undefined ? {} : { commandId }),
+    });
+  }
+  return {
+    caseId,
+    taskId: text(record.taskId),
+    taskState: text(record.taskState) ?? 'UNRESOLVED',
+    operatingDisposition: text(record.operatingDisposition) ?? 'UNRESOLVED',
+    taskVersion: decimal(record.taskVersion),
+    accountableRole: text(record.accountableRole) ?? 'UNRESOLVED',
+    firstRaisedAt: text(record.firstRaisedAt),
+    acknowledgementDueAt: text(record.acknowledgementDueAt),
+    actionDueAt: text(record.actionDueAt),
+    escalationDueAt: text(record.escalationDueAt),
+    coverageState: text(record.coverageState) ?? 'UNRESOLVED',
+    nextStaffedResponseAt: text(record.nextStaffedResponseAt),
+    slo:
+      typeof record.slo === 'object' && record.slo !== null
+        ? (record.slo as Record<string, unknown>)
+        : undefined,
+    candidates,
+    allowedActions: strings(record.allowedActions),
+  };
+}
+
 /** One advertising case, as the queue and the case view read it. */
 export interface AdvertisingCase {
   readonly id: string;
@@ -23,6 +124,7 @@ export interface AdvertisingCase {
   readonly platformCode: string;
   readonly adNativeObjectId: string;
   readonly nativeObjectKind: string;
+  readonly allowedControlActions: readonly string[];
   readonly nativeObjectName: string | undefined;
   readonly lane: string;
   readonly protectionTier: string | undefined;
@@ -44,7 +146,18 @@ export interface AdvertisingCase {
   readonly maxCpcAmount: number | undefined;
   readonly currentBidState: string;
   readonly currentBidAmount: number | undefined;
-  readonly rankScore: number;
+  readonly rankScore: number | undefined;
+  readonly storeTimezone: string | undefined;
+  readonly disclosureState: string;
+  readonly nativeObjectKey: string | undefined;
+  readonly biddingMode: string;
+  readonly controlGranularityState: string;
+  readonly affectedSetDigest: string | undefined;
+  readonly affectedSetResolution: string;
+  readonly affectedProductVariantIds: readonly string[];
+  readonly affectedListingVariantIds: readonly string[];
+  readonly semanticProfile: Readonly<Record<string, unknown>> | undefined;
+  readonly nativeRelationships: readonly Readonly<Record<string, unknown>>[];
   readonly asOf: string;
   readonly rankFactors: readonly AdvertisingRankFactor[];
 }
@@ -70,7 +183,7 @@ export function parseAdvertisingRankFactor(body: unknown): AdvertisingRankFactor
     return undefined;
   }
   const record = body as Record<string, unknown>;
-  const code = text(record.code);
+  const code = text(record.factorCode);
   if (code === undefined) {
     return undefined;
   }
@@ -79,7 +192,7 @@ export function parseAdvertisingRankFactor(body: unknown): AdvertisingRankFactor
     value: decimal(record.value),
     weight: decimal(record.weight),
     contribution: decimal(record.contribution),
-    absenceReason: text(record.absenceReason),
+    absenceReason: text(record.displayNote),
   };
 }
 
@@ -118,12 +231,15 @@ export function parseAdvertisingCase(body: unknown): AdvertisingCase | undefined
         .map(parseAdvertisingRankFactor)
         .filter((item): item is AdvertisingRankFactor => item !== undefined)
     : [];
+  if (Array.isArray(record.rankFactors) && factors.length !== record.rankFactors.length)
+    return undefined;
   return {
     id,
     storeId,
     platformCode: text(record.platformCode) ?? 'UNKNOWN',
     adNativeObjectId,
     nativeObjectKind: text(record.nativeObjectKind) ?? 'UNKNOWN',
+    allowedControlActions: strings(record.allowedControlActions),
     nativeObjectName: text(record.nativeObjectName),
     lane,
     protectionTier: text(record.protectionTier),
@@ -147,7 +263,25 @@ export function parseAdvertisingCase(body: unknown): AdvertisingCase | undefined
     maxCpcAmount: decimal(record.maxCpcAmount),
     currentBidState: text(record.currentBidState) ?? 'UNKNOWN',
     currentBidAmount: decimal(record.currentBidAmount),
-    rankScore: decimal(record.rankScore) ?? 0,
+    rankScore: decimal(record.rankScore),
+    storeTimezone: text(record.storeTimezone),
+    disclosureState: text(record.disclosureState) ?? 'UNRESOLVED',
+    nativeObjectKey: text(record.nativeObjectKey),
+    biddingMode: text(record.biddingMode) ?? 'UNKNOWN',
+    controlGranularityState: text(record.controlGranularityState) ?? 'UNKNOWN',
+    affectedSetDigest: text(record.affectedSetDigest),
+    affectedSetResolution: text(record.affectedSetResolution) ?? 'UNRESOLVED',
+    affectedProductVariantIds: strings(record.affectedProductVariantIds),
+    affectedListingVariantIds: strings(record.affectedListingVariantIds),
+    semanticProfile:
+      typeof record.semanticProfile === 'object' && record.semanticProfile !== null
+        ? (record.semanticProfile as Record<string, unknown>)
+        : undefined,
+    nativeRelationships: Array.isArray(record.nativeRelationships)
+      ? record.nativeRelationships.filter(
+          (value): value is Record<string, unknown> => typeof value === 'object' && value !== null,
+        )
+      : [],
     asOf: text(record.asOf) ?? '',
     rankFactors: factors,
   };
@@ -190,10 +324,10 @@ export interface AdvertisingExposure {
   readonly policyVersion: number | undefined;
   readonly scopeKind: string | undefined;
   readonly currencyCode: string | undefined;
-  readonly activeInterventions: number;
+  readonly activeInterventions: number | undefined;
   readonly maxActiveInterventions: number | undefined;
   readonly reservedRecoveryHeadroom: number | undefined;
-  readonly unresolvedTransmittedWrites: number;
+  readonly unresolvedTransmittedWrites: number | undefined;
   readonly maxUnresolvedTransmittedWrites: number | undefined;
   readonly cumulativeBidChangeAmount: number | undefined;
   readonly maxCumulativeBidChangeAmount: number | undefined;
@@ -217,6 +351,7 @@ export interface AdvertisingContainment {
   readonly state: string;
   readonly holding: boolean;
   readonly outstandingConditions: readonly string[];
+  readonly allowedActions: readonly string[];
   readonly readyToLift: boolean;
   readonly reenabledAt: string | undefined;
 }
@@ -224,14 +359,13 @@ export interface AdvertisingContainment {
 /**
  * One observation of what a bid change actually did.
  *
- * The stage is carried, never flattened. An operational reading counts orders
- * and arrives in days; a settled reading counts what the buyer kept and arrives
- * much later. Showing one number labelled "result" would show whichever was
- * written last.
+ * Completed, retained over 30 days, and settled stages retain their own
+ * independent observations and revisions.
  */
 export interface AdvertisingOutcome {
   readonly id: string;
-  readonly commandId: string;
+  readonly commandId: string | undefined;
+  readonly manualPacketId: string | undefined;
   readonly outcomeStage: string;
   readonly revisionNo: number;
   readonly supersedesObservationId: string | undefined;
@@ -248,6 +382,7 @@ export interface AdvertisingOutcome {
   readonly guardState: string | undefined;
   readonly unresolvedReasonCodes: readonly string[];
   readonly settled: boolean;
+  readonly axes: Readonly<Record<string, unknown>> | undefined;
   readonly evaluatedAt: string;
 }
 
@@ -286,7 +421,7 @@ export function parseAdvertisingReservation(body: unknown): AdvertisingReservati
     direction: text(record.direction),
     lane: text(record.lane) ?? 'UNKNOWN',
     state,
-    holding: record.holding === true,
+    holding: record.holding === true || !['RELEASED', 'REENABLED'].includes(state),
     outstandingReleaseConditions: strings(record.outstandingReleaseConditions),
     reservedAt: text(record.reservedAt) ?? '',
     releasedAt: text(record.releasedAt),
@@ -305,7 +440,7 @@ export function parseAdvertisingExposure(body: unknown): AdvertisingExposure | u
     return undefined;
   }
   const record = body as Record<string, unknown>;
-  if (typeof record.activeInterventions !== 'number') {
+  if (typeof record.activeInterventions !== 'number' && record.disclosureState !== 'MASKED') {
     return undefined;
   }
   return {
@@ -313,10 +448,10 @@ export function parseAdvertisingExposure(body: unknown): AdvertisingExposure | u
     policyVersion: decimal(record.policyVersion),
     scopeKind: text(record.scopeKind),
     currencyCode: text(record.currencyCode),
-    activeInterventions: record.activeInterventions,
+    activeInterventions: decimal(record.activeInterventions),
     maxActiveInterventions: decimal(record.maxActiveInterventions),
     reservedRecoveryHeadroom: decimal(record.reservedRecoveryHeadroom),
-    unresolvedTransmittedWrites: decimal(record.unresolvedTransmittedWrites) ?? 0,
+    unresolvedTransmittedWrites: decimal(record.unresolvedTransmittedWrites),
     maxUnresolvedTransmittedWrites: decimal(record.maxUnresolvedTransmittedWrites),
     cumulativeBidChangeAmount: decimal(record.cumulativeBidChangeAmount),
     maxCumulativeBidChangeAmount: decimal(record.maxCumulativeBidChangeAmount),
@@ -350,8 +485,9 @@ export function parseAdvertisingContainment(body: unknown): AdvertisingContainme
     activatedByTrigger: text(record.activatedByTrigger),
     activatedAt: text(record.activatedAt) ?? '',
     state,
-    holding: record.holding === true,
+    holding: record.holding === true || !['RELEASED', 'REENABLED'].includes(state),
     outstandingConditions: strings(record.outstandingConditions),
+    allowedActions: strings(record.allowedActions),
     readyToLift: record.readyToLift === true,
     reenabledAt: text(record.reenabledAt),
   };
@@ -371,13 +507,14 @@ export function parseAdvertisingOutcome(body: unknown): AdvertisingOutcome | und
   const record = body as Record<string, unknown>;
   const id = text(record.id);
   const commandId = text(record.commandId);
+  const manualPacketId = text(record.manualPacketId);
   const outcomeStage = text(record.outcomeStage);
   const verdict = text(record.verdict);
   const baselineMetricState = text(record.baselineMetricState);
   const observedMetricState = text(record.observedMetricState);
   if (
     id === undefined ||
-    commandId === undefined ||
+    (commandId === undefined && manualPacketId === undefined) ||
     outcomeStage === undefined ||
     verdict === undefined ||
     baselineMetricState === undefined ||
@@ -388,6 +525,7 @@ export function parseAdvertisingOutcome(body: unknown): AdvertisingOutcome | und
   return {
     id,
     commandId,
+    manualPacketId,
     outcomeStage,
     revisionNo: decimal(record.revisionNo) ?? 1,
     supersedesObservationId: text(record.supersedesObservationId),
@@ -403,7 +541,11 @@ export function parseAdvertisingOutcome(body: unknown): AdvertisingOutcome | und
     verdict,
     guardState: text(record.guardState),
     unresolvedReasonCodes: strings(record.unresolvedReasonCodes),
-    settled: record.settled === true,
+    settled: outcomeStage.startsWith('SETTLED'),
+    axes:
+      typeof record.axes === 'object' && record.axes !== null
+        ? (record.axes as Record<string, unknown>)
+        : undefined,
     evaluatedAt: text(record.evaluatedAt) ?? '',
   };
 }
@@ -442,6 +584,7 @@ export interface AdvertisingManualPacket {
   readonly adNativeObjectId: string;
   readonly actionKind: string;
   readonly intendedState: string | undefined;
+  readonly packetDetails: Readonly<Record<string, unknown>> | undefined;
   readonly reason: string | undefined;
   readonly evidenceReference: string | undefined;
   readonly blockerCodes: readonly string[];
@@ -452,6 +595,9 @@ export interface AdvertisingManualPacket {
   readonly issuedAt: string;
   readonly expiresAt: string;
   readonly configurationProven: boolean;
+  readonly version: number | undefined;
+  readonly currentProofId: string | undefined;
+  readonly allowedActions: readonly string[];
   readonly verifications: readonly AdvertisingManualVerification[];
 }
 
@@ -505,12 +651,18 @@ export function parseAdvertisingManualPacket(body: unknown): AdvertisingManualPa
         .map(parseAdvertisingManualVerification)
         .filter((item): item is AdvertisingManualVerification => item !== undefined)
     : [];
+  if (Array.isArray(record.verifications) && verifications.length !== record.verifications.length)
+    return undefined;
   return {
     id,
     caseId: text(record.caseId),
     adNativeObjectId,
     actionKind,
     intendedState: text(record.intendedState),
+    packetDetails:
+      typeof record.packetDetails === 'object' && record.packetDetails !== null
+        ? (record.packetDetails as Record<string, unknown>)
+        : undefined,
     reason: text(record.reason),
     evidenceReference: text(record.evidenceReference),
     blockerCodes: strings(record.blockerCodes),
@@ -522,7 +674,18 @@ export function parseAdvertisingManualPacket(body: unknown): AdvertisingManualPa
     expiresAt: text(record.expiresAt) ?? '',
     // Derived from the verifications by the backend, and re-derived here rather
     // than trusted, so a body that claimed proof with none could not assert it.
-    configurationProven: verifications.some((item) => item.provesConfiguration),
+    configurationProven:
+      state === 'MANUAL_CONFIGURATION_VERIFIED' &&
+      record.configurationProven === true &&
+      verifications.some(
+        (item) =>
+          item.id === text(record.currentProofId) &&
+          item.provesConfiguration &&
+          item.conflictState === 'NONE',
+      ),
+    version: decimal(record.version),
+    currentProofId: text(record.currentProofId),
+    allowedActions: strings(record.allowedActions),
     verifications,
   };
 }
@@ -621,6 +784,7 @@ export function parseAdvertisingBriefSection(body: unknown): AdvertisingBriefSec
         .map(parseAdvertisingBriefItem)
         .filter((item): item is AdvertisingBriefItem => item !== undefined)
     : [];
+  if (Array.isArray(record.items) && items.length !== record.items.length) return undefined;
   return {
     sectionCode,
     ordinal: decimal(record.ordinal) ?? 0,
@@ -630,7 +794,7 @@ export function parseAdvertisingBriefSection(body: unknown): AdvertisingBriefSec
     summaryNote: text(record.summaryNote),
     // Re-derived rather than trusted, so a body claiming a topic was covered
     // while naming a blocker cannot assert it.
-    complete: coverageState === 'COMPLETE',
+    complete: coverageState === 'COMPLETE' && strings(record.blockerCodes).length === 0,
     items,
   };
 }
@@ -666,6 +830,8 @@ export function parseAdvertisingBrief(body: unknown): AdvertisingBrief | undefin
         .map(parseAdvertisingBriefSection)
         .filter((section): section is AdvertisingBriefSection => section !== undefined)
     : [];
+  if (Array.isArray(record.sections) && sections.length !== record.sections.length)
+    return undefined;
   const supersedesPublicationId = text(record.supersedesPublicationId);
   return {
     id,
@@ -683,7 +849,10 @@ export function parseAdvertisingBrief(body: unknown): AdvertisingBrief | undefin
     // Derived from what the body actually carries. A reading that named no
     // predecessor is not a restatement however it labelled itself.
     restatement: supersedesPublicationId !== undefined,
-    fullyCovered: sections.every((section) => section.complete),
+    fullyCovered:
+      sections.length > 0 &&
+      strings(record.gapCodes).length === 0 &&
+      sections.every((section) => section.complete),
     sections,
   };
 }

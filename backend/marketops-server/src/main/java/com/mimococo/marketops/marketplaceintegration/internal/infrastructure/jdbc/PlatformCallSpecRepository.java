@@ -266,9 +266,11 @@ public class PlatformCallSpecRepository {
                           ELSE CAST(:task AS text) IS NULL END
                       AND c.fence_token=a.fence_token AND c.lease_owner=a.lease_owner
                       AND c.lease_expires_at > clock_timestamp()
-                      AND c.approval_expires_at > clock_timestamp()
+                      AND (a.purpose<>'APPLY' OR c.approval_expires_at > clock_timestamp())
                       AND a.expected_version_token IS NOT DISTINCT FROM CAST(:precondition AS text)
-                      AND a.operation_snapshot=platform.ad_bid_operation_snapshot(c.capability_id,a.purpose)
+                      AND a.operation_snapshot-'adSemanticProfile'=platform.ad_bid_operation_snapshot(c.capability_id,a.purpose)
+                      AND a.operation_snapshot->'adSemanticProfile'=(SELECT to_jsonb(profile)
+                          FROM platform.ad_semantic_profile profile WHERE profile.id=c.semantic_profile_id)
                       AND platform.capability_evidence_current(store.marketplace_account_id,c.capability_id,
                           (a.operation_snapshot #>> '{operation,endpoint_id}')::uuid)
                       AND credential.id=:credential AND credential.organization_id=c.organization_id
@@ -280,7 +282,8 @@ public class PlatformCallSpecRepository {
                           WHERE scope.credential_id=credential.id AND scope.store_id=store.id
                             AND scope.status='ACTIVE'))
                       AND (a.purpose NOT IN ('APPLY','RESTORE')
-                          OR cardinality(ops.evaluate_ad_bid_write_gate(c.id))=0))
+                          OR cardinality(CASE WHEN a.purpose='RESTORE' THEN ops.evaluate_ad_bid_compensation_gate(c.id)
+                              ELSE ops.evaluate_ad_bid_write_gate(c.id) END)=0))
                 """).param("attempt",request.attemptId()).param("digest",request.digest())
                 .param("purpose",request.operation().name()).param("capability",request.capabilityId())
                 .param("campaign",request.nativeCampaignKey()).param("object",request.nativeObjectKey())

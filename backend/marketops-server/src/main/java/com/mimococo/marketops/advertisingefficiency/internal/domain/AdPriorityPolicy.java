@@ -10,31 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Turns a case into a rank that a commercial number cannot buy its way up.
- *
- * <p>The device is arithmetic rather than convention. A case's rank is
- *
- * <pre>
- *   BAND * tierIndex + clamp(commercial, 0, BAND - 1)
- * </pre>
- *
- * <p>where {@code BAND} is 100000 and the commercial part is clamped strictly
- * below it. A P2 Protection case with no measurable loss therefore still
- * outranks every Data Repair case, and a Data Repair case outranks every
- * Optimization case no matter how large the opportunity. That is the
- * Contract's non-compensating requirement made structural: there is no input
- * value that can move a case across a boundary, so no future weight change can
- * accidentally introduce one.
- *
- * <p>Confidence is the one term allowed to be negative, and its weight is
- * required to be non-positive by the policy record, so uncertainty can lower a
- * rank inside its band and can never raise one or escape it.
- *
- * <p>The band arithmetic is mirrored in SQL by the queue repository, because the
- * read path re-derives the rank of the child a scoped viewer may actually see.
- * The two must stay in lockstep, and {@code AdPriorityPolicyTest} asserts the
- * constants that make them the same.
+/** Canonical lane/tier followed by a non-compensating, lane-specific lexicographic tuple.
+ * The numeric score is a severity display only and never the canonical queue order.
  */
 public final class AdPriorityPolicy {
 
@@ -81,7 +58,18 @@ public final class AdPriorityPolicy {
             AdMeasure recoverableProfit,
             BigDecimal evidenceMaturityRatio,
             BigDecimal caseAgeDays,
-            AdConfidence confidence) {
+            AdConfidence confidence, BigDecimal humanSloUrgency, BigDecimal blockedProtection,
+            BigDecimal blastRadius, BigDecimal blockedWork, BigDecimal dualAxisGap, BigDecimal criticalSalesHeadroom, BigDecimal perRubGap) {
+        public Inputs(AdvertisingLane lane,ProtectionTier tier,AdMeasure loss,AdMeasure spend,AdMeasure critical,AdMeasure recoverable,
+                BigDecimal maturity,BigDecimal age,AdConfidence confidence,BigDecimal urgency,BigDecimal blockedProtection,BigDecimal blastRadius,
+                BigDecimal blockedWork,BigDecimal absoluteGap,BigDecimal headroom) {
+            this(lane,tier,loss,spend,critical,recoverable,maturity,age,confidence,urgency,blockedProtection,blastRadius,blockedWork,absoluteGap,headroom,null);
+        }
+        public Inputs(AdvertisingLane lane, ProtectionTier tier, AdMeasure loss, AdMeasure spend,
+                AdMeasure critical, AdMeasure recoverable, BigDecimal maturity, BigDecimal age, AdConfidence confidence) {
+            this(lane, tier, loss, spend, critical, recoverable, maturity, age, confidence,
+                    null, null, null, null, null, null);
+        }
 
         public Inputs {
             Objects.requireNonNull(lane, "lane");
@@ -131,31 +119,57 @@ public final class AdPriorityPolicy {
     public static Ranking rank(Inputs inputs, Weights weights) {
         Objects.requireNonNull(inputs, "inputs");
         Objects.requireNonNull(weights, "weights");
+        List<AdRankFactor> factors = new ArrayList<>();
+        switch (inputs.lane()) {
+            case PROTECTION -> {
+                factor(factors, AdRankFactor.Code.HUMAN_SLO_URGENCY, inputs.humanSloUrgency());
+                factor(factors, AdRankFactor.Code.CONFIRMED_PROFIT_LOSS_RATE, confirmed(inputs.confirmedProfitLossRate()));
+                factor(factors, AdRankFactor.Code.CRITICAL_SALES_EXPOSURE, confirmed(inputs.criticalSalesExposure()));
+                factor(factors, AdRankFactor.Code.OFFICIAL_SPEND_EXPOSURE, confirmed(inputs.officialSpendExposure()));
+                factor(factors, AdRankFactor.Code.CASE_AGE, inputs.caseAgeDays());
+            }
+            case DATA_REPAIR -> {
+                factor(factors, AdRankFactor.Code.BLOCKED_PROTECTION, inputs.blockedProtection());
+                factor(factors, AdRankFactor.Code.BLAST_RADIUS, inputs.blastRadius());
+                factor(factors, AdRankFactor.Code.OFFICIAL_SPEND_EXPOSURE, confirmed(inputs.officialSpendExposure()));
+                factor(factors, AdRankFactor.Code.BLOCKED_WORK, inputs.blockedWork());
+                factor(factors, AdRankFactor.Code.HUMAN_SLO_URGENCY, inputs.humanSloUrgency());
+                factor(factors, AdRankFactor.Code.CASE_AGE, inputs.caseAgeDays());
+            }
+            case OPTIMIZATION -> {
+                factor(factors, AdRankFactor.Code.RECOVERABLE_CONTRIBUTION_PROFIT, confirmed(inputs.recoverableProfit()));
+                factor(factors, AdRankFactor.Code.DUAL_AXIS_GAP, inputs.dualAxisGap());
+                factor(factors, AdRankFactor.Code.DUAL_AXIS_PER_RUB_GAP, inputs.perRubGap());
+                factor(factors, AdRankFactor.Code.OFFICIAL_SPEND_EXPOSURE, confirmed(inputs.officialSpendExposure()));
+                factor(factors, AdRankFactor.Code.CRITICAL_SALES_HEADROOM, inputs.criticalSalesHeadroom());
+                factor(factors, AdRankFactor.Code.EVIDENCE_MATURITY, inputs.evidenceMaturityRatio());
+                factor(factors, AdRankFactor.Code.CASE_AGE, inputs.caseAgeDays());
+            }
+            case WATCH -> { /* Visibility only. Stable identity resolves the final order. */ }
+        }
+        return new Ranking(BAND.multiply(BigDecimal.valueOf(band(inputs.lane(), inputs.protectionTier()))), factors);
+    }
 
-        List<AdRankFactor> factors = new ArrayList<>(7);
-        BigDecimal commercial = BigDecimal.ZERO;
+    private static BigDecimal confirmed(AdMeasure value) {
+        return value != null && value.sufficientForWrite() ? value.value() : null;
+    }
 
-        commercial = commercial.add(term(factors, AdRankFactor.Code.CONFIRMED_PROFIT_LOSS_RATE,
-                normalise(measure(inputs.confirmedProfitLossRate())), weights.profitLossWeight()));
-        commercial = commercial.add(term(factors, AdRankFactor.Code.OFFICIAL_SPEND_EXPOSURE,
-                normalise(measure(inputs.officialSpendExposure())), weights.spendExposureWeight()));
-        commercial = commercial.add(term(factors, AdRankFactor.Code.CRITICAL_SALES_EXPOSURE,
-                normalise(measure(inputs.criticalSalesExposure())), weights.criticalSalesWeight()));
-        commercial = commercial.add(term(factors, AdRankFactor.Code.RECOVERABLE_CONTRIBUTION_PROFIT,
-                normalise(measure(inputs.recoverableProfit())), weights.recoverableProfitWeight()));
-        commercial = commercial.add(term(factors, AdRankFactor.Code.EVIDENCE_MATURITY,
-                orZero(inputs.evidenceMaturityRatio()), weights.evidenceMaturityWeight()));
-        commercial = commercial.add(term(factors, AdRankFactor.Code.CASE_AGE,
-                normalise(orZero(inputs.caseAgeDays())), weights.ageWeight()));
-        commercial = commercial.add(term(factors, AdRankFactor.Code.CONFIDENCE_PENALTY,
-                BigDecimal.valueOf(inputs.confidence().penaltyRank()), weights.confidenceWeight()));
+    private static void factor(List<AdRankFactor> factors, AdRankFactor.Code code, BigDecimal value) {
+        factors.add(new AdRankFactor(code, value, BigDecimal.ZERO, BigDecimal.ZERO,
+                value == null ? "UNRESOLVED:" + code : "LEXICOGRAPHIC:" + (factors.size() + 1)));
+    }
 
-        BigDecimal clamped = commercial.max(BigDecimal.ZERO).min(BAND.subtract(BigDecimal.ONE));
-        BigDecimal score = BAND
-                .multiply(BigDecimal.valueOf(band(inputs.lane(), inputs.protectionTier())))
-                .add(clamped)
-                .setScale(4, RoundingMode.HALF_UP);
-        return new Ranking(score, factors);
+    /** Higher severity first; no later exposure can compensate for an earlier factor. */
+    public static int compare(Ranking left, String leftIdentity, Ranking right, String rightIdentity) {
+        int severity = right.score().compareTo(left.score());
+        if (severity != 0) { return severity; }
+        for (int index = 0; index < Math.min(left.factors().size(), right.factors().size()); index++) {
+            BigDecimal a = left.factors().get(index).value();
+            BigDecimal b = right.factors().get(index).value();
+            int comparison = a == null ? (b == null ? 0 : 1) : b == null ? -1 : b.compareTo(a);
+            if (comparison != 0) { return comparison; }
+        }
+        return leftIdentity.compareTo(rightIdentity);
     }
 
     /**
@@ -214,36 +228,4 @@ public final class AdPriorityPolicy {
                 .setScale(4, RoundingMode.HALF_UP);
     }
 
-    private static BigDecimal term(
-            List<AdRankFactor> factors, AdRankFactor.Code code, BigDecimal value, BigDecimal weight) {
-        BigDecimal contribution = value.multiply(weight, CONTEXT);
-        factors.add(new AdRankFactor(code,
-                value.setScale(4, RoundingMode.HALF_UP),
-                weight.setScale(4, RoundingMode.HALF_UP),
-                contribution.setScale(4, RoundingMode.HALF_UP),
-                null));
-        return contribution;
-    }
-
-    private static BigDecimal measure(AdMeasure measure) {
-        return measure == null ? BigDecimal.ZERO : measure.orElse(BigDecimal.ZERO);
-    }
-
-    private static BigDecimal orZero(BigDecimal value) {
-        return value == null ? BigDecimal.ZERO : value;
-    }
-
-    /**
-     * Map an unbounded magnitude into [0, 1).
-     *
-     * <p>Without this a single very large exposure would saturate the clamp and
-     * flatten every distinction below it, which would make the commercial part
-     * of the rank useless exactly when the queue is busiest.
-     */
-    private static BigDecimal normalise(BigDecimal value) {
-        if (value == null || value.signum() <= 0) {
-            return BigDecimal.ZERO;
-        }
-        return value.divide(BigDecimal.ONE.add(value), CONTEXT);
-    }
 }

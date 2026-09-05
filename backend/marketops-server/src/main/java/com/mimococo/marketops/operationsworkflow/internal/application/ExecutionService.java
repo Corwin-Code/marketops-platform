@@ -249,8 +249,7 @@ public class ExecutionService {
                         ErrorCode.CONCURRENT_INTERVENTION));
 
         UUID commandId = adCommands.submit(new AdBidCommandRequest(
-                proposal.id(), expectedVersion, actor.userId(),
-                reservationId, scope.bundleId(), scope.approvalExpiresAt()));
+                proposal.id(), expectedVersion, reservationId));
 
         recommendations.transition(actor.userId().toString(), proposal.id(),
                 RecommendationState.COMMAND_CREATED, null, expectedVersion);

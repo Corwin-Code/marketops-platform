@@ -28,6 +28,82 @@ class AdvertisingPrivilegeBoundaryIT extends PostgresContainerSupport {
 
     private static PostgreSQLContainer container;
 
+    /** Callable signatures exclude trigger-only functions, which PostgreSQL cannot invoke directly. */
+    private static final List<String> SANCTIONED_FUNCTIONS = List.of(
+            "core.ad_freshness_purpose_violations(uuid, timestamp with time zone)",
+            "core.ad_qualification_tier_is_monotonic(uuid, text, text, uuid, timestamp with time zone)",
+            "core.resolve_ad_outcome_policy(uuid, text, uuid, text, text, timestamp with time zone)",
+            "ops.activate_ad_bundle(uuid, uuid, text)",
+            "ops.activate_ad_human_containment(uuid, uuid, text, text, text, uuid, text, text, text)",
+            "ops.activate_ad_regression_containment(uuid)",
+            "ops.ad_action_blockers(text, text, text[])",
+            "ops.ad_active_containment(uuid, uuid, uuid, text, text, text)",
+            "ops.ad_actor_covers_affected_set(uuid, uuid, uuid, text)",
+            "ops.ad_actor_has_role_scope(uuid, uuid, uuid, text, text)",
+            "ops.ad_bid_authority_snapshot(uuid)",
+            "ops.ad_bid_command_authority_matches(uuid)",
+            "ops.ad_bid_execution_pass_matches_bundle(uuid)",
+            "ops.ad_bid_parameter_contract_is_valid(jsonb)",
+            "ops.ad_bid_retry_is_proven(uuid)",
+            "ops.ad_bundle_authority_snapshot(uuid)",
+            "ops.ad_bundle_validation_failures(uuid)",
+            "ops.ad_completed_sales_guard_state(uuid, numeric)",
+            "ops.ad_credential_authority_expiry(uuid, uuid)",
+            "ops.ad_entity_version_digest(uuid, uuid)",
+            "ops.ad_exception_risk_snapshot(uuid)",
+            "ops.ad_exposure_failures(uuid, uuid, text)",
+            "ops.ad_exposure_snapshot(uuid, uuid, text)",
+            "ops.ad_manual_actor_scoped(uuid, uuid, uuid, uuid, text, text)",
+            "ops.ad_manual_proposal_current(uuid)",
+            "ops.ad_materiality_assessment(uuid, uuid)",
+            "ops.ad_nonnegative_numeric(text)",
+            "ops.ad_ordinary_promotion_covers(uuid, uuid, numeric)",
+            "ops.ad_outcome_baseline_is_attested(uuid)",
+            "ops.ad_outcome_baseline_is_canonical(uuid, timestamp with time zone)",
+            "ops.ad_outcome_freshness_snapshot(uuid)",
+            "ops.ad_outcome_payload_digest(jsonb, jsonb, jsonb)",
+            "ops.ad_outcome_plan_snapshot(uuid)",
+            "ops.ad_overlapping_reservation(uuid, uuid[], uuid)",
+            "ops.ad_required_action_evidence_kinds(text, text)",
+            "ops.ad_settled_review_context(uuid)",
+            "ops.approve_ad_compensation(uuid, text)",
+            "ops.attest_ad_containment(uuid, text, text, text)",
+            "ops.capture_ad_bid_authority_snapshot(uuid)",
+            "ops.complete_ad_bid_command_attempt(uuid, bigint, text, text, text, text, text, uuid, bytea, integer, jsonb, text, text, boolean)",
+            "ops.create_ad_bid_command(uuid, bigint, uuid, text)",
+            "ops.create_ad_bundle_draft(jsonb, text)",
+            "ops.decide_ad_manual_packet(uuid, bigint, boolean, text)",
+            "ops.defer_ad_bid_observation(uuid, bigint, text, integer)",
+            "ops.deliver_due_ad_recalculations(timestamp with time zone, integer)",
+            "ops.endorse_ad_bundle(uuid, uuid, text)",
+            "ops.endorse_ad_compensation(uuid, text)",
+            "ops.evaluate_ad_bid_compensation_gate(uuid)",
+            "ops.evaluate_ad_bid_write_gate(uuid)",
+            "ops.expire_ad_action_authority(uuid, timestamp with time zone)",
+            "ops.expire_ad_manual_packets()",
+            "ops.freeze_ad_outcome_baseline(jsonb, jsonb, jsonb, text)",
+            "ops.generate_ad_manual_proposal(uuid, uuid, uuid, uuid)",
+            "ops.lease_ad_bid_command(uuid, text, integer)",
+            "ops.lease_ad_bid_compensation(uuid, text, integer)",
+            "ops.lease_ad_bid_readback(uuid, text, integer)",
+            "ops.lease_ad_bid_status(uuid, text, integer)",
+            "ops.open_ad_bid_command_attempt(uuid, uuid, text, bigint, text, text, text)",
+            "ops.preview_ad_compensation(uuid, uuid, uuid, text)",
+            "ops.publish_ad_manual_policy(jsonb, text)",
+            "ops.record_ad_bid_command_readback(uuid, uuid, uuid, bigint, text, text)",
+            "ops.record_ad_manual_observation(uuid, uuid, bigint, text, text, uuid, text)",
+            "ops.recover_expired_ad_bid_command_leases()",
+            "ops.reenable_ad_containment(uuid, uuid, text)",
+            "ops.release_ad_action_reservation(uuid, text)",
+            "ops.request_ad_bid_readback(uuid, bigint)",
+            "ops.seal_ad_action_authorization(uuid, uuid, uuid, text)",
+            "ops.select_ad_manual_packet(uuid, uuid, uuid, text, text)",
+            "ops.start_ad_manual_execution(uuid, bigint, text)",
+            "ops.take_ad_action_reservation(uuid, uuid, uuid, uuid, uuid, text, uuid[], text, uuid, text, text, text)",
+            "ops.transition_ad_bid_command(uuid, bigint, text, text, text, integer, uuid)",
+            "ops.try_release_ad_reservation_after_outcome(uuid)",
+            "platform.ad_bid_operation_snapshot(uuid, text)");
+
     /** Everything the advertising work added, whether or not it is writable. */
     private static final List<String> ADVERTISING_TABLES = List.of(
             "platform.ad_semantic_profile",
@@ -69,7 +145,14 @@ class AdvertisingPrivilegeBoundaryIT extends PostgresContainerSupport {
             "ops.ad_bid_command_readback",
             "raw.ad_bid_response_observation",
             "core.ad_outcome_policy",
-            "ops.ad_outcome_observation");
+            "ops.ad_outcome_observation",
+            "iam.ad_invocation_grant", "ops.ad_outcome_plan_grant",
+            "platform.ad_write_credential_attestation", "ops.ad_gate_authority", "ops.ad_ordinary_promotion",
+            "ops.ad_action_authorization", "ops.ad_authority_invalidation", "ops.ad_compensation_authorization",
+            "ops.ad_compensation_invalidation", "ops.ad_bundle_endorsement", "ops.ad_containment_attestation",
+            "ops.ad_reservation_state_history", "ops.ad_outcome_baseline", "ops.ad_outcome_stage_baseline",
+            "ops.ad_outcome_critical_unit", "ops.ad_outcome_baseline_attestation",
+            "ops.ad_outcome_review_responsibility", "ops.ad_outcome_review_observation");
 
     /**
      * Tables the application role may not write at all, and why.
@@ -82,7 +165,16 @@ class AdvertisingPrivilegeBoundaryIT extends PostgresContainerSupport {
             "ops.ad_bid_command_transition",
             "ops.ad_bid_command_attempt",
             "ops.ad_bid_command_readback",
-            "ops.ad_action_reservation");
+            "ops.ad_action_reservation",
+            "iam.ad_invocation_grant", "ops.ad_outcome_plan_grant",
+            "platform.ad_write_credential_attestation", "ops.ad_gate_authority", "ops.ad_ordinary_promotion",
+            "ops.ad_action_authorization", "ops.ad_authority_invalidation", "ops.ad_compensation_authorization",
+            "ops.ad_compensation_invalidation", "ops.ad_bundle_endorsement", "ops.ad_containment_attestation",
+            "ops.ad_reservation_state_history", "ops.ad_outcome_baseline", "ops.ad_outcome_stage_baseline",
+            "ops.ad_outcome_critical_unit", "ops.ad_outcome_baseline_attestation");
+
+    private static final List<String> PRIVATE_PROOF_LEDGERS = List.of(
+            "iam.ad_invocation_grant", "ops.ad_outcome_plan_grant", "ops.ad_outcome_baseline_attestation");
 
     @BeforeAll
     static void migrate() {
@@ -145,8 +237,8 @@ class AdvertisingPrivilegeBoundaryIT extends PostgresContainerSupport {
                     }
                     assertThat(singleBoolean(connection, "SELECT has_table_privilege('"
                             + APPLICATION_ROLE + "', '" + table + "', 'SELECT')"))
-                            .describedAs("%s must stay readable", table)
-                            .isTrue();
+                            .describedAs("%s must preserve its declared proof confidentiality", table)
+                            .isEqualTo(!PRIVATE_PROOF_LEDGERS.contains(table));
                 }
             }
             assertThat(writable).isEmpty();
@@ -194,32 +286,41 @@ class AdvertisingPrivilegeBoundaryIT extends PostgresContainerSupport {
         void executableFunctionsAreTheSanctionedSet() throws SQLException {
             try (Connection connection = asApplicationRole(container)) {
                 String executable = single(connection, """
-                        SELECT coalesce(string_agg(n.nspname || '.' || p.proname, ', '
-                                ORDER BY n.nspname, p.proname), '')
-                          FROM pg_proc p
-                          JOIN pg_namespace n ON n.oid = p.pronamespace
+                        SELECT coalesce(string_agg(n.nspname || '.' || p.proname || '(' ||
+                                oidvectortypes(p.proargtypes) || ')', E'\\n'
+                                ORDER BY n.nspname, p.proname, oidvectortypes(p.proargtypes)), '')
+                          FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
                          WHERE (p.proname LIKE 'ad\\_%' OR p.proname LIKE '%\\_ad\\_%')
-                           AND n.nspname IN ('ops', 'core', 'platform')
+                           AND n.nspname IN ('ops', 'core', 'platform', 'iam')
+                           AND p.prorettype NOT IN ('trigger'::regtype, 'event_trigger'::regtype)
                            AND has_function_privilege('marketops_app', p.oid, 'EXECUTE')
                         """);
-                // Named rather than counted: a function appearing here that
-                // nobody meant to expose is exactly the thing this catches.
-                assertThat(executable.split(", ")).contains(
-                        "ops.create_ad_bid_command",
-                        "ops.open_ad_bid_command_attempt",
-                        "ops.complete_ad_bid_command_attempt",
-                        "ops.record_ad_bid_command_readback",
-                        "ops.transition_ad_bid_command",
-                        "ops.evaluate_ad_bid_write_gate",
-                        "ops.take_ad_action_reservation",
-                        "ops.release_ad_action_reservation",
-                        "ops.observe_ad_reservation_condition",
-                        "ops.reopen_ad_lineage_after_regression",
-                        "ops.ad_completed_sales_guard_state",
-                        "ops.ad_overlapping_reservation",
-                        "ops.ad_active_containment",
-                        "platform.ad_bid_operation_snapshot",
-                        "core.resolve_ad_outcome_policy");
+                assertThat(executable.split("\\n")).containsExactlyInAnyOrderElementsOf(SANCTIONED_FUNCTIONS);
+            }
+        }
+
+
+        @Test
+        @DisplayName("caller-asserted reservation and role-based reopen routes are not executable")
+        void obsoleteCallerAssertionRoutesRefuseAtThePrivilegeBoundary() throws SQLException {
+            try (Connection connection = asApplicationRole(container)) {
+                for (String signature : List.of(
+                        "ops.observe_ad_reservation_condition(uuid, text, boolean)",
+                        "ops.reopen_ad_lineage_after_regression(uuid, uuid, text, text)",
+                        "ops.create_ad_bid_command_from_sealed_authority(uuid, bigint, uuid, uuid, uuid, timestamp with time zone, text)",
+                        "ops.take_ad_action_reservation_serialized(uuid, uuid, uuid, uuid, uuid, text, uuid[], text, uuid, text, text, text)",
+                        "ops.consume_ad_control_invocation(text, text, uuid, uuid)")) {
+                    assertThat(singleBoolean(connection, "SELECT has_function_privilege(current_user,'" + signature + "','EXECUTE')"))
+                            .describedAs(signature).isFalse();
+                }
+                for (String statement : List.of(
+                        "SELECT ops.observe_ad_reservation_condition(gen_random_uuid(),'EARLY_OBSERVATION_COMPLETE',true)",
+                        "SELECT ops.reopen_ad_lineage_after_regression(gen_random_uuid(),gen_random_uuid(),'OWNER','synthetic privilege attack')")) {
+                    SQLException refusal = null;
+                    try { execute(connection, statement); } catch (SQLException failure) { refusal = failure; }
+                    assertThat((Throwable) refusal).describedAs(statement).isNotNull();
+                    assertThat(refusal.getSQLState()).isEqualTo(INSUFFICIENT_PRIVILEGE);
+                }
             }
         }
 
@@ -240,8 +341,14 @@ class AdvertisingPrivilegeBoundaryIT extends PostgresContainerSupport {
                                 'open_ad_bid_command_attempt', 'complete_ad_bid_command_attempt',
                                 'record_ad_bid_command_readback', 'transition_ad_bid_command',
                                 'take_ad_action_reservation', 'release_ad_action_reservation',
-                                'observe_ad_reservation_condition',
-                                'reopen_ad_lineage_after_regression')
+                                'seal_ad_action_authorization', 'freeze_ad_outcome_baseline',
+                                'activate_ad_regression_containment', 'activate_ad_human_containment',
+                                'attest_ad_containment', 'reenable_ad_containment',
+                                'preview_ad_compensation', 'endorse_ad_compensation', 'approve_ad_compensation',
+                                'lease_ad_bid_compensation', 'create_ad_bundle_draft', 'endorse_ad_bundle',
+                                'activate_ad_bundle', 'try_release_ad_reservation_after_outcome',
+                                'select_ad_manual_packet', 'decide_ad_manual_packet', 'start_ad_manual_execution',
+                                'record_ad_manual_observation', 'expire_ad_action_authority')
                            AND NOT p.prosecdef
                         """);
                 assertThat(invoker).isEmpty();

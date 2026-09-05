@@ -1,0 +1,2974 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "FINDING_AND_AC_EVIDENCE_SHARD",
+  "owner": "human-decisions",
+  "generatedAt": "2026-09-05T03:11:18.332844+00:00",
+  "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+  "normativeInputs": {
+    "contract_sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c",
+    "frozen_findings_json_sha256": "f4af74f5086772dc70c3ec3cc7aa8808e9441e96109d301b145e70c18f6131a0"
+  },
+  "criteria": [
+    {
+      "id": "S3-AC-061",
+      "criterion": "Protection and material actionable Data Repair create/update one cause-routed Task; qualified Optimization does likewise; Watch does not.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-010",
+        "OD-S3-028"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "Responsibility is created independently of executable candidate eligibility. PostgreSQL row locking and cause identity deduplicate four concurrent intakes and replay; separate causes can own linked Tasks on the same native object; candidate generation takes no reservation.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+          "sha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AdvertisingWorkflowRepository.java",
+          "sha256": "250a890e31ae6a752522faec5e7083c02def9ef2adda64de2ca528a30297b2ee"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "aMissingServiceLevelNeverInventsAReviewWindow"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-062",
+      "criterion": "concurrency, replay and repeated calculation cannot duplicate a Case or active cause Task.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-010",
+        "OD-S3-028"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "Responsibility is created independently of executable candidate eligibility. PostgreSQL row locking and cause identity deduplicate four concurrent intakes and replay; separate causes can own linked Tasks on the same native object; candidate generation takes no reservation.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+          "sha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AdvertisingWorkflowRepository.java",
+          "sha256": "250a890e31ae6a752522faec5e7083c02def9ef2adda64de2ca528a30297b2ee"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "aMissingServiceLevelNeverInventsAReviewWindow"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-063",
+      "criterion": "independent causes with different owners may create explicitly linked separate Tasks.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-010",
+        "OD-S3-028"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "Responsibility is created independently of executable candidate eligibility. PostgreSQL row locking and cause identity deduplicate four concurrent intakes and replay; separate causes can own linked Tasks on the same native object; candidate generation takes no reservation.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+          "sha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AdvertisingWorkflowRepository.java",
+          "sha256": "250a890e31ae6a752522faec5e7083c02def9ef2adda64de2ca528a30297b2ee"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "aMissingServiceLevelNeverInventsAReviewWindow"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-064",
+      "criterion": "human SLO distinguishes acknowledgement from action decision/first attributable action.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-020",
+        "OD-S3-021",
+        "OD-S3-028"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "View, acknowledgement and attributable action are distinct. Cause-owned profiles and calendar freeze first-raised history; reassignment requires live role/resource scope and preserves age. A later profile repairs readiness without rewriting historical unresolved clocks; unknown coverage remains active and escalates.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+          "sha256": "a8fc936236f3301916415a5f50136d485bd79857e4c799e4ab010b52fede392e"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+          "sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloMonitor.java",
+          "sha256": "5910d34502bf8b17398ddd581b794a54a8a1d32f87ec2c3e21684cc28460ceb9"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClock.java",
+          "sha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "repeatedDstHourCountsActualStaffedTime"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "exceptionPausesOnlyItsMatchingStaffedIntervalAndNeverAcknowledgement"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-065",
+      "criterion": "page open or free-text acknowledgement cannot satisfy the action stage.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-020",
+        "OD-S3-021",
+        "OD-S3-028"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "View, acknowledgement and attributable action are distinct. Cause-owned profiles and calendar freeze first-raised history; reassignment requires live role/resource scope and preserves age. A later profile repairs readiness without rewriting historical unresolved clocks; unknown coverage remains active and escalates.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+          "sha256": "a8fc936236f3301916415a5f50136d485bd79857e4c799e4ab010b52fede392e"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+          "sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloMonitor.java",
+          "sha256": "5910d34502bf8b17398ddd581b794a54a8a1d32f87ec2c3e21684cc28460ceb9"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClock.java",
+          "sha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "repeatedDstHourCountsActualStaffedTime"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "exceptionPausesOnlyItsMatchingStaffedIntervalAndNeverAcknowledgement"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-066",
+      "criterion": "Protection/Regression response is no weaker than Optimization; material Data Repair has a cause-owner Profile.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-020",
+        "OD-S3-021",
+        "OD-S3-028"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "View, acknowledgement and attributable action are distinct. Cause-owned profiles and calendar freeze first-raised history; reassignment requires live role/resource scope and preserves age. A later profile repairs readiness without rewriting historical unresolved clocks; unknown coverage remains active and escalates.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+          "sha256": "a8fc936236f3301916415a5f50136d485bd79857e4c799e4ab010b52fede392e"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+          "sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloMonitor.java",
+          "sha256": "5910d34502bf8b17398ddd581b794a54a8a1d32f87ec2c3e21684cc28460ceb9"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClock.java",
+          "sha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "repeatedDstHourCountsActualStaffedTime"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "exceptionPausesOnlyItsMatchingStaffedIntervalAndNeverAcknowledgement"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-067",
+      "criterion": "reassignment preserves Case age and SLO history.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-020",
+        "OD-S3-021",
+        "OD-S3-028"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "View, acknowledgement and attributable action are distinct. Cause-owned profiles and calendar freeze first-raised history; reassignment requires live role/resource scope and preserves age. A later profile repairs readiness without rewriting historical unresolved clocks; unknown coverage remains active and escalates.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+          "sha256": "a8fc936236f3301916415a5f50136d485bd79857e4c799e4ab010b52fede392e"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+          "sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloMonitor.java",
+          "sha256": "5910d34502bf8b17398ddd581b794a54a8a1d32f87ec2c3e21684cc28460ceb9"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClock.java",
+          "sha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "repeatedDstHourCountsActualStaffedTime"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "exceptionPausesOnlyItsMatchingStaffedIntervalAndNeverAcknowledgement"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-068",
+      "criterion": "outside coverage, staffed-clock handling and `OUT_OF_COVERAGE_ACTIVE_HARM` exposure remain simultaneously visible.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-020",
+        "OD-S3-021",
+        "OD-S3-028"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "View, acknowledgement and attributable action are distinct. Cause-owned profiles and calendar freeze first-raised history; reassignment requires live role/resource scope and preserves age. A later profile repairs readiness without rewriting historical unresolved clocks; unknown coverage remains active and escalates.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+          "sha256": "a8fc936236f3301916415a5f50136d485bd79857e4c799e4ab010b52fede392e"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+          "sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloMonitor.java",
+          "sha256": "5910d34502bf8b17398ddd581b794a54a8a1d32f87ec2c3e21684cc28460ceb9"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClock.java",
+          "sha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "repeatedDstHourCountsActualStaffedTime"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "exceptionPausesOnlyItsMatchingStaffedIntervalAndNeverAcknowledgement"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-069",
+      "criterion": "missing human SLO/Coverage Profile leaves Task active and blocks affected operating readiness rather than claiming on-time.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-020",
+        "OD-S3-021",
+        "OD-S3-028"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "View, acknowledgement and attributable action are distinct. Cause-owned profiles and calendar freeze first-raised history; reassignment requires live role/resource scope and preserves age. A later profile repairs readiness without rewriting historical unresolved clocks; unknown coverage remains active and escalates.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+          "sha256": "a8fc936236f3301916415a5f50136d485bd79857e4c799e4ab010b52fede392e"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+          "sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloMonitor.java",
+          "sha256": "5910d34502bf8b17398ddd581b794a54a8a1d32f87ec2c3e21684cc28460ceb9"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClock.java",
+          "sha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "repeatedDstHourCountsActualStaffedTime"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "exceptionPausesOnlyItsMatchingStaffedIntervalAndNeverAcknowledgement"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-072",
+      "criterion": "Accepted Exception preserves the calculated lane and exact known consequence.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-020"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "Exact evidence and consequence are frozen with requester, distinct Operations endorsement and Owner decision. Effective validity uses the shortest authority bound. Only matching Action time pauses; action intent cannot coexist; permanent IAM/Case/policy invalidation reopens the same Task and cannot renew acceptance.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingExceptionService.java",
+          "sha256": "72d5147059bc0510e86aa47757d7822636da4f26b997d69a6ad08f2c90990ccf"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AdvertisingWorkflowRepository.java",
+          "sha256": "250a890e31ae6a752522faec5e7083c02def9ef2adda64de2ca528a30297b2ee"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+          "sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "restoredRoleCannotResurrectAnExceptionAndSameTaskReopens"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "restoredCaseAuthorityCannotRestoreAcceptedRiskAndViewReadsTheReopenedTask"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-073",
+      "criterion": "Exception requires exact cause/scope, evidence, consequence, Operations endorsement, Owner approval, period, review and Bundle.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-020"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "Exact evidence and consequence are frozen with requester, distinct Operations endorsement and Owner decision. Effective validity uses the shortest authority bound. Only matching Action time pauses; action intent cannot coexist; permanent IAM/Case/policy invalidation reopens the same Task and cannot renew acceptance.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingExceptionService.java",
+          "sha256": "72d5147059bc0510e86aa47757d7822636da4f26b997d69a6ad08f2c90990ccf"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AdvertisingWorkflowRepository.java",
+          "sha256": "250a890e31ae6a752522faec5e7083c02def9ef2adda64de2ca528a30297b2ee"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+          "sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "restoredRoleCannotResurrectAnExceptionAndSameTaskReopens"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "restoredCaseAuthorityCannotRestoreAcceptedRiskAndViewReadsTheReopenedTask"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-074",
+      "criterion": "valid Exception pauses only matching ordinary Action SLO, suppresses duplicate work visibly, cannot coexist with action intent, and invalidation reopens the same Case without automatic renewal.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-020"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "Exact evidence and consequence are frozen with requester, distinct Operations endorsement and Owner decision. Effective validity uses the shortest authority bound. Only matching Action time pauses; action intent cannot coexist; permanent IAM/Case/policy invalidation reopens the same Task and cannot renew acceptance.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingExceptionService.java",
+          "sha256": "72d5147059bc0510e86aa47757d7822636da4f26b997d69a6ad08f2c90990ccf"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AdvertisingWorkflowRepository.java",
+          "sha256": "250a890e31ae6a752522faec5e7083c02def9ef2adda64de2ca528a30297b2ee"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+          "sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "restoredRoleCannotResurrectAnExceptionAndSameTaskReopens"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "restoredCaseAuthorityCannotRestoreAcceptedRiskAndViewReadsTheReopenedTask"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-090",
+      "criterion": "Optimization Increase requires complete write-grade Freshness, qualification, conversion/Max CPC, sales and inventory/sellability safety.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-009",
+        "OD-S3-012",
+        "OD-S3-013",
+        "OD-S3-017",
+        "OD-S3-029",
+        "OD-S3-030",
+        "OD-S3-031"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The versioned target policy produces a bounded normalized finite set with converted native denomination and conservative headroom. Runtime cannot free-type or round. An explicit Protection intermediate remains in recovery; only the exact proved sellability/availability cause can exclude the closed set of irrelevant financial blockers while retaining their visible uncertainty.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+          "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+          "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-091",
+      "criterion": "Protection Decrease requires exact one-sided danger and a valid candidate basis.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-009",
+        "OD-S3-012",
+        "OD-S3-013",
+        "OD-S3-017",
+        "OD-S3-029",
+        "OD-S3-030",
+        "OD-S3-031"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The versioned target policy produces a bounded normalized finite set with converted native denomination and conservative headroom. Runtime cannot free-type or round. An explicit Protection intermediate remains in recovery; only the exact proved sellability/availability cause can exclude the closed set of irrelevant financial blockers while retaining their visible uncertainty.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+          "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+          "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-092",
+      "criterion": "all ordinary targets come from one versioned `AD_BID_TARGET_POLICY`.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-009",
+        "OD-S3-012",
+        "OD-S3-013",
+        "OD-S3-017",
+        "OD-S3-029",
+        "OD-S3-030",
+        "OD-S3-031"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The versioned target policy produces a bounded normalized finite set with converted native denomination and conservative headroom. Runtime cannot free-type or round. An explicit Protection intermediate remains in recovery; only the exact proved sellability/availability cause can exclude the closed set of irrelevant financial blockers while retaining their visible uncertainty.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+          "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+          "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-093",
+      "criterion": "Max CPC is never automatically selected as the target.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-009",
+        "OD-S3-012",
+        "OD-S3-013",
+        "OD-S3-017",
+        "OD-S3-029",
+        "OD-S3-030",
+        "OD-S3-031"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The versioned target policy produces a bounded normalized finite set with converted native denomination and conservative headroom. Runtime cannot free-type or round. An explicit Protection intermediate remains in recovery; only the exact proved sellability/availability cause can exclude the closed set of irrelevant financial blockers while retaining their visible uncertainty.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+          "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+          "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-094",
+      "criterion": "the exact finite candidate set is deterministic for identical facts and Policy version.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-009",
+        "OD-S3-012",
+        "OD-S3-013",
+        "OD-S3-017",
+        "OD-S3-029",
+        "OD-S3-030",
+        "OD-S3-031"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The versioned target policy produces a bounded normalized finite set with converted native denomination and conservative headroom. Runtime cannot free-type or round. An explicit Protection intermediate remains in recovery; only the exact proved sellability/availability cause can exclude the closed set of irrelevant financial blockers while retaining their visible uncertainty.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+          "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+          "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-095",
+      "criterion": "Marketplace Operator may select/reject candidates but cannot free-type outside the set.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-009",
+        "OD-S3-012",
+        "OD-S3-013",
+        "OD-S3-017",
+        "OD-S3-029",
+        "OD-S3-030",
+        "OD-S3-031"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The versioned target policy produces a bounded normalized finite set with converted native denomination and conservative headroom. Runtime cannot free-type or round. An explicit Protection intermediate remains in recovery; only the exact proved sellability/availability cause can exclude the closed set of irrelevant financial blockers while retaining their visible uncertainty.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+          "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+          "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-096",
+      "criterion": "Provider valid-step normalization occurs before Preview/Approval; runtime rounding or target substitution fails acceptance.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-009",
+        "OD-S3-012",
+        "OD-S3-013",
+        "OD-S3-017",
+        "OD-S3-029",
+        "OD-S3-030",
+        "OD-S3-031"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The versioned target policy produces a bounded normalized finite set with converted native denomination and conservative headroom. Runtime cannot free-type or round. An explicit Protection intermediate remains in recovery; only the exact proved sellability/availability cause can exclude the closed set of irrelevant financial blockers while retaining their visible uncertainty.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+          "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+          "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-097",
+      "criterion": "`MAX_CPC_BOUNDED` Increase never exceeds the conservative Provider-valid ceiling.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-009",
+        "OD-S3-012",
+        "OD-S3-013",
+        "OD-S3-017",
+        "OD-S3-029",
+        "OD-S3-030",
+        "OD-S3-031"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The versioned target policy produces a bounded normalized finite set with converted native denomination and conservative headroom. Runtime cannot free-type or round. An explicit Protection intermediate remains in recovery; only the exact proved sellability/availability cause can exclude the closed set of irrelevant financial blockers while retaining their visible uncertainty.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+          "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+          "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-098",
+      "criterion": "a Protection intermediate target above the ceiling remains recovery-in-progress and not healthy.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-009",
+        "OD-S3-012",
+        "OD-S3-013",
+        "OD-S3-017",
+        "OD-S3-029",
+        "OD-S3-030",
+        "OD-S3-031"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The versioned target policy produces a bounded normalized finite set with converted native denomination and conservative headroom. Runtime cannot free-type or round. An explicit Protection intermediate remains in recovery; only the exact proved sellability/availability cause can exclude the closed set of irrelevant financial blockers while retaining their visible uncertainty.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+          "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+          "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-099",
+      "criterion": "`CAUSE_BOUND_PROTECTION_STEP` requires an exact accepted danger cause whose missing conversion cannot reverse danger.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-009",
+        "OD-S3-012",
+        "OD-S3-013",
+        "OD-S3-017",
+        "OD-S3-029",
+        "OD-S3-030",
+        "OD-S3-031"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The versioned target policy produces a bounded normalized finite set with converted native denomination and conservative headroom. Runtime cannot free-type or round. An explicit Protection intermediate remains in recovery; only the exact proved sellability/availability cause can exclude the closed set of irrelevant financial blockers while retaining their visible uncertainty.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+          "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+          "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-100",
+      "criterion": "cause-bound Preview states that Max CPC is unavailable and the target limits exposure only.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-009",
+        "OD-S3-012",
+        "OD-S3-013",
+        "OD-S3-017",
+        "OD-S3-029",
+        "OD-S3-030",
+        "OD-S3-031"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The versioned target policy produces a bounded normalized finite set with converted native denomination and conservative headroom. Runtime cannot free-type or round. An explicit Protection intermediate remains in recovery; only the exact proved sellability/availability cause can exclude the closed set of irrelevant financial blockers while retaining their visible uncertainty.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+          "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+          "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-101",
+      "criterion": "estimated conversion/Max CPC, Provider observation, similar-SKU inference and AI magnitude never generate a controlled candidate.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-009",
+        "OD-S3-012",
+        "OD-S3-013",
+        "OD-S3-017",
+        "OD-S3-029",
+        "OD-S3-030",
+        "OD-S3-031"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The versioned target policy produces a bounded normalized finite set with converted native denomination and conservative headroom. Runtime cannot free-type or round. An explicit Protection intermediate remains in recovery; only the exact proved sellability/availability cause can exclude the closed set of irrelevant financial blockers while retaining their visible uncertainty.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+          "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+          "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-102",
+      "criterion": "Materiality uses visible multi-axis non-compensating hard triggers.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-014",
+        "OD-S3-015",
+        "OD-S3-016",
+        "OD-S3-035",
+        "OD-S3-045",
+        "OD-S3-046"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The initial route requires exact Maker selection, a different Operations endorser and a third Owner. Unified SQL materiality exposes all independent hard axes and fixes the route through seal/transmission; exact later Ordinary promotion retains per-command Maker/Checker and cannot downgrade critical, unknown, regression or other fixed hard triggers. The financial preview freezes full scope, plan, native target, evidence, policies and aggregate axes.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+          "sha256": "2a082d60d87530eaecddeed1390c92164d7d812279041eb2e51b990ee4ff078a"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+          "sha256": "8da7700eee24418b11d6812f383072b1334de434a5a22799d41a3073f9fa1763"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
+          "sha256": "876f4184f807a85ae97a8bead24d3afe8b9a4734084dd8c1c41e2710d40b1e68"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+          "sha256": "fca1236dfb2d24da5ba0cc760e319a07aa8ce97c310176f816d419ef68425910"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "missingSpendKeepsItsUnknownValueAndCannotRetainAnOrdinaryRoute"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "fixedCriticalSalesRemainMaterialDespiteThePromotedOrdinaryEnvelope"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-103",
+      "criterion": "initial ordinary nonzero envelope is zero and every initial nonzero action follows Maker → Operations endorsement → Owner final approval.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-014",
+        "OD-S3-015",
+        "OD-S3-016",
+        "OD-S3-035",
+        "OD-S3-045",
+        "OD-S3-046"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The initial route requires exact Maker selection, a different Operations endorser and a third Owner. Unified SQL materiality exposes all independent hard axes and fixes the route through seal/transmission; exact later Ordinary promotion retains per-command Maker/Checker and cannot downgrade critical, unknown, regression or other fixed hard triggers. The financial preview freezes full scope, plan, native target, evidence, policies and aggregate axes.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+          "sha256": "2a082d60d87530eaecddeed1390c92164d7d812279041eb2e51b990ee4ff078a"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+          "sha256": "8da7700eee24418b11d6812f383072b1334de434a5a22799d41a3073f9fa1763"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
+          "sha256": "876f4184f807a85ae97a8bead24d3afe8b9a4734084dd8c1c41e2710d40b1e68"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+          "sha256": "fca1236dfb2d24da5ba0cc760e319a07aa8ce97c310176f816d419ef68425910"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "missingSpendKeepsItsUnknownValueAndCannotRetainAnOrdinaryRoute"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "fixedCriticalSalesRemainMaterialDespiteThePromotedOrdinaryEnvelope"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-104",
+      "criterion": "Maker cannot self-endorse or self-approve; unresolved Materiality fails closed.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-014",
+        "OD-S3-015",
+        "OD-S3-016",
+        "OD-S3-035",
+        "OD-S3-045",
+        "OD-S3-046"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The initial route requires exact Maker selection, a different Operations endorser and a third Owner. Unified SQL materiality exposes all independent hard axes and fixes the route through seal/transmission; exact later Ordinary promotion retains per-command Maker/Checker and cannot downgrade critical, unknown, regression or other fixed hard triggers. The financial preview freezes full scope, plan, native target, evidence, policies and aggregate axes.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+          "sha256": "2a082d60d87530eaecddeed1390c92164d7d812279041eb2e51b990ee4ff078a"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+          "sha256": "8da7700eee24418b11d6812f383072b1334de434a5a22799d41a3073f9fa1763"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
+          "sha256": "876f4184f807a85ae97a8bead24d3afe8b9a4734084dd8c1c41e2710d40b1e68"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+          "sha256": "fca1236dfb2d24da5ba0cc760e319a07aa8ce97c310176f816d419ef68425910"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "missingSpendKeepsItsUnknownValueAndCannotRetainAnOrdinaryRoute"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "fixedCriticalSalesRemainMaterialDespiteThePromotedOrdinaryEnvelope"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-105",
+      "criterion": "every Preview shows exact Before/After, affected-set, critical sales, Spend, profit, inventory/sellability, versions, Bundle, route and blockers.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-014",
+        "OD-S3-015",
+        "OD-S3-016",
+        "OD-S3-035",
+        "OD-S3-045",
+        "OD-S3-046"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The initial route requires exact Maker selection, a different Operations endorser and a third Owner. Unified SQL materiality exposes all independent hard axes and fixes the route through seal/transmission; exact later Ordinary promotion retains per-command Maker/Checker and cannot downgrade critical, unknown, regression or other fixed hard triggers. The financial preview freezes full scope, plan, native target, evidence, policies and aggregate axes.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+          "sha256": "2a082d60d87530eaecddeed1390c92164d7d812279041eb2e51b990ee4ff078a"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+          "sha256": "8da7700eee24418b11d6812f383072b1334de434a5a22799d41a3073f9fa1763"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
+          "sha256": "876f4184f807a85ae97a8bead24d3afe8b9a4734084dd8c1c41e2710d40b1e68"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+          "sha256": "fca1236dfb2d24da5ba0cc760e319a07aa8ce97c310176f816d419ef68425910"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "missingSpendKeepsItsUnknownValueAndCannotRetainAnOrdinaryRoute"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "fixedCriticalSalesRemainMaterialDespiteThePromotedOrdinaryEnvelope"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-106",
+      "criterion": "every executable Approval binds exact current/target, evidence snapshot, affected-set, Policy/Profile/Bundle and actors.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-014",
+        "OD-S3-015",
+        "OD-S3-016",
+        "OD-S3-035",
+        "OD-S3-045",
+        "OD-S3-046"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The initial route requires exact Maker selection, a different Operations endorser and a third Owner. Unified SQL materiality exposes all independent hard axes and fixes the route through seal/transmission; exact later Ordinary promotion retains per-command Maker/Checker and cannot downgrade critical, unknown, regression or other fixed hard triggers. The financial preview freezes full scope, plan, native target, evidence, policies and aggregate axes.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+          "sha256": "2a082d60d87530eaecddeed1390c92164d7d812279041eb2e51b990ee4ff078a"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+          "sha256": "8da7700eee24418b11d6812f383072b1334de434a5a22799d41a3073f9fa1763"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
+          "sha256": "876f4184f807a85ae97a8bead24d3afe8b9a4734084dd8c1c41e2710d40b1e68"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+          "sha256": "fca1236dfb2d24da5ba0cc760e319a07aa8ce97c310176f816d419ef68425910"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "missingSpendKeepsItsUnknownValueAndCannotRetainAnOrdinaryRoute"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "fixedCriticalSalesRemainMaterialDespiteThePromotedOrdinaryEnvelope"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-109",
+      "criterion": "later Ordinary promotion requires exact all-Material mature evidence for the same Platform/Direction/Basis/scope and remains per-command Operator/Operations Maker-Checker.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-014",
+        "OD-S3-015",
+        "OD-S3-016",
+        "OD-S3-035",
+        "OD-S3-045",
+        "OD-S3-046"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The initial route requires exact Maker selection, a different Operations endorser and a third Owner. Unified SQL materiality exposes all independent hard axes and fixes the route through seal/transmission; exact later Ordinary promotion retains per-command Maker/Checker and cannot downgrade critical, unknown, regression or other fixed hard triggers. The financial preview freezes full scope, plan, native target, evidence, policies and aggregate axes.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+          "sha256": "2a082d60d87530eaecddeed1390c92164d7d812279041eb2e51b990ee4ff078a"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+          "sha256": "8da7700eee24418b11d6812f383072b1334de434a5a22799d41a3073f9fa1763"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
+          "sha256": "876f4184f807a85ae97a8bead24d3afe8b9a4734084dd8c1c41e2710d40b1e68"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+          "sha256": "fca1236dfb2d24da5ba0cc760e319a07aa8ce97c310176f816d419ef68425910"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "missingSpendKeepsItsUnknownValueAndCannotRetainAnOrdinaryRoute"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "fixedCriticalSalesRemainMaterialDespiteThePromotedOrdinaryEnvelope"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    },
+    {
+      "id": "S3-AC-110",
+      "criterion": "fixed material triggers and Standing Policy automation cannot be downgraded or introduced by Ordinary promotion.",
+      "status": "IMPLEMENTED_TARGETED_REVERIFY_PENDING",
+      "ownerDecisions": [
+        "OD-S3-002",
+        "OD-S3-014",
+        "OD-S3-015",
+        "OD-S3-016",
+        "OD-S3-035",
+        "OD-S3-045",
+        "OD-S3-046"
+      ],
+      "design": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+      "implementedBehavior": "The initial route requires exact Maker selection, a different Operations endorser and a third Owner. Unified SQL materiality exposes all independent hard axes and fixes the route through seal/transmission; exact later Ordinary promotion retains per-command Maker/Checker and cannot downgrade critical, unknown, regression or other fixed hard triggers. The financial preview freezes full scope, plan, native target, evidence, policies and aggregate axes.",
+      "sources": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+          "sha256": "2a082d60d87530eaecddeed1390c92164d7d812279041eb2e51b990ee4ff078a"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+          "sha256": "8da7700eee24418b11d6812f383072b1334de434a5a22799d41a3073f9fa1763"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
+          "sha256": "876f4184f807a85ae97a8bead24d3afe8b9a4734084dd8c1c41e2710d40b1e68"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+          "sha256": "fca1236dfb2d24da5ba0cc760e319a07aa8ce97c310176f816d419ef68425910"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "missingSpendKeepsItsUnknownValueAndCannotRetainAnOrdinaryRoute"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "fixedCriticalSalesRemainMaterialDespiteThePromotedOrdinaryEnvelope"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        }
+      ],
+      "evidence": [
+        "workstreams/human-decisions.md"
+      ],
+      "remainingVerification": "Final coherent source commit full backend/browser/security/remote CI; materiality and Ordinary new tests not yet claimed PASS."
+    }
+  ],
+  "sameClassScan": [
+    {
+      "boundary": "Responsibility vs candidate eligibility",
+      "scope": "Every AdvertisingProposalService early return and Watch/material Data Repair path; same-object separate cause, replay and concurrency.",
+      "result": "Task precedes candidate gates; immutable age and exact cause owner remain canonical."
+    },
+    {
+      "boundary": "Amount/unit/ceiling throughout generation, preview and SQL creator",
+      "scope": "All AdBidUnitConversion consumers, finite targets, GuardrailService and V0045 final admissibility.",
+      "result": "Major/minor units converted once; conservative headroom applies before approval and again at creator; unknown headroom fails closed."
+    },
+    {
+      "boundary": "Authority and risk coexistence",
+      "scope": "Generic recommendation transitions, selection, endorsement, final approval, task action, Manual packet and Accepted Exception.",
+      "result": "No generic advertising approval bypass; exact actor chain and permanent invalidation; historical action facts are not erased."
+    },
+    {
+      "boundary": "Materiality downgrade",
+      "scope": "SQL assessment, recommendation route, preview, final seal and execution gate.",
+      "result": "Single non-compensating classification includes exact current promotion; current route must equal sealed route."
+    }
+  ],
+  "productionWriteEnabled": false,
+  "controllerVerdict": "NOT_ISSUED_BY_CODEX",
+  "identityNotice": "Source/test hashes identify current inspected files. Targeted working-tree measurements are not a final immutable commit binding.",
+  "findings": [
+    {
+      "id": "S3-DR-006",
+      "rootCause": "Candidate eligibility incorrectly controlled responsibility creation; response profiles were passive data with a hidden fallback and no exclusive accepted-risk lifecycle.",
+      "implementedBehavior": "Responsibilities precede candidate eligibility. Immutable first-raised history, explicit calendar/SLO state and exclusive three-person Accepted Exception preserve one canonical Task through repair, hold and expiry.",
+      "sameClassScan": [
+        {
+          "boundary": "Responsibility vs candidate eligibility",
+          "scope": "Every AdvertisingProposalService early return and Watch/material Data Repair path; same-object separate cause, replay and concurrency.",
+          "result": "Task precedes candidate gates; immutable age and exact cause owner remain canonical."
+        },
+        {
+          "boundary": "Authority and risk coexistence",
+          "scope": "Generic recommendation transitions, selection, endorsement, final approval, task action, Manual packet and Accepted Exception.",
+          "result": "No generic advertising approval bypass; exact actor chain and permanent invalidation; historical action facts are not erased."
+        }
+      ],
+      "transitiveImpact": [
+        "Shared Task journal, all Case actions and manual/bid intent creation consume the same responsibility, live scope and risk acceptance."
+      ],
+      "sourceEvidence": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
+          "sha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AdvertisingWorkflowRepository.java",
+          "sha256": "250a890e31ae6a752522faec5e7083c02def9ef2adda64de2ca528a30297b2ee"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+          "sha256": "a8fc936236f3301916415a5f50136d485bd79857e4c799e4ab010b52fede392e"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
+          "sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloMonitor.java",
+          "sha256": "5910d34502bf8b17398ddd581b794a54a8a1d32f87ec2c3e21684cc28460ceb9"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClock.java",
+          "sha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingExceptionService.java",
+          "sha256": "72d5147059bc0510e86aa47757d7822636da4f26b997d69a6ad08f2c90990ccf"
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "aMissingServiceLevelNeverInventsAReviewWindow"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "repeatedDstHourCountsActualStaffedTime"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
+          "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
+          "class": "StaffedResponseClockTest",
+          "method": "exceptionPausesOnlyItsMatchingStaffedIntervalAndNeverAcknowledgement"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "restoredRoleCannotResurrectAnExceptionAndSameTaskReopens"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "restoredCaseAuthorityCannotRestoreAcceptedRiskAndViewReadsTheReopenedTask"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit"
+        }
+      ],
+      "negativeTests": [],
+      "testClassification": "The referenced methods contain positive controls and explicit fault assertions; the separate systematic fault matrix identifies the exact assertion boundary. This list is not a mutation score.",
+      "status": "REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING",
+      "evidenceLimits": [
+        "Final full measured-source execution, browser evidence and exact remote CI remain pending.",
+        "The independent Controller alone decides formal frozen-finding closure."
+      ]
+    },
+    {
+      "id": "S3-DR-008",
+      "rootCause": "Generic recommendation approval modeled a single decision and did not bind an independent command-specific Maker/Operations/Owner chain or its evidence scope.",
+      "implementedBehavior": "Maker selects an independently attested frozen plan, a different Ops reviewer endorses it, and a third Owner approves the initial Material route. A separately promoted Ordinary route retains exact Maker/Checker and current materiality gating.",
+      "sameClassScan": [
+        {
+          "boundary": "Authority and risk coexistence",
+          "scope": "Generic recommendation transitions, selection, endorsement, final approval, task action, Manual packet and Accepted Exception.",
+          "result": "No generic advertising approval bypass; exact actor chain and permanent invalidation; historical action facts are not erased."
+        },
+        {
+          "boundary": "Materiality downgrade",
+          "scope": "SQL assessment, recommendation route, preview, final seal and execution gate.",
+          "result": "Single non-compensating classification includes exact current promotion; current route must equal sealed route."
+        }
+      ],
+      "transitiveImpact": [
+        "Generic recommendation endpoints, impact preview, final seal, reservation, worker and historical command disclosure consume the same action identity and route."
+      ],
+      "sourceEvidence": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+          "sha256": "2a082d60d87530eaecddeed1390c92164d7d812279041eb2e51b990ee4ff078a"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+          "sha256": "8da7700eee24418b11d6812f383072b1334de434a5a22799d41a3073f9fa1763"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
+          "sha256": "876f4184f807a85ae97a8bead24d3afe8b9a4734084dd8c1c41e2710d40b1e68"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+          "sha256": "fca1236dfb2d24da5ba0cc760e319a07aa8ce97c310176f816d419ef68425910"
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "missingSpendKeepsItsUnknownValueAndCannotRetainAnOrdinaryRoute"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "fixedCriticalSalesRemainMaterialDespiteThePromotedOrdinaryEnvelope"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        }
+      ],
+      "negativeTests": [],
+      "testClassification": "The referenced methods contain positive controls and explicit fault assertions; the separate systematic fault matrix identifies the exact assertion boundary. This list is not a mutation score.",
+      "status": "REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING",
+      "evidenceLimits": [
+        "Final full measured-source execution, browser evidence and exact remote CI remain pending.",
+        "The independent Controller alone decides formal frozen-finding closure."
+      ]
+    },
+    {
+      "id": "S3-DR-011",
+      "rootCause": "Target generation persisted one endpoint, while native denomination, alternatives and multi-axis Impact evidence were not consistently carried to the final decision boundary.",
+      "implementedBehavior": "The bounded provider-normalized finite set preserves native denomination and conservative headroom. Every Materiality axis is independent; incomplete authority cannot become Ordinary. Impact evidence includes exact scope, critical sales, financial states and uncertainty.",
+      "sameClassScan": [
+        {
+          "boundary": "Amount/unit/ceiling throughout generation, preview and SQL creator",
+          "scope": "All AdBidUnitConversion consumers, finite targets, GuardrailService and V0045 final admissibility.",
+          "result": "Major/minor units converted once; conservative headroom applies before approval and again at creator; unknown headroom fails closed."
+        },
+        {
+          "boundary": "Materiality downgrade",
+          "scope": "SQL assessment, recommendation route, preview, final seal and execution gate.",
+          "result": "Single non-compensating classification includes exact current promotion; current route must equal sealed route."
+        }
+      ],
+      "transitiveImpact": [
+        "Generator, preview, selection, both approval routes, SQL creator and transmission gate share amount and current materiality constraints."
+      ],
+      "sourceEvidence": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
+          "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
+          "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+          "sha256": "2a082d60d87530eaecddeed1390c92164d7d812279041eb2e51b990ee4ff078a"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
+          "sha256": "8da7700eee24418b11d6812f383072b1334de434a5a22799d41a3073f9fa1763"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
+          "sha256": "876f4184f807a85ae97a8bead24d3afe8b9a4734084dd8c1c41e2710d40b1e68"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+          "sha256": "fca1236dfb2d24da5ba0cc760e319a07aa8ce97c310176f816d419ef68425910"
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+          "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+          "class": "BidCandidateSetTest",
+          "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+          "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+          "class": "AdvertisingProposalServiceTest",
+          "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
+          "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
+          "class": "AdBidGuardrailTest",
+          "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+          "class": "AdvertisingHumanWorkflowIT",
+          "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+          "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+          "class": "AdvertisingMaterialityIT",
+          "method": "missingSpendKeepsItsUnknownValueAndCannotRetainAnOrdinaryRoute"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "fixedCriticalSalesRemainMaterialDespiteThePromotedOrdinaryEnvelope"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+          "class": "AdvertisingOrdinaryApprovalIT",
+          "method": "unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+        }
+      ],
+      "negativeTests": [],
+      "testClassification": "The referenced methods contain positive controls and explicit fault assertions; the separate systematic fault matrix identifies the exact assertion boundary. This list is not a mutation score.",
+      "status": "REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING",
+      "evidenceLimits": [
+        "Final full measured-source execution, browser evidence and exact remote CI remain pending.",
+        "The independent Controller alone decides formal frozen-finding closure."
+      ]
+    }
+  ]
+}

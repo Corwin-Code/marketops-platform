@@ -36,6 +36,9 @@ public interface AdvertisingOperationsQuery {
     List<AdvertisingContainment> containments(
             UUID organizationId, boolean holdingOnly, int limit);
 
+    List<AdvertisingContainment> scopedContainments(
+            UUID organizationId, List<UUID> permittedStoreIds, boolean holdingOnly, int limit);
+
     /** Manual execution packets issued for one advertising object. */
     List<ManualExecutionPacketView> manualPackets(
             UUID organizationId, UUID adNativeObjectId, List<UUID> permittedStoreIds, int limit);

@@ -95,6 +95,22 @@ An empty section with `COMPLETE` means the topic was covered and there was
 nothing in it. An empty section with `NOT_AVAILABLE` means it could not be
 covered. Those are different facts and the report keeps them apart.
 
+## A reader sees masked or unavailable financial fields
+
+The brief body, attachment/export, notification and AI explanation all pass
+through `AdvertisingDisclosurePolicy`. Financial role membership alone is
+insufficient: the reviewer also needs live evidence-view grants over every
+affected store and variant, and organization scope for company-wide totals.
+A restricted reader may see work identity and native intent while profit,
+rank factors, free-text financial explanations and source evidence are masked.
+Do not compare that masked projection to an Owner export as if it were missing
+canonical data, or bypass the projection with a raw body endpoint.
+
+An export is the requesting actor's permitted view at that time. A permission
+change must apply to the next read even when the underlying immutable publication
+has not changed. Published content is an audit record, not standing disclosure
+permission or execution approval.
+
 ## A figure in a brief looks wrong
 
 Follow the link. Every item names exactly one canonical row:

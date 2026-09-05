@@ -24,6 +24,8 @@ from scripts.validate_governance import (
     HISTORIC_CONTRACT_END,
     REQUIRED_FILES,
     SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS,
+    SLICE3_R1_AUTHORITY_HASHES,
+    validate_slice3_r1_authority,
     V1_ACTIVE_SLICE_CONTRACT_SHA256,
     SLICE_REWORK_ARTIFACT_HASHES,
     WP_P0_002_ID,
@@ -2870,6 +2872,31 @@ class Dr0003R1WhitespaceAttributeTests(unittest.TestCase):
         self.assertEqual([], errors)
 
 
+class Slice3R1AuthorityTests(unittest.TestCase):
+    def documents(self) -> dict[str, bytes]:
+        root = Path(__file__).resolve().parents[1]
+        return {name: (root / name).read_bytes() for name in SLICE3_R1_AUTHORITY_HASHES}
+
+    def test_exact_owner_authorization_and_both_frozen_representations_pass(self) -> None:
+        errors = []
+        validate_slice3_r1_authority(errors, self.documents())
+        self.assertEqual(errors, [])
+
+    def test_each_missing_or_changed_authority_is_refused(self) -> None:
+        for name in SLICE3_R1_AUTHORITY_HASHES:
+            for change in ("missing", "one_byte"):
+                with self.subTest(name=name, change=change):
+                    documents = self.documents()
+                    if change == "missing":
+                        documents.pop(name)
+                    else:
+                        documents[name] += b"\n"
+                    errors = []
+                    validate_slice3_r1_authority(errors, documents)
+                    self.assertEqual(len(errors), 1)
+                    self.assertIn(name, errors[0])
+
+
 class V1CurrentStateContractTests(unittest.TestCase):
     def current(self) -> str:
         return repository_governance_text("docs/00-governance/CURRENT_STATE.md")
@@ -3133,7 +3160,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
     def test_rework_identity_phase_and_actor_cannot_drift(self) -> None:
         mutations = (
             (
-                "next_authorized_actor: Claude Fable 5 / Claude Code",
+                "next_authorized_actor: CODEX",
                 "next_authorized_actor: SOMEBODY_ELSE",
             ),
             (
@@ -3154,7 +3181,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "slice_v1_001_closure_claim: OWNER_FORMALLY_CLOSED",
             ),
             (
-                "candidate_state_scope: PROTECTED_MAIN_SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION_LOCAL_CHECKPOINT",
+                "candidate_state_scope: SLICE_V1_003_AUTHORIZED_R1_REWORK_PENDING_FULL_VERIFICATION",
                 "candidate_state_scope: PRODUCTION_READY",
             ),
             (

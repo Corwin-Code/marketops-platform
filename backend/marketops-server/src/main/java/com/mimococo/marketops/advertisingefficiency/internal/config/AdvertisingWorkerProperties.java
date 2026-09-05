@@ -16,7 +16,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AdvertisingWorkerProperties {
 
     private boolean workerEnabled;
-    private int objectsPerPass = 50;
+    private int objectsPerPass = 250;
     private Duration scanInterval = Duration.ofSeconds(30);
     private Duration scanInitialDelay = Duration.ofSeconds(20);
     private Duration sweepInterval = Duration.ofHours(1);
@@ -38,6 +38,7 @@ public class AdvertisingWorkerProperties {
     }
 
     public void setObjectsPerPass(int objectsPerPass) {
+        if(objectsPerPass<1 || objectsPerPass>10000) throw new IllegalArgumentException("objects-per-pass must be between 1 and 10000");
         this.objectsPerPass = objectsPerPass;
     }
 

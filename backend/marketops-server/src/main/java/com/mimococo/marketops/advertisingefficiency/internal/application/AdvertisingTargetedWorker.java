@@ -43,23 +43,26 @@ class AdvertisingTargetedWorker {
     private final AdvertisingTraceRepository trace;
     private final IdGenerator ids;
     private final Clock clock;
+    private final AdvertisingOrchestrationSloService slo;
+    private final AdvertisingOutcomeWorker outcomes;
 
     AdvertisingTargetedWorker(
             AdvertisingRecalculationRepository queue,
             AdvertisingCaseRefreshService refresh,
             AdvertisingTraceRepository trace,
             IdGenerator ids,
-            Clock clock) {
+            Clock clock, AdvertisingOrchestrationSloService slo, AdvertisingOutcomeWorker outcomes) {
         this.queue = queue;
         this.refresh = refresh;
         this.trace = trace;
         this.ids = ids;
-        this.clock = clock;
+        this.clock = clock; this.slo=slo;this.outcomes=outcomes;
     }
 
     /** Claim and process up to {@code limit} requests. Returns how many were handled. */
     int runOnce(int limit) {
         Instant now = clock.instant();
+        queue.deliverDue(now,Math.max(limit,1000));
         String owner = "advertising-targeted-" + ids.newId();
         var claimed = queue.claim(owner, now.plus(LEASE), limit, now);
         int handled = 0;
@@ -68,23 +71,26 @@ class AdvertisingTargetedWorker {
                 handled++;
             }
         }
+        claimed.stream().map(AdvertisingRecalculationRepository.ClaimedRequest::organizationId).distinct().forEach(slo::record);
         return handled;
     }
 
     boolean process(AdvertisingRecalculationRepository.ClaimedRequest request) {
         Instant startedAt = clock.instant();
         try {
+            var evaluated=outcomes.runForObject(request.organizationId(),request.adNativeObjectId(),request.calculationAsOf(),1000);
+            if(evaluated.remaining()) throw new IllegalStateException("AD_OUTCOME_BACKLOG_REMAINS");
             Optional<AdvertisingCaseRefreshService.RefreshOutcome> outcome = refresh.refresh(
-                    request.organizationId(), request.adNativeObjectId(), startedAt,
+                    request.organizationId(), request.adNativeObjectId(), request.calculationAsOf(),
                     AdvertisingProjectionWriter.TARGETED, null, request.correlationId());
             Instant finishedAt = clock.instant();
-            queue.finish(request.id(), "COMPLETED", null, finishedAt);
+            queue.finish(request, "COMPLETED", null, finishedAt);
             recordLatency(request, outcome, finishedAt);
             return true;
         } catch (RuntimeException failure) {
             Instant finishedAt = clock.instant();
             boolean exhausted = request.attemptCount() >= MAX_ATTEMPTS;
-            queue.finish(request.id(), exhausted ? "ABANDONED" : "FAILED",
+            queue.finish(request, exhausted ? "ABANDONED" : "FAILED",
                     "ADVERTISING_RECALCULATION_FAILED", finishedAt);
             // The message is logged for a human and never stored: a failure code is
             // a stable operator-facing value and an exception message is not.
@@ -114,11 +120,12 @@ class AdvertisingTargetedWorker {
         if (internal.isNegative()) {
             log.warn("event=advertising_latency_negative adNativeObjectId={}",
                     request.adNativeObjectId());
-            internal = Duration.ZERO;
+            // Clock disagreement remains unknown and creates an incident; it is never a zero-latency success.
         }
         String lane = outcome
                 .map(result -> result.written().cases().isEmpty()
-                        ? "WATCH" : result.written().cases().getFirst().lane())
+                        ? "WATCH" : result.written().cases().stream().anyMatch(value->"PROTECTION".equals(value.lane()))
+                            ? "PROTECTION" : result.written().cases().getFirst().lane())
                 .orElse("WATCH");
         trace.recordSlo(ids.newId(), request.organizationId(), request.adNativeObjectId(),
                 outcome.filter(result -> !result.written().cases().isEmpty())
@@ -126,7 +133,7 @@ class AdvertisingTargetedWorker {
                         .orElse(null),
                 lane, "TARGETED", null, null, null, request.factAcceptedAt(), finishedAt,
                 outcome.map(result -> finishedAt).orElse(null),
-                internal.toMillis(), null,
-                AdvertisingSlo.breached(internal), request.correlationId());
+                internal.isNegative()?null:internal.toMillis(), null,
+                internal.isNegative() || AdvertisingSlo.breached(internal), request.correlationId());
     }
 }

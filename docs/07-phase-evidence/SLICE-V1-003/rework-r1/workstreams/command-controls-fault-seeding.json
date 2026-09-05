@@ -1,0 +1,1132 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "CONTROL_FAULT_SEEDING_METHOD_RECEIPT",
+  "reviewedAt": "2026-09-05T02:40:17.456923+00:00",
+  "status": "TARGETED_BOUNDARY_EVIDENCE_WITH_EXPLICIT_LIMITS_FINAL_HEAD_FULL_VERIFICATION_PENDING",
+  "distinctions": [
+    "Schema/privilege early refusal is not a live gate evaluation.",
+    "A named reason added to an already closed gate is not an all-other-conditions-open fault proof.",
+    "SQL state oracles and fake ports do not establish real Provider facts or financial mathematics.",
+    "A passing local suite inside a failed batch is recorded as suite PASS and batch PARTIAL_FAILURE."
+  ],
+  "positiveControls": [
+    {
+      "id": "SEALED_CREATOR",
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "realApplicationCreatorUsesExactImmutableApprovalAndMinimumFrozenExpiry",
+        "line": 37
+      },
+      "proves": "Actual independent issuer proof, physical app transaction, immutable final seal, exact canonical baseline, idempotent command and minimum frozen expiry.",
+      "limit": "The ordinary APPLY transport gate still has disabled global/capability and execution-guardrail refusals. This positive control is the seal/creator boundary, not an empty transmission gate.",
+      "run": "source-r12"
+    },
+    {
+      "id": "CAUSE_BOUND_CREATOR",
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "causeBoundKnownDangerCanBeSealedWithoutConversionOrCostEvidence",
+        "line": 165
+      },
+      "proves": "Exact allowed known danger and required source evidence can seal/create without unrelated conversion/cost evidence.",
+      "limit": "No missing danger/critical safety is waived; no Provider call.",
+      "run": "source-r12"
+    },
+    {
+      "id": "COMPENSATION_OPEN_GATE",
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore",
+        "line": 309
+      },
+      "proves": "Actual Maker preview, independent Ops endorsement, distinct Owner approval and exact new Bundle yield an empty compensation gate, lease and one captured-prior RESTORE attempt.",
+      "limit": "Fictional protocol controls, no socket/Provider call, production_write_enabled=false.",
+      "run": "source-r12"
+    },
+    {
+      "id": "ORDINARY_HUMAN_CHAIN",
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+        "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand",
+        "line": 95
+      },
+      "proves": "Zero seeded approval/baseline; actual trusted Planner, Maker selection, Ops endorsement and same Ops final approval create one command through exact promoted Ordinary authority.",
+      "limit": "Engineering fixture only, no Provider call.",
+      "run": "source-r12"
+    },
+    {
+      "id": "ORDINARY_ASSESSMENT",
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution",
+        "line": 33
+      },
+      "proves": "App SQL reads complete ORDINARY_IMPACT and every independent axis before fault injection; authorization/command rows remain zero.",
+      "limit": "Classification control, not execution authority.",
+      "run": "source-r12"
+    },
+    {
+      "id": "REAL_FINANCIAL_RECONCILIATION",
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+        "method": "matureActualSettlementContradictionDoesNotOverwritePriorRetainedSuccess",
+        "line": 217
+      },
+      "proves": "Actual canonical financial evidence and shared Outcome service preserve primary retained history and route a contradictory settled result to Finance review.",
+      "limit": "Logical synthetic history in isolated PostgreSQL; no real financial/provider evidence.",
+      "run": "source-r15-local-suite-pass-whole-run-failed"
+    }
+  ],
+  "faults": [
+    {
+      "id": "APP_PRIVILEGE",
+      "findings": [
+        "010"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "App SQL attempts table DML/private creator/SET ROLE issuer.",
+      "expectedResult": "INSERT/UPDATE/DELETE false, private creator EXECUTE false, SET ROLE refused.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "applicationCannotMintProofOrRestoreTheRemovedActorParameterCreator",
+        "line": 66
+      },
+      "boundaryExercised": "EARLY_PRIVILEGE_REFUSAL",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "FORGED_GUC",
+      "findings": [
+        "010"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Arbitrary authenticated_actor GUC plus attacker-selected proof.",
+      "expectedResult": "one-use transaction-bound authenticated invocation required",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "arbitraryApplicationGucCannotImpersonateFinalApprover",
+        "line": 80
+      },
+      "boundaryExercised": "AUTHENTICATED_SEAL_BOUNDARY",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "WRONG_SESSION",
+      "findings": [
+        "010"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Valid proof replayed from another physical application backend/transaction.",
+      "expectedResult": "Replay refuses; original application transaction still seals.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "grantFromDifferentPhysicalApplicationSessionCannotBeReplayed",
+        "line": 91
+      },
+      "boundaryExercised": "AUTHENTICATED_SEAL_BOUNDARY",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "WRONG_ACTOR",
+      "findings": [
+        "010"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Proof names Maker rather than exact recorded final approver.",
+      "expectedResult": "final approval identity refusal",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "makerProofCannotBecomeOwnersFinalApproval",
+        "line": 101
+      },
+      "boundaryExercised": "AUTHENTICATED_SEAL_BOUNDARY",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "ACTOR_REVOKED",
+      "findings": [
+        "009",
+        "010"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "credentials_valid_from advanced after proof issuance.",
+      "expectedResult": "Transaction-bound invocation refuses current credential epoch.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "currentActorRevocationInvalidatesAnAlreadyIssuedProof",
+        "line": 109
+      },
+      "boundaryExercised": "AUTHENTICATED_SEAL_BOUNDARY",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "PRODUCT_SCOPE_MISSING",
+      "findings": [
+        "010"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Owner approval grant narrowed to Store without affected Product grant.",
+      "expectedResult": "current exact Material/Ordinary scoped final approval required",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "storeOnlyApprovalGrantCannotAuthoriseUndisclosedAffectedProducts",
+        "line": 119
+      },
+      "boundaryExercised": "SCOPED_SEAL_BOUNDARY",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "BASELINE_SWAPPED",
+      "findings": [
+        "009",
+        "010"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Final seal receives a different baseline than immutable selection.",
+      "expectedResult": "final approval identity or sealed selection is invalid",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "finalApprovalCannotSwapInAnUnapprovedBaseline",
+        "line": 130
+      },
+      "boundaryExercised": "SEALED_SELECTION_BOUNDARY",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "ENDORSED_POLICY_DRIFT",
+      "findings": [
+        "009",
+        "017"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Exact target policy changes after human endorsement.",
+      "expectedResult": "selection/endorsement authority changed",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "changedPolicyAfterEndorsementCannotBeSilentlySealed",
+        "line": 142
+      },
+      "boundaryExercised": "SEALED_AUTHORITY_SNAPSHOT_BOUNDARY",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "CUMULATIVE_MAJOR_CURRENCY",
+      "findings": [
+        "014"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Broad exposure limit 5 below actual cumulative major-currency bid delta.",
+      "expectedResult": "CUMULATIVE_BID_CHANGE and AGGREGATE_ENVELOPE_BLOCKED",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "cumulativeExposureIsMajorCurrencyAndUsesAllBroaderPolicies",
+        "line": 152
+      },
+      "boundaryExercised": "ACTUAL_EXPOSURE_GATE_AXIS",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "This tests a named actual exposure failure with other ordinary transmission refusals still present, not a fully open gate with one fault."
+    },
+    {
+      "id": "CAUSE_STEP_RATIO",
+      "findings": [
+        "010"
+      ],
+      "positiveControl": "CAUSE_BOUND_CREATOR",
+      "injectedVariable": "Owner cause-bound ratio reduced below candidate decrease.",
+      "expectedResult": "exact target and Provider policy refusal",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "causeBoundStepCannotExceedExactOwnerPolicyRatio",
+        "line": 177
+      },
+      "boundaryExercised": "CONTROLLED_CREATOR_PREDICATE",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "DANGER_EVIDENCE_MISSING",
+      "findings": [
+        "010"
+      ],
+      "positiveControl": "CAUSE_BOUND_CREATOR",
+      "injectedVariable": "Required SELLABILITY danger evidence removed/ineligible.",
+      "expectedResult": "all evidence purpose expiry bounds required",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "causeBoundProtectionCannotTreatMissingDangerAsFreshEvidence",
+        "line": 186
+      },
+      "boundaryExercised": "EVIDENCE_SEAL_BOUNDARY",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "CRITICAL_UNKNOWN",
+      "findings": [
+        "010",
+        "017"
+      ],
+      "positiveControl": "CAUSE_BOUND_CREATOR",
+      "injectedVariable": "Unresolved critical safety blocker added to cause-bound evidence.",
+      "expectedResult": "action-specific evidence blockers remain unresolved",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+        "method": "causeBoundFinancialExceptionNeverIgnoresUnknownCriticalSafety",
+        "line": 196
+      },
+      "boundaryExercised": "EVIDENCE_SEAL_BOUNDARY",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "UNAPPROVED_RESERVATION",
+      "findings": [
+        "014"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Candidate has no final sealed intervention.",
+      "expectedResult": "exact intervention refusal",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "pendingRecommendationCannotReserve",
+        "line": 84
+      },
+      "boundaryExercised": "CANONICAL_RESERVATION_ADMISSION",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "CALLER_RELEASE_BOOLEAN",
+      "findings": [
+        "014"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "App attempts table writes or observe_ad_reservation_condition EXECUTE.",
+      "expectedResult": "All DML and caller-boolean function denied.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "applicationCannotWriteReservationOrAssertReleaseConditions",
+        "line": 77
+      },
+      "boundaryExercised": "EARLY_PRIVILEGE_REFUSAL",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "OVERLAPPING_SCOPE",
+      "findings": [
+        "014"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Another object key queried for the same canonical Product Variant.",
+      "expectedResult": "Returns the already held reservation.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "overlappingVariantsNameTheExistingHolderEvenForAnotherObjectKey",
+        "line": 95
+      },
+      "boundaryExercised": "ACTUAL_OVERLAP_READ",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "A real overlap query is exercised. This method is not a concurrent two-command admission test."
+    },
+    {
+      "id": "EARLY_SAFETY_ABSENT",
+      "findings": [
+        "014"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Held command has no canonical completed readback/early sales evidence.",
+      "expectedResult": "Release false; ACTIVE and early_observation_complete=false.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "missingConfigurationAndEarlySafetyEvidenceKeepReservationHeld",
+        "line": 102
+      },
+      "boundaryExercised": "CANONICAL_RELEASE_GATE",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "STOP_SCOPE",
+      "findings": [
+        "016"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Authenticated Operations actor activates exact Store/capability Kill.",
+      "expectedResult": "KILL_SWITCH_ACTIVE returned.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "authenticatedOperationsStopCoversTheStoreCapability",
+        "line": 112
+      },
+      "boundaryExercised": "AUTHENTICATED_CONTAINMENT_AND_READ_GATE",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "DIFFERENT_DIGEST_OVERLAP",
+      "findings": [
+        "016"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Affected-set digest changes while real canonical variant membership overlaps.",
+      "expectedResult": "EMERGENCY_ENTITY_HOLD still returned.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "affectedSetStopIntersectsVariantsAcrossDifferentDigests",
+        "line": 116
+      },
+      "boundaryExercised": "ACTUAL_CONTAINMENT_INTERSECTION",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "STOP_SELF_ENDORSE",
+      "findings": [
+        "016"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Stopper signs own Operations endorsement.",
+      "expectedResult": "independent scoped evidence attestation required",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "stopperCannotEndorseTheirOwnReenablement",
+        "line": 125
+      },
+      "boundaryExercised": "AUTHENTICATED_RECOVERY_BOUNDARY",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "BUSINESS_AS_TECH",
+      "findings": [
+        "016"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Business actor asserts security attestation without TECH_DATA technical scope.",
+      "expectedResult": "independent scoped evidence attestation required",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "businessRoleCannotFabricateTechnicalSecurityAttestation",
+        "line": 136
+      },
+      "boundaryExercised": "AUTHENTICATED_RECOVERY_BOUNDARY",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "STOP_OLD_APPROVAL",
+      "findings": [
+        "009",
+        "016"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Actual authenticated Stop after command creation.",
+      "expectedResult": "AUTHORITY_PERMANENTLY_INVALIDATED plus KILL_SWITCH_ACTIVE; durable invalidation row.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "containmentPermanentlyInvalidatesPriorApprovalAssets",
+        "line": 147
+      },
+      "boundaryExercised": "ACTUAL_LIVE_GATE_WITH_PERMANENT_INVALIDATION",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "BUNDLE_GATE_DRIFT",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Proposed exact Gate is changed after independent Bundle endorsement.",
+      "expectedResult": "Activation refuses changed endorsed authority.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "bundleGateChangedAfterEndorsementCannotBecomeApprovedAuthority",
+        "line": 218
+      },
+      "boundaryExercised": "AUTHENTICATED_BUNDLE_ACTIVATION",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "COMP_MAKER_ENDORSE",
+      "findings": [
+        "013"
+      ],
+      "positiveControl": "COMPENSATION_OPEN_GATE",
+      "injectedVariable": "Maker attempts compensation endorsement.",
+      "expectedResult": "distinct scoped Operations Lead refusal",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore",
+        "line": 309
+      },
+      "boundaryExercised": "AUTHENTICATED_COMPENSATION_QUORUM",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "COMP_ENDORSER_APPROVE",
+      "findings": [
+        "013"
+      ],
+      "positiveControl": "COMPENSATION_OPEN_GATE",
+      "injectedVariable": "Ops endorser attempts final compensation approval.",
+      "expectedResult": "new distinct scoped Owner approval required",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore",
+        "line": 309
+      },
+      "boundaryExercised": "AUTHENTICATED_COMPENSATION_QUORUM",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "COMP_CREDENTIAL_RESTORED",
+      "findings": [
+        "009",
+        "013"
+      ],
+      "positiveControl": "COMPENSATION_OPEN_GATE",
+      "injectedVariable": "Credential attestation revoked then restored after previously empty compensation gate.",
+      "expectedResult": "EXACT_COMPENSATION_APPROVAL_ABSENT_OR_STALE persists.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+        "method": "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore",
+        "line": 309
+      },
+      "boundaryExercised": "ACTUAL_PREVIOUSLY_OPEN_COMPENSATION_GATE",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "LEASE_EXPIRED",
+      "findings": [
+        "009"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Migration-role stale-command oracle sets approval_expires_at in past.",
+      "expectedResult": "APPROVAL_LEASE_EXPIRED added by actual gate.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+        "method": "anExpiredApprovalIsNamedAsItsOwnRefusal",
+        "line": 115
+      },
+      "boundaryExercised": "ACTUAL_NAMED_TRANSMISSION_GATE_REASON",
+      "lastReferencedRun": "controls-88",
+      "evidenceLimit": "The source run predates current canonical baseline revisions; rerun needed. Other disabled transport reasons remain. Privileged historical mutation is not a permitted app lease update."
+    },
+    {
+      "id": "MIDFLIGHT_STOP",
+      "findings": [
+        "009",
+        "016"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Authenticated Kill after a privileged leased-state oracle.",
+      "expectedResult": "KILL_SWITCH_ACTIVE added; opening APPLY fails closed at transmission.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+        "method": "aKillSwitchThrownMidFlightClosesTheGate",
+        "line": 94
+      },
+      "boundaryExercised": "ACTUAL_ATTEMPT_GATE",
+      "lastReferencedRun": "controls-88",
+      "evidenceLimit": "Other transport refusals remain; this does not prove an otherwise empty APPLY gate. Rerun needed on final Head."
+    },
+    {
+      "id": "UNKNOWN_REPEAT",
+      "findings": [
+        "012"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "A recorded UNKNOWN APPLY and an attempted second mutating operation.",
+      "expectedResult": "Unknown-state transition and duplicate-mutation checks refuse.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+        "method": "anUnknownResultIsNeverRepeated",
+        "line": 152
+      },
+      "boundaryExercised": "ACTUAL_ATTEMPT_LIFECYCLE_BOUNDARY",
+      "lastReferencedRun": "controls-88",
+      "evidenceLimit": "Migration-role historical attempt/state oracle; no actual Provider request. Rerun needed."
+    },
+    {
+      "id": "STALE_FENCE",
+      "findings": [
+        "012",
+        "016"
+      ],
+      "positiveControl": "SEALED_CREATOR",
+      "injectedVariable": "Attempt uses stale fencing token.",
+      "expectedResult": "Lease that authorised attempt is not current.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+        "method": "aStaleFenceOpensNothing",
+        "line": 198
+      },
+      "boundaryExercised": "ACTUAL_ATTEMPT_FENCE_BOUNDARY",
+      "lastReferencedRun": "controls-88",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "WORKER_pendingNativeStatusPollPreservesTaskAndNeverAppliesAgain",
+      "findings": [
+        "012",
+        "013"
+      ],
+      "positiveControl": null,
+      "injectedVariable": "Native async task remains pending.",
+      "expectedResult": "Poll STATUS only, preserve task identity, never dispatch APPLY.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+        "method": "pendingNativeStatusPollPreservesTaskAndNeverAppliesAgain",
+        "line": 305
+      },
+      "boundaryExercised": "UNIT_SCRIPTED_PORT_BOUNDARY",
+      "lastReferencedRun": "controls-88",
+      "evidenceLimit": "Fake command repository/write port verifies the worker state machine; it is not actual database authorization, HTTP transport or Provider evidence."
+    },
+    {
+      "id": "WORKER_sameCommandRetryNeedsIndependentDatabaseProof",
+      "findings": [
+        "012",
+        "013"
+      ],
+      "positiveControl": null,
+      "injectedVariable": "Retry state with independent database proof false.",
+      "expectedResult": "No APPLY retry.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+        "method": "sameCommandRetryNeedsIndependentDatabaseProof",
+        "line": 364
+      },
+      "boundaryExercised": "UNIT_SCRIPTED_PORT_BOUNDARY",
+      "lastReferencedRun": "controls-88",
+      "evidenceLimit": "Fake command repository/write port verifies the worker state machine; it is not actual database authorization, HTTP transport or Provider evidence."
+    },
+    {
+      "id": "WORKER_compensationCannotOverwriteThirdPartyCurrentValue",
+      "findings": [
+        "012",
+        "013"
+      ],
+      "positiveControl": null,
+      "injectedVariable": "Current observed native value belongs to a third-party change.",
+      "expectedResult": "No RESTORE, investigate mismatch.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+        "method": "compensationCannotOverwriteThirdPartyCurrentValue",
+        "line": 351
+      },
+      "boundaryExercised": "UNIT_SCRIPTED_PORT_BOUNDARY",
+      "lastReferencedRun": "controls-88",
+      "evidenceLimit": "Fake command repository/write port verifies the worker state machine; it is not actual database authorization, HTTP transport or Provider evidence."
+    },
+    {
+      "id": "WORKER_unreadableObservationStaysUnknown",
+      "findings": [
+        "012",
+        "013"
+      ],
+      "positiveControl": null,
+      "injectedVariable": "Unreadable native bid observation.",
+      "expectedResult": "No successful readback or invented numeric value.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+        "method": "unreadableObservationStaysUnknown",
+        "line": 290
+      },
+      "boundaryExercised": "UNIT_SCRIPTED_PORT_BOUNDARY",
+      "lastReferencedRun": "controls-88",
+      "evidenceLimit": "Fake command repository/write port verifies the worker state machine; it is not actual database authorization, HTTP transport or Provider evidence."
+    },
+    {
+      "id": "MATERIALITY_ABSOLUTE_BID_CHANGE",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_ASSESSMENT",
+      "injectedVariable": "ABSOLUTE_BID_CHANGE parameter row; see test switch for exact seeded columns.",
+      "expectedResult": "MATERIAL_IMPACT with the exact named axis reason.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "method": "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence",
+        "line": 49
+      },
+      "boundaryExercised": "ACTUAL_APP_SQL_MATERIALITY_ASSESSMENT",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "Positive Ordinary classification is asserted before each parameter. Absolute/relative tests change both coherent ordinary/material threshold columns; no claim of exactly one physical column."
+    },
+    {
+      "id": "MATERIALITY_RELATIVE_BID_CHANGE",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_ASSESSMENT",
+      "injectedVariable": "RELATIVE_BID_CHANGE parameter row; see test switch for exact seeded columns.",
+      "expectedResult": "MATERIAL_IMPACT with the exact named axis reason.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "method": "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence",
+        "line": 49
+      },
+      "boundaryExercised": "ACTUAL_APP_SQL_MATERIALITY_ASSESSMENT",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "Positive Ordinary classification is asserted before each parameter. Absolute/relative tests change both coherent ordinary/material threshold columns; no claim of exactly one physical column."
+    },
+    {
+      "id": "MATERIALITY_OFFICIAL_SPEND_EXPOSURE",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_ASSESSMENT",
+      "injectedVariable": "OFFICIAL_SPEND_EXPOSURE parameter row; see test switch for exact seeded columns.",
+      "expectedResult": "MATERIAL_IMPACT with the exact named axis reason.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "method": "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence",
+        "line": 49
+      },
+      "boundaryExercised": "ACTUAL_APP_SQL_MATERIALITY_ASSESSMENT",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "Positive Ordinary classification is asserted before each parameter. Absolute/relative tests change both coherent ordinary/material threshold columns; no claim of exactly one physical column."
+    },
+    {
+      "id": "MATERIALITY_AFFECTED_VARIANT_EXPOSURE",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_ASSESSMENT",
+      "injectedVariable": "AFFECTED_VARIANT_EXPOSURE parameter row; see test switch for exact seeded columns.",
+      "expectedResult": "MATERIAL_IMPACT with the exact named axis reason.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "method": "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence",
+        "line": 49
+      },
+      "boundaryExercised": "ACTUAL_APP_SQL_MATERIALITY_ASSESSMENT",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "Positive Ordinary classification is asserted before each parameter. Absolute/relative tests change both coherent ordinary/material threshold columns; no claim of exactly one physical column."
+    },
+    {
+      "id": "MATERIALITY_CUMULATIVE_BID_CHANGE",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_ASSESSMENT",
+      "injectedVariable": "CUMULATIVE_BID_CHANGE parameter row; see test switch for exact seeded columns.",
+      "expectedResult": "MATERIAL_IMPACT with the exact named axis reason.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "method": "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence",
+        "line": 49
+      },
+      "boundaryExercised": "ACTUAL_APP_SQL_MATERIALITY_ASSESSMENT",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "Positive Ordinary classification is asserted before each parameter. Absolute/relative tests change both coherent ordinary/material threshold columns; no claim of exactly one physical column."
+    },
+    {
+      "id": "MATERIALITY_LIFECYCLE_OR_GOVERNED_COHORT_UNRESOLVED",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_ASSESSMENT",
+      "injectedVariable": "LIFECYCLE_OR_GOVERNED_COHORT_UNRESOLVED parameter row; see test switch for exact seeded columns.",
+      "expectedResult": "MATERIAL_IMPACT with the exact named axis reason.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "method": "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence",
+        "line": 49
+      },
+      "boundaryExercised": "ACTUAL_APP_SQL_MATERIALITY_ASSESSMENT",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "Positive Ordinary classification is asserted before each parameter. Absolute/relative tests change both coherent ordinary/material threshold columns; no claim of exactly one physical column."
+    },
+    {
+      "id": "MATERIALITY_FIXED_UNKNOWN_DECISION_EVIDENCE",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_ASSESSMENT",
+      "injectedVariable": "FIXED_UNKNOWN_DECISION_EVIDENCE parameter row; see test switch for exact seeded columns.",
+      "expectedResult": "MATERIAL_IMPACT with the exact named axis reason.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "method": "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence",
+        "line": 49
+      },
+      "boundaryExercised": "ACTUAL_APP_SQL_MATERIALITY_ASSESSMENT",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "Positive Ordinary classification is asserted before each parameter. Absolute/relative tests change both coherent ordinary/material threshold columns; no claim of exactly one physical column."
+    },
+    {
+      "id": "MATERIALITY_FIXED_REGRESSION_OR_UNKNOWN_EXECUTION",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_ASSESSMENT",
+      "injectedVariable": "FIXED_REGRESSION_OR_UNKNOWN_EXECUTION parameter row; see test switch for exact seeded columns.",
+      "expectedResult": "MATERIAL_IMPACT with the exact named axis reason.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "method": "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence",
+        "line": 49
+      },
+      "boundaryExercised": "ACTUAL_APP_SQL_MATERIALITY_ASSESSMENT",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "Positive Ordinary classification is asserted before each parameter. Absolute/relative tests change both coherent ordinary/material threshold columns; no claim of exactly one physical column."
+    },
+    {
+      "id": "MATERIALITY_FIXED_CRITICAL_PROTECTED_SALES_EXPOSURE",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_ASSESSMENT",
+      "injectedVariable": "FIXED_CRITICAL_PROTECTED_SALES_EXPOSURE parameter row; see test switch for exact seeded columns.",
+      "expectedResult": "MATERIAL_IMPACT with the exact named axis reason.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "method": "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence",
+        "line": 49
+      },
+      "boundaryExercised": "ACTUAL_APP_SQL_MATERIALITY_ASSESSMENT",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "Positive Ordinary classification is asserted before each parameter. Absolute/relative tests change both coherent ordinary/material threshold columns; no claim of exactly one physical column."
+    },
+    {
+      "id": "MATERIALITY_EXACT_ORDINARY_PROMOTION_ABSENT",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_ASSESSMENT",
+      "injectedVariable": "EXACT_ORDINARY_PROMOTION_ABSENT parameter row; see test switch for exact seeded columns.",
+      "expectedResult": "MATERIAL_IMPACT with the exact named axis reason.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
+        "method": "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence",
+        "line": 49
+      },
+      "boundaryExercised": "ACTUAL_APP_SQL_MATERIALITY_ASSESSMENT",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "Positive Ordinary classification is asserted before each parameter. Absolute/relative tests change both coherent ordinary/material threshold columns; no claim of exactly one physical column."
+    },
+    {
+      "id": "ORDINARY_immutableBundlePromotionReferenceMustResolveAtTransactionCommit",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_HUMAN_CHAIN",
+      "injectedVariable": "Missing referenced promotion at COMMIT.",
+      "expectedResult": "Deferred FK refuses orphan transaction.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+        "method": "immutableBundlePromotionReferenceMustResolveAtTransactionCommit",
+        "line": 169
+      },
+      "boundaryExercised": "DEFERRED_SCHEMA_CONSTRAINT",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "ORDINARY_inactivePromotionCannotActivateOrDelegateAnOrdinaryBundle",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_HUMAN_CHAIN",
+      "injectedVariable": "Promotion is inactive.",
+      "expectedResult": "No activation or Ordinary delegation.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+        "method": "inactivePromotionCannotActivateOrDelegateAnOrdinaryBundle",
+        "line": 190
+      },
+      "boundaryExercised": "ACTUAL_BUNDLE_AND_MATERIALITY_GATE",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "ORDINARY_promotionWithoutOwnerEvidenceCannotBeStored",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_HUMAN_CHAIN",
+      "injectedVariable": "Owner evidence reference empty.",
+      "expectedResult": "ad_ordinary_promotion_evidence_present row CHECK refuses.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+        "method": "promotionWithoutOwnerEvidenceCannotBeStored",
+        "line": 200
+      },
+      "boundaryExercised": "EARLY_SCHEMA_CONSTRAINT",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "ORDINARY_regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_HUMAN_CHAIN",
+      "injectedVariable": "Regression after real Maker/Ops endorsement.",
+      "expectedResult": "Ops final approval refuses Material route.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+        "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval",
+        "line": 153
+      },
+      "boundaryExercised": "ACTUAL_HUMAN_FINAL_APPROVAL_BOUNDARY",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "ORDINARY_unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval",
+      "findings": [
+        "017"
+      ],
+      "positiveControl": "ORDINARY_HUMAN_CHAIN",
+      "injectedVariable": "Unknown evidence after real Maker/Ops endorsement.",
+      "expectedResult": "Ops final approval refuses Material route.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+        "method": "unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval",
+        "line": 161
+      },
+      "boundaryExercised": "ACTUAL_HUMAN_FINAL_APPROVAL_BOUNDARY",
+      "lastReferencedRun": "source-r12",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "FINANCE_PRIMARY_REBIND",
+      "findings": [
+        "016"
+      ],
+      "positiveControl": "REAL_FINANCIAL_RECONCILIATION",
+      "injectedVariable": "App inserts primary Task as its own distinct Finance review Task.",
+      "expectedResult": "ad_review_task_distinct_ck refuses.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingFinanceReviewIT.java",
+        "method": "applicationCannotRebindThePrimaryAdvertisingTaskAsItsFinanceReview",
+        "line": 129
+      },
+      "boundaryExercised": "EARLY_SCHEMA_CONSTRAINT",
+      "lastReferencedRun": "source-r15-local-suite-pass-whole-run-failed",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "FINANCE_UNKNOWN",
+      "findings": [
+        "016"
+      ],
+      "positiveControl": "REAL_FINANCIAL_RECONCILIATION",
+      "injectedVariable": "Only early safety / unknown settled evidence is present.",
+      "expectedResult": "No conclusive Finance review responsibility can be minted.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingFinanceReviewIT.java",
+        "method": "earlySafetyAndUnknownSettledEvidenceCannotForgeFinanceResponsibility",
+        "line": 115
+      },
+      "boundaryExercised": "ACTUAL_CANONICAL_REVIEW_CONTEXT",
+      "lastReferencedRun": "source-r15-local-suite-pass-whole-run-failed",
+      "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    }
+  ],
+  "sourceRuns": [
+    {
+      "id": "source-r12",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dtest=AdvertisingAttributedEconomicsTest,AdvertisingPurposeFreshnessTest,AdPriorityLexicographicTest,AdPriorityPolicyTest,AdvertisingCaseCalculationServiceTest,AdvertisingCaseMeasureCalculationTest,AdvertisingCanonicalFactsIT,AdvertisingFrozenOutcomeIT,AdvertisingOutcomeServiceTest,DualAxisVerdictTest,SalesPreservationTest,BidCandidateSetTest,OutcomeEvaluationTest,StaffedResponseClockTest,AdvertisingManualWorkflowIT,AdvertisingHumanWorkflowIT,AdvertisingSealedAuthorityIT,AdvertisingReservationIT,AdvertisingOrdinaryApprovalIT,AdvertisingMaterialityIT,AdBidGuardrailTest test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "recordedResult": "PASS",
+      "tests": 248,
+      "passed": 248,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "sourceSuitesPassed": {
+        "AdvertisingCanonicalFactsIT": 10,
+        "AdvertisingFrozenOutcomeIT": 7,
+        "AdvertisingManualWorkflowIT": 9,
+        "AdvertisingOutcomeServiceTest": 18,
+        "AdvertisingPurposeFreshnessTest": 6,
+        "AdvertisingAttributedEconomicsTest": 8,
+        "AdPriorityLexicographicTest": 7,
+        "AdvertisingHumanWorkflowIT": 10,
+        "AdvertisingReservationIT": 14,
+        "AdvertisingMaterialityIT": 13,
+        "AdvertisingOrdinaryApprovalIT": 7,
+        "AdvertisingSealedAuthorityIT": 15,
+        "AdBidGuardrailTest": 16
+      },
+      "errorsPreserved": [],
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r12.log",
+      "logSha256": "95a709092538526bf914e2a0a9cbf0a384e194397499cec3d06fa5c032c7ba22",
+      "originalLocalLog": "/tmp/slice3-frozen-outcome-pg-r12.log",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "identityLimit": "Coherent local working-tree targeted superset. No immutable final commit or CI binding; subsequent Finance review changes require another superset.",
+      "finishedAt": "2026-09-05T09:53:38+08:00",
+      "elapsed": "01:34 min"
+    },
+    {
+      "id": "source-r15",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dtest=AdvertisingAttributedEconomicsTest,AdvertisingPurposeFreshnessTest,AdvertisingQualificationBoundaryTest,AdPriorityLexicographicTest,AdPriorityPolicyTest,AdvertisingCaseCalculationServiceTest,AdvertisingCaseMeasureCalculationTest,AdvertisingCanonicalFactsIT,AdvertisingFrozenOutcomeIT,AdvertisingOutcomeServiceTest,DualAxisVerdictTest,SalesPreservationTest,BidCandidateSetTest,OutcomeEvaluationTest,StaffedResponseClockTest,AdvertisingManualWorkflowIT,AdvertisingHumanWorkflowIT,AdvertisingSealedAuthorityIT,AdvertisingReservationIT,AdvertisingOrdinaryApprovalIT,AdvertisingMaterialityIT,AdBidGuardrailTest,AdvertisingFinanceReviewIT,AdvertisingBrowserHistoryIT,AdvertisingDisclosureIT,AdvertisingProtectedBaseUpgradeIT,FlywayMigrationIT,ManagedMigrationRunnerIT,ManagedProfileMigrationIT test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 288,
+      "passed": 286,
+      "failures": 1,
+      "errors": 1,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r15.log",
+      "logSha256": "d1602828ec7dab120c9f47b6a6da8c974ae327d672d8c00dba538b4deb5cf27e",
+      "originalLocalLog": "/tmp/slice3-frozen-outcome-pg-r15.log",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "identityLimit": "Working-tree targeted run. Final immutable clean verify and exact-head CI remain required.",
+      "errorsPreserved": [
+        "ManagedProfileMigrationIT:250 expected prior-release table delta 46, actual55.",
+        "AdvertisingBrowserHistoryIT parameter3 OPERATIONAL synthetic observation used guard SATISFIED and violates existing stage CHECK."
+      ],
+      "sourceSuitesPassed": {
+        "AdvertisingFrozenOutcomeIT": 10,
+        "AdvertisingFinanceReviewIT": 6,
+        "AdvertisingCanonicalFactsIT": 10,
+        "AdvertisingQualificationBoundaryTest": 3,
+        "AdvertisingManualWorkflowIT": 9,
+        "AdvertisingOutcomeServiceTest": 18,
+        "AdvertisingHumanWorkflowIT": 11
+      }
+    }
+  ],
+  "historicControlRuns": [
+    {
+      "id": "controls-88",
+      "command": "./mvnw -q -Dtest=AdBidCommandWorkerTest,AdBidWritePortContractTest,AdBidWriteRefusalTest,AdBidWriteDispatchTest -Dit.test=AdvertisingSealedAuthorityIT,AdvertisingReservationIT,AdvertisingTransmissionBoundaryIT test-compile surefire:test failsafe:integration-test failsafe:verify",
+      "cwd": "backend/marketops-server",
+      "recordedResult": "PASS",
+      "tests": 88,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "suiteCounts": {
+        "AdvertisingSealedAuthorityIT": 15,
+        "AdvertisingReservationIT": 13,
+        "AdvertisingTransmissionBoundaryIT": 7,
+        "AdBidCommandWorkerTest": 19,
+        "AdBidWritePortContractTest": 12,
+        "AdBidWriteDispatchTest": 15,
+        "AdBidWriteRefusalTest": 7
+      },
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-command-controls-it-r2.log",
+      "logSha256": "10fc992fafce91efb35f0502e04d69570829a70eae530f2e1449bca72a51843b",
+      "originalLocalLog": "/tmp/slice3-command-controls-it-r2.log",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "schemaAtRun": "V0001–V0064",
+      "identityLimit": "Local working-tree run; log has no immutable final rework commit binding. Source has changed after this run, including the canonical baseline proof correction. Do not reuse this PASS as current full verification."
+    },
+    {
+      "id": "compensation-14",
+      "command": "./mvnw -q -Dtest=NoTests -Dsurefire.failIfNoSpecifiedTests=false -Dit.test=AdvertisingReservationIT test-compile failsafe:integration-test failsafe:verify",
+      "cwd": "backend/marketops-server",
+      "recordedResult": "PASS",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "suiteCounts": {
+        "AdvertisingReservationIT": 14
+      },
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-compensation-control-it-r2.log",
+      "logSha256": "41334bb93446e74cb2e316933bc32ee5e8e75d2e2bead6501da150db3c64e244",
+      "originalLocalLog": "/tmp/slice3-compensation-control-it-r2.log",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "schemaAtRun": "V0001–V0064",
+      "identityLimit": "Local working-tree run; log has no immutable final rework commit binding. Source has changed after this run, including the canonical baseline proof correction. Do not reuse this PASS as current full verification."
+    },
+    {
+      "id": "baseline-materiality-sql-probe",
+      "recordedResult": "PASS",
+      "scope": "ISOLATED_POSTGRESQL_SQL_ONLY",
+      "commands": [
+        "python3 /tmp/r1-db-verify.py --reset",
+        "python3 /tmp/r1-proof-harness.py",
+        "SELECT production_write_enabled FROM ops.ad_gate_authority WHERE id=<exact synthetic gate>"
+      ],
+      "schemaAtRun": "V0001–V0064",
+      "observed": [
+        "all current migration statements applied",
+        "full typed synthetic baseline fixture accepted",
+        "canonical baseline=true; attested=true; app direct INSERT=false",
+        "initial materiality assessment MATERIAL_IMPACT with independent axes",
+        "trusted issuer proof consumed by real app transaction final seal",
+        "real reservation taken then command created",
+        "sealed exact baseline, MATERIAL_IMPACT, 18-minute minimum expiry",
+        "live gate names only expected disabled switches / absent execution guardrail",
+        "production_write_enabled=false"
+      ],
+      "tests": null,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-baseline-materiality-seal-probe.log",
+      "logSha256": "faae1ea7f1445f613d58cc331184dc2caf17269632d30398eb6616524b167717",
+      "identityLimit": "SQL smoke proof of the current isolated synthetic graph. Not a Maven or full verification result; no final commit binding.",
+      "harnessCorrection": "First scratch-harness attempt omitted reservation and correctly failed; the harness now uses the same explicit reserve-before-create sequence as AdvertisingR1Fixture."
+    },
+    {
+      "id": "source-r12",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dtest=AdvertisingAttributedEconomicsTest,AdvertisingPurposeFreshnessTest,AdPriorityLexicographicTest,AdPriorityPolicyTest,AdvertisingCaseCalculationServiceTest,AdvertisingCaseMeasureCalculationTest,AdvertisingCanonicalFactsIT,AdvertisingFrozenOutcomeIT,AdvertisingOutcomeServiceTest,DualAxisVerdictTest,SalesPreservationTest,BidCandidateSetTest,OutcomeEvaluationTest,StaffedResponseClockTest,AdvertisingManualWorkflowIT,AdvertisingHumanWorkflowIT,AdvertisingSealedAuthorityIT,AdvertisingReservationIT,AdvertisingOrdinaryApprovalIT,AdvertisingMaterialityIT,AdBidGuardrailTest test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "recordedResult": "PASS",
+      "tests": 248,
+      "passed": 248,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "sourceSuitesPassed": {
+        "AdvertisingCanonicalFactsIT": 10,
+        "AdvertisingFrozenOutcomeIT": 7,
+        "AdvertisingManualWorkflowIT": 9,
+        "AdvertisingOutcomeServiceTest": 18,
+        "AdvertisingPurposeFreshnessTest": 6,
+        "AdvertisingAttributedEconomicsTest": 8,
+        "AdPriorityLexicographicTest": 7,
+        "AdvertisingHumanWorkflowIT": 10,
+        "AdvertisingReservationIT": 14,
+        "AdvertisingMaterialityIT": 13,
+        "AdvertisingOrdinaryApprovalIT": 7,
+        "AdvertisingSealedAuthorityIT": 15,
+        "AdBidGuardrailTest": 16
+      },
+      "errorsPreserved": [],
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r12.log",
+      "logSha256": "95a709092538526bf914e2a0a9cbf0a384e194397499cec3d06fa5c032c7ba22",
+      "originalLocalLog": "/tmp/slice3-frozen-outcome-pg-r12.log",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "identityLimit": "Coherent local working-tree targeted superset. No immutable final commit or CI binding; subsequent Finance review changes require another superset.",
+      "finishedAt": "2026-09-05T09:53:38+08:00",
+      "elapsed": "01:34 min"
+    }
+  ],
+  "sourceHashesAtReview": {
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java": "3bfba2a56fc948afd5b3b44398c0e7ec22af914824441bc557d228e96a9e2f51",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java": "494192d29beb207da8f43d3f04932b84f7682bfe168eef800cc611ecd854e999",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java": "b34ae1f31d2caba55618f5df2677173be0a229e6d45dc8bff0217f7472ada9c5",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java": "0e93e3bba6c25b89a578ff646758febf987c639cd084dac2c40c2b8cab895a25",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingFinanceReviewIT.java": "a3a42a660bad1a12b5637bf3d7893edf8eadbbe54d9d23b76d621a5532f1de4d",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java": "e6be6bd39f19195f1576f858e01e5338538835968592a3d6d8d25eda41ed83ea"
+  },
+  "pending": [
+    "The two old gate/privilege suites and exact obsolete-ingress revoke are applied. Independent SQL probes pass; their new Java/current full execution is pending and not counted in historic PASS references.",
+    "Full current Head verify, runtime artifacts, remote twelve-gate evidence and independent Controller verdict remain separate."
+  ],
+  "productionWriteEnabled": false,
+  "externalProviderCalls": false
+}

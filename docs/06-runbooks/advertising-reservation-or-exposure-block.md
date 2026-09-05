@@ -1,63 +1,24 @@
-# Advertising work that will not start because something else is running
+# Advertising reservation and aggregate exposure blocks
 
-Two blocks look similar from the queue and mean different things. One says
-another intervention holds these products; the other says the organization has
-used up how much advertising it may have in flight at once.
+An active intervention holds its complete canonical affected set. API reservation requires a current sealed action; manual reservation begins only for a confirmed issued packet entering execution. A recommendation, Watch, Data Repair task or revocable unexecuted packet does not consume a reservation.
 
-## Reservation conflict
+`RESERVATION_CONFLICT` identifies an overlapping intervention. Read `ops.ad_overlapping_reservation(organization_id, variant_ids, exclude_object_id)` with the case's actual Product variants. Changing a set digest or native-object key cannot avoid an overlap. Admission is serialized for the organization. Protection/regression takes precedence over ordinary Optimization; do not start another action to bypass the holder.
 
-The gate reports `RESERVATION_CONFLICT`, or an approval refuses with
-`CONCURRENT_INTERVENTION`.
+`ops.release_ad_action_reservation` derives conditions from current command/manual proof and immutable Outcome evidence. It does not trust caller booleans or the reservation's cached flags. Release requires exact resolved configuration, no unknown/mismatch, a latest eligible early Completed-Sales observation with company preservation and every required critical unit passing, and no unresolved regression or holding containment. `false` means continue holding. An hourly reconciliation may retry this factual check and count only actual releases.
 
-One advertising object carries traffic for many product variants. Two objects
-changed at the same time can move the same variants' sales, and afterwards
-nobody can say which change did what. So a reservation covers the **affected
-set**, and an overlapping one is refused rather than ordered.
+Late regression preserves the original observation history and appends quarantine. It reacquires a released reservation only when no newer intervention already holds the scope. The quarantine still blocks the intersecting scope when immediate reacquisition is impossible.
 
-Find out what holds it:
+Every applicable organization, platform and Store envelope constrains these six axes independently:
 
-```sql
-SELECT * FROM ops.ad_overlapping_reservation(:organizationId,
-        ARRAY[:variantIds]::uuid[], :excludeObjectId);
-```
-
-The answer names the lane. Protection outranks data repair, which outranks
-optimization — so an optimization case waiting behind a protection case is the
-system working, and the right action is to finish the protection case.
-
-A reservation releases when four conditions all hold, and no sooner:
-configuration resolved, no unknown or mismatch open, early observation complete,
-no regression open. `ops.release_ad_action_reservation` reads all four from the
-row rather than accepting them as arguments, so nobody can release by asserting
-what they have not observed.
-
-## Aggregate exposure
-
-The gate reports `AGGREGATE_ENVELOPE_BLOCKED`, or
-`AGGREGATE_ENVELOPE_UNRESOLVED` when no envelope is in force at all.
-
-Four axes, each checked independently — no axis lends slack to another:
-
-| Axis | What it bounds |
+| Axis | Measurement |
 | --- | --- |
-| `max_active_interventions` | how many advertising changes may be live at once |
-| `max_unresolved_transmitted_writes` | how many outcomes may be unknown at once |
-| `max_cumulative_bid_change_amount` | how much bid movement in a rolling window |
-| `reserved_recovery_headroom_count` | slots kept free for compensation |
+| Active interventions | All current affected-set holders. |
+| Associated official spend | Current official native facts over the policy window; overlapping/incomplete/correcting or mixed-currency evidence is unresolved. |
+| Affected retained-sales share | Actual eligible retained company sales in the frozen retention window and exact affected variants. |
+| Cumulative Bid change | Absolute movement in currency major units, including exact restoration; native minor-unit differences are divided by 100. |
+| Unresolved transmitted writes | Current unknown, pending, mismatch and unresolved execution responsibility. |
+| Reserved recovery headroom | Capacity reserved for governed exact compensation. |
 
-The recovery headroom is the one to understand. Ordinary work may not consume
-it; only a compensation may. Without it, a product that filled its envelope with
-new changes would have no room left to undo one that went wrong.
+The read-only `ops.ad_exposure_snapshot(organization_id, store_id, direction)` supplies the same usages, limits, states and failure reasons consumed by the write gate and Impact Preview. Unknown does not become zero; a narrower envelope cannot weaken a broader one.
 
-An unresolved envelope is **not** an open one. No envelope in force means no
-advertising write, because nobody has said how much exposure is acceptable.
-
-## What to do
-
-Wait, or finish what is running. Do not widen an envelope to unblock a queue:
-the envelope is a versioned, owner-attributed decision about how much of the
-business may be under simultaneous advertising change, and raising it because
-today's queue is long is exactly the decision it exists to prevent.
-
-If unresolved outcomes are what is consuming the envelope, that is the real
-problem. See `advertising-unknown-result.md`.
+Finish or investigate the current holder. Do not manually mark it observed/released or widen limits to clear the queue. Policy changes require a new governed version and fresh review. R1 keeps `production_write_enabled=false` and uses no shared or production environment.

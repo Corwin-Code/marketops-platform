@@ -43,21 +43,17 @@ public class AdBidCommandRepository {
             String leaseOwner, String requestedOperation, Instant approvalExpiresAt) {
     }
 
-    public UUID create(UUID recommendationId, long expectedVersion, UUID actorId,
-            UUID reservationId, UUID bundleId, Instant approvalExpiresAt, String correlationId) {
+    public UUID create(UUID recommendationId, long expectedVersion,
+            UUID reservationId, String correlationId) {
         return jdbc.sql("""
-                SELECT ops.create_ad_bid_command(:recommendationId, :expectedVersion, :actorId,
-                        :reservationId, :bundleId, :approvalExpiresAt, :correlationId)
+                SELECT ops.create_ad_bid_command(:recommendationId, :expectedVersion,
+                        :reservationId, :correlationId)
                 """)
                 .param("recommendationId", recommendationId)
                 .param("expectedVersion", expectedVersion)
-                .param("actorId", actorId)
                 .param("reservationId", reservationId)
-                .param("bundleId", bundleId)
-                .param("approvalExpiresAt", ts(approvalExpiresAt))
                 .param("correlationId", correlationId)
-                .query(UUID.class)
-                .single();
+                .query(UUID.class).single();
     }
 
     public Optional<CommandRow> row(UUID commandId) {
@@ -89,7 +85,8 @@ public class AdBidCommandRepository {
                         AND (next_attempt_at IS NULL OR next_attempt_at <= :now)
                         AND retry_budget_remaining > 0)
                     OR (state = 'UNKNOWN_REQUIRES_READBACK' AND requested_operation = 'READBACK')
-                    OR (state = 'COMPENSATION_PENDING' AND lease_owner IS NULL)
+                    OR (state IN ('COMPENSATION_PENDING','PLATFORM_PENDING') AND lease_owner IS NULL
+                        AND (next_attempt_at IS NULL OR next_attempt_at<=:now))
                  ORDER BY created_at
                  LIMIT :limit
                 """)
@@ -109,6 +106,38 @@ public class AdBidCommandRepository {
         return jdbc.sql("SELECT ops.lease_ad_bid_readback(:commandId, :owner, :seconds)")
                 .param("commandId", commandId).param("owner", owner).param("seconds", seconds)
                 .query(Long.class).single();
+    }
+
+    public long leaseStatus(UUID commandId, String owner, int seconds) {
+        return jdbc.sql("SELECT ops.lease_ad_bid_status(:id,:owner,:seconds)")
+                .param("id", commandId).param("owner", owner).param("seconds", seconds)
+                .query(Long.class).single();
+    }
+
+    public void deferObservation(UUID commandId, long fence, String owner, int seconds) {
+        jdbc.sql("SELECT ops.defer_ad_bid_observation(:id,:fence,:owner,:seconds)")
+                .param("id", commandId).param("fence", fence).param("owner", owner)
+                .param("seconds", seconds).query(Object.class).optional();
+    }
+
+    public boolean retryIsProven(UUID commandId) {
+        return Boolean.TRUE.equals(jdbc.sql("SELECT ops.ad_bid_retry_is_proven(:id)")
+                .param("id", commandId).query(Boolean.class).single());
+    }
+
+    public Optional<String> nativeTaskKey(UUID commandId) {
+        return jdbc.sql("""
+                SELECT native_task_key FROM ops.ad_bid_command_attempt
+                 WHERE command_id=:id AND native_task_key IS NOT NULL
+                 ORDER BY attempt_no DESC LIMIT 1
+                """).param("id", commandId).query(String.class).optional();
+    }
+
+    public boolean restoreAlreadyAttempted(UUID commandId) {
+        return Boolean.TRUE.equals(jdbc.sql("""
+                SELECT EXISTS(SELECT 1 FROM ops.ad_bid_command_attempt
+                 WHERE command_id=:id AND purpose='RESTORE')
+                """).param("id", commandId).query(Boolean.class).single());
     }
 
     public long leaseCompensation(UUID commandId, String owner, int seconds) {
@@ -241,11 +270,15 @@ public class AdBidCommandRepository {
                 json.append(',');
             }
             first = false;
-            json.append('"').append(entry.getKey().replace("\"", "")).append('"')
+            json.append('"').append(escapeJson(entry.getKey())).append('"')
                     .append(':')
-                    .append('"').append(entry.getValue().replace("\"", "")).append('"');
+                    .append('"').append(escapeJson(entry.getValue())).append('"');
         }
         return json.append('}').toString();
+    }
+
+    private static String escapeJson(String value) {
+        return value.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
     /** The gate's own answer, for the operator surface and for the workflow. */
@@ -295,7 +328,7 @@ public class AdBidCommandRepository {
                         instantOf(rs, "started_at"), instantOf(rs, "completed_at")))
                 .list();
         List<AdBidCommandView.Readback> readbacks = jdbc.sql("""
-                SELECT id, match_state, observed_bid, currency_code, observed_at
+                SELECT id, match_state, observed_bid, currency_code, bid_unit_code, observed_at
                   FROM ops.ad_bid_command_readback
                  WHERE command_id = :commandId ORDER BY observed_at
                 """)
@@ -303,7 +336,7 @@ public class AdBidCommandRepository {
                 .query((ResultSet rs, int index) -> new AdBidCommandView.Readback(
                         rs.getObject("id", UUID.class), rs.getString("match_state"),
                         rs.getBigDecimal("observed_bid"), rs.getString("currency_code"),
-                        instantOf(rs, "observed_at")))
+                        rs.getString("bid_unit_code"),instantOf(rs, "observed_at")))
                 .list();
         return Optional.of(toView(command, attempts, readbacks));
     }

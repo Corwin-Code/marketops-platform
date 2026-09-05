@@ -48,16 +48,37 @@ class AdvertisingEvidenceGatherer {
     private final AdvertisingPolicyRepository policies;
     private final MetricQuery metrics;
     private final AvailabilityRiskQuery availability;
+    private final com.mimococo.marketops.operationsworkflow.AdvertisingTaskSloQuery taskSlo;
 
+    @org.springframework.beans.factory.annotation.Autowired
     AdvertisingEvidenceGatherer(
             AdvertisingEvidenceRepository facts,
             AdvertisingPolicyRepository policies,
             MetricQuery metrics,
-            AvailabilityRiskQuery availability) {
+            AvailabilityRiskQuery availability, com.mimococo.marketops.operationsworkflow.AdvertisingTaskSloQuery taskSlo) {
         this.facts = facts;
         this.policies = policies;
         this.metrics = metrics;
         this.availability = availability;
+        this.taskSlo = taskSlo;
+    }
+
+    AdvertisingEvidenceGatherer(AdvertisingEvidenceRepository facts, AdvertisingPolicyRepository policies,
+            MetricQuery metrics, AvailabilityRiskQuery availability) { this(facts,policies,metrics,availability,null); }
+
+    private Map<String, AdvertisingEvidenceRepository.RankContext> rankContexts(UUID organization, UUID object, Instant at) {
+        Map<String, AdvertisingEvidenceRepository.RankContext> result = new HashMap<>();
+        facts.rankContexts(organization, object, at).forEach((key, value) -> {
+            var status = taskSlo == null || value.caseId() == null ? Optional.<com.mimococo.marketops.operationsworkflow.AdvertisingTaskSloQuery.Status>empty()
+                    : taskSlo.statusForCase(value.caseId(), at);
+            Instant due = status.filter(slo -> !"PROFILE_OR_CALENDAR_MISSING".equals(slo.coverageState()))
+                    .map(slo -> java.util.stream.Stream.of(slo.acknowledgedAt() == null ? slo.acknowledgementDueAt() : null,
+                            slo.firstAttributableActionAt() == null && !slo.actionPaused() ? slo.actionDueAt() : null)
+                            .filter(java.util.Objects::nonNull).min(Instant::compareTo).orElse(null)).orElse(null);
+            result.put(key, new AdvertisingEvidenceRepository.RankContext(value.firstRaisedAt(), due,
+                    value.blockedProtection(), value.downstreamVariants(), value.blockedWork(), value.caseId()));
+        });
+        return Map.copyOf(result);
     }
 
     /** Everything one calculation reads, as one immutable value. */
@@ -78,17 +99,71 @@ class AdvertisingEvidenceGatherer {
             Map<UUID, VariantEconomics> economics,
             Map<UUID, VariantAvailability> variantAvailability,
             Instant windowStart,
+            Instant asOf, Authorities authorities) {
+        Evidence(
+            AdvertisingEvidenceRepository.ObjectRow object,
+            Optional<AdvertisingEvidenceRepository.AffectedSetRow> affectedSet,
+            Optional<AdvertisingEvidenceRepository.ConfigurationRow> configuration,
+            Optional<AdvertisingEvidenceRepository.ObjectFactAggregate> objectFacts,
+            Optional<AdvertisingEvidenceRepository.LinkedSaleAggregate> completedSales,
+            Optional<AdvertisingEvidenceRepository.LinkedSaleAggregate> retainedSales,
+            List<AdvertisingEvidenceRepository.VariantShareRow> variantShares,
+            AdvertisingEvidenceRepository.ContainmentRow containment,
+            Optional<AdvertisingPolicyRepository.ConversionDefinition> conversion,
+            Optional<AdvertisingPolicyRepository.AllowableCpaDefinition> allowableCpa,
+            Optional<AdvertisingPolicyRepository.QualificationPolicy> writeQualification,
+            Optional<AdvertisingPolicyRepository.QualificationPolicy> taskQualification,
+            Optional<AdvertisingPolicyRepository.PriorityWeights> priority,
+            Map<UUID, VariantEconomics> economics,
+            Map<UUID, VariantAvailability> variantAvailability,
+            Instant windowStart,
             Instant asOf) {
+            this(object, affectedSet, configuration, objectFacts, completedSales, retainedSales, variantShares, containment, conversion, allowableCpa, writeQualification, taskQualification, priority, economics, variantAvailability, windowStart, asOf, Authorities.unresolved());
+        }
+    }
+
+    record Authorities(Map<UUID, AdvertisingPolicyRepository.AllowableCpaDefinition> cpaByVariant,
+            Map<String, AdvertisingPolicyRepository.FreshnessProfile> freshness,
+            Map<UUID, Integer> sustainedPeriods, boolean comparableBaseline, List<UUID> metricValueIds,
+            Map<String, AdvertisingEvidenceRepository.RankContext> rankContexts, boolean compensationPending,
+            boolean providerIncidentOpen, AdvertisingEvidenceRepository.CriticalSignals criticalSignals,
+            Long canonicalCompletedEventCount) {
+        Authorities(Map<UUID, AdvertisingPolicyRepository.AllowableCpaDefinition> cpas,
+                Map<String, AdvertisingPolicyRepository.FreshnessProfile> freshness, Map<UUID, Integer> periods,
+                boolean baseline, List<UUID> metrics, Map<String, AdvertisingEvidenceRepository.RankContext> ranks,
+                boolean compensation, boolean incident, AdvertisingEvidenceRepository.CriticalSignals criticalSignals) {
+            this(cpas,freshness,periods,baseline,metrics,ranks,compensation,incident,criticalSignals,null);
+        }
+        Authorities(Map<UUID, AdvertisingPolicyRepository.AllowableCpaDefinition> cpas,
+                Map<String, AdvertisingPolicyRepository.FreshnessProfile> freshness, Map<UUID, Integer> periods,
+                boolean baseline, List<UUID> metrics, Map<String, AdvertisingEvidenceRepository.RankContext> ranks,
+                boolean compensation, boolean incident) {
+            this(cpas,freshness,periods,baseline,metrics,ranks,compensation,incident,AdvertisingEvidenceRepository.CriticalSignals.absent());
+        }
+        Authorities(Map<UUID, AdvertisingPolicyRepository.AllowableCpaDefinition> cpas,
+                Map<String, AdvertisingPolicyRepository.FreshnessProfile> freshness, Map<UUID, Integer> periods,
+                boolean baseline, List<UUID> metrics, Map<String, AdvertisingEvidenceRepository.RankContext> ranks,
+                boolean compensation) {
+            this(cpas, freshness, periods, baseline, metrics, ranks, compensation, false);
+        }
+        static Authorities unresolved() { return new Authorities(Map.of(), Map.of(), Map.of(), false, List.of(), Map.of(), false, true); }
     }
 
     /** The per-unit variable economics for one variant, each independently absent-able. */
     record VariantEconomics(
             AdMeasure unitCost, AdMeasure platformFeesPerUnit, AdMeasure returnLossPerUnit,
-            AdMeasure variableTaxPerUnit, String currencyCode) {
+            AdMeasure variableTaxPerUnit, String currencyCode, List<MetricValueView> lineage) {
+        VariantEconomics(AdMeasure unitCost, AdMeasure fees, AdMeasure returns, AdMeasure tax, String currency) {
+            this(unitCost, fees, returns, tax, currency, List.of());
+        }
     }
 
     /** What the availability vertical says about one variant. */
-    record VariantAvailability(String sellabilityState, String availabilityState) {
+    record VariantAvailability(String sellabilityState, String availabilityState, Instant observedAt,
+            String evidenceState, List<UUID> evidenceIds) {
+        VariantAvailability(String sellability, String availability) {
+            this(sellability, availability, null, "UNKNOWN", List.of());
+        }
 
         static VariantAvailability unknown() {
             return new VariantAvailability("UNKNOWN", "UNKNOWN");
@@ -110,11 +185,11 @@ class AdvertisingEvidenceGatherer {
         }
         AdvertisingEvidenceRepository.ObjectRow object = found.get();
 
-        var affectedSet = facts.affectedSet(organizationId, objectId);
-        var configuration = facts.currentConfiguration(organizationId, objectId);
+        var affectedSet = facts.affectedSet(organizationId, objectId, asOf);
+        var configuration = facts.currentConfiguration(organizationId, objectId, asOf);
 
-        var completedConversion = policies.resolveConversion(organizationId, object.platformCode(),
-                object.storeId(), SaleStage.CANONICAL_AD_LINKED_COMPLETED_SALE.name(), asOf);
+        var completedConversion = policies.resolveObjectConversion(organizationId, object.platformCode(),
+                object.storeId(), object.semanticProfileId(), object.nativeObjectKind(), asOf);
         int windowDays = completedConversion
                 .map(AdvertisingPolicyRepository.ConversionDefinition::observationWindowDays)
                 .orElse(30);
@@ -122,7 +197,13 @@ class AdvertisingEvidenceGatherer {
 
         var objectFacts = facts.objectFacts(organizationId, objectId, windowStart, asOf);
         var completedSales = facts.linkedSales(organizationId, objectId,
-                SaleStage.CANONICAL_AD_LINKED_COMPLETED_SALE.name(), windowStart, asOf);
+                completedConversion.map(AdvertisingPolicyRepository.ConversionDefinition::saleStage)
+                        .orElse("UNRESOLVED"), windowStart, asOf);
+        long canonicalCompletedEvents = completedConversion.map(AdvertisingPolicyRepository.ConversionDefinition::saleStage)
+                .filter(SaleStage.CANONICAL_AD_LINKED_COMPLETED_SALE.name()::equals).isPresent()
+                ? completedSales.map(AdvertisingEvidenceRepository.LinkedSaleAggregate::eventCount).orElse(0L)
+                : facts.linkedSales(organizationId,objectId,SaleStage.CANONICAL_AD_LINKED_COMPLETED_SALE.name(),windowStart,asOf)
+                    .map(AdvertisingEvidenceRepository.LinkedSaleAggregate::eventCount).orElse(0L);
         var retainedSales = facts.linkedSales(organizationId, objectId,
                 SaleStage.CANONICAL_AD_LINKED_RETAINED_SALE.name(), windowStart, asOf);
         var shares = facts.variantShares(organizationId, objectId, windowStart, asOf);
@@ -134,6 +215,33 @@ class AdvertisingEvidenceGatherer {
                 .map(AdvertisingEvidenceRepository.AffectedSetRow::digest)
                 .orElse("0".repeat(64));
 
+        Map<UUID, AdvertisingPolicyRepository.AllowableCpaDefinition> cpas = new HashMap<>();
+        if (completedConversion.isPresent()) {
+            for (UUID variantId : variantIds) {
+                policies.resolveAllowableCpa(organizationId, object.platformCode(), object.storeId(),
+                        variantId, completedConversion.get().saleStage(), asOf)
+                        .ifPresent(value -> cpas.put(variantId, value));
+            }
+        }
+        Map<String, AdvertisingPolicyRepository.FreshnessProfile> freshness = new HashMap<>();
+        for (String purpose : List.of("QUEUE_OBSERVATION", "TASK_ACTIVATION", "PROTECTION_RECOMMENDATION",
+                "OPTIMIZATION_RECOMMENDATION", "PROTECTION_BID_WRITE", "OPTIMIZATION_BID_WRITE")) {
+            for (String kind : List.of("OFFICIAL_AD_SPEND", "OFFICIAL_AD_TRAFFIC", "AD_LINKED_SALE_EVENT",
+                    "COST_AND_FEE", "AD_OBJECT_CONFIGURATION", "AFFECTED_SET", "SELLABILITY", "AVAILABILITY")) {
+                policies.resolveFreshness(organizationId, kind, purpose, object.platformCode(),
+                        object.storeId(), object.semanticProfileId(), asOf)
+                        .ifPresent(value -> freshness.put(purpose + ":" + kind, value));
+            }
+        }
+        var writeQualification = policies.resolveQualification(organizationId, object.platformCode(),
+                object.storeId(), "OPTIMIZATION_BID_WRITE", asOf);
+        var taskQualification = policies.resolveQualification(organizationId, object.platformCode(),
+                object.storeId(), "OPTIMIZATION_TASK", asOf);
+        Map<UUID, Integer> sustained = new HashMap<>();
+        java.util.stream.Stream.concat(writeQualification.stream(), taskQualification.stream())
+                .forEach(policy -> sustained.put(policy.id(), facts.sustainedPeriods(
+                        organizationId, objectId, policy.id(), windowStart)));
+        Map<UUID, VariantEconomics> economics = economicsForSales(completedSales, windowStart, asOf);
         return Optional.of(new Evidence(
                 object,
                 affectedSet,
@@ -144,45 +252,53 @@ class AdvertisingEvidenceGatherer {
                 shares,
                 facts.containment(organizationId, objectId, digest),
                 completedConversion,
-                policies.resolveAllowableCpa(organizationId, object.platformCode(),
-                        object.storeId(), variantIds.isEmpty() ? null : variantIds.getFirst(),
-                        SaleStage.CANONICAL_AD_LINKED_COMPLETED_SALE.name(), asOf),
-                policies.resolveQualification(organizationId, object.platformCode(),
-                        object.storeId(), "OPTIMIZATION_BID_WRITE", asOf),
-                policies.resolveQualification(organizationId, object.platformCode(),
-                        object.storeId(), "OPTIMIZATION_TASK", asOf),
+                cpas.values().stream().sorted(java.util.Comparator.comparing(AdvertisingPolicyRepository.AllowableCpaDefinition::id)).findFirst(),
+                writeQualification,
+                taskQualification,
                 policies.resolvePriority(organizationId, asOf),
-                economicsFor(variantIds),
+                economics,
                 availabilityFor(organizationId, object.storeId(), variantIds),
                 windowStart,
-                asOf));
+                asOf, new Authorities(Map.copyOf(cpas), Map.copyOf(freshness),
+                        Map.copyOf(sustained),
+                        facts.comparableBaseline(organizationId, objectId, windowStart, asOf),
+                        economics.values().stream().flatMap(value -> value.lineage().stream())
+                                .map(MetricValueView::metricValueId).distinct().sorted().toList(),
+                        rankContexts(organizationId, objectId, asOf), facts.compensationPending(organizationId, objectId),
+                        facts.providerIncidentOpen(organizationId, objectId, asOf), facts.criticalSignals(organizationId, objectId, asOf),canonicalCompletedEvents)));
     }
 
-    /**
-     * The per-unit variable economics for each affected variant.
-     *
-     * <p>Read through the published metric contract rather than from the ledger,
-     * so the number an advertising decision uses is the same number the price
-     * decision and the console use, computed once by the authority that owns it.
-     *
-     * <p>Package-private rather than private because the outcome path needs the
-     * same resolution. Two independent readings of unit cost would eventually
-     * disagree, and then a case and its own outcome would be arguing about the
-     * same product.
-     */
-    Map<UUID, VariantEconomics> economicsFor(List<UUID> variantIds) {
-        Map<UUID, VariantEconomics> economics = new HashMap<>();
-        for (UUID variantId : variantIds) {
-            Map<MetricCode, MetricValueView> values = metrics.currentValues(
-                    SubjectKind.PRODUCT_VARIANT, variantId, MetricWindow.D30);
-            economics.put(variantId, new VariantEconomics(
-                    measure(values.get(MetricCode.UNIT_COST)),
-                    measure(values.get(MetricCode.PLATFORM_FEES_PER_UNIT)),
-                    measure(values.get(MetricCode.RETURN_LOSS_PER_UNIT)),
-                    measure(values.get(MetricCode.VARIABLE_TAX_PER_UNIT)),
-                    currencyOf(values)));
+    Map<UUID, VariantEconomics> economicsForSales(
+            Optional<AdvertisingEvidenceRepository.LinkedSaleAggregate> sales, Instant from, Instant to) {
+        return economicsForSales(sales, from, to, to);
+    }
+
+    Map<UUID, VariantEconomics> economicsForSales(Optional<AdvertisingEvidenceRepository.LinkedSaleAggregate> sales,
+            Instant from, Instant to, Instant readAt) {
+        Map<UUID, VariantEconomics> result = new HashMap<>();
+        var window = java.util.Arrays.stream(MetricWindow.values())
+                .filter(candidate -> from.plus(candidate.length()).equals(to)).findFirst()
+                .or(() -> Optional.of(MetricWindow.D30));
+        if (sales.isEmpty()) { return Map.of(); }
+        for (var line : sales.get().lines()) {
+            Map<MetricCode, MetricValueView> values = metrics.currentValuesAt(
+                    SubjectKind.PLATFORM_LISTING_VARIANT, line.platformListingVariantId(), window.get(), readAt);
+            List<MetricCode> required = List.of(MetricCode.UNIT_COST, MetricCode.PLATFORM_FEES_PER_UNIT,
+                    MetricCode.RETURN_LOSS_PER_UNIT, MetricCode.VARIABLE_TAX_PER_UNIT);
+            boolean valid = required.stream().map(values::get).allMatch(value -> value != null
+                    && value.definitionVersion() == MetricCode.DEFINITION_VERSION && value.subjectId().equals(line.platformListingVariantId())
+                    && value.subjectKind() == SubjectKind.PLATFORM_LISTING_VARIANT
+                    && value.periodStart().plus(window.get().length()).equals(value.periodEnd())
+                    && !value.periodEnd().isAfter(readAt)
+                    && !value.computedAt().isAfter(readAt) && value.inputDigest() != null
+                    && !value.evidenceRefs().isEmpty() && java.util.Objects.equals(value.currencyCode(), line.currencyCode()));
+            if (!valid) { continue; }
+            result.put(line.platformListingVariantId(), new VariantEconomics(
+                    measure(values.get(MetricCode.UNIT_COST)), measure(values.get(MetricCode.PLATFORM_FEES_PER_UNIT)),
+                    measure(values.get(MetricCode.RETURN_LOSS_PER_UNIT)), measure(values.get(MetricCode.VARIABLE_TAX_PER_UNIT)),
+                    line.currencyCode(), required.stream().map(values::get).toList()));
         }
-        return Map.copyOf(economics);
+        return Map.copyOf(result);
     }
 
     /**
@@ -215,20 +331,16 @@ class AdvertisingEvidenceGatherer {
      * unknown availability must never be read as a reason to keep spending.
      */
     private static VariantAvailability availabilityFromCard(AvailabilityCardView card) {
-        String lane = card.lane();
-        String availabilityState = switch (lane == null ? "" : lane) {
-            case "HEALTHY" -> "AVAILABLE";
-            case "WATCH", "HIGH" -> "AT_RISK";
-            case "CRITICAL" -> "UNAVAILABLE";
-            default -> "UNKNOWN";
-        };
-        boolean notSellable = card.children().stream()
-                .anyMatch(child -> "CHANNEL_NOT_SELLABLE".equals(child.causeCode()));
-        boolean sellabilityKnown = card.children().stream()
-                .anyMatch(child -> child.causeCode() != null);
-        String sellabilityState = notSellable ? "NOT_SELLABLE"
-                : sellabilityKnown ? "SELLABLE" : "UNKNOWN";
-        return new VariantAvailability(sellabilityState, availabilityState);
+        var confirmed = card.children().stream().filter(child -> "CONFIRMED".equals(child.evidenceState())
+                && child.blockerCodes().isEmpty()).toList();
+        if (confirmed.isEmpty()) { return VariantAvailability.unknown(); }
+        boolean unsellable = confirmed.stream().anyMatch(child -> "CHANNEL_NOT_SELLABLE".equals(child.causeCode()));
+        boolean unavailable = confirmed.stream().anyMatch(child -> child.availableUnits() != null && child.availableUnits() <= 0);
+        boolean stockKnown = confirmed.stream().allMatch(child -> child.availableUnits() != null);
+        return new VariantAvailability(unsellable ? "NOT_SELLABLE" : "SELLABLE",
+                unavailable ? "UNAVAILABLE" : stockKnown ? "AVAILABLE" : "UNKNOWN",
+                confirmed.stream().map(child -> child.calculatedAt()).min(Instant::compareTo).orElse(null),
+                "CANONICAL_CONFIRMED", confirmed.stream().map(child -> child.id()).toList());
     }
 
     /** A metric value as a measure, carrying the confidence the authority attached. */
@@ -258,36 +370,4 @@ class AdvertisingEvidenceGatherer {
         };
     }
 
-    private static String currencyOf(Map<MetricCode, MetricValueView> values) {
-        return values.values().stream()
-                .map(MetricValueView::currencyCode)
-                .filter(java.util.Objects::nonNull)
-                .findFirst()
-                .orElse(null);
-    }
-
-    /** Sum a per-variant measure across the affected set, blocking if any is absent. */
-    static AdMeasure sumAcross(
-            List<UUID> variantIds,
-            Map<UUID, VariantEconomics> economics,
-            java.util.function.Function<VariantEconomics, AdMeasure> component) {
-        if (variantIds.isEmpty()) {
-            return AdMeasure.notAvailable(AdEvidenceState.INCOMPLETE);
-        }
-        BigDecimal total = BigDecimal.ZERO;
-        AdEvidenceState weakest = AdEvidenceState.CANONICAL_CONFIRMED;
-        for (UUID variantId : variantIds) {
-            VariantEconomics variant = economics.get(variantId);
-            AdMeasure measure = variant == null ? null : component.apply(variant);
-            if (measure == null || !measure.present()) {
-                return AdMeasure.notAvailable(AdEvidenceState.DATA_BLOCKED);
-            }
-            total = total.add(measure.value(), CONTEXT);
-            weakest = weakest.weakest(measure.evidenceState());
-        }
-        // A mean rather than a sum: these are per-unit figures, and the object's
-        // ad-linked units are counted once across the whole affected set.
-        BigDecimal mean = total.divide(BigDecimal.valueOf(variantIds.size()), CONTEXT);
-        return AdMeasure.available(mean, weakest);
-    }
 }

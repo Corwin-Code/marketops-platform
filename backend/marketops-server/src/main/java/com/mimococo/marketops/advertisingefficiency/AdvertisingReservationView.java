@@ -25,7 +25,7 @@ import java.util.UUID;
  * @param affectedSetDigest the exact set of variants it covers
  * @param productVariantIds the variants themselves
  * @param interventionKind which of the three real interventions took it
- * @param interventionReferenceId the command or packet that owns it
+ * @param interventionReferenceId the canonical candidate, manual packet or recovery record that owns it
  * @param direction which way the bid was to move, or {@code null} for a packet
  * @param lane the lane the intervention came from
  * @param state whether it still holds

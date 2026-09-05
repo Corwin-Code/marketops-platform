@@ -1,64 +1,86 @@
-# Verifying a manual advertising change
+# Governed Manual advertising configuration verification
 
-This product writes exactly one kind of advertising change — a bid. A budget, a
-campaign status and a targeting structure are all things somebody may need to
-change and all things nothing here will ever send. Those go out as a **Manual
-Execution Packet**: an instruction a person carries out by hand.
+Both Ozon and Wildberries can use the governed Manual workflow without claiming
+verified API capability. Manual policies and packets cannot create API commands,
+outbox attempts, credentials or provider authority. In this Slice all runtime
+verification is isolated and fictional; production writes remain disabled.
 
-## What a packet is, and is not
+## Establish a valid packet
 
-A packet is a record. It has no command, no outbox row, no worker and no adapter
-reachable from it, and `AdvertisingManualShadowIT#TC-AD-MANUAL-001,002` asserts
-that structurally rather than by convention. Issuing one changes nothing on any
-marketplace.
+Use the Case's Manual options. An exact Owner policy produces an eligible
+proposal, Maker selects it, a distinct Operations Lead endorses it and Owner
+approves the bounded packet. A proposal is not an instruction to execute.
+Approval freezes the native field and intended target, current configuration,
+complete affected set, people, versions, expiry, shared Outcome baseline and
+reservation. Free-form target substitution is refused.
 
-## The part that goes wrong
+The API prefix is `/api/v1/console/advertising`:
 
-Somebody makes the change and reports that they made it. That report is not
-evidence that the configuration is what they say it is.
-
-The evidence grades, in the order they carry weight:
-
-| Grade | Proves the configuration? |
+| Operation | Endpoint |
 | --- | --- |
-| `OFFICIAL_API_READBACK` | yes |
-| `OFFICIAL_CONFIGURATION_EXPORT` | yes |
-| `INDEPENDENT_MANUAL_VERIFICATION` | yes, by a **different** person |
-| `EXECUTOR_SELF_REPORT` | no |
+| Read eligible options | `GET /cases/{caseId}/manual-options` |
+| Select policy/candidate | `POST /cases/{caseId}/manual-selections` |
+| Ops endorsement | `POST /manual-packets/{id}/endorsement` |
+| Owner approval | `POST /manual-packets/{id}/approval` |
+| Executor starts | `POST /manual-packets/{id}/start` |
+| Executor reports | `POST /manual-packets/{id}/report` |
+| Different person verifies | `POST /manual-packets/{id}/independent-verification` |
+| Cite an official observation | `POST /manual-packets/{id}/official-verification` |
+| Read shared Outcome history | `GET /manual-packets/{id}/outcomes` |
+| Evaluate available early safety | `POST /manual-packets/{id}/early-observation` |
 
-A self-report moves the packet to
-`ACTION_REPORTED_CONFIGURATION_UNVERIFIED` and no further, however confidently
-it was written. The schema refuses a self-report that claims to prove anything,
-and refuses an "independent" verification carried out by the executor — that is
-a check constraint, not a code path somebody could change their mind about.
+Use the server-returned expected version and allowed actions. Every state change
+rechecks identity, scope and frozen authority. Do not insert packet, approval or
+configuration-proof rows by SQL; that bypasses the human workflow and is not an
+operating route. An expired or invalidated decision needs new evidence and a new
+governed decision, never an edited expiry.
 
-## Recording a verification
+## Establish configuration, not confidence
 
-```sql
-INSERT INTO ops.ad_manual_configuration_verification (
-        id, organization_id, packet_id, evidence_grade, executor_user_id,
-        verifier_user_id, observed_field_path, observed_value, observed_at,
-        evidence_reference, conflict_state, proves_configuration, recorded_at,
-        correlation_id)
-VALUES (gen_random_uuid(), :organizationId, :packetId, 'INDEPENDENT_MANUAL_VERIFICATION',
-        :executorUserId, :verifierUserId, 'campaign.dailyBudget', '5000.00', now(),
-        :evidenceReference, 'NONE', true, now(), :correlationId);
-```
+| Evidence grade | Required proof |
+| --- | --- |
+| `OFFICIAL_API_READBACK` | Actual replayable Raw custody and matching account/object/native field/current observation. |
+| `OFFICIAL_CONFIGURATION_EXPORT` | Actual replayable official export with the same exact binding. |
+| `INDEPENDENT_MANUAL_VERIFICATION` | A different scope-authorized person observes the exact native field/value. |
+| `EXECUTOR_SELF_REPORT` | Establishes only that execution was reported. |
 
-`observed_field_path` and `observed_value` are what the verifier actually
-looked at and what it read. "I checked it" is not a verification; "campaign.
-dailyBudget read 5000.00 at 14:20" is.
+A self-report moves to `ACTION_REPORTED_CONFIGURATION_UNVERIFIED`. It does not
+start a favorable Outcome clock or release the reservation. A URL, arbitrary
+UUID, observation for another account, wrong field or stale/superseded value
+cannot become official proof. Independent verification by the executor is
+refused. Independent proof establishes only the observed configuration; it does
+not verify API idempotency or an exact provider application timestamp.
 
-## When the observation conflicts
+A conflicting or superseded configuration is `MANUAL_EXECUTION_UNCERTAIN`.
+Keep the complete affected set reserved and investigate the actual current
+configuration. Do not overwrite uncertainty with the intended target or reissue
+another intervention against overlapping variants.
 
-Set `conflict_state` to `CONFLICTED` when what you see contradicts what was
-reported, or `SUPERSEDED_BY_LATER_CHANGE` when somebody has changed it again
-since. Either moves the packet to `MANUAL_EXECUTION_UNCERTAIN` and proves
-nothing — which is correct: a conflicted observation of any grade establishes
-nothing at all.
+## Observe safety and business results separately
 
-## Packets that ran out
+Controlled and Manual actions use one frozen baseline and Outcome plan.
+Configuration proof anchors observation. Early Completed-Sales safety requires
+company coverage and every action-time frozen critical unit; absent or unmatured
+evidence remains unknown or `NOT_YET_OBSERVABLE`. Configuration alone is not
+safety, efficiency or health.
 
-Expiry is a sweep, not a read-time judgement, so a packet that has run out looks
-the same to everybody. If a packet expired before anybody acted, re-issue it
-rather than acting on the old one: the case that produced it may have moved.
+Only canonical complete early safety plus valid current configuration may release
+the reservation. The 30-day Retained Operational business result and mature
+Settled confirmation use their own frozen windows and Owner thresholds. Late
+adverse facts append a new observation and reopen/quarantine as necessary;
+previous observations remain readable. Negative profit cannot close Protection.
+
+## Investigate a stuck workflow
+
+Read the packet state, evidence grade, expiry and refusal code, then the Case
+workflow, Task journal, reservation and shared Outcome history. Confirm the
+relevant person's actual role and all affected store/variant grants. Compare the
+packet's exact field/target with the actual observation and replayable custody.
+Do not resolve a block by granting financial access to an otherwise restricted
+reviewer or changing API verification status.
+
+`AdvertisingManualWorkflowIT` covers real service/SQL human decisions and shared
+Outcome; `AdvertisingManualShadowIT` covers structural no-command boundaries.
+The isolated browser scenarios exercise both platform labels with actual role
+sessions and verify stored semantic verification state. Measured results and
+limitations are recorded in the R1 evidence package.

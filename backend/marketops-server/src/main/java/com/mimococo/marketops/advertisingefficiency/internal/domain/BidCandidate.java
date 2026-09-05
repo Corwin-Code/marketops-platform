@@ -73,7 +73,9 @@ public record BidCandidate(
         if (current == null) {
             return Optional.empty();
         }
-        BigDecimal ceiling = limits.applyCeilingHeadroom(maxCpc.ceiling().amount());
+        limits = limits.inNativeUnits(grid.bidUnitCode());
+        BigDecimal ceiling = limits.applyCeilingHeadroom(
+                AdBidUnitConversion.toNative(maxCpc.ceiling().amount(),grid.bidUnitCode()));
         if (ceiling.compareTo(current) >= 0) {
             // The bid is already at or below what a click is worth. Nothing to
             // protect against, so no candidate rather than a token decrease.
@@ -102,7 +104,9 @@ public record BidCandidate(
         if (current == null) {
             return Optional.empty();
         }
-        BigDecimal ceiling = limits.applyCeilingHeadroom(maxCpc.ceiling().amount());
+        limits = limits.inNativeUnits(grid.bidUnitCode());
+        BigDecimal ceiling = limits.applyCeilingHeadroom(
+                AdBidUnitConversion.toNative(maxCpc.ceiling().amount(),grid.bidUnitCode()));
         if (ceiling.compareTo(current) <= 0) {
             return Optional.empty();
         }
@@ -145,6 +149,7 @@ public record BidCandidate(
         if (current == null || current.signum() <= 0) {
             return Optional.empty();
         }
+        limits = limits.inNativeUnits(grid.bidUnitCode());
         BigDecimal causeTarget = current
                 .subtract(current.multiply(causeStepRatio))
                 .setScale(STORED_SCALE, RoundingMode.FLOOR);

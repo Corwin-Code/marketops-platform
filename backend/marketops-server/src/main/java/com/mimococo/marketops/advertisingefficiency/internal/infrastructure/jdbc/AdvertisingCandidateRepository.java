@@ -42,10 +42,16 @@ public class AdvertisingCandidateRepository {
         Optional<UUID> existing = jdbc.sql("""
                 SELECT id FROM ops.ad_bid_candidate
                  WHERE case_id = :caseId AND direction = :direction AND ordinal = :ordinal
+                   AND target_policy_id=:policyId AND target_policy_version=:policyVersion
+                   AND semantic_profile_id=:profileId AND affected_set_digest=:digest
+                   AND current_bid_amount=:currentBid AND provider_normalized_amount=:target
                 """)
                 .param("caseId", caseId)
                 .param("direction", candidate.direction())
                 .param("ordinal", ordinal)
+                .param("policyId", targetPolicyId).param("policyVersion", targetPolicyVersion)
+                .param("profileId", semanticProfileId).param("digest", affectedSetDigest)
+                .param("currentBid", candidate.currentBid()).param("target", candidate.providerNormalizedAmount())
                 .query(UUID.class)
                 .optional();
         if (existing.isPresent()) {
@@ -86,6 +92,11 @@ public class AdvertisingCandidateRepository {
                 .param("correlationId", correlationId)
                 .update();
         return id;
+    }
+
+    public boolean allowsIntermediateTarget(UUID policyId) {
+        return jdbc.sql("SELECT allow_protection_intermediate_target FROM core.ad_bid_target_policy WHERE id=:id")
+                .param("id", policyId).query(Boolean.class).optional().orElse(false);
     }
 
     /**

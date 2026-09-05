@@ -83,12 +83,86 @@ public class AdvertisingPolicyRepository {
             int expectedPublicationLagMinutes, int correctionWindowMinutes,
             boolean requiresWindowComplete, boolean requiresCorrectionWindowClosed,
             BigDecimal minimumCoverageRatio, String minimumConfidenceState,
-            boolean providerIncidentBlocks) {
+            boolean providerIncidentBlocks, Instant effectiveTo) {
+        public FreshnessProfile(UUID id, int version, String evidenceKind, String decisionPurpose,
+                Integer sourceMaxAgeMinutes, Integer acceptedFactMaxAgeMinutes, int expectedPublicationLagMinutes,
+                int correctionWindowMinutes, boolean requiresWindowComplete, boolean requiresCorrectionWindowClosed,
+                BigDecimal minimumCoverageRatio, String minimumConfidenceState, boolean providerIncidentBlocks) {
+            this(id, version, evidenceKind, decisionPurpose, sourceMaxAgeMinutes, acceptedFactMaxAgeMinutes,
+                    expectedPublicationLagMinutes, correctionWindowMinutes, requiresWindowComplete,
+                    requiresCorrectionWindowClosed, minimumCoverageRatio, minimumConfidenceState, providerIncidentBlocks, null);
+        }
     }
 
     private static final String IN_FORCE =
             " AND status IN ('ACTIVE','RETIRED') AND effective_from <= :at"
                     + " AND (effective_to IS NULL OR effective_to > :at)";
+
+    /** Resolve the stage from the exact active bundle, or one unambiguous shadow definition. */
+    private static String uniqueEffectiveScope(String table) {
+        String rowName=table.substring(table.lastIndexOf('.')+1);
+        String columns = "scope_kind,platform_code,store_ref_id,product_variant_ref_id,semantic_profile_id,sale_stage,purpose_tier,evidence_kind,decision_purpose";
+        String same = java.util.Arrays.stream(columns.split(","))
+                .map(column -> "to_jsonb(other)->'" + column + "' IS NOT DISTINCT FROM to_jsonb(" + rowName + ")->'" + column + "'")
+                .collect(java.util.stream.Collectors.joining(" AND "));
+        String ambiguity=" AND NOT EXISTS (SELECT 1 FROM " + table + " other WHERE other.organization_id = :organizationId"
+                + " AND other.id <> " + table + ".id AND " + same
+                + " AND other.status IN ('ACTIVE','RETIRED') AND other.effective_from <= :at"
+                + " AND (other.effective_to IS NULL OR other.effective_to > :at)) ";
+        if(table.equals("core.ad_priority_policy")) return ambiguity;
+        String applicable="(preferred.scope_kind='ORGANIZATION' OR (preferred.scope_kind='PLATFORM' AND preferred.platform_code=:platformCode)"
+                + " OR (preferred.scope_kind='STORE' AND preferred.store_ref_id=:storeId)";
+        if(table.equals("core.ad_allowable_cpa_definition")) applicable+=" OR (preferred.scope_kind='PRODUCT_VARIANT' AND preferred.product_variant_ref_id=:productVariantId)";
+        if(table.equals("core.ad_freshness_profile")) applicable+=" OR (preferred.scope_kind='SEMANTIC_PROFILE' AND preferred.semantic_profile_id=:semanticProfileId)";
+        applicable+=")";
+        String dimensions=java.util.Arrays.stream("sale_stage,purpose_tier,evidence_kind,decision_purpose".split(","))
+                .map(column->"to_jsonb(preferred)->'"+column+"' IS NOT DISTINCT FROM to_jsonb("+rowName+")->'"+column+"'")
+                .collect(java.util.stream.Collectors.joining(" AND "));
+        String rank="CASE %s.scope_kind WHEN 'PRODUCT_VARIANT' THEN 0 WHEN 'SEMANTIC_PROFILE' THEN 0 WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END";
+        // A conflicted narrow scope is unresolved; it cannot expose a broader
+        // policy by disappearing from the result before ORDER BY/LIMIT.
+        return ambiguity+" AND NOT EXISTS(SELECT 1 FROM "+table+" preferred WHERE preferred.organization_id=:organizationId AND "
+                +applicable+" AND "+dimensions+" AND "+rank.formatted("preferred")+" < "+rank.formatted(rowName)
+                +" AND preferred.status IN('ACTIVE','RETIRED') AND preferred.effective_from<=:at"
+                +" AND (preferred.effective_to IS NULL OR preferred.effective_to>:at)) ";
+    }
+
+    public Optional<ConversionDefinition> resolveObjectConversion(UUID organizationId,
+            String platformCode, UUID storeId, UUID semanticProfileId, String objectKind, Instant at) {
+        var candidates = jdbc.sql("""
+                WITH bundles AS (
+                    SELECT DISTINCT conversion_definition_id AS id
+                    FROM ops.ad_decision_policy_bundle
+                    WHERE organization_id = :organizationId AND store_id = :storeId
+                      AND semantic_profile_id = :semanticProfileId AND native_object_kind = :objectKind
+                      AND status = 'ACTIVE' AND validation_state = 'VALIDATED'
+                      AND effective_from <= :at AND (effective_to IS NULL OR effective_to > :at)
+                ), definitions AS (
+                    SELECT d.*, dense_rank() OVER (ORDER BY CASE scope_kind
+                        WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END) AS precedence
+                    FROM core.ad_conversion_definition d
+                    WHERE organization_id = :organizationId
+                      AND (scope_kind = 'ORGANIZATION' OR (scope_kind = 'PLATFORM' AND platform_code = :platformCode)
+                        OR (scope_kind = 'STORE' AND store_ref_id = :storeId))
+                      AND status IN ('ACTIVE','RETIRED') AND effective_from <= :at
+                      AND (effective_to IS NULL OR effective_to > :at)
+                )
+                SELECT * FROM definitions d
+                WHERE (EXISTS (SELECT 1 FROM bundles) AND d.id IN (SELECT id FROM bundles))
+                   OR (NOT EXISTS (SELECT 1 FROM bundles) AND precedence = 1)
+                LIMIT 2
+                """).param("organizationId", organizationId).param("storeId", storeId)
+                .param("platformCode", platformCode).param("semanticProfileId", semanticProfileId)
+                .param("objectKind", objectKind).param("at", ts(at))
+                .query((rs, index) -> new ConversionDefinition(rs.getObject("id", UUID.class),
+                        rs.getInt("definition_version"), rs.getString("sale_stage"),
+                        rs.getString("traffic_denominator_kind"), rs.getString("linkage_basis"),
+                        rs.getBigDecimal("minimum_linkage_coverage_ratio"),
+                        rs.getBigDecimal("minimum_affected_set_coverage_ratio"),
+                        rs.getInt("minimum_sample_events"), rs.getBigDecimal("maximum_attribution_gap_ratio"),
+                        rs.getInt("observation_window_days"))).list();
+        return candidates.size() == 1 ? Optional.of(candidates.getFirst()) : Optional.empty();
+    }
 
     public Optional<ConversionDefinition> resolveConversion(
             UUID organizationId, String platformCode, UUID storeId, String saleStage, Instant at) {
@@ -101,7 +175,7 @@ public class AdvertisingPolicyRepository {
                    AND (scope_kind = 'ORGANIZATION'
                         OR (scope_kind = 'PLATFORM' AND platform_code = :platformCode)
                         OR (scope_kind = 'STORE' AND store_ref_id = :storeId))
-                """ + IN_FORCE + """
+                """ + IN_FORCE + uniqueEffectiveScope("core.ad_conversion_definition") + """
                  ORDER BY CASE scope_kind WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END,
                           effective_from DESC
                  LIMIT 1
@@ -136,7 +210,7 @@ public class AdvertisingPolicyRepository {
                         OR (scope_kind = 'STORE' AND store_ref_id = :storeId)
                         OR (scope_kind = 'PRODUCT_VARIANT'
                             AND product_variant_ref_id = :productVariantId))
-                """ + IN_FORCE + """
+                """ + IN_FORCE + uniqueEffectiveScope("core.ad_allowable_cpa_definition") + """
                  ORDER BY CASE scope_kind WHEN 'PRODUCT_VARIANT' THEN 1 WHEN 'STORE' THEN 2
                               WHEN 'PLATFORM' THEN 3 ELSE 4 END,
                           effective_from DESC
@@ -172,7 +246,7 @@ public class AdvertisingPolicyRepository {
                    AND (scope_kind = 'ORGANIZATION'
                         OR (scope_kind = 'PLATFORM' AND platform_code = :platformCode)
                         OR (scope_kind = 'STORE' AND store_ref_id = :storeId))
-                """ + IN_FORCE + """
+                """ + IN_FORCE + uniqueEffectiveScope("core.ad_optimization_qualification_policy") + """
                  ORDER BY CASE scope_kind WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END,
                           effective_from DESC
                  LIMIT 1
@@ -206,7 +280,7 @@ public class AdvertisingPolicyRepository {
                        evidence_maturity_weight, age_weight, confidence_weight
                   FROM core.ad_priority_policy
                  WHERE organization_id = :organizationId
-                """ + IN_FORCE + """
+                """ + IN_FORCE + uniqueEffectiveScope("core.ad_priority_policy") + """
                  ORDER BY effective_from DESC LIMIT 1
                 """)
                 .param("organizationId", organizationId)
@@ -249,23 +323,30 @@ public class AdvertisingPolicyRepository {
                 .optional();
     }
 
+    public Optional<FreshnessProfile> resolveFreshness(UUID organizationId, String evidenceKind,
+            String decisionPurpose, String platformCode, UUID storeId, Instant at) {
+        return resolveFreshness(organizationId, evidenceKind, decisionPurpose, platformCode,
+                storeId, null, at);
+    }
+
     public Optional<FreshnessProfile> resolveFreshness(
             UUID organizationId, String evidenceKind, String decisionPurpose,
-            String platformCode, UUID storeId, Instant at) {
+            String platformCode, UUID storeId, UUID semanticProfileId, Instant at) {
         return jdbc.sql("""
                 SELECT id, profile_version, evidence_kind, decision_purpose,
                        source_max_age_minutes, accepted_fact_max_age_minutes,
                        expected_publication_lag_minutes, correction_window_minutes,
                        requires_window_complete, requires_correction_window_closed,
-                       minimum_coverage_ratio, minimum_confidence_state, provider_incident_blocks
+                       minimum_coverage_ratio, minimum_confidence_state, provider_incident_blocks, effective_to
                   FROM core.ad_freshness_profile
                  WHERE organization_id = :organizationId
                    AND evidence_kind = :evidenceKind AND decision_purpose = :decisionPurpose
                    AND (scope_kind = 'ORGANIZATION'
                         OR (scope_kind = 'PLATFORM' AND platform_code = :platformCode)
-                        OR (scope_kind = 'STORE' AND store_ref_id = :storeId))
-                """ + IN_FORCE + """
-                 ORDER BY CASE scope_kind WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END,
+                        OR (scope_kind = 'STORE' AND store_ref_id = :storeId)
+                        OR (scope_kind = 'SEMANTIC_PROFILE' AND semantic_profile_id = :semanticProfileId))
+                """ + IN_FORCE + uniqueEffectiveScope("core.ad_freshness_profile") + """
+                 ORDER BY CASE scope_kind WHEN 'SEMANTIC_PROFILE' THEN 0 WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END,
                           effective_from DESC
                  LIMIT 1
                 """)
@@ -274,6 +355,7 @@ public class AdvertisingPolicyRepository {
                 .param("decisionPurpose", decisionPurpose)
                 .param("platformCode", platformCode)
                 .param("storeId", storeId)
+                .param("semanticProfileId", semanticProfileId)
                 .param("at", ts(at))
                 .query((ResultSet rs, int index) -> new FreshnessProfile(
                         rs.getObject("id", UUID.class), rs.getInt("profile_version"),
@@ -286,7 +368,8 @@ public class AdvertisingPolicyRepository {
                         rs.getBoolean("requires_correction_window_closed"),
                         rs.getBigDecimal("minimum_coverage_ratio"),
                         rs.getString("minimum_confidence_state"),
-                        rs.getBoolean("provider_incident_blocks")))
+                        rs.getBoolean("provider_incident_blocks"), rs.getTimestamp("effective_to") == null
+                                ? null : rs.getTimestamp("effective_to").toInstant()))
                 .optional();
     }
 

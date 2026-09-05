@@ -40,12 +40,21 @@ public record AdRankFactor(
         CASE_AGE,
 
         /** The subtraction uncertainty applies. Never positive. */
-        CONFIDENCE_PENALTY
+        CONFIDENCE_PENALTY,
+        HUMAN_SLO_URGENCY,
+        BLOCKED_PROTECTION,
+        BLAST_RADIUS,
+        BLOCKED_WORK,
+        DUAL_AXIS_GAP,
+        DUAL_AXIS_PER_RUB_GAP,
+        CRITICAL_SALES_HEADROOM
     }
 
     public AdRankFactor {
         Objects.requireNonNull(code, "code");
-        Objects.requireNonNull(value, "value");
+        if (value == null && (displayNote == null || !displayNote.startsWith("UNRESOLVED:"))) {
+            throw new IllegalArgumentException("an absent rank input must explain its unresolved state");
+        }
         Objects.requireNonNull(weight, "weight");
         Objects.requireNonNull(contribution, "contribution");
         if (code == Code.CONFIDENCE_PENALTY && contribution.signum() > 0) {

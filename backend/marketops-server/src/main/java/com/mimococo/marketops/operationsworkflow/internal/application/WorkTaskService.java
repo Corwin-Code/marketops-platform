@@ -43,16 +43,21 @@ public class WorkTaskService {
     private final BusinessAuthorization authorization;
     private final WorkTaskEventRepository journal;
     private final IdGenerator ids;
+    private final AdvertisingTaskGovernance advertising;
+    private final tools.jackson.databind.ObjectMapper json;
 
     WorkTaskService(WorkTaskRepository tasks, MetadataAuditRecorder auditRecorder,
                     Clock clock, BusinessAuthorization authorization,
-                    WorkTaskEventRepository journal, IdGenerator ids) {
+                    WorkTaskEventRepository journal, IdGenerator ids,
+                    AdvertisingTaskGovernance advertising, tools.jackson.databind.ObjectMapper json) {
         this.tasks = tasks;
         this.auditRecorder = auditRecorder;
         this.clock = clock;
         this.authorization = authorization;
         this.journal = journal;
         this.ids = ids;
+        this.advertising = advertising;
+        this.json = json;
     }
 
     /**
@@ -67,10 +72,10 @@ public class WorkTaskService {
     @Transactional
     public void assign(AuthenticatedActor actor, UUID taskId, UUID assigneeUserId,
                        long expectedVersion) {
-        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
-                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        requireTaskAction(actor, taskId, false);
         String operator = actor.userId().toString();
         WorkTaskView task = require(taskId);
+        advertising.requireAssignee(taskId, assigneeUserId);
         UUID previousAssignee = task.assigneeUserId();
         if (!tasks.assign(taskId, assigneeUserId, clock.instant(), expectedVersion)) {
             throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
@@ -100,8 +105,8 @@ public class WorkTaskService {
     /** Record that somebody has started. */
     @Transactional
     public void start(AuthenticatedActor actor, UUID taskId, long expectedVersion) {
-        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
-                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        requireTaskAction(actor, taskId, false);
+        advertising.requireNewAction(taskId);
         String operator = actor.userId().toString();
         WorkTaskView task = require(taskId);
         if (!tasks.start(taskId, clock.instant(), expectedVersion)) {
@@ -118,20 +123,30 @@ public class WorkTaskService {
     @Transactional
     public void close(AuthenticatedActor actor, UUID taskId, boolean done, String closureReason,
                       long expectedVersion) {
-        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
-                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        requireTaskAction(actor, taskId, false);
         String operator = actor.userId().toString();
         WorkTaskView task = require(taskId);
         String reason = MetadataFieldPolicy.requireText("closureReason", closureReason);
+        advertising.requireClosure(taskId);
         String state = done ? "DONE" : "CANCELLED";
         if (!tasks.close(taskId, state, reason, clock.instant(), expectedVersion)) {
             throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
         }
+        journal.append(new WorkTaskEventRepository.Event(ids.newId(), taskId, task.organizationId(),
+                done ? "COMPLETED" : "CANCELLED", lineageOf(task), null,null,null,null,null,
+                null,null,actor.userId(),null,reason,clock.instant(),"task-close:"+taskId));
         auditRecorder.recordChange(new MetadataAuditChange(
                 AuditSourceDomain.OPERATIONS_WORKFLOW, operator, AuditAction.STATUS_CHANGE,
                 ENTITY_TYPE, taskId, null,
                 Map.of("state", new FieldChange(task.state(), state)),
                 reason, null));
+    }
+
+    @Transactional(readOnly=true)
+    public boolean mayRead(AuthenticatedActor actor,UUID taskId) {
+        return advertising.context(taskId).map(context->actor.organizationId().equals(context.organization())
+                && context.resources().stream().allMatch(resource->authorization.evaluate(actor,
+                    ActionScopeCode.ADVERTISING_VIEW,resource).permitted())).orElse(true);
     }
 
     /** The open work of one organization, soonest due first. */
@@ -162,8 +177,7 @@ public class WorkTaskService {
      */
     @Transactional
     public void recordView(AuthenticatedActor actor, UUID taskId) {
-        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
-                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        requireTaskAction(actor, taskId, true);
         WorkTaskView task = require(taskId);
         journal.append(new WorkTaskEventRepository.Event(
                 ids.newId(), taskId, task.organizationId(), "VIEWED", lineageOf(task),
@@ -180,8 +194,7 @@ public class WorkTaskService {
      */
     @Transactional
     public void acknowledge(AuthenticatedActor actor, UUID taskId) {
-        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
-                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        requireTaskAction(actor, taskId, false);
         WorkTaskView task = require(taskId);
         journal.append(new WorkTaskEventRepository.Event(
                 ids.newId(), taskId, task.organizationId(), "ACKNOWLEDGED", lineageOf(task),
@@ -201,18 +214,30 @@ public class WorkTaskService {
     @Transactional
     public void recordAction(AuthenticatedActor actor, UUID taskId, String actionKind,
                              String evidenceReference, String reason) {
-        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
-                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        requireTaskAction(actor, taskId, false);
         WorkTaskView task = require(taskId);
         String reference = MetadataFieldPolicy.requireText("evidenceReference",
                 evidenceReference);
+        advertising.requireCanonicalAction(actor, taskId, actionKind, reference);
         journal.append(new WorkTaskEventRepository.Event(
                 ids.newId(), taskId, task.organizationId(), "ACTION_RECORDED", lineageOf(task),
                 MetadataFieldPolicy.requireText("actionKind", actionKind),
-                "{\"reference\":\"" + reference.replace("\"", "'") + "\"}",
+                json.writeValueAsString(Map.of("reference", reference)),
                 reference, null, null, null, null, actor.userId(), null,
                 MetadataFieldPolicy.requireText("reason", reason), clock.instant(),
                 "task-action:" + taskId));
+    }
+
+    /** Only the Manual authority calls this after canonical issuance or independent proof is committed in this transaction. */
+    @Transactional
+    public void recordManualAction(AuthenticatedActor actor,UUID taskId,String actionKind,String reference,String reason) {
+        advertising.requireManualAction(actor,taskId,actionKind);
+        advertising.requireCanonicalAction(actor,taskId,actionKind,reference);
+        WorkTaskView task=require(taskId);
+        journal.append(new WorkTaskEventRepository.Event(ids.newId(),taskId,task.organizationId(),"ACTION_RECORDED",
+                lineageOf(task),actionKind,json.writeValueAsString(Map.of("reference",reference)),reference,
+                null,null,null,null,actor.userId(),null,MetadataFieldPolicy.requireText("reason",reason),
+                clock.instant(),"manual-task-action:"+taskId));
     }
 
     /**
@@ -247,9 +272,12 @@ public class WorkTaskService {
      */
     @Transactional
     public void reopen(AuthenticatedActor actor, UUID taskId, boolean escalated, String reason) {
-        authorization.requireOwned(actor, ActionScopeCode.TASK_ASSIGN,
-                new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        requireTaskAction(actor, taskId, false);
+        if (!escalated) advertising.requireNewAction(taskId);
         WorkTaskView task = require(taskId);
+        if (!escalated && !tasks.reopen(taskId, clock.instant(), task.version())) {
+            throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
+        }
         journal.append(new WorkTaskEventRepository.Event(
                 ids.newId(), taskId, task.organizationId(),
                 escalated ? "ESCALATED" : "REOPENED", lineageOf(task),
@@ -275,8 +303,15 @@ public class WorkTaskService {
      * reopened for the same proposal is the same work continuing; a task raised
      * from a different proposal is different work whatever it is called.
      */
-    private static String lineageOf(WorkTaskView task) {
-        return "recommendation:" + task.recommendationId();
+    private String lineageOf(WorkTaskView task) {
+        return advertising.lineage(task.id(), "recommendation:" + task.recommendationId());
+    }
+
+    public void requireTaskAction(AuthenticatedActor actor, UUID taskId, boolean readOnly) {
+        if (!advertising.require(actor, taskId, readOnly)) {
+            authorization.requireOwned(actor, readOnly ? ActionScopeCode.DIAGNOSTIC_VIEW : ActionScopeCode.TASK_ASSIGN,
+                    new OwnedResource(OwnedResource.Kind.WORK_TASK, taskId));
+        }
     }
 
     private WorkTaskView require(UUID taskId) {

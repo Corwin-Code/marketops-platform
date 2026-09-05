@@ -10,7 +10,6 @@ import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc
 import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingDecisionRepository.ProjectionRow;
 import java.math.BigDecimal;
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,16 +99,17 @@ public class AdvertisingDecisionService implements AdvertisingDecisionAuthority 
                 row.causeCode(), row.evidenceState(), row.confidenceState(),
                 row.blockerCodes(), row.direction() == null ? "UNRESOLVED" : row.direction(),
                 row.candidateBasis(),
-                current == null ? BigDecimal.ZERO : current,
-                target == null ? BigDecimal.ZERO : target,
+                current,
+                target,
                 row.currencyCode(), row.bidUnitCode(),
                 row.maxCpcAmount(), row.maxCpcState(), row.attributionGapRatio(),
                 row.affectedVariantCount() == null ? 0 : row.affectedVariantCount(),
                 row.affectedSetDigest(),
-                decisions.materialityRoute(row.organizationId(),
-                        current == null || target == null
-                                ? BigDecimal.ZERO : target.subtract(current).abs()),
-                axes, row.entityVersionDigest(), row.bundleId(), row.bundleVersion());
+                current == null || target == null ? "MATERIALITY_UNRESOLVED"
+                        : decisions.materialityRouteForRecommendation(row.recommendationId()),
+                axes, row.entityVersionDigest(), row.bundleId(), row.bundleVersion(),
+                com.mimococo.marketops.advertisingefficiency.internal.domain.AdActionDependencyPolicy
+                    .actionBlockers(row.candidateBasis(),row.causeCode(),row.blockerCodes()));
     }
 
     private Optional<AdvertisingDecisionScope> scopeOf(DecisionRow row) {
@@ -165,6 +165,8 @@ public class AdvertisingDecisionService implements AdvertisingDecisionAuthority 
         }
         if (row.approvalExpiresAt() == null) {
             reasons.add("APPROVAL_MISSING");
+        } else if (!row.approvalExpiresAt().isAfter(now)) {
+            reasons.add("APPROVAL_LEASE_EXPIRED");
         }
         if (row.leaseSeconds() == null) {
             reasons.add("APPROVAL_LEASE_POLICY_ABSENT");
@@ -211,11 +213,8 @@ public class AdvertisingDecisionService implements AdvertisingDecisionAuthority 
     }
 
     private Instant approvalExpiry(DecisionRow row) {
-        BigDecimal change = row.targetBidAmount().subtract(row.currentBidAmount()).abs();
-        int seconds = change.signum() > 0 && row.materialLeaseSeconds() != null
-                ? Math.min(row.leaseSeconds(), row.materialLeaseSeconds())
-                : row.leaseSeconds();
-        Instant leased = clock.instant().plus(Duration.ofSeconds(seconds));
-        return leased.isBefore(row.approvalExpiresAt()) ? leased : row.approvalExpiresAt();
+        // The database sealed this minimum at final approval. Reading a scope,
+        // claiming a lease or retrying never computes a new deadline.
+        return row.approvalExpiresAt();
     }
 }

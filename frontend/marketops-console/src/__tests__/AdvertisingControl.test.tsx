@@ -8,7 +8,7 @@ import {
   presentEvidence,
   presentMeasure,
 } from '../advertising/evidencePresentation';
-import { parseAdvertisingCase } from '../api/advertising';
+import { parseAdvertisingCase, parseAdvertisingWorkflow } from '../api/advertising';
 import type { ConsoleRequest } from '../api/console';
 
 function respondWith(body: unknown, status = 200): typeof fetch {
@@ -57,18 +57,18 @@ const PROTECTION_CASE = {
   asOf: '2026-09-04T00:00:00Z',
   rankFactors: [
     {
-      code: 'PROFIT_LOSS',
+      factorCode: 'PROFIT_LOSS',
       value: '0.4',
       weight: '1.0',
       contribution: '0.4',
-      absenceReason: null,
+      displayNote: null,
     },
     {
-      code: 'CRITICAL_SALES',
+      factorCode: 'CRITICAL_SALES',
       value: null,
       weight: '1.0',
       contribution: null,
-      absenceReason: 'NOT_AVAILABLE',
+      displayNote: 'NOT_AVAILABLE',
     },
   ],
 };
@@ -258,5 +258,59 @@ describe('the advertising parser', () => {
     expect(parsed?.profitPerAdRubValue).toBeUndefined();
     expect(parsed?.profitPerAdRubState).toBe('UNDEFINED');
     expect(parsed?.officialSpendAmount).toBe(4500);
+  });
+});
+
+describe('advertising disclosure and real wire vocabulary', () => {
+  it('keeps the exact native minor denomination visible when financial currency is masked', async () => {
+    render(
+      <AdvertisingCaseView
+        context={context(
+          respondWith({
+            ...PROTECTION_CASE,
+            platformCode: 'WILDBERRIES',
+            profitCurrencyCode: null,
+            semanticProfile: {
+              bidUnitCode: 'CURRENCY_MINOR',
+              nativeRules: { currencyCode: 'RUB' },
+            },
+          }),
+        )}
+        caseId={PROTECTION_CASE.id}
+        onBack={() => undefined}
+      />,
+    );
+    await waitFor(() => {
+      expect(screen.getByText('30.0000 RUB (CURRENCY_MINOR)')).toHaveAttribute(
+        'data-measure',
+        'current-bid',
+      );
+    });
+  });
+
+  it('keeps permission masking distinct from a missing value and unknown state', () => {
+    expect(presentMeasure('MASKED', undefined, String)).toBe('masked');
+    expect(presentMeasure('AVAILABLE', undefined, String)).toBe('not available');
+    expect(presentMeasure('FUTURE_STATE', undefined, String)).toContain('FUTURE_STATE');
+    expect(presentMeasure('AVAILABLE', Number.NaN, String)).toBe('not available');
+  });
+
+  it('consumes factorCode and displayNote from the Java record and refuses malformed factors', () => {
+    expect(parseAdvertisingCase(PROTECTION_CASE)?.rankFactors[1]?.absenceReason).toBe(
+      'NOT_AVAILABLE',
+    );
+    expect(
+      parseAdvertisingCase({ ...PROTECTION_CASE, rankFactors: [{ code: 'legacy-fiction' }] }),
+    ).toBeUndefined();
+  });
+
+  it('rejects malformed rows rather than silently showing a partial finite candidate set', () => {
+    expect(
+      parseAdvertisingWorkflow({
+        caseId: PROTECTION_CASE.id,
+        candidates: [{ id: 'bad' }],
+        allowedActions: [],
+      }),
+    ).toBeUndefined();
   });
 });

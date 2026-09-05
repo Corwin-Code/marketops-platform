@@ -1,0 +1,22 @@
+
+> marketops-console@0.1.0 test:ci
+> vitest run --coverage
+
+
+ RUN  v4.1.10 /Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console
+      Coverage enabled with v8
+
+
+ Test Files  22 passed (22)
+      Tests  293 passed (293)
+   Start at  10:56:44
+   Duration  6.72s (transform 2.17s, setup 3.58s, import 3.18s, tests 5.67s, environment 24.84s)
+
+ % Coverage report from v8
+
+=============================== Coverage summary ===============================
+Statements   : 85.26% ( 1799/2110 )
+Branches     : 77.64% ( 1695/2183 )
+Functions    : 86.08% ( 501/582 )
+Lines        : 85.84% ( 1741/2028 )
+================================================================================

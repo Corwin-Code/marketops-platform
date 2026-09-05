@@ -3,419 +3,337 @@ package com.mimococo.marketops;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingContainmentRepository;
-import java.time.Instant;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
-/**
- * Two interventions cannot hold the same product variants.
- *
- * <p>The property is the whole reason reservations exist. One advertising object
- * carries traffic for many product variants, so two objects changed at the same
- * time can move the same variants' sales, and afterwards nobody can say which
- * change did what. Overlap is therefore refused rather than ordered.
- *
- * <p>The refusal lives in the database, behind an advisory lock, and the
- * application role cannot insert a reservation row at all. That is what makes
- * this a property rather than a convention: there is no code path that skips it,
- * because there is no code path.
- */
-@SpringBootTest
-@ActiveProfiles("ci")
+/** Public reservation/stop boundaries use real issuer proofs; a caller boolean is never evidence. */
 class AdvertisingReservationIT {
+    private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE=TestDatabase.isolatedContainer();
+    private static DataSource migration,application,admin;
+    private static JdbcClient seed,appRead;
+    private AdvertisingR1Fixture.Graph graph;
 
-    private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE =
-            TestDatabase.isolatedContainer();
-
-    private static JdbcClient seed;
-
-    @Autowired
-    private AdvertisingContainmentRepository reservations;
-
-    @DynamicPropertySource
-    static void databaseProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", DATABASE::getJdbcUrl);
-        registry.add("spring.datasource.username", TestDatabase::applicationRole);
-        registry.add("spring.datasource.password", TestDatabase::applicationPassword);
-        registry.add("spring.flyway.user", TestDatabase::migrationRole);
-        registry.add("spring.flyway.password", TestDatabase::migrationPassword);
+    @BeforeAll static void database() {
+        migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
+        application=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.applicationRole(),TestDatabase.applicationPassword());
+        admin=new DriverManagerDataSource(DATABASE.getJdbcUrl(),DATABASE.getUsername(),DATABASE.getPassword());
+        seed=JdbcClient.create(migration);appRead=JdbcClient.create(application);
+        Flyway.configure().dataSource(migration).locations("classpath:db/migration").load().migrate();
     }
-
-    /**
-     * The one advertising semantic profile these fixtures share.
-     *
-     * <p>A profile is scoped to a platform and an object kind rather than to an
-     * organization, so seeding one per test would be claiming several different
-     * descriptions of the same marketplace. It is a SYNTHETIC_FIXTURE and
-     * UNVERIFIED, which the schema will not let anything promote.
-     */
-    private static final UUID SEMANTIC_PROFILE =
-            UUID.fromString("aaaaaaaa-0000-4000-8000-00000000ad01");
-
-    /**
-     * The one synthetic identity provider the fixture people belong to.
-     *
-     * <p>Deliberately RETIRED and UNVERIFIED. Nobody in this test authenticates;
-     * the people exist only to be named as an activator, an endorser and an
-     * approver, and an ACTIVE provider would have to claim a verification this
-     * fixture has no evidence for.
-     */
-    private static final UUID IDENTITY_PROVIDER =
-            UUID.fromString("aaaaaaaa-0000-4000-8000-0000000010d1");
-
-    @BeforeAll
-    static void openSeedConnection() {
-        seed = JdbcClient.create(new DriverManagerDataSource(DATABASE.getJdbcUrl(),
-                TestDatabase.migrationRole(), TestDatabase.migrationPassword()));
+    @BeforeEach void graph() throws Exception {
+        graph=AdvertisingR1Fixture.seed(migration);
+        grant("verifierUser","OPS_LEAD","ADVERTISING_POLICY_MANAGE");
+        grant("ownerUser","OWNER","ADVERTISING_POLICY_MANAGE");
+        grant("executorUser","MARKETPLACE_OPERATOR","ADVERTISING_TASK_ACT");
     }
-
-    @Test
-    @DisplayName("TC-AD-RESERVE-001 the application role cannot write a reservation itself")
-    void applicationRoleCannotWriteReservationsDirectly() {
-        for (String privilege : List.of("INSERT", "UPDATE", "DELETE")) {
-            assertThat(Boolean.TRUE.equals(seed.sql(
-                    "SELECT has_table_privilege(:role, 'ops.ad_action_reservation', :privilege)")
-                    .param("role", TestDatabase.applicationRole())
-                    .param("privilege", privilege)
-                    .query(Boolean.class).single()))
-                    .describedAs("%s on ops.ad_action_reservation", privilege)
-                    .isFalse();
+    private void grant(String person,String role,String action) {
+        seed.sql("""
+            INSERT INTO iam.user_role_assignment(id,organization_id,user_id,role_code,effective_from,status,reason,created_at,updated_at)
+            SELECT gen_random_uuid(),:org,:actor,:role,now()-interval '1 day','ACTIVE','synthetic reviewed scope',now(),now()
+            WHERE NOT EXISTS(SELECT 1 FROM iam.user_role_assignment WHERE user_id=:actor AND role_code=:role AND status='ACTIVE')
+            """).param("org",graph.id("organization")).param("actor",graph.id(person)).param("role",role).update();
+        seed.sql("""
+            INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,organization_ref_id,effective_from,status,reason,created_at,updated_at)
+            VALUES(gen_random_uuid(),:org,:actor,:action,:org,now()-interval '1 day','ACTIVE','synthetic reviewed scope',now(),now())
+            """).param("org",graph.id("organization")).param("actor",graph.id(person)).param("action",action).update();
+    }
+    private Connection transaction() throws SQLException { Connection c=application.getConnection();c.setAutoCommit(false);return c; }
+    private UUID command() throws Exception {
+        try(var app=transaction()) {
+            String proof=AdvertisingR1Fixture.proof(admin,app,graph,graph.id("ownerUser"),null,graph.id("recommendation"),graph.id("approval"));
+            AdvertisingR1Fixture.seal(app,graph,proof);UUID command=AdvertisingR1Fixture.createCommand(app,graph);app.commit();return command;
         }
-        assertThat(Boolean.TRUE.equals(seed.sql(
-                "SELECT has_table_privilege(:role, 'ops.ad_action_reservation', 'SELECT')")
-                .param("role", TestDatabase.applicationRole())
-                .query(Boolean.class).single())).isTrue();
     }
-
-    @Test
-    @DisplayName("TC-AD-RESERVE-002 an overlapping affected set is refused, naming the holder")
-    void overlappingAffectedSetIsRefused() {
-        Fixture fixture = seedFixture();
-        UUID sharedVariant = fixture.variantOne();
-
-        UUID held = reservations.take(UUID.randomUUID(), fixture.organizationId(),
-                fixture.objectOne(), fixture.storeId(), fixture.affectedSetOne(),
-                fixture.digestOne(), List.of(sharedVariant), "CONTROLLED_AD_BID_CHANGE",
-                UUID.randomUUID(), "PROTECTION_DECREASE", "PROTECTION", "reservation-fixture");
-        assertThat(held).isNotNull();
-
-        assertThatThrownBy(() -> reservations.take(UUID.randomUUID(), fixture.organizationId(),
-                fixture.objectTwo(), fixture.storeId(), fixture.affectedSetTwo(),
-                fixture.digestTwo(), List.of(sharedVariant), "CONTROLLED_AD_BID_CHANGE",
-                UUID.randomUUID(), "OPTIMIZATION_INCREASE", "OPTIMIZATION",
-                "reservation-fixture"))
-                .hasMessageContaining("PROTECTION")
-                .hasMessageContaining("already holds");
-
-        assertThat(reservations.blockingReservation(fixture.organizationId(),
-                List.of(sharedVariant), fixture.objectTwo()))
-                .hasValueSatisfying(blocking -> {
-                    assertThat(blocking.reservationId()).isEqualTo(held);
-                    assertThat(blocking.lane()).isEqualTo("PROTECTION");
-                });
-    }
-
-    @Test
-    @DisplayName("TC-AD-RESERVE-003 taking twice for one intervention returns the same reservation")
-    void takingTwiceIsIdempotent() {
-        Fixture fixture = seedFixture();
-        UUID intervention = UUID.randomUUID();
-
-        UUID first = reservations.take(UUID.randomUUID(), fixture.organizationId(),
-                fixture.objectOne(), fixture.storeId(), fixture.affectedSetOne(),
-                fixture.digestOne(), List.of(fixture.variantOne()), "CONTROLLED_AD_BID_CHANGE",
-                intervention, "PROTECTION_DECREASE", "PROTECTION", "reservation-fixture");
-        UUID again = reservations.take(UUID.randomUUID(), fixture.organizationId(),
-                fixture.objectOne(), fixture.storeId(), fixture.affectedSetOne(),
-                fixture.digestOne(), List.of(fixture.variantOne()), "CONTROLLED_AD_BID_CHANGE",
-                intervention, "PROTECTION_DECREASE", "PROTECTION", "reservation-fixture");
-
-        assertThat(again).isEqualTo(first);
-    }
-
-    @Test
-    @DisplayName("TC-AD-RESERVE-004 a reservation is not released until all four conditions hold")
-    void releaseNeedsAllFourConditions() {
-        Fixture fixture = seedFixture();
-        UUID reservation = reservations.take(UUID.randomUUID(), fixture.organizationId(),
-                fixture.objectOne(), fixture.storeId(), fixture.affectedSetOne(),
-                fixture.digestOne(), List.of(fixture.variantOne()), "CONTROLLED_AD_BID_CHANGE",
-                UUID.randomUUID(), "PROTECTION_DECREASE", "PROTECTION", "reservation-fixture");
-
-        assertThat(reservations.release(reservation, "nothing has been observed yet")).isFalse();
-        assertThat(reservations.releasable(Instant.now(), 10)).doesNotContain(reservation);
-
-        reservations.observeCondition(reservation, "CONFIGURATION_RESOLVED", true);
-        assertThat(reservations.release(reservation, "configuration only")).isFalse();
-
-        reservations.observeCondition(reservation, "EARLY_OBSERVATION_COMPLETE", true);
-        assertThat(reservations.releasable(Instant.now(), 10)).contains(reservation);
-        assertThat(reservations.release(reservation, "every condition observed")).isTrue();
-
-        // A second release changes nothing and says so.
-        assertThat(reservations.release(reservation, "again")).isFalse();
-    }
-
-    @Test
-    @DisplayName("TC-AD-RESERVE-005 an open mismatch keeps a reservation held")
-    void openMismatchKeepsTheReservationHeld() {
-        Fixture fixture = seedFixture();
-        UUID reservation = reservations.take(UUID.randomUUID(), fixture.organizationId(),
-                fixture.objectOne(), fixture.storeId(), fixture.affectedSetOne(),
-                fixture.digestOne(), List.of(fixture.variantOne()), "CONTROLLED_AD_BID_CHANGE",
-                UUID.randomUUID(), "PROTECTION_DECREASE", "PROTECTION", "reservation-fixture");
-
-        reservations.observeCondition(reservation, "CONFIGURATION_RESOLVED", true);
-        reservations.observeCondition(reservation, "EARLY_OBSERVATION_COMPLETE", true);
-        reservations.observeCondition(reservation, "UNKNOWN_OR_MISMATCH_OPEN", true);
-
-        // The command whose outcome nobody knows is exactly the one whose
-        // variants must stay held.
-        assertThat(reservations.release(reservation, "premature")).isFalse();
-        assertThat(reservations.releasable(Instant.now(), 10)).doesNotContain(reservation);
-    }
-
-    @Test
-    @DisplayName("TC-AD-RESERVE-006 with nothing contained, no containment covers a scope")
-    void noContainmentCoversAnEmptyScope() {
-        Fixture fixture = seedFixture();
-
-        assertThat(reservations.activeContainment(fixture.organizationId(), fixture.objectOne(),
-                fixture.storeId(), "OZON", "ad-bid-change", fixture.digestOne())).isEmpty();
-    }
-
-    @Test
-    @DisplayName("TC-AD-CONTAIN-001 a kill switch covers every scope beneath it")
-    void killSwitchCoversTheCapabilityScope() {
-        Fixture fixture = seedFixture();
-        UUID kill = reservations.activate(UUID.randomUUID(), fixture.organizationId(),
-                "KILL_SWITCH_ACTIVE", "PLATFORM_STORE_CAPABILITY", "OZON", null,
-                fixture.storeId(), null, null, "ad-bid-change", null, "BUSINESS_HARM",
-                "synthetic incident", "evidence://fixture/kill", null, "OPERATOR_DECISION",
-                "containment-fixture");
-
-        assertThat(kill).isNotNull();
-        assertThat(reservations.activeContainment(fixture.organizationId(), fixture.objectOne(),
-                fixture.storeId(), "OZON", "ad-bid-change", fixture.digestOne()))
-                .containsExactly("KILL_SWITCH_ACTIVE");
-    }
-
-    @Test
-    @DisplayName("TC-AD-CONTAIN-002 one person cannot lift their own stop")
-    void onePersonCannotLiftTheirOwnStop() {
-        Fixture fixture = seedFixture();
-        UUID activator = seedUser(fixture.organizationId());
-        UUID other = seedUser(fixture.organizationId());
-        UUID containment = reservations.activate(UUID.randomUUID(), fixture.organizationId(),
-                "EMERGENCY_ENTITY_HOLD", "ENTITY", null, null, null, fixture.objectOne(),
-                null, null, null, "BUSINESS_HARM", "synthetic hold",
-                "evidence://fixture/hold", activator, null, "containment-fixture");
-
-        for (String condition : List.of("ROOT_CAUSE_CLASSIFIED", "UNKNOWNS_RESOLVED",
-                "AUTHORITIES_REPLACED", "RESULTS_RECONCILED", "CAPABILITY_EVIDENCE_CURRENT")) {
-            assertThat(reservations.observeReenablementCondition(containment, condition, true))
-                    .isTrue();
+    private UUID stop(String person,String scope,String kind,String cause) throws Exception {
+        UUID id=UUID.randomUUID();
+        try(var app=transaction()) {
+            String proof=AdvertisingR1Fixture.proof(admin,app,graph,graph.id(person),"CONTAINMENT_STOP",graph.id("object"),id);
+            try(var query=app.prepareStatement("SELECT ops.activate_ad_human_containment(?,?,?,?,?,?,?,?,?)")) {
+                query.setObject(1,id);query.setObject(2,graph.id("object"));query.setString(3,scope);query.setString(4,kind);
+                query.setString(5,cause);query.setObject(6,graph.id("verifierUser"));query.setString(7,"fictional safety incident");
+                query.setString(8,"fixture://reviewed-stop");query.setString(9,proof);query.execute();
+            }
+            app.commit();return id;
         }
-
-        // Endorser and approver both the activator: refused by the table.
-        assertThatThrownBy(() -> reservations.reenable(containment, activator, activator, "{}"))
-                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
-        // One person in both roles: still refused.
-        assertThatThrownBy(() -> reservations.reenable(containment, other, other, "{}"))
-                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
-
-        UUID third = seedUser(fixture.organizationId());
-        assertThat(reservations.reenable(containment, other, third, "{\"scope\":\"entity\"}"))
-                .isTrue();
-        assertThat(reservations.activeContainment(fixture.organizationId(), fixture.objectOne(),
-                fixture.storeId(), "OZON", "ad-bid-change", fixture.digestOne())).isEmpty();
     }
+    private String[] active(String digest) {
+        return appRead.sql("SELECT ops.ad_active_containment(:org,:object,:store,:platform,'ad-bid-change',:digest)")
+                .param("org",graph.id("organization")).param("object",graph.id("object")).param("store",graph.id("store"))
+                .param("platform",graph.platform()).param("digest",digest)
+                .query((row,index)->(String[])row.getArray(1).getArray()).single();
+    }
+    private String digest() { return seed.sql("SELECT affected_set_digest FROM core.ad_affected_set WHERE id=:id")
+            .param("id",graph.id("affectedSet")).query(String.class).single(); }
 
-    @Test
-    @DisplayName("TC-AD-CONTAIN-003 a security cause needs an attestation before anything restarts")
-    void securityCauseNeedsAnAttestation() {
-        Fixture fixture = seedFixture();
-        UUID activator = seedUser(fixture.organizationId());
-        UUID endorser = seedUser(fixture.organizationId());
-        UUID approver = seedUser(fixture.organizationId());
-        UUID containment = reservations.activate(UUID.randomUUID(), fixture.organizationId(),
-                "CAPABILITY_QUARANTINED", "PLATFORM_STORE_CAPABILITY", "OZON", null,
-                fixture.storeId(), null, null, "ad-bid-change", null, "CREDENTIAL_OR_SECURITY",
-                "synthetic credential incident", "evidence://fixture/security", activator, null,
-                "containment-fixture");
-
-        for (String condition : List.of("ROOT_CAUSE_CLASSIFIED", "UNKNOWNS_RESOLVED",
-                "AUTHORITIES_REPLACED", "RESULTS_RECONCILED", "CAPABILITY_EVIDENCE_CURRENT")) {
-            reservations.observeReenablementCondition(containment, condition, true);
+    @Test void applicationCannotWriteReservationOrAssertReleaseConditions() {
+        for(String privilege:List.of("INSERT","UPDATE","DELETE")) assertThat(appRead.sql(
+                "SELECT has_table_privilege(current_user,'ops.ad_action_reservation',:privilege)")
+                .param("privilege",privilege).query(Boolean.class).single()).isFalse();
+        assertThat(appRead.sql("SELECT has_function_privilege(current_user,'ops.observe_ad_reservation_condition(uuid,text,boolean)','EXECUTE')")
+                .query(Boolean.class).single()).isFalse();
+    }
+    @Test void pendingRecommendationCannotReserve() throws Exception {
+        try(var app=transaction()) {
+            assertThatThrownBy(()->AdvertisingR1Fixture.reserve(app,graph)).hasMessageContaining("exact intervention");app.rollback();
         }
-
-        assertThat(reservations.list(fixture.organizationId(), true, 10))
-                .filteredOn(row -> row.id().equals(containment))
-                .singleElement()
-                .satisfies(row -> assertThat(row.outstandingConditions())
-                        .containsExactly("SECURITY_ATTESTATION_PRESENT"));
-        assertThatThrownBy(() -> reservations.reenable(containment, endorser, approver, "{}"))
-                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
-
-        reservations.observeReenablementCondition(containment, "SECURITY_ATTESTATION_PRESENT",
-                true);
-        assertThat(reservations.reenable(containment, endorser, approver, "{}")).isTrue();
+    }
+    @Test void takingTwiceForOneSealedInterventionIsIdempotent() throws Exception {
+        command();
+        try(var app=transaction()) { assertThat(AdvertisingR1Fixture.reserve(app,graph)).isEqualTo(graph.id("reservation"));app.commit(); }
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_action_reservation WHERE organization_id=:org")
+                .param("org",graph.id("organization")).query(Integer.class).single()).isEqualTo(1);
+    }
+    @Test void overlappingVariantsNameTheExistingHolderEvenForAnotherObjectKey() throws Exception {
+        command();
+        UUID found=appRead.sql("SELECT reservation_id FROM ops.ad_overlapping_reservation(:org,ARRAY[:variant]::uuid[],:other)")
+                .param("org",graph.id("organization")).param("variant",graph.id("productVariant")).param("other",UUID.randomUUID())
+                .query(UUID.class).single();
+        assertThat(found).isEqualTo(graph.id("reservation"));
+    }
+    @Test void missingConfigurationAndEarlySafetyEvidenceKeepReservationHeld() throws Exception {
+        command();
+        assertThat(appRead.sql("SELECT ops.release_ad_action_reservation(:id,'caller has no factual observation')")
+                .param("id",graph.id("reservation")).query(Boolean.class).single()).isFalse();
+        assertThat(seed.sql("SELECT state FROM ops.ad_action_reservation WHERE id=:id")
+                .param("id",graph.id("reservation")).query(String.class).single()).isEqualTo("ACTIVE");
+        assertThat(seed.sql("SELECT early_observation_complete FROM ops.ad_action_reservation WHERE id=:id")
+                .param("id",graph.id("reservation")).query(Boolean.class).single()).isFalse();
+    }
+    @Test void emptyScopeHasNoContainment() { assertThat(active(digest())).isEmpty(); }
+    @Test void authenticatedOperationsStopCoversTheStoreCapability() throws Exception {
+        stop("verifierUser","PLATFORM_STORE_CAPABILITY","KILL_SWITCH_ACTIVE","BUSINESS_HARM");
+        assertThat(active(digest())).containsExactly("KILL_SWITCH_ACTIVE");
+    }
+    @Test void affectedSetStopIntersectsVariantsAcrossDifferentDigests() throws Exception {
+        stop("executorUser","AFFECTED_SET","EMERGENCY_ENTITY_HOLD","BUSINESS_HARM");
+        seed.sql("""
+            INSERT INTO core.ad_affected_set SELECT (jsonb_populate_record(NULL::core.ad_affected_set,
+              to_jsonb(original)||jsonb_build_object('id',:newId::text,'affected_set_digest',repeat('d',64),'resolved_at',clock_timestamp()))).*
+            FROM core.ad_affected_set original WHERE original.id=:id
+            """).param("newId",UUID.randomUUID()).param("id",graph.id("affectedSet")).update();
+        assertThat(active("d".repeat(64))).contains("EMERGENCY_ENTITY_HOLD");
+    }
+    @Test void stopperCannotEndorseTheirOwnReenablement() throws Exception {
+        UUID stop=stop("verifierUser","ENTITY","EMERGENCY_ENTITY_HOLD","BUSINESS_HARM");
+        try(var app=transaction()) {
+            String proof=AdvertisingR1Fixture.proof(admin,app,graph,graph.id("verifierUser"),"CONTAINMENT_ENDORSE",stop,stop);
+            try(var call=app.prepareStatement("SELECT ops.attest_ad_containment(?,'OPERATIONS_ENDORSEMENT','fixture://self',?)")) {
+                call.setObject(1,stop);call.setString(2,proof);
+                assertThatThrownBy(call::execute).hasMessageContaining("independent scoped evidence attestation required");
+            }
+            app.rollback();
+        }
+    }
+    @Test void businessRoleCannotFabricateTechnicalSecurityAttestation() throws Exception {
+        UUID stop=stop("verifierUser","ENTITY","EMERGENCY_ENTITY_HOLD","EXECUTION_INTEGRITY");
+        try(var app=transaction()) {
+            String proof=AdvertisingR1Fixture.proof(admin,app,graph,graph.id("verifierUser"),"CONTAINMENT_ATTEST",stop,stop);
+            try(var call=app.prepareStatement("SELECT ops.attest_ad_containment(?,'SECURITY_ATTESTATION_PRESENT','fixture://unsupported',?)")) {
+                call.setObject(1,stop);call.setString(2,proof);
+                assertThatThrownBy(call::execute).hasMessageContaining("independent scoped evidence attestation required");
+            }
+            app.rollback();
+        }
+    }
+    @Test void containmentPermanentlyInvalidatesPriorApprovalAssets() throws Exception {
+        UUID command=command();
+        stop("verifierUser","PLATFORM_STORE_CAPABILITY","KILL_SWITCH_ACTIVE","BUSINESS_HARM");
+        assertThat(appRead.sql("SELECT ops.evaluate_ad_bid_write_gate(:id)").param("id",command)
+                .query((row,index)->(String[])row.getArray(1).getArray()).single())
+                .contains("AUTHORITY_PERMANENTLY_INVALIDATED","KILL_SWITCH_ACTIVE");
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_authority_invalidation WHERE organization_id=:org")
+                .param("org",graph.id("organization")).query(Integer.class).single()).isPositive();
     }
 
-    /** One synthetic person who can endorse or approve. */
-    private UUID seedUser(UUID organizationId) {
-        UUID id = UUID.randomUUID();
-        seed.sql("""
-                INSERT INTO iam.identity_provider (id, code, display_name, issuer,
-                        max_auth_age_seconds, verification_state, owner_label, status,
-                        created_at, updated_at)
-                VALUES (:id, 'fixture-idp', 'Fixture provider',
-                        'https://fixture.invalid/issuer', 3600, 'UNVERIFIED', 'fixture',
-                        'RETIRED', now(), now())
-                ON CONFLICT (id) DO NOTHING
-                """).param("id", IDENTITY_PROVIDER).update();
-        seed.sql("""
-                INSERT INTO iam.user_account (id, organization_id, identity_provider_id,
-                        external_subject, display_name, status, credentials_valid_from,
-                        created_at, updated_at)
-                VALUES (:id, :organization, :provider, :subject, 'Fixture person', 'ACTIVE',
-                        now(), now(), now())
-                """).param("id", id).param("organization", organizationId)
-                .param("provider", IDENTITY_PROVIDER)
-                .param("subject", "subject-" + id)
-                .update();
-        return id;
-    }
-
-    private record Fixture(UUID organizationId, UUID storeId, UUID objectOne, UUID objectTwo,
-                           UUID affectedSetOne, UUID affectedSetTwo, String digestOne,
-                           String digestTwo, UUID variantOne) {
-    }
-
-    /**
-     * One organization, one store, two advertising objects sharing a variant.
-     *
-     * <p>Seeded through the migration role because the point of the test above
-     * is that the application role cannot write these rows.
-     */
-    private Fixture seedFixture() {
-        seed.sql("""
-                INSERT INTO platform.ad_semantic_profile (id, platform_code, profile_version,
-                        native_object_kind, control_level, bidding_mode, bid_field_present,
-                        bid_currency_code, bid_unit_code, bid_precision, bid_step, bid_minimum,
-                        bid_maximum, idempotency_semantics, propagation_semantics,
-                        readback_semantics, correction_behaviour, source_maturity,
-                        verification_state, owner_label, status, created_at, updated_at)
-                VALUES (:id, 'OZON', 901, 'KEYWORD', 'KEYWORD', 'MANUAL_BID', true,
-                        'RUB', 'CURRENCY_MAJOR', 2, 0.5, 1.0, 500.0, 'VERIFIED_NATIVE_KEY',
-                        'EVENTUAL_BOUNDED', 'EXACT_FIELD', 'APPEND_ONLY_CORRECTION',
-                        'SYNTHETIC_FIXTURE', 'UNVERIFIED', 'fixture', 'ACTIVE', now(), now())
-                ON CONFLICT (id) DO NOTHING
-                """).param("id", SEMANTIC_PROFILE).update();
-
-        UUID organization = UUID.randomUUID();
-        UUID legalEntity = UUID.randomUUID();
-        UUID account = UUID.randomUUID();
-        UUID store = UUID.randomUUID();
-        UUID productVariant = UUID.randomUUID();
-        UUID product = UUID.randomUUID();
-        UUID objectOne = UUID.randomUUID();
-        UUID objectTwo = UUID.randomUUID();
-        UUID setOne = UUID.randomUUID();
-        UUID setTwo = UUID.randomUUID();
-        String digestOne = "1".repeat(64);
-        String digestTwo = "2".repeat(64);
-
-        seed.sql("""
-                INSERT INTO core.organization (id, code, display_name, status, created_at,
-                        updated_at)
-                VALUES (:id, :code, 'Reservation fixture', 'ACTIVE', now(), now())
-                """).param("id", organization)
-                .param("code", "resv-" + organization.toString().substring(0, 8)).update();
-        seed.sql("""
-                INSERT INTO core.legal_entity (id, organization_id, code, display_name, status,
-                        created_at, updated_at)
-                VALUES (:id, :organization, :code, 'Fixture entity', 'ACTIVE', now(), now())
-                """).param("id", legalEntity).param("organization", organization)
-                .param("code", "le-" + legalEntity.toString().substring(0, 8))
-                .update();
-        seed.sql("""
-                INSERT INTO core.marketplace_account (id, organization_id, legal_entity_id,
-                        platform_code, code, display_name, status, created_at, updated_at)
-                VALUES (:id, :organization, :legalEntity, 'OZON', :code, 'Fixture account',
-                        'ACTIVE', now(), now())
-                """).param("id", account).param("organization", organization)
-                .param("legalEntity", legalEntity)
-                .param("code", "acct-" + account.toString().substring(0, 8)).update();
-        seed.sql("""
-                INSERT INTO core.store (id, organization_id, marketplace_account_id, code,
-                        display_name, status, created_at, updated_at)
-                VALUES (:id, :organization, :account, :code, 'Fixture store', 'ACTIVE',
-                        now(), now())
-                """).param("id", store).param("organization", organization)
-                .param("account", account)
-                .param("code", "store-" + store.toString().substring(0, 8)).update();
-        seed.sql("""
-                INSERT INTO core.product (id, organization_id, code, display_name, status,
-                        created_at, updated_at)
-                VALUES (:id, :organization, :code, 'Fixture product', 'ACTIVE', now(), now())
-                """).param("id", product).param("organization", organization)
-                .param("code", "sku-" + product.toString().substring(0, 8)).update();
-        seed.sql("""
-                INSERT INTO core.product_variant (id, organization_id, product_id, sku_code,
-                        display_name, status, created_at, updated_at)
-                VALUES (:id, :organization, :product, :sku, 'Fixture variant', 'ACTIVE',
-                        now(), now())
-                """).param("id", productVariant).param("organization", organization)
-                .param("product", product)
-                .param("sku", "var-" + productVariant.toString().substring(0, 8)).update();
-        for (UUID object : List.of(objectOne, objectTwo)) {
+    private record Bundle(UUID id,UUID gate) { }
+    private Bundle draftBundle() throws Exception { return draftBundle(false); }
+    private Bundle draftBundle(boolean compensation) throws Exception {
+        grant("executorUser","OPS_LEAD","ADVERTISING_POLICY_MANAGE");
+        Bundle next=new Bundle(UUID.randomUUID(),UUID.randomUUID());
+        UUID targetPolicy=graph.id("targetPolicy");
+        if(compensation) {
+            targetPolicy=UUID.randomUUID();
             seed.sql("""
-                    INSERT INTO core.ad_native_object (id, organization_id, store_id,
-                            platform_code, semantic_profile_id, native_object_kind,
-                            native_object_key, native_campaign_key, bidding_mode,
-                            control_granularity_state, lineage_key, lineage_generation,
-                            observation_state, status, first_observed_at, last_observed_at,
-                            created_at, updated_at)
-                    VALUES (:id, :organization, :store, 'OZON', :profile, 'KEYWORD',
-                            :key, :campaign, 'MANUAL_BID', 'UNKNOWN', :key, 1, 'OBSERVED',
-                            'ACTIVE', now(), now(), now(), now())
-                    """).param("id", object).param("organization", organization)
-                    .param("store", store).param("profile", SEMANTIC_PROFILE)
-                    .param("key", "obj-" + object.toString().substring(0, 8))
-                    .param("campaign", "camp-" + object.toString().substring(0, 8)).update();
+                INSERT INTO core.ad_bid_target_policy SELECT (jsonb_populate_record(NULL::core.ad_bid_target_policy,
+                  to_jsonb(policy)||jsonb_build_object('id',:id::text,'direction','EXACT_PRIOR_BID_COMPENSATION','candidate_count',0))).*
+                FROM core.ad_bid_target_policy policy WHERE id=:prior
+                """).param("id",targetPolicy).param("prior",graph.id("targetPolicy")).update();
+        }
+        String content=seed.sql("""
+            SELECT (to_jsonb(bundle)||jsonb_build_object('id',:id::text,'bundle_version',bundle.bundle_version+1,
+              'target_policy_id',:target::text,'direction',:direction,
+              'gate_scope_reference',:gate::text,'effective_from',clock_timestamp(),'effective_to',clock_timestamp()+interval '1 hour'))::text
+            FROM ops.ad_decision_policy_bundle bundle WHERE id=:prior
+            """).param("id",next.id()).param("gate",next.gate()).param("target",targetPolicy)
+                .param("direction",compensation?"EXACT_PRIOR_BID_COMPENSATION":"PROTECTION_DECREASE")
+                .param("prior",graph.id("bundle")).query(String.class).single();
+        try(var app=transaction()) {
+            String proof=AdvertisingR1Fixture.proof(admin,app,graph,graph.id("executorUser"),"BUNDLE_DRAFT",next.id(),next.gate());
+            try(var create=app.prepareStatement("SELECT ops.create_ad_bundle_draft(?::jsonb,?)")) {
+                create.setString(1,content);create.setString(2,proof);create.execute();
+            }
+            app.commit();
         }
         seed.sql("""
-                INSERT INTO core.ad_affected_set (id, organization_id, ad_native_object_id,
-                        affected_set_digest, product_variant_ids, platform_listing_variant_ids,
-                        resolution_state, resolved_at, created_at)
-                VALUES (:id, :organization, :object, :digest, ARRAY[:variant]::uuid[],
-                        ARRAY[]::uuid[], 'COMPLETE', now(), now())
-                """).param("id", setOne).param("organization", organization)
-                .param("object", objectOne).param("digest", digestOne)
-                .param("variant", productVariant).update();
-        seed.sql("""
-                INSERT INTO core.ad_affected_set (id, organization_id, ad_native_object_id,
-                        affected_set_digest, product_variant_ids, platform_listing_variant_ids,
-                        resolution_state, resolved_at, created_at)
-                VALUES (:id, :organization, :object, :digest, ARRAY[:variant]::uuid[],
-                        ARRAY[]::uuid[], 'COMPLETE', now(), now())
-                """).param("id", setTwo).param("organization", organization)
-                .param("object", objectTwo).param("digest", digestTwo)
-                .param("variant", productVariant).update();
+            INSERT INTO ops.ad_gate_authority SELECT (jsonb_populate_record(NULL::ops.ad_gate_authority,
+              to_jsonb(prior)||jsonb_build_object('id',:gate::text,'bundle_id',:bundle::text))).*
+            FROM ops.ad_gate_authority prior WHERE prior.id=:prior
+            """).param("gate",next.gate()).param("bundle",next.id()).param("prior",graph.id("gate")).update();
+        if(compensation) seed.sql("""
+            UPDATE ops.ad_gate_authority SET direction='EXACT_PRIOR_BID_COMPENSATION',exact_object_values=
+              jsonb_build_object(:object::text,jsonb_build_object('currentBid',20,'targetBid',30,'currencyCode','RUB','bidUnitCode','CURRENCY_MAJOR'))
+            WHERE id=:gate
+            """).param("object",graph.id("object")).param("gate",next.gate()).update();
+        return next;
+    }
+    private void controlBundle(Bundle bundle,String actor,String purpose,String function) throws Exception {
+        try(var app=transaction()) {
+            String proof=AdvertisingR1Fixture.proof(admin,app,graph,graph.id(actor),purpose,bundle.id(),bundle.gate());
+            try(var call=app.prepareStatement("SELECT ops."+function+"(?,?,?)")) {
+                call.setObject(1,bundle.id());call.setObject(2,bundle.gate());call.setString(3,proof);call.execute();
+            }
+            app.commit();
+        }
+    }
+    @Test void newBundleRequiresThreeActorsAndAtomicallyRetiresPriorAuthority() throws Exception {
+        command();Bundle next=draftBundle();
+        controlBundle(next,"verifierUser","BUNDLE_ENDORSE","endorse_ad_bundle");
+        controlBundle(next,"ownerUser","BUNDLE_APPROVE","activate_ad_bundle");
+        assertThat(seed.sql("SELECT status FROM ops.ad_decision_policy_bundle WHERE id=:id")
+                .param("id",next.id()).query(String.class).single()).isEqualTo("ACTIVE");
+        assertThat(seed.sql("SELECT status FROM ops.ad_decision_policy_bundle WHERE id=:id")
+                .param("id",graph.id("bundle")).query(String.class).single()).isEqualTo("SUPERSEDED");
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_authority_invalidation WHERE organization_id=:org")
+                .param("org",graph.id("organization")).query(Integer.class).single()).isPositive();
+    }
+    @Test void bundleGateChangedAfterEndorsementCannotBecomeApprovedAuthority() throws Exception {
+        Bundle next=draftBundle();controlBundle(next,"verifierUser","BUNDLE_ENDORSE","endorse_ad_bundle");
+        seed.sql("UPDATE ops.ad_gate_authority SET max_commands=max_commands+1 WHERE id=:id")
+                .param("id",next.gate()).update();
+        assertThatThrownBy(()->controlBundle(next,"ownerUser","BUNDLE_APPROVE","activate_ad_bundle"))
+                .hasMessageContaining("complete endorsed Bundle and exact scoped Owner Gate authority required");
+    }
 
-        return new Fixture(organization, store, objectOne, objectTwo, setOne, setTwo,
-                digestOne, digestTwo, productVariant);
+    /** A prior completed write/readback is historical input, never a live Provider call. */
+    private void fictionalReadback(UUID command,int bid) {
+        UUID attempt=UUID.randomUUID(),raw=UUID.randomUUID(),content=UUID.randomUUID();
+        String bytes="{\"bid\":"+bid+",\"currency\":\"RUB\",\"unit\":\"CURRENCY_MAJOR\"}";
+        seed.sql("""
+            INSERT INTO ops.ad_bid_command_attempt(id,command_id,attempt_no,purpose,fence_token,lease_owner,started_at,completed_at,
+              outcome_class,correlation_id,request_digest,operation_snapshot)
+            SELECT :id,:command,coalesce(max(attempt_no),0)+1,'READBACK',1,'fictional-compensation',clock_timestamp(),clock_timestamp(),
+              'ACCEPTED','fictional-compensation',repeat('a',64),'{}' FROM ops.ad_bid_command_attempt WHERE command_id=:command
+            """).param("id",attempt).param("command",command).update();
+        seed.sql("INSERT INTO raw.raw_content(id,hash_algorithm,hash_value,byte_length,object_ref) VALUES(:id,'SHA256',:hash,:length,:ref)")
+                .param("id",content).param("hash",com.mimococo.marketops.shared.Digest.ofText(bytes))
+                .param("length",bytes.getBytes(java.nio.charset.StandardCharsets.UTF_8).length)
+                .param("ref","object-ref://fictional/"+content).update();
+        seed.sql("""
+            INSERT INTO raw.ad_bid_response_observation(id,command_id,attempt_id,raw_content_id,request_digest,http_status,
+              response_headers,evidence_class,response_complete,observed_bid,observed_currency,observed_unit,observed_at,correlation_id)
+            VALUES(:id,:command,:attempt,:content,repeat('a',64),200,'{}','PROTOCOL_FIXTURE',true,:bid,'RUB','CURRENCY_MAJOR',clock_timestamp(),'fictional-compensation')
+            """).param("id",raw).param("command",command).param("attempt",attempt).param("content",content).param("bid",bid).update();
+        seed.sql("""
+            INSERT INTO ops.ad_bid_command_readback VALUES(gen_random_uuid(),:command,:attempt,clock_timestamp(),:bid,
+              'RUB','CURRENCY_MAJOR',:match,:raw,'fictional-compensation')
+            """).param("command",command).param("attempt",attempt).param("bid",bid).param("match",bid==20?"MATCHES_TARGET":"DIFFERENT").param("raw",raw).update();
+    }
+    private void fictionalDispatchControls(UUID command) {
+        UUID capability=seed.sql("SELECT capability_id FROM ops.ad_bid_command WHERE id=:id").param("id",command).query(UUID.class).single();
+        seed.sql("""
+            INSERT INTO platform.capability_subject_status(id,organization_id,platform_code,capability_id,store_id,
+              availability,last_verified_at,evidence_ref,verified_source_title,created_at,updated_at)
+            VALUES(gen_random_uuid(),:org,:platform,:cap,:store,'AVAILABLE',now(),'fixture://protocol','fictional oracle',now(),now())
+            """).param("org",graph.id("organization")).param("platform",graph.platform()).param("cap",capability).param("store",graph.id("store")).update();
+        seed.sql("""
+            INSERT INTO platform.feature_flag(id,flag_code,flag_kind,scope_kind,state,status,reason,created_at,updated_at)
+            SELECT gen_random_uuid(),'ad-bid-change-write','WRITE_CAPABILITY','GLOBAL','ENABLED','ACTIVE','isolated fictional transport only',now(),now()
+            WHERE NOT EXISTS(SELECT 1 FROM platform.feature_flag WHERE flag_code='ad-bid-change-write' AND scope_kind='GLOBAL')
+            """).update();
+        seed.sql("UPDATE platform.feature_flag SET state='ENABLED' WHERE flag_code='ad-bid-change-write' AND scope_kind='GLOBAL'").update();
+        seed.sql("""
+            INSERT INTO platform.feature_flag(id,flag_code,flag_kind,scope_kind,capability_id,state,status,reason,created_at,updated_at)
+            VALUES(gen_random_uuid(),'ad-bid-change-write','WRITE_CAPABILITY','CAPABILITY',:cap,'ENABLED','ACTIVE','fictional isolated capability',now(),now())
+            """).param("cap",capability).update();
+        seed.sql("""
+            INSERT INTO ops.pilot_allowlist_entry(id,organization_id,action_kind,platform_code,store_id,ad_native_object_id,
+              valid_from,valid_until,status,granted_by_user_id,reason,created_at,updated_at)
+            VALUES(gen_random_uuid(),:org,'AD_BID_CHANGE',:platform,:store,:object,now()-interval '1 hour',now()+interval '1 hour',
+              'ACTIVE',:owner,'fictional isolated exact object',now(),now())
+            """).param("org",graph.id("organization")).param("platform",graph.platform()).param("store",graph.id("store"))
+                .param("object",graph.id("object")).param("owner",graph.id("ownerUser")).update();
+        UUID endpoint=UUID.randomUUID();
+        seed.sql("""
+            INSERT INTO platform.platform_endpoint(id,platform_code,endpoint_code,api_version,http_method,path_template,operation_function,
+              capability_id,read_write_class,pagination_model,idempotency_support,verification_state,last_verified_at,evidence_ref,
+              verified_source_title,owner_label,contract_test_status,status,created_at,updated_at)
+            VALUES(:id,:platform,'fictional.restore','v1','POST','/fixture/restore','AD_BID_RESTORE',:cap,'WRITE','NONE','YES','VERIFIED',
+              now(),'fixture://protocol','fictional oracle','synthetic','PASSING','ACTIVE',now(),now())
+            """).param("id",endpoint).param("platform",graph.platform()).param("cap",capability).update();
+        seed.sql("""
+            INSERT INTO platform.capability_operation(id,capability_id,platform_code,operation,endpoint_id,request_template,
+              accepted_pointer,accepted_value,verification_state,last_verified_at,evidence_ref,verified_source_title,owner_label,status,created_at,updated_at)
+            VALUES(gen_random_uuid(),:cap,:platform,'RESTORE',:endpoint,
+              '{"bid":"{targetBid}","currency":"{currencyCode}","unit":"{bidUnitCode}","object":"{nativeObjectKey}"}',
+              '/accepted','true','VERIFIED',now(),'fixture://protocol','fictional oracle','synthetic','ACTIVE',now(),now())
+            """).param("cap",capability).param("platform",graph.platform()).param("endpoint",endpoint).update();
+    }
+    private UUID compensationPreview(UUID command,Bundle bundle) throws Exception {
+        UUID preview=UUID.randomUUID();
+        try(var app=transaction()) {
+            String proof=AdvertisingR1Fixture.proof(admin,app,graph,graph.id("executorUser"),"COMPENSATION_PREVIEW",command,preview);
+            try(var call=app.prepareStatement("SELECT ops.preview_ad_compensation(?,?,?,?)")) {
+                call.setObject(1,preview);call.setObject(2,command);call.setObject(3,bundle.id());call.setString(4,proof);call.execute();
+            }
+            app.commit();return preview;
+        }
+    }
+    private void compensationDecision(UUID command,UUID preview,String person,boolean approve) throws Exception {
+        try(var app=transaction()) {
+            String proof=AdvertisingR1Fixture.proof(admin,app,graph,graph.id(person),approve?"COMPENSATION_APPROVE":"COMPENSATION_ENDORSE",command,preview);
+            try(var call=app.prepareStatement(approve?"SELECT ops.approve_ad_compensation(?,?)":"SELECT ops.endorse_ad_compensation(?,?)")) {
+                call.setObject(1,preview);call.setString(2,proof);call.execute();
+            }
+            app.commit();
+        }
+    }
+    @Test void exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore() throws Exception {
+        UUID command=command();fictionalReadback(command,20);
+        seed.sql("UPDATE ops.ad_bid_command SET state='READBACK_MATCHED',terminal_at=clock_timestamp() WHERE id=:id").param("id",command).update();
+        stop("executorUser","ENTITY","EMERGENCY_ENTITY_HOLD","BUSINESS_HARM");
+        Bundle compensation=draftBundle(true);
+        controlBundle(compensation,"verifierUser","BUNDLE_ENDORSE","endorse_ad_bundle");
+        controlBundle(compensation,"ownerUser","BUNDLE_APPROVE","activate_ad_bundle");
+        fictionalDispatchControls(command);
+        UUID preview=compensationPreview(command,compensation);
+        assertThatThrownBy(()->compensationDecision(command,preview,"executorUser",false)).hasMessageContaining("distinct scoped Operations Lead");
+        compensationDecision(command,preview,"verifierUser",false);
+        assertThatThrownBy(()->compensationDecision(command,preview,"verifierUser",true)).hasMessageContaining("new distinct scoped Owner approval required");
+        compensationDecision(command,preview,"ownerUser",true);
+        assertThat(appRead.sql("SELECT ops.evaluate_ad_bid_compensation_gate(:id)").param("id",command)
+                .query((row,index)->(String[])row.getArray(1).getArray()).single()).isEmpty();
+        assertThat(seed.sql("SELECT captured_prior_bid FROM ops.ad_compensation_authorization WHERE id=:id").param("id",preview)
+                .query(java.math.BigDecimal.class).single()).isEqualByComparingTo("30");
+        long fence=appRead.sql("SELECT ops.lease_ad_bid_compensation(:id,'fictional-compensation',60)").param("id",command).query(Long.class).single();
+        UUID attempt=appRead.sql("SELECT ops.open_ad_bid_command_attempt(gen_random_uuid(),:id,'RESTORE',:fence,'fictional-compensation',repeat('a',64),'fictional-compensation')")
+                .param("id",command).param("fence",fence).query(UUID.class).single();
+        assertThat(seed.sql("SELECT purpose FROM ops.ad_bid_command_attempt WHERE id=:id").param("id",attempt).query(String.class).single()).isEqualTo("RESTORE");
+        assertThat(seed.sql("SELECT production_write_enabled FROM ops.ad_gate_authority WHERE id=:id").param("id",compensation.gate()).query(Boolean.class).single()).isFalse();
+        seed.sql("UPDATE platform.ad_write_credential_attestation SET status='REVOKED' WHERE credential_id=:id")
+                .param("id",graph.id("credential")).update();
+        seed.sql("UPDATE platform.ad_write_credential_attestation SET status='VERIFIED' WHERE credential_id=:id")
+                .param("id",graph.id("credential")).update();
+        assertThat(appRead.sql("SELECT ops.evaluate_ad_bid_compensation_gate(:id)").param("id",command)
+                .query((row,index)->(String[])row.getArray(1).getArray()).single())
+                .contains("EXACT_COMPENSATION_APPROVAL_ABSENT_OR_STALE");
     }
 }

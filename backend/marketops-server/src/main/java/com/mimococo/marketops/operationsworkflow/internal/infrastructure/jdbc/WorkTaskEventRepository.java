@@ -62,7 +62,10 @@ public class WorkTaskEventRepository {
     }
 
     /** Append one event, taking the next sequence number for its task. */
+    @org.springframework.transaction.annotation.Transactional
     public void append(Event event) {
+        jdbc.sql("SELECT id FROM ops.work_task WHERE id=:id FOR UPDATE")
+                .param("id",event.taskId()).query(UUID.class).single();
         jdbc.sql("""
                 INSERT INTO ops.work_task_event (
                     id, task_id, organization_id, sequence_no, event_kind, lineage_key,

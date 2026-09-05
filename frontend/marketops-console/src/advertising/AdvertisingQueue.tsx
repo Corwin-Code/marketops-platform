@@ -30,13 +30,14 @@ const LANES = ['PROTECTION', 'DATA_REPAIR', 'OPTIMIZATION', 'WATCH'] as const;
  * spent", because one of those is a finding and the other is a gap.
  */
 export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): React.JSX.Element {
+  const [offset, setOffset] = useState(0);
   const [lane, setLane] = useState<string | undefined>(undefined);
   const [cases, setCases] = useState<readonly AdvertisingCase[] | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
 
   useEffect(() => {
     let active = true;
-    void fetchAdvertisingQueue(context, lane).then((outcome) => {
+    void fetchAdvertisingQueue(context, lane, 50, offset).then((outcome) => {
       if (!active) {
         return;
       }
@@ -51,7 +52,7 @@ export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): 
     return () => {
       active = false;
     };
-  }, [context, lane]);
+  }, [context, lane, offset]);
 
   if (failure !== undefined) {
     return <AdvertisingProblem failure={failure} />;
@@ -79,6 +80,7 @@ export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): 
           aria-pressed={lane === undefined}
           onClick={() => {
             setLane(undefined);
+            setOffset(0);
           }}
         >
           All
@@ -90,12 +92,35 @@ export function AdvertisingQueue({ context, onSelect }: AdvertisingQueueProps): 
             aria-pressed={lane === name}
             onClick={() => {
               setLane(name);
+              setOffset(0);
             }}
           >
             {name}
           </button>
         ))}
       </fieldset>
+
+      <nav aria-label="Advertising queue pages">
+        <button
+          type="button"
+          disabled={offset === 0}
+          onClick={() => {
+            setOffset(Math.max(0, offset - 50));
+          }}
+        >
+          Previous page
+        </button>
+        <span> Page {Math.floor(offset / 50) + 1} </span>
+        <button
+          type="button"
+          disabled={cases.length < 50}
+          onClick={() => {
+            setOffset(offset + 50);
+          }}
+        >
+          Next page
+        </button>
+      </nav>
 
       {cases.length === 0 ? (
         <p data-empty="advertising-queue">

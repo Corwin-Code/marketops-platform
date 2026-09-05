@@ -24,11 +24,10 @@ import java.util.Objects;
  * conservative contribution figure, it is a wrong one in the direction of
  * spending more.
  *
- * <p>Promotion cost has no canonical feed in this Slice. It is a component like
- * any other, so a governed source stating that no promotion applies produces a
- * present zero, and the absence of any statement produces a blocked profit. The
- * two are not the same and the Contract is explicit that they must not be
- * treated as such.
+ * <p>The production line calculator consumes the canonical version 2 fee
+ * metric, including fulfillment and promotion costs, once per actual unit.
+ * A confirmed zero is distinct from missing economic evidence; the latter
+ * blocks the affected contribution instead of silently dropping a component.
  */
 public record AdvertisingContributionProfit(
         AdMeasure absoluteProfit,

@@ -296,7 +296,7 @@ class AdvertisingCaseCalculationServiceTest {
             AdvertisingEvidenceRepository.LinkedSaleAggregate retained,
             String conversionStage, String cpaStage,
             Map<UUID, AdvertisingEvidenceGatherer.VariantAvailability> availability) {
-        return new AdvertisingEvidenceGatherer.Evidence(
+        return AdvertisingCalculationFixture.withLineage(new AdvertisingEvidenceGatherer.Evidence(
                 object("PROVEN_INDEPENDENT", "ACTIVE"),
                 Optional.of(affectedSet("COMPLETE", List.of(), List.of(VARIANT))),
                 Optional.of(configuration("30.0000", "OFFICIAL_API_READBACK")),
@@ -311,7 +311,7 @@ class AdvertisingCaseCalculationServiceTest {
                 cpaStage == null ? Optional.empty() : Optional.of(allowableCpa(cpaStage)),
                 Optional.empty(), Optional.empty(), Optional.of(weights()),
                 Map.of(VARIANT, economics("100.0000")), availability,
-                AS_OF.minusSeconds(2_592_000), AS_OF);
+                AS_OF.minusSeconds(2_592_000), AS_OF));
     }
 
     @Nested
@@ -388,6 +388,15 @@ class AdvertisingCaseCalculationServiceTest {
             assertThat(result.cases().getFirst().maxCpc().writeGrade()).isFalse();
         }
 
+        @Test void missingConversionCannotSilenceCauseBoundProtectionAndItsIndependentRepair() {
+            var result=service.calculateFrom(populated(facts("4500",1000L,60L,true,false),null,null,null,null,
+                    Map.of(VARIANT,new AdvertisingEvidenceGatherer.VariantAvailability("NOT_SELLABLE","AVAILABLE"))));
+            var protection=result.cases().stream().filter(value->value.identity().cause()==AdvertisingCause.PROMOTED_VARIANT_NOT_SELLABLE).findFirst().orElseThrow();
+            assertThat(result.causeBoundProtectionQualified(protection)).isTrue();
+            assertThat(result.cases()).anyMatch(value->value.decision().lane()==AdvertisingLane.DATA_REPAIR);
+            assertThat(protection.maxCpc().writeGrade()).isFalse();
+        }
+
         @Test
         @DisplayName("a promoted variant that cannot be sold is protection, not optimization")
         void unsellableVariantIsProtection() {
@@ -453,16 +462,14 @@ class AdvertisingCaseCalculationServiceTest {
         }
 
         @Test
-        @DisplayName("the profit blocks on the promotion feed nobody has")
-        void profitBlocksOnTheAbsentPromotionFeed() {
+        @DisplayName("covered platform fees include promotion exactly once")
+        void coveredPlatformFeesDoNotRequireASecondPromotionFeed() {
             var result = service.calculateFrom(populated(
                     facts("4500.0000", 1000L, 60L, true, false), sales(50, "80000.0000"),
                     sales(40, "70000.0000"), "CANONICAL_AD_LINKED_RETAINED_SALE",
                     "CANONICAL_AD_LINKED_RETAINED_SALE", Map.of()));
 
-            // Absent rather than zero, so the gap stays visible instead of
-            // becoming a profit nobody earned.
-            assertThat(result.cases().getFirst().contributionProfit().present()).isFalse();
+            assertThat(result.cases().getFirst().contributionProfit().value()).isEqualByComparingTo("67500.0000");
         }
 
         @Test
@@ -525,5 +532,30 @@ class AdvertisingCaseCalculationServiceTest {
                 assertThat(AdConfidence.values()).contains(scored.decision().confidence());
             }
         }
+    }
+
+    private static AdvertisingEvidenceGatherer.Evidence withCritical(boolean regressed, boolean unknown, boolean compensation) {
+        var e = bare(object("PROVEN_INDEPENDENT", "ACTIVE"),
+                Optional.of(affectedSet("COMPLETE", List.of(), List.of(VARIANT))), Optional.empty(), containment(false,List.of(),false));
+        return new AdvertisingEvidenceGatherer.Evidence(e.object(),e.affectedSet(),e.configuration(),e.objectFacts(),e.completedSales(),e.retainedSales(),
+                e.variantShares(),e.containment(),e.conversion(),e.allowableCpa(),e.writeQualification(),e.taskQualification(),e.priority(),
+                e.economics(),e.variantAvailability(),e.windowStart(),e.asOf(),new AdvertisingEvidenceGatherer.Authorities(
+                        Map.of(),Map.of(),Map.of(),false,List.of(),Map.of(),compensation,false,
+                        new AdvertisingEvidenceRepository.CriticalSignals(regressed,unknown,new BigDecimal("1000"),null,null,List.of(ID))));
+    }
+    @Test void productionCalculationKeepsCriticalP1EvenWhenOtherEvidenceIsMissing() {
+        var result=service.calculateFrom(withCritical(true,true,false));
+        assertThat(result.cases().getFirst().decision().cause()).isEqualTo(AdvertisingCause.CRITICAL_SALES_UNIT_AT_RISK);
+        assertThat(result.cases().getFirst().decision().protectionTier()).isEqualTo(com.mimococo.marketops.advertisingefficiency.ProtectionTier.P1);
+        assertThat(result.cases()).anySatisfy(item->assertThat(item.decision().blockerCodes()).contains("CRITICAL_SALES_GUARD_EVIDENCE_UNRESOLVED"));
+    }
+    @Test void productionCalculationDoesNotPromoteUnknownCriticalGuardToSafeWatch() {
+        var result=service.calculateFrom(withCritical(false,true,false));
+        assertThat(result.cases().getFirst().decision().lane()).isEqualTo(AdvertisingLane.DATA_REPAIR);
+        assertThat(result.cases().getFirst().decision().blockerCodes()).contains("CRITICAL_SALES_GUARD_EVIDENCE_UNRESOLVED");
+    }
+    @Test void pendingCompensationIsP0BeforeFreshCriticalP1() {
+        var result=service.calculateFrom(withCritical(true,true,true));
+        assertThat(result.cases().getFirst().decision().protectionTier()).isEqualTo(com.mimococo.marketops.advertisingefficiency.ProtectionTier.P0);
     }
 }

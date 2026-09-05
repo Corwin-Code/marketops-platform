@@ -614,10 +614,15 @@ V1_ACTIVE_STATE = {
     "slice_v1_002_deferred_release_register": (
         "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json"
     ),
-    "next_authorized_actor": "Claude Fable 5 / Claude Code",
+    "slice_v1_003_rework_authorization": "OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1",
+    "slice_v1_003_rework_authorization_evidence_sha256":
+        "23a2954d68abeebf87d7710f3ab749af5246cdfcbe4a3029dde73dbb34647a11",
+    "slice_v1_003_rework_starting_head": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+    "slice_v1_003_frozen_findings_sha256":
+        "15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1",
+    "next_authorized_actor": "CODEX",
     "next_action": (
-        "SOURCE_UNDERSTANDING_DETAILED_DESIGN_FULL_SCOPE_IMPLEMENTATION_"
-        "TESTS_EVIDENCE_AND_EXACT_LOCAL_CHECKPOINT"
+        "ROOT_CAUSE_REWORK_VERIFY_APPEND_ONLY_NAMED_BRANCH_DRAFT_PR_AND_CI"
     ),
     "slice_v1_001_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_001_rework_phase": "R2_FORMAL_CLOSURE_ACCEPTED",
@@ -710,7 +715,7 @@ V1_ACTIVE_STATE = {
         "CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK"
     ),
     "candidate_state_scope": (
-        "PROTECTED_MAIN_SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION_LOCAL_CHECKPOINT"
+        "SLICE_V1_003_AUTHORIZED_R1_REWORK_PENDING_FULL_VERIFICATION"
     ),
     "merge_authorization": (
         "NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED"
@@ -4839,6 +4844,24 @@ def validate_slice_v1_002_post_merge_closure_documents(
             )
 
 
+SLICE3_R1_AUTHORITY_HASHES = {
+    "docs/08-handoffs/OWNER-SLICE-V1-003-CODEX-REWORK-AUTHORIZATION-EVIDENCE.md":
+        "23a2954d68abeebf87d7710f3ab749af5246cdfcbe4a3029dde73dbb34647a11",
+    "docs/07-phase-evidence/SLICE-V1-003/SLICE-V1-003-FROZEN-FINDING-SET-001.md":
+        "15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1",
+    "docs/07-phase-evidence/SLICE-V1-003/SLICE-V1-003-FROZEN-FINDING-SET-001.json":
+        "f4af74f5086772dc70c3ec3cc7aa8808e9441e96109d301b145e70c18f6131a0",
+}
+
+
+def validate_slice3_r1_authority(errors: list[str], documents: dict[str, bytes]) -> None:
+    """R1 actor/transport comes from exact Owner evidence and one frozen set."""
+    for relative, expected in SLICE3_R1_AUTHORITY_HASHES.items():
+        actual = documents.get(relative)
+        if actual is None or hashlib.sha256(actual).hexdigest() != expected:
+            errors.append(f"SLICE-V1-003 R1 authority missing or changed: {relative}")
+
+
 def validate_v1_current_state_text(
     errors: list[str],
     current_state_text: str,
@@ -4851,6 +4874,11 @@ def validate_v1_current_state_text(
         errors.append("CURRENT_STATE must begin with one fenced YAML metadata block")
         return
 
+    validate_slice3_r1_authority(errors, {
+        relative: path.read_bytes()
+        for relative in SLICE3_R1_AUTHORITY_HASHES
+        if (path := ROOT / relative).is_file()
+    })
     for field, expected in V1_ACTIVE_STATE.items():
         actual = unique_yaml_value(metadata, field)
         if actual != expected:

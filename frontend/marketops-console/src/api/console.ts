@@ -6,6 +6,7 @@ import type {
   AdvertisingManualPacket,
   AdvertisingOutcome,
   AdvertisingReservation,
+  AdvertisingWorkflow,
 } from './advertising';
 import {
   parseAdvertisingCase,
@@ -15,6 +16,7 @@ import {
   parseAdvertisingManualPacket,
   parseAdvertisingOutcome,
   parseAdvertisingReservation,
+  parseAdvertisingWorkflow,
 } from './advertising';
 /**
  * Every request the operating console makes, and the parsing that stands
@@ -1557,12 +1559,13 @@ export function fetchAdvertisingQueue(
   context: ConsoleRequest,
   lane?: string,
   limit = 50,
+  offset = 0,
 ): Promise<ConsoleOutcome<readonly AdvertisingCase[]>> {
   const laneParam = lane === undefined ? '' : `lane=${encodeURIComponent(lane)}&`;
   return request(
     context,
-    `/api/v1/console/advertising/queue?${laneParam}limit=${String(limit)}`,
-    list(parseAdvertisingCase),
+    `/api/v1/console/advertising/queue?${laneParam}limit=${String(limit)}&offset=${String(offset)}`,
+    strictAdvertisingList(parseAdvertisingCase),
   );
 }
 
@@ -1591,7 +1594,7 @@ export function fetchAdvertisingReservations(
     context,
     `/api/v1/console/advertising/reservations?holdingOnly=${String(holdingOnly)}` +
       `&limit=${String(limit)}`,
-    list(parseAdvertisingReservation),
+    strictAdvertisingList(parseAdvertisingReservation),
   );
 }
 
@@ -1612,7 +1615,7 @@ export function fetchAdvertisingContainments(
     context,
     `/api/v1/console/advertising/containments?holdingOnly=${String(holdingOnly)}` +
       `&limit=${String(limit)}`,
-    list(parseAdvertisingContainment),
+    strictAdvertisingList(parseAdvertisingContainment),
   );
 }
 
@@ -1625,7 +1628,7 @@ export function fetchAdvertisingManualPackets(
   return request(
     context,
     `/api/v1/console/advertising/objects/${objectId}/manual-packets?limit=${String(limit)}`,
-    list(parseAdvertisingManualPacket),
+    strictAdvertisingList(parseAdvertisingManualPacket),
   );
 }
 
@@ -1643,7 +1646,7 @@ export function fetchAdvertisingOutcomes(
   return request(
     context,
     `/api/v1/console/advertising/commands/${commandId}/outcomes`,
-    list(parseAdvertisingOutcome),
+    strictAdvertisingList(parseAdvertisingOutcome),
   );
 }
 
@@ -1689,7 +1692,7 @@ export function fetchAdvertisingBriefHistory(
   return request(
     context,
     `/api/v1/console/advertising/briefs/${briefKind}/${periodKey}/history`,
-    list(parseAdvertisingBrief),
+    strictAdvertisingList(parseAdvertisingBrief),
   );
 }
 
@@ -1931,5 +1934,367 @@ export function fetchCommandsNeedingAttention(
     context,
     `/api/v1/console/commands/stores/${storeId}/needing-attention`,
     list(parseCommand),
+  );
+}
+
+function strictAdvertisingList<T>(parse: (body: unknown) => T | undefined) {
+  return (body: unknown): readonly T[] | undefined => {
+    if (!Array.isArray(body)) return undefined;
+    const parsed = body.map(parse);
+    return parsed.every((item): item is T => item !== undefined) ? parsed : undefined;
+  };
+}
+
+/** Live workflow authority and finite candidates for this case. */
+export function fetchAdvertisingWorkflow(
+  context: ConsoleRequest,
+  caseId: string,
+): Promise<ConsoleOutcome<AdvertisingWorkflow>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/cases/${encodeURIComponent(caseId)}/workflow`,
+    parseAdvertisingWorkflow,
+  );
+}
+
+export type AdvertisingCandidateAction =
+  'SELECT_CANDIDATE' | 'REJECT_CANDIDATE' | 'ENDORSE' | 'APPROVE' | 'CREATE_COMMAND';
+
+/** The server derives actors, target, approval route, lease and command authority. */
+export function actOnAdvertisingCandidate(
+  context: ConsoleRequest,
+  caseId: string,
+  candidateId: string,
+  recommendationId: string,
+  action: AdvertisingCandidateAction,
+  expectedVersion: number,
+  reason: string,
+): Promise<ConsoleOutcome<Readonly<Record<string, unknown>>>> {
+  const workflow = `/api/v1/console/workflow/recommendations/${encodeURIComponent(recommendationId)}`;
+  const candidate = `/api/v1/console/advertising/cases/${encodeURIComponent(caseId)}/candidates/${encodeURIComponent(candidateId)}`;
+  const routes: Record<AdvertisingCandidateAction, string> = {
+    SELECT_CANDIDATE: `${candidate}/selection`,
+    REJECT_CANDIDATE: `${candidate}/rejection`,
+    ENDORSE: `${workflow}/endorsement`,
+    APPROVE: `${workflow}/approval`,
+    CREATE_COMMAND: `${workflow}/command`,
+  };
+  return request(context, routes[action], (body) => (isRecord(body) ? body : undefined), {
+    method: 'POST',
+    body: JSON.stringify(
+      action === 'CREATE_COMMAND' ? { expectedVersion } : { expectedVersion, reason },
+    ),
+  });
+}
+
+export interface AdvertisingDecisionPreview extends Readonly<Record<string, unknown>> {
+  readonly recommendationId: string;
+  readonly verdict: Readonly<Record<string, unknown>> & {
+    readonly passed: boolean;
+    readonly reasons: readonly string[];
+  };
+  readonly gateReasons: readonly string[];
+  readonly unresolvedReasons: readonly string[];
+}
+
+/** GuardrailVerdict is a Java record; a string label is not the wire contract. */
+export function parseAdvertisingDecisionPreview(
+  body: unknown,
+): AdvertisingDecisionPreview | undefined {
+  if (!isRecord(body) || typeof body.recommendationId !== 'string' || !isRecord(body.verdict))
+    return undefined;
+  const verdict = body.verdict;
+  if (
+    typeof verdict.passed !== 'boolean' ||
+    !Array.isArray(verdict.reasons) ||
+    !verdict.reasons.every((value): value is string => typeof value === 'string') ||
+    !Array.isArray(body.gateReasons) ||
+    !body.gateReasons.every((value): value is string => typeof value === 'string') ||
+    !Array.isArray(body.unresolvedReasons) ||
+    !body.unresolvedReasons.every((value): value is string => typeof value === 'string')
+  )
+    return undefined;
+  return {
+    ...body,
+    recommendationId: body.recommendationId,
+    verdict: { ...verdict, passed: verdict.passed, reasons: verdict.reasons },
+    gateReasons: body.gateReasons,
+    unresolvedReasons: body.unresolvedReasons,
+  };
+}
+
+export function previewAdvertisingCandidate(
+  context: ConsoleRequest,
+  recommendationId: string,
+): Promise<ConsoleOutcome<AdvertisingDecisionPreview>> {
+  return request(
+    context,
+    `/api/v1/console/workflow/recommendations/${encodeURIComponent(recommendationId)}/ad-bid-impact-preview`,
+    parseAdvertisingDecisionPreview,
+    { method: 'POST' },
+  );
+}
+
+export interface AdvertisingManualOption {
+  readonly policyId: string;
+  readonly policyVersion: number;
+  readonly actionKind: string;
+  readonly candidateId: string | undefined;
+  readonly currentBid: number | undefined;
+  readonly targetBid: number | undefined;
+  readonly targetBudget: number | undefined;
+  readonly targetStatus: string | undefined;
+  readonly currencyCode: string;
+  readonly bidUnitCode: string;
+  readonly verificationMode: string;
+  readonly apiProfileState: string;
+}
+export interface AdvertisingManualOptions {
+  readonly options: readonly AdvertisingManualOption[];
+  readonly allowedActions: readonly string[];
+}
+export function fetchAdvertisingManualOptions(
+  context: ConsoleRequest,
+  caseId: string,
+): Promise<ConsoleOutcome<AdvertisingManualOptions>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/cases/${encodeURIComponent(caseId)}/manual-options`,
+    (body) => {
+      if (!isRecord(body) || !Array.isArray(body.options) || !Array.isArray(body.allowedActions))
+        return undefined;
+      const options: AdvertisingManualOption[] = [];
+      for (const row of body.options) {
+        if (
+          !isRecord(row) ||
+          typeof row.policyId !== 'string' ||
+          typeof row.policyVersion !== 'number' ||
+          typeof row.actionKind !== 'string'
+        )
+          return undefined;
+        options.push({
+          policyId: row.policyId,
+          policyVersion: row.policyVersion,
+          actionKind: row.actionKind,
+          candidateId: typeof row.candidateId === 'string' ? row.candidateId : undefined,
+          currentBid: typeof row.currentBid === 'number' ? row.currentBid : undefined,
+          targetBid: typeof row.targetBid === 'number' ? row.targetBid : undefined,
+          targetBudget: typeof row.targetBudget === 'number' ? row.targetBudget : undefined,
+          targetStatus: typeof row.targetStatus === 'string' ? row.targetStatus : undefined,
+          currencyCode: typeof row.currencyCode === 'string' ? row.currencyCode : 'UNRESOLVED',
+          bidUnitCode: typeof row.bidUnitCode === 'string' ? row.bidUnitCode : 'UNRESOLVED',
+          verificationMode:
+            typeof row.verificationMode === 'string' ? row.verificationMode : 'UNRESOLVED',
+          apiProfileState:
+            typeof row.apiProfileState === 'string' ? row.apiProfileState : 'UNRESOLVED',
+        });
+      }
+      return {
+        options,
+        allowedActions: body.allowedActions.filter(
+          (item): item is string => typeof item === 'string',
+        ),
+      };
+    },
+  );
+}
+export function selectAdvertisingManualOption(
+  context: ConsoleRequest,
+  caseId: string,
+  option: AdvertisingManualOption,
+  reason: string,
+): Promise<ConsoleOutcome<AdvertisingManualPacket>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/cases/${encodeURIComponent(caseId)}/manual-selections`,
+    parseAdvertisingManualPacket,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        policyId: option.policyId,
+        candidateId: option.candidateId ?? null,
+        reason,
+      }),
+    },
+  );
+}
+export type AdvertisingManualAction =
+  | 'ENDORSE'
+  | 'APPROVE'
+  | 'START'
+  | 'REPORT'
+  | 'INDEPENDENT_VERIFY'
+  | 'OFFICIAL_VERIFY'
+  | 'OBSERVE_EARLY_SAFETY';
+export function actOnAdvertisingManualPacket(
+  context: ConsoleRequest,
+  packet: AdvertisingManualPacket,
+  action: AdvertisingManualAction,
+  value: string,
+): Promise<ConsoleOutcome<AdvertisingManualPacket>> {
+  const routes: Record<AdvertisingManualAction, string> = {
+    ENDORSE: 'endorsement',
+    APPROVE: 'approval',
+    START: 'start',
+    REPORT: 'report',
+    INDEPENDENT_VERIFY: 'independent-verification',
+    OFFICIAL_VERIFY: 'official-verification',
+    OBSERVE_EARLY_SAFETY: 'early-observation',
+  };
+  return request(
+    context,
+    `/api/v1/console/advertising/manual-packets/${encodeURIComponent(packet.id)}/${routes[action]}`,
+    parseAdvertisingManualPacket,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        expectedVersion: packet.version,
+        ...(action === 'INDEPENDENT_VERIFY' ? { observedValue: value } : {}),
+        ...(action === 'OFFICIAL_VERIFY' ? { configurationObservationId: value } : {}),
+      }),
+    },
+  );
+}
+
+/** Closed advertising paths for attributable human task and exception interactions. */
+export function advertisingControl(
+  context: ConsoleRequest,
+  path: string,
+  body?: Readonly<Record<string, unknown>>,
+): Promise<ConsoleOutcome<Readonly<Record<string, unknown>>>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/${path}`,
+    (value) => (value === undefined ? {} : isRecord(value) ? value : undefined),
+    { method: 'POST', ...(body === undefined ? {} : { body: JSON.stringify(body) }) },
+  );
+}
+export function fetchAdvertisingJournal(
+  context: ConsoleRequest,
+  taskId: string,
+): Promise<ConsoleOutcome<readonly Readonly<Record<string, unknown>>[]>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/tasks/${encodeURIComponent(taskId)}/journal`,
+    strictAdvertisingList((value) => (isRecord(value) ? value : undefined)),
+  );
+}
+export function fetchAdvertisingExceptions(
+  context: ConsoleRequest,
+  caseId: string,
+): Promise<ConsoleOutcome<readonly Readonly<Record<string, unknown>>[]>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/cases/${encodeURIComponent(caseId)}/exceptions`,
+    strictAdvertisingList((value) =>
+      isRecord(value) &&
+      typeof value.id === 'string' &&
+      typeof value.version === 'number' &&
+      Array.isArray(value.allowedActions)
+        ? value
+        : undefined,
+    ),
+  );
+}
+
+export function actOnAdvertisingTask(
+  context: ConsoleRequest,
+  taskId: string,
+  action: 'assignment' | 'start',
+  body: Readonly<Record<string, unknown>>,
+): Promise<ConsoleOutcome<Readonly<Record<string, unknown>>>> {
+  return request(
+    context,
+    `/api/v1/console/workflow/tasks/${encodeURIComponent(taskId)}/${action}`,
+    (value) => (value === undefined ? {} : isRecord(value) ? value : undefined),
+    { method: 'POST', body: JSON.stringify(body) },
+  );
+}
+export function fetchAdvertisingExceptionEvidence(
+  context: ConsoleRequest,
+  id: string,
+): Promise<ConsoleOutcome<Readonly<Record<string, unknown>>>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/exceptions/${encodeURIComponent(id)}`,
+    (value) => (isRecord(value) ? value : undefined),
+  );
+}
+
+export function fetchAdvertisingCompensation(
+  context: ConsoleRequest,
+  commandId: string,
+): Promise<ConsoleOutcome<Readonly<Record<string, unknown>>>> {
+  return request(
+    context,
+    `/api/v1/console/workflow/ad-bid-compensations/commands/${encodeURIComponent(commandId)}`,
+    (value) =>
+      isRecord(value) &&
+      Array.isArray(value.allowedActions) &&
+      Array.isArray(value.availableBundleIds)
+        ? value
+        : undefined,
+  );
+}
+export function actOnAdvertisingCompensation(
+  context: ConsoleRequest,
+  commandId: string,
+  previewId: string | undefined,
+  action: 'PREVIEW' | 'ENDORSE' | 'APPROVE',
+  bundleId: string,
+): Promise<ConsoleOutcome<Readonly<Record<string, unknown>>>> {
+  const base = '/api/v1/console/workflow/ad-bid-compensations';
+  const path =
+    action === 'PREVIEW'
+      ? `${base}/commands/${encodeURIComponent(commandId)}/preview`
+      : `${base}/${encodeURIComponent(previewId ?? '')}/${action === 'ENDORSE' ? 'endorsement' : 'approval'}`;
+  return request(
+    context,
+    path,
+    (value) => (value === undefined ? {} : isRecord(value) ? value : undefined),
+    {
+      method: 'POST',
+      ...(action === 'PREVIEW' ? { body: JSON.stringify({ compensationBundleId: bundleId }) } : {}),
+    },
+  );
+}
+
+export function fetchAdvertisingManualOutcomes(
+  context: ConsoleRequest,
+  packetId: string,
+): Promise<ConsoleOutcome<readonly AdvertisingOutcome[]>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/manual-packets/${encodeURIComponent(packetId)}/outcomes`,
+    strictAdvertisingList(parseAdvertisingOutcome),
+  );
+}
+
+export function fetchAdvertisingOrchestration(
+  context: ConsoleRequest,
+): Promise<ConsoleOutcome<Readonly<Record<string, unknown>>>> {
+  return request(context, '/api/v1/console/advertising/orchestration', (value) =>
+    isRecord(value) && typeof value.state === 'string' && Array.isArray(value.incidents)
+      ? value
+      : undefined,
+  );
+}
+
+/** Native command history is read from the advertising boundary, never the price endpoint. */
+export function fetchAdvertisingCommand(
+  context: ConsoleRequest,
+  commandId: string,
+): Promise<ConsoleOutcome<Readonly<Record<string, unknown>>>> {
+  return request(
+    context,
+    `/api/v1/console/advertising/commands/${encodeURIComponent(commandId)}`,
+    (value) =>
+      isRecord(value) &&
+      typeof value.id === 'string' &&
+      typeof value.state === 'string' &&
+      Array.isArray(value.attempts) &&
+      Array.isArray(value.readbacks)
+        ? value
+        : undefined,
   );
 }

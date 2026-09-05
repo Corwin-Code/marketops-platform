@@ -74,6 +74,8 @@ public class ApprovalService {
     private final MetadataAuditRecorder auditRecorder;
     private final IdGenerator idGenerator;
     private final Clock clock;
+    private final AdvertisingHumanDecisionService advertisingHumans;
+    private final com.mimococo.marketops.marketplaceintegration.AdBidApprovalAuthority advertisingApproval;
 
     ApprovalService(RecommendationService recommendations,
                     GuardrailService guardrails,
@@ -83,7 +85,8 @@ public class ApprovalService {
                     BusinessAuthorization authorization,
                     MetadataAuditRecorder auditRecorder,
                     IdGenerator idGenerator,
-                    Clock clock) {
+                    Clock clock, AdvertisingHumanDecisionService advertisingHumans,
+                    com.mimococo.marketops.marketplaceintegration.AdBidApprovalAuthority advertisingApproval) {
         this.recommendations = recommendations;
         this.guardrails = guardrails;
         this.approvals = approvals;
@@ -93,6 +96,8 @@ public class ApprovalService {
         this.auditRecorder = auditRecorder;
         this.idGenerator = idGenerator;
         this.clock = clock;
+        this.advertisingHumans = advertisingHumans;
+        this.advertisingApproval = advertisingApproval;
     }
 
     /**
@@ -112,6 +117,8 @@ public class ApprovalService {
             throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
         }
 
+        UUID advertisingBaseline = proposal.actionKind() == ActionKind.AD_BID_CHANGE
+                ? advertisingHumans.requireFinalApproval(actor, proposal) : null;
         GuardrailVerdict verdict = guardrails.evaluate(proposal, null,
                 GuardrailPurpose.APPROVAL);
         if (!verdict.passed()) {
@@ -122,6 +129,10 @@ public class ApprovalService {
                 actor.authenticatedAt(), true, reason, now);
         recommendations.transition(actor.userId().toString(), recommendationId,
                 RecommendationState.APPROVED, null, expectedVersion);
+        if (proposal.actionKind() == ActionKind.AD_BID_CHANGE) {
+            advertisingApproval.seal(recommendationId, decisionId, advertisingBaseline);
+            advertisingHumans.recordAction(actor,recommendationId,"DECISION_APPROVED",decisionId,reason);
+        }
         return new Decision(decisionId, RecommendationState.APPROVED, verdict, null);
     }
 
@@ -131,11 +142,14 @@ public class ApprovalService {
                            long expectedVersion) {
         RecommendationView proposal = requireDecidable(actor, recommendationId,
                 expectedVersion);
+        if(proposal.actionKind()==ActionKind.AD_BID_CHANGE) advertisingHumans.requireFinalApproval(actor,proposal);
         Instant now = clock.instant();
         UUID decisionId = record(proposal, "REJECTED", actor.userId(), null,
                 actor.authenticatedAt(), actor.stepUpSatisfiedAt(now), reason, now);
         recommendations.transition(actor.userId().toString(), recommendationId,
                 RecommendationState.REJECTED, "REJECTED_BY_REVIEWER", expectedVersion);
+        if(proposal.actionKind()==ActionKind.AD_BID_CHANGE)
+            advertisingHumans.recordAction(actor,recommendationId,"DECISION_REJECTED",decisionId,reason);
         return new Decision(decisionId, RecommendationState.REJECTED, null, null);
     }
 

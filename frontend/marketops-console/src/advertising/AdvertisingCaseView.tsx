@@ -2,9 +2,13 @@ import { useEffect, useState } from 'react';
 import { fetchAdvertisingCase } from '../api/console';
 import type { AdvertisingCase } from '../api/advertising';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
+import { AdvertisingTimestamp } from './AdvertisingTimestamp';
+import { AdvertisingWorkflow } from './AdvertisingWorkflow';
+import { AdvertisingStopControls } from './AdvertisingContainmentControls';
 import { AdvertisingManualShadow } from './AdvertisingManualShadow';
 import { AdvertisingProblem } from './AdvertisingQueue';
 import { EvidenceChip } from './EvidenceChip';
+import { AdvertisingEvidenceDetails } from './AdvertisingEvidenceDetails';
 import { presentMeasure } from './evidencePresentation';
 
 /** What the case view needs in order to load itself. */
@@ -25,11 +29,11 @@ export interface AdvertisingCaseViewProps {
  * operator can see why this case is where it is in the queue rather than having
  * to trust the position.
  *
- * There is deliberately no approve button here. This Slice builds the evidence
- * and the decision surface; approving a bid change is a step-up action on a
- * separate route, and a console that offered it from a read-only view would be
- * inviting a decision made without the approval path's own checks.
  */
+function nativeLabel(value: unknown, fallback = 'UNRESOLVED'): string {
+  return typeof value === 'string' ? value : fallback;
+}
+
 export function AdvertisingCaseView({
   context,
   caseId,
@@ -70,6 +74,12 @@ export function AdvertisingCaseView({
   }
 
   const currency = detail.profitCurrencyCode ?? '';
+  const nativeRules = detail.semanticProfile?.nativeRules;
+  const nativeCurrency =
+    typeof nativeRules === 'object' && nativeRules !== null && 'currencyCode' in nativeRules
+      ? nativeLabel(nativeRules.currencyCode)
+      : 'UNRESOLVED';
+  const nativeUnit = nativeLabel(detail.semanticProfile?.bidUnitCode);
   return (
     <section aria-label="Advertising case" data-state="loaded" data-case-id={detail.id}>
       <button type="button" onClick={onBack}>
@@ -84,6 +94,54 @@ export function AdvertisingCaseView({
         {detail.causeCode}. Owned by {detail.accountableRoleCode ?? 'nobody yet'}.
       </p>
 
+      <p>
+        Fact cut: <AdvertisingTimestamp value={detail.asOf} timezone={detail.storeTimezone} />
+      </p>
+      <p data-disclosure={detail.disclosureState}>Disclosure: {detail.disclosureState}</p>
+      <section aria-label="Native platform structure">
+        <h3>Native platform structure</h3>
+        <p>
+          {detail.platformCode} · {detail.nativeObjectKind} ·{' '}
+          {detail.nativeObjectKey ?? 'Native identity unresolved'}
+        </p>
+        <p>
+          Bidding mode: {detail.biddingMode}. Control granularity: {detail.controlGranularityState}.
+        </p>
+        <p>
+          Semantic profile: {nativeLabel(detail.semanticProfile?.verificationState)} ·{' '}
+          {nativeLabel(detail.semanticProfile?.sourceMaturity)}
+        </p>
+        <p>Synthetic and unverified profiles provide no production write authority.</p>
+        <AdvertisingEvidenceDetails
+          value={detail.semanticProfile?.nativeRules}
+          label="Native denomination, step and readback rules"
+        />
+        <ul>
+          {detail.nativeRelationships.map((relation) => (
+            <li key={String(relation.id)}>
+              {String(relation.parentKind)} {String(relation.parentObjectId)} →{' '}
+              {nativeLabel(relation.childKind, 'LISTING_VARIANT')}{' '}
+              {String(relation.childObjectId ?? relation.listingVariantId)} (
+              {String(relation.relationshipKind)})
+            </li>
+          ))}
+        </ul>
+      </section>
+      <section aria-label="Complete affected set">
+        <h3>Complete affected set</h3>
+        <p>
+          {detail.affectedSetResolution} · {detail.affectedSetDigest ?? 'Digest unresolved'}
+        </p>
+        <p>Structural membership stays visible when economic evidence is masked.</p>
+        <ul>
+          {detail.affectedProductVariantIds.map((id) => (
+            <li key={id}>{id}</li>
+          ))}
+        </ul>
+        {detail.affectedProductVariantIds.length === 0 && (
+          <p>No complete ProductVariant membership is established.</p>
+        )}
+      </section>
       <EvidenceChip state={detail.evidenceState} of="Evidence" />
       <span data-confidence={detail.confidenceState}> Confidence: {detail.confidenceState}</span>
 
@@ -135,10 +193,12 @@ export function AdvertisingCaseView({
               `${value.toFixed(4)} ${currency}`.trim(),
             )}
           </dd>
-          <dt>Current bid</dt>
+          <dt>Current native bid</dt>
           <dd data-measure="current-bid" data-measure-state={detail.currentBidState}>
-            {presentMeasure(detail.currentBidState, detail.currentBidAmount, (value) =>
-              `${value.toFixed(4)} ${currency}`.trim(),
+            {presentMeasure(
+              detail.currentBidState,
+              detail.currentBidAmount,
+              (value) => `${value.toFixed(4)} ${nativeCurrency} (${nativeUnit})`,
             )}
           </dd>
         </dl>
@@ -148,27 +208,25 @@ export function AdvertisingCaseView({
         <h3>Why it is here in the queue</h3>
         {detail.rankFactors.length === 0 ? (
           <p data-empty="rank-factors">
-            No factors were recorded, which happens when no priority policy is in force. The case
-            still sorts by its lane.
+            Factors are masked or unresolved. Canonical ordering is retained; no missing factor is a
+            zero.
           </p>
         ) : (
           <table>
-            <caption>Rank factors, and what each contributed</caption>
+            <caption>Canonical lexicographic rank factors</caption>
             <thead>
               <tr>
                 <th scope="col">Factor</th>
                 <th scope="col">Value</th>
-                <th scope="col">Weight</th>
-                <th scope="col">Contribution</th>
+                <th scope="col">Evidence note</th>
               </tr>
             </thead>
             <tbody>
               {detail.rankFactors.map((factor) => (
                 <tr key={factor.code} data-factor={factor.code}>
                   <td>{factor.code}</td>
-                  <td>{factor.value ?? factor.absenceReason ?? 'absent'}</td>
-                  <td>{factor.weight ?? '—'}</td>
-                  <td>{factor.contribution ?? '—'}</td>
+                  <td>{factor.value ?? 'unresolved'}</td>
+                  <td>{factor.absenceReason ?? 'Recorded'}</td>
                 </tr>
               ))}
             </tbody>
@@ -181,7 +239,17 @@ export function AdvertisingCaseView({
         no marketplace, and an operator reading the case is the person who needs
         to know whether somebody has already done one by hand.
       */}
-      <AdvertisingManualShadow context={context} objectId={detail.adNativeObjectId} />
+      <AdvertisingManualShadow
+        context={context}
+        objectId={detail.adNativeObjectId}
+        caseId={detail.id}
+      />
+      <AdvertisingStopControls
+        context={context}
+        objectId={detail.adNativeObjectId}
+        allowedActions={detail.allowedControlActions}
+      />
+      <AdvertisingWorkflow context={context} caseId={detail.id} timezone={detail.storeTimezone} />
     </section>
   );
 }

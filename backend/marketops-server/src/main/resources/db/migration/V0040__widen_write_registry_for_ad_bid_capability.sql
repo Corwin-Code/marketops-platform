@@ -314,3 +314,14 @@ ALTER TABLE ops.pilot_allowlist_entry
 CREATE INDEX pilot_allowlist_entry_ad_object_ix
     ON ops.pilot_allowlist_entry (ad_native_object_id, action_kind)
     WHERE ad_native_object_id IS NOT NULL;
+
+-- Advertising observations have their own unit and explicit NOT_APPLIED semantics.
+-- Neither an HTTP status nor an ETag header describes a bid unit or proves absence.
+ALTER TABLE platform.capability_operation
+    ADD COLUMN ad_observed_unit_pointer text,
+    ADD COLUMN ad_not_applied_pointer text,
+    ADD COLUMN ad_not_applied_value jsonb;
+ALTER TABLE platform.capability_operation ADD CONSTRAINT ad_operation_pointer_shape_ck
+    CHECK ((ad_observed_unit_pointer IS NULL OR ad_observed_unit_pointer LIKE '/%')
+       AND ((ad_not_applied_pointer IS NULL AND ad_not_applied_value IS NULL)
+         OR (ad_not_applied_pointer LIKE '/%' AND ad_not_applied_value IS NOT NULL)));

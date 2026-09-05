@@ -3,7 +3,7 @@
 ```yaml
 document_type: production_assurance_contract
 product_version: V1
-active_slice: SLICE-V1-002
+active_slice: SLICE-V1-003
 review_style: RISK_DRIVEN
 quality_policy: PRODUCTION_GRADE_NO_COMPROMISE
 ```
@@ -135,6 +135,45 @@ fact rather than from the worker.
 The evidence classes below apply unchanged. Fixture and in-memory results
 remain fixture results; nothing in this Slice's record is offered as real
 provider, production release or business outcome evidence.
+
+## 2d. SLICE-V1-003 authorized R1 implementation evidence
+
+This factual status section leaves the evidence classes, minimum controls and
+review requirements unchanged. Original accepted Contract and Frozen Finding
+Set bytes remain protected. It does not alter either predecessor's recorded
+Controller verdict or Owner closure.
+
+```yaml
+slice: SLICE-V1-003
+contract_sha256: 1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c
+frozen_finding_set_sha256: 15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1
+reviewed_head: a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb
+implementation_state: ROOT_CAUSE_REWORK_AND_VERIFICATION_IN_PROGRESS
+owner_authorization: OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1
+controller_verdict: NOT_ISSUED_FOR_REWORK_HEAD
+exact_source_full_verification: PENDING
+remote_publication: PENDING_AUTHORIZED_APPEND_ONLY_DRAFT_PR
+production_write_enabled: false
+evidence_index: docs/07-phase-evidence/SLICE-V1-003/rework-r1/
+```
+
+| Class | R1 implementation and verification surface | Required final evidence |
+| --- | --- | --- |
+| `SRC` | Read-only takeover, exact accepted Contract/Owner authorization/Frozen Finding Set, canonical facts and source review. | Final commit/tree, protected-byte and migration inventory, exact remote PR and tested merge identity. |
+| `UNIT` | Quantity-weighted linked economics, purpose-specific freshness, distinct qualification periods, lexicographic ranks, finite native bid sets, staffed clocks and dual-axis/sales guards. | Complete clean backend verification and unchanged coverage gates on identified inputs. |
+| `RDB` | Actual canonical-facts service path; live three-person human chain; private sealed authority; exact compensation; shared frozen controlled/Manual baseline and critical units. | Complete PostgreSQL clean install, protected-main upgrade, privilege, authority-spoofing, concurrency and full runtime suites. |
+| `SEC_NEG` | Live complete-scope disclosure, person separation, caller-claim rejection, exact Gate boundaries, permanent revoke-and-restore invalidation. | Whole-surface API/export/attachment/notification/AI negatives and repository security CI. |
+| `REPLAY` | Canonical mutation triggers, coalesced queue leases, exact expiry/maturity, missed-trigger repair and append-only late Outcome corrections. | Declared workload restart/replay/failure drills, stable same-as-of results and attributable SLO incidents. |
+| `BROWSER` | Actual isolated API/PostgreSQL role sessions, generated candidates, Manual packets for both unverified platforms, distinct proof and Outcome states. | Rendered role/lane/action/failure scenarios, screenshots and exact source-bound browser results. |
+| `PERF` | Advertising-specific targeted and hourly reconciliation with actual latency samples and independent safety paths. | Declared capacity/resources/distribution and all required recovery scenarios; no unsupported production extrapolation. |
+| `DR` / `OPS` | Exact native compensation, unknown/mismatch, containment, expiry, missing profile, early/late regression and updated canonical runbooks. | Executed fault matrix with concrete observable refusals/recovery; prose or an ordinary positive fixture alone is insufficient. |
+| `AUDIT` | Immutable selected/approved baseline identity, Task event sequence, proof-bound command/readback, frozen observations and publication revisions. | Actor/evidence/commit/CI artifact manifest and all 199 engineering criteria traceable; independent Controller retains final finding authority. |
+| `OBJ` / `REAL_EXT` | Only isolated fictional custody/transport fixtures; no real Provider, credential or shared environment used. | The exact 24 S3-REL obligations remain deferred and production-blocking. No fixture grants Gate EV/Gate E or release evidence. |
+
+Targeted passes are checkpoint evidence. They do not convert an incomplete
+full-source verification or a cancelled/stale CI run into a passed gate. The
+central R1 matrices retain unresolved verification explicitly until the actual
+run, artifact and input identity are recorded.
 
 ## 2b. Supplemental R2 mutation-sensitive matrix
 

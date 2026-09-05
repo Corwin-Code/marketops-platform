@@ -157,6 +157,15 @@ APPROVED_MIGRATIONS = (
     "V0054__index_the_demand_carry_forward_lookup.sql",
     "V0055__record_what_happened_to_a_task_and_who_did_it.sql",
     "V0056__publish_the_daily_brief_and_weekly_review_as_projections.sql",
+    "V0057__bind_advertising_responsibility_and_human_decisions.sql",
+    "V0058__seal_advertising_authority_and_control_execution.sql",
+    "V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+    "V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+    "V0061__bind_advertising_exception_risk_and_preview_evidence.sql",
+    "V0062__share_frozen_outcome_authority_with_governed_manual.sql",
+    "V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+    "V0064__reconcile_expired_advertising_authority.sql",
+    "V0065__route_settled_advertising_contradictions_to_finance_review.sql",
 )
 
 DEFERRED_EVIDENCE_REGISTER = (
@@ -200,14 +209,35 @@ DESTRUCTIVE_MIGRATION_STATEMENT = re.compile(
 
 
 def approved_index_replacement(path: Path, text: str, line: str) -> bool:
-    """Allow one exact non-data index replacement whose old shape is unsafe.
+    """Allow exact non-data index replacements with fully bounded new keys.
 
     The old active-grant uniqueness key predates Product scope. Keeping it would
     collapse every Product grant for one user/action into one row. This narrow
     exception requires the exact V0034 file, exact old index, and the complete
     replacement key; it does not permit a table/row/schema drop or arbitrary
-    index retirement.
+    index retirement. R1 also distinguishes an accountable Advertising Case
+    from its finite inert choices while preserving every non-advertising key.
     """
+    if path.name == "V0064__reconcile_expired_advertising_authority.sql":
+        expected = """
+        DROP INDEX ops.recommendation_live_uq;
+        CREATE UNIQUE INDEX recommendation_live_uq ON ops.recommendation(subject_kind,subject_id,action_kind)
+         WHERE action_kind NOT IN('ADVERTISING_REVIEW','AD_BID_CHANGE')
+          AND state IN('DRAFT','VALIDATED','READY_FOR_REVIEW','TASK_ONLY','APPROVED','POLICY_AUTHORIZED',
+                      'COMMAND_CREATED','EXECUTION_TRACKING','OUTCOME_OBSERVATION');
+        CREATE UNIQUE INDEX ad_responsibility_recommendation_case_uq
+         ON ops.recommendation(organization_id,(proposed_parameters->>'caseId'))
+         WHERE action_kind='ADVERTISING_REVIEW';
+        CREATE UNIQUE INDEX ad_bid_recommendation_live_candidate_uq
+         ON ops.recommendation(organization_id,(proposed_parameters->>'candidateId'))
+         WHERE action_kind='AD_BID_CHANGE'
+          AND state IN('DRAFT','VALIDATED','READY_FOR_REVIEW','TASK_ONLY','APPROVED','POLICY_AUTHORIZED',
+                      'COMMAND_CREATED','EXECUTION_TRACKING','OUTCOME_OBSERVATION');
+        """
+        # Check the complete consecutive DDL, including all live states. The
+        # exception cannot admit an omitted replacement or a broader predicate.
+        return (line.strip().upper() == "DROP INDEX OPS.RECOMMENDATION_LIVE_UQ;"
+                and re.sub(r"\s+", "", expected) in re.sub(r"\s+", "", text))
     return (
         path.name == "V0034__close_availability_deep_review_findings.sql"
         and line.strip().upper() == "DROP INDEX IAM.USER_SCOPE_GRANT_ACTIVE_UQ;"
@@ -525,7 +555,7 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33",
     "closure_snapshot_before_next_slice: SATISFIED_EXACT_OWNER_ACCEPTED",
     "merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED",
-    "next_authorized_actor: Claude Fable 5 / Claude Code",
+    "next_authorized_actor: CODEX",
     "production_write_enabled: false",
     "bounded_real_write_verification_authorization: NONE",
     "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",

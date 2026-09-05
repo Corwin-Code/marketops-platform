@@ -116,9 +116,7 @@ class AdPriorityPolicyTest {
                         null, null, AdConfidence.HIGH),
                 BALANCED);
 
-        assertThat(ranking.factors()).hasSize(AdRankFactor.Code.values().length);
-        assertThat(ranking.factors()).extracting(AdRankFactor::code)
-                .containsExactlyInAnyOrder(AdRankFactor.Code.values());
+        assertThat(ranking.factors()).isEmpty(); // Watch has visibility only, no optimization rank.
     }
 
     @Test
@@ -129,7 +127,7 @@ class AdPriorityPolicyTest {
         AdPriorityPolicy.Ranking uncertain = AdPriorityPolicy.rank(
                 inputs(AdvertisingLane.OPTIMIZATION, null, "1000", AdConfidence.UNUSABLE), BALANCED);
 
-        assertThat(uncertain.score()).isLessThan(confident.score());
+        assertThat(uncertain.score()).isEqualByComparingTo(confident.score()); // confidence cannot alter severity
         assertThat(uncertain.score()).isGreaterThanOrEqualTo(new BigDecimal("100000"));
         assertThat(uncertain.score()).isLessThan(new BigDecimal("200000"));
     }

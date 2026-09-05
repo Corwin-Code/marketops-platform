@@ -229,14 +229,8 @@ public class RecommendationService
     @Transactional
     public UUID proposeBidChange(
             com.mimococo.marketops.operationsworkflow.AdvertisingBidProposal proposal) {
-        List<UUID> live = recommendations.liveFor(SubjectKind.AD_NATIVE_OBJECT,
-                proposal.adNativeObjectId(), ActionKind.AD_BID_CHANGE);
-        if (!live.isEmpty()) {
-            // One object, one live decision. Returning the existing proposal
-            // rather than refusing means a recalculation that reaches the same
-            // conclusion does not need to know whether it is the first.
-            return live.getFirst();
-        }
+        var live = recommendations.liveForAdvertisingCandidate(proposal.organizationId(), proposal.candidateId());
+        if (live.isPresent()) return live.get();
         AdBidChangeParameterContract.requireValid(proposal.parameters());
         String validRisk = MetadataFieldPolicy.requireText("riskLabel", proposal.riskLabel());
 
@@ -262,14 +256,8 @@ public class RecommendationService
                 recommendations.insertEvidence(idGenerator.newId(), id, metricValueId,
                         null, null, "SUPPORTING"));
 
-        // The task exists from the start for a bid change, unlike a price
-        // change, because the service level being measured is how long a person
-        // takes to decide — and that clock starts when the case is raised, not
-        // when somebody notices it.
-        raiseTask(idGenerator.newId(), proposal.organizationId(), id,
-                taskTitle(ActionKind.AD_BID_CHANGE),
-                now.plus(proposal.humanReviewWindow()), now);
-
+        // Responsibility already exists independently for the Case. An inert
+        // candidate must not create a second task or consume an action SLO.
         auditRecorder.recordChange(new MetadataAuditChange(
                 AuditSourceDomain.OPERATIONS_WORKFLOW, proposal.operator(), AuditAction.CREATE,
                 ENTITY_TYPE, id, null,

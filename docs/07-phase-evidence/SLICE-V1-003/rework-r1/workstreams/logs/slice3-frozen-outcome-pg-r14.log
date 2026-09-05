@@ -1,0 +1,92 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------< com.mimococo.marketops:marketops-server >---------------
+[INFO] Building MarketOps Server 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-toolchain-and-dependencies) @ marketops-server ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[INFO] Rule 2: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[INFO] 
+[INFO] --- jacoco:0.8.15:prepare-agent (prepare-coverage) @ marketops-server ---
+[INFO] argLine set to -javaagent:/Users/chzhengx/.m2/repository/org/jacoco/org.jacoco.agent/0.8.15/org.jacoco.agent-0.8.15-runtime.jar=destfile=/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/jacoco.exec
+[INFO] 
+[INFO] --- spring-boot:4.1.0:build-info (build-info) @ marketops-server ---
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ marketops-server ---
+[INFO] Copying 5 resources from src/main/resources to target/classes
+[INFO] Copying 66 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ marketops-server ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 666 source files with javac [debug deprecation parameters release 21] to target/classes
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingRecalculationRepository.java:[118,25] trailing white space will be removed
+[INFO] Extracting Javadoc into /Users/chzhengx/Code/personal/marketops-platform/./build/generated-spring-modulith/javadoc.json.
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[46,42] isTextual() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[47,78] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[51,82] isTextual() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[52,82] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[52,123] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[58,90] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/errors/ConsoleProblemAdvice.java:[56,61] PAYLOAD_TOO_LARGE in org.springframework.http.HttpStatus has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/errors/ConsoleProblemAdvice.java:[77,66] UNPROCESSABLE_ENTITY in org.springframework.http.HttpStatus has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationEvidence.java:[22,7] auto-closeable resource com.mimococo.marketops.shared.internal.migration.ManagedMigrationEvidence has a member method close() that could throw InterruptedException
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunner.java:[84,18] auto-closeable resource com.mimococo.marketops.shared.internal.migration.ManagedMigrationEvidence has a member method close() that could throw InterruptedException
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunner.java:[260,22] auto-closeable resource com.mimococo.marketops.shared.internal.migration.ManagedMigrationEvidence has a member method close() that could throw InterruptedException
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ marketops-server ---
+[INFO] Copying 4 resources from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ marketops-server ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 269 source files with javac [debug deprecation parameters release 21] to target/test-classes
+[INFO] Extracting Javadoc into /Users/chzhengx/Code/personal/marketops-platform/./build/generated-spring-modulith/javadoc.json.
+[INFO] -------------------------------------------------------------
+[WARNING] COMPILATION WARNING : 
+[INFO] -------------------------------------------------------------
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[78,65] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[81,74] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[85,83] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[108,49] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[157,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[200,52] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[242,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[244,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java:[263,69] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[31,46] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[72,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[77,46] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[83,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidatorTest.java:[161,56] redundant cast to java.lang.String
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdaptersTest.java:[103,70] unchecked generic array creation for varargs parameter of type java.util.Optional<java.lang.String>[]
+[INFO] 15 warnings 
+[INFO] -------------------------------------------------------------
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingQualificationBoundaryTest.java:[54,46] cannot find symbol
+  symbol:   variable SaleStage
+  location: class com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingQualificationBoundaryTest
+[INFO] 1 error
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  10.442 s
+[INFO] Finished at: 2026-09-05T10:21:53+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.15.0:testCompile (default-testCompile) on project marketops-server: Compilation failure
+[ERROR] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingQualificationBoundaryTest.java:[54,46] cannot find symbol
+[ERROR]   symbol:   variable SaleStage
+[ERROR]   location: class com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingQualificationBoundaryTest
+[ERROR] 
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

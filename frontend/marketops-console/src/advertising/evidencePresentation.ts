@@ -17,6 +17,8 @@
 
 /** The advertising evidence states the API can send. */
 export const EVIDENCE_STATES = [
+  'MASKED',
+  'UNVERIFIED',
   'CANONICAL_CONFIRMED',
   'OPERATIONAL',
   'PROVISIONAL_OR_ESTIMATED',
@@ -51,6 +53,18 @@ export interface EvidencePresentation {
  * {@link EVIDENCE_STATES} without describing it will not compile.
  */
 const PRESENTATIONS: Record<EvidenceState, EvidencePresentation> = {
+  MASKED: {
+    tone: 'blocked',
+    label: 'Masked',
+    explanation: 'Your current role and complete affected-set scope do not disclose this evidence.',
+    writeGrade: false,
+  },
+  UNVERIFIED: {
+    tone: 'blocked',
+    label: 'Unverified',
+    explanation: 'Synthetic or unverified platform semantics cannot authorize a production write.',
+    writeGrade: false,
+  },
   CANONICAL_CONFIRMED: {
     tone: 'confirmed',
     label: 'Confirmed',
@@ -131,14 +145,15 @@ export function presentEvidence(state: string): EvidencePresentation | undefined
 }
 
 /** The three value states a measure can be in, separately from its evidence. */
-export const VALUE_STATES = ['AVAILABLE', 'NOT_AVAILABLE', 'UNDEFINED'] as const;
+export const VALUE_STATES = ['AVAILABLE', 'NOT_AVAILABLE', 'UNDEFINED', 'MASKED'] as const;
 
 /** One value state. */
 export type ValueState = (typeof VALUE_STATES)[number];
 
 /** How an absent or undefined measure must read. */
 const VALUE_LABELS: Record<ValueState, string> = {
-  AVAILABLE: '',
+  AVAILABLE: 'not available',
+  MASKED: 'masked',
   // Deliberately different words. "Not available" means nobody could compute
   // it; "undefined" means the arithmetic has no answer, as profit per
   // advertising rouble does not when nothing was spent. Rendering both as a
@@ -160,8 +175,10 @@ export function presentMeasure(
   value: number | undefined,
   format: (value: number) => string,
 ): string {
-  if (state === 'AVAILABLE' && value !== undefined) {
+  if (state === 'AVAILABLE' && value !== undefined && Number.isFinite(value)) {
     return format(value);
   }
-  return VALUE_LABELS[state as ValueState];
+  return Object.hasOwn(VALUE_LABELS, state)
+    ? VALUE_LABELS[state as ValueState]
+    : `unresolved (${state || 'UNKNOWN'})`;
 }

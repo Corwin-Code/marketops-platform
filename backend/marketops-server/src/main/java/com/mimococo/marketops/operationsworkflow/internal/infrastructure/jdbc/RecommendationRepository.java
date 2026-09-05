@@ -42,6 +42,17 @@ public class RecommendationRepository {
         this.objectMapper = objectMapper;
     }
 
+    /** Exact candidate reuse never returns an unrelated cause on the same object. */
+    public Optional<UUID> liveForAdvertisingCandidate(UUID organizationId, UUID candidateId) {
+        return jdbc.sql("""
+                SELECT id FROM ops.recommendation WHERE organization_id=:org
+                  AND action_kind='AD_BID_CHANGE' AND proposed_parameters->>'candidateId'=:candidate
+                  AND state NOT IN ('REJECTED','EXPIRED','CANCELLED','CLOSED')
+                ORDER BY created_at DESC,id LIMIT 1
+                """).param("org", organizationId).param("candidate", candidateId.toString())
+                .query(UUID.class).optional();
+    }
+
     /** Propose an action. */
     public void insert(UUID id, UUID organizationId, UUID storeId, SubjectKind subjectKind,
                        UUID subjectId, ActionKind actionKind, String origin,
@@ -269,13 +280,13 @@ public class RecommendationRepository {
         return Map.copyOf(values);
     }
 
-    /** Proposals of one store in a set of states, for counting a queue. */
+    /** Legacy diagnostic counts exclude advertising; its complete-scope queue owns those counts. */
     public Map<RecommendationState, Integer> stateCounts(UUID storeId) {
         Map<RecommendationState, Integer> counts = new LinkedHashMap<>();
         jdbc.sql("""
                         SELECT state, count(*) AS total
                           FROM ops.recommendation
-                         WHERE store_id = :storeId
+                         WHERE store_id = :storeId AND subject_kind <> 'AD_NATIVE_OBJECT'
                          GROUP BY state
                         """)
                 .param("storeId", storeId)

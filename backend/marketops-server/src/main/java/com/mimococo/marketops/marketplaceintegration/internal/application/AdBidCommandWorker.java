@@ -84,16 +84,16 @@ class AdBidCommandWorker {
         String owner = WorkerIdentity.current();
         try {
             return switch (command.state()) {
+                case "PLATFORM_PENDING" -> pollStatus(commandId, owner);
                 case "COMPENSATION_PENDING" -> compensate(commandId, owner);
                 case "UNKNOWN_REQUIRES_READBACK" -> observeAfterUnknown(commandId, owner);
                 default -> apply(commandId, owner);
             };
         } catch (RuntimeException refused) {
-            // Every refusal here is the database declining, which means nothing
-            // was sent. The code is logged and never stored: a stable failure
-            // code belongs to the transition that records it.
-            log.warn("event=ad_bid_command_not_advanced commandId={} state={} reason={}",
-                    commandId, command.state(), refused.toString());
+            // A failed completion may follow dispatch. Preserve the durable
+            // attempt for fenced recovery; exception text may contain transport data.
+            log.warn("event=ad_bid_command_not_advanced commandId={} state={} failureType={}",
+                    commandId, command.state(), refused.getClass().getSimpleName());
             return false;
         }
     }
@@ -118,6 +118,7 @@ class AdBidCommandWorker {
                 if (result.nativeTaskKey() != null) {
                     commands.transition(commandId, fence, owner, "PLATFORM_PENDING",
                             null, null, null);
+                    commands.deferObservation(commandId, fence, owner, properties.getRetryDelaySeconds());
                 } else {
                     commands.transition(commandId, fence, owner, "READBACK_PENDING",
                             null, null, null);
@@ -132,8 +133,9 @@ class AdBidCommandWorker {
                 yield true;
             }
             case RETRIABLE_ERROR -> {
-                commands.transition(commandId, fence, owner, "RETRY_WAIT", null,
-                        properties.getRetryDelaySeconds(), null);
+                // Explicit NOT_APPLIED still needs a current prior-value readback.
+                commands.transition(commandId, fence, owner, "READBACK_PENDING", null, null, null);
+                observe(command, fence, owner);
                 yield true;
             }
             // A timeout and an unclassifiable answer are the same thing: we do
@@ -144,6 +146,33 @@ class AdBidCommandWorker {
                 yield true;
             }
         };
+    }
+
+    private boolean pollStatus(UUID commandId, String owner) {
+        long fence = commands.leaseStatus(commandId, owner, properties.getLeaseSeconds());
+        AdBidCommandRepository.CommandRow command = commands.row(commandId).orElseThrow();
+        AdBidWriteResult result = call(command, fence, owner,
+                AdBidWriteRequest.Operation.STATUS_ENQUIRY,
+                Money.of(command.targetBidAmount(), command.currencyCode()), null);
+        switch (result.outcome()) {
+            case ACCEPTED -> {
+                commands.transition(commandId, fence, owner, "READBACK_PENDING", null, null, null);
+                observe(command, fence, owner);
+            }
+            case RETRIABLE_ERROR -> {
+                if ("provider_explicit_not_applied".equals(result.errorCode())) {
+                    commands.transition(commandId, fence, owner, "READBACK_PENDING", null, null, null);
+                    observe(command, fence, owner);
+                } else {
+                    commands.deferObservation(commandId, fence, owner, properties.getRetryDelaySeconds());
+                }
+            }
+            case REJECTED -> commands.transition(commandId, fence, owner, "FAILED_FINAL",
+                    "native_task_rejected", null, null);
+            case TIMEOUT, UNKNOWN_STATE -> commands.transition(commandId, fence, owner,
+                    "UNKNOWN_REQUIRES_READBACK", null, null, null);
+        }
+        return true;
     }
 
     /** The only route out of an unknown result: look, do not act. */
@@ -175,8 +204,15 @@ class AdBidCommandWorker {
         switch (match) {
             case "MATCHES_TARGET" -> commands.transition(command.id(), fence, owner,
                     "READBACK_MATCHED", null, null, readbackId);
-            case "MATCHES_PRIOR" -> commands.transition(command.id(), fence, owner,
-                    "READBACK_MISMATCH", null, null, null);
+            case "MATCHES_PRIOR" -> {
+                if (commands.retryIsProven(command.id())) {
+                    commands.transition(command.id(), fence, owner, "RETRY_WAIT", null,
+                            properties.getRetryDelaySeconds(), null);
+                } else {
+                    commands.transition(command.id(), fence, owner,
+                            "READBACK_MISMATCH", null, null, null);
+                }
+            }
             case "DIFFERENT" -> commands.transition(command.id(), fence, owner,
                     "LATER_CHANGE_OR_MISMATCH_INVESTIGATION", null, null, null);
             default -> commands.transition(command.id(), fence, owner,
@@ -184,29 +220,60 @@ class AdBidCommandWorker {
         }
     }
 
-    /** Restore the captured prior bid, and prove afterwards that it landed. */
+    /** Compensation observations never use original-action success transitions. */
     private boolean compensate(UUID commandId, String owner) {
         long fence = commands.leaseCompensation(commandId, owner, properties.getLeaseSeconds());
         AdBidCommandRepository.CommandRow command = commands.row(commandId).orElseThrow();
-
-        // A fresh observation first: a restore may only proceed while this
-        // command still owns the value the platform holds.
-        observe(command, fence, owner);
-
-        AdBidWriteResult result = call(command, fence, owner,
-                AdBidWriteRequest.Operation.RESTORE,
-                Money.of(command.priorBidAmount(), command.currencyCode()),
-                commands.restoreVersionToken(commandId).orElse(null));
-        if (result.outcome() != AdBidWriteResult.Outcome.ACCEPTED) {
-            commands.transition(commandId, fence, owner,
-                    result.outcome() == AdBidWriteResult.Outcome.REJECTED
-                            ? "COMPENSATION_FAILED" : "MANUAL_RESOLUTION",
-                    "restore_not_accepted", null, null);
-            return true;
+        if (!commands.restoreAlreadyAttempted(commandId)) {
+            if (!"MATCHES_TARGET".equals(observeCompensation(command, fence, owner))) {
+                commands.transition(commandId, fence, owner, "MANUAL_RESOLUTION",
+                        "compensation_current_owner_not_proven", null, null);
+                return true;
+            }
+            AdBidWriteResult restore = call(command, fence, owner,
+                    AdBidWriteRequest.Operation.RESTORE,
+                    Money.of(command.priorBidAmount(), command.currencyCode()),
+                    commands.restoreVersionToken(commandId).orElse(null));
+            if (restore.outcome() != AdBidWriteResult.Outcome.ACCEPTED) {
+                commands.transition(commandId, fence, owner,
+                        restore.outcome() == AdBidWriteResult.Outcome.REJECTED
+                                ? "COMPENSATION_FAILED" : "MANUAL_RESOLUTION",
+                        "restore_result_requires_resolution", null, null);
+                return true;
+            }
+            if (restore.nativeTaskKey() != null) {
+                commands.deferObservation(commandId, fence, owner, properties.getRetryDelaySeconds());
+                return true;
+            }
+        } else if (commands.nativeTaskKey(commandId).isPresent()) {
+            AdBidWriteResult status = call(command, fence, owner,
+                    AdBidWriteRequest.Operation.STATUS_ENQUIRY,
+                    Money.of(command.priorBidAmount(), command.currencyCode()), null);
+            if (status.outcome() == AdBidWriteResult.Outcome.RETRIABLE_ERROR) {
+                commands.deferObservation(commandId, fence, owner, properties.getRetryDelaySeconds());
+                return true;
+            }
+            if (status.outcome() != AdBidWriteResult.Outcome.ACCEPTED) {
+                commands.transition(commandId, fence, owner, "MANUAL_RESOLUTION",
+                        "restore_native_state_unresolved", null, null);
+                return true;
+            }
         }
-        observe(command, fence, owner);
-        commands.transition(commandId, fence, owner, "COMPENSATED", null, null, null);
+        String match = observeCompensation(command, fence, owner);
+        commands.transition(commandId, fence, owner,
+                "MATCHES_PRIOR".equals(match) ? "COMPENSATED" : "MANUAL_RESOLUTION",
+                "MATCHES_PRIOR".equals(match) ? null : "restore_readback_not_exact", null, null);
         return true;
+    }
+
+    private String observeCompensation(AdBidCommandRepository.CommandRow command,
+            long fence, String owner) {
+        AdBidWriteResult result = call(command, fence, owner, AdBidWriteRequest.Operation.READBACK,
+                Money.of(command.targetBidAmount(), command.currencyCode()), null);
+        if (result.response() == null) {
+            return "UNREADABLE";
+        }
+        return commands.transitionReadback(ids.newId(), command.id(), fence, owner);
     }
 
     /**
@@ -225,8 +292,6 @@ class AdBidCommandWorker {
         if (credentialId == null) {
             // No credential reference means no call and no attempt row: nothing
             // happened, and the command waits for a person.
-            commands.transition(command.id(), fence, owner, "MANUAL_RESOLUTION",
-                    "credential_reference_absent", null, null);
             return AdBidWriteResult.refusedBeforeDispatch(
                     "credential_reference_absent", java.time.Instant.EPOCH);
         }
@@ -235,7 +300,9 @@ class AdBidCommandWorker {
                 command.nativeCampaignKey(), command.nativeObjectKey(),
                 amount, command.bidUnitCode(),
                 AdBidWriteRequest.operationIdempotencyKey(operation, command.idempotencyKey()),
-                null, versionToken, attemptId);
+                operation == AdBidWriteRequest.Operation.STATUS_ENQUIRY
+                        ? commands.nativeTaskKey(command.id()).orElse(null) : null,
+                versionToken, attemptId);
 
         commands.openAttempt(attemptId, command.id(), operation.name(), fence, owner,
                 request.digest(), CorrelationId.current());

@@ -54,6 +54,37 @@ public class JdbcBusinessAuthorization implements BusinessAuthorization {
 
     @Override
     @Transactional(readOnly = true)
+    public boolean eligibleAssignee(UUID userId, UUID organizationId,
+            com.mimococo.marketops.identityaccess.BusinessRoleCode requiredRole,
+            ActionScopeCode action, List<ResourceScope> resources) {
+        Instant now = clock.instant();
+        var profile = profiles.findById(userId);
+        var roles = authorization.liveRoles(userId, now);
+        if (profile.isEmpty() || !profile.get().isActive() || !roles.contains(requiredRole)
+                || !authorization.rolesGrantAction(roles, action) || resources.isEmpty()) return false;
+        return resources.stream().allMatch(resource -> authorization.resolveChain(resource.type(), resource.resourceId())
+                .filter(chain -> chain.organizationId().equals(organizationId))
+                .filter(chain -> authorization.grantCoversChain(userId, action, chain, now)).isPresent());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Instant assignmentValidUntil(UUID userId,UUID organizationId,
+            com.mimococo.marketops.identityaccess.BusinessRoleCode role,ActionScopeCode action,
+            List<ResourceScope> resources,Instant upperBound) {
+        Instant now=clock.instant();
+        if(!eligibleAssignee(userId,organizationId,role,action,resources)) return now;
+        Instant until=authorization.roleValidUntil(userId,role,now,upperBound);
+        for(ResourceScope resource:resources) {
+            var chain=authorization.resolveChain(resource.type(),resource.resourceId()).orElseThrow();
+            Instant grantUntil=authorization.grantValidUntil(userId,action,chain,now,upperBound);
+            if(grantUntil.isBefore(until)) until=grantUntil;
+        }
+        return until;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public AuthorizationVerdict evaluate(AuthenticatedActor actor,
                                          ActionScopeCode action,
                                          ResourceScope resource) {

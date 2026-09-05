@@ -62,13 +62,14 @@ class SalesPreservationTest {
     }
 
     @Test
-    @DisplayName("TC-ADV-SALES-005 an unresolved company total is unresolved before anything else")
-    void unresolvedTotalShortCircuits() {
+    @DisplayName("TC-ADV-SALES-005 a known critical failure survives an unresolved company total")
+    void knownCriticalFailureIsNotSilencedByUnknownTotal() {
         SalesPreservation result = SalesPreservation.evaluate(
                 unit("COMPANY_TOTAL", true, SalesPreservation.Status.UNRESOLVED),
                 List.of(unit("HERO_VARIANT", true, SalesPreservation.Status.FAILED)));
 
-        assertThat(result.reasonCode()).isEqualTo("COMPANY_TOTAL_EVIDENCE_UNRESOLVED");
+        assertThat(result.reasonCode()).isEqualTo("CRITICAL_SALES_UNIT_BELOW_TOLERANCE");
+        assertThat(result.evidenceComplete()).isFalse();
     }
 
     @Test

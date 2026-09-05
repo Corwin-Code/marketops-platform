@@ -30,7 +30,18 @@ public record AdCaseCalculation(
         AdPolicySet policies,
         AffectedSet affectedSet,
         UUID affectedSetId,
-        List<ScoredCase> cases) {
+        List<ScoredCase> cases, List<QualificationPeriod> qualificationPeriods, List<PurposeEvidence> purposeEvidence,
+        boolean writeQualificationSatisfied) {
+    public AdCaseCalculation(UUID organizationId, UUID adNativeObjectId, UUID storeId, String platformCode,
+            UUID semanticProfileId, int lineageGeneration, Instant asOf, AdPolicySet policies,
+            AffectedSet affectedSet, UUID affectedSetId, List<ScoredCase> cases) {
+        this(organizationId, adNativeObjectId, storeId, platformCode, semanticProfileId, lineageGeneration,
+                asOf, policies, affectedSet, affectedSetId, cases, List.of(), List.of(), false);
+    }
+    public record PurposeEvidence(String purpose, String kind, UUID profileId, Instant sourceTime,
+            Instant acceptedAt, Instant expiresAt, boolean eligible, List<String> reasonCodes) { }
+    public record QualificationPeriod(UUID policyId, Instant from, Instant to, boolean qualified) { }
+
 
     /** One case, its lane decision, its rank and the measures behind both. */
     public record ScoredCase(
@@ -83,6 +94,8 @@ public record AdCaseCalculation(
         Objects.requireNonNull(asOf, "asOf");
         Objects.requireNonNull(policies, "policies");
         cases = List.copyOf(cases == null ? List.of() : cases);
+        qualificationPeriods = List.copyOf(qualificationPeriods);
+        purposeEvidence = List.copyOf(purposeEvidence);
         long distinctCauses = cases.stream().map(c -> c.identity().cause()).distinct().count();
         if (distinctCauses != cases.size()) {
             throw new IllegalArgumentException(
@@ -101,6 +114,24 @@ public record AdCaseCalculation(
                 .map(scored -> scored.decision().lane())
                 .max((left, right) -> Integer.compare(left.laneBand(), right.laneBand()))
                 .orElse(AdvertisingLane.WATCH);
+    }
+
+    /** Only the dependencies of a proven one-sided cause authorize this basis. */
+    public boolean causeBoundProtectionQualified(ScoredCase scored) {
+        if (scored.decision().lane() != AdvertisingLane.PROTECTION || scored.maxCpc().writeGrade()
+                || !affectedSet.sufficientForWrite() || !scored.currentBid().sufficientForWrite()
+                || !scored.officialSpend().sufficientForWrite() || scored.officialSpend().value().signum() <= 0) return false;
+        String dangerKind = switch(scored.identity().cause()) {
+            case PROMOTED_VARIANT_NOT_SELLABLE -> "SELLABILITY";
+            case PROMOTED_VARIANT_UNAVAILABLE -> "AVAILABILITY";
+            default -> null;
+        };
+        if(dangerKind==null || scored.decision().blockerCodes().contains("CRITICAL_SALES_GUARD_EVIDENCE_UNRESOLVED")) return false;
+        return List.of("OFFICIAL_AD_SPEND","AD_OBJECT_CONFIGURATION","AFFECTED_SET",dangerKind).stream()
+                .allMatch(kind -> {
+                    var exact=purposeEvidence.stream().filter(evidence -> evidence.purpose().equals("PROTECTION_BID_WRITE") && evidence.kind().equals(kind)).toList();
+                    return exact.size()==1 && exact.getFirst().eligible() && exact.getFirst().expiresAt()!=null && exact.getFirst().expiresAt().isAfter(asOf);
+                });
     }
 
     /** Whether this calculation raises accountable work. */

@@ -58,7 +58,17 @@ INSERT INTO iam.action_scope (code, display_name, description, requires_step_up,
     ('AD_BID_CHANGE_APPROVE', 'Approve a bid change',
         'Give the final per-command approval for an exact, bounded advertising bid change.', true, 21),
     ('ADVERTISING_POLICY_MANAGE', 'Manage advertising policy',
-        'Publish or retire advertising freshness, qualification, target, outcome, priority, SLO, lease and exposure policy.', true, 22);
+        'Publish or retire advertising freshness, qualification, target, outcome, priority, SLO, lease and exposure policy.', true, 22),
+    ('ADVERTISING_DECISION_EVIDENCE_VIEW', 'Read scoped advertising decision evidence',
+        'Read financial evidence only with Store and complete affected ProductVariant grants.', false, 23),
+    ('ADVERTISING_MANUAL_EXECUTE', 'Execute an approved manual packet',
+        'Confirm and report legal manual execution of an exact approved packet.', true, 24),
+    ('ADVERTISING_MANUAL_VERIFY', 'Independently verify manual configuration',
+        'Verify an exact native observation independently of the executor.', true, 25),
+    ('ADVERTISING_MANUAL_ENDORSE', 'Endorse an exact manual packet',
+        'Give distinct operational endorsement to an exact manual business proposal.', true, 26),
+    ('ADVERTISING_MANUAL_APPROVE', 'Approve an exact manual packet',
+        'Give Owner approval to an endorsed exact manual business proposal.', true, 27);
 
 -- The reviewed matrix. Reading stays broad. Acting on a case belongs to the
 -- operator and the lead. Endorsement and final approval are deliberately
@@ -93,7 +103,17 @@ SELECT role_code, action_code
     ('OPERATIONS', 'ADVERTISING_VIEW'),
     ('OPERATIONS', 'ADVERTISING_TASK_ACT'),
     ('OPERATIONS', 'ADVERTISING_EXCEPTION_REQUEST'),
-    ('AUDITOR', 'ADVERTISING_VIEW')
+    ('AUDITOR', 'ADVERTISING_VIEW'),
+    ('OWNER', 'ADVERTISING_DECISION_EVIDENCE_VIEW'),
+    ('OPS_LEAD', 'ADVERTISING_DECISION_EVIDENCE_VIEW'),
+    ('FINANCE', 'ADVERTISING_DECISION_EVIDENCE_VIEW'),
+    ('FINANCE_ANALYST', 'ADVERTISING_DECISION_EVIDENCE_VIEW'),
+    ('AUDITOR', 'ADVERTISING_DECISION_EVIDENCE_VIEW'),
+    ('MARKETPLACE_OPERATOR', 'ADVERTISING_MANUAL_EXECUTE'),
+    ('TECH_DATA', 'ADVERTISING_MANUAL_VERIFY'),
+    ('OPS_LEAD', 'ADVERTISING_MANUAL_VERIFY'),
+    ('OPS_LEAD', 'ADVERTISING_MANUAL_ENDORSE'),
+    ('OWNER', 'ADVERTISING_MANUAL_APPROVE')
   ) AS matrix(role_code, action_code);
 
 -- ---------------------------------------------------------------------------

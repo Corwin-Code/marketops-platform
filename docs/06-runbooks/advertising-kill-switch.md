@@ -1,73 +1,19 @@
-# Stopping every advertising write
+# Stopping advertising writes
 
-The advertising kill switch is the instrument for when you do not know where the
-problem is. Use it early; the narrower ones are in
-`advertising-quarantine.md`.
+Stop the known scope when writes move unexpectedly, native responses cannot be classified, or observed business harm needs investigation. Stops preserve observation and reconciliation responsibility; they do not automatically restore any Bid.
 
-## When to throw it
+Use the console's server-authorized Stop action. The API is `POST /api/v1/console/advertising/containments/objects/{objectId}/stop`. It derives organization, platform, account, Store and canonical affected set from the object and consumes a one-use proof of the authenticated, stepped-up actor. The application role cannot INSERT/UPDATE containment directly or impersonate an actor through a request field/GUC.
 
-Immediately, without waiting for certainty, when any of these is true:
+| Responsibility | Supported stop authority |
+| --- | --- |
+| Scoped Marketplace Operator | `EMERGENCY_ENTITY_HOLD` on ENTITY or AFFECTED_SET with `ADVERTISING_TASK_ACT`. |
+| Scoped Operations Lead | Business/execution/outcome stop on ENTITY, AFFECTED_SET or PLATFORM_STORE_CAPABILITY with `ADVERTISING_POLICY_MANAGE`. |
+| Explicit technical responsibility (`TECH_DATA`) | Credential/security, Provider/readback or execution-integrity stop at PLATFORM_STORE_CAPABILITY or explicitly granted PLATFORM_ACCOUNT_CAPABILITY with `ADVERTISING_TECHNICAL_STOP`. |
 
-- bids are moving on a marketplace in a way nobody recognises;
-- more than one command has landed in `READBACK_MISMATCH` in a short period;
-- a marketplace is answering advertising writes with something the product
-  cannot classify;
-- spend is rising against advertising the product recently changed;
-- anybody with the grant believes something is wrong and cannot yet say what.
+Record the reason, evidence reference and an eligible Operations Lead review owner. Stopping needs no second human approval, but authentication, step-up and the actor's exact scope still apply. The advertising `ad-bid-change-write` flag is its own capability control; it must not be described as the price-write switch.
 
-The last one is deliberate. The cost of stopping is a delay. The cost of not
-stopping is somebody's advertising budget, spent on something nobody chose.
+Confirm with the scoped console or read-only `ops.ad_active_containment(...)` and `ops.evaluate_ad_bid_write_gate(command_id)`. A leased command is checked again at the transmission boundary. A request already in flight continues into factual status/readback reconciliation.
 
-## Throwing it
+Activation permanently invalidates prior action authorization and unexecuted manual assets. In-progress or reported manual work retains its reservation and verification duty. A business emergency hold can bind the exact current, readback-matched command as an action-bound stop; it still cannot authorize compensation by itself.
 
-The advertising capability shares the write registry's switches with the price
-path, so the global switch stops both. A narrower advertising-only stop is a
-`KILL_SWITCH_ACTIVE` containment at the capability scope:
-
-```sql
-INSERT INTO ops.ad_containment (id, organization_id, containment_kind, scope_kind,
-        platform_code, store_id, capability_code, cause_class, reason,
-        evidence_reference, activated_by_user_id, activated_at, state,
-        accountable_role_code, correlation_id, created_at, updated_at)
-VALUES (gen_random_uuid(), :organizationId, 'KILL_SWITCH_ACTIVE',
-        'PLATFORM_STORE_CAPABILITY', :platformCode, :storeId, 'ad-bid-change',
-        'BUSINESS_HARM', :reason, :evidenceReference, :userId, now(), 'ACTIVE',
-        'OPS_LEAD', :correlationId, now(), now());
-```
-
-No step-up, no second approval, no waiting period. A delay measured in seconds
-is a delay measured in bid changes.
-
-## Confirming it took
-
-```sql
-SELECT ops.ad_active_containment(:organizationId, :objectId, :storeId,
-        :platformCode, 'ad-bid-change', :affectedSetDigest);
-```
-
-An empty array means nothing is held. It does **not** mean anything is
-permitted — the write gate asks several other questions, and this is one of
-them.
-
-To see the whole picture for a command:
-
-```sql
-SELECT unnest(ops.evaluate_ad_bid_write_gate(:commandId));
-```
-
-That returns every reason rather than the first, so you can see the whole
-distance to a usable configuration rather than fixing one thing at a time.
-
-## What it does not do
-
-It does not undo anything. A bid already changed stays changed; restoring it is
-compensation, which needs a current readback proving this command still owns the
-value. See `advertising-outcome-regression.md`.
-
-It does not stop the calculation. Cases keep being computed and the queue keeps
-being ranked, which is what you want — you need to see what is happening while
-nothing is being sent.
-
-## Getting out
-
-Never by letting time pass. See `advertising-reenablement.md`.
+Follow [reenablement](advertising-reenablement.md) to resume. Old approvals do not revive after lifting a stop. R1 does not operate real switches or Providers and keeps `production_write_enabled=false`; future real verification remains subject to separate exact Owner Gate authorization.

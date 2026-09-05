@@ -60,6 +60,10 @@ class AdvertisingProjectionWriter {
     Written write(AdCaseCalculation calculation, String calculationKind, UUID reconciliationRunId) {
         Instant calculatedAt = calculation.asOf();
         List<WrittenCase> written = new ArrayList<>(calculation.cases().size());
+        for (var period : calculation.qualificationPeriods()) {
+            projection.recordQualification(calculation.organizationId(), calculation.adNativeObjectId(),
+                    period.policyId(), period.from(), period.to(), period.qualified(), calculatedAt);
+        }
 
         for (AdCaseCalculation.ScoredCase scored : calculation.cases()) {
             String caseKey = scored.identity().caseKey();
@@ -97,6 +101,9 @@ class AdvertisingProjectionWriter {
                     calculation.asOf(), calculatedAt, calculationKind, calculationId,
                     reconciliationRunId, run.lane(), run.cycles(), run.since()));
 
+            for (var evidence : calculation.purposeEvidence()) {
+                projection.recordPurposeEvidence(caseId, calculation.organizationId(), calculationId, evidence);
+            }
             for (AdRankFactor factor : scored.ranking().factors()) {
                 projection.insertFactor(ids.newId(), caseId, calculation.organizationId(),
                         calculationId, factor.code().name(), factor.value(), factor.weight(),
@@ -154,6 +161,16 @@ class AdvertisingProjectionWriter {
                     calculationId, reference.role(), null, null, reference.id(),
                     null, null, null, at, null);
         }
+        for (var ref : policies.inputReferences()) {
+            UUID metric = "PROFIT_ECONOMICS".equals(ref.role()) ? ref.id() : null;
+            UUID sale = "AD_LINKED_SALE".equals(ref.role()) ? ref.id() : null;
+            UUID fact = "OFFICIAL_SPEND".equals(ref.role()) ? ref.id() : null;
+            UUID configuration = "OBJECT_CONFIGURATION".equals(ref.role()) ? ref.id() : null;
+            UUID policy = metric == null && sale == null && fact == null && configuration == null ? ref.id() : null;
+            projection.insertEvidence(ids.newId(), caseId, calculation.organizationId(), calculationId,
+                    ref.role(), null, metric, policy, fact, sale, configuration, ref.observedAt(),
+                    "definitionVersion=" + ref.version() + ";inputDigest=" + ref.digest());
+        }
         // A conclusion with no traceable input cannot be persisted, so a case
         // resting only on absence still records the affected set it was about.
         if (references.isEmpty()) {
@@ -173,7 +190,7 @@ class AdvertisingProjectionWriter {
             return new SustainedRun(lane, 1, at);
         }
         if (lane.equals(existing.sustainedLane())) {
-            return new SustainedRun(lane, existing.sustainedCycles() + 1,
+            return new SustainedRun(lane, existing.sustainedCycles() + (existing.asOf() != null && !at.isAfter(existing.asOf()) ? 0 : 1),
                     existing.sustainedSince() == null ? at : existing.sustainedSince());
         }
         return new SustainedRun(lane, 1, at);

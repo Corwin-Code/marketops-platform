@@ -1,62 +1,56 @@
-# An advertising object whose affected set will not resolve
+# An advertising object whose affected set or sales linkage will not resolve
 
-One advertising object promotes several product variants, and a bid change
-reaches every one of them. The set of variants it reaches is the **affected
-set**, and until it resolves completely nothing about that object can be acted
-on.
+An advertising intervention reaches every product variant in its native affected
+set. Partial membership blocks candidates and reservations. Responsibility and
+DataRepair Tasks continue to identify the missing work and any independently
+proven Protection harm.
 
-## What you will see
-
-A case blocked with `AFFECTED_SET_UNRESOLVED` or `AFFECTED_SET_NEVER_RESOLVED`,
-or a proposal that never appears for an object you expected one for.
-
-## Why it blocks rather than proceeding partially
-
-A partially resolved affected set means the product knows some of the variants
-this bid touches and not others. Acting on it would be reserving against
-variants that were never listed — so the reservation would claim to hold
-products it does not hold, and a second intervention could act on the ones it
-missed. Both interventions would then have outcomes nobody could attribute.
-
-The refusal is structural: `AdvertisingCandidateRepository.resolvedAffectedSet`
-requires `resolution_state = 'COMPLETE'`, and `ops.take_ad_action_reservation`
-is the only route to a reservation.
-
-## Finding the gap
+## Identify the missing dependency
 
 ```sql
-SELECT a.id, a.resolution_state, a.unresolved_reason_codes,
+SELECT a.id,a.resolution_state,a.unresolved_reason_codes,a.affected_set_digest,
        cardinality(a.product_variant_ids) AS variants,
-       cardinality(a.platform_listing_variant_ids) AS listings, a.resolved_at
+       cardinality(a.platform_listing_variant_ids) AS listings,a.resolved_at
   FROM core.ad_affected_set a
- WHERE a.ad_native_object_id = :objectId
- ORDER BY a.resolved_at DESC LIMIT 5;
+ WHERE a.organization_id=:organizationId AND a.ad_native_object_id=:objectId
+ ORDER BY a.resolved_at DESC,a.id LIMIT 5;
 ```
 
-The reason codes name what stopped it. The common ones:
+Distinguish native structural membership from sales attribution. A complete set
+may still contain a sale line whose platform listing, effective internal product
+mapping, conversion stage or amount is missing. That line remains in the observed
+denominator and attribution-gap evidence. It is not dropped to make the remaining
+lines look complete, and another variant's cost or CPA does not fill its gap.
+Canonical economics apply each line's actual net amount, quantity, listing,
+product and effective cost/fee authority. Retained quantities already exclude
+returns; return loss is not charged a second time.
 
-- a promoted listing variant has no confirmed internal mapping — resolve it
-  through the mapping journey, not here;
-- a mapping conflict is open for one of the listings — see
-  `MAPPING_CONFLICT_OPEN`, and note the write gate refuses independently of the
-  affected set for that reason;
-- the object's structural relationships were observed incompletely, so the
-  product cannot enumerate what it promotes.
+## Repair the authority that is missing
 
-## What to do
+1. Resolve listing-to-product mappings through the governed mapping journey.
+   Preserve effective intervals; historical sale linkage is evaluated as of its
+   event and the calculation's acceptance cutoff.
+2. Resolve open mapping conflicts. A partial or conflicted set cannot be reserved
+   by manually listing the subset currently understood.
+3. Repair incomplete native object structure through acquisition. Check the
+   official read's scope and pagination rather than constructing membership by
+   hand. Follow `advertising-stale-or-incomplete-data.md` for missing windows.
+4. Check the refreshed case, exact affected-set digest and distinct DataRepair
+   responsibility. A newer mapping or membership snapshot invalidates old action
+   authority; an old candidate does not automatically inherit it.
 
-1. Resolve the listing-to-SKU mappings. The advertising queue will pick the
-   object up on the next targeted pass; you do not need to do anything here.
-2. If a mapping conflict is open, resolve the conflict. A conflicted mapping
-   means the product does not know whose sales this bid affects, and that is a
-   refusal in its own right.
-3. If the object's structure is the problem — a campaign whose keywords were not
-   fully observed — this is a read problem. Follow
-   `advertising-stale-or-incomplete-data.md`.
+The targeted refresh must include both old and new memberships of a mapping
+change. Company sales guards aggregate all company channels for each affected
+ProductVariant, so a sales or settlement change on another store/platform can
+also affect an advertising object promoting that same product. The guard is not
+limited to the advertised listing and does not include unrelated products.
 
-## What must not happen
+## Why partial execution is refused
 
-Do not create an affected set by hand, and do not mark one COMPLETE that is not.
-The digest of the set is bound into the reservation, the candidate and the
-command; a set that says COMPLETE and is not would make every one of those
-agree with each other about something untrue.
+The complete set and digest bind the candidate, selected baseline, reservation,
+review chain and command or manual packet. Reservations exclude overlapping
+ProductVariants across objects and channels. A hand-built subset would leave
+unreserved products exposed to another intervention and make the outcome
+unattributable. Do not create an affected set by hand or mark it complete to
+bypass this boundary. Raw lineage and official facts remain unchanged while the
+mapping authority is repaired.

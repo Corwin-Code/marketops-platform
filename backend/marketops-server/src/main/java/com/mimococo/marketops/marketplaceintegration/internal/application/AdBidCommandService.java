@@ -32,8 +32,7 @@ class AdBidCommandService implements AdBidCommandGateway {
     @Transactional
     public UUID submit(AdBidCommandRequest request) {
         return commands.create(request.recommendationId(), request.expectedVersion(),
-                request.actorUserId(), request.reservationId(), request.bundleId(),
-                request.approvalExpiresAt(), CorrelationId.current());
+                request.reservationId(), CorrelationId.current());
     }
 
     @Override

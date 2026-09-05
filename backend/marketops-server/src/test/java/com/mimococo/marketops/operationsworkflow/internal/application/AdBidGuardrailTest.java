@@ -57,9 +57,10 @@ class AdBidGuardrailTest {
     private final AdvertisingDecisionAuthority advertising =
             mock(AdvertisingDecisionAuthority.class);
     private final IdGenerator ids = mock(IdGenerator.class);
+    private final AdvertisingImpactEvidenceService impact = mock(AdvertisingImpactEvidenceService.class);
 
     private final GuardrailService service = new GuardrailService(
-            metrics, diagnosis, evaluations, changeHistory, advertising, ids);
+            metrics, diagnosis, evaluations, changeHistory, advertising, ids,impact);
 
     private static RecommendationView proposal() {
         return new RecommendationView(ID, ID, ID, SubjectKind.AD_NATIVE_OBJECT, ID,
@@ -96,11 +97,26 @@ class AdBidGuardrailTest {
                 new GuardrailRepository.AdvertisingAuthority(NOW, "{}"));
         when(advertising.bidProjection(ID)).thenReturn(Optional.of(clean()));
         when(advertising.unresolvedReasons(ID)).thenReturn(List.of());
+        var evidence=new tools.jackson.databind.ObjectMapper().createObjectNode();
+        evidence.putObject("policyVersions").putObject("target").put("ceiling_headroom_ratio",BigDecimal.ZERO);
+        when(impact.capture(ID,NOW,ID)).thenReturn(evidence);
     }
 
     private List<GuardrailReason> reasonsFor() {
         return service.previewAdBidChange(proposal(), GuardrailPurpose.EXECUTION)
                 .verdict().reasons();
+    }
+
+    @Test void theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling() {
+        var evidence=new tools.jackson.databind.ObjectMapper().createObjectNode();
+        evidence.putObject("policyVersions").putObject("target").put("ceiling_headroom_ratio",new BigDecimal("0.3"));
+        when(impact.capture(ID,NOW,ID)).thenReturn(evidence);
+        assertThat(reasonsFor()).contains(GuardrailReason.ABOVE_MAX_CPC);
+    }
+
+    @Test void absentHeadroomAuthorityCannotSilentlyUseZero() {
+        when(impact.capture(ID,NOW,ID)).thenReturn(new tools.jackson.databind.ObjectMapper().createObjectNode());
+        assertThat(reasonsFor()).contains(GuardrailReason.AD_POLICY_BUNDLE_UNRESOLVED);
     }
 
     @Nested
@@ -241,22 +257,22 @@ class AdBidGuardrailTest {
         }
 
         @Test
-        @DisplayName("an approval nobody gave is not a guardrail refusal")
-        void approvalMissingIsNotAGuardrailRefusal() {
+        @DisplayName("approval absence permits a preview but blocks execution")
+        void approvalMissingBlocksOnlyExecution() {
             when(advertising.unresolvedReasons(ID)).thenReturn(List.of("APPROVAL_MISSING"));
 
-            // The approval path already refuses this. Repeating it here would
-            // make an unapproved proposal look guardrailed.
-            assertThat(reasonsFor()).isEmpty();
+            assertThat(service.previewAdBidChange(proposal(),GuardrailPurpose.IMPACT_PREVIEW).verdict().passed()).isTrue();
+            assertThat(service.previewAdBidChange(proposal(),GuardrailPurpose.APPROVAL).verdict().passed()).isTrue();
+            assertThat(reasonsFor()).contains(GuardrailReason.ADVERTISING_CASE_BLOCKED);
         }
 
         @Test
-        @DisplayName("a reason nobody taught the workflow about is not invented into one")
-        void unknownScopeReasonIsIgnored() {
+        @DisplayName("an unrecognized authority refusal remains a refusal")
+        void unknownScopeReasonFailsClosed() {
             when(advertising.unresolvedReasons(ID))
                     .thenReturn(List.of("A_REASON_FROM_THE_FUTURE"));
 
-            assertThat(reasonsFor()).isEmpty();
+            assertThat(reasonsFor()).contains(GuardrailReason.ADVERTISING_CASE_BLOCKED);
         }
 
         @Test

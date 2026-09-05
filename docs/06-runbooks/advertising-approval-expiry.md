@@ -1,55 +1,14 @@
-# An approval that ran out before the command went
+# Advertising approval expiry
 
-## What you will see
+A command reports `APPROVAL_LEASE_EXPIRED` or `SEALED_AUTHORIZATION_MISSING_OR_EXPIRED`. The final approval is sealed to the selected recommendation, candidate, complete affected set, endorsed Bundle, three human identities and the baseline selected before approval.
 
-The write gate reporting `APPROVAL_LEASE_EXPIRED`, or a command sitting in
-`PENDING` that a worker will not pick up.
+The frozen expiry is the minimum of the final-approval lease, material lease, recommendation validity, Owner scope limit, referenced policy periods, required purpose evidence, frozen Outcome baseline, exact Gate window, credential authority and current approval/endorsement grants. Waiting, retrying or rotating a credential cannot extend it. `ops.expire_ad_action_authority` appends an invalidation; it does not edit historical approval or transmit anything.
 
-## Why approvals expire at all
+1. Read the scoped case, current blockers, task age and command history in the console. Distinguish never-sent work from transmitted, pending or unknown work.
+2. Refresh the evidence and prepare a new candidate/recommendation generation when the cause still holds. Preserve original demand age and prior decisions.
+3. Repeat Marketplace Operator selection, independent Operations Lead endorsement and the required final approval. Initial material actions require a distinct Owner. A previously approved candidate is not a renewable token.
+4. Let the worker reconcile the existing command. Only proven unsent work can terminate without a Provider call. Already transmitted or unknown work remains under observation and keeps its reservation until factual release conditions pass.
 
-An approval authorises one exact change, built from one exact set of facts, at
-one moment. The advertising world moves: a bid changes, a variant stops being
-sellable, a policy version is superseded. An approval with no expiry would let a
-decision taken on Monday's evidence be spent on Friday's world.
+If a new actionable generation cannot be produced, retain the blocked task and escalate the specific missing authority. Do not extend timestamps or set completion fields manually. Frequent expiry is an Owner policy/review-capacity issue; a queue delay is not permission to widen a lease.
 
-The window comes from `core.ad_approval_lease_policy` for the direction, and the
-command stores the earlier of that lease and the approval's own scope expiry —
-so a lease longer than the approval cannot extend an authority nobody granted.
-
-## What to do
-
-**Do not** extend the approval. There is no supported way to, and the reason is
-the point: the decision was about facts that are now older than somebody agreed
-they could be.
-
-Re-decide instead:
-
-1. Open the advertising case again. The calculation will have refreshed it, and
-   the candidate may now be different — which is the information the expiry was
-   protecting.
-2. If the case no longer appears, the cause stopped holding. `mart.ad_case`
-   records that as a supersession with reason `CAUSE_NO_LONGER_CALCULATED`, and
-   nothing needs to be done.
-3. If it appears with the same candidate, approve it again. The new approval
-   carries a new lease.
-
-## The command that was already created
-
-A command whose approval expired never transmitted; the gate refuses before any
-worker takes it. It can be terminated without a provider call:
-
-```sql
-SELECT ops.transition_ad_bid_command(:commandId, :fence, :owner,
-        'TERMINATED_WITHOUT_PROVIDER_CALL', 'approval_lease_expired', NULL, :correlationId);
-```
-
-That state exists precisely so a command that never left can be closed without
-anybody wondering later whether it did.
-
-## What to check if this happens often
-
-Short leases against a slow review cycle is a real operating problem, not a
-technical one. `core.ad_human_slo_profile.action_minutes` is how long the
-product expects a person to take, and `core.ad_approval_lease_policy` is how
-long the decision stays spendable. If the first is routinely larger than the
-second, one of them is wrong and the Owner has to say which.
+Read-only diagnostics: `ops.evaluate_ad_bid_write_gate(command_id)`, `ops.ad_action_authorization.bounds`, and `ops.ad_authority_invalidation`. Keep `production_write_enabled=false` during R1. A future real Provider verification requires its separate exact Owner-approved Gate envelope.

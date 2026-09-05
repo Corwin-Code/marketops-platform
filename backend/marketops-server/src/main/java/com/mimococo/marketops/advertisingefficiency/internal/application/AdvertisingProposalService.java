@@ -24,23 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Turning a calculated case into a decision a person owns.
- *
- * <p>Three things happen, in an order chosen so that failing part-way leaves
- * nothing dangerous. The candidate is recorded first, because it is inert. The
- * reservation is taken second, because it is what stops anything else acting on
- * these variants and it must exist before a proposal invites somebody to act.
- * The proposal is created last, because it is the only one of the three a person
- * can see.
- *
- * <p>Every step is idempotent, and all three happen in one transaction. A
- * recalculation that reaches the same conclusion re-uses its own candidate, its
- * own reservation and its own proposal rather than accumulating one of each per
- * cycle. That matters more here than in most places: the hourly reconciliation
- * visits every object, so anything not idempotent would grow without bound.
- *
- * <p>Nothing here approves anything and nothing reaches a marketplace. The
- * furthest this can get is a proposal in a queue with a task attached to it.
+ * Records a finite set of inert choices under one accountable Case Task.
+ * A choice becomes an intervention only after the governed human decision chain.
+ * Reconciliation reuses the same candidate generation and responsibility identity.
  */
 @Service
 class AdvertisingProposalService {
@@ -50,6 +36,7 @@ class AdvertisingProposalService {
     private final AdvertisingContainmentRepository reservations;
     private final AdvertisingRecommendationIntake intake;
     private final IdGenerator ids;
+    private final com.mimococo.marketops.operationsworkflow.AdvertisingResponsibilityIntake responsibility;
 
     /** How long a proposed bid change's effect is measured for. */
     private static final int VALIDATION_HORIZON_DAYS = 14;
@@ -58,12 +45,14 @@ class AdvertisingProposalService {
                                AdvertisingCandidateRepository candidates,
                                AdvertisingContainmentRepository reservations,
                                AdvertisingRecommendationIntake intake,
-                               IdGenerator ids) {
+                               IdGenerator ids,
+                               com.mimococo.marketops.operationsworkflow.AdvertisingResponsibilityIntake responsibility) {
         this.policies = policies;
         this.candidates = candidates;
         this.reservations = reservations;
         this.intake = intake;
         this.ids = ids;
+        this.responsibility = responsibility;
     }
 
     /**
@@ -77,34 +66,46 @@ class AdvertisingProposalService {
     List<UUID> proposeFor(AdCaseCalculation calculation,
                           List<AdvertisingProjectionWriter.WrittenCase> written,
                           UUID calculationRunId, String correlationId) {
+        responsibility.synchronizeObject(calculation.organizationId(),calculation.adNativeObjectId());
         List<UUID> proposed = new java.util.ArrayList<>();
         for (AdvertisingProjectionWriter.WrittenCase writtenCase : written) {
             calculation.cases().stream()
                     .filter(scored -> scored.identity().caseKey().equals(writtenCase.caseKey()))
                     .findFirst()
-                    .flatMap(scored -> propose(calculation, scored, writtenCase,
+                    .map(scored -> propose(calculation, scored, writtenCase,
                             calculationRunId, correlationId))
-                    .ifPresent(proposed::add);
+                    .ifPresent(proposed::addAll);
         }
         return List.copyOf(proposed);
     }
 
-    private Optional<UUID> propose(AdCaseCalculation calculation,
+    private List<UUID> propose(AdCaseCalculation calculation,
                                    AdCaseCalculation.ScoredCase scored,
                                    AdvertisingProjectionWriter.WrittenCase writtenCase,
                                    UUID calculationRunId, String correlationId) {
-        // A case the calculation itself refused is not a case anybody may act
-        // on, whatever its cause would otherwise justify.
-        if (!scored.decision().blockerCodes().isEmpty()) {
-            return Optional.empty();
+        if (scored.decision().lane() != AdvertisingLane.WATCH
+                && scored.decision().cause().actionable()) {
+            responsibility.ensureResponsibility(writtenCase.caseId(), calculationRunId,
+                    scored.decision().cause().accountableRole().name());
+        }
+        boolean causeBoundQualified=calculation.causeBoundProtectionQualified(scored);
+        String allowedBasis=causeBoundQualified?BidCandidate.CAUSE_BOUND_PROTECTION_STEP:BidCandidate.MAX_CPC_BOUNDED;
+        if (!com.mimococo.marketops.advertisingefficiency.internal.domain.AdActionDependencyPolicy
+                .actionBlockers(allowedBasis,scored.decision().cause().name(),scored.decision().blockerCodes()).isEmpty()) {
+            return List.of();
         }
         Optional<BidDirection> direction =
                 BidDirectionForCause.of(scored.decision().cause());
         if (direction.isEmpty()) {
-            return Optional.empty();
+            return List.of();
         }
 
+        if (scored.decision().lane() == AdvertisingLane.OPTIMIZATION
+                && !calculation.writeQualificationSatisfied()) return List.of();
         Instant asOf = calculation.asOf();
+        var responseProfile = policies.resolveHumanSlo(calculation.organizationId(),
+                scored.decision().lane().name(), asOf);
+        if (responseProfile.isEmpty()) return List.of();
         Optional<AdvertisingPolicyRepository.ObjectBidContext> context =
                 policies.resolveBidGrid(calculation.adNativeObjectId());
         if (context.isEmpty() || !context.get().independentlyControllable()) {
@@ -112,7 +113,7 @@ class AdvertisingProposalService {
             // enough to ask for anything, and an object nobody has proven to be
             // independently controllable is one whose bid may not be touched at
             // all. Both are refusals rather than absences.
-            return Optional.empty();
+            return List.of();
         }
         ProviderBidGrid grid = context.get().grid();
         String objectKind = context.get().nativeObjectKind();
@@ -129,7 +130,8 @@ class AdvertisingProposalService {
                         : BidCandidate.increase(scored.currentBid(), scored.maxCpc(), limits,
                                 grid, BidCandidate.MAX_CPC_BOUNDED));
 
-        if (generated == null && direction.get() == BidDirection.PROTECTION_DECREASE) {
+        if (generated == null && causeBoundQualified
+                && direction.get() == BidDirection.PROTECTION_DECREASE) {
             // The cause-bound route. Only for a decrease, only where a policy
             // names this exact cause, and only because for these causes the
             // spend is wasted whether or not any conversion figure exists.
@@ -141,7 +143,7 @@ class AdvertisingProposalService {
                             : Optional.empty());
         }
         if (generated == null) {
-            return Optional.empty();
+            return List.of();
         }
         Optional<AdvertisingPolicyRepository.TargetPolicy> policy =
                 Optional.of(generated.policy());
@@ -152,16 +154,8 @@ class AdvertisingProposalService {
         if (affected.isEmpty()) {
             // Nothing may be reserved against a set nobody could finish
             // enumerating, so nothing may be proposed either.
-            return Optional.empty();
+            return List.of();
         }
-
-        BidCandidate candidate = generated.candidate();
-        UUID candidateId = candidates.record(ids.newId(), calculation.organizationId(),
-                writtenCase.caseId(), calculation.adNativeObjectId(),
-                affected.get().digest(), policy.get().id(), policy.get().policyVersion(),
-                calculation.semanticProfileId(), candidate, 1,
-                ceilingAmount(scored.maxCpc()), absenceReason(scored.maxCpc()),
-                scored.decision().cause().name(), asOf, correlationId);
 
         // Read, not reserve. A proposal is a decision somebody might make, and
         // reserving here would make every unactioned case in the queue look like
@@ -173,20 +167,24 @@ class AdvertisingProposalService {
         if (reservations.blockingReservation(calculation.organizationId(),
                 affected.get().productVariantIds(), calculation.adNativeObjectId())
                 .isPresent()) {
-            return Optional.empty();
+            return List.of();
         }
 
-        String entityVersionDigest = candidates
-                .entityVersionDigest(calculation.adNativeObjectId(), candidateId)
-                .orElse(null);
-        if (entityVersionDigest == null) {
-            // The identity the approval will be compared against could not be
-            // computed, so there is nothing to approve against. Refusing here is
-            // better than proposing something the approval would refuse.
-            return Optional.empty();
-        }
-
-        return Optional.of(intake.proposeBidChange(new AdvertisingBidProposal(
+        List<UUID> result = new java.util.ArrayList<>();
+        var exactSet = com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateSet.generate(
+                generated.candidate(), policy.get().candidateCount(), policy.get().limits(), grid,
+                scored.maxCpc(), candidates.allowsIntermediateTarget(policy.get().id()));
+        int ordinal = 0;
+        for (BidCandidate candidate : exactSet) {
+            UUID candidateId = candidates.record(ids.newId(), calculation.organizationId(),
+                    writtenCase.caseId(), calculation.adNativeObjectId(), affected.get().digest(),
+                    policy.get().id(), policy.get().policyVersion(), calculation.semanticProfileId(),
+                    candidate, ++ordinal, ceilingAmount(scored.maxCpc(),grid.bidUnitCode()), absenceReason(scored.maxCpc()),
+                    scored.decision().cause().name(), asOf, correlationId);
+            String entityVersionDigest = candidates.entityVersionDigest(calculation.adNativeObjectId(), candidateId)
+                    .orElse(null);
+            if (entityVersionDigest == null) continue;
+            result.add(intake.proposeBidChange(new AdvertisingBidProposal(
                 "advertising-calculation", calculation.organizationId(), calculation.storeId(),
                 calculation.adNativeObjectId(), writtenCase.caseId(), candidateId,
                 candidate.direction(), candidate.providerNormalizedAmount(),
@@ -200,22 +198,10 @@ class AdvertisingProposalService {
                         .AdPriorityPolicy.workflowPriority(scored.ranking().score()),
                 expectedEffect(scored, candidate),
                 riskLabel(scored.decision().lane()), VALIDATION_HORIZON_DAYS,
-                humanReviewWindow(calculation.organizationId(), scored.decision().lane(), asOf),
+                Duration.ofMinutes(responseProfile.get().actionMinutes()),
                 calculationRunId, entityVersionDigest, List.of())));
-    }
-
-    /**
-     * How long a person has to decide, from the advertising service level.
-     *
-     * <p>Falls back to the tightest window the profile vocabulary allows rather
-     * than to a generous one. A missing service level should make work look
-     * urgent, not comfortable, because somebody has to notice the profile is
-     * missing.
-     */
-    private Duration humanReviewWindow(UUID organizationId, AdvertisingLane lane, Instant asOf) {
-        return policies.resolveHumanSlo(organizationId, lane.name(), asOf)
-                .map(slo -> Duration.ofMinutes(slo.actionMinutes()))
-                .orElse(Duration.ofMinutes(15));
+        }
+        return List.copyOf(result);
     }
 
     /** What the case expects the change to achieve, in values the console shows. */
@@ -228,6 +214,15 @@ class AdvertisingProposalService {
         effect.put("targetBid", candidate.providerNormalizedAmount().toPlainString());
         effect.put("changeAmount", candidate.changeAmount().toPlainString());
         effect.put("currency", String.valueOf(candidate.currencyCode()));
+        effect.put("candidateBasis", candidate.candidateBasis());
+        if (BidCandidate.CAUSE_BOUND_PROTECTION_STEP.equals(candidate.candidateBasis())) {
+            effect.put("interpretation", "EXPOSURE_LIMIT_ONLY_NOT_PROFITABILITY_OR_HEALTH");
+            effect.put("maxCpc", "UNAVAILABLE");
+            effect.put("financialUncertainty", String.join(",",scored.decision().blockerCodes()));
+        } else if (scored.maxCpc().writeGrade()
+                && com.mimococo.marketops.advertisingefficiency.internal.domain.AdBidUnitConversion.toMajor(candidate.providerNormalizedAmount(),candidate.bidUnitCode()).compareTo(scored.maxCpc().ceiling().amount()) > 0) {
+            effect.put("interpretation", "RECOVERY_IN_PROGRESS_NOT_HEALTHY");
+        }
         return Map.copyOf(effect);
     }
 
@@ -277,8 +272,9 @@ class AdvertisingProposalService {
                              AdvertisingPolicyRepository.TargetPolicy policy) {
     }
 
-    private static BigDecimal ceilingAmount(MaxCpc maxCpc) {
-        return maxCpc.writeGrade() ? maxCpc.ceiling().amount() : null;
+    private static BigDecimal ceilingAmount(MaxCpc maxCpc,String unit) {
+        return maxCpc.writeGrade() ? com.mimococo.marketops.advertisingefficiency.internal.domain.AdBidUnitConversion
+                .toNative(maxCpc.ceiling().amount(),unit) : null;
     }
 
     private static String absenceReason(MaxCpc maxCpc) {

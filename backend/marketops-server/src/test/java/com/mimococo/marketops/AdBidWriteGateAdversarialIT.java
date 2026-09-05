@@ -1,297 +1,208 @@
 package com.mimococo.marketops;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import javax.sql.DataSource;
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 /**
- * The write gate, attacked one fact at a time.
- *
- * <p>A gate that refuses everything is as useless as one that refuses nothing,
- * and both look identical from a test that only ever asks a broken fixture what
- * it thinks. So every case below does the same thing: change exactly one fact
- * in the database, ask the gate again, and require that exactly the expected
- * reason appears or disappears. A reason that never moves is a reason nobody is
- * actually computing.
- *
- * <p>Nothing here makes the gate satisfiable, and nothing here is meant to. An
- * advertising capability cannot be verified anywhere, so the fixture's baseline
- * is a long list of refusals; what these cases prove is that each entry on it is
- * earned separately rather than emitted together.
- *
- * <p>The gate also has to <em>refuse</em> rather than raise. Every call below
- * goes through {@code ops.evaluate_ad_bid_write_gate} and expects an array back;
- * a function that threw would fail these cases as errors rather than as
- * assertions, which is the distinction V0053 was written to restore.
+ * Live gate faults start from an actual sealed and idempotently created command.
+ * Production transport remains disabled. These tests distinguish a named gate
+ * refusal from an earlier privilege/row constraint; they do not claim an open
+ * production APPLY path. Each test owns a separate fictional graph.
  */
-@SpringBootTest
-@ActiveProfiles("ci")
 class AdBidWriteGateAdversarialIT {
+    private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE=TestDatabase.isolatedContainer();
+    private static DataSource migration,application,admin;
+    private static JdbcClient seed,appRead;
+    private AdvertisingR1Fixture.Graph graph;
+    private UUID command;
 
-    private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE =
-            TestDatabase.isolatedContainer();
-
-    private static JdbcClient seed;
-    private static AdvertisingGraphFixture.Graph graph;
-    private static AdvertisingGraphFixture.Command command;
-
-    @DynamicPropertySource
-    static void databaseProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", DATABASE::getJdbcUrl);
-        registry.add("spring.datasource.username", TestDatabase::applicationRole);
-        registry.add("spring.datasource.password", TestDatabase::applicationPassword);
-        registry.add("spring.flyway.user", TestDatabase::migrationRole);
-        registry.add("spring.flyway.password", TestDatabase::migrationPassword);
+    @BeforeAll static void database() {
+        migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
+        application=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.applicationRole(),TestDatabase.applicationPassword());
+        admin=new DriverManagerDataSource(DATABASE.getJdbcUrl(),DATABASE.getUsername(),DATABASE.getPassword());
+        seed=JdbcClient.create(migration);appRead=JdbcClient.create(application);
+        Flyway.configure().dataSource(migration).locations("classpath:db/migration").load().migrate();
     }
-
-    @BeforeAll
-    static void openSeedConnection() {
-        seed = JdbcClient.create(new DriverManagerDataSource(DATABASE.getJdbcUrl(),
-                TestDatabase.migrationRole(), TestDatabase.migrationPassword()));
-    }
-
-    @BeforeEach
-    void seedTheGraphOnce() {
-        if (graph != null) {
-            return;
+    @BeforeEach void seedExactCommand() throws Exception {
+        graph=AdvertisingR1Fixture.seed(migration);
+        seed.sql("""
+            INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,organization_ref_id,
+              effective_from,status,reason,created_at,updated_at)
+            VALUES(gen_random_uuid(),:org,:actor,'ADVERTISING_POLICY_MANAGE',:org,
+              now()-interval '1 day','ACTIVE','synthetic stop scope',now(),now())
+            """).param("org",graph.id("organization")).param("actor",graph.id("verifierUser")).update();
+        try(var app=transaction()) {
+            String proof=AdvertisingR1Fixture.proof(admin,app,graph,graph.id("ownerUser"),null,
+                    graph.id("recommendation"),graph.id("approval"));
+            AdvertisingR1Fixture.seal(app,graph,proof);
+            command=AdvertisingR1Fixture.createCommand(app,graph);
+            assertThat(AdvertisingR1Fixture.createCommand(app,graph)).isEqualTo(command);
+            app.commit();
         }
-        graph = AdvertisingGraphFixture.seed(seed);
-        AdvertisingGraphFixture.Decision decision = AdvertisingGraphFixture.seedDecision(
-                seed, graph, "PROTECTION_DECREASE", "MAX_CPC_BOUNDED");
-        command = AdvertisingGraphFixture.seedCommand(seed, graph, decision, "PENDING");
+        assertThat(reasons()).doesNotContain("SEALED_AUTHORIZATION_MISSING_OR_EXPIRED",
+                "CANONICAL_OUTCOME_BASELINE_AUTHORITY_INVALID","AUTHORITY_PERMANENTLY_INVALIDATED",
+                "KILL_SWITCH_ACTIVE","QUARANTINE_ACTIVE","RESERVATION_CONFLICT");
     }
 
-    @Test
-    @DisplayName("TC-AD-GATE-ADV-001 the gate answers with an array rather than raising")
+    @Test @DisplayName("TC-AD-GATE-ADV-001 a real sealed command returns named closed-transport reasons")
     void theGateRefusesRatherThanRaises() {
-        // The whole point of V0053. An ambiguous array append made this function
-        // raise 'malformed array literal' instead of returning its reasons, and
-        // a gate that throws is a gate whose refusals nobody can read.
-        Set<String> reasons = reasons();
-
-        assertThat(reasons).isNotEmpty();
-        assertThat(reasons).contains("CAPABILITY_NOT_VERIFIED", "BUNDLE_UNRESOLVED");
+        assertThat(reasons()).contains("GLOBAL_SWITCH_DISABLED","CAPABILITY_SWITCH_DISABLED","GUARDRAIL_NOT_PASSED");
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_action_authorization WHERE recommendation_id=:id")
+                .param("id",graph.id("recommendation")).query(Integer.class).single()).isEqualTo(1);
     }
 
-    @Test
-    @DisplayName("TC-AD-GATE-ADV-002 a command that does not exist is refused by name")
+    @Test @DisplayName("TC-AD-GATE-ADV-002 a missing command is refused by name")
     void anAbsentCommandIsRefusedByName() {
-        // Never an empty array. An empty refusal list is how this function says
-        // "permitted", so a command it cannot find has to answer with a reason
-        // rather than with nothing.
-        List<String> unknown = seed.sql(
-                "SELECT unnest(ops.evaluate_ad_bid_write_gate(:id)) AS reason")
-                .param("id", UUID.randomUUID()).query(String.class).list();
-
-        assertThat(unknown).containsExactly("COMMAND_NOT_FOUND");
+        assertThat(appRead.sql("SELECT unnest(ops.evaluate_ad_bid_write_gate(:id))")
+                .param("id",UUID.randomUUID()).query(String.class).list()).containsExactly("COMMAND_NOT_FOUND");
     }
 
-    @Test
-    @DisplayName("TC-AD-GATE-ADV-003 a kill switch adds exactly its own reason")
-    void aKillSwitchAddsExactlyItsOwnReason() {
-        Set<String> before = reasons();
-        assertThat(before).doesNotContain("KILL_SWITCH_ACTIVE");
-        UUID containment = activateContainment("KILL_SWITCH_ACTIVE");
-        try {
-            Set<String> withKill = reasons();
-
-            assertThat(withKill).contains("KILL_SWITCH_ACTIVE");
-            // Exactly one reason more. A kill switch that also flipped an
-            // unrelated axis would make the two impossible to tell apart in an
-            // incident, which is when somebody most needs to know which fired.
-            assertThat(difference(withKill, before)).containsExactly("KILL_SWITCH_ACTIVE");
-        } finally {
-            reenable(containment);
-        }
-        assertThat(reasons()).isEqualTo(before);
+    @Test @DisplayName("TC-AD-GATE-ADV-003 authenticated Kill adds its named gate reason and permanent invalidation")
+    void aKillSwitchAddsItsReasonAndPermanentlyInvalidatesAuthority() throws Exception {
+        UUID containment=activateContainment("KILL_SWITCH_ACTIVE");
+        assertThat(reasons()).contains("KILL_SWITCH_ACTIVE","AUTHORITY_PERMANENTLY_INVALIDATED");
+        assertThat(reasons()).doesNotContain("QUARANTINE_ACTIVE");
+        assertCannotRenewAfterPrivilegedRestoration(containment,"KILL_SWITCH_ACTIVE");
     }
 
-    @Test
-    @DisplayName("TC-AD-GATE-ADV-004 a quarantine and a kill switch are separate reasons")
-    void aQuarantineIsNotAKillSwitch() {
-        Set<String> before = reasons();
-        UUID containment = activateContainment("EMERGENCY_ENTITY_HOLD");
-        try {
-            Set<String> quarantined = reasons();
-
-            // Five kinds of stop, and they are not degrees of one thing. An
-            // operator reading a single severity would learn nothing about what
-            // to fix.
-            assertThat(difference(quarantined, before)).containsExactly("QUARANTINE_ACTIVE");
-            assertThat(quarantined).doesNotContain("KILL_SWITCH_ACTIVE");
-        } finally {
-            reenable(containment);
-        }
-        assertThat(reasons()).isEqualTo(before);
+    @Test @DisplayName("TC-AD-GATE-ADV-004 an entity hold is independently named and cannot revive authority")
+    void aQuarantineIsNotAKillSwitch() throws Exception {
+        UUID containment=activateContainment("EMERGENCY_ENTITY_HOLD");
+        assertThat(reasons()).contains("QUARANTINE_ACTIVE","AUTHORITY_PERMANENTLY_INVALIDATED");
+        assertThat(reasons()).doesNotContain("KILL_SWITCH_ACTIVE");
+        assertCannotRenewAfterPrivilegedRestoration(containment,"QUARANTINE_ACTIVE");
     }
 
-    @Test
-    @DisplayName("TC-AD-GATE-ADV-005 the reservation cannot be released out from under a live command")
+    @Test @DisplayName("TC-AD-GATE-ADV-005 early release refuses at privilege/canonical boundaries and stale release closes the gate")
     void aLiveReservationCannotBeReleasedEarly() {
-        Set<String> before = reasons();
-        // The attack this case was written to try is refused one level lower
-        // than the gate. A reservation may not move to RELEASED while its
-        // configuration is unresolved, an unknown stands against it, its early
-        // observation has not closed or a regression is open — so there is no
-        // state in which a command names a released reservation and the gate has
-        // to notice.
-        assertThatThrownBy(() -> seed.sql("""
-                UPDATE ops.ad_action_reservation
-                   SET state = 'RELEASED', released_at = now(), release_reason = 'adversarial'
-                 WHERE id = :id
-                """).param("id", command.reservationId()).update())
-                .hasMessageContaining("ad_action_reservation_release_conditions_ck");
-
-        // And with every condition met it releases, at which point the command
-        // that named it is refused rather than permitted.
+        // App refusal is a privilege boundary, not evidence that the live gate ran.
+        assertSqlRefusal(()->appRead.sql("UPDATE ops.ad_action_reservation SET configuration_resolved=true WHERE id=:id")
+                .param("id",graph.id("reservation")).update(),"42501","permission denied");
+        assertThat(appRead.sql("SELECT ops.release_ad_action_reservation(:id,'no factual safety observation')")
+                .param("id",graph.id("reservation")).query(Boolean.class).single()).isFalse();
+        // Even the owning-role attack cannot bypass the row's required shape.
+        assertSqlRefusal(()->seed.sql("""
+            UPDATE ops.ad_action_reservation SET state='RELEASED',released_at=clock_timestamp(),release_reason='synthetic attack'
+            WHERE id=:id
+            """).param("id",graph.id("reservation")).update(),"23514","ad_action_reservation_release_conditions_ck");
+        // Privileged historical state injection models stale work, not canonical release evidence.
         seed.sql("""
-                UPDATE ops.ad_action_reservation
-                   SET configuration_resolved = true, unknown_or_mismatch_open = false,
-                       early_observation_complete = true, regression_open = false,
-                       state = 'RELEASED', released_at = now(), release_reason = 'adversarial'
-                 WHERE id = :id
-                """).param("id", command.reservationId()).update();
-        try {
-            assertThat(difference(reasons(), before)).contains("RESERVATION_CONFLICT");
-        } finally {
-            seed.sql("""
-                    UPDATE ops.ad_action_reservation
-                       SET state = 'ACTIVE', released_at = NULL, release_reason = NULL,
-                           configuration_resolved = false, early_observation_complete = false
-                     WHERE id = :id
-                    """).param("id", command.reservationId()).update();
-        }
-        assertThat(reasons()).isEqualTo(before);
+            UPDATE ops.ad_action_reservation SET configuration_resolved=true,unknown_or_mismatch_open=false,
+              early_observation_complete=true,regression_open=false,state='RELEASED',released_at=clock_timestamp(),
+              release_reason='synthetic stale-worker state' WHERE id=:id
+            """).param("id",graph.id("reservation")).update();
+        assertThat(reasons()).contains("RESERVATION_CONFLICT");
     }
 
-    @Test
-    @DisplayName("TC-AD-GATE-ADV-006 an envelope that resolves removes exactly that reason and no other")
-    void aResolvedEnvelopeRemovesOnlyItsOwnReason() {
-        // The fixture already writes one, so this case works the other way: it
-        // retires the envelope and requires the unresolved reason to appear
-        // alone. An envelope axis that leaked into another reason would show up
-        // here as a second difference.
-        Set<String> before = reasons();
-        assertThat(before).doesNotContain("AGGREGATE_ENVELOPE_UNRESOLVED");
-        seed.sql("""
-                UPDATE core.ad_exposure_envelope SET status = 'CANCELLED'
-                 WHERE organization_id = :organizationId
-                """).param("organizationId", graph.organizationId()).update();
-        try {
-            Set<String> withoutEnvelope = reasons();
-
-            assertThat(difference(withoutEnvelope, before))
-                    .containsExactly("AGGREGATE_ENVELOPE_UNRESOLVED");
-        } finally {
-            seed.sql("""
-                    UPDATE core.ad_exposure_envelope SET status = 'ACTIVE'
-                     WHERE organization_id = :organizationId
-                    """).param("organizationId", graph.organizationId()).update();
-        }
-        assertThat(reasons()).isEqualTo(before);
+    @Test @DisplayName("TC-AD-GATE-ADV-006 envelope restoration resolves its axis but cannot resurrect the sealed command")
+    void aResolvedEnvelopeCannotRevivePriorAuthority() throws Exception {
+        assertThat(reasons()).doesNotContain("AGGREGATE_ENVELOPE_UNRESOLVED");
+        seed.sql("UPDATE core.ad_exposure_envelope SET status='CANCELLED' WHERE id=:id")
+                .param("id",graph.id("exposure")).update();
+        assertThat(reasons()).contains("AGGREGATE_ENVELOPE_UNRESOLVED","AUTHORITY_PERMANENTLY_INVALIDATED");
+        seed.sql("UPDATE core.ad_exposure_envelope SET status='ACTIVE' WHERE id=:id")
+                .param("id",graph.id("exposure")).update();
+        assertThat(reasons()).doesNotContain("AGGREGATE_ENVELOPE_UNRESOLVED");
+        assertOldApprovalCannotCreateAgain();
     }
 
-    @Test
-    @DisplayName("TC-AD-GATE-ADV-007 every baseline reason names a fact somebody could establish")
+    @Test @DisplayName("TC-AD-GATE-ADV-007 baseline reasons use the declared control vocabulary")
     void everyBaselineReasonIsInTheDeclaredVocabulary() {
-        // A reason the vocabulary does not carry is a reason no runbook can
-        // explain and no console can present. The set is closed on purpose.
         assertThat(reasons()).isSubsetOf(List.of(
-                "AFFECTED_SET_DIGEST_CHANGED", "AGGREGATE_ENVELOPE_BLOCKED",
-                "AGGREGATE_ENVELOPE_UNRESOLVED", "APPROVAL_LEASE_EXPIRED",
-                "AUTHORIZATION_INVALID_OR_EXPIRED", "BUNDLE_SCOPE_EXCEEDED", "BUNDLE_UNRESOLVED",
-                "CANDIDATE_BASIS_NOT_ENABLED", "CAPABILITY_NOT_AVAILABLE_FOR_STORE",
-                "CAPABILITY_NOT_VERIFIED", "CAPABILITY_SWITCH_DISABLED",
-                "COMMAND_AUTHORITY_MISMATCH", "DIRECTION_NOT_ENABLED", "ENTITY_NOT_ALLOWLISTED",
-                "GLOBAL_SWITCH_DISABLED", "GUARDRAIL_NOT_PASSED", "KILL_SWITCH_ACTIVE",
-                "MAPPING_CONFLICT_OPEN", "MAPPING_UNRESOLVED", "MATERIALITY_UNRESOLVED",
-                "ORDINARY_ROUTE_NOT_PROMOTED", "QUARANTINE_ACTIVE", "RECOMMENDATION_STALE",
-                "RESERVATION_CONFLICT", "SCOPED_SWITCH_DISABLED", "COMMAND_NOT_FOUND"));
+            "AFFECTED_SET_DIGEST_CHANGED","AGGREGATE_ENVELOPE_BLOCKED","AGGREGATE_ENVELOPE_UNRESOLVED",
+            "APPROVAL_LEASE_EXPIRED","AUTHORIZATION_INVALID_OR_EXPIRED","BUNDLE_SCOPE_EXCEEDED","BUNDLE_UNRESOLVED",
+            "CANDIDATE_BASIS_NOT_ENABLED","CAPABILITY_NOT_AVAILABLE_FOR_STORE","CAPABILITY_NOT_VERIFIED",
+            "CAPABILITY_SWITCH_DISABLED","COMMAND_AUTHORITY_MISMATCH","DIRECTION_NOT_ENABLED","ENTITY_NOT_ALLOWLISTED",
+            "GLOBAL_SWITCH_DISABLED","GUARDRAIL_NOT_PASSED","KILL_SWITCH_ACTIVE","MAPPING_CONFLICT_OPEN",
+            "MAPPING_UNRESOLVED","MATERIALITY_UNRESOLVED","ORDINARY_ROUTE_NOT_PROMOTED","QUARANTINE_ACTIVE",
+            "RECOMMENDATION_STALE","RESERVATION_CONFLICT","SCOPED_SWITCH_DISABLED","COMMAND_NOT_FOUND",
+            "ACCEPTED_EXCEPTION_ACTIVE","ACTION_EVIDENCE_BLOCKERS_UNRESOLVED","SEALED_AUTHORIZATION_MISSING_OR_EXPIRED",
+            "CANONICAL_OUTCOME_BASELINE_AUTHORITY_INVALID","SEALED_MATERIALITY_ROUTE_CHANGED_OR_UNRESOLVED",
+            "AUTHORITY_PERMANENTLY_INVALIDATED","COMPLETE_AUTHORITY_SNAPSHOT_CHANGED","ACTION_EVIDENCE_AUTHORITY_CHANGED",
+            "GUARDRAIL_BUNDLE_MISMATCH","EXACT_GATE_AUTHORITY_ABSENT_OR_EXCEEDED","ADS_WRITE_CREDENTIAL_AUTHORITY_INVALID"));
     }
 
-    @Test
-    @DisplayName("TC-AD-GATE-ADV-008 the gate is never satisfiable in this environment")
+    @Test @DisplayName("TC-AD-GATE-ADV-008 fictional approval does not enable production transport or verify real Providers")
     void theGateCannotBeSatisfiedHere() {
-        // The property every other case rests on. No advertising capability is
-        // verified anywhere, no policy bundle is active, and neither can be made
-        // so from here — which is why the fixture seeds a command directly
-        // rather than asking the product to create one.
-        assertThat(reasons()).isNotEmpty();
+        assertThat(reasons()).contains("GLOBAL_SWITCH_DISABLED","CAPABILITY_SWITCH_DISABLED");
+        assertThat(appRead.sql("SELECT production_write_enabled FROM ops.ad_gate_authority WHERE id=:id")
+                .param("id",graph.id("gate")).query(Boolean.class).single()).isFalse();
         assertThat(seed.sql("""
-                SELECT count(*) FROM platform.platform_capability
-                 WHERE capability_code = 'ad-bid-change' AND verification_state = 'VERIFIED'
-                """).query(Long.class).single()).isZero();
-        assertThat(seed.sql("""
-                SELECT count(*) FROM ops.ad_decision_policy_bundle WHERE status = 'ACTIVE'
-                """).query(Long.class).single()).isZero();
+            SELECT count(*) FROM platform.platform_capability WHERE platform_code IN('OZON','WILDBERRIES')
+              AND capability_code='ad-bid-change' AND verification_state='VERIFIED'
+            """).query(Long.class).single()).isZero();
     }
 
-    /** The gate's answer for the fixture command, as a set. */
-    private static Set<String> reasons() {
-        return Set.copyOf(seed.sql("""
-                SELECT unnest(ops.evaluate_ad_bid_write_gate(:id)) AS reason
-                """).param("id", command.commandId()).query(String.class).list());
+    private Connection transaction() throws SQLException { var app=application.getConnection();app.setAutoCommit(false);return app; }
+    private Set<String> reasons() { return Set.copyOf(appRead.sql("SELECT unnest(ops.evaluate_ad_bid_write_gate(:id))")
+            .param("id",command).query(String.class).list()); }
+    private UUID activateContainment(String kind) throws Exception {
+        UUID id=UUID.randomUUID();
+        try(var app=transaction()) {
+            String proof=AdvertisingR1Fixture.proof(admin,app,graph,graph.id("verifierUser"),"CONTAINMENT_STOP",graph.id("object"),id);
+            try(var call=app.prepareStatement("SELECT ops.activate_ad_human_containment(?,?,?,?,?,?,?,?,?)")) {
+                call.setObject(1,id);call.setObject(2,graph.id("object"));
+                call.setString(3,"KILL_SWITCH_ACTIVE".equals(kind)?"PLATFORM_STORE_CAPABILITY":"ENTITY");
+                call.setString(4,kind);call.setString(5,"BUSINESS_HARM");call.setObject(6,graph.id("verifierUser"));
+                call.setString(7,"fictional gate incident");call.setString(8,"fixture://named-gate-fault");call.setString(9,proof);call.execute();
+            }
+            app.commit();return id;
+        }
     }
-
-    private static Set<String> difference(Set<String> larger, Set<String> smaller) {
-        return larger.stream().filter(reason -> !smaller.contains(reason))
-                .collect(java.util.stream.Collectors.toUnmodifiableSet());
-    }
-
-    /** One containment over the fixture object, of the kind asked for. */
-    private UUID activateContainment(String kind) {
-        UUID id = UUID.randomUUID();
+    private void assertCannotRenewAfterPrivilegedRestoration(UUID containment,String resolvedReason) throws Exception {
+        assertSqlRefusal(()->appRead.sql("UPDATE ops.ad_containment SET state='REENABLED' WHERE id=:id")
+                .param("id",containment).update(),"42501","permission denied");
+        // A migration-role state oracle models even an apparently restored dependency.
+        // This is not a product reenablement or a substitute for its human evidence chain.
         seed.sql("""
-                INSERT INTO ops.ad_containment (id, organization_id, containment_kind,
-                        scope_kind, ad_native_object_id, cause_class, reason,
-                        evidence_reference, activated_by_trigger, activated_at, state,
-                        correlation_id, created_at, updated_at)
-                VALUES (:id, :organizationId, :kind, 'ENTITY', :objectId,
-                        'EXECUTION_INTEGRITY', 'adversarial gate probe',
-                        'evidence://fixture/adversarial', 'ADVERSARIAL_GATE_PROBE', now(),
-                        'ACTIVE', :correlationId, now(), now())
-                """)
-                .param("id", id)
-                .param("organizationId", graph.organizationId())
-                .param("kind", kind)
-                .param("objectId", graph.objectId())
-                .param("correlationId", "adversarial-" + id)
-                .update();
-        return id;
+            UPDATE ops.ad_containment SET state='REENABLED',root_cause_classified=true,unknowns_resolved=true,
+              authorities_replaced=true,results_reconciled=true,capability_evidence_current=true,
+              security_attestation_present=true,endorsed_by_user_id=:endorser,approved_by_user_id=:owner,
+              reenabled_scope=jsonb_build_object('syntheticRestorationAttempt',true),reenabled_at=clock_timestamp()
+            WHERE id=:id
+            """).param("endorser",graph.id("executorUser")).param("owner",graph.id("ownerUser")).param("id",containment).update();
+        assertThat(reasons()).doesNotContain(resolvedReason);
+        assertOldApprovalCannotCreateAgain();
+    }
+    private void assertOldApprovalCannotCreateAgain() throws Exception {
+        assertThat(reasons()).contains("AUTHORITY_PERMANENTLY_INVALIDATED");
+        assertThat(appRead.sql("SELECT count(*) FROM ops.ad_authority_invalidation WHERE authorization_id=(SELECT id FROM ops.ad_action_authorization WHERE recommendation_id=:id)")
+                .param("id",graph.id("recommendation")).query(Integer.class).single()).isPositive();
+        try(var app=transaction()) {
+            assertSqlRefusal(()->AdvertisingR1Fixture.reserve(app,graph),"MO097","reservation requires exact intervention");
+            app.rollback();
+            // Call the public creator directly to test its own boundary after reservation admission refused.
+            try(var query=app.prepareStatement("SELECT ops.create_ad_bid_command(?,(SELECT version FROM ops.recommendation WHERE id=?),?,'fictional-invalidated-creator')")) {
+                query.setObject(1,graph.id("recommendation"));query.setObject(2,graph.id("recommendation"));
+                query.setObject(3,graph.id("reservation"));
+                assertSqlRefusal(query::execute,"MO092","current immutable approval authority required");
+            }
+            app.rollback();
+        }
+        assertThat(appRead.sql("SELECT count(*) FROM ops.ad_bid_command WHERE recommendation_id=:id")
+                .param("id",graph.id("recommendation")).query(Integer.class).single()).isEqualTo(1);
     }
 
-    private void reenable(UUID containmentId) {
-        seed.sql("""
-                UPDATE ops.ad_containment
-                   SET state = 'REENABLED', reenabled_at = now(),
-                       endorsed_by_user_id = :endorser, approved_by_user_id = :approver,
-                       root_cause_classified = true, unknowns_resolved = true,
-                       authorities_replaced = true, results_reconciled = true,
-                       capability_evidence_current = true,
-                       -- A technical or security cause needs an attestation
-                       -- before anything restarts, and the schema says so.
-                       security_attestation_present = true,
-                       -- Reenablement names the scope it restores, so nobody can
-                       -- lift a hold and leave what it covered undefined.
-                       reenabled_scope = '{"scope": "adversarial-probe"}'::jsonb
-                 WHERE id = :id
-                """)
-                .param("id", containmentId)
-                .param("endorser", graph.executorUserId())
-                .param("approver", graph.verifierUserId())
-                .update();
+    private static void assertSqlRefusal(org.assertj.core.api.ThrowableAssert.ThrowingCallable action,
+                                         String state,String message) {
+        Throwable refusal=catchThrowable(action);
+        assertThat(refusal).as("database operation must refuse").isNotNull();
+        while(refusal.getCause()!=null) refusal=refusal.getCause();
+        assertThat(refusal).isInstanceOf(SQLException.class).hasMessageContaining(message);
+        assertThat(((SQLException)refusal).getSQLState()).isEqualTo(state);
     }
 }

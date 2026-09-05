@@ -587,6 +587,15 @@ class MigrationContractTests(unittest.TestCase):
                 "V0054__index_the_demand_carry_forward_lookup.sql",
                 "V0055__record_what_happened_to_a_task_and_who_did_it.sql",
                 "V0056__publish_the_daily_brief_and_weekly_review_as_projections.sql",
+                "V0057__bind_advertising_responsibility_and_human_decisions.sql",
+                "V0058__seal_advertising_authority_and_control_execution.sql",
+                "V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+                "V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+                "V0061__bind_advertising_exception_risk_and_preview_evidence.sql",
+                "V0062__share_frozen_outcome_authority_with_governed_manual.sql",
+                "V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+                "V0064__reconcile_expired_advertising_authority.sql",
+                "V0065__route_settled_advertising_contradictions_to_finance_review.sql",
             ),
             APPROVED_MIGRATIONS,
         )
@@ -646,6 +655,19 @@ class MigrationContractTests(unittest.TestCase):
         self.assertTrue(approved_index_replacement(path, text, line))
         self.assertFalse(approved_index_replacement(path.with_name("V9999__unsafe.sql"), text, line))
         self.assertFalse(approved_index_replacement(path, text.replace("product_variant_ref_id", "omitted"), line))
+
+
+    def test_advertising_identity_index_replacement_preserves_all_three_authorities(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        path = root / "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql"
+        text = path.read_text(encoding="utf-8")
+        line = "DROP INDEX ops.recommendation_live_uq;"
+        self.assertTrue(approved_index_replacement(path, text, line))
+        self.assertFalse(approved_index_replacement(path.with_name("V9999__unsafe.sql"), text, line))
+        self.assertFalse(approved_index_replacement(path, text, "DROP INDEX ops.ad_case_responsibility;"))
+        for removed in ("'caseId'", "'candidateId'", "'APPROVED',", "'ADVERTISING_REVIEW','AD_BID_CHANGE'"):
+            with self.subTest(removed=removed):
+                self.assertFalse(approved_index_replacement(path, text.replace(removed, ""), line))
 
 
 class CommentExtractionTests(unittest.TestCase):

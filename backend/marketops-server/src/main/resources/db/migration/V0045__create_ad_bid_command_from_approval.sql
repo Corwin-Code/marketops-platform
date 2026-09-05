@@ -111,6 +111,10 @@ BEGIN
     IF NOT FOUND THEN
         RAISE EXCEPTION 'the approved candidate does not exist' USING ERRCODE = 'MO092';
     END IF;
+    IF cardinality(ops.ad_action_blockers(candidate.candidate_basis,candidate.cause_code,
+        (SELECT blocker_codes FROM mart.ad_case WHERE id=candidate.case_id)))>0 THEN
+        RAISE EXCEPTION 'current action-specific evidence blockers remain unresolved' USING ERRCODE='MO092';
+    END IF;
     IF candidate.direction <> (recommendation.proposed_parameters ->> 'direction')
         OR candidate.provider_normalized_amount
             <> (recommendation.proposed_parameters ->> 'targetBid')::numeric THEN
@@ -124,6 +128,32 @@ BEGIN
         OR object_row.status <> 'ACTIVE' THEN
         RAISE EXCEPTION 'the advertising object is not independently controllable'
             USING ERRCODE = 'MO092';
+    END IF;
+
+    IF NOT EXISTS(SELECT 1 FROM core.ad_bid_target_policy policy
+        JOIN platform.ad_semantic_profile profile ON profile.id=candidate.semantic_profile_id
+        WHERE policy.id=candidate.target_policy_id AND policy.policy_version=candidate.target_policy_version
+        AND policy.status='ACTIVE' AND policy.effective_from<=statement_timestamp()
+        AND (policy.effective_to IS NULL OR policy.effective_to>statement_timestamp())
+        AND profile.id=object_row.semantic_profile_id AND profile.status='ACTIVE'
+        AND profile.verification_state='VERIFIED' AND profile.bid_currency_code=candidate.currency_code
+        AND profile.bid_unit_code=candidate.bid_unit_code
+        AND candidate.provider_normalized_amount BETWEEN profile.bid_minimum AND profile.bid_maximum
+        AND mod(candidate.provider_normalized_amount,profile.bid_step)=0
+        AND round(candidate.provider_normalized_amount,profile.bid_precision)=candidate.provider_normalized_amount
+        AND abs(candidate.provider_normalized_amount-candidate.current_bid_amount)
+            <=least(policy.max_absolute_change_amount * CASE candidate.bid_unit_code WHEN 'CURRENCY_MINOR' THEN 100 ELSE 1 END,candidate.current_bid_amount*policy.max_relative_change_ratio)
+        AND policy.direction=candidate.direction AND policy.candidate_basis=candidate.candidate_basis
+        AND (candidate.candidate_basis='MAX_CPC_BOUNDED' AND candidate.max_cpc_amount IS NOT NULL
+             AND (candidate.provider_normalized_amount<=candidate.max_cpc_amount*(1-policy.ceiling_headroom_ratio)
+                 OR candidate.direction='PROTECTION_DECREASE' AND policy.allow_protection_intermediate_target)
+          OR candidate.candidate_basis='CAUSE_BOUND_PROTECTION_STEP'
+             AND candidate.direction='PROTECTION_DECREASE' AND policy.cause_bound_step_enabled
+             AND policy.cause_bound_step_ratio IS NOT NULL
+             AND abs(candidate.provider_normalized_amount-candidate.current_bid_amount)
+                 <=candidate.current_bid_amount*policy.cause_bound_step_ratio
+             AND candidate.cause_code=ANY(policy.cause_bound_causes))) THEN
+        RAISE EXCEPTION 'candidate no longer satisfies exact target and Provider policy' USING ERRCODE='MO092';
     END IF;
 
     SELECT * INTO configuration FROM core.ad_object_configuration_observation c
@@ -182,10 +212,14 @@ BEGIN
     -- Materiality. The initial ordinary envelope is zero, so every nonzero
     -- change is Material; the policy is read rather than assumed so widening it
     -- later stays a reviewed data change.
-    change_amount := abs(candidate.provider_normalized_amount - candidate.current_bid_amount);
+    change_amount := abs(candidate.provider_normalized_amount - candidate.current_bid_amount)
+        / CASE candidate.bid_unit_code WHEN 'CURRENCY_MINOR' THEN 100 ELSE 1 END;
     SELECT * INTO envelope FROM core.ad_materiality_policy m
      WHERE m.organization_id = recommendation.organization_id
-       AND m.status IN ('ACTIVE', 'RETIRED')
+       AND m.status = 'ACTIVE'
+       AND (m.scope_kind='ORGANIZATION'
+         OR m.scope_kind='PLATFORM' AND m.platform_code=object_row.platform_code
+         OR m.scope_kind='STORE' AND m.store_ref_id=recommendation.store_id)
        AND m.effective_from <= statement_timestamp()
        AND (m.effective_to IS NULL OR m.effective_to > statement_timestamp())
      ORDER BY CASE m.scope_kind WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END,
@@ -196,7 +230,8 @@ BEGIN
     ELSIF change_amount > envelope.ordinary_nonzero_envelope_amount THEN
         materiality := 'MATERIAL_IMPACT';
     ELSE
-        materiality := 'ORDINARY_IMPACT';
+        materiality := CASE WHEN ops.ad_ordinary_promotion_covers(p_bundle_id,
+            object_row.id, change_amount) THEN 'ORDINARY_IMPACT' ELSE 'MATERIAL_IMPACT' END;
     END IF;
     IF materiality = 'MATERIALITY_UNRESOLVED' THEN
         RAISE EXCEPTION 'materiality cannot be resolved, so no command may be created'

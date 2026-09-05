@@ -78,20 +78,24 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM platform.feature_flag f
          WHERE f.flag_code = 'ad-bid-change-write'
-           AND f.scope_kind = 'CAPABILITY' AND f.state = 'ENABLED') THEN
+           AND f.scope_kind = 'CAPABILITY' AND f.capability_id=command.capability_id
+           AND f.status='ACTIVE' AND f.state = 'ENABLED') THEN
         reasons := array_append(reasons, 'CAPABILITY_SWITCH_DISABLED');
     END IF;
     IF NOT EXISTS (
         SELECT 1 FROM platform.feature_flag f
          WHERE f.flag_code = 'ad-bid-change-write'
-           AND f.scope_kind = 'GLOBAL' AND f.state = 'ENABLED') THEN
+           AND f.scope_kind = 'GLOBAL' AND f.status='ACTIVE' AND f.state = 'ENABLED') THEN
         reasons := array_append(reasons, 'GLOBAL_SWITCH_DISABLED');
     END IF;
     IF EXISTS (
         SELECT 1 FROM platform.feature_flag f
          WHERE f.flag_code = 'ad-bid-change-write'
-           AND f.scope_kind IN ('PLATFORM', 'MARKETPLACE_ACCOUNT', 'STORE')
-           AND f.state = 'DISABLED') THEN
+           AND f.status='ACTIVE' AND f.state = 'DISABLED'
+           AND (f.scope_kind='PLATFORM' AND f.platform_code=command.platform_code
+             OR f.scope_kind='STORE' AND f.store_id=command.store_id
+             OR f.scope_kind='MARKETPLACE_ACCOUNT' AND f.marketplace_account_id=
+                 (SELECT marketplace_account_id FROM core.store WHERE id=command.store_id))) THEN
         reasons := array_append(reasons, 'SCOPED_SWITCH_DISABLED');
     END IF;
 
@@ -221,7 +225,8 @@ BEGIN
 
     -- The Ordinary route exists only where a promotion record says so, and this
     -- Slice creates none. An ordinary-routed command therefore always refuses.
-    IF command.materiality_route = 'ORDINARY_IMPACT' THEN
+    IF command.materiality_route = 'ORDINARY_IMPACT' AND NOT ops.ad_ordinary_promotion_covers(
+        command.bundle_id,command.ad_native_object_id,abs(command.target_bid_amount-command.prior_bid_amount) / CASE command.bid_unit_code WHEN 'CURRENCY_MINOR' THEN 100 ELSE 1 END) THEN
         reasons := array_append(reasons, 'ORDINARY_ROUTE_NOT_PROMOTED');
     END IF;
     IF command.materiality_route = 'MATERIALITY_UNRESOLVED' THEN
@@ -259,53 +264,9 @@ BEGIN
         END IF;
     END IF;
 
-    -- The aggregate envelope. Every axis is checked independently; there is no
-    -- point in this function where one axis's slack is added to another's.
-    SELECT * INTO envelope
-      FROM core.ad_exposure_envelope e
-     WHERE e.organization_id = command.organization_id
-       AND e.status IN ('ACTIVE', 'RETIRED')
-       AND e.effective_from <= statement_timestamp()
-       AND (e.effective_to IS NULL OR e.effective_to > statement_timestamp())
-     ORDER BY CASE e.scope_kind WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END,
-              e.effective_from DESC
-     LIMIT 1;
-    IF NOT FOUND THEN
-        reasons := array_append(reasons, 'AGGREGATE_ENVELOPE_UNRESOLVED');
-    ELSE
-        SELECT count(*) INTO active_count
-          FROM ops.ad_action_reservation res
-         WHERE res.organization_id = command.organization_id AND res.state = 'ACTIVE';
-        -- Ordinary work may not consume the reserved recovery headroom. A
-        -- compensation may, which is what the headroom is for.
-        IF command.direction <> 'EXACT_PRIOR_BID_COMPENSATION'
-            AND active_count > envelope.max_active_interventions
-                               - envelope.reserved_recovery_headroom_count THEN
-            reasons := array_append(reasons, 'AGGREGATE_ENVELOPE_BLOCKED');
-        ELSIF active_count > envelope.max_active_interventions THEN
-            reasons := array_append(reasons, 'AGGREGATE_ENVELOPE_BLOCKED');
-        END IF;
-
-        SELECT count(*) INTO unresolved
-          FROM ops.ad_bid_command other
-         WHERE other.organization_id = command.organization_id
-           AND other.state IN ('UNKNOWN_REQUIRES_READBACK', 'READBACK_MISMATCH',
-                               'LATER_CHANGE_OR_MISMATCH_INVESTIGATION', 'MANUAL_RESOLUTION');
-        IF unresolved > envelope.max_unresolved_transmitted_writes THEN
-            reasons := array_append(reasons, 'AGGREGATE_ENVELOPE_BLOCKED');
-        END IF;
-
-        SELECT coalesce(sum(abs(other.target_bid_amount - other.prior_bid_amount)), 0)
-          INTO cumulative
-          FROM ops.ad_bid_command other
-         WHERE other.organization_id = command.organization_id
-           AND other.created_at > statement_timestamp()
-                                  - make_interval(hours => envelope.cumulative_window_hours);
-        IF cumulative + abs(command.target_bid_amount - command.prior_bid_amount)
-                > envelope.max_cumulative_bid_change_amount THEN
-            reasons := array_append(reasons, 'AGGREGATE_ENVELOPE_BLOCKED');
-        END IF;
-    END IF;
+    -- Reservation admission and the gate share the same six independent axes.
+    reasons := reasons || ops.ad_exposure_failures(command.organization_id,
+        command.store_id, command.direction);
 
     RETURN reasons;
 END;

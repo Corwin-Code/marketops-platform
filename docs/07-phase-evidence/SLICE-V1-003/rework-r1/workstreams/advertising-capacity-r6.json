@@ -1,0 +1,45 @@
+{
+  "dataset" : {
+    "nativeObjects" : 1000,
+    "completeAffectedSetMembersPerObject" : 1,
+    "regressionObjects" : 200,
+    "sharedListings" : 1,
+    "organizations" : 1,
+    "sharedProducts" : 1,
+    "stores" : 1
+  },
+  "runtime" : {
+    "os" : "Mac OS X",
+    "postgres" : "17.6 (Debian 17.6-2.pgdg12+1)",
+    "arch" : "aarch64",
+    "availableProcessors" : 8,
+    "java" : "21.0.10",
+    "maxJvmMemoryBytes" : 4294967296
+  },
+  "targeted" : {
+    "sampleCount" : 1000,
+    "criticalSampleCount" : 200,
+    "criticalP95Millis" : 39845,
+    "maximumMillis" : 217449,
+    "hardBreachCount" : 0,
+    "clockDefectCount" : 0,
+    "pendingRequests" : 0,
+    "failedRequests" : 0,
+    "oldestFactAcceptedAt" : null,
+    "lastSweepState" : "NOT_ESTABLISHED",
+    "lastSweepCompletedAt" : null,
+    "observedAt" : "2026-09-05T02:00:30.650727Z",
+    "windowHours" : 24,
+    "incidents" : [ "HOURLY_RECONCILIATION_NOT_CURRENT" ],
+    "state" : "INCIDENT",
+    "distributionState" : "MEASURED"
+  },
+  "targetedWallMillis" : 216418,
+  "workerPasses" : 4,
+  "sweepWallMillis" : 113072,
+  "hourlyMarginMillis" : 3486928,
+  "responsibilityTasks" : 1200,
+  "droppedLateCorrectionRecovered" : 1,
+  "productionWriteEnabled" : false,
+  "realProviderAccess" : false
+}

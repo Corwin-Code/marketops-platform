@@ -60,7 +60,7 @@ public class AdvertisingDecisionRepository {
                        object.platform_code,
                        configuration.observed_bid_amount,
                        bundle.id                  AS bundle_id,
-                       approval.scope_expires_at,
+                       sealed.expires_at AS scope_expires_at,
                        lease.lease_seconds,
                        lease.material_lease_seconds
                   FROM ops.recommendation r
@@ -98,6 +98,7 @@ public class AdvertisingDecisionRepository {
                            AND (b.effective_to IS NULL
                                 OR b.effective_to > statement_timestamp())
                          LIMIT 1) bundle ON true
+                  LEFT JOIN ops.ad_action_authorization sealed ON sealed.recommendation_id=r.id
                   LEFT JOIN LATERAL (
                         SELECT a.scope_expires_at
                           FROM ops.approval_decision a
@@ -111,6 +112,9 @@ public class AdvertisingDecisionRepository {
                          WHERE p.organization_id = r.organization_id
                            AND p.direction = candidate.direction
                            AND p.status = 'ACTIVE'
+                           AND (p.scope_kind='ORGANIZATION' OR p.scope_kind='PLATFORM'
+                                AND p.platform_code=object.platform_code OR p.scope_kind='STORE'
+                                AND p.store_ref_id=r.store_id)
                            AND p.effective_from <= statement_timestamp()
                            AND (p.effective_to IS NULL
                                 OR p.effective_to > statement_timestamp())
@@ -308,33 +312,43 @@ public class AdvertisingDecisionRepository {
                 .list();
     }
 
-    /**
-     * Which route a change of this size takes.
-     *
-     * <p>Read from the materiality policy rather than assumed, with the same
-     * scope precedence the creation function uses. The initial ordinary envelope
-     * is zero, so every nonzero change is Material today; widening that stays a
-     * reviewed data change rather than a code change.
-     */
+    /** An amount without its exact candidate, scope and Policy cannot classify materiality. */
     public String materialityRoute(UUID organizationId, java.math.BigDecimal changeAmount) {
+        return "MATERIALITY_UNRESOLVED";
+    }
+
+    public String materialityRouteForRecommendation(UUID recommendationId) {
         return jdbc.sql("""
-                SELECT CASE WHEN :changeAmount > m.ordinary_nonzero_envelope_amount
-                            THEN 'MATERIAL_IMPACT' ELSE 'ORDINARY_IMPACT' END
-                  FROM core.ad_materiality_policy m
-                 WHERE m.organization_id = :organizationId
-                   AND m.status IN ('ACTIVE', 'RETIRED')
-                   AND m.effective_from <= statement_timestamp()
-                   AND (m.effective_to IS NULL OR m.effective_to > statement_timestamp())
-                 ORDER BY CASE m.scope_kind WHEN 'STORE' THEN 1
-                                            WHEN 'PLATFORM' THEN 2 ELSE 3 END,
-                          m.effective_from DESC
-                 LIMIT 1
-                """)
-                .param("organizationId", organizationId)
-                .param("changeAmount", changeAmount)
-                .query(String.class)
-                .optional()
-                .orElse("MATERIALITY_UNRESOLVED");
+                SELECT CASE WHEN bundle.id IS NULL OR materiality.id IS NULL
+                            THEN 'MATERIALITY_UNRESOLVED'
+                            ELSE ops.ad_materiality_assessment(bundle.id,candidate.id)->>'route' END
+                  FROM ops.recommendation r
+                  JOIN ops.ad_bid_candidate candidate
+                    ON candidate.id=CASE WHEN ops.ad_bid_parameter_contract_is_valid(r.proposed_parameters)
+                         THEN (r.proposed_parameters->>'candidateId')::uuid END
+                  LEFT JOIN ops.ad_candidate_selection selection ON selection.recommendation_id=r.id
+                  LEFT JOIN LATERAL (
+                    SELECT b.* FROM ops.ad_decision_policy_bundle b
+                    WHERE b.status='ACTIVE' AND b.validation_state='VALIDATED'
+                      AND b.effective_from<=statement_timestamp() AND (b.effective_to IS NULL OR b.effective_to>statement_timestamp())
+                      AND b.organization_id=r.organization_id AND b.store_id=r.store_id
+                      AND b.semantic_profile_id=candidate.semantic_profile_id AND b.target_policy_id=candidate.target_policy_id
+                      AND b.direction=candidate.direction AND b.candidate_basis=candidate.candidate_basis
+                      AND (selection.id IS NULL OR b.id=selection.bundle_id AND b.bundle_version=selection.bundle_version)
+                      AND (selection.id IS NOT NULL OR (SELECT count(*) FROM ops.ad_decision_policy_bundle sibling
+                        WHERE sibling.organization_id=r.organization_id AND sibling.store_id=r.store_id
+                          AND sibling.semantic_profile_id=candidate.semantic_profile_id AND sibling.target_policy_id=candidate.target_policy_id
+                          AND sibling.direction=candidate.direction AND sibling.candidate_basis=candidate.candidate_basis
+                          AND sibling.status='ACTIVE' AND sibling.validation_state='VALIDATED'
+                          AND sibling.effective_from<=statement_timestamp()
+                          AND (sibling.effective_to IS NULL OR sibling.effective_to>statement_timestamp()))=1)
+                  ) bundle ON true
+                  LEFT JOIN core.ad_materiality_policy materiality ON materiality.id=bundle.materiality_policy_id
+                    AND materiality.status='ACTIVE' AND materiality.effective_from<=statement_timestamp()
+                    AND (materiality.effective_to IS NULL OR materiality.effective_to>statement_timestamp())
+                 WHERE r.id=:recommendationId
+                """).param("recommendationId", recommendationId).query(String.class)
+                .optional().orElse("MATERIALITY_UNRESOLVED");
     }
 
     /** One case's view of a proposed bid change, with unresolved parts null. */

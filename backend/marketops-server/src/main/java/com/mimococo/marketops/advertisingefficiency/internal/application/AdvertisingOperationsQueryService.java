@@ -9,6 +9,7 @@ import com.mimococo.marketops.advertisingefficiency.ManualExecutionPacketView;
 import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingContainmentRepository;
 import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingManualPacketRepository;
 import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingOutcomeRepository;
+import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingDisclosureRepository;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -36,13 +37,15 @@ class AdvertisingOperationsQueryService implements AdvertisingOperationsQuery {
     private final AdvertisingContainmentRepository containment;
     private final AdvertisingManualPacketRepository packets;
     private final AdvertisingOutcomeRepository outcomes;
+    private final AdvertisingDisclosureRepository scopes;
 
     AdvertisingOperationsQueryService(AdvertisingContainmentRepository containment,
                                       AdvertisingManualPacketRepository packets,
-                                      AdvertisingOutcomeRepository outcomes) {
+                                      AdvertisingOutcomeRepository outcomes, AdvertisingDisclosureRepository scopes) {
         this.containment = containment;
         this.packets = packets;
         this.outcomes = outcomes;
+        this.scopes = scopes;
     }
 
     @Override
@@ -67,6 +70,14 @@ class AdvertisingOperationsQueryService implements AdvertisingOperationsQuery {
     public List<AdvertisingContainment> containments(
             UUID organizationId, boolean holdingOnly, int limit) {
         return containment.list(organizationId, holdingOnly, bounded(limit));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AdvertisingContainment> scopedContainments(UUID organizationId,
+            List<UUID> permittedStoreIds, boolean holdingOnly, int limit) {
+        return containment.listForIds(organizationId,
+                scopes.relevantContainmentIds(organizationId, permittedStoreIds), holdingOnly, bounded(limit));
     }
 
     @Override

@@ -77,6 +77,17 @@ public enum ActionScopeCode {
     /** Read the advertising control queue, its cases, evidence and outcomes. */
     ADVERTISING_VIEW(false),
 
+    /** Read financial decision evidence for every member of an advertising affected set. */
+    ADVERTISING_DECISION_EVIDENCE_VIEW(false),
+
+    ADVERTISING_MANUAL_EXECUTE(true),
+    ADVERTISING_MANUAL_VERIFY(true),
+    ADVERTISING_MANUAL_ENDORSE(true),
+    ADVERTISING_MANUAL_APPROVE(true),
+
+    ADVERTISING_TECHNICAL_STOP(true),
+    ADVERTISING_TECHNICAL_ATTEST(true),
+
     /** Record structured action evidence against an accountable advertising case. */
     ADVERTISING_TASK_ACT(false),
 

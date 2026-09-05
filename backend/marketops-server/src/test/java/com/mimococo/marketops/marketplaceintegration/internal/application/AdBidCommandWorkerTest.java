@@ -155,7 +155,7 @@ class AdBidCommandWorkerTest {
         }
 
         @Test
-        @DisplayName("a retriable error waits rather than failing")
+        @DisplayName("a retriable label without proof requires readback before any retry")
         void retriableErrorWaits() {
             claim("PENDING");
             when(writePort.perform(any())).thenReturn(new AdBidWriteResult(
@@ -164,7 +164,9 @@ class AdBidCommandWorkerTest {
 
             worker.runOnce(Instant.now(), 10);
 
-            verify(commands).transition(eq(COMMAND), anyLong(), anyString(), eq("RETRY_WAIT"),
+            verify(commands).transition(eq(COMMAND), anyLong(), anyString(), eq("READBACK_PENDING"),
+                    any(), any(), any());
+            verify(commands, never()).transition(eq(COMMAND), anyLong(), anyString(), eq("RETRY_WAIT"),
                     any(), any(), any());
         }
 
@@ -242,7 +244,7 @@ class AdBidCommandWorkerTest {
                     anyString(), anyString(), anyString());
             verify(writePort, never()).perform(any());
             verify(commands).transition(eq(COMMAND), anyLong(), anyString(),
-                    eq("MANUAL_RESOLUTION"), eq("credential_reference_absent"), any(), any());
+                    eq("FAILED_FINAL"), eq("credential_reference_absent"), any(), any());
         }
     }
 
@@ -297,6 +299,78 @@ class AdBidCommandWorkerTest {
             verify(commands, org.mockito.Mockito.atLeastOnce()).transition(eq(COMMAND), anyLong(),
                     anyString(), eq("UNKNOWN_REQUIRES_READBACK"), any(), any(), any());
         }
+    }
+
+    @Test
+    void pendingNativeStatusPollPreservesTaskAndNeverAppliesAgain() {
+        claim("PLATFORM_PENDING");
+        when(commands.leaseStatus(eq(COMMAND), anyString(), anyInt())).thenReturn(2L);
+        when(commands.nativeTaskKey(COMMAND)).thenReturn(Optional.of("native-task-original"));
+        when(writePort.perform(any())).thenAnswer(answering(AdBidWriteResult.Outcome.RETRIABLE_ERROR, null));
+        assertThat(worker.runOnce(Instant.now(), 10)).isEqualTo(1);
+        var request = org.mockito.ArgumentCaptor.forClass(AdBidWriteRequest.class);
+        verify(writePort).perform(request.capture());
+        assertThat(request.getValue().operation()).isEqualTo(AdBidWriteRequest.Operation.STATUS_ENQUIRY);
+        assertThat(request.getValue().nativeTaskKey()).isEqualTo("native-task-original");
+        verify(commands).deferObservation(eq(COMMAND), eq(2L), anyString(), anyInt());
+        verify(commands, never()).lease(eq(COMMAND), anyString(), anyInt());
+        verify(commands, never()).transition(eq(COMMAND), anyLong(), anyString(), eq("RETRY_WAIT"), any(), any(), any());
+    }
+
+    @Test
+    void resolvedNativeStatusMustReadBackBeforeSuccess() {
+        claim("PLATFORM_PENDING");
+        when(commands.nativeTaskKey(COMMAND)).thenReturn(Optional.of("native-task-original"));
+        when(writePort.perform(any())).thenAnswer(answering(AdBidWriteResult.Outcome.ACCEPTED, null));
+        worker.runOnce(Instant.now(), 10);
+        var request = org.mockito.ArgumentCaptor.forClass(AdBidWriteRequest.class);
+        verify(writePort,org.mockito.Mockito.times(2)).perform(request.capture());
+        assertThat(request.getAllValues()).extracting(AdBidWriteRequest::operation)
+                .containsExactly(AdBidWriteRequest.Operation.STATUS_ENQUIRY, AdBidWriteRequest.Operation.READBACK);
+        verify(commands).transition(eq(COMMAND),anyLong(),anyString(),eq("READBACK_MATCHED"),any(),any(),any());
+    }
+
+    @Test
+    void compensationKeepsItsLeaseUntilExactPriorReadback() {
+        claim("COMPENSATION_PENDING");
+        when(writePort.perform(any())).thenAnswer(answering(AdBidWriteResult.Outcome.ACCEPTED, null));
+        when(commands.transitionReadback(any(),any(),anyLong(),anyString()))
+                .thenReturn("MATCHES_TARGET", "MATCHES_PRIOR");
+        worker.runOnce(Instant.now(), 10);
+        var request = org.mockito.ArgumentCaptor.forClass(AdBidWriteRequest.class);
+        verify(writePort,org.mockito.Mockito.times(3)).perform(request.capture());
+        assertThat(request.getAllValues()).extracting(AdBidWriteRequest::operation)
+                .containsExactly(AdBidWriteRequest.Operation.READBACK,AdBidWriteRequest.Operation.RESTORE,
+                        AdBidWriteRequest.Operation.READBACK);
+        assertThat(request.getAllValues().get(1).targetBid().amount()).isEqualByComparingTo("30.0000");
+        verify(commands).transition(eq(COMMAND),anyLong(),anyString(),eq("COMPENSATED"),any(),any(),any());
+        verify(commands,never()).transition(eq(COMMAND),anyLong(),anyString(),eq("READBACK_MATCHED"),any(),any(),any());
+    }
+
+    @Test
+    void compensationCannotOverwriteThirdPartyCurrentValue() {
+        claim("COMPENSATION_PENDING");
+        when(writePort.perform(any())).thenAnswer(answering(AdBidWriteResult.Outcome.ACCEPTED, null));
+        when(commands.transitionReadback(any(),any(),anyLong(),anyString())).thenReturn("DIFFERENT");
+        worker.runOnce(Instant.now(), 10);
+        var request = org.mockito.ArgumentCaptor.forClass(AdBidWriteRequest.class);
+        verify(writePort).perform(request.capture());
+        assertThat(request.getValue().operation()).isEqualTo(AdBidWriteRequest.Operation.READBACK);
+        verify(commands).transition(eq(COMMAND),anyLong(),anyString(),eq("MANUAL_RESOLUTION"),
+                eq("compensation_current_owner_not_proven"),any(),any());
+    }
+
+    @Test
+    void sameCommandRetryNeedsIndependentDatabaseProof() {
+        claim("UNKNOWN_REQUIRES_READBACK");
+        when(writePort.perform(any())).thenAnswer(answering(AdBidWriteResult.Outcome.ACCEPTED, null));
+        when(commands.transitionReadback(any(),any(),anyLong(),anyString())).thenReturn("MATCHES_PRIOR");
+        when(commands.retryIsProven(COMMAND)).thenReturn(true);
+        worker.runOnce(Instant.now(), 10);
+        verify(commands).transition(eq(COMMAND),anyLong(),anyString(),eq("RETRY_WAIT"),any(),anyInt(),any());
+        var request=org.mockito.ArgumentCaptor.forClass(AdBidWriteRequest.class);
+        verify(writePort).perform(request.capture());
+        assertThat(request.getValue().operation()).isEqualTo(AdBidWriteRequest.Operation.READBACK);
     }
 
     @Nested

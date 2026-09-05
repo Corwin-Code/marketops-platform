@@ -1,0 +1,4 @@
+PASS: trusted issuer -> one-use app transaction proof -> immutable final approval seal -> app command creator
+authorization: d957728c-c16e-4846-af02-bea50afff7dd command: 9afef86b-b445-4dba-af98-8d986af2b288
+frozen outcome and minimum expiry: d0fa7daf-0724-5272-a691-bc0400c23766|MATERIAL_IMPACT|00:18:00
+disabled real transmission gate: {CAPABILITY_NOT_AVAILABLE_FOR_STORE,CAPABILITY_SWITCH_DISABLED,ENTITY_NOT_ALLOWLISTED,GLOBAL_SWITCH_DISABLED,GUARDRAIL_BUNDLE_MISMATCH,GUARDRAIL_NOT_PASSED}

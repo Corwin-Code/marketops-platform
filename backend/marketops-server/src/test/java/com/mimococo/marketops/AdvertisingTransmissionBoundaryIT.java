@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,12 +27,9 @@ import org.springframework.test.context.DynamicPropertySource;
  * matters here, because it is the only one that can catch a kill switch thrown
  * in the milliseconds while a request was being assembled.
  *
- * <p>The commands below are seeded directly with the owning role. They cannot be
- * created through ops.create_ad_bid_command, because that needs a verified
- * advertising capability and a unique active policy bundle and neither exists —
- * which is the product working as intended and is asserted elsewhere. Seeding
- * one is how the boundary is put under pressure without first making it
- * satisfiable, which would mean weakening the thing under test.
+ * <p>Commands are created through the real sealed creator in an isolated
+ * fictional protocol graph. Capability authority is then withdrawn before any
+ * dispatch; privileged fixture changes put stale workers under pressure.
  */
 @SpringBootTest
 @ActiveProfiles("ci")
@@ -41,6 +39,7 @@ class AdvertisingTransmissionBoundaryIT {
             TestDatabase.isolatedContainer();
 
     private static JdbcClient seed;
+    private static DataSource migration,application,admin;
 
     @Autowired
     private JdbcClient jdbc;
@@ -56,8 +55,10 @@ class AdvertisingTransmissionBoundaryIT {
 
     @BeforeAll
     static void openSeedConnection() {
-        seed = JdbcClient.create(new DriverManagerDataSource(DATABASE.getJdbcUrl(),
-                TestDatabase.migrationRole(), TestDatabase.migrationPassword()));
+        migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
+        application=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.applicationRole(),TestDatabase.applicationPassword());
+        admin=new DriverManagerDataSource(DATABASE.getJdbcUrl(),DATABASE.getUsername(),DATABASE.getPassword());
+        seed = JdbcClient.create(migration);
     }
 
     @Test
@@ -85,8 +86,7 @@ class AdvertisingTransmissionBoundaryIT {
         // whole distance to a usable configuration.
         assertThatThrownBy(() -> lease(command.commandId()))
                 .hasMessageContaining("the advertising write gate is closed")
-                .hasMessageContaining("CAPABILITY_NOT_VERIFIED")
-                .hasMessageContaining("BUNDLE_UNRESOLVED");
+                .hasMessageContaining("CAPABILITY_NOT_VERIFIED");
     }
 
     @Test
@@ -132,16 +132,15 @@ class AdvertisingTransmissionBoundaryIT {
     void leasedWorkCannotTransmitAfterTheReservationLapses() {
         var command = seedCommand("EXECUTING");
 
-        // Releasing the reservation is what happens when the intervention is
-        // considered finished. A command still holding a lease at that point is
-        // one whose right to act has been withdrawn under it.
+        // Model a stale worker after reservation retirement with a privileged
+        // isolated fixture mutation. Canonical release itself is exercised by
+        // FrozenOutcomeIT; the worker must validate its lease at transmission.
         seed.sql("""
                 UPDATE ops.ad_action_reservation
-                   SET configuration_resolved = true, early_observation_complete = true
+                   SET configuration_resolved = true, early_observation_complete = true,
+                       state='RELEASED',released_at=clock_timestamp(),release_reason='isolated stale-worker fixture'
                  WHERE id = :id
                 """).param("id", command.reservationId()).update();
-        seed.sql("SELECT ops.release_ad_action_reservation(:id, 'fixture release')")
-                .param("id", command.reservationId()).query(Boolean.class).single();
 
         assertThat(gateReasons(command.commandId())).contains("RESERVATION_CONFLICT");
         assertThatThrownBy(() -> openAttempt(command.commandId(), 1L, "APPLY"))
@@ -205,11 +204,23 @@ class AdvertisingTransmissionBoundaryIT {
                 .hasMessageContaining("the lease that authorised this attempt is not current");
     }
 
-    private AdvertisingGraphFixture.Command seedCommand(String state) {
-        var graph = AdvertisingGraphFixture.seed(seed);
-        var decision = AdvertisingGraphFixture.seedDecision(seed, graph,
-                "PROTECTION_DECREASE", "MAX_CPC_BOUNDED");
-        return AdvertisingGraphFixture.seedCommand(seed, graph, decision, state);
+    private record Command(UUID commandId,UUID reservationId) { }
+    private Command seedCommand(String state) {
+        try {
+            var graph=AdvertisingR1Fixture.seed(migration);UUID command;
+            try(var app=application.getConnection()) {
+                app.setAutoCommit(false);
+                String proof=AdvertisingR1Fixture.proof(admin,app,graph,graph.id("ownerUser"),null,graph.id("recommendation"),graph.id("approval"));
+                AdvertisingR1Fixture.seal(app,graph,proof);command=AdvertisingR1Fixture.createCommand(app,graph);app.commit();
+            }
+            seed.sql("UPDATE platform.platform_capability SET verification_state='UNVERIFIED' WHERE platform_code=:platform")
+                    .param("platform",graph.platform()).update();
+            if("EXECUTING".equals(state)) seed.sql("""
+                UPDATE ops.ad_bid_command SET state='EXECUTING',fence_token=1,lease_owner='boundary-fixture',
+                  lease_expires_at=clock_timestamp()+interval '10 minutes' WHERE id=:id
+                """).param("id",command).update();
+            return new Command(command,graph.id("reservation"));
+        } catch(Exception failure) { throw new AssertionError("fictional sealed command fixture failed",failure); }
     }
 
     private List<String> gateReasons(UUID commandId) {

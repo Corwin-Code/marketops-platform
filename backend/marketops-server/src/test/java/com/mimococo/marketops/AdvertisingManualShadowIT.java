@@ -3,7 +3,6 @@ package com.mimococo.marketops;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.mimococo.marketops.advertisingefficiency.ManualExecutionPacketView;
 import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingManualPacketRepository;
 import java.time.Duration;
 import java.time.Instant;
@@ -85,106 +84,38 @@ class AdvertisingManualShadowIT {
     }
 
     @Test
-    @DisplayName("TC-AD-MANUAL-003 an executor's own report cannot prove a configuration")
-    void selfReportProvesNothing() {
-        AdvertisingGraphFixture.Graph fixture = seedFixture();
-        UUID packet = issue(fixture, "AD_BUDGET_CHANGE");
-
-        packets.recordVerification(UUID.randomUUID(), fixture.organizationId(), packet,
-                "EXECUTOR_SELF_REPORT", fixture.executorUserId(), null, "campaign.dailyBudget",
-                "5000.00", Instant.now(), "evidence://fixture/self-report", "NONE",
-                "manual-fixture");
-
-        ManualExecutionPacketView view = packets.packet(packet).orElseThrow();
-        assertThat(view.configurationProven()).isFalse();
-        assertThat(view.state()).isEqualTo("ACTION_REPORTED_CONFIGURATION_UNVERIFIED");
-        assertThat(view.verifications()).singleElement()
-                .satisfies(observation -> {
-                    assertThat(observation.provesConfiguration()).isFalse();
-                    assertThat(observation.verifierUserId()).isNull();
-                });
+    @DisplayName("TC-AD-MANUAL-003 legacy arbitrary packet issuance is closed; positive human lifecycle uses sealed functions")
+    void callerCannotIssueAnArbitraryManualPacket() {
+        var fixture=seedFixture();
+        assertThatThrownBy(()->issue(fixture,"AD_BUDGET_CHANGE"))
+                .isInstanceOf(com.mimococo.marketops.shared.OperationRejectedException.class);
     }
 
     @Test
-    @DisplayName("TC-AD-MANUAL-004 the executor cannot be their own independent verifier")
-    void executorCannotVerifyThemselves() {
-        AdvertisingGraphFixture.Graph fixture = seedFixture();
-        UUID packet = issue(fixture, "AD_STATUS_CHANGE");
-
-        assertThatThrownBy(() -> packets.recordVerification(UUID.randomUUID(),
-                fixture.organizationId(), packet, "INDEPENDENT_MANUAL_VERIFICATION",
-                fixture.executorUserId(), fixture.executorUserId(), "campaign.status", "PAUSED",
-                Instant.now(), "evidence://fixture/self-check", "NONE", "manual-fixture"))
-                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
-
-        assertThat(packets.packet(packet).orElseThrow().configurationProven()).isFalse();
+    @DisplayName("TC-AD-MANUAL-004/005/006 caller-named evidence grades cannot enter the canonical journal")
+    void callerCannotChooseTheirOwnEvidenceGradeOrVerifier() {
+        var fixture=seedFixture();
+        for(String grade:List.of("EXECUTOR_SELF_REPORT","INDEPENDENT_MANUAL_VERIFICATION",
+                "OFFICIAL_API_READBACK","OFFICIAL_CONFIGURATION_EXPORT")) {
+            assertThatThrownBy(()->packets.recordVerification(UUID.randomUUID(),fixture.organizationId(),
+                    UUID.randomUUID(),grade,fixture.executorUserId(),fixture.verifierUserId(),
+                    "campaign.dailyBudget","5000",Instant.now(),"fixture://asserted-grade","NONE","fixture"))
+                    .isInstanceOf(com.mimococo.marketops.shared.OperationRejectedException.class);
+        }
     }
 
     @Test
-    @DisplayName("TC-AD-MANUAL-005 a second person's look does establish the configuration")
-    void independentVerificationEstablishesTheConfiguration() {
-        AdvertisingGraphFixture.Graph fixture = seedFixture();
-        UUID packet = issue(fixture, "AD_BUDGET_CHANGE");
-
-        packets.recordVerification(UUID.randomUUID(), fixture.organizationId(), packet,
-                "EXECUTOR_SELF_REPORT", fixture.executorUserId(), null, "campaign.dailyBudget",
-                "5000.00", Instant.now(), "evidence://fixture/self-report", "NONE",
-                "manual-fixture");
-        packets.recordVerification(UUID.randomUUID(), fixture.organizationId(), packet,
-                "INDEPENDENT_MANUAL_VERIFICATION", fixture.executorUserId(), fixture.verifierUserId(),
-                "campaign.dailyBudget", "5000.00", Instant.now(),
-                "evidence://fixture/second-look", "NONE", "manual-fixture");
-
-        ManualExecutionPacketView view = packets.packet(packet).orElseThrow();
-        assertThat(view.configurationProven()).isTrue();
-        assertThat(view.state()).isEqualTo("MANUAL_CONFIGURATION_VERIFIED");
-    }
-
-    @Test
-    @DisplayName("TC-AD-MANUAL-006 a conflicted observation proves nothing and says so")
-    void conflictedObservationProvesNothing() {
-        AdvertisingGraphFixture.Graph fixture = seedFixture();
-        UUID packet = issue(fixture, "AD_BUDGET_CHANGE");
-
-        packets.recordVerification(UUID.randomUUID(), fixture.organizationId(), packet,
-                "OFFICIAL_API_READBACK", fixture.executorUserId(), fixture.verifierUserId(),
-                "campaign.dailyBudget", "4000.00", Instant.now(),
-                "evidence://fixture/readback", "CONFLICTED", "manual-fixture");
-
-        ManualExecutionPacketView view = packets.packet(packet).orElseThrow();
-        assertThat(view.configurationProven()).isFalse();
-        assertThat(view.state()).isEqualTo("MANUAL_EXECUTION_UNCERTAIN");
-    }
-
-    @Test
-    @DisplayName("TC-AD-MANUAL-007 an expired packet stops being current for everybody at once")
-    void expiryIsASweepRatherThanAReadTimeJudgement() {
-        AdvertisingGraphFixture.Graph fixture = seedFixture();
-        // A window that was real when it was issued and has since run out. A
-        // packet whose window was never real is refused by the table.
-        UUID packet = issue(fixture, "AD_BUDGET_CHANGE",
-                Instant.now().minus(Duration.ofHours(2)), Duration.ofHours(1));
-
-        // Still ISSUED in the row, because nothing has swept yet.
-        assertThat(packets.packet(packet).orElseThrow().state())
-                .isEqualTo("MANUAL_PACKET_ISSUED");
-
-        assertThat(packets.expire(Instant.now())).isGreaterThanOrEqualTo(1);
-        assertThat(packets.packet(packet).orElseThrow().state())
-                .isEqualTo("MANUAL_PACKET_EXPIRED");
-        assertThat(packets.packet(packet).orElseThrow().current(Instant.now())).isFalse();
-    }
-
-    @Test
-    @DisplayName("TC-AD-MANUAL-008 a revoked packet cannot be revoked or expired again")
-    void revocationIsFinal() {
-        AdvertisingGraphFixture.Graph fixture = seedFixture();
-        UUID packet = issue(fixture, "AD_STATUS_CHANGE");
-
-        assertThat(packets.revoke(packet, "the case no longer holds")).isTrue();
-        assertThat(packets.revoke(packet, "again")).isFalse();
-        assertThat(packets.packet(packet).orElseThrow().state())
-                .isEqualTo("MANUAL_PACKET_REVOKED");
+    @DisplayName("TC-AD-MANUAL-007/008 expiry uses server time and legacy unscoped revocation is closed")
+    void oldMutationMethodsCannotSupplyAuthority() {
+        assertThatThrownBy(()->packets.revoke(UUID.randomUUID(),"caller assertion"))
+                .isInstanceOf(com.mimococo.marketops.shared.OperationRejectedException.class);
+        // A caller cannot expire live instructions by choosing a distant clock.
+        assertThat(packets.expire(Instant.parse("9999-01-01T00:00:00Z"))).isGreaterThanOrEqualTo(0);
+        assertThat(jdbc.sql("SELECT has_table_privilege(current_user,'ops.ad_manual_execution_packet','INSERT,UPDATE,DELETE')")
+                .query(Boolean.class).single()).isFalse();
+        // The real Maker → OpsLead → Owner → reservation → independent/official
+        // observation, withdrawal of scope, replay and later-conflict assertions
+        // live in AdvertisingManualWorkflowIT against the same PostgreSQL schema.
     }
 
     private UUID issue(AdvertisingGraphFixture.Graph fixture, String actionKind) {

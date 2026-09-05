@@ -32,12 +32,15 @@ public class AdvertisingProjectionRepository {
 
     /** What an existing case already carried, so a sustained run can continue. */
     public record ExistingCase(UUID id, String lane, String sustainedLane,
-            int sustainedCycles, Instant sustainedSince) {
+            int sustainedCycles, Instant sustainedSince, Instant asOf) {
+        public ExistingCase(UUID id, String lane, String sustainedLane, int cycles, Instant since) {
+            this(id, lane, sustainedLane, cycles, since, since);
+        }
     }
 
     public Optional<ExistingCase> findByKey(UUID organizationId, String caseKey) {
         return jdbc.sql("""
-                SELECT id, lane, sustained_lane, sustained_cycles, sustained_since
+                SELECT id, lane, sustained_lane, sustained_cycles, sustained_since, as_of
                   FROM mart.ad_case
                  WHERE organization_id = :organizationId AND case_key = :caseKey
                 """)
@@ -48,7 +51,7 @@ public class AdvertisingProjectionRepository {
                         rs.getString("lane"),
                         rs.getString("sustained_lane"),
                         rs.getInt("sustained_cycles"),
-                        instantOf(rs, "sustained_since")))
+                        instantOf(rs, "sustained_since"), instantOf(rs, "as_of")))
                 .optional();
     }
 
@@ -321,6 +324,34 @@ public class AdvertisingProjectionRepository {
      * anywhere else would produce a runtime failure that only shows up on the
      * path that happens to pass a null.
      */
+    public void recordPurposeEvidence(UUID caseId, UUID organization, UUID calculation,
+            com.mimococo.marketops.advertisingefficiency.internal.domain.AdCaseCalculation.PurposeEvidence evidence) {
+        jdbc.sql("""
+                INSERT INTO mart.ad_case_purpose_evidence (case_id, organization_id, calculation_id,
+                    decision_purpose, evidence_kind, freshness_profile_id, source_time, accepted_at,
+                    expires_at, eligible, reason_codes)
+                VALUES (:caseId, :organization, :calculation, :purpose, :kind, :profile, :source,
+                    :accepted, :expires, :eligible, :reasons)
+                """).param("caseId", caseId).param("organization", organization).param("calculation", calculation)
+                .param("purpose", evidence.purpose()).param("kind", evidence.kind()).param("profile", evidence.profileId())
+                .param("source", ts(evidence.sourceTime())).param("accepted", ts(evidence.acceptedAt()))
+                .param("expires", ts(evidence.expiresAt())).param("eligible", evidence.eligible())
+                .param("reasons", evidence.reasonCodes().toArray(new String[0])).update();
+    }
+
+    public void recordQualification(UUID organization, UUID object, UUID policy,
+            Instant from, Instant to, boolean qualified, Instant at) {
+        jdbc.sql("""
+                INSERT INTO mart.ad_qualification_period (organization_id, ad_native_object_id,
+                    qualification_policy_id, period_start, period_end, qualified, evaluated_at)
+                VALUES (:organization, :object, :policy, :from, :to, :qualified, :at)
+                ON CONFLICT (organization_id, ad_native_object_id, qualification_policy_id, period_start, period_end)
+                DO UPDATE SET qualified = EXCLUDED.qualified, evaluated_at = EXCLUDED.evaluated_at
+                WHERE mart.ad_qualification_period.evaluated_at <= EXCLUDED.evaluated_at
+                """).param("organization", organization).param("object", object).param("policy", policy)
+                .param("from", ts(from)).param("to", ts(to)).param("qualified", qualified).param("at", ts(at)).update();
+    }
+
     private static org.springframework.jdbc.core.SqlParameterValue ts(java.time.Instant instant) {
         return new org.springframework.jdbc.core.SqlParameterValue(
                 java.sql.Types.TIMESTAMP,

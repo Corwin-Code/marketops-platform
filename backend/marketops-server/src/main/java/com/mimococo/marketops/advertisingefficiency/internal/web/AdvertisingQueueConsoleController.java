@@ -4,6 +4,8 @@ import com.mimococo.marketops.adminobservability.audit.AuditAction;
 import com.mimococo.marketops.adminobservability.audit.AuditSourceDomain;
 import com.mimococo.marketops.adminobservability.audit.MetadataAuditChange;
 import com.mimococo.marketops.adminobservability.audit.MetadataAuditRecorder;
+import tools.jackson.databind.node.ObjectNode;
+import com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDisclosureService;
 import com.mimococo.marketops.advertisingefficiency.AdvertisingCaseQuery;
 import com.mimococo.marketops.advertisingefficiency.AdvertisingCaseView;
 import com.mimococo.marketops.identityaccess.ActionScopeCode;
@@ -45,19 +47,21 @@ class AdvertisingQueueConsoleController {
     private final AdvertisingCaseQuery cases;
     private final BusinessAuthorization authorization;
     private final MetadataAuditRecorder audit;
+    private final AdvertisingDisclosureService disclosure;
 
     AdvertisingQueueConsoleController(
             AdvertisingCaseQuery cases,
             BusinessAuthorization authorization,
-            MetadataAuditRecorder audit) {
+            MetadataAuditRecorder audit, AdvertisingDisclosureService disclosure) {
         this.cases = cases;
         this.authorization = authorization;
         this.audit = audit;
+        this.disclosure = disclosure;
     }
 
     @GetMapping("/queue")
     @Transactional
-    List<AdvertisingCaseView> queue(
+    List<ObjectNode> queue(
             AuthenticatedActor actor,
             @RequestParam(required = false) String lane,
             @RequestParam(defaultValue = "50") int limit,
@@ -71,12 +75,13 @@ class AdvertisingQueueConsoleController {
         List<AdvertisingCaseView> result = cases.queue(
                 actor.organizationId(), stores, variants, lane, limit, offset);
         auditRead(actor, "advertising_queue", actor.organizationId(), "queue");
-        return result;
+        return result.stream().map(view -> disclosure.caseView(actor, view,
+                AdvertisingDisclosureService.Channel.API)).toList();
     }
 
     @GetMapping("/cases/{caseId}")
     @Transactional
-    AdvertisingCaseView caseById(AuthenticatedActor actor, @PathVariable UUID caseId) {
+    ObjectNode caseById(AuthenticatedActor actor, @PathVariable UUID caseId) {
         List<UUID> stores = authorization.permittedStoreIds(actor, ActionScopeCode.ADVERTISING_VIEW);
         List<UUID> variants =
                 authorization.permittedProductVariantIds(actor, ActionScopeCode.ADVERTISING_VIEW);
@@ -91,7 +96,21 @@ class AdvertisingQueueConsoleController {
         authorization.require(actor, ActionScopeCode.ADVERTISING_VIEW,
                 ResourceScope.store(view.storeId()));
         auditRead(actor, "advertising_case", caseId, "case");
-        return view;
+        return disclosure.caseView(actor, view, AdvertisingDisclosureService.Channel.API);
+    }
+
+    /** Preparing a projection does not send it to an external destination. */
+    @GetMapping("/cases/{caseId}/projections/{channel}")
+    @Transactional
+    ObjectNode projection(AuthenticatedActor actor, @PathVariable UUID caseId,
+            @PathVariable AdvertisingDisclosureService.Channel channel) {
+        List<UUID> stores = authorization.permittedStoreIds(actor, ActionScopeCode.ADVERTISING_VIEW);
+        List<UUID> variants = authorization.permittedProductVariantIds(actor, ActionScopeCode.ADVERTISING_VIEW);
+        AdvertisingCaseView view = cases.caseById(actor.organizationId(), caseId, stores, variants)
+                .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
+        ObjectNode result = disclosure.caseView(actor, view, channel);
+        auditRead(actor, "advertising_case", caseId, "projection_" + channel.name());
+        return result;
     }
 
     private void auditRead(AuthenticatedActor actor, String entityType, UUID entityId, String reason) {

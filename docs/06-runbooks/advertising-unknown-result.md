@@ -1,61 +1,20 @@
-# A bid change whose outcome nobody knows
+# Advertising unknown-result convergence
 
-This is the most serious ordinary state in the advertising write path. A call
-went out and nothing usable came back, so the product cannot say whether a real
-bid on a real marketplace changed.
+`UNKNOWN_REQUIRES_READBACK`, `UNKNOWN_STATE`, timeout or an incomplete native response means the write may have landed. Keep the affected-set reservation, task and Raw evidence. Configuration success, business Outcome and task closure are separate facts.
 
-## What you will see
+The worker records the exact response against the frozen operation and semantic profile. Status polling uses `STATUS_ENQUIRY`; it does not invoke APPLY. Pending native tasks wait on their stored task key. Readback checks the exact native amount, currency and bid unit.
 
-A command in `UNKNOWN_REQUIRES_READBACK`, and an attempt whose `outcome_class`
-is `UNKNOWN_STATE`.
+| Current official readback | Required handling |
+| --- | --- |
+| `MATCHES_TARGET` | Record configuration success and continue the frozen early/retained/settled observation plan. |
+| `MATCHES_PRIOR` | The current value equals the captured prior value. This alone does not prove that the write was never applied; retain mismatch/review responsibility. |
+| `DIFFERENT` | Enter later-change/mismatch investigation. Do not overwrite the third value. |
+| `UNREADABLE` | Keep the result unknown and retain the reservation. |
 
-## The one thing that must not happen
+There is no generic second APPLY or same-object command reentry. A retry requires the same command/key and the explicitly verified native idempotency or exact NOT_APPLIED proof accepted by the frozen operation. Mere absence, an old prior value or an adapter's classification is insufficient. Fences and attempt completion prevent stale workers from opening or completing another operation.
 
-**The call is never repeated.** Not by a worker, not by an operator, not by a
-retry. If the first call landed, a second would move the bid twice.
+If official readback is unavailable, an authorized human can investigate through the controlled workflow. `MANUAL_RESOLUTION` records responsibility; it does not manufacture a successful configuration or release evidence. Preserve request/response digests, native task/status, operation version, time and the exact failed predicate.
 
-This is enforced in three places and you cannot route around any of them:
+Exact prior-Bid compensation requires a new Maker preview, independent Operations Lead endorsement, distinct Owner approval, a matched original readback, an action-bound stop/regression and current proof that the original command still owns the target. The RESTORE target is immutable prior Bid. Compensation readback is not business Outcome success.
 
-- `ops.open_ad_bid_command_attempt` refuses a second `APPLY` for a command that
-  has ever had one, whatever its state;
-- an `APPLY` cannot be opened from `UNKNOWN_REQUIRES_READBACK` at all;
-- the transition graph contains no edge from `UNKNOWN_REQUIRES_READBACK` back to
-  `EXECUTING`, so there is no sequence of transitions that reaches a retry.
-
-`AdvertisingTransmissionBoundaryIT#TC-AD-BOUNDARY-006` asserts all three.
-
-## What happens instead
-
-The product observes. A readback is the only route out, and only a readback
-that matched the target closes the command successfully:
-
-- `MATCHES_TARGET` — the change landed. The command completes.
-- `MATCHES_PRIOR` — the change did not land. The command goes to
-  `READBACK_MISMATCH` and compensation is available.
-- `DIFFERENT` — the platform holds a third value. Something outside this
-  lineage owns that bid now, and the command goes to
-  `LATER_CHANGE_OR_MISMATCH_INVESTIGATION`. Do not compensate: restoring "the
-  prior bid" would overwrite whatever the third party set.
-- `UNREADABLE` — still unknown. It stays unknown.
-
-## When the readback itself will not work
-
-If the provider cannot be read at all, the command stays in
-`UNKNOWN_REQUIRES_READBACK` and that is the correct resting place. It counts
-against `max_unresolved_transmitted_writes` in the aggregate exposure envelope,
-so accumulating them stops new advertising work — which is the intended
-pressure, not a bug to work around.
-
-Move it to `MANUAL_RESOLUTION` only when a person has established the truth by
-some other means, and record what they looked at:
-
-```sql
-SELECT ops.transition_ad_bid_command(:commandId, :fence, :owner, 'MANUAL_RESOLUTION',
-        'readback_unavailable', NULL, :correlationId);
-```
-
-## What to tell people
-
-An unknown result is not a failure and should not be reported as one. The
-honest sentence is: "we asked the marketplace to change a bid, we do not yet
-know whether it did, and we will not ask again until we do."
+The runtime gate is also checked immediately before APPLY or RESTORE. R1 validation uses isolated fictional protocol evidence only, with `production_write_enabled=false`; no real Provider investigation or write is authorized by this runbook.

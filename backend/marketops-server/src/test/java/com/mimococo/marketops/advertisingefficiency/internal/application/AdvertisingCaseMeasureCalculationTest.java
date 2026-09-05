@@ -241,25 +241,26 @@ class AdvertisingCaseMeasureCalculationTest {
                 .conversion(conversionDefinition("CLICKS", new BigDecimal("0.2000")))
                 .build());
 
-        assertThat(only(result).decision().cause())
-                .isEqualTo(AdvertisingCause.ATTRIBUTION_GAP_MATERIAL);
-        assertThat(only(result).decision().blockerCodes())
-                .contains("PROVIDER_TO_CANONICAL_ATTRIBUTION_GAP_MATERIAL");
+        assertThat(only(result).decision().cause()).isEqualTo(AdvertisingCause.PROVEN_ADVERTISING_LOSS);
+        assertThat(result.cases()).anySatisfy(scored -> {
+            assertThat(scored.decision().cause()).isEqualTo(AdvertisingCause.ATTRIBUTION_GAP_MATERIAL);
+            assertThat(scored.decision().blockerCodes()).contains("PROVIDER_TO_CANONICAL_ATTRIBUTION_GAP_MATERIAL");
+        });
     }
 
     @Test
     @DisplayName("TC-AD-MEASURE-017 a profit missing a component names the component, not a number")
     void ablockedProfitNamesItsMissingComponent() {
-        // No promotion-cost feed exists in this Slice, so the profit blocks and
-        // says which input it was waiting for rather than quietly using zero.
+        // One unresolved canonical fee component blocks the whole atomic scope.
         var result = service.calculateFrom(fully()
                 .completedSales(sales(100L, "240000.0000", 1L))
+                .economics(Map.of(VARIANT, variantEconomics("1000", null, "60", "40")))
                 .build());
 
         assertThat(only(result).decision().cause())
                 .isEqualTo(AdvertisingCause.PROFIT_ECONOMICS_BLOCKED);
         assertThat(only(result).decision().blockerCodes())
-                .contains("PROMOTION_COST_PER_UNIT");
+                .anyMatch(code -> code.startsWith("LINE_COST_COMPONENT_UNAVAILABLE:"));
         assertThat(only(result).contributionProfit().valueState())
                 .isEqualTo(ValueState.NOT_AVAILABLE);
     }
@@ -403,7 +404,7 @@ class AdvertisingCaseMeasureCalculationTest {
     private static AdvertisingPolicyRepository.ConversionDefinition conversionDefinition(
             String denominator, BigDecimal maximumGap) {
         return new AdvertisingPolicyRepository.ConversionDefinition(ID, 1,
-                "CANONICAL_AD_LINKED_COMPLETED_SALE", denominator, "OFFICIAL_AD_LINKED_EVENT",
+                "CANONICAL_AD_LINKED_COMPLETED_SALE", denominator, "DETERMINISTIC_OBJECT_LINKAGE",
                 new BigDecimal("0.9000"), new BigDecimal("0.9000"), 10, maximumGap, 30);
     }
 
@@ -435,7 +436,7 @@ class AdvertisingCaseMeasureCalculationTest {
         private AdvertisingPolicyRepository.AllowableCpaDefinition allowableCpa =
                 new AdvertisingPolicyRepository.AllowableCpaDefinition(ID, 1,
                         "CANONICAL_AD_LINKED_COMPLETED_SALE", "RUB", "SETTLED_CONTRIBUTION",
-                        new BigDecimal("0.1000"), "DEDUCT_FROM_CONTRIBUTION");
+                        new BigDecimal("0.1000"), "APPLIED_ONCE_ON_TOP");
         private Map<UUID, AdvertisingEvidenceGatherer.VariantEconomics> economics =
                 Map.of(VARIANT, variantEconomics("1000.0000", "300.0000", "60.0000", "40.0000"));
 
@@ -475,7 +476,7 @@ class AdvertisingCaseMeasureCalculationTest {
         }
 
         AdvertisingEvidenceGatherer.Evidence build() {
-            return new AdvertisingEvidenceGatherer.Evidence(
+            return AdvertisingCalculationFixture.withLineage(new AdvertisingEvidenceGatherer.Evidence(
                     new AdvertisingEvidenceRepository.ObjectRow(ID, ID, ID, "OZON", ID, "KEYWORD",
                             "object-1", "campaign-1", "зимние сапоги", "MANUAL_BID",
                             "PROVEN_INDEPENDENT", "lineage-1", 1, "OBSERVED",
@@ -486,7 +487,7 @@ class AdvertisingCaseMeasureCalculationTest {
                     new AdvertisingEvidenceRepository.ContainmentRow(false, List.of(), false),
                     Optional.ofNullable(conversion), Optional.ofNullable(allowableCpa),
                     Optional.of(qualification()), Optional.empty(), Optional.empty(),
-                    economics, Map.of(), AS_OF.minusSeconds(2_592_000), AS_OF);
+                    economics, Map.of(), AS_OF.minusSeconds(2_592_000), AS_OF));
         }
 
         private static AdvertisingPolicyRepository.QualificationPolicy qualification() {

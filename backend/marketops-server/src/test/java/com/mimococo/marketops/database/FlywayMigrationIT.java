@@ -89,7 +89,16 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0053__the_write_gate_must_refuse_rather_than_raise.sql",
             "V0054__index_the_demand_carry_forward_lookup.sql",
             "V0055__record_what_happened_to_a_task_and_who_did_it.sql",
-            "V0056__publish_the_daily_brief_and_weekly_review_as_projections.sql");
+            "V0056__publish_the_daily_brief_and_weekly_review_as_projections.sql",
+            "V0057__bind_advertising_responsibility_and_human_decisions.sql",
+            "V0058__seal_advertising_authority_and_control_execution.sql",
+            "V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+            "V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+            "V0061__bind_advertising_exception_risk_and_preview_evidence.sql",
+            "V0062__share_frozen_outcome_authority_with_governed_manual.sql",
+            "V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+            "V0064__reconcile_expired_advertising_authority.sql",
+            "V0065__route_settled_advertising_contradictions_to_finance_review.sql");
 
     private static PostgreSQLContainer container;
 
@@ -160,11 +169,13 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "core.ad_exposure_envelope",
                     "core.ad_freshness_profile",
                     "core.ad_human_slo_profile",
+                    "core.ad_manual_policy",
                     "core.ad_materiality_policy",
                     "core.ad_native_object",
                     "core.ad_object_configuration_observation",
                     "core.ad_object_relationship",
                     "core.ad_optimization_qualification_policy",
+                    "core.ad_outcome_critical_unit_rule",
                     "core.ad_outcome_policy",
                     "core.ad_priority_policy",
                     "core.ad_reporting_calendar",
@@ -207,6 +218,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "core.warehouse",
                     "core.work_activation_policy",
                     "iam.action_scope",
+                    "iam.ad_invocation_grant",
                     "iam.business_role",
                     "iam.business_role_action_scope",
                     "iam.identity_decision_event",
@@ -221,6 +233,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ledger.ad_linked_sale_event",
                     "ledger.ad_object_fact",
                     "ledger.ad_object_listing_allocation",
+                    "ledger.ad_settlement_attribution",
                     "ledger.ad_spend_fact",
                     "ledger.finance_fee_fact",
                     "ledger.return_fact",
@@ -232,8 +245,10 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "mart.ad_brief_section",
                     "mart.ad_case",
                     "mart.ad_case_evidence",
+                    "mart.ad_case_purpose_evidence",
                     "mart.ad_case_rank_factor",
                     "mart.ad_case_variant_diagnostic",
+                    "mart.ad_qualification_period",
                     "mart.availability_risk_card",
                     "mart.availability_risk_child",
                     "mart.availability_risk_evidence",
@@ -248,21 +263,48 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "mart.metric_definition",
                     "mart.metric_input_reference",
                     "mart.metric_value",
+                    "ops.ad_accepted_exception",
+                    "ops.ad_action_authorization",
                     "ops.ad_action_reservation",
+                    "ops.ad_authority_invalidation",
                     "ops.ad_bid_candidate",
                     "ops.ad_bid_command",
                     "ops.ad_bid_command_attempt",
                     "ops.ad_bid_command_readback",
                     "ops.ad_bid_command_transition",
                     "ops.ad_brief_publication",
+                    "ops.ad_bundle_endorsement",
+                    "ops.ad_candidate_endorsement",
+                    "ops.ad_candidate_selection",
+                    "ops.ad_case_responsibility",
+                    "ops.ad_compensation_authorization",
+                    "ops.ad_compensation_invalidation",
                     "ops.ad_containment",
+                    "ops.ad_containment_attestation",
                     "ops.ad_decision_policy_bundle",
+                    "ops.ad_exception_authority_change",
+                    "ops.ad_exception_decision_event",
                     "ops.ad_fact_cursor",
+                    "ops.ad_gate_authority",
+                    "ops.ad_impact_preview_evidence",
                     "ops.ad_manual_configuration_verification",
                     "ops.ad_manual_execution_packet",
+                    "ops.ad_manual_proposal",
+                    "ops.ad_ordinary_promotion",
+                    "ops.ad_outcome_axes",
+                    "ops.ad_outcome_baseline",
+                    "ops.ad_outcome_baseline_attestation",
+                    "ops.ad_outcome_critical_guard",
+                    "ops.ad_outcome_critical_unit",
                     "ops.ad_outcome_observation",
+                    "ops.ad_outcome_plan_grant",
+                    "ops.ad_outcome_review_observation",
+                    "ops.ad_outcome_review_responsibility",
+                    "ops.ad_outcome_stage_baseline",
+                    "ops.ad_recalculation_due",
                     "ops.ad_recalculation_request",
                     "ops.ad_reconciliation_run",
+                    "ops.ad_reservation_state_history",
                     "ops.ad_slo_observation",
                     "ops.ad_trace_event",
                     "ops.ai_claim_evidence",
@@ -305,7 +347,9 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ops.recommendation_evidence",
                     "ops.work_task",
                     "ops.work_task_event",
+                    "platform.ad_provider_incident",
                     "platform.ad_semantic_profile",
+                    "platform.ad_write_credential_attestation",
                     "platform.capability_operation",
                     "platform.capability_subject_status",
                     "platform.capability_verification_event",
@@ -392,7 +436,11 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                             "AVAILABILITY_EXCEPTION_APPROVE",
                             "ADVERTISING_VIEW", "ADVERTISING_TASK_ACT",
                             "ADVERTISING_EXCEPTION_REQUEST", "AD_BID_CHANGE_ENDORSE",
-                            "AD_BID_CHANGE_APPROVE", "ADVERTISING_POLICY_MANAGE");
+                            "AD_BID_CHANGE_APPROVE", "ADVERTISING_POLICY_MANAGE",
+                            "ADVERTISING_DECISION_EVIDENCE_VIEW", "ADVERTISING_MANUAL_EXECUTE",
+                            "ADVERTISING_MANUAL_VERIFY", "ADVERTISING_MANUAL_ENDORSE",
+                            "ADVERTISING_MANUAL_APPROVE", "ADVERTISING_TECHNICAL_STOP",
+                            "ADVERTISING_TECHNICAL_ATTEST");
             // A role matrix that grew without review is the quiet way a
             // read-only profile acquires the ability to move a price.
             assertThat(strings(connection,
@@ -422,13 +470,13 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             assertThat(strings(connection,
                     "SELECT action_code FROM iam.business_role_action_scope"
                             + " WHERE role_code = 'AUDITOR' ORDER BY action_code"))
-                    .containsExactly("ADVERTISING_VIEW", "AVAILABILITY_VIEW",
+                    .containsExactly("ADVERTISING_DECISION_EVIDENCE_VIEW", "ADVERTISING_VIEW", "AVAILABILITY_VIEW",
                             "DIAGNOSTIC_VIEW", "EVIDENCE_VIEW");
-            // The two halves of the advertising Maker-Checker chain are held by
-            // different roles on purpose. Endorsement is the Operations Lead's;
-            // the final per-command approval is the Owner's. A role holding both
-            // would let one person move a live bid alone, which is the exact
-            // outcome the Contract's material route exists to prevent.
+            // Initial Material requires distinct Maker, Operations and Owner.
+            // The exact later Ordinary promotion may permit the same endorsing
+            // Operations Lead to finalize; SQL checks the live per-command route
+            // and still requires that person to differ from the Maker.
+            // Role membership alone does not authorize the promoted route.
             assertThat(strings(connection,
                     "SELECT role_code FROM iam.business_role_action_scope"
                             + " WHERE action_code = 'AD_BID_CHANGE_ENDORSE' ORDER BY role_code"))
@@ -436,14 +484,14 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             assertThat(strings(connection,
                     "SELECT role_code FROM iam.business_role_action_scope"
                             + " WHERE action_code = 'AD_BID_CHANGE_APPROVE' ORDER BY role_code"))
-                    .containsExactly("OWNER");
+                    .containsExactly("OPS_LEAD", "OWNER");
             assertThat(strings(connection,
                     "SELECT role_code FROM iam.business_role_action_scope"
                             + " WHERE action_code = 'ADVERTISING_POLICY_MANAGE'"
                             + " ORDER BY role_code"))
                     .containsExactly("OPS_LEAD", "OWNER");
-            // No advertising Semantic Profile is seeded. A synthetic fixture can
-            // never be VERIFIED, so even a fixture cannot open a Provider path.
+            // No advertising Semantic Profile or active real Gate is seeded.
+            // Isolated test oracles do not publish a production Provider profile.
             assertThat(count(connection,
                     "SELECT count(*) FROM platform.ad_semantic_profile"))
                     .isZero();

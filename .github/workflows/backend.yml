@@ -54,6 +54,10 @@ jobs:
           cache: maven
           cache-dependency-path: backend/marketops-server/pom.xml
 
+      - name: Record host and Docker resource limits
+        working-directory: .
+        run: python3 scripts/validation/collect_slice3_runtime_resources.py --output build/slice3-runtime-resources.json
+
       - name: Run full backend verification and the combined coverage gate
         run: |
           ./mvnw -B -ntp clean \
@@ -69,6 +73,7 @@ jobs:
           MARKETOPS_EVIDENCE_WORKFLOW_RUN_ATTEMPT: ${{ github.run_attempt }}
           MARKETOPS_EVIDENCE_WORKFLOW_JOB: backend-build
           MARKETOPS_EVIDENCE_ARTIFACT_NAME: backend-test-reports
+          SLICE3_RUNTIME_RESOURCE_RECEIPT: ../../build/slice3-runtime-resources.json
 
       - name: Prove the backend coverage gate rejects an unmet threshold
         working-directory: .
@@ -102,6 +107,10 @@ jobs:
             backend/marketops-server/target/managed-profile-evidence/
             backend/marketops-server/target/diagnostic-export-evidence/
             backend/marketops-server/target/performance/
+            backend/marketops-server/target/advertising-capacity-receipt.json
+            backend/marketops-server/target/advertising-capacity-dataset.json
+            backend/marketops-server/target/advertising-capacity-source-inputs.json
+            build/slice3-runtime-resources.json
             build/migration-runtime-evidence/
 
   architecture-boundary:
@@ -145,6 +154,10 @@ jobs:
           cache: maven
           cache-dependency-path: backend/marketops-server/pom.xml
 
+      - name: Record host and Docker resource limits
+        working-directory: .
+        run: python3 scripts/validation/collect_slice3_runtime_resources.py --output build/slice3-runtime-resources.json
+
       - name: Run the database and application integration tests
         # The container runtime is provided by the runner image. The tests start
         # PostgreSQL themselves and mount the same initialisation scripts a
@@ -157,6 +170,7 @@ jobs:
           MARKETOPS_EVIDENCE_WORKFLOW_RUN_ATTEMPT: ${{ github.run_attempt }}
           MARKETOPS_EVIDENCE_WORKFLOW_JOB: backend-integration
           MARKETOPS_EVIDENCE_ARTIFACT_NAME: backend-integration-reports
+          SLICE3_RUNTIME_RESOURCE_RECEIPT: ../../build/slice3-runtime-resources.json
 
       - name: Publish the integration test reports
         if: always()
@@ -170,3 +184,7 @@ jobs:
             backend/marketops-server/target/managed-profile-evidence/
             backend/marketops-server/target/diagnostic-export-evidence/
             backend/marketops-server/target/performance/
+            backend/marketops-server/target/advertising-capacity-receipt.json
+            backend/marketops-server/target/advertising-capacity-dataset.json
+            backend/marketops-server/target/advertising-capacity-source-inputs.json
+            build/slice3-runtime-resources.json

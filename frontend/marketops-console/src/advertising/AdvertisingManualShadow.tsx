@@ -1,7 +1,13 @@
+import { AdvertisingEvidenceDetails } from './AdvertisingEvidenceDetails';
+import { AdvertisingOutcomeHistory } from './AdvertisingOutcomeHistory';
 import { useEffect, useState } from 'react';
 import { fetchAdvertisingManualPackets } from '../api/console';
 import type { AdvertisingManualPacket } from '../api/advertising';
 import type { ConsoleFailure, ConsoleRequest } from '../api/console';
+import {
+  AdvertisingManualPacketControls,
+  AdvertisingManualProposalControls,
+} from './AdvertisingManualControls';
 import { AdvertisingProblem } from './AdvertisingQueue';
 
 /** What the manual shadow surface needs in order to load itself. */
@@ -10,6 +16,7 @@ export interface AdvertisingManualShadowProps {
   readonly context: ConsoleRequest;
   /** The advertising object whose manual work is being read. */
   readonly objectId: string;
+  readonly caseId?: string;
 }
 
 /**
@@ -29,7 +36,12 @@ export interface AdvertisingManualShadowProps {
 export function AdvertisingManualShadow({
   context,
   objectId,
+  caseId,
 }: AdvertisingManualShadowProps): React.JSX.Element {
+  const [revision, setRevision] = useState(0);
+  const reload = (): void => {
+    setRevision((value) => value + 1);
+  };
   const [packets, setPackets] = useState<readonly AdvertisingManualPacket[] | undefined>(undefined);
   const [failure, setFailure] = useState<ConsoleFailure | undefined>(undefined);
 
@@ -50,7 +62,7 @@ export function AdvertisingManualShadow({
     return () => {
       active = false;
     };
-  }, [context, objectId]);
+  }, [context, objectId, revision]);
 
   if (failure !== undefined) {
     return <AdvertisingProblem failure={failure} />;
@@ -68,6 +80,9 @@ export function AdvertisingManualShadow({
       <section aria-label="Manual execution" data-state="empty">
         <h3>Manual execution</h3>
         <p>No manual packet has been issued for this object.</p>
+        {caseId !== undefined && (
+          <AdvertisingManualProposalControls context={context} caseId={caseId} reload={reload} />
+        )}
       </section>
     );
   }
@@ -79,6 +94,9 @@ export function AdvertisingManualShadow({
         Instructions for a person. Nothing here reaches a marketplace by itself, and nothing here
         creates a command.
       </p>
+      {caseId !== undefined && (
+        <AdvertisingManualProposalControls context={context} caseId={caseId} reload={reload} />
+      )}
       <ul>
         {packets.map((packet) => (
           <li
@@ -88,6 +106,16 @@ export function AdvertisingManualShadow({
             data-proven={packet.configurationProven}
           >
             <h4>{packet.actionKind}</h4>
+            <p>
+              {packet.state} · revision {packet.version ?? 'unresolved'}
+            </p>
+            <AdvertisingManualPacketControls context={context} packet={packet} reload={reload} />
+            {packet.packetDetails !== undefined && (
+              <AdvertisingEvidenceDetails
+                value={packet.packetDetails}
+                label="Exact manual packet and verification plan"
+              />
+            )}
             <p>{packet.reason ?? 'No reason was recorded.'}</p>
             {packet.intendedState === undefined ? null : <p>Intended: {packet.intendedState}</p>}
             <p data-proven={packet.configurationProven}>
@@ -108,7 +136,9 @@ export function AdvertisingManualShadow({
                     {verification.evidenceGrade}
                     {' — '}
                     {verification.provesConfiguration
-                      ? 'establishes the configuration'
+                      ? verification.id === packet.currentProofId && packet.configurationProven
+                        ? 'current configuration proof'
+                        : 'historical observation; current proof must be checked'
                       : 'a report, not a proof'}
                     {verification.observedValue === undefined ? null : (
                       <>
@@ -123,6 +153,13 @@ export function AdvertisingManualShadow({
                   </li>
                 ))}
               </ul>
+            )}
+            {packet.state === 'MANUAL_CONFIGURATION_VERIFIED' && (
+              <AdvertisingOutcomeHistory
+                key={`${packet.id}:${String(revision)}`}
+                context={context}
+                manualPacketId={packet.id}
+              />
             )}
             {packet.blockerCodes.length === 0 ? null : (
               <ul aria-label="Blockers">

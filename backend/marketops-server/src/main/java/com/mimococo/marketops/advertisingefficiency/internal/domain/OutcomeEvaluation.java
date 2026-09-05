@@ -39,7 +39,7 @@ public record OutcomeEvaluation(
         OPERATIONAL,
 
         /** What survived cancellations, returns and provider corrections. */
-        SETTLED
+        RETAINED, SETTLED
     }
 
     /** What the evidence says. */
@@ -81,8 +81,9 @@ public record OutcomeEvaluation(
             throw new IllegalArgumentException(
                     "the completed-sales guard applies to a settled claim and only to one");
         }
-        if (stage == Stage.SETTLED && guardState != GuardState.SATISFIED
-                && verdict != Verdict.INDETERMINATE && verdict != Verdict.NOT_YET_EVALUABLE) {
+        if (stage != Stage.OPERATIONAL && guardState != GuardState.SATISFIED
+                && verdict != Verdict.INDETERMINATE && verdict != Verdict.NOT_YET_EVALUABLE
+                && verdict != Verdict.REGRESSED) {
             throw new IllegalArgumentException(
                     "a settled claim cannot outrun the completed-sales guard");
         }
@@ -116,7 +117,7 @@ public record OutcomeEvaluation(
             // is more useful than reporting UNCHANGED on four clicks.
             reasons.add("TRAFFIC_BELOW_MINIMUM");
         }
-        if (stage == Stage.SETTLED && guard != GuardState.SATISFIED) {
+        if (stage != Stage.OPERATIONAL && guard != GuardState.SATISFIED) {
             reasons.add(guard == GuardState.SALES_TOO_RECENT
                     ? "COMPLETED_SALES_GUARD_OPEN" : "SETTLED_COVERAGE_INSUFFICIENT");
         }
@@ -157,7 +158,7 @@ public record OutcomeEvaluation(
 
     /** Whether this observation is a claim about money rather than about orders. */
     public boolean settledClaim() {
-        return stage == Stage.SETTLED && guardState == GuardState.SATISFIED;
+        return stage != Stage.OPERATIONAL && guardState == GuardState.SATISFIED;
     }
 
     /**

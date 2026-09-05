@@ -1,5 +1,7 @@
 package com.mimococo.marketops.advertisingefficiency.internal.web;
 
+import tools.jackson.databind.node.ObjectNode;
+import com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDisclosureService;
 import com.mimococo.marketops.adminobservability.audit.AuditAction;
 import com.mimococo.marketops.adminobservability.audit.AuditSourceDomain;
 import com.mimococo.marketops.adminobservability.audit.MetadataAuditChange;
@@ -41,13 +43,15 @@ class AdvertisingBriefConsoleController {
     private final AdvertisingBriefService briefs;
     private final BusinessAuthorization authorization;
     private final MetadataAuditRecorder audit;
+    private final AdvertisingDisclosureService disclosure;
 
     AdvertisingBriefConsoleController(AdvertisingBriefService briefs,
                                       BusinessAuthorization authorization,
-                                      MetadataAuditRecorder audit) {
+                                      MetadataAuditRecorder audit, AdvertisingDisclosureService disclosure) {
         this.briefs = briefs;
         this.authorization = authorization;
         this.audit = audit;
+        this.disclosure = disclosure;
     }
 
     /**
@@ -59,26 +63,26 @@ class AdvertisingBriefConsoleController {
      */
     @GetMapping("/{briefKind}")
     @Transactional
-    AdvertisingBriefView mostRecent(AuthenticatedActor actor, @PathVariable String briefKind) {
+    ObjectNode mostRecent(AuthenticatedActor actor, @PathVariable String briefKind) {
         requireAdvertisingScope(actor);
         AdvertisingBriefView view = briefs
                 .mostRecent(actor.organizationId(), briefKind)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
         auditRead(actor, view.id(), "brief");
-        return view;
+        return disclosure.brief(actor, view);
     }
 
     /** The newest reading of one period. */
     @GetMapping("/{briefKind}/{periodKey}")
     @Transactional
-    AdvertisingBriefView latest(AuthenticatedActor actor, @PathVariable String briefKind,
+    ObjectNode latest(AuthenticatedActor actor, @PathVariable String briefKind,
                                 @PathVariable String periodKey) {
         requireAdvertisingScope(actor);
         AdvertisingBriefView view = briefs
                 .latest(actor.organizationId(), briefKind, periodKey)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
         auditRead(actor, view.id(), "brief");
-        return view;
+        return disclosure.brief(actor, view);
     }
 
     /**
@@ -89,21 +93,20 @@ class AdvertisingBriefConsoleController {
      */
     @GetMapping("/{briefKind}/{periodKey}/history")
     @Transactional
-    List<AdvertisingBriefView> history(AuthenticatedActor actor, @PathVariable String briefKind,
+    List<ObjectNode> history(AuthenticatedActor actor, @PathVariable String briefKind,
                                        @PathVariable String periodKey) {
         requireAdvertisingScope(actor);
         List<AdvertisingBriefView> readings =
                 briefs.history(actor.organizationId(), briefKind, periodKey);
         auditRead(actor, actor.organizationId(), "brief_history");
-        return readings;
+        return readings.stream().map(view -> disclosure.brief(actor, view)).toList();
     }
 
     /**
      * The caller's advertising scope, or a refusal.
      *
-     * <p>A brief is an organization-wide report, so it is not narrowed by store —
-     * but a caller with no advertising grant at all has no business reading one,
-     * and an empty scope must refuse rather than fall through to everything.
+     * <p>The canonical publication is organization-wide. The delivery projector narrows
+     * references to the reader’s actual scope and marks incomplete disclosure explicitly.
      */
     private void requireAdvertisingScope(AuthenticatedActor actor) {
         if (authorization.permittedStoreIds(actor, ActionScopeCode.ADVERTISING_VIEW).isEmpty()) {

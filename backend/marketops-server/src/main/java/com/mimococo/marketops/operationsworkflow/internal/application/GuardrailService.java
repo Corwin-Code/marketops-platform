@@ -59,19 +59,21 @@ public class GuardrailService {
     private final PriceChangeHistory changeHistory;
     private final AdvertisingDecisionAuthority advertising;
     private final IdGenerator idGenerator;
+    private final AdvertisingImpactEvidenceService impactEvidence;
 
     GuardrailService(MetricQuery metrics,
                      DiagnosisQuery diagnosis,
                      GuardrailRepository evaluations,
                      PriceChangeHistory changeHistory,
                      AdvertisingDecisionAuthority advertising,
-                     IdGenerator idGenerator) {
+                     IdGenerator idGenerator,AdvertisingImpactEvidenceService impactEvidence) {
         this.metrics = metrics;
         this.diagnosis = diagnosis;
         this.evaluations = evaluations;
         this.changeHistory = changeHistory;
         this.advertising = advertising;
         this.idGenerator = idGenerator;
+        this.impactEvidence=impactEvidence;
     }
 
     /**
@@ -115,12 +117,17 @@ public class GuardrailService {
         AdvertisingBidProjection projection =
                 advertising.bidProjection(proposal.id()).orElse(null);
         List<String> unresolved = advertising.unresolvedReasons(proposal.id());
+        var evidence=impactEvidence.capture(proposal.id(),now,projection==null?null:projection.decisionBundleId());
 
-        List<GuardrailReason> reasons = adBidReasons(proposal, projection, unresolved, now);
+        var headroom=evidence==null?null:evidence.path("policyVersions").path("target").path("ceiling_headroom_ratio");
+        java.math.BigDecimal headroomRatio=headroom!=null && headroom.isNumber()?headroom.decimalValue():null;
+        List<GuardrailReason> reasons = adBidReasons(proposal, projection, unresolved, now, purpose,
+                evidence!=null && evidence.path("policyVersions").path("target").path("allow_protection_intermediate_target").asBoolean(false),headroomRatio);
         boolean passed = reasons.isEmpty();
 
         UUID evaluationId = idGenerator.newId();
-        String inputDigest = adBidDigest(proposal, projection, unresolved, now);
+        String inputDigest = Digest.ofComponents(List.of(adBidDigest(proposal, projection, unresolved, now, purpose),
+                evidence == null ? "EVIDENCE_NOT_AVAILABLE" : evidence.toString()));
         evaluations.insert(evaluationId, proposal.organizationId(), proposal.id(),
                 null, null,
                 projection == null ? null : projection.decisionBundleId(),
@@ -130,8 +137,9 @@ public class GuardrailService {
 
         GuardrailVerdict verdict = new GuardrailVerdict(evaluationId, purpose, passed,
                 reasons, null, null, adBidDetail(projection), inputDigest);
+        impactEvidence.record(evaluationId,proposal.id(),evidence,now);
         return new AdBidImpactPreview(proposal.id(), projection,
-                List.of(), unresolved, verdict);
+                List.of(), unresolved, verdict,evidence);
     }
 
     /**
@@ -143,7 +151,8 @@ public class GuardrailService {
      */
     private static List<GuardrailReason> adBidReasons(RecommendationView proposal,
                                                       AdvertisingBidProjection projection,
-                                                      List<String> unresolved, Instant now) {
+                                                      List<String> unresolved, Instant now, GuardrailPurpose purpose,boolean intermediateAllowed,
+                                                      java.math.BigDecimal headroomRatio) {
         List<GuardrailReason> reasons = new ArrayList<>();
         if (!proposal.validUntil().isAfter(now)) {
             reasons.add(GuardrailReason.RECOMMENDATION_EXPIRED);
@@ -153,20 +162,31 @@ public class GuardrailService {
             reasons.add(GuardrailReason.ADVERTISING_CASE_BLOCKED);
             return List.copyOf(reasons);
         }
-        if (!projection.blockerCodes().isEmpty()) {
+        if (!projection.actionBlockerCodes().isEmpty()) {
             reasons.add(GuardrailReason.ADVERTISING_CASE_BLOCKED);
         }
         if (!java.util.Objects.equals(projection.entityVersionDigest(),
                 proposal.entityVersionDigest())) {
             reasons.add(GuardrailReason.ENTITY_VERSION_CHANGED);
         }
-        if (projection.currentBidAmount().compareTo(projection.targetBidAmount()) == 0) {
+        if (projection.currentBidAmount() == null || projection.targetBidAmount() == null) {
+            reasons.add(GuardrailReason.CURRENT_BID_NOT_OBSERVED);
+        } else if (projection.currentBidAmount().compareTo(projection.targetBidAmount()) == 0) {
             reasons.add(GuardrailReason.NO_CHANGE_PROPOSED);
         }
-        if (projection.maxCpcAmount() == null) {
+        boolean causeBoundProtection = "PROTECTION_DECREASE".equals(projection.direction())
+                && "CAUSE_BOUND_PROTECTION_STEP".equals(projection.candidateBasis())
+                && "PROTECTION".equals(projection.lane());
+        if (projection.maxCpcAmount() == null && !causeBoundProtection) {
             reasons.add(GuardrailReason.MAX_CPC_UNAVAILABLE);
-        } else if (projection.exceedsMaxCpc()) {
-            reasons.add(GuardrailReason.ABOVE_MAX_CPC);
+        } else if (!causeBoundProtection) {
+            if(headroomRatio==null || headroomRatio.signum()<0 || headroomRatio.compareTo(java.math.BigDecimal.ONE)>=0) {
+                reasons.add(GuardrailReason.AD_POLICY_BUNDLE_UNRESOLVED);
+            } else if(projection.targetBidAmount()!=null && projection.maxCpcAmount()!=null
+                    && projection.targetBidAmount().compareTo(projection.maxCpcAmount().multiply(java.math.BigDecimal.ONE.subtract(headroomRatio)))>0
+                    && !("PROTECTION_DECREASE".equals(projection.direction()) && intermediateAllowed)) {
+                reasons.add(GuardrailReason.ABOVE_MAX_CPC);
+            }
         }
         if (!projection.exhaustedExposureAxes().isEmpty()) {
             reasons.add(GuardrailReason.EXPOSURE_ENVELOPE_EXHAUSTED);
@@ -195,11 +215,10 @@ public class GuardrailService {
                         reasons.add(GuardrailReason.RECOMMENDATION_EXPIRED);
                 case "NO_CHANGE_PROPOSED" ->
                         reasons.add(GuardrailReason.NO_CHANGE_PROPOSED);
-                default -> {
-                    // APPROVAL_MISSING and its kin are not guardrail refusals.
-                    // The approval path already refuses them, and repeating them
-                    // here would make an unapproved proposal look guardrailed.
+                case "APPROVAL_MISSING" -> {
+                    if (purpose == GuardrailPurpose.EXECUTION) reasons.add(GuardrailReason.ADVERTISING_CASE_BLOCKED);
                 }
+                default -> reasons.add(GuardrailReason.ADVERTISING_CASE_BLOCKED);
             }
         }
         return List.copyOf(new java.util.LinkedHashSet<>(reasons));
@@ -214,8 +233,8 @@ public class GuardrailService {
         detail.put("lane", String.valueOf(projection.lane()));
         detail.put("causeCode", String.valueOf(projection.causeCode()));
         detail.put("direction", projection.direction());
-        detail.put("currentBid", projection.currentBidAmount().toPlainString());
-        detail.put("targetBid", projection.targetBidAmount().toPlainString());
+        detail.put("currentBid", projection.currentBidAmount() == null ? "UNKNOWN" : projection.currentBidAmount().toPlainString());
+        detail.put("targetBid", projection.targetBidAmount() == null ? "UNKNOWN" : projection.targetBidAmount().toPlainString());
         detail.put("currency", String.valueOf(projection.currencyCode()));
         detail.put("bidUnit", String.valueOf(projection.bidUnitCode()));
         detail.put("materialityRoute", String.valueOf(projection.materialityRoute()));
@@ -236,16 +255,17 @@ public class GuardrailService {
     /** Digest exactly what this advertising verdict was made from. */
     private static String adBidDigest(RecommendationView proposal,
                                       AdvertisingBidProjection projection,
-                                      List<String> unresolved, Instant now) {
+                                      List<String> unresolved, Instant now, GuardrailPurpose purpose) {
         List<String> components = new ArrayList<>();
         components.add(proposal.id().toString());
+        components.add(purpose.name());
         components.add(proposal.entityVersionDigest());
         components.add(now.toString());
         components.add(projection == null ? "NO_PROJECTION" : projection.direction());
         components.add(projection == null
-                ? "NO_PROJECTION" : projection.currentBidAmount().toPlainString());
+                ? "NO_PROJECTION" : projection.currentBidAmount() == null ? "UNKNOWN" : projection.currentBidAmount().toPlainString());
         components.add(projection == null
-                ? "NO_PROJECTION" : projection.targetBidAmount().toPlainString());
+                ? "NO_PROJECTION" : projection.targetBidAmount() == null ? "UNKNOWN" : projection.targetBidAmount().toPlainString());
         components.add(projection == null
                 ? "NO_PROJECTION" : String.valueOf(projection.affectedSetDigest()));
         components.add(projection == null

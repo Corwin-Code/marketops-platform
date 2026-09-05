@@ -102,6 +102,8 @@ public enum ErrorCode {
     /** No live grant covers the requested resource. */
     RESOURCE_SCOPE_DENIED("This resource is outside the profile's scope."),
 
+    APPROVAL_EVIDENCE_SCOPE_BLOCKED("The complete decision evidence is outside the profile's scope."),
+
     /** The token issuer is not a registered, active identity provider. */
     IDENTITY_PROVIDER_NOT_ACCEPTED("The identity provider is not accepted here."),
 

@@ -9,19 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-/**
- * The pass that measures what already happened.
- *
- * <p>Deliberately not part of the calculation loop. The calculation decides what
- * to do next and runs every thirty seconds; this decides what the last thing
- * did and cannot usefully run more often than facts arrive. Keeping them apart
- * also keeps a slow outcome pass from delaying a Protection case.
- *
- * <p>Each command is evaluated in its own transaction, so one command whose
- * facts are malformed does not stop the pass for every other. What went wrong is
- * logged with the command, because an outcome nobody could measure is itself a
- * thing somebody needs to look at.
- */
+/** Canonical outcome evaluation for scheduled reconciliation and accepted-fact refresh. */
 @Component
 class AdvertisingOutcomeWorker {
 
@@ -39,10 +27,27 @@ class AdvertisingOutcomeWorker {
         this.clock = clock;
     }
 
+    record Batch(int evaluated,int recorded,boolean remaining) { }
+
+    /** Scoped refresh propagates errors so a failed outcome is not a successful queue item. */
+    Batch runForObject(java.util.UUID organization,java.util.UUID object,Instant asOf,int limit) {
+        if(organization==null || object==null || limit<1) throw new IllegalArgumentException("Exact outcome scope and positive limit required");
+        var due=new java.util.ArrayList<>(outcomes.due(organization,object,asOf,limit+1));
+        due.addAll(outcomes.manualDue(organization,null,object,asOf,limit+1,true));
+        due.sort(java.util.Comparator.comparing(AdvertisingOutcomeRepository.DueRow::landedAt)
+                .thenComparing(AdvertisingOutcomeRepository.DueRow::nextStage));
+        int recorded=0;
+        for(var row:due.stream().limit(limit).toList()) if(service.evaluate(row,asOf).isPresent()) recorded++;
+        return new Batch(Math.min(due.size(),limit),recorded,due.size()>limit);
+    }
+
     /** Evaluate up to {@code limit} due commands. Returns how many were recorded. */
     int runOnce(int limit) {
         Instant now = clock.instant();
-        List<AdvertisingOutcomeRepository.DueRow> due = outcomes.due(now, limit);
+        List<AdvertisingOutcomeRepository.DueRow> due = new java.util.ArrayList<>(outcomes.due(now, limit));
+        due.addAll(outcomes.manualDue(null,null,now,limit,true));
+        due.sort(java.util.Comparator.comparing(AdvertisingOutcomeRepository.DueRow::landedAt));
+        due = due.stream().limit(limit).toList();
         int recorded = 0;
         for (AdvertisingOutcomeRepository.DueRow row : due) {
             try {

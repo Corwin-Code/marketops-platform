@@ -62,6 +62,10 @@ public class AdvertisingRecalculationRepository {
         int coalesced = jdbc.sql("""
                 UPDATE ops.ad_recalculation_request
                    SET fact_accepted_at = LEAST(fact_accepted_at, :factAcceptedAt),
+                       latest_fact_accepted_at = GREATEST(latest_fact_accepted_at, :factAcceptedAt),
+                       next_fact_accepted_at = CASE WHEN state='LEASED' AND :factAcceptedAt>calculation_as_of
+                          THEN LEAST(coalesce(next_fact_accepted_at,:factAcceptedAt),:factAcceptedAt)
+                          ELSE next_fact_accepted_at END,
                        version = version + 1
                  WHERE organization_id = :organizationId
                    AND ad_native_object_id = :adNativeObjectId
@@ -102,26 +106,45 @@ public class AdvertisingRecalculationRepository {
     public record ClaimedRequest(
             UUID id, UUID organizationId, UUID adNativeObjectId, String triggerClass,
             String triggerReference, Instant factAcceptedAt, int attemptCount,
-            String correlationId) {
+            String correlationId, Instant calculationAsOf, String leaseOwner) {
+    }
+
+    public int deliverDue(Instant now,int limit) {
+        return jdbc.sql("SELECT ops.deliver_due_ad_recalculations(:at,:limit)")
+                .param("at",ts(now)).param("limit",limit).query(Integer.class).single();
     }
 
     public List<ClaimedRequest> claim(String owner, Instant leasedUntil, int limit, Instant now) {
         return jdbc.sql("""
                 UPDATE ops.ad_recalculation_request target
                    SET state = 'LEASED', leased_until = :leasedUntil, lease_owner = :owner,
-                       attempt_count = target.attempt_count + 1,
-                       started_at = coalesce(target.started_at, :now),
+                       attempt_count = target.attempt_count + 1, completed_at=NULL, failure_code=NULL,
+                       started_at = coalesce(target.started_at, :now), calculation_as_of=:now, next_fact_accepted_at=NULL,
                        version = target.version + 1
                   FROM (SELECT id FROM ops.ad_recalculation_request
-                         WHERE state = 'PENDING'
-                            OR (state = 'LEASED' AND leased_until < :now)
-                         ORDER BY fact_accepted_at
+                         WHERE ((state = 'PENDING' OR (state='FAILED' AND attempt_count<5)) AND fact_accepted_at<=:now
+                            OR (state = 'LEASED' AND leased_until < :now))
+                           AND (state<>'FAILED' OR NOT EXISTS(SELECT 1 FROM ops.ad_recalculation_request active
+                             WHERE active.organization_id=ops.ad_recalculation_request.organization_id
+                               AND active.ad_native_object_id=ops.ad_recalculation_request.ad_native_object_id
+                               AND active.id<>ops.ad_recalculation_request.id
+                               AND (active.state IN ('PENDING','LEASED') OR active.state='FAILED'
+                                 AND active.attempt_count<5 AND (active.fact_accepted_at,active.id)<
+                                   (ops.ad_recalculation_request.fact_accepted_at,ops.ad_recalculation_request.id))))
+                         ORDER BY EXISTS(SELECT 1 FROM mart.ad_case critical
+                             WHERE critical.ad_native_object_id=ops.ad_recalculation_request.ad_native_object_id
+                               AND critical.lane='PROTECTION') DESC,
+                           EXISTS(SELECT 1 FROM ops.ad_containment held
+                             WHERE held.organization_id=ops.ad_recalculation_request.organization_id
+                               AND held.ad_native_object_id=ops.ad_recalculation_request.ad_native_object_id
+                               AND held.state<>'REENABLED') DESC,
+                           fact_accepted_at,id
                          LIMIT :limit
                          FOR UPDATE SKIP LOCKED) AS claimable
                  WHERE target.id = claimable.id
              RETURNING target.id, target.organization_id, target.ad_native_object_id,
                        target.trigger_class, target.trigger_reference, target.fact_accepted_at,
-                       target.attempt_count, target.correlation_id
+                       target.attempt_count, target.correlation_id,target.calculation_as_of,target.lease_owner
                 """)
                 .param("owner", owner)
                 .param("leasedUntil", ts(leasedUntil))
@@ -135,8 +158,21 @@ public class AdvertisingRecalculationRepository {
                         rs.getString("trigger_reference"),
                         instantOf(rs, "fact_accepted_at"),
                         rs.getInt("attempt_count"),
-                        rs.getString("correlation_id")))
+                        rs.getString("correlation_id"),instantOf(rs,"calculation_as_of"),rs.getString("lease_owner")))
                 .list();
+    }
+
+    /** An expired lease cannot acknowledge a successor worker's work or swallow a newer event. */
+    public void finish(ClaimedRequest request,String state,String failureCode,Instant completedAt) {
+        jdbc.sql("""
+                UPDATE ops.ad_recalculation_request SET
+                  state=CASE WHEN :state='COMPLETED' AND next_fact_accepted_at IS NOT NULL THEN 'PENDING' ELSE :state END,
+                  fact_accepted_at=CASE WHEN :state='COMPLETED' THEN coalesce(next_fact_accepted_at,fact_accepted_at) ELSE fact_accepted_at END,
+                  completed_at=CASE WHEN :state='COMPLETED' AND next_fact_accepted_at IS NOT NULL THEN NULL ELSE CAST(:at AS timestamptz) END,
+                  failure_code=:failure,lease_owner=NULL,leased_until=NULL,next_fact_accepted_at=NULL,version=version+1
+                WHERE id=:id AND state='LEASED' AND lease_owner=:owner AND calculation_as_of=:asof
+                """).param("state",state).param("failure",failureCode).param("at",ts(completedAt))
+                .param("id",request.id()).param("owner",request.leaseOwner()).param("asof",ts(request.calculationAsOf())).update();
     }
 
     public void finish(UUID id, String state, String failureCode, Instant completedAt) {
@@ -158,7 +194,7 @@ public class AdvertisingRecalculationRepository {
      * the object anyway, and any request still waiting for it is completed rather
      * than left to expire.
      */
-    public int repairCoveredRequests(UUID organizationId, List<UUID> objectIds, Instant at) {
+    public int repairCoveredRequests(UUID organizationId, List<UUID> objectIds, Instant asOf, Instant at) {
         if (objectIds.isEmpty()) {
             return 0;
         }
@@ -168,12 +204,34 @@ public class AdvertisingRecalculationRepository {
                        leased_until = NULL, version = version + 1
                  WHERE organization_id = :organizationId
                    AND ad_native_object_id = ANY (:objectIds)
-                   AND state IN ('PENDING', 'LEASED')
+                   AND state IN ('PENDING', 'LEASED','FAILED','ABANDONED')
+                   AND latest_fact_accepted_at<=:asOf
                 """)
-                .param("organizationId", organizationId)
+                .param("asOf",ts(asOf)).param("organizationId", organizationId)
                 .param("objectIds", objectIds.toArray(new UUID[0]))
                 .param("at", ts(at))
                 .update();
+    }
+
+    public int repairCoveredRequests(UUID organizationId,List<UUID> objectIds,Instant at) {
+        return repairCoveredRequests(organizationId,objectIds,at,at);
+    }
+
+    public record Unanswered(UUID id,UUID objectId,Instant acceptedAt) { }
+    public List<Unanswered> unanswered(UUID organizationId,UUID objectId,Instant asOf) {
+        return jdbc.sql("""
+                SELECT id,ad_native_object_id,fact_accepted_at FROM ops.ad_recalculation_request
+                WHERE organization_id=:org AND ad_native_object_id=:object
+                  AND state IN('PENDING','LEASED','FAILED','ABANDONED') AND latest_fact_accepted_at<=:asof
+                """).param("org",organizationId).param("object",objectId).param("asof",ts(asOf))
+                .query((rs,n)->new Unanswered(rs.getObject("id",UUID.class),rs.getObject("ad_native_object_id",UUID.class),instantOf(rs,"fact_accepted_at"))).list();
+    }
+
+    public int releaseProvenReservations(UUID organizationId) {
+        return jdbc.sql("""
+                SELECT count(*) FROM (SELECT ops.release_ad_action_reservation(id,'hourly canonical proof reconciliation') released
+                    FROM ops.ad_action_reservation WHERE organization_id=:org AND state<>'RELEASED') checked WHERE released
+                """).param("org",organizationId).query(Integer.class).single();
     }
 
     /** How much work is waiting and how old the oldest of it is. */

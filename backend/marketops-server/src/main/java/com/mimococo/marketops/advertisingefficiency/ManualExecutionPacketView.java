@@ -51,6 +51,13 @@ public record ManualExecutionPacketView(
         String state,
         Instant issuedAt,
         Instant expiresAt,
+        UUID proposalId,
+        UUID manualPolicyId,
+        UUID executorUserId,
+        Instant executionStartedAt,
+        UUID reservationId,
+        UUID currentProofId,
+        long version,
         List<Verification> verifications) {
 
     /**
@@ -99,7 +106,9 @@ public record ManualExecutionPacketView(
      * to be treated as a configuration somebody confirmed.
      */
     public boolean configurationProven() {
-        return verifications.stream().anyMatch(Verification::provesConfiguration);
+        return "MANUAL_CONFIGURATION_VERIFIED".equals(state) && currentProofId != null
+                && verifications.stream().anyMatch(view -> currentProofId.equals(view.id())
+                        && view.provesConfiguration() && "NONE".equals(view.conflictState()));
     }
 
     /** Whether the packet may still be acted on. */

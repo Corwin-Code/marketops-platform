@@ -1,3 +1,5 @@
+import { AdvertisingOrchestration } from './AdvertisingOrchestration';
+import { AdvertisingRecoveryControls } from './AdvertisingContainmentControls';
 import { useEffect, useState } from 'react';
 import {
   fetchAdvertisingContainments,
@@ -45,6 +47,7 @@ interface Axis {
  * through.
  */
 export function AdvertisingOperations({ context }: AdvertisingOperationsProps): React.JSX.Element {
+  const [revision, setRevision] = useState(0);
   const [reservations, setReservations] = useState<readonly AdvertisingReservation[] | undefined>(
     undefined,
   );
@@ -87,7 +90,7 @@ export function AdvertisingOperations({ context }: AdvertisingOperationsProps): 
     return () => {
       active = false;
     };
-  }, [context]);
+  }, [context, revision]);
 
   if (failure !== undefined) {
     return <AdvertisingProblem failure={failure} />;
@@ -104,8 +107,15 @@ export function AdvertisingOperations({ context }: AdvertisingOperationsProps): 
   return (
     <section aria-label="Advertising execution" data-state="loaded">
       <h2>Advertising execution</h2>
+      <AdvertisingOrchestration context={context} />
       <ExposurePanel exposure={exposure} />
-      <ContainmentPanel containments={containments} />
+      <ContainmentPanel
+        containments={containments}
+        context={context}
+        reload={() => {
+          setRevision((value) => value + 1);
+        }}
+      />
       <ReservationPanel reservations={reservations} />
     </section>
   );
@@ -117,6 +127,17 @@ function ExposurePanel({
 }: {
   readonly exposure: AdvertisingExposure;
 }): React.JSX.Element {
+  if (exposure.status === 'MASKED') {
+    return (
+      <section aria-label="Exposure envelope" data-state="masked">
+        <h3>Exposure envelope</h3>
+        <p>
+          Masked: organization exposure exceeds your current disclosure scope. A masked amount is
+          not zero or spare capacity.
+        </p>
+      </section>
+    );
+  }
   if (!exposure.resolved) {
     return (
       <section aria-label="Exposure envelope" data-state="unresolved">
@@ -126,24 +147,24 @@ function ExposurePanel({
           written, whatever else is otherwise ready.
         </p>
         <p>
-          {exposure.activeInterventions} interventions are standing and{' '}
-          {exposure.unresolvedTransmittedWrites} transmitted writes are unresolved.
+          {exposure.activeInterventions ?? 'Unresolved'} interventions are standing and{' '}
+          {exposure.unresolvedTransmittedWrites ?? 'Unresolved'} transmitted writes are unresolved.
         </p>
       </section>
     );
   }
-  const headroom = exposure.reservedRecoveryHeadroom ?? 0;
+  const headroom = exposure.reservedRecoveryHeadroom;
   const axes: readonly Axis[] = [
     {
       code: 'ACTIVE_INTERVENTIONS',
       label: 'Active interventions',
       used: exposure.activeInterventions,
       limit:
-        exposure.maxActiveInterventions === undefined
+        exposure.maxActiveInterventions === undefined || headroom === undefined
           ? undefined
           : exposure.maxActiveInterventions - headroom,
       note:
-        headroom > 0
+        headroom !== undefined && headroom > 0
           ? `${String(headroom)} of ${String(exposure.maxActiveInterventions)} reserved for recovery`
           : undefined,
     },
@@ -210,8 +231,12 @@ function ExposurePanel({
 /** Holds, quarantines and kills, each named rather than reduced to a severity. */
 function ContainmentPanel({
   containments,
+  context,
+  reload,
 }: {
   readonly containments: readonly AdvertisingContainment[];
+  readonly context: ConsoleRequest;
+  readonly reload: () => void;
 }): React.JSX.Element {
   if (containments.length === 0) {
     return (
@@ -232,6 +257,12 @@ function ContainmentPanel({
           <li key={hold.id} data-kind={hold.containmentKind} data-state={hold.state}>
             <strong>{hold.containmentKind}</strong> over {hold.scopeKind ?? 'an unnamed scope'}
             {hold.causeClass === undefined ? null : <> — {hold.causeClass}</>}
+            <AdvertisingRecoveryControls
+              context={context}
+              id={hold.id}
+              allowedActions={hold.allowedActions}
+              reload={reload}
+            />
             <p>{hold.reason ?? 'No reason was recorded.'}</p>
             {hold.outstandingConditions.length === 0 ? (
               <p data-ready={hold.readyToLift}>

@@ -1,58 +1,21 @@
-# Quarantining advertising, at the right scope
+# Advertising quarantine
 
-A quarantine stops a scope while something is being explained. It is not the
-kill switch, which stops everything; it is the narrower instrument you reach for
-when you know where the problem is.
+Containment is an explicit scope and cause, not a severity number.
 
-## The five kinds, and when each fits
+| Kind | Meaning |
+| --- | --- |
+| `EMERGENCY_ENTITY_HOLD` | Human hold on a native object or its canonical affected set. |
+| `ACTION_OUTCOME_QUARANTINE` | Canonical action-bound regression, including early company/critical sales regression or a later correction. |
+| `AUTHORITY_VERSION_QUARANTINE` | Hold on decisions referencing the exact quarantined authority version. |
+| `CAPABILITY_QUARANTINED` | Hold on the identified platform/Store/account capability. |
+| `KILL_SWITCH_ACTIVE` | Stop at its explicit scope; the name alone does not imply global scope. |
 
-| Kind | Stops | Reach for it when |
-| --- | --- | --- |
-| `EMERGENCY_ENTITY_HOLD` | one advertising object | one object is behaving oddly |
-| `ACTION_OUTCOME_QUARANTINE` | one lineage's affected set | a settled outcome regressed |
-| `AUTHORITY_VERSION_QUARANTINE` | everything decided under one version | a policy version turned out wrong |
-| `CAPABILITY_QUARANTINED` | one platform-store capability | a provider path is unreliable |
-| `KILL_SWITCH_ACTIVE` | all of it | you do not yet know |
+Use an available console Stop action and provide evidence plus an eligible review owner; see [kill-switch authority](advertising-kill-switch.md). The application role cannot create a containment row directly. System outcome quarantine is derived from a specific immutable `REGRESSED` observation, not a caller verdict or an inferred AI action.
 
-They are not degrees of one thing, and there is deliberately no severity number.
-An operator reading "level 3" learns nothing about what to fix; an operator
-reading `AUTHORITY_VERSION_QUARANTINE` knows to look at what was decided under
-that version.
+Affected-set quarantine tests intersecting canonical Product variants, including a later generation with a different digest. Authority-version quarantine follows the referenced Bundle components. A late correction retains the old observation and task age; it appends review responsibility and blocks overlapping execution even if another current reservation prevents reacquisition.
 
-## Throwing one
+Stops are checked before leasing and at transmission. They cannot retract a request already sent, so pending/unknown/native readback work must still converge. Cached booleans, passage of time and reverting a policy row cannot revive invalidated actions.
 
-```sql
-INSERT INTO ops.ad_containment (id, organization_id, containment_kind, scope_kind,
-        ad_native_object_id, cause_class, reason, evidence_reference,
-        activated_by_user_id, activated_at, state, accountable_role_code,
-        correlation_id, created_at, updated_at)
-VALUES (gen_random_uuid(), :organizationId, 'EMERGENCY_ENTITY_HOLD', 'ENTITY',
-        :objectId, 'BUSINESS_HARM', :reason, :evidenceReference, :userId, now(),
-        'ACTIVE', 'MARKETPLACE_OPERATOR', :correlationId, now(), now());
-```
+`CREDENTIAL_OR_SECURITY`, `PROVIDER_OR_READBACK_DEFECT` and `EXECUTION_INTEGRITY` require the corresponding technical/security attestation before reenablement. Choose the actual cause; use [reenablement](advertising-reenablement.md) for the independent review and fresh Bundle.
 
-Attribution is to exactly one of a person or a deterministic trigger — the
-schema refuses both and refuses neither. AI inference is neither, so it can
-activate nothing.
-
-Record the accountable role. It is not inferred from the cause, so an operator
-can see who owns it without knowing the cause table by heart.
-
-## What it does and does not reach
-
-It stops new work and it stops work at the transmission boundary. A command
-already leased is caught: `ops.open_ad_bid_command_attempt` evaluates the gate
-again, after the destination has been built and immediately before anything
-leaves. `AdvertisingTransmissionBoundaryIT#TC-AD-BOUNDARY-003` asserts exactly
-that window.
-
-It does not reach into a call already in flight. A request that has left the
-process has left; that is what the unknown-result path is for.
-
-## Cause class matters later
-
-`EXECUTION_INTEGRITY`, `PROVIDER_OR_READBACK_DEFECT` and
-`CREDENTIAL_OR_SECURITY` each require a security or platform attestation before
-anything restarts. Choose the cause honestly when you throw it — choosing a
-softer one to make reenablement easier is choosing to restart without the
-evidence that would have made restarting safe.
+R1 changes are engineering and isolated-fixture evidence only. Production write remains disabled and no real Provider or shared environment is authorized here.

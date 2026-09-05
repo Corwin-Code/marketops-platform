@@ -45,6 +45,12 @@ public record BidStepLimits(
         return relative.min(maxAbsoluteChangeAmount).setScale(STORED_SCALE, RoundingMode.FLOOR);
     }
 
+    /** Published absolute limits are currency-major amounts; native targets may use minor units. */
+    public BidStepLimits inNativeUnits(String unit) {
+        return new BidStepLimits(maxRelativeChangeRatio,
+                AdBidUnitConversion.toNative(maxAbsoluteChangeAmount,unit),ceilingHeadroomRatio);
+    }
+
     /** The lowest value a decrease from this bid may reach. */
     public BigDecimal lowestPermittedFrom(BigDecimal currentBid) {
         return currentBid.subtract(permittedStepFrom(currentBid))

@@ -87,9 +87,7 @@ public class AdvertisingQueryRepository {
                    c.ad_linked_conversion_stage, c.max_cpc_state, c.max_cpc_amount,
                    c.attribution_gap_state, c.attribution_gap_ratio,
                    c.current_bid_state, c.current_bid_amount, c.recoverable_profit_amount,
-                   %s * %s + LEAST(%s::numeric - 1, GREATEST(0,
-                       coalesce((SELECT sum(f.contribution) FROM mart.ad_case_rank_factor f
-                                  WHERE f.calculation_id = c.calculation_id), 0))) AS visible_rank,
+                   %s * %s AS visible_rank,
                    c.policy_version_digest, a.affected_set_digest, a.resolution_state,
                    cardinality(a.product_variant_ids) AS affected_variant_count,
                    c.as_of, c.calculated_at, c.sustained_lane, c.sustained_cycles,
@@ -102,14 +100,30 @@ public class AdvertisingQueryRepository {
              WHERE c.organization_id = :organizationId
                AND c.store_id = ANY (:permittedStoreIds)
                AND c.superseded_at IS NULL
-            """.formatted(BAND, BAND_EXPRESSION, BAND);
+            """.formatted(BAND, BAND_EXPRESSION);
+
+    private static String rankTerm(String protection, String repair, String optimization) {
+        return "(SELECT f.factor_value FROM mart.ad_case_rank_factor f WHERE f.calculation_id = c.calculation_id"
+                + " AND f.factor_code = CASE c.lane WHEN 'PROTECTION' THEN '" + protection
+                + "' WHEN 'DATA_REPAIR' THEN '" + repair + "' WHEN 'OPTIMIZATION' THEN '" + optimization
+                + "' END) DESC NULLS LAST";
+    }
+
+    private static final String CANONICAL_ORDER = " ORDER BY visible_rank DESC, "
+            + rankTerm("HUMAN_SLO_URGENCY", "BLOCKED_PROTECTION", "RECOVERABLE_CONTRIBUTION_PROFIT") + ", "
+            + rankTerm("CONFIRMED_PROFIT_LOSS_RATE", "BLAST_RADIUS", "DUAL_AXIS_GAP") + ", "
+            + rankTerm("NOT_APPLICABLE", "NOT_APPLICABLE", "DUAL_AXIS_PER_RUB_GAP") + ", "
+            + rankTerm("CRITICAL_SALES_EXPOSURE", "OFFICIAL_SPEND_EXPOSURE", "OFFICIAL_SPEND_EXPOSURE") + ", "
+            + rankTerm("OFFICIAL_SPEND_EXPOSURE", "BLOCKED_WORK", "CRITICAL_SALES_HEADROOM") + ", "
+            + rankTerm("CASE_AGE", "HUMAN_SLO_URGENCY", "EVIDENCE_MATURITY") + ", "
+            + rankTerm("CASE_AGE", "CASE_AGE", "CASE_AGE") + ", c.case_key COLLATE \"C\"";
 
     public List<CaseRow> queue(
             UUID organizationId, List<UUID> permittedStoreIds, String laneFilter,
             int limit, int offset) {
         String sql = CASE_SELECT
                 + (laneFilter == null ? "" : " AND c.lane = :lane ")
-                + " ORDER BY visible_rank DESC, c.id LIMIT :limit OFFSET :offset";
+                + CANONICAL_ORDER + " LIMIT :limit OFFSET :offset";
         var spec = jdbc.sql(sql)
                 .param("organizationId", organizationId)
                 .param("permittedStoreIds", permittedStoreIds.toArray(new UUID[0]))

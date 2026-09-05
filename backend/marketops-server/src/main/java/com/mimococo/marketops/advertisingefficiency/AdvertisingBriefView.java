@@ -85,7 +85,7 @@ public record AdvertisingBriefView(
 
         /** Whether this topic was covered without a gap. */
         public boolean complete() {
-            return "COMPLETE".equals(coverageState);
+            return "COMPLETE".equals(coverageState) && blockerCodes.isEmpty();
         }
     }
 
@@ -142,6 +142,6 @@ public record AdvertisingBriefView(
 
     /** Whether every topic was covered without a gap. */
     public boolean fullyCovered() {
-        return gapCodes.isEmpty() && sections.stream().allMatch(Section::complete);
+        return !sections.isEmpty() && gapCodes.isEmpty() && sections.stream().allMatch(Section::complete);
     }
 }

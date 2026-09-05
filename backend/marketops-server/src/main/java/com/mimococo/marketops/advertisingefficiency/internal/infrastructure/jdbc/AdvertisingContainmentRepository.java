@@ -168,105 +168,16 @@ public class AdvertisingContainmentRepository {
                          String authorityVersionReference, String causeClass, String reason,
                          String evidenceReference, UUID activatedByUserId,
                          String activatedByTrigger, String correlationId) {
-        jdbc.sql("""
-                INSERT INTO ops.ad_containment (
-                    id, organization_id, containment_kind, scope_kind, platform_code,
-                    marketplace_account_id, store_id, ad_native_object_id, affected_set_digest,
-                    capability_code, authority_version_reference, cause_class, reason,
-                    evidence_reference, activated_by_user_id, activated_by_trigger,
-                    activated_at, state, correlation_id, created_at, updated_at)
-                VALUES (:id, :organizationId, :kind, :scopeKind, :platformCode, :accountId,
-                    :storeId, :objectId, :digest, :capabilityCode, :authorityVersion,
-                    :causeClass, :reason, :evidenceReference, :activatedByUserId,
-                    :activatedByTrigger, clock_timestamp(), 'ACTIVE', :correlationId,
-                    clock_timestamp(), clock_timestamp())
-                """)
-                .param("id", id)
-                .param("organizationId", organizationId)
-                .param("kind", containmentKind)
-                .param("scopeKind", scopeKind)
-                .param("platformCode", platformCode)
-                .param("accountId", marketplaceAccountId)
-                .param("storeId", storeId)
-                .param("objectId", adNativeObjectId)
-                .param("digest", affectedSetDigest)
-                .param("capabilityCode", capabilityCode)
-                .param("authorityVersion", authorityVersionReference)
-                .param("causeClass", causeClass)
-                .param("reason", reason)
-                .param("evidenceReference", evidenceReference)
-                .param("activatedByUserId", activatedByUserId)
-                .param("activatedByTrigger", activatedByTrigger)
-                .param("correlationId", correlationId)
-                .update();
-        return id;
+        throw new IllegalStateException("authenticated containment control invocation required");
     }
 
-    /**
-     * Record that one reenablement condition now holds, and who observed it.
-     *
-     * <p>Conditions are recorded one at a time and separately from lifting, so
-     * the row-level check that refuses a lift with an outstanding condition has
-     * something independent to check. Setting a condition on a containment that
-     * has already been lifted changes nothing.
-     */
-    public boolean observeReenablementCondition(UUID containmentId, String condition,
-                                                boolean holds) {
-        if (!REENABLEMENT_CONDITIONS.contains(condition)) {
-            throw new IllegalArgumentException("unknown reenablement condition " + condition);
-        }
-        return jdbc.sql("""
-                UPDATE ops.ad_containment
-                   SET root_cause_classified = CASE WHEN :condition = 'ROOT_CAUSE_CLASSIFIED'
-                                                    THEN :holds ELSE root_cause_classified END,
-                       unknowns_resolved = CASE WHEN :condition = 'UNKNOWNS_RESOLVED'
-                                                THEN :holds ELSE unknowns_resolved END,
-                       authorities_replaced = CASE WHEN :condition = 'AUTHORITIES_REPLACED'
-                                                   THEN :holds ELSE authorities_replaced END,
-                       results_reconciled = CASE WHEN :condition = 'RESULTS_RECONCILED'
-                                                 THEN :holds ELSE results_reconciled END,
-                       capability_evidence_current =
-                           CASE WHEN :condition = 'CAPABILITY_EVIDENCE_CURRENT'
-                                THEN :holds ELSE capability_evidence_current END,
-                       security_attestation_present =
-                           CASE WHEN :condition = 'SECURITY_ATTESTATION_PRESENT'
-                                THEN :holds ELSE security_attestation_present END,
-                       state = CASE WHEN state = 'ACTIVE' THEN 'REENABLEMENT_REVIEW'
-                                    ELSE state END,
-                       updated_at = clock_timestamp(), version = version + 1
-                 WHERE id = :id AND state <> 'REENABLED'
-                """)
-                .param("id", containmentId)
-                .param("condition", condition)
-                .param("holds", holds)
-                .update() == 1;
+    public boolean observeReenablementCondition(UUID containmentId, String condition, boolean holds) {
+        throw new IllegalStateException("independent recovery evidence attestation required");
     }
 
-    /**
-     * Lift a containment, if two different people and every condition say so.
-     *
-     * <p>The endorser and the approver are written in the same statement that
-     * lifts, and the table refuses the row unless they differ from each other
-     * and from whoever activated it. So a single person cannot lift their own
-     * stop by any sequence of calls, rather than merely being discouraged from
-     * it by this method.
-     */
     public boolean reenable(UUID containmentId, UUID endorsedByUserId, UUID approvedByUserId,
-                            String reenabledScopeJson) {
-        return jdbc.sql("""
-                UPDATE ops.ad_containment
-                   SET state = 'REENABLED', endorsed_by_user_id = :endorsedBy,
-                       approved_by_user_id = :approvedBy,
-                       reenabled_scope = CAST(:scope AS jsonb),
-                       reenabled_at = clock_timestamp(),
-                       updated_at = clock_timestamp(), version = version + 1
-                 WHERE id = :id AND state <> 'REENABLED'
-                """)
-                .param("id", containmentId)
-                .param("endorsedBy", endorsedByUserId)
-                .param("approvedBy", approvedByUserId)
-                .param("scope", reenabledScopeJson)
-                .update() == 1;
+            String reenabledScopeJson) {
+        throw new IllegalStateException("new scoped Owner recovery invocation required");
     }
 
     /** Every containment for one organization, newest first. */
@@ -304,6 +215,19 @@ public class AdvertisingContainmentRepository {
      * is harmless and leaving it out of the vocabulary would mean a caller had
      * no way to record it at all.
      */
+    public List<com.mimococo.marketops.advertisingefficiency.AdvertisingContainment> listForIds(
+            UUID organizationId, List<UUID> ids, boolean holdingOnly, int limit) {
+        if (ids.isEmpty()) return List.of();
+        return jdbc.sql("""
+                SELECT * FROM ops.ad_containment
+                 WHERE organization_id = :organizationId AND id = ANY(:ids)
+                   AND (:holdingOnly = false OR state <> 'REENABLED')
+                 ORDER BY activated_at DESC, id LIMIT :limit
+                """).param("organizationId", organizationId).param("ids", ids.toArray(new UUID[0]))
+                .param("holdingOnly", holdingOnly).param("limit", limit)
+                .query(AdvertisingContainmentRepository::mapContainment).list();
+    }
+
     private static final java.util.Set<String> REENABLEMENT_CONDITIONS = java.util.Set.of(
             "ROOT_CAUSE_CLASSIFIED", "UNKNOWNS_RESOLVED", "AUTHORITIES_REPLACED",
             "RESULTS_RECONCILED", "CAPABILITY_EVIDENCE_CURRENT",

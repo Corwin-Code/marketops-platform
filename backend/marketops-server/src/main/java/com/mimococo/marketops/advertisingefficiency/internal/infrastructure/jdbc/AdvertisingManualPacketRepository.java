@@ -44,46 +44,8 @@ public class AdvertisingManualPacketRepository {
                       List<String> blockerCodes, UUID makerUserId, String expectedImpactJson,
                       String verificationPlanJson, Instant issuedAt, Instant expiresAt,
                       String correlationId) {
-        jdbc.sql("""
-                INSERT INTO ops.ad_manual_execution_packet (
-                    id, organization_id, case_id, ad_native_object_id, store_id, platform_code,
-                    affected_set_id, affected_set_digest, semantic_profile_id, action_kind,
-                    observed_configuration_id, intended_state, reason, evidence_reference,
-                    guardrail_evaluation_id, blocker_codes, maker_user_id, expected_impact,
-                    verification_plan, state, issued_at, expires_at, correlation_id,
-                    created_at, updated_at)
-                VALUES (:id, :organizationId, :caseId, :objectId, :storeId, :platformCode,
-                    :affectedSetId, :digest, :profileId, :actionKind, :configurationId,
-                    CAST(:intendedState AS jsonb), :reason, :evidenceReference,
-                    :guardrailEvaluationId, CAST(:blockerCodes AS text[]), :makerUserId,
-                    CAST(:expectedImpact AS jsonb), CAST(:verificationPlan AS jsonb),
-                    'MANUAL_PACKET_ISSUED', :issuedAt, :expiresAt, :correlationId,
-                    clock_timestamp(), clock_timestamp())
-                """)
-                .param("id", id)
-                .param("organizationId", organizationId)
-                .param("caseId", caseId)
-                .param("objectId", adNativeObjectId)
-                .param("storeId", storeId)
-                .param("platformCode", platformCode)
-                .param("affectedSetId", affectedSetId)
-                .param("digest", affectedSetDigest)
-                .param("profileId", semanticProfileId)
-                .param("actionKind", actionKind)
-                .param("configurationId", observedConfigurationId)
-                .param("intendedState", intendedStateJson)
-                .param("reason", reason)
-                .param("evidenceReference", evidenceReference)
-                .param("guardrailEvaluationId", guardrailEvaluationId)
-                .param("blockerCodes", textArrayLiteral(blockerCodes))
-                .param("makerUserId", makerUserId)
-                .param("expectedImpact", expectedImpactJson)
-                .param("verificationPlan", verificationPlanJson)
-                .param("issuedAt", Timestamp.from(issuedAt))
-                .param("expiresAt", Timestamp.from(expiresAt))
-                .param("correlationId", correlationId)
-                .update();
-        return id;
+        throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                com.mimococo.marketops.shared.ErrorCode.ACTION_NOT_PERMITTED);
     }
 
     /**
@@ -100,65 +62,14 @@ public class AdvertisingManualPacketRepository {
                                    String observedValue, Instant observedAt,
                                    String evidenceReference, String conflictState,
                                    String correlationId) {
-        boolean proves = "NONE".equals(conflictState)
-                && List.of("OFFICIAL_API_READBACK", "OFFICIAL_CONFIGURATION_EXPORT",
-                        "INDEPENDENT_MANUAL_VERIFICATION").contains(evidenceGrade);
-        jdbc.sql("""
-                INSERT INTO ops.ad_manual_configuration_verification (
-                    id, organization_id, packet_id, evidence_grade, executor_user_id,
-                    verifier_user_id, observed_field_path, observed_value, observed_at,
-                    evidence_reference, conflict_state, proves_configuration, recorded_at,
-                    correlation_id)
-                VALUES (:id, :organizationId, :packetId, :grade, :executor, :verifier,
-                    :fieldPath, :value, :observedAt, :evidenceReference, :conflictState,
-                    :proves, clock_timestamp(), :correlationId)
-                """)
-                .param("id", id)
-                .param("organizationId", organizationId)
-                .param("packetId", packetId)
-                .param("grade", evidenceGrade)
-                .param("executor", executorUserId)
-                .param("verifier", verifierUserId)
-                .param("fieldPath", observedFieldPath)
-                .param("value", observedValue)
-                .param("observedAt", Timestamp.from(observedAt))
-                .param("evidenceReference", evidenceReference)
-                .param("conflictState", conflictState)
-                .param("proves", proves)
-                .param("correlationId", correlationId)
-                .update();
-
-        jdbc.sql("""
-                UPDATE ops.ad_manual_execution_packet
-                   SET state = CASE
-                           WHEN :proves THEN 'MANUAL_CONFIGURATION_VERIFIED'
-                           WHEN :conflicted THEN 'MANUAL_EXECUTION_UNCERTAIN'
-                           WHEN state = 'MANUAL_PACKET_ISSUED'
-                               THEN 'ACTION_REPORTED_CONFIGURATION_UNVERIFIED'
-                           ELSE state END,
-                       updated_at = clock_timestamp(), version = version + 1
-                 WHERE id = :packetId AND state NOT IN ('MANUAL_PACKET_REVOKED',
-                       'MANUAL_CONFIGURATION_VERIFIED', 'MANUAL_PACKET_EXPIRED')
-                """)
-                .param("packetId", packetId)
-                .param("proves", proves)
-                .param("conflicted", !"NONE".equals(conflictState))
-                .update();
-        return id;
+        throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                com.mimococo.marketops.shared.ErrorCode.ACTION_NOT_PERMITTED);
     }
 
     /** Withdraw a packet nobody should act on any more. */
     public boolean revoke(UUID packetId, String reason) {
-        return jdbc.sql("""
-                UPDATE ops.ad_manual_execution_packet
-                   SET state = 'MANUAL_PACKET_REVOKED', revoked_at = clock_timestamp(),
-                       revoked_reason = :reason, updated_at = clock_timestamp(),
-                       version = version + 1
-                 WHERE id = :packetId AND state = 'MANUAL_PACKET_ISSUED'
-                """)
-                .param("packetId", packetId)
-                .param("reason", reason)
-                .update() == 1;
+        throw com.mimococo.marketops.shared.OperationRejectedException.of(
+                com.mimococo.marketops.shared.ErrorCode.ACTION_NOT_PERMITTED);
     }
 
     /**
@@ -170,14 +81,7 @@ public class AdvertisingManualPacketRepository {
      * disagree about.
      */
     public int expire(Instant now) {
-        return jdbc.sql("""
-                UPDATE ops.ad_manual_execution_packet
-                   SET state = 'MANUAL_PACKET_EXPIRED', updated_at = clock_timestamp(),
-                       version = version + 1
-                 WHERE state = 'MANUAL_PACKET_ISSUED' AND expires_at <= :now
-                """)
-                .param("now", Timestamp.from(now))
-                .update();
+        return jdbc.sql("SELECT ops.expire_ad_manual_packets()").query(Integer.class).single();
     }
 
     /** One packet with everything observed about it. */
@@ -259,7 +163,7 @@ public class AdvertisingManualPacketRepository {
                        proves_configuration, observed_at
                   FROM ops.ad_manual_configuration_verification
                  WHERE packet_id = :packetId
-                 ORDER BY observed_at DESC, id
+                 ORDER BY recorded_at DESC, id
                 """)
                 .param("packetId", packetId)
                 .query((ResultSet rs, int index) ->
@@ -283,7 +187,9 @@ public class AdvertisingManualPacketRepository {
                 packet.adNativeObjectId(), packet.actionKind(), packet.intendedState(),
                 packet.reason(), packet.evidenceReference(), packet.blockerCodes(),
                 packet.makerUserId(), packet.endorserUserId(), packet.approverUserId(),
-                packet.state(), packet.issuedAt(), packet.expiresAt(), verifications);
+                packet.state(), packet.issuedAt(), packet.expiresAt(), packet.proposalId(), packet.manualPolicyId(),
+                packet.executorUserId(), packet.executionStartedAt(), packet.reservationId(), packet.currentProofId(),
+                packet.version(), verifications);
     }
 
     private static final String PACKET_SELECT = """
@@ -291,7 +197,8 @@ public class AdvertisingManualPacketRepository {
                    packet.intended_state::text AS intended_state, packet.reason,
                    packet.evidence_reference, packet.blocker_codes, packet.maker_user_id,
                    packet.endorser_user_id, packet.approver_user_id, packet.state,
-                   packet.issued_at, packet.expires_at
+                   packet.issued_at, packet.expires_at, packet.proposal_id, packet.manual_policy_id,
+                   packet.executor_user_id, packet.execution_started_at, packet.reservation_id, packet.current_proof_id, packet.version
               FROM ops.ad_manual_execution_packet packet
             """;
 
@@ -313,7 +220,11 @@ public class AdvertisingManualPacketRepository {
                 rs.getString("state"),
                 rs.getTimestamp("issued_at").toInstant(),
                 rs.getTimestamp("expires_at").toInstant(),
-                List.of());
+                rs.getObject("proposal_id", UUID.class), rs.getObject("manual_policy_id", UUID.class),
+                rs.getObject("executor_user_id", UUID.class),
+                rs.getTimestamp("execution_started_at") == null ? null : rs.getTimestamp("execution_started_at").toInstant(),
+                rs.getObject("reservation_id", UUID.class), rs.getObject("current_proof_id", UUID.class),
+                rs.getLong("version"), List.of());
     }
 
     /** A text array as PostgreSQL reads it, with no element able to close the literal. */

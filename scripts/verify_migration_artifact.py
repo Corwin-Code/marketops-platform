@@ -11,6 +11,16 @@ import tempfile
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def reject_packaged_test_authority(names):
+    """The shipped artifact must contain neither signing nor advertising oracles."""
+    forbidden = ("BrowserFixtureApplication", "BrowserSigningFixture", "AdvertisingR1Fixture",
+                 "AdvertisingBrowser", "AdvertisingManualBrowserSeed", "r1-fictional-positive.sql")
+    if any(marker in name for name in names for marker in forbidden):
+        raise ValueError("Synthetic browser or advertising authority must never enter the production artifact")
+
+
 PROBE = r'''
 package com.mimococo.marketops.shared.internal.migration;
 public final class PackagedMigrationProbe {
@@ -62,8 +72,7 @@ def main():
     canonical = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in
                  (ROOT / "backend/marketops-server/src/main/resources/db/migration").glob("*.sql")}
     with zipfile.ZipFile(artifact) as jar:
-        if any("BrowserFixtureApplication" in name or "BrowserSigningFixture" in name for name in jar.namelist()):
-            raise ValueError("Synthetic browser authority must never enter the production artifact")
+        reject_packaged_test_authority(jar.namelist())
         packaged = {Path(p).name: hashlib.sha256(jar.read(p)).hexdigest() for p in jar.namelist()
                     if p.startswith("BOOT-INF/classes/db/migration/") and p.endswith(".sql")}
     if packaged != canonical:

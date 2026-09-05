@@ -46,7 +46,7 @@ public record AdBidCommandView(
     /** One observation of what the platform holds. */
     public record Readback(
             UUID id, String matchState, BigDecimal observedBid, String currencyCode,
-            Instant observedAt) {
+            String bidUnitCode, Instant observedAt) {
     }
 
     public AdBidCommandView {

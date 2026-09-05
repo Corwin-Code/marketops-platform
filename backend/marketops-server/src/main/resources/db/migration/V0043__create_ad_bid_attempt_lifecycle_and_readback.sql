@@ -11,7 +11,8 @@
 --
 -- Three rules are worth restating because they are where the money is.
 --
--- An APPLY and a RESTORE may each be dispatched at most once per command, ever.
+-- Re-dispatch is bounded and requires the frozen native-idempotency contract or
+-- an exact provider NOT_APPLIED observation. Unknown absence never proves a retry safe.
 -- Not once per lease, not once per fence — once. A retry of a mutating call
 -- without verified provider idempotency is a second bid change wearing the first
 -- one's name.
@@ -85,6 +86,7 @@ AS $$
        AND capability.deprecated_at IS NULL
        AND capability.capability_code = 'ad-bid-change' AND capability.read_write_class = 'WRITE'
        AND endpoint.capability_id = op.capability_id
+       AND (op.operation <> 'READBACK' OR op.ad_observed_unit_pointer IS NOT NULL)
        AND endpoint.operation_function = CASE op.operation
                WHEN 'STATUS_ENQUIRY' THEN 'AD_BID_STATUS' ELSE 'AD_BID_' || op.operation END
        AND ((op.operation IN ('APPLY', 'RESTORE')
@@ -124,6 +126,7 @@ BEGIN
     IF NOT FOUND THEN
         RAISE EXCEPTION 'command does not exist' USING ERRCODE = 'MO090';
     END IF;
+    PERFORM pg_advisory_xact_lock(hashtext('ad_action_reservation'),hashtext(command.organization_id::text));
     IF command.fence_token <> p_fence
         OR command.lease_owner IS DISTINCT FROM p_owner
         OR command.lease_expires_at IS NULL
@@ -142,7 +145,7 @@ BEGIN
     -- Purpose and state must agree. A READBACK during EXECUTING would observe a
     -- value before the write it is meant to verify.
     IF NOT ((p_purpose = 'APPLY' AND command.state = 'EXECUTING')
-         OR (p_purpose = 'STATUS_ENQUIRY' AND command.state IN ('EXECUTING', 'PLATFORM_PENDING'))
+         OR (p_purpose = 'STATUS_ENQUIRY' AND command.state IN ('EXECUTING', 'PLATFORM_PENDING', 'COMPENSATION_PENDING'))
          OR (p_purpose = 'READBACK' AND command.state IN ('READBACK_PENDING', 'COMPENSATION_PENDING'))
          OR (p_purpose = 'RESTORE' AND command.state = 'COMPENSATION_PENDING')) THEN
         RAISE EXCEPTION 'a % attempt cannot be opened from %', p_purpose, command.state
@@ -163,7 +166,22 @@ BEGIN
     -- merely discouraged.
     IF p_purpose IN ('APPLY', 'RESTORE')
         AND EXISTS (SELECT 1 FROM ops.ad_bid_command_attempt a
-                     WHERE a.command_id = p_command_id AND a.purpose = p_purpose) THEN
+                     WHERE a.command_id = p_command_id AND a.purpose = p_purpose)
+        AND NOT (command.retry_budget_remaining > 0 AND EXISTS (
+            SELECT 1 FROM ops.ad_bid_command_attempt a
+            WHERE a.command_id = p_command_id AND a.purpose = p_purpose
+              AND a.id = (SELECT last_attempt.id FROM ops.ad_bid_command_attempt last_attempt
+                           WHERE last_attempt.command_id = p_command_id
+                             AND last_attempt.purpose = p_purpose
+                           ORDER BY last_attempt.attempt_no DESC LIMIT 1)
+              AND ops.ad_bid_retry_is_proven(p_command_id)
+              AND a.raw_observation_id IS NOT NULL
+              AND (a.error_code = 'provider_explicit_not_applied'
+                   OR EXISTS(SELECT 1 FROM ops.ad_bid_command_attempt proof
+                      WHERE proof.command_id=p_command_id AND proof.error_code='provider_explicit_not_applied'
+                        AND proof.completed_at>a.completed_at AND proof.raw_observation_id IS NOT NULL)
+                   OR a.operation_snapshot #>> '{adSemanticProfile,idempotency_semantics}'
+                        = 'VERIFIED_NATIVE_KEY'))) THEN
         RAISE EXCEPTION 'a mutating command operation cannot be dispatched twice'
             USING ERRCODE = 'MO090';
     END IF;
@@ -171,7 +189,8 @@ BEGIN
     -- The transmission boundary. The gate is evaluated once more, here, so a
     -- quarantine or kill activated after the lease was taken stops the call.
     IF p_purpose IN ('APPLY', 'RESTORE') THEN
-        reasons := ops.evaluate_ad_bid_write_gate(p_command_id);
+        reasons := CASE WHEN p_purpose='RESTORE' THEN ops.evaluate_ad_bid_compensation_gate(p_command_id)
+                   ELSE ops.evaluate_ad_bid_write_gate(p_command_id) END;
         IF cardinality(reasons) > 0 THEN
             RAISE EXCEPTION 'the advertising write gate is closed at transmission: %',
                 array_to_string(reasons, ',') USING ERRCODE = 'MO092';
@@ -205,6 +224,13 @@ BEGIN
             USING ERRCODE = 'MO093';
     END IF;
 
+    shape := shape || jsonb_build_object('adSemanticProfile',
+        (SELECT to_jsonb(p) FROM platform.ad_semantic_profile p
+          WHERE p.id = command.semantic_profile_id AND p.verification_state = 'VERIFIED'
+            AND p.status = 'ACTIVE'));
+    IF shape -> 'adSemanticProfile' = 'null'::jsonb THEN
+        RAISE EXCEPTION 'verified semantic profile is required' USING ERRCODE = 'MO093';
+    END IF;
     SELECT coalesce(max(a.attempt_no), 0) + 1 INTO next_no
       FROM ops.ad_bid_command_attempt a WHERE a.command_id = p_command_id;
 
@@ -286,6 +312,7 @@ DECLARE
     observed_bid numeric(18, 4);
     observed_currency text;
     observed_unit text;
+    native_task text;
 BEGIN
     SELECT * INTO attempt FROM ops.ad_bid_command_attempt WHERE id = p_id FOR UPDATE;
     IF NOT FOUND THEN
@@ -294,6 +321,11 @@ BEGIN
     IF attempt.fence_token <> p_fence OR attempt.lease_owner IS DISTINCT FROM p_owner
         OR attempt.request_digest IS DISTINCT FROM p_request_digest THEN
         RAISE EXCEPTION 'this attempt does not belong to the caller' USING ERRCODE = 'MO090';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM ops.ad_bid_command c WHERE c.id = attempt.command_id
+        AND c.fence_token = p_fence AND c.lease_owner = p_owner
+        AND c.lease_expires_at > clock_timestamp()) THEN
+        RAISE EXCEPTION 'stale completion fence' USING ERRCODE = 'MO090';
     END IF;
     IF attempt.outcome_class <> 'IN_FLIGHT' THEN
         RAISE EXCEPTION 'this attempt is already complete' USING ERRCODE = 'MO096';
@@ -333,12 +365,25 @@ BEGIN
             RAISE EXCEPTION 'an evidence class is required' USING ERRCODE = 'MO093';
         END IF;
 
-        document := convert_from(p_body, 'UTF8')::jsonb;
+        BEGIN
+            document := convert_from(p_body, 'UTF8')::jsonb;
+        EXCEPTION WHEN invalid_text_representation OR character_not_in_repertoire THEN
+            document := NULL;
+        END;
 
-        IF NOT p_response_complete OR p_http_status IN (408, 429) OR p_http_status >= 500 THEN
+        IF document IS NULL THEN
+            resolved := 'UNKNOWN_STATE';
+            failure := 'response_semantics_unknown';
+        ELSIF NOT p_response_complete OR p_http_status IN (408, 429) OR p_http_status >= 500 THEN
             resolved := CASE WHEN attempt.purpose IN ('APPLY', 'RESTORE')
                              THEN 'UNKNOWN_STATE' ELSE 'RETRIABLE_ERROR' END;
             failure := 'provider_response_inconclusive';
+        ELSIF attempt.purpose IN ('APPLY', 'RESTORE', 'STATUS_ENQUIRY')
+            AND operation.ad_not_applied_pointer IS NOT NULL
+            AND ops.ad_json_value(document, operation.ad_not_applied_pointer)
+                  = operation.ad_not_applied_value THEN
+            resolved := 'RETRIABLE_ERROR';
+            failure := 'provider_explicit_not_applied';
         ELSIF p_http_status >= 300 THEN
             resolved := 'REJECTED';
             failure := 'platform_rejected';
@@ -346,8 +391,9 @@ BEGIN
             IF ops.ad_json_value(document, operation.accepted_pointer)
                     IS NOT DISTINCT FROM operation.accepted_value THEN
                 IF attempt.operation_snapshot ->> 'writeResultModel' = 'ASYNCHRONOUS_TASK' THEN
-                    IF p_task IS NOT NULL AND length(p_task) BETWEEN 1 AND 256
-                        AND p_task !~ '[[:cntrl:]]' THEN
+                    native_task := ops.ad_json_pointer(document, operation.task_key_pointer);
+                    IF native_task IS NOT NULL AND length(native_task) BETWEEN 1 AND 256
+                        AND native_task !~ '[[:cntrl:]]' THEN
                         resolved := 'ACCEPTED';
                     ELSE
                         resolved := 'UNKNOWN_STATE';
@@ -363,9 +409,10 @@ BEGIN
         ELSIF attempt.purpose = 'READBACK' THEN
             observed_bid := nullif(ops.ad_json_pointer(document, operation.observed_price_pointer), '')::numeric;
             observed_currency := ops.ad_json_pointer(document, operation.observed_currency_pointer);
-            observed_unit := attempt.operation_snapshot #>> '{operation,version_token_header}';
+            observed_unit := ops.ad_json_pointer(document, operation.ad_observed_unit_pointer);
             IF observed_bid IS NOT NULL AND observed_bid >= 0
-                AND observed_currency ~ '^[A-Z]{3}$' THEN
+                AND observed_currency ~ '^[A-Z]{3}$'
+                AND observed_unit IN ('CURRENCY_MAJOR', 'CURRENCY_MINOR') THEN
                 resolved := 'ACCEPTED';
             ELSE
                 resolved := 'UNKNOWN_STATE';
@@ -405,7 +452,7 @@ BEGIN
 
     UPDATE ops.ad_bid_command_attempt
        SET completed_at = clock_timestamp(), outcome_class = resolved,
-           native_status = p_native_status, native_task_key = p_task,
+           native_status = p_native_status, native_task_key = native_task,
            error_code = failure, raw_observation_id = observation_id
      WHERE id = p_id;
 
@@ -466,7 +513,8 @@ BEGIN
 
     -- Four outcomes, derived. There is no tolerance: an equal value is equal.
     match := CASE
-        WHEN observation.observed_bid IS NULL THEN 'UNREADABLE'
+        WHEN observation.observed_bid IS NULL OR observation.observed_unit IS NULL THEN 'UNREADABLE'
+        WHEN observation.observed_unit IS DISTINCT FROM command.bid_unit_code THEN 'DIFFERENT'
         WHEN observation.observed_currency IS DISTINCT FROM command.currency_code THEN 'DIFFERENT'
         WHEN observation.observed_bid = command.target_bid_amount THEN 'MATCHES_TARGET'
         WHEN observation.observed_bid = command.prior_bid_amount THEN 'MATCHES_PRIOR'
@@ -479,7 +527,7 @@ BEGIN
     VALUES (p_readback_id, p_command_id, p_attempt_id, clock_timestamp(),
         CASE WHEN match = 'UNREADABLE' THEN NULL ELSE observation.observed_bid END,
         CASE WHEN match = 'UNREADABLE' THEN NULL ELSE observation.observed_currency END,
-        CASE WHEN match = 'UNREADABLE' THEN NULL ELSE command.bid_unit_code END,
+        CASE WHEN match = 'UNREADABLE' THEN NULL ELSE observation.observed_unit END,
         match, attempt.raw_observation_id, p_correlation_id);
 
     RETURN match;
@@ -509,13 +557,17 @@ BEGIN
            AND rb.match_state = 'MATCHES_PRIOR'
            AND rb.observed_bid = NEW.prior_bid_amount
            AND rb.currency_code = NEW.currency_code
+           AND rb.bid_unit_code = NEW.bid_unit_code
            AND at.fence_token = NEW.fence_token
            AND at.raw_observation_id IS NOT NULL)
         OR NOT EXISTS (
         SELECT 1 FROM ops.ad_bid_command_attempt at
          WHERE at.command_id = NEW.id AND at.purpose = 'RESTORE'
-           AND at.outcome_class = 'ACCEPTED' AND at.fence_token = NEW.fence_token
-           AND at.raw_observation_id IS NOT NULL) THEN
+           AND at.outcome_class = 'ACCEPTED'
+           AND at.raw_observation_id IS NOT NULL
+           AND at.completed_at < (SELECT max(rb.observed_at) FROM ops.ad_bid_command_readback rb
+              JOIN ops.ad_bid_command_attempt current_read ON current_read.id=rb.attempt_id
+              WHERE rb.command_id=NEW.id AND current_read.fence_token=NEW.fence_token)) THEN
         RAISE EXCEPTION 'a compensation is complete only when the prior bid was observed'
             USING ERRCODE = 'MO094';
     END IF;

@@ -1,0 +1,72 @@
+{
+  "kind": "ISOLATED_SQL_PREPARATION_RECEIPT",
+  "container": "marketops-s3-r1-sql-20260905",
+  "transport": "docker exec PostgreSQL unix socket, network none, no mapped port",
+  "sourceMutation": "No source/schema/shared fixture file was changed during UI build freeze; staged revoke applied only to owned isolated SQL database.",
+  "checks": [
+    "Fresh V0001–V0065 migrations and complete fictional graph PASS.",
+    "Actual independent issuer proof, physical app transaction, seal and creator PASS.",
+    "Staged exact revoke closes obsolete caller-role reopen EXECUTE; 73 named non-trigger callable signatures match the staged test.",
+    "Every listed authority table refuses application DML.",
+    "Actual authenticated Stop adds named Kill + permanent invalidation; privileged apparent restoration does not revive authorization.",
+    "Cancelled/restored exposure changes its named live-gate axis while durable invalidation remains.",
+    "Missing factual configuration/early evidence returns release=false."
+  ],
+  "failuresPreserved": [
+    {
+      "log": "slice3-old-control-boundary-probe.log",
+      "cause": "Probe script supplied issuer purpose/hash arguments in reversed order; issuer correctly rejected unknown purpose. Only scratch script corrected."
+    },
+    {
+      "log": "slice3-old-control-boundary-probe-r2.log",
+      "cause": "Probe replay attempted duplicate synthetic IAM scope grant; unique index correctly rejected. Only scratch grant made idempotent."
+    }
+  ],
+  "finalProbe": "slice3-old-control-boundary-probe-r3.log",
+  "logs": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-old-gate-schema-probe.log",
+      "sha256": "934a8b90bb9df8347641b95fb7d16c6357a7ce9f3a47ac7088106dc27607ce8f",
+      "original": "/tmp/slice3-old-gate-schema-probe.log"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-old-gate-positive-probe.log",
+      "sha256": "282f4832a1309c8d288e11fc767f6589104b8091d6c78b282c9a07ec8507b927",
+      "original": "/tmp/slice3-old-gate-positive-probe.log"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-old-control-boundary-probe.log",
+      "sha256": "e0226664893585eccc49e2554fd973f43c6822299eac0c598f45eedc51750d07",
+      "original": "/tmp/slice3-old-control-boundary-probe.log"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-old-control-boundary-probe-r2.log",
+      "sha256": "55657ad0fa0556a80834962408ac5f6e5a387db319f2d75385a06f8d5361ed88",
+      "original": "/tmp/slice3-old-control-boundary-probe-r2.log"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-old-control-boundary-probe-r3.log",
+      "sha256": "abf8b76ee2d65fbf4a305aa84c605737a1dde29541ef3d20415bef3702969541",
+      "original": "/tmp/slice3-old-control-boundary-probe-r3.log"
+    }
+  ],
+  "stagedInputs": [
+    {
+      "path": "/tmp/r1-old-control-tests/AdBidWriteGateAdversarialIT.java",
+      "sha256": "dbbbccae7366d3b60457a10d55b66abb636a37f6d4fe1bee722081231b80aa31"
+    },
+    {
+      "path": "/tmp/r1-old-control-tests/AdvertisingPrivilegeBoundaryIT.java",
+      "sha256": "6ec5b9127d268b710efd430c4c32934eeb304f469abeabc4fa923af1e979e9a1"
+    },
+    {
+      "path": "/tmp/r1-old-control-tests/revoke-obsolete-reopen.sql",
+      "sha256": "2c57070e64a1fc825ff229a10b9d60e14c3ed97e35d4ba165b62ed13078ae686"
+    }
+  ],
+  "limits": [
+    "These SQL probes are not Maven or final commit CI results. The staged Java suites remain unexecuted.",
+    "Fictional migration-role restoration is an adversarial state oracle, not a product reenablement procedure.",
+    "No real Provider, production write or shared environment is used."
+  ]
+}

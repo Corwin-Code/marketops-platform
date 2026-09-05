@@ -829,3 +829,22 @@ GRANT SELECT, INSERT, UPDATE (status, effective_to)
 GRANT SELECT, INSERT, UPDATE (status, effective_to)
     ON core.ad_optimization_qualification_policy TO marketops_app;
 GRANT SELECT, INSERT ON ledger.ad_linked_sale_event TO marketops_app;
+
+-- Known provider incident evidence is an append-only input, scoped independently
+-- from the reporting window; a newly accepted old fact cannot clear an incident.
+CREATE TABLE platform.ad_provider_incident (
+    id uuid PRIMARY KEY,
+    organization_id uuid NOT NULL REFERENCES core.organization(id),
+    platform_code text NOT NULL REFERENCES core.marketplace_platform(code),
+    store_id uuid,
+    provenance_id uuid NOT NULL REFERENCES core.fact_provenance(id),
+    incident_open boolean NOT NULL,
+    observed_at timestamptz NOT NULL,
+    valid_until timestamptz NOT NULL,
+    evidence_reference text NOT NULL CHECK (length(btrim(evidence_reference)) BETWEEN 1 AND 512),
+    FOREIGN KEY (store_id, organization_id) REFERENCES core.store(id, organization_id),
+    CHECK (observed_at < valid_until)
+);
+GRANT SELECT, INSERT ON platform.ad_provider_incident TO marketops_app;
+INSERT INTO platform.control_route_inventory (schema_name,table_name,route_kind,scope_kind,routing_note)
+VALUES ('platform','ad_provider_incident','NO_ROUTE',NULL,'append-only known incident evidence; no external execution');

@@ -9,12 +9,8 @@ import java.util.UUID;
 /**
  * One observation of what a bid change actually did.
  *
- * <p>The stage is carried rather than flattened, because an operational reading
- * and a settled one are different claims about the same change. The operational
- * reading counts orders and is available within days; the settled reading counts
- * what the buyer kept and is not available until returns have run their course.
- * A console that showed one number labelled "result" would be showing whichever
- * of the two happened to be written last.
+ * <p>Completed, 30-day retained and settled sales are independent observation
+ * stages. Late corrections append revisions to the affected stage.
  *
  * <p>{@code revisionNo} and {@code supersedesObservationId} exist for the same
  * reason. A settled figure can be restated when a late return arrives, and the
@@ -43,6 +39,7 @@ import java.util.UUID;
 public record AdvertisingOutcomeView(
         UUID id,
         UUID commandId,
+        UUID manualPacketId,
         String outcomeStage,
         int revisionNo,
         UUID supersedesObservationId,
@@ -58,11 +55,38 @@ public record AdvertisingOutcomeView(
         String verdict,
         String guardState,
         List<String> unresolvedReasonCodes,
-        Instant evaluatedAt) {
+        Instant evaluatedAt,
+        Axes axes) {
+
+    public record CriticalGuard(UUID productVariantId, UUID listingVariantId, String guardState,
+            BigDecimal baselineSales, BigDecimal observedSales) { }
+    public record Axes(String dualAxisVerdict, String salesPreservationVerdict, String businessOutcome,
+            BigDecimal baselineAbsoluteProfit, BigDecimal observedAbsoluteProfit,
+            BigDecimal baselineProfitPerRub, BigDecimal observedProfitPerRub,
+            BigDecimal companyBaselineSales, BigDecimal companyObservedSales,
+            String currencyCode, String inputSnapshot, List<CriticalGuard> criticalGuards) { }
+
+    public AdvertisingOutcomeView(UUID id, UUID commandId, String outcomeStage, int revisionNo,
+            UUID supersedesObservationId, String adjustmentReason, Instant windowStartsAt,
+            Instant windowEndsAt, String baselineMetricState, BigDecimal baselineMetricValue,
+            String observedMetricState, BigDecimal observedMetricValue, Long observedTrafficCount,
+            BigDecimal settledCoverageRatio, String verdict, String guardState,
+            List<String> unresolvedReasonCodes, Instant evaluatedAt) {
+        this(id,commandId,null,outcomeStage,revisionNo,supersedesObservationId,adjustmentReason,windowStartsAt,
+                windowEndsAt,baselineMetricState,baselineMetricValue,observedMetricState,observedMetricValue,
+                observedTrafficCount,settledCoverageRatio,verdict,guardState,unresolvedReasonCodes,evaluatedAt,null);
+    }
+
+    public AdvertisingOutcomeView withAxes(Axes newAxes) {
+        return new AdvertisingOutcomeView(id,commandId,manualPacketId,outcomeStage,revisionNo,supersedesObservationId,
+                adjustmentReason,windowStartsAt,windowEndsAt,baselineMetricState,baselineMetricValue,
+                observedMetricState,observedMetricValue,observedTrafficCount,settledCoverageRatio,
+                verdict,guardState,unresolvedReasonCodes,evaluatedAt,newAxes);
+    }
 
     public AdvertisingOutcomeView {
         Objects.requireNonNull(id, "id");
-        Objects.requireNonNull(commandId, "commandId");
+        if((commandId == null) == (manualPacketId == null)) throw new IllegalArgumentException("exactly one intervention anchor is required");
         Objects.requireNonNull(outcomeStage, "outcomeStage");
         Objects.requireNonNull(verdict, "verdict");
         unresolvedReasonCodes =

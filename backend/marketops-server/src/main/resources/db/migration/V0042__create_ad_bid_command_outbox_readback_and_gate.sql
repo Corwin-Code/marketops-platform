@@ -971,7 +971,13 @@ BEGIN
     END IF;
 
     -- Compensation is only safe while the bid is still what this command wrote.
+    IF p_to_state = 'RETRY_WAIT' AND NOT ops.ad_bid_retry_is_proven(p_command_id) THEN
+        RAISE EXCEPTION 'retry requires status/readback-first proof and all current authorities' USING ERRCODE='MO092';
+    END IF;
     IF p_to_state = 'COMPENSATION_PENDING' THEN
+        IF cardinality(ops.evaluate_ad_bid_compensation_gate(p_command_id))>0 THEN
+            RAISE EXCEPTION 'new exact human compensation authority required' USING ERRCODE='MO094';
+        END IF;
         IF NOT EXISTS (
             SELECT 1 FROM ops.ad_bid_command_readback rb
              WHERE rb.command_id = p_command_id
@@ -1136,7 +1142,7 @@ BEGIN
         OR p_seconds NOT BETWEEN 1 AND 900 THEN
         RAISE EXCEPTION 'lease owner or duration is invalid' USING ERRCODE = 'MO095';
     END IF;
-    reasons := ops.evaluate_ad_bid_write_gate(p_command_id);
+    reasons := ops.evaluate_ad_bid_compensation_gate(p_command_id);
     IF cardinality(reasons) > 0 THEN
         RAISE EXCEPTION 'the advertising write gate is closed: %',
             array_to_string(reasons, ',') USING ERRCODE = 'MO092';

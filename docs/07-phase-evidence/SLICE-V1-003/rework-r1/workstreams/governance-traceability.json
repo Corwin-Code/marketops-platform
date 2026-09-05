@@ -1,0 +1,501 @@
+{
+  "kind": "FINDING_AND_AC_EVIDENCE_SHARD",
+  "owner": "governance-and-final-evidence",
+  "generatedAt": "2026-09-05T03:12:01.768641+00:00",
+  "status": "REWORK_IN_PROGRESS",
+  "acceptanceCriteria": [
+    {
+      "id": "S3-AC-001",
+      "criterion": "repository contains the exact Human Owner-accepted Contract bytes and attributable acceptance evidence.",
+      "implementedBehavior": "Exact accepted Contract and attributable original acceptance bytes remain unchanged.",
+      "sourceReferences": [
+        {
+          "path": "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md",
+          "sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c"
+        },
+        {
+          "path": "docs/08-handoffs/OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md",
+          "sha256": "d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "scripts/validate_production_readiness.py",
+          "sha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "e3d86c96948ec574772d454a17b8f512f32cdc91a3feb90d046cdf3dc86d635e"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+        }
+      ],
+      "status": "CURRENT_STATIC_GOVERNANCE_VERIFIED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r11.log",
+        "TAKEOVER_RECEIPT.md"
+      ],
+      "evidenceLimits": "The recorded governance log passed 410 Python tests. Full final-source JVM/non-goal/architecture and immutable Git publication binding are still pending."
+    },
+    {
+      "id": "S3-AC-002",
+      "criterion": "canonical path, Contract SHA-256, source protected-main commit/tree and predecessor Snapshot identities are synchronized without mutation.",
+      "implementedBehavior": "The exact protected Base and reviewed Head anchor current state and predecessor Snapshot; final identity collector enforces frozen history and all protected migration bytes.",
+      "sourceReferences": [
+        {
+          "path": "docs/00-governance/CURRENT_STATE.md",
+          "sha256": "49f7e18e3c0bc0198cd0bc10ae4c9359ff50a28b87f8ec8b36d9402a85691bb6"
+        },
+        {
+          "path": "scripts/validation/collect_slice3_rework_identity.py",
+          "sha256": "fd85b4c1997fc1c1d32e9baea6f9845c0b5aa70c7cd3a91b7b2b2d93a0dd6f4e"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "scripts/validate_production_readiness.py",
+          "sha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "e3d86c96948ec574772d454a17b8f512f32cdc91a3feb90d046cdf3dc86d635e"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+        }
+      ],
+      "status": "CURRENT_STATIC_GOVERNANCE_VERIFIED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r11.log",
+        "TAKEOVER_RECEIPT.md"
+      ],
+      "evidenceLimits": "The recorded governance log passed 410 Python tests. Full final-source JVM/non-goal/architecture and immutable Git publication binding are still pending."
+    },
+    {
+      "id": "S3-AC-003",
+      "criterion": "canonical state advances to SLICE-V1-003 Full-Scope Implementation only after exact acceptance and preserves every SLICE-V1-002 accepted identity.",
+      "implementedBehavior": "Active Slice and implementation authority follow exact acceptance. R1 actor/transport derives from separately pinned Owner evidence; all predecessor identities remain enforced.",
+      "sourceReferences": [
+        {
+          "path": "docs/00-governance/CURRENT_STATE.md",
+          "sha256": "49f7e18e3c0bc0198cd0bc10ae4c9359ff50a28b87f8ec8b36d9402a85691bb6"
+        },
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "scripts/validate_production_readiness.py",
+          "sha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "e3d86c96948ec574772d454a17b8f512f32cdc91a3feb90d046cdf3dc86d635e"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+        }
+      ],
+      "status": "CURRENT_STATIC_GOVERNANCE_VERIFIED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r11.log",
+        "TAKEOVER_RECEIPT.md"
+      ],
+      "evidenceLimits": "The recorded governance log passed 410 Python tests. Full final-source JVM/non-goal/architecture and immutable Git publication binding are still pending."
+    },
+    {
+      "id": "S3-AC-004",
+      "criterion": "roadmap preserves the Advertising & Traffic Efficiency outcome and records `AD_BID_CHANGE` as the selected controlled-write family.",
+      "implementedBehavior": "The preserved roadmap retains Advertising & Traffic Efficiency and only AD_BID_CHANGE controlled scope.",
+      "sourceReferences": [
+        {
+          "path": "docs/03-work-items/V1_DELIVERY_SLICES.md",
+          "sha256": "d2d3da9987fa1c57ffbae4b06cb73c178daf4fe08ba52011f1ceec93d96313f3"
+        },
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "scripts/validate_production_readiness.py",
+          "sha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "e3d86c96948ec574772d454a17b8f512f32cdc91a3feb90d046cdf3dc86d635e"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+        }
+      ],
+      "status": "CURRENT_STATIC_GOVERNANCE_VERIFIED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r11.log",
+        "TAKEOVER_RECEIPT.md"
+      ],
+      "evidenceLimits": "The recorded governance log passed 410 Python tests. Full final-source JVM/non-goal/architecture and immutable Git publication binding are still pending."
+    },
+    {
+      "id": "S3-AC-005",
+      "criterion": "SLICE-V1-002 `STOCK_CHANGE`, replenishment quantity, Overstock, Allocation and Transfer remain unopened.",
+      "implementedBehavior": "Predecessor unopened inventory action families remain absent; production AD additions do not create a stock/replenishment write family.",
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "scripts/validate_production_readiness.py",
+          "sha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "e3d86c96948ec574772d454a17b8f512f32cdc91a3feb90d046cdf3dc86d635e"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+        }
+      ],
+      "status": "CURRENT_STATIC_GOVERNANCE_VERIFIED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r11.log",
+        "TAKEOVER_RECEIPT.md"
+      ],
+      "evidenceLimits": "The recorded governance log passed 410 Python tests. Full final-source JVM/non-goal/architecture and immutable Git publication binding are still pending."
+    },
+    {
+      "id": "S3-AC-007",
+      "criterion": "conditional Design Gate remains untriggered or any later trigger follows the exact governance path.",
+      "implementedBehavior": "The accepted conditional Design Gate has no trigger requiring changed Product outcome, provider or architectural ownership; changes consume public Shared Spine authorities.",
+      "sourceReferences": [
+        {
+          "path": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+          "sha256": "de74042474e5d6e93d05511a01ccd262dfbf7ed655e7ca6cc677e2f452d443ec"
+        },
+        {
+          "path": "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md",
+          "sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "scripts/validate_production_readiness.py",
+          "sha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "e3d86c96948ec574772d454a17b8f512f32cdc91a3feb90d046cdf3dc86d635e"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+        }
+      ],
+      "status": "CURRENT_STATIC_GOVERNANCE_VERIFIED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r11.log",
+        "TAKEOVER_RECEIPT.md"
+      ],
+      "evidenceLimits": "The recorded governance log passed 410 Python tests. Full final-source JVM/non-goal/architecture and immutable Git publication binding are still pending."
+    },
+    {
+      "id": "S3-AC-008",
+      "criterion": "no Release, Gate EV, Gate E, Pilot, deployment or production-write authority is claimed by source completion, tests, merge or this Contract.",
+      "implementedBehavior": "R1 is bounded repair/transport authority with no Ready/merge/production activation. All 24 exact release obligations remain separately blocking.",
+      "sourceReferences": [
+        {
+          "path": "docs/08-handoffs/OWNER-SLICE-V1-003-CODEX-REWORK-AUTHORIZATION-EVIDENCE.md",
+          "sha256": "23a2954d68abeebf87d7710f3ab749af5246cdfcbe4a3029dde73dbb34647a11"
+        },
+        {
+          "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-REL-DEFERRED-REGISTER.json",
+          "sha256": "2d44dcec0b73137726c54fa885e56f26597731ee8eac770bbcff6d123b2c212b"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "scripts/validate_production_readiness.py",
+          "sha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "e3d86c96948ec574772d454a17b8f512f32cdc91a3feb90d046cdf3dc86d635e"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+        }
+      ],
+      "status": "CURRENT_STATIC_GOVERNANCE_VERIFIED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r11.log",
+        "TAKEOVER_RECEIPT.md"
+      ],
+      "evidenceLimits": "The recorded governance log passed 410 Python tests. Full final-source JVM/non-goal/architecture and immutable Git publication binding are still pending."
+    },
+    {
+      "id": "S3-AC-085",
+      "criterion": "`AD_BID_CHANGE` is the only new controlled-write family in this Slice.",
+      "implementedBehavior": "Advertising controlled action enum and registry expose only AD_BID_CHANGE.",
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/ActionKind.java",
+          "sha256": "1aebab12ce5bd0525a299d6801b90cce2f2536fbdae26f62df3e7896f7dddc26"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "scripts/validate_production_readiness.py",
+          "sha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "e3d86c96948ec574772d454a17b8f512f32cdc91a3feb90d046cdf3dc86d635e"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+        }
+      ],
+      "status": "CURRENT_STATIC_GOVERNANCE_VERIFIED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r11.log",
+        "TAKEOVER_RECEIPT.md"
+      ],
+      "evidenceLimits": "The recorded governance log passed 410 Python tests. Full final-source JVM/non-goal/architecture and immutable Git publication binding are still pending."
+    },
+    {
+      "id": "S3-AC-086",
+      "criterion": "Budget, Campaign status, strategy/mode and Campaign/Target structure cannot be written through it.",
+      "implementedBehavior": "Advertising parameters and write ports forbid budget, status, mode or structure. These instructions are governed Manual only.",
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+          "sha256": "1987ba56522abf19c08525c46674add23a099714d8c79c178ab8c2f6bb0294c7"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "scripts/validate_production_readiness.py",
+          "sha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "e3d86c96948ec574772d454a17b8f512f32cdc91a3feb90d046cdf3dc86d635e"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+        }
+      ],
+      "status": "CURRENT_STATIC_GOVERNANCE_VERIFIED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r11.log",
+        "TAKEOVER_RECEIPT.md"
+      ],
+      "evidenceLimits": "The recorded governance log passed 410 Python tests. Full final-source JVM/non-goal/architecture and immutable Git publication binding are still pending."
+    },
+    {
+      "id": "S3-AC-089",
+      "criterion": "Protection Decrease and Optimization Increase are separately gated; exact Compensation uses its own authority.",
+      "implementedBehavior": "Increase and Protection Decrease use distinct direction/basis gates; Compensation targets exact prior state through its own new human authority.",
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0045__create_ad_bid_command_from_approval.sql",
+          "sha256": "89cdd51222a110ae8aa4e844a8654268fa3ecc1a7d1ba3ff170d24ce05364398"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "sha256": "494192d29beb207da8f43d3f04932b84f7682bfe168eef800cc611ecd854e999"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "scripts/validate_production_readiness.py",
+          "sha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "e3d86c96948ec574772d454a17b8f512f32cdc91a3feb90d046cdf3dc86d635e"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+        }
+      ],
+      "status": "CURRENT_STATIC_GOVERNANCE_VERIFIED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r11.log",
+        "TAKEOVER_RECEIPT.md"
+      ],
+      "evidenceLimits": "The recorded governance log passed 410 Python tests. Full final-source JVM/non-goal/architecture and immutable Git publication binding are still pending."
+    }
+  ],
+  "runs": [
+    {
+      "command": "make governance",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "exitCode": 0,
+      "tests": 410,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-r1-governance-preflight-r11.log",
+      "sha256": "4eedc761a41c14c925f0f1d26a105fc48a375df0112b161208b14962956a515a",
+      "sourceBinding": "CURRENT_WORKING_TREE_AT_EXECUTION_NOT_FINAL_COMMIT"
+    }
+  ],
+  "productionWriteEnabled": false,
+  "controllerVerdict": "NOT_ISSUED_BY_CODEX",
+  "findings": [
+    {
+      "id": "S3-DR-001",
+      "rootCause": "The published identity and mutable evidence indexes were maintained independently, allowing a stale local checkpoint and false remote-state claims to survive publication.",
+      "implementedBehavior": "Exact read-only takeover and current authority pins distinguish the reviewed starting commit from the eventual measured source and remote Head. A clean-tree identity collector derives migration and build input identities from Git.",
+      "sameClassScan": [
+        "Scanned active CURRENT_STATE, original historical handoffs, migration inventories, PR workflows and source/test identity bindings. Historical claims remain preserved with explicit scope."
+      ],
+      "transitiveImpact": [
+        "Active acceptance index, protected migration comparison, Draft PR identity and tested merge/CI artifact records must agree; final remote transport and CI are still pending."
+      ],
+      "sourceEvidence": [
+        {
+          "path": "scripts/validation/collect_slice3_rework_identity.py",
+          "sha256_at_receipt": "fd85b4c1997fc1c1d32e9baea6f9845c0b5aa70c7cd3a91b7b2b2d93a0dd6f4e"
+        },
+        {
+          "path": "scripts/validation/assemble_slice3_rework_evidence.py",
+          "sha256_at_receipt": "0ee8f073ac3f4ac642e9d09ace889bed055de7be479b9dfdc81660f278f1c8a6"
+        },
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256_at_receipt": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "docs/00-governance/CURRENT_STATE.md",
+          "sha256_at_receipt": "49f7e18e3c0bc0198cd0bc10ae4c9359ff50a28b87f8ec8b36d9402a85691bb6"
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "tests/test_validate_governance.py"
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "tests/test_validate_governance.py"
+        }
+      ],
+      "status": "REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING",
+      "evidenceLimits": [
+        "Current governance run passes 400 tests; this is not full local verification or remote CI.",
+        "Exact clean measured commit, one Draft PR, final Head CI and Controller verdict remain pending."
+      ]
+    },
+    {
+      "id": "S3-DR-022",
+      "rootCause": "Acceptance, runtime evidence and Git publication did not share a measured input identity; aggregate tests were used despite incomplete named behaviors and verification classes.",
+      "implementedBehavior": "All 200 exact criteria are mapped to actual current source and named tests; mapping cannot assert PASS. Complete per-finding fault, integration, capacity, browser, migration and remote CI results remain separate evidence obligations.",
+      "sameClassScan": [
+        "Scanned every AC against all six current source/test shards and all 22 Frozen findings. Newly identified old vertical bypass is being replaced with a real canonical path; its closure remains pending."
+      ],
+      "transitiveImpact": [
+        "The full clean regression and runtime artifact receipts must bind a measured commit; final evidence-only changes require runtime input comparison and final remote CI."
+      ],
+      "sourceEvidence": [
+        {
+          "path": "scripts/validation/collect_slice3_rework_identity.py",
+          "sha256_at_receipt": "fd85b4c1997fc1c1d32e9baea6f9845c0b5aa70c7cd3a91b7b2b2d93a0dd6f4e"
+        },
+        {
+          "path": "scripts/validation/assemble_slice3_rework_evidence.py",
+          "sha256_at_receipt": "0ee8f073ac3f4ac642e9d09ace889bed055de7be479b9dfdc81660f278f1c8a6"
+        },
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256_at_receipt": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "docs/00-governance/CURRENT_STATE.md",
+          "sha256_at_receipt": "49f7e18e3c0bc0198cd0bc10ae4c9359ff50a28b87f8ec8b36d9402a85691bb6"
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "tests/test_validate_governance.py"
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "tests/test_validate_governance.py"
+        }
+      ],
+      "status": "REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING",
+      "evidenceLimits": [
+        "Current governance run passes 400 tests; this is not full local verification or remote CI.",
+        "Exact clean measured commit, one Draft PR, final Head CI and Controller verdict remain pending."
+      ]
+    }
+  ]
+}

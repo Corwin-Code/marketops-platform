@@ -1,0 +1,29 @@
+PASS: ops.observe_ad_reservation_condition(uuid,text,boolean) remains uncallable
+PASS: ops.reopen_ad_lineage_after_regression(uuid,uuid,text,text) remains uncallable
+PASS: exact 73 sanctioned non-trigger callable signatures
+PASS: ops.ad_bid_command app has no DML
+PASS: ops.ad_bid_command_transition app has no DML
+PASS: ops.ad_bid_command_attempt app has no DML
+PASS: ops.ad_bid_command_readback app has no DML
+PASS: ops.ad_action_reservation app has no DML
+PASS: iam.ad_invocation_grant app has no DML
+PASS: ops.ad_outcome_plan_grant app has no DML
+PASS: platform.ad_write_credential_attestation app has no DML
+PASS: ops.ad_gate_authority app has no DML
+PASS: ops.ad_ordinary_promotion app has no DML
+PASS: ops.ad_action_authorization app has no DML
+PASS: ops.ad_authority_invalidation app has no DML
+PASS: ops.ad_compensation_authorization app has no DML
+PASS: ops.ad_compensation_invalidation app has no DML
+PASS: ops.ad_bundle_endorsement app has no DML
+PASS: ops.ad_containment_attestation app has no DML
+PASS: ops.ad_reservation_state_history app has no DML
+PASS: ops.ad_outcome_baseline app has no DML
+PASS: ops.ad_outcome_stage_baseline app has no DML
+PASS: ops.ad_outcome_critical_unit app has no DML
+PASS: ops.ad_outcome_baseline_attestation app has no DML
+PASS: actual authenticated Stop adds Kill and permanent invalidation
+PASS: privileged apparent restoration cannot revive historical approval
+PASS: cancelled envelope named by actual gate
+PASS: restored envelope axis does not resurrect seal
+PASS: canonical missing-evidence release returns false

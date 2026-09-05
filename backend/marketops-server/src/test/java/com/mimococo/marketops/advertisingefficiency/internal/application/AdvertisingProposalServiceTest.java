@@ -82,8 +82,12 @@ class AdvertisingProposalServiceTest {
     private final AdvertisingRecommendationIntake intake =
             mock(AdvertisingRecommendationIntake.class);
 
+    private final com.mimococo.marketops.operationsworkflow.AdvertisingResponsibilityIntake responsibility=
+            mock(com.mimococo.marketops.operationsworkflow.AdvertisingResponsibilityIntake.class);
+
     private final AdvertisingProposalService service = new AdvertisingProposalService(
-            policies, candidates, reservations, intake, (IdGenerator) UUID::randomUUID);
+            policies, candidates, reservations, intake, (IdGenerator) UUID::randomUUID,
+            responsibility);
 
     @BeforeEach
     void everythingResolvable() {
@@ -95,7 +99,8 @@ class AdvertisingProposalServiceTest {
         when(policies.resolveBidTargetPolicy(any(), anyString(), any(), anyString(), anyString(),
                 eq(BidCandidate.CAUSE_BOUND_PROTECTION_STEP), any()))
                 .thenReturn(Optional.empty());
-        when(policies.resolveHumanSlo(any(), anyString(), any())).thenReturn(Optional.empty());
+        when(policies.resolveHumanSlo(any(), anyString(), any())).thenReturn(Optional.of(
+                new AdvertisingPolicyRepository.HumanSlo(POLICY,1,"PROTECTION",5,45,90,true,"Europe/Moscow",540,1080,0)));
         when(candidates.resolvedAffectedSet(ORG, CASE)).thenReturn(Optional.of(
                 new AdvertisingCandidateRepository.AffectedSetRow(AFFECTED, "d".repeat(64),
                         List.of(VARIANT))));
@@ -159,6 +164,7 @@ class AdvertisingProposalServiceTest {
                 .isEmpty();
         verifyNoInteractions(intake);
         verifyNoInteractions(policies);
+        verify(responsibility).ensureResponsibility(eq(CASE),eq(RUN),eq("MARKETPLACE_OPERATOR"));
     }
 
     @Test
@@ -251,7 +257,7 @@ class AdvertisingProposalServiceTest {
         when(policies.resolveBidTargetPolicy(any(), anyString(), any(), anyString(), anyString(),
                 eq(BidCandidate.CAUSE_BOUND_PROTECTION_STEP), any()))
                 .thenReturn(Optional.of(new AdvertisingPolicyRepository.TargetPolicy(POLICY, 3, 1,
-                        new BigDecimal("0.3000"), new BigDecimal("15.0000"), "RUB", null, true,
+                        new BigDecimal("0.5000"), new BigDecimal("15.0000"), "RUB", null, true,
                         new BigDecimal("0.5000"), List.of("PROMOTED_VARIANT_UNAVAILABLE"))));
 
         assertThat(proposeFor(withoutCeiling(
@@ -339,13 +345,12 @@ class AdvertisingProposalServiceTest {
     }
 
     @Test
-    @DisplayName("TC-AD-PROPOSE-017 a missing service level makes work look urgent, not comfortable")
-    void aMissingServiceLevelFallsBackToTheTightestWindow() {
-        // Somebody has to notice the profile is missing, and a generous default
-        // is exactly how nobody would.
-        proposeFor(lossCase());
-
-        assertThat(proposal().humanReviewWindow()).isEqualTo(Duration.ofMinutes(15));
+    @DisplayName("TC-AD-PROPOSE-017 missing human SLO blocks a bid candidate but preserves cause responsibility")
+    void aMissingServiceLevelNeverInventsAReviewWindow() {
+        when(policies.resolveHumanSlo(any(),anyString(),any())).thenReturn(Optional.empty());
+        assertThat(proposeFor(lossCase())).isEmpty();
+        verifyNoInteractions(intake);
+        verify(responsibility).ensureResponsibility(eq(CASE),eq(RUN),eq("MARKETPLACE_OPERATOR"));
     }
 
     @Test
@@ -376,6 +381,50 @@ class AdvertisingProposalServiceTest {
         verifyNoInteractions(intake);
     }
 
+    @Test
+    void missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease() {
+        when(policies.resolveBidTargetPolicy(any(),anyString(),any(),anyString(),anyString(),
+                eq(BidCandidate.CAUSE_BOUND_PROTECTION_STEP),any())).thenReturn(Optional.of(policy(true)));
+        var scored=withBlockers(withoutCeiling(caseFor(AdvertisingCause.PROMOTED_VARIANT_NOT_SELLABLE,
+                AdvertisingLane.PROTECTION,ProtectionTier.P1)),List.of("LINE_COST_COMPONENT_UNAVAILABLE:"+VARIANT,
+                    "AD_LINKED_CONVERSION_NOT_WRITE_GRADE"));
+        assertThat(proposeFor(scored)).containsExactly(PROPOSAL);
+        assertThat(proposal().expectedEffect()).containsEntry("interpretation","EXPOSURE_LIMIT_ONLY_NOT_PROFITABILITY_OR_HEALTH")
+                .containsEntry("financialUncertainty","LINE_COST_COMPONENT_UNAVAILABLE:"+VARIANT+",AD_LINKED_CONVERSION_NOT_WRITE_GRADE");
+        verify(responsibility).ensureResponsibility(CASE,RUN,"MARKETPLACE_OPERATOR");
+    }
+
+    @Test
+    void unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis() {
+        when(policies.resolveBidTargetPolicy(any(),anyString(),any(),anyString(),anyString(),
+                eq(BidCandidate.CAUSE_BOUND_PROTECTION_STEP),any())).thenReturn(Optional.of(policy(true)));
+        var scored=withBlockers(withoutCeiling(caseFor(AdvertisingCause.PROMOTED_VARIANT_NOT_SELLABLE,
+                AdvertisingLane.PROTECTION,ProtectionTier.P1)),List.of("CRITICAL_SALES_GUARD_EVIDENCE_UNRESOLVED"));
+        assertThat(proposeFor(scored)).isEmpty();
+        verifyNoInteractions(intake);
+    }
+
+    @Test
+    void causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency() {
+        when(policies.resolveBidTargetPolicy(any(),anyString(),any(),anyString(),anyString(),
+                eq(BidCandidate.CAUSE_BOUND_PROTECTION_STEP),any())).thenReturn(Optional.of(policy(true)));
+        var scored=withoutCeiling(caseFor(AdvertisingCause.PROMOTED_VARIANT_NOT_SELLABLE,
+                AdvertisingLane.PROTECTION,ProtectionTier.P1));
+        var complete=calculation(scored);
+        var missingDanger=complete.purposeEvidence().stream().filter(e->!e.kind().equals("SELLABILITY")).toList();
+        var expiredDanger=complete.purposeEvidence().stream().map(e->e.kind().equals("SELLABILITY")
+                ?new AdCaseCalculation.PurposeEvidence(e.purpose(),e.kind(),e.profileId(),e.sourceTime(),e.acceptedAt(),AS_OF,true,List.of()):e).toList();
+        var duplicatedDanger=new java.util.ArrayList<>(complete.purposeEvidence());
+        duplicatedDanger.add(complete.purposeEvidence().stream().filter(e->e.kind().equals("SELLABILITY")).findFirst().orElseThrow());
+        for(var proofs:List.of(missingDanger,expiredDanger,duplicatedDanger)) {
+            var input=new AdCaseCalculation(ORG,OBJECT,STORE,"OZON",PROFILE,1,AS_OF,complete.policies(),
+                    complete.affectedSet(),AFFECTED,List.of(scored),List.of(),proofs,false);
+            assertThat(service.proposeFor(input,List.of(new AdvertisingProjectionWriter.WrittenCase(CASE,UUID.randomUUID(),
+                    scored.identity().caseKey(),"PROTECTION",true)),RUN,"proof-boundary")).isEmpty();
+        }
+        verifyNoInteractions(intake);
+    }
+
     private List<UUID> proposeFor(AdCaseCalculation.ScoredCase scored) {
         AdCaseCalculation calculation = calculation(scored);
         return service.proposeFor(calculation, List.of(
@@ -395,12 +444,14 @@ class AdvertisingProposalServiceTest {
         return new AdCaseCalculation(ORG, OBJECT, STORE, "OZON", PROFILE, 1, AS_OF,
                 AdPolicySet.empty(),
                 AffectedSet.complete(List.of(VARIANT), List.of(VARIANT)), AFFECTED,
-                List.of(scored));
+                List.of(scored),List.of(),List.of("OFFICIAL_AD_SPEND","AD_OBJECT_CONFIGURATION","AFFECTED_SET","SELLABILITY","AVAILABILITY")
+                    .stream().map(kind -> new AdCaseCalculation.PurposeEvidence("PROTECTION_BID_WRITE",kind,POLICY,
+                        AS_OF.minusSeconds(60),AS_OF.minusSeconds(30),AS_OF.plusSeconds(600),true,List.of())).toList(),true);
     }
 
     private static AdvertisingPolicyRepository.TargetPolicy policy(boolean causeBound) {
         return new AdvertisingPolicyRepository.TargetPolicy(POLICY, 3, 1,
-                new BigDecimal("0.3000"), new BigDecimal("15.0000"), "RUB",
+                new BigDecimal("0.5000"), new BigDecimal("15.0000"), "RUB",
                 causeBound ? null : new BigDecimal("0.0000"), causeBound,
                 causeBound ? new BigDecimal("0.5000") : null,
                 causeBound ? List.of("PROMOTED_VARIANT_NOT_SELLABLE") : List.of());

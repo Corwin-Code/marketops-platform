@@ -16,8 +16,9 @@ import java.util.UUID;
  * at one answer.
  *
  * <p>{@code blockerCodes} are the module's own deterministic refusals, already
- * computed for the case. The guardrail adds the workflow's refusals to them; it
- * does not second-guess them.
+ * computed for the case. The module projects actionBlockerCodes for the exact
+ * candidate basis; economic uncertainty remains visible even when it is not
+ * a dependency of a proven one-sided protection decrease.
  *
  * @param recommendationId the proposal
  * @param organizationId owning organization
@@ -74,14 +75,45 @@ public record AdvertisingBidProjection(
         List<String> exhaustedExposureAxes,
         String entityVersionDigest,
         UUID decisionBundleId,
+        Integer decisionBundleVersion,
+        List<String> actionBlockerCodes) {
+
+    public AdvertisingBidProjection(
+        UUID recommendationId,
+        UUID organizationId,
+        UUID storeId,
+        UUID adNativeObjectId,
+        UUID caseId,
+        String lane,
+        String protectionTier,
+        String causeCode,
+        String evidenceState,
+        String confidenceState,
+        List<String> blockerCodes,
+        String direction,
+        String candidateBasis,
+        BigDecimal currentBidAmount,
+        BigDecimal targetBidAmount,
+        String currencyCode,
+        String bidUnitCode,
+        BigDecimal maxCpcAmount,
+        String maxCpcState,
+        BigDecimal attributionGapRatio,
+        int affectedVariantCount,
+        String affectedSetDigest,
+        String materialityRoute,
+        List<String> exhaustedExposureAxes,
+        String entityVersionDigest,
+        UUID decisionBundleId,
         Integer decisionBundleVersion) {
+        this(recommendationId, organizationId, storeId, adNativeObjectId, caseId, lane, protectionTier, causeCode, evidenceState, confidenceState, blockerCodes, direction, candidateBasis, currentBidAmount, targetBidAmount, currencyCode, bidUnitCode, maxCpcAmount, maxCpcState, attributionGapRatio, affectedVariantCount, affectedSetDigest, materialityRoute, exhaustedExposureAxes, entityVersionDigest, decisionBundleId, decisionBundleVersion, blockerCodes);
+    }
 
     public AdvertisingBidProjection {
         Objects.requireNonNull(recommendationId, "recommendationId");
         Objects.requireNonNull(direction, "direction");
-        Objects.requireNonNull(currentBidAmount, "currentBidAmount");
-        Objects.requireNonNull(targetBidAmount, "targetBidAmount");
         blockerCodes = List.copyOf(blockerCodes == null ? List.of() : blockerCodes);
+        actionBlockerCodes = List.copyOf(actionBlockerCodes == null ? blockerCodes : actionBlockerCodes);
         exhaustedExposureAxes =
                 List.copyOf(exhaustedExposureAxes == null ? List.of() : exhaustedExposureAxes);
         if ((decisionBundleId == null) != (decisionBundleVersion == null)) {
@@ -104,7 +136,7 @@ public record AdvertisingBidProjection(
 
     /** How far the bid would move, as a positive amount. */
     public BigDecimal changeAmount() {
-        return targetBidAmount.subtract(currentBidAmount).abs();
+        return currentBidAmount == null || targetBidAmount == null ? null : targetBidAmount.subtract(currentBidAmount).abs();
     }
 
     /**
@@ -114,6 +146,6 @@ public record AdvertisingBidProjection(
      * not be computed, which is a refusal rather than a licence.
      */
     public boolean exceedsMaxCpc() {
-        return maxCpcAmount == null || targetBidAmount.compareTo(maxCpcAmount) > 0;
+        return maxCpcAmount == null || targetBidAmount == null || targetBidAmount.compareTo(maxCpcAmount) > 0;
     }
 }

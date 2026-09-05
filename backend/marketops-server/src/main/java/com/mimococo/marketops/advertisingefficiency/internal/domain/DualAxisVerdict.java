@@ -88,6 +88,13 @@ public record DualAxisVerdict(
             BigDecimal materialPerRubDelta,
             boolean salesPreserved,
             boolean salesEvidenceComplete) {
+        return evaluate(baselineAbsolute,currentAbsolute,baselinePerRub,currentPerRub,materialAbsoluteDelta,materialPerRubDelta,
+                materialAbsoluteDelta,materialPerRubDelta,null,null,true,salesPreserved,salesEvidenceComplete);
+    }
+
+    public static DualAxisVerdict evaluate(AdMeasure baselineAbsolute,AdMeasure currentAbsolute,AdMeasure baselinePerRub,AdMeasure currentPerRub,
+            BigDecimal materialAbsoluteDelta,BigDecimal materialPerRubDelta,BigDecimal absoluteBand,BigDecimal perRubBand,
+            Integer scale,String roundingMode,boolean inclusive,boolean salesPreserved,boolean salesEvidenceComplete) {
         if (!salesEvidenceComplete) {
             return new DualAxisVerdict(Outcome.UNRESOLVED, AxisMovement.UNRESOLVED,
                     AxisMovement.UNRESOLVED, false, "SALES_PRESERVATION_EVIDENCE_INCOMPLETE");
@@ -96,8 +103,8 @@ public record DualAxisVerdict(
             return new DualAxisVerdict(Outcome.REGRESSION, AxisMovement.UNRESOLVED,
                     AxisMovement.UNRESOLVED, false, "SALES_PRESERVATION_FAILED");
         }
-        AxisMovement absolute = movement(baselineAbsolute, currentAbsolute, materialAbsoluteDelta);
-        AxisMovement perRub = movement(baselinePerRub, currentPerRub, materialPerRubDelta);
+        AxisMovement absolute = movement(baselineAbsolute, currentAbsolute, materialAbsoluteDelta, absoluteBand, scale, roundingMode, inclusive);
+        AxisMovement perRub = movement(baselinePerRub, currentPerRub, materialPerRubDelta, perRubBand, scale, roundingMode, inclusive);
         if (absolute == AxisMovement.UNRESOLVED || perRub == AxisMovement.UNRESOLVED) {
             return new DualAxisVerdict(Outcome.UNRESOLVED, absolute, perRub, true,
                     "PROFIT_AXIS_EVIDENCE_INCOMPLETE");
@@ -137,16 +144,18 @@ public record DualAxisVerdict(
         return outcome == Outcome.VERIFIED_EFFICIENCY_SUCCESS;
     }
 
-    private static AxisMovement movement(AdMeasure baseline, AdMeasure current, BigDecimal materialDelta) {
+    private static AxisMovement movement(AdMeasure baseline, AdMeasure current, BigDecimal materialDelta, BigDecimal band, Integer scale, String roundingMode, boolean inclusive) {
         if (baseline == null || current == null || !baseline.present() || !current.present()
-                || materialDelta == null) {
+                || !baseline.sufficientForWrite() || !current.sufficientForWrite()
+                || materialDelta == null || materialDelta.signum() < 0 || band == null || band.signum()<0) {
             return AxisMovement.UNRESOLVED;
         }
         BigDecimal delta = current.value().subtract(baseline.value());
-        if (delta.compareTo(materialDelta) >= 0) {
+        if(scale!=null && roundingMode!=null) { delta=delta.setScale(scale,java.math.RoundingMode.valueOf(roundingMode)); }
+        if (delta.signum() > 0 && (inclusive ? delta.compareTo(materialDelta) >= 0 : delta.compareTo(materialDelta) > 0)) {
             return AxisMovement.MATERIALLY_IMPROVED;
         }
-        if (delta.negate().compareTo(materialDelta) >= 0) {
+        if (delta.signum() < 0 && delta.negate().compareTo(band) > 0) {
             return AxisMovement.MATERIALLY_WORSENED;
         }
         return AxisMovement.UNCHANGED_WITHIN_BAND;

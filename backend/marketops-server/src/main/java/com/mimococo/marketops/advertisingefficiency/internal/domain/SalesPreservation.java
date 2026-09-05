@@ -73,8 +73,8 @@ public record SalesPreservation(
     /**
      * Evaluate the conjunction.
      *
-     * <p>Unresolved is checked before failure so that "we do not know" never
-     * presents as "it failed", and neither ever presents as a pass. A required
+     * <p>A proven failure has priority; unresolved siblings remain explicit and
+     * neither state ever presents as a pass. A required
      * unit is required; a non-required unit is visible and carries no veto,
      * exactly as the Contract states.
      */
@@ -86,16 +86,8 @@ public record SalesPreservation(
                 required.add(unit);
             }
         }
-        if (companyTotal.status() == Status.UNRESOLVED) {
-            return new SalesPreservation(Verdict.UNRESOLVED, companyTotal, units,
-                    "COMPANY_TOTAL_EVIDENCE_UNRESOLVED");
-        }
-        for (UnitResult unit : required) {
-            if (unit.status() == Status.UNRESOLVED) {
-                return new SalesPreservation(Verdict.UNRESOLVED, companyTotal, units,
-                        "CRITICAL_SALES_UNIT_EVIDENCE_UNRESOLVED");
-            }
-        }
+        // One proven failure is sufficient to disprove the conjunction. Other
+        // missing units remain visible in their own results and never clear it.
         if (companyTotal.status() == Status.FAILED) {
             return new SalesPreservation(Verdict.NOT_PRESERVED, companyTotal, units,
                     "COMPANY_TOTAL_BELOW_TOLERANCE");
@@ -104,6 +96,16 @@ public record SalesPreservation(
             if (unit.status() == Status.FAILED) {
                 return new SalesPreservation(Verdict.NOT_PRESERVED, companyTotal, units,
                         "CRITICAL_SALES_UNIT_BELOW_TOLERANCE");
+            }
+        }
+        if (companyTotal.status() == Status.UNRESOLVED) {
+            return new SalesPreservation(Verdict.UNRESOLVED, companyTotal, units,
+                    "COMPANY_TOTAL_EVIDENCE_UNRESOLVED");
+        }
+        for (UnitResult unit : required) {
+            if (unit.status() == Status.UNRESOLVED) {
+                return new SalesPreservation(Verdict.UNRESOLVED, companyTotal, units,
+                        "CRITICAL_SALES_UNIT_EVIDENCE_UNRESOLVED");
             }
         }
         return new SalesPreservation(Verdict.PRESERVED, companyTotal, units,
@@ -117,6 +119,7 @@ public record SalesPreservation(
 
     /** Whether every required term produced a measurable answer. */
     public boolean evidenceComplete() {
-        return verdict != Verdict.UNRESOLVED;
+        return companyTotal.status() != Status.UNRESOLVED
+                && criticalUnits.stream().filter(UnitResult::required).noneMatch(unit -> unit.status() == Status.UNRESOLVED);
     }
 }

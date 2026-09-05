@@ -413,6 +413,8 @@ describe('the manual shadow', () => {
     const readback = {
       ...PACKET,
       configurationProven: true,
+      state: 'MANUAL_CONFIGURATION_VERIFIED',
+      currentProofId: 'ffffffff-ffff-4fff-8fff-fffffffffff1',
       verifications: [
         {
           id: 'ffffffff-ffff-4fff-8fff-fffffffffff1',
@@ -466,8 +468,8 @@ describe('the operations parsers', () => {
     expect(parseAdvertisingReservation(without(RESERVATION, 'interventionKind'))).toBeUndefined();
   });
 
-  it('TC-UI-ADV-034 never reads an absent holding flag as holding', () => {
-    expect(parseAdvertisingReservation(without(RESERVATION, 'holding'))?.holding).toBe(false);
+  it('TC-UI-ADV-034 an absent flag never clears an active reservation', () => {
+    expect(parseAdvertisingReservation(without(RESERVATION, 'holding'))?.holding).toBe(true);
   });
 
   it('TC-UI-ADV-035 refuses an envelope body with no consumption figure', () => {

@@ -76,10 +76,7 @@ export function ConsoleShell({
     <main aria-labelledby="console-heading">
       <h1 id="console-heading">MarketOps Russia</h1>
       <nav aria-label="Session">
-        <p>
-          Signed in{session.displayName === undefined ? '' : ` as ${session.displayName}`}, working
-          in store {storeId}.
-        </p>
+        <p>Signed in{session.displayName === undefined ? '' : ` as ${session.displayName}`}.</p>
         <button type="button" onClick={onSignOut}>
           Sign out
         </button>
