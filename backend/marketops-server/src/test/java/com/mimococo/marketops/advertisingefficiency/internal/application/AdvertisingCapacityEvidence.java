@@ -59,12 +59,24 @@ final class AdvertisingCapacityEvidence {
         for(String name:List.of("GITHUB_SHA","GITHUB_REF","GITHUB_EVENT_NAME","GITHUB_RUN_ID","GITHUB_RUN_ATTEMPT"))
             ci.put(name,System.getenv().getOrDefault(name,"NOT_SUPPLIED"));
         result.put("ciIdentity",ci);
+        result.put("publicationIdentity",Map.of(
+                "sourceHeadSha",evidenceEnvironment("MARKETOPS_EVIDENCE_SOURCE_HEAD_SHA"),
+                "testedMergeSha",evidenceEnvironment("MARKETOPS_EVIDENCE_TESTED_MERGE_SHA"),
+                "workflowRunId",evidenceEnvironment("MARKETOPS_EVIDENCE_WORKFLOW_RUN_ID"),
+                "workflowRunAttempt",evidenceEnvironment("MARKETOPS_EVIDENCE_WORKFLOW_RUN_ATTEMPT"),
+                "workflowJob",evidenceEnvironment("MARKETOPS_EVIDENCE_WORKFLOW_JOB"),
+                "artifactName",evidenceEnvironment("MARKETOPS_EVIDENCE_ARTIFACT_NAME")));
         String resources=System.getenv("SLICE3_RUNTIME_RESOURCE_RECEIPT");
         result.put("runtimeResourceReceipt",resources==null?"NOT_SUPPLIED_BY_OUTER_RUNNER":resources);
         result.put("runtimeResourceReceiptSha256",resources!=null && Files.isRegularFile(Path.of(resources))
                 ?sha(Path.of(resources)):"NOT_AVAILABLE");
         result.put("resourceScopeNotice","JVM processors/memory describe the test host JVM, not Docker limits; the outer runner records actual Docker CPU/memory separately.");
         return result;
+    }
+
+    private static String evidenceEnvironment(String name) {
+        String value=System.getenv(name);
+        return value==null || value.isBlank()?"NOT_PROVIDED":value;
     }
 
     private static String sha(Path path) throws Exception {

@@ -137,13 +137,78 @@ class AdvertisingVerticalPathIT {
         assertThat(productionWrites.getEnabled()).isFalse();
     }
 
+    @Test void concurrentCanonicalRefreshCreatesOneCaseAndOneResponsibilityTask() throws Exception {
+        acceptPreActionFacts(true);
+        var begin=new java.util.concurrent.CountDownLatch(1);
+        try(var workers=java.util.concurrent.Executors.newFixedThreadPool(4)) {
+            var calls=new java.util.ArrayList<java.util.concurrent.Future<?>>();
+            for(int index=0;index<4;index++) calls.add(workers.submit(() -> {
+                begin.await();
+                return refresh.refresh(graph.id("organization"),graph.id("object"),start,
+                        "TARGETED",null,"vertical-concurrent").orElseThrow();
+            }));
+            begin.countDown();
+            for(var call:calls) assertThat(call.get(30,java.util.concurrent.TimeUnit.SECONDS)).isNotNull();
+        }
+        assertThat(count("mart.ad_case")).isEqualTo(1);
+        assertThat(sql("SELECT cause_code FROM mart.ad_case WHERE organization_id=:org").query(String.class).single())
+                .isEqualTo("PROVEN_ADVERTISING_LOSS");
+        assertThat(count("ops.ad_case_responsibility")).isEqualTo(1);
+        assertThat(sql("SELECT count(*) FROM ops.work_task task JOIN ops.ad_case_responsibility responsibility ON responsibility.task_id=task.id WHERE responsibility.organization_id=:org")
+                .query(Integer.class).single()).isEqualTo(1);
+        assertThat(count("ops.ad_bid_candidate")).isEqualTo(1);
+        assertThat(count("ops.ad_bid_command")).isZero();
+        assertThat(provider.calls).isEmpty();
+    }
+
+    @Test void concurrentDifferentAsOfWithoutQualificationPoliciesKeepsOneTaskPerActualCause() throws Exception {
+        acceptPreActionFacts(false);
+        sql("UPDATE core.ad_optimization_qualification_policy SET status='CANCELLED' WHERE organization_id=:org").update();
+        var begin=new java.util.concurrent.CountDownLatch(1);
+        try(var workers=java.util.concurrent.Executors.newFixedThreadPool(4)) {
+            var calls=new java.util.ArrayList<java.util.concurrent.Future<?>>();
+            for(int index=0;index<4;index++) {
+                Instant asOf=start.plusNanos(index*1000L);
+                calls.add(workers.submit(() -> {
+                    begin.await();
+                    return refresh.refresh(graph.id("organization"),graph.id("object"),asOf,
+                            "TARGETED",null,"vertical-policy-missing-concurrent").orElseThrow();
+                }));
+            }
+            begin.countDown();
+            for(var call:calls) assertThat(call.get(30,java.util.concurrent.TimeUnit.SECONDS)).isNotNull();
+        }
+        assertThat(count("mart.ad_qualification_period")).isZero();
+        // At start the complete 30-day report is visible, so policy is the
+        // unresolved cause. Advancing the left window edge excludes that
+        // indivisible report and independently raises an official-fact gap.
+        assertThat(count("mart.ad_case")).isEqualTo(2);
+        assertThat(sql("SELECT cause_code FROM mart.ad_case WHERE organization_id=:org").query(String.class).list())
+                .containsExactlyInAnyOrder("DECISION_POLICY_UNRESOLVED","OFFICIAL_AD_FACT_DEFECT");
+        assertThat(count("ops.ad_case_responsibility")).isEqualTo(2);
+        assertThat(sql("SELECT count(*) FROM ops.work_task task JOIN ops.ad_case_responsibility responsibility ON responsibility.task_id=task.id WHERE responsibility.organization_id=:org")
+                .query(Integer.class).single()).isEqualTo(2);
+        assertThat(sql("SELECT count(*) FROM ops.ad_case_responsibility responsibility JOIN mart.ad_case kase ON kase.id=responsibility.case_id WHERE responsibility.organization_id=:org GROUP BY kase.cause_code")
+                .query(Integer.class).list()).containsExactlyInAnyOrder(1,1);
+        assertThat(count("ops.ad_bid_candidate")).isZero();
+        assertThat(count("ops.ad_bid_command")).isZero();
+        assertThat(provider.calls).isEmpty();
+    }
+
     @Test void acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory() {
         acceptPreActionFacts(true);
         var canonical=metrics.currentValues(SubjectKind.PLATFORM_LISTING_VARIANT,graph.id("listingVariant"),MetricWindow.D30);
         for(MetricCode code:List.of(MetricCode.UNIT_COST,MetricCode.PLATFORM_FEES_PER_UNIT,MetricCode.RETURN_LOSS_PER_UNIT,MetricCode.VARIABLE_TAX_PER_UNIT))
+        {
             assertThat(canonical.get(code).valueState().name()).as(code.name()).isEqualTo("AVAILABLE");
+            assertThat(canonical.get(code).confidenceState().name()).as(code.name()+" must carry canonical fresh evidence").isEqualTo("CANONICAL_CONFIRMED");
+        }
         assertThat(canonical.get(MetricCode.PLATFORM_FEES_PER_UNIT).numericValue()).isEqualByComparingTo("0");
         var calculated=refresh.refresh(graph.id("organization"),graph.id("object"),start,"TARGETED",null,"vertical-positive").orElseThrow();
+        assertThat(calculated.calculation().cases().stream().map(c -> c.identity().cause().name()).toList())
+            .as("Actual canonical cases %s; purpose failures %s", calculated.calculation().cases(),
+                calculated.calculation().purposeEvidence().stream().filter(e -> !e.eligible()).toList())
+            .contains("PROVEN_ADVERTISING_LOSS");
         var protection=calculated.calculation().cases().stream().filter(c->c.identity().cause().name().equals("PROVEN_ADVERTISING_LOSS")).findFirst().orElseThrow();
         assertThat(protection.contributionProfit().value()).isEqualByComparingTo("-1000");
         assertThat(protection.maxCpc().ceiling().amount()).isEqualByComparingTo("25");
@@ -153,7 +218,7 @@ class AdvertisingVerticalPathIT {
         caseId=seed.sql("SELECT case_id FROM ops.ad_bid_candidate WHERE id=:id").param("id",candidate).query(UUID.class).single();
         assertThat(count("ops.ad_case_responsibility")).isPositive();
         assertThat(count("ops.ad_outcome_baseline")).isZero();
-        fictionalDispatchControls();
+        fictionalDispatchControls(candidate);
         var selected=humans.select(maker,caseId,candidate,0,"Choose actual generated loss protection");
         assertThat(selected.state()).isEqualTo(RecommendationState.VALIDATED);
         assertThat(count("ops.ad_outcome_baseline")).isEqualTo(1);
@@ -165,9 +230,9 @@ class AdvertisingVerticalPathIT {
         var approved=approvals.approve(owner,recommendation,"Owner approves exact synthetic target",endorsed.version());
         assertThat(approved.state()).isEqualTo(RecommendationState.APPROVED);
         command=execution.createCommand(owner,recommendation,recommendations.require(recommendation).version()).commandId();
-        reservation=seed.sql("SELECT id FROM ops.ad_action_reservation WHERE command_id=:id").param("id",command).query(UUID.class).single();
+        reservation=seed.sql("SELECT reservation_id FROM ops.ad_bid_command WHERE id=:id").param("id",command).query(UUID.class).single();
         assertThat(seed.sql("SELECT b.state FROM ops.ad_outcome_baseline b JOIN ops.ad_bid_command c ON c.outcome_baseline_id=b.id WHERE c.id=:id").param("id",command).query(String.class).single()).isEqualTo("COMPLETE");
-        assertThat(jdbc.sql("SELECT cardinality(ops.evaluate_ad_bid_write_gate(:id))").param("id",command).query(Integer.class).single()).isZero();
+        assertThat(jdbc.sql("SELECT unnest(ops.evaluate_ad_bid_write_gate(:id))").param("id",command).query(String.class).list()).isEmpty();
         Object worker=context.getBean("adBidCommandWorker");
         ReflectionTestUtils.invokeMethod(worker,"runOnce",Instant.now(),10);
         assertThat(seed.sql("SELECT state FROM ops.ad_bid_command WHERE id=:id").param("id",command).query(String.class).single()).isEqualTo("READBACK_MATCHED");
@@ -189,7 +254,7 @@ class AdvertisingVerticalPathIT {
         sql("INSERT INTO ledger.ad_settlement_attribution VALUES(gen_random_uuid(),:org,:event,:financial,'fixture://vertical/settlement',:at)")
             .param("event",linked).param("financial",financial).update();
         report(from,start,"6000",100);
-        coverage(start.minus(Duration.ofDays(61)),start.plusSeconds(300));context(start.minusSeconds(1));
+        coverage(start.minus(Duration.ofDays(61)),start.plusSeconds(300),economicsAvailable);context(start.minusSeconds(1));
         if(economicsAvailable) {
             economicsAuthority();
             economicFacts(occurred);
@@ -237,13 +302,16 @@ class AdvertisingVerticalPathIT {
             .param("money",new BigDecimal(amount)).param("clicks",clicks).update();
     }
     void coverage(Instant from,Instant to) {
+        coverage(from,to,false);
+    }
+    void coverage(Instant from,Instant to,boolean returnsObserved) {
         sql("""
           INSERT INTO ledger.return_quality_evidence_snapshot(id,organization_id,platform_listing_variant_id,report_window_start,report_window_end,
             completed_coverage,retained_coverage,return_coverage,qc_coverage,completed_source_updated_at,retained_source_updated_at,
             return_source_updated_at,qc_source_updated_at,evidence_reference,accepted_at,correlation_id)
-          VALUES(gen_random_uuid(),:org,:listing,:from,:to,'COMPLETE','COMPLETE','COMPLETE_ZERO','COMPLETE',:at,:at,:at,:at,
+          VALUES(gen_random_uuid(),:org,:listing,:from,:to,'COMPLETE','COMPLETE',:returns,'COMPLETE',:at,:at,:at,:at,
             'fixture://vertical/whole-window',:at,'vertical')
-          """).param("from",Timestamp.from(from)).param("to",Timestamp.from(to)).update();
+          """).param("from",Timestamp.from(from)).param("to",Timestamp.from(to)).param("returns",returnsObserved?"COMPLETE_OBSERVED":"COMPLETE_ZERO").update();
     }
     void context(Instant at) {
         sql("INSERT INTO core.listing_price_observation(id,organization_id,provenance_id,platform_listing_variant_id,source_fact_key,observed_at,currency_code,selling_price,promotion_active) VALUES(gen_random_uuid(),:org,:source,:listing,:key,:observed,'RUB',1000,'NO')").param("key",UUID.randomUUID().toString()).param("observed",Timestamp.from(at)).update();
@@ -252,7 +320,7 @@ class AdvertisingVerticalPathIT {
     }
     void economicsAuthority() {
         UUID profile=UUID.randomUUID();
-        sql("INSERT INTO core.cost_version(id,organization_id,product_variant_id,cost_kind,currency_code,unit_cost,provenance_id,effective_from,status,created_at,updated_at) VALUES(gen_random_uuid(),:org,:variant,'PURCHASE','RUB',500,:source,CAST(:at AS timestamptz)-interval '70 days','ACTIVE',:at,:at)").update();
+        sql("INSERT INTO core.cost_version(id,organization_id,product_variant_id,cost_kind,currency_code,unit_cost,provenance_id,effective_from,status,created_at,updated_at) VALUES(gen_random_uuid(),:org,:variant,'PURCHASE','RUB',500,:source,CAST(:at AS timestamptz)-interval '6 hours','ACTIVE',:at,:at)").update();
         sql("INSERT INTO core.store_fulfillment_declaration(id,organization_id,store_id,fulfillment_mode_code,effective_from,status,created_at,updated_at) VALUES(gen_random_uuid(),:org,:store,'SELLER_FULFILLED',CAST(:at AS timestamptz)-interval '70 days','ACTIVE',:at,:at)").update();
         sql("""
           INSERT INTO core.economics_projection_profile(id,profile_version,organization_id,platform_code,marketplace_account_id,store_id,
@@ -273,19 +341,29 @@ class AdvertisingVerticalPathIT {
           """).param("profile",profile).update();
     }
     void economicFacts(Instant occurred) {
+        UUID source=UUID.randomUUID();
+        sql("INSERT INTO core.fact_provenance(id,organization_id,source_kind,source_time,ingestion_time,recorded_by_user_id,evidence_note) VALUES(:id,:org,'MANUAL_ENTRY',:at,:at,:owner,'Synthetic current publication of complete settled fee and return facts')").param("id",source).update();
         for(String category:List.of("COMMISSION","FULFILLMENT","STORAGE","PROMOTION","OTHER_VARIABLE","VARIABLE_TAX"))
             sql("""
               INSERT INTO ledger.finance_fee_fact(id,organization_id,provenance_id,platform_listing_variant_id,store_id,source_fact_key,
                 fee_category,settlement_state,occurred_at,currency_code,amount)
               VALUES(gen_random_uuid(),:org,:source,:listing,:store,:key,:category,'SETTLED',:occurred,'RUB',0)
-              """).param("key",UUID.randomUUID().toString()).param("category",category).param("occurred",Timestamp.from(occurred)).update();
+              """).param("source",source).param("key",UUID.randomUUID().toString()).param("category",category).param("occurred",Timestamp.from(occurred)).update();
         sql("""
           INSERT INTO ledger.return_fact(id,organization_id,provenance_id,platform_listing_variant_id,store_id,source_fact_key,native_return_key,
             return_kind,reason_category,occurred_at,quantity,currency_code,refund_amount,loss_amount)
           VALUES(gen_random_uuid(),:org,:source,:listing,:store,:key,:key,'CANCELLATION','CUSTOMER_CHANGED_MIND',:occurred,1,'RUB',0,0)
-          """).param("key",UUID.randomUUID().toString()).param("occurred",Timestamp.from(occurred)).update();
+          """).param("source",source).param("key",UUID.randomUUID().toString()).param("occurred",Timestamp.from(occurred)).update();
     }
-    void fictionalDispatchControls() {
+    void fictionalDispatchControls(UUID candidateId) {
+        // The synthetic Owner envelope names the target the real calculator
+        // generated, before any human selection or approval is recorded.
+        sql("""
+          UPDATE ops.ad_gate_authority gate SET exact_object_values=jsonb_build_object(:object::text,
+            jsonb_build_object('currentBid',candidate.current_bid_amount,'targetBid',candidate.provider_normalized_amount,
+              'currencyCode',candidate.currency_code,'bidUnitCode',candidate.bid_unit_code))
+          FROM ops.ad_bid_candidate candidate WHERE candidate.id=:candidate AND gate.organization_id=:org
+          """).param("candidate",candidateId).update();
         UUID capability=seed.sql("SELECT id FROM platform.platform_capability WHERE platform_code=:platform AND capability_code='ad-bid-change'").param("platform",graph.platform()).query(UUID.class).single();
         sql("""
           INSERT INTO platform.capability_subject_status(id,organization_id,platform_code,capability_id,store_id,
@@ -316,7 +394,7 @@ class AdvertisingVerticalPathIT {
                 evidence_ref,verified_source_title,owner_label,contract_test_status,status,created_at,updated_at)
               VALUES(:id,:platform,:code,'v1',:method,:path,:query,:function,:cap,:kind,'NONE','YES','VERIFIED',:at,
                 'fixture://vertical/protocol','Synthetic port protocol','test','PASSING','ACTIVE',:at,:at)
-              """).param("id",endpoint).param("platform",graph.platform()).param("code","vertical."+operation)
+              """).param("id",endpoint).param("platform",graph.platform()).param("code","vertical-"+operation.toLowerCase())
                 .param("method",writing?"POST":"GET").param("path","/fixture/ad-bid/"+operation.toLowerCase())
                 .param("query",writing?null:"object={nativeObjectKey}").param("function","AD_BID_"+operation)
                 .param("cap",capability).param("kind",writing?"WRITE":"READ").update();
@@ -324,9 +402,10 @@ class AdvertisingVerticalPathIT {
               INSERT INTO platform.capability_operation(id,capability_id,platform_code,operation,endpoint_id,request_template,
                 accepted_pointer,accepted_value,observed_price_pointer,observed_currency_pointer,ad_observed_unit_pointer,version_token_header,
                 verification_state,last_verified_at,evidence_ref,verified_source_title,owner_label,status,created_at,updated_at)
-              VALUES(gen_random_uuid(),:cap,:platform,:operation,:endpoint,:template,'/accepted','true'::jsonb,'/bid','/currencyCode','/bidUnitCode','etag',
+              VALUES(gen_random_uuid(),:cap,:platform,:operation,:endpoint,:template,'/accepted','true'::jsonb,'/bid','/currencyCode','/bidUnitCode',:versionHeader,
                 'VERIFIED',:at,'fixture://vertical/protocol','Synthetic port protocol','test','ACTIVE',:at,:at)
               """).param("cap",capability).param("platform",graph.platform()).param("operation",operation).param("endpoint",endpoint)
+                .param("versionHeader",writing?null:"etag")
                 .param("template",writing?"{\"bid\":\"{targetBid}\",\"currencyCode\":\"{currencyCode}\",\"bidUnitCode\":\"{bidUnitCode}\",\"object\":\"{nativeObjectKey}\"}":"").update();
         }
         // All actual gates see current authority; no gate result or attempt is fabricated.
@@ -336,26 +415,36 @@ class AdvertisingVerticalPathIT {
         Instant landed=seed.sql("SELECT observed_at FROM ops.ad_bid_command_readback WHERE command_id=:id").param("id",command).query(Timestamp.class).single().toInstant();
         Instant from=landed.plusSeconds(1800),earlyTo=from.plusSeconds(86400),retainedTo=from.plus(Duration.ofDays(30)),settledTo=from.plus(Duration.ofDays(60));
         clock.at=earlyTo.plusSeconds(60);
-        company("COMPLETED","10000",10,from.plusSeconds(7200),"after",null);
+        UUID completed=company("COMPLETED","10000",10,from.plusSeconds(7200),"after",null);
         coverage(from,earlyTo);report(from,earlyTo,"50",10);context(clock.instant().minusSeconds(1));
         var early=outcomeService.evaluate(due("OPERATIONAL"),clock.instant()).orElseThrow();
         assertThat(early.evaluation().verdict()).isEqualTo(OutcomeEvaluation.Verdict.UNCHANGED);
         assertThat(seed.sql("SELECT state FROM ops.ad_action_reservation WHERE id=:id").param("id",reservation).query(String.class).single()).isEqualTo("RELEASED");
         clock.at=retainedTo.plusSeconds(60);
+        // A current official publication restates the same Completed cohort;
+        // old source timestamps cannot become fresh merely because we recalculate.
+        company("COMPLETED","10000",10,from.plusSeconds(7200),"after",completed);
         company("RETAINED","10000",10,from.plus(Duration.ofDays(1)),"after",null);
         UUID retainedEvent=linked("10000",10,from,retainedTo,from.plus(Duration.ofDays(1)));
-        coverage(from,retainedTo);report(earlyTo,retainedTo,"950",90);context(clock.instant().minusSeconds(1));
+        coverage(from,retainedTo,true);report(earlyTo,retainedTo,"950",90);context(clock.instant().minusSeconds(1));
+        UUID costSource=UUID.randomUUID();
+        sql("INSERT INTO core.fact_provenance(id,organization_id,source_kind,source_time,ingestion_time,recorded_by_user_id,evidence_note) VALUES(:id,:org,'MANUAL_ENTRY',:at,:at,:owner,'Synthetic current publication of unchanged unit cost')").param("id",costSource).update();
+        sql("UPDATE core.cost_version SET effective_to=CAST(:at AS timestamptz)-interval '6 hours',updated_at=:at WHERE organization_id=:org AND effective_to IS NULL").update();
+        sql("INSERT INTO core.cost_version(id,organization_id,product_variant_id,cost_kind,currency_code,unit_cost,provenance_id,effective_from,status,created_at,updated_at) VALUES(gen_random_uuid(),:org,:variant,'PURCHASE','RUB',500,:source,CAST(:at AS timestamptz)-interval '6 hours','ACTIVE',:at,:at)").param("source",costSource).update();
         economicFacts(from.plus(Duration.ofDays(1)));
         analytics.run(graph.id("store"),MetricWindow.D30,"SCHEDULED",null);
+        for(MetricCode code:List.of(MetricCode.UNIT_COST,MetricCode.PLATFORM_FEES_PER_UNIT,MetricCode.RETURN_LOSS_PER_UNIT,MetricCode.VARIABLE_TAX_PER_UNIT))
+            assertThat(metrics.currentValues(SubjectKind.PLATFORM_LISTING_VARIANT,graph.id("listingVariant"),MetricWindow.D30).get(code).confidenceState().name())
+                .as("Mature canonical "+code).isEqualTo("CANONICAL_CONFIRMED");
         var retained=outcomeService.evaluate(due("RETAINED"),clock.instant()).orElseThrow();
-        assertThat(retained.evaluation().verdict()).isEqualTo(OutcomeEvaluation.Verdict.IMPROVED);
+        assertThat(retained.evaluation().verdict()).as(retained.toString()).isEqualTo(OutcomeEvaluation.Verdict.IMPROVED);
         clock.at=settledTo.plusSeconds(60);
         UUID settled=company("SETTLED","10000",10,settledTo.minusSeconds(1),"after",null);
         sql("INSERT INTO ledger.ad_settlement_attribution VALUES(gen_random_uuid(),:org,:event,:financial,'fixture://vertical/actual-financial',:at)")
           .param("event",retainedEvent).param("financial",settled).update();
-        coverage(from,settledTo);report(retainedTo,settledTo,"0",0);context(clock.instant().minusSeconds(1));
+        coverage(from,settledTo,true);report(retainedTo,settledTo,"0",0);context(clock.instant().minusSeconds(1));
         var financial=outcomeService.evaluate(due("SETTLED"),clock.instant()).orElseThrow();
-        assertThat(financial.evaluation().verdict()).isEqualTo(OutcomeEvaluation.Verdict.IMPROVED);
+        assertThat(financial.evaluation().verdict()).as(financial.toString()).isEqualTo(OutcomeEvaluation.Verdict.IMPROVED);
         clock.at=clock.instant().plusSeconds(60);
         UUID corrected=company("SETTLED","8000",10,settledTo.minusSeconds(1),"after",settled);
         sql("INSERT INTO ledger.ad_settlement_attribution VALUES(gen_random_uuid(),:org,:event,:financial,'fixture://vertical/late-correction',:at)")

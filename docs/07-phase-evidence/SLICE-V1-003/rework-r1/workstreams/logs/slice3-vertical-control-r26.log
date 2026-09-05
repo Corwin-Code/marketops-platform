@@ -1,0 +1,130 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------< com.mimococo.marketops:marketops-server >---------------
+[INFO] Building MarketOps Server 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-toolchain-and-dependencies) @ marketops-server ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[INFO] Rule 2: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[INFO] 
+[INFO] --- jacoco:0.8.15:prepare-agent (prepare-coverage) @ marketops-server ---
+[INFO] argLine set to -javaagent:/Users/chzhengx/.m2/repository/org/jacoco/org.jacoco.agent/0.8.15/org.jacoco.agent-0.8.15-runtime.jar=destfile=/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/jacoco.exec
+[INFO] 
+[INFO] --- spring-boot:4.1.0:build-info (build-info) @ marketops-server ---
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ marketops-server ---
+[INFO] Copying 5 resources from src/main/resources to target/classes
+[INFO] Copying 66 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ marketops-server ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ marketops-server ---
+[INFO] Copying 4 resources from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ marketops-server ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 270 source files with javac [debug deprecation parameters release 21] to target/test-classes
+[INFO] Extracting Javadoc into /Users/chzhengx/Code/personal/marketops-platform/./build/generated-spring-modulith/javadoc.json.
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[83,65] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[86,74] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[90,83] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[113,49] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[162,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[205,52] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[285,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[287,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java:[263,69] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[31,46] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[72,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[77,46] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[83,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidatorTest.java:[161,56] redundant cast to java.lang.String
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdaptersTest.java:[103,70] unchecked generic array creation for varargs parameter of type java.util.Optional<java.lang.String>[]
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ marketops-server ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT
+11:28:22.639 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.mimococo.marketops.MarketOpsServerApplication for test class com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT
+11:28:22.729 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.mimococo.marketops.MarketOpsServerApplication for test class com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT
+11:28:22.789 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+11:28:22.791 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+11:28:22.803 [main] INFO org.testcontainers.DockerClientFactory -- Testcontainers version: 2.0.5
+11:28:23.124 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Loaded org.testcontainers.dockerclient.UnixSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+11:28:23.521 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with local Unix socket (unix:///var/run/docker.sock)
+11:28:23.522 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+11:28:23.540 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 29.7.2
+  API Version: 1.55
+  Operating System: Docker Desktop
+  Total Memory: 5922 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/chzhengx/Library/Containers/com.docker.docker/Data/docker-cli.sock
+11:28:23.808 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Creating container for image: testcontainers/ryuk:0.14.0
+11:28:23.965 [main] INFO org.testcontainers.utility.RegistryAuthLocator -- Credential helper/store (docker-credential-desktop) does not have credentials for https://index.docker.io/v1/
+11:28:24.156 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Container testcontainers/ryuk:0.14.0 is starting: 33cc260f8349547cfba050a7b8807b65af6e923768124bef85b3bdbacd804fda
+11:28:24.456 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Container testcontainers/ryuk:0.14.0 started in PT0.648038S
+11:28:24.480 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+11:28:24.480 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+11:28:24.480 [main] INFO org.testcontainers.DockerClientFactory -- ✔︎ Docker server version should be at least 1.6.0
+11:28:24.513 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Creating container for image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
+11:28:24.641 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 is starting: 12d55ab00e6b3b1dc7a245298cc8fa7b9dcb8e397c718de3614e87a9da9ebb63
+11:28:26.155 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 started in PT1.642385S
+11:28:26.161 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container is started (JDBC URL: jdbc:postgresql://localhost:50780/marketops?loggerLevel=OFF)
+{"@timestamp":"2026-09-05T03:28:26.553635Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT"},"process":{"pid":89469,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Starting AdvertisingVerticalPathIT v0.1.0-SNAPSHOT using Java 21.0.10 with PID 89469 (started by chzhengx in /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T03:28:26.562398Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT"},"process":{"pid":89469,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"The following 1 profile is active: \"ci\"","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T03:28:32.902272Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT"},"process":{"pid":89469,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Started AdvertisingVerticalPathIT in 6.684 seconds (process running for 11.477)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T03:28:34.366409Z","log":{"level":"INFO","logger":"com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationService"},"process":{"pid":89469,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"An analytics run completed","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"analytics_run_completed","storeId":"85cd96f4-dbf0-46aa-be30-5867124dc654","window":"D30","subjectCount":1,"valueCount":33,"findingCount":9}
+{"@timestamp":"2026-09-05T03:28:34.772710Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":89469,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"26d97cbe-ebed-4653-b586-ca2ae90988a4","action":"CREATE","actorId":"advertising-calculation"}
+{"@timestamp":"2026-09-05T03:28:35.178361Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":89469,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"26d97cbe-ebed-4653-b586-ca2ae90988a4","action":"STATUS_CHANGE","actorId":"be6e6481-0698-4d00-9926-5edeb7cf4206"}
+{"@timestamp":"2026-09-05T03:28:35.269299Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":89469,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"26d97cbe-ebed-4653-b586-ca2ae90988a4","action":"STATUS_CHANGE","actorId":"9682a1da-e739-44f2-bb20-8b44b3307c8a"}
+{"@timestamp":"2026-09-05T03:28:35.412933Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":89469,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"approval-decision","entityId":"1551c940-6962-4153-b425-5cbed471a8f9","action":"APPROVAL_DECISION","actorId":"c2df2764-d795-49d4-bcdf-e80daf6f4187"}
+{"@timestamp":"2026-09-05T03:28:35.415676Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":89469,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"26d97cbe-ebed-4653-b586-ca2ae90988a4","action":"STATUS_CHANGE","actorId":"c2df2764-d795-49d4-bcdf-e80daf6f4187"}
+{"@timestamp":"2026-09-05T03:28:35.519737Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":89469,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"26d97cbe-ebed-4653-b586-ca2ae90988a4","action":"STATUS_CHANGE","actorId":"c2df2764-d795-49d4-bcdf-e80daf6f4187"}
+{"@timestamp":"2026-09-05T03:28:35.520896Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":89469,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"26d97cbe-ebed-4653-b586-ca2ae90988a4","action":"COMMAND_TRANSITION","actorId":"c2df2764-d795-49d4-bcdf-e80daf6f4187"}
+{"@timestamp":"2026-09-05T03:28:36.044759Z","log":{"level":"INFO","logger":"com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationService"},"process":{"pid":89469,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"An analytics run completed","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"analytics_run_completed","storeId":"85cd96f4-dbf0-46aa-be30-5867124dc654","window":"D30","subjectCount":1,"valueCount":33,"findingCount":9}
+{"@timestamp":"2026-09-05T03:28:36.771349Z","log":{"level":"INFO","logger":"com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationService"},"process":{"pid":89469,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"An analytics run completed","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"analytics_run_completed","storeId":"dc08913f-1690-403d-a5bf-c62acbd2eac0","window":"D30","subjectCount":1,"valueCount":33,"findingCount":9}
+[ERROR] Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 14.86 s <<< FAILURE! -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT
+[ERROR] com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT.acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory -- Time elapsed: 3.151 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+expected: IMPROVED
+ but was: INDETERMINATE
+	at com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT.observeMaturityAndRevision(AdvertisingVerticalPathIT.java:370)
+	at com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT.acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory(AdvertisingVerticalPathIT.java:185)
+
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   AdvertisingVerticalPathIT.acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory:185->observeMaturityAndRevision:370 
+expected: IMPROVED
+ but was: INDETERMINATE
+[INFO] 
+[ERROR] Tests run: 2, Failures: 1, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  23.877 s
+[INFO] Finished at: 2026-09-05T11:28:37+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project marketops-server: There are test failures.
+[ERROR] 
+[ERROR] See /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

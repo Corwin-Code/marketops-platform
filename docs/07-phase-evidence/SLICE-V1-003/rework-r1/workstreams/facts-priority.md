@@ -79,3 +79,21 @@ Qualification now uses the independently queried canonical Completed event count
 The Vertical rewrite exposed a same-class historical read defect: economicsForSales(readAt) read the latest Metric and then rejected future computedAt, erasing the older valid value. It now calls canonical MetricQuery.currentValuesAt directly. A new PostgreSQL counterexample stores both an earlier and later Metric version and requires the corresponding earlier/later economics, pending the next integrated runtime run.
 
 R15 whole result is 288 tests / 286 passed / 1 failure / 1 error / 0 skipped, not final verified closure. Commands and retained logs are recorded in the traceability shard.
+
+### R18–R29: actual canonical vertical path
+
+The former `AdvertisingVerticalPathIT` shortcut is replaced by a journey that begins with empty Case, Metric, candidate, recommendation and Outcome-baseline tables. Accepted ledger sales, official ad reports, mapping, exact source provenance, typed cost/fee authority and source coverage feed the real `AnalyticsCalculationService` and advertising refresh. The positive path asserts four fresh canonical economic Metrics, contribution profit `-1000`, MaxCPC `25`, one generated bid recommendation and a real responsibility Task. The negative path leaves economic inputs unresolved and proves visible responsibility with no executable candidate or Provider call.
+
+The same positive graph continues through actual Maker selection, independent Operations endorsement, Owner preview/final approval, trusted baseline sealing and Command creation. The actual worker uses an in-process fixture port and real Raw custody/readback; a second run does not repeat APPLY. All Provider effects are synthetic and `production_write_enabled=false` remains asserted.
+
+R18–R27 retain their actual failures in the machine-readable run ledger. These exposed fixture timestamp/coverage/protocol/FK issues, a stale cost version and an exact synthetic Gate target mismatch; the strict existing production checks remained in place. R28 passed the two complete journeys. R29 then passed the complete narrow superset: **34 tests, 0 failures, 0 errors, 0 skipped**, including Gate8, Privilege10, Transmission7 and NonGoals7. R29 finished `2026-09-05T03:32:37Z`, Maven duration `45.535 s`; log SHA-256 `234b28703331f19c2a0b1983639a7e3332ee43edfa62cdf95419bc2c0dd2af39`.
+
+R29 is a working-tree targeted run based on W1 `60638b1fc1a227b50f4b3ede1ba0bb983407bfdc`. Its `marketops.build.gitCommit` property identifies that base and does not turn the subsequent fixture edits into a clean-source result. Exact final clean verification and CI remain required.
+
+[facts-outcome-fault-seeding.json](facts-outcome-fault-seeding.json) records 47 intentional adverse boundaries with precise test methods, altered inputs, asserted responses and actual reached layers. Database privilege/shape refusals are distinguished from calculator, Planner and Outcome execution.
+
+### Atomic Case identity under concurrent refresh — R34
+
+The Case repository now returns the persisted UUID from `INSERT ... ON CONFLICT ... RETURNING id`; the projection writer uses that UUID for every dependent row. This closes the losing proposed UUID race without introducing additional object locks. The actual PostgreSQL test removes all qualification policies and uses four distinct microsecond evaluation instants, preventing incidental qualification-row serialization. The exact report window legitimately produces two causes; each retains exactly one Case and one responsibility Task. The dedicated writer test also injects an upsert conflict identity and verifies every dependent reference.
+
+Parent-run R34 passed all 97 tests, including Vertical4 and Writer17; the complete command, log SHA and source identity limitation are in `final-targeted-r34.json`. The previous R32 wrong total-Case expectation and Mockito restubbing error remain in the preserved failed-run evidence. Final clean committed-source verification and exact CI are pending.

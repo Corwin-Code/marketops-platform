@@ -30,10 +30,12 @@ public class AdvertisingImpactEvidenceService {
                         'currency',c.profit_currency_code,'unit','CURRENCY_MAJOR'),
                     'submittedUnitMaxCpc',jsonb_build_object('state',c.max_cpc_state,'amount',cd.max_cpc_amount,
                         'currency',cd.currency_code,'unit',cd.bid_unit_code),
+                    'conservativeCeiling',jsonb_build_object('amount',trunc(cd.max_cpc_amount*(1-tp.ceiling_headroom_ratio),4),
+                        'headroomRatio',tp.ceiling_headroom_ratio,'unit',cd.bid_unit_code,'currency',cd.currency_code),
                     'expectedEffect',r.expected_effect,
                     'recoveryState',CASE WHEN cd.candidate_basis='CAUSE_BOUND_PROTECTION_STEP'
                         THEN 'EXPOSURE_LIMIT_ONLY_NOT_PROFITABILITY_OR_HEALTH'
-                        WHEN cd.direction='PROTECTION_DECREASE' AND cd.provider_normalized_amount>cd.max_cpc_amount
+                        WHEN cd.direction='PROTECTION_DECREASE' AND cd.provider_normalized_amount>trunc(cd.max_cpc_amount*(1-tp.ceiling_headroom_ratio),4)
                         THEN 'RECOVERY_IN_PROGRESS_NOT_HEALTHY' ELSE 'OUTCOME_VERIFICATION_REQUIRED' END,
                     'policyVersions',ops.ad_bundle_authority_snapshot(CAST(:bundle AS uuid)),
                     'materiality',ops.ad_materiality_assessment(CAST(:bundle AS uuid),cd.id),
@@ -73,6 +75,7 @@ public class AdvertisingImpactEvidenceService {
                         'blockers',c.blocker_codes,'attributionGapState',c.attribution_gap_state,'attributionGap',c.attribution_gap_ratio))::text
                 FROM ops.recommendation r JOIN ops.ad_bid_candidate cd ON cd.id=(r.proposed_parameters->>'candidateId')::uuid
                 JOIN mart.ad_case c ON c.id=cd.case_id JOIN platform.ad_semantic_profile sp ON sp.id=cd.semantic_profile_id
+                JOIN core.ad_bid_target_policy tp ON tp.id=cd.target_policy_id AND tp.policy_version=cd.target_policy_version
                 LEFT JOIN ops.ad_candidate_selection selected ON selected.recommendation_id=r.id
                 LEFT JOIN LATERAL(SELECT b.* FROM ops.ad_outcome_baseline b WHERE b.candidate_id=cd.id
                     AND (selected.recommendation_id IS NULL OR b.id=selected.outcome_baseline_id)

@@ -2,12 +2,14 @@ package com.mimococo.marketops.advertisingefficiency;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.mimococo.marketops.operationsworkflow.ActionKind;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -176,8 +178,8 @@ class AdvertisingNonGoalsTest {
      * path may do it.
      *
      * <p>So AD_BUDGET_CHANGE and AD_STATUS_CHANGE are permitted to appear, and
-     * are permitted to appear in exactly one place — the manual execution
-     * packet's action vocabulary. An occurrence anywhere else would mean
+     * are permitted to appear in the original manual packet vocabulary and
+     * the governed manual policy/proposal/proof migration. An occurrence elsewhere would mean
      * something other than a human instruction had learned to name them.
      */
     @Test
@@ -191,11 +193,26 @@ class AdvertisingNonGoalsTest {
                 }
             }
             assertThat(carrying)
-                    .describedAs("%s may only be named by the manual execution packet", action)
-                    .hasSize(1);
-            assertThat(carrying.get(0).getFileName().toString())
-                    .isEqualTo("V0039__create_advertising_target_materiality_and_manual_shadow.sql");
+                    .describedAs("%s is restricted to the two governed human-instruction migrations", action)
+                    .extracting(path -> path.getFileName().toString())
+                    .containsExactlyInAnyOrder(
+                            "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
+                            "V0060__govern_manual_proposals_packets_and_configuration_proof.sql");
         }
+    }
+
+    @Test
+    @DisplayName("TC-ADV-NONGOAL-007 governed Manual instructions cannot add an executable write family")
+    void governedManualActionsCannotEnterCommandOrOutbox() {
+        assertThat(Arrays.stream(ActionKind.values()).filter(ActionKind::writeCapable))
+                .containsExactly(ActionKind.PRICE_CHANGE, ActionKind.AD_BID_CHANGE);
+        String manual = read(repositoryRoot().resolve(
+                "backend/marketops-server/src/main/resources/db/migration/"
+                        + "V0060__govern_manual_proposals_packets_and_configuration_proof.sql"));
+        assertThat(manual).contains("CREATE TABLE core.ad_manual_policy", "CREATE TABLE ops.ad_manual_proposal",
+                "CREATE FUNCTION ops.select_ad_manual_packet", "CREATE FUNCTION ops.record_ad_manual_observation");
+        assertThat(manual).doesNotContainPattern(
+                "(?i)INSERT\\s+INTO\\s+(?:ops|platform)\\.[a-z_]*(?:command|outbox)[a-z_]*");
     }
 
     /**

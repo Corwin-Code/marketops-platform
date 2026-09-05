@@ -79,8 +79,8 @@ public class AdvertisingProjectionRepository {
     }
 
     /** Insert or update one case on its cause key. */
-    public void upsertCase(CaseRow row) {
-        jdbc.sql("""
+    public UUID upsertCase(CaseRow row) {
+        return jdbc.sql("""
                 INSERT INTO mart.ad_case (
                     id, organization_id, store_id, platform_code, ad_native_object_id,
                     affected_set_id, semantic_profile_id, lineage_generation, case_key,
@@ -159,6 +159,7 @@ public class AdvertisingProjectionRepository {
                     superseded_at = NULL,
                     superseded_reason = NULL,
                     version = mart.ad_case.version + 1
+                RETURNING id
                 """)
                 .param("id", row.id()).param("organizationId", row.organizationId())
                 .param("storeId", row.storeId()).param("platformCode", row.platformCode())
@@ -201,7 +202,7 @@ public class AdvertisingProjectionRepository {
                 .param("sustainedLane", row.sustainedLane())
                 .param("sustainedCycles", row.sustainedCycles())
                 .param("sustainedSince", ts(row.sustainedSince()))
-                .update();
+                .query(UUID.class).single();
     }
 
     /** Append one visible rank factor. */

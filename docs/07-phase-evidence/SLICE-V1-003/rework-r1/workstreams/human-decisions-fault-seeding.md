@@ -44,3 +44,17 @@ Forgery, private-issuer, seal, retry, permanent containment and compensation
 injections are recorded separately in the command-control fault matrix. Browser
 role journeys are separate actual HTTP evidence. No entry here is permission to
 contact a real Provider or enable production writes.
+
+The r34 complete selected-class run passed all 97 tests, including the following
+additional independent faults and positive controls (exact argv/log hash in
+`workstreams/final-targeted-r34.json`; final immutable full execution is separate):
+
+| Actual tested boundary | Fault and result |
+| --- | --- |
+| `AdvertisingProposalServiceTest` recovery interpretation and `AdvertisingHumanWorkflowIT` headroom Preview | Raw Max CPC remains above the candidate while conservative headroom falls below it; major/minor Proposal and actual PostgreSQL Preview retain recovery in progress. The complementary safe-side boundary requires subsequent Outcome verification. |
+| `AdvertisingResponsibilityBoundaryIT` | Each of five weaker Protection response/coverage axes is independently rejected by PostgreSQL. Successful reassignment preserves first raise, acknowledgement, deadlines and journal prefix; missing live role or any required scope is refused. Outside coverage exposes active harm and its next staffed time. Different causes/owner roles retain separate explicitly linked canonical Tasks. |
+| `makerWithAnAdditionalOperationsRoleCannotEndorseTheirOwnSelection` in `AdvertisingHumanWorkflowIT` | A dual-role Maker cannot self-endorse; a distinct Operations reviewer succeeds. |
+| `anOutOfSetCandidateIsRefusedAndARejectedFiniteChoiceNeverStartsAction` | An unpublished random choice and a rejected generated choice cannot create selection or command; rejecting a choice leaves responsibility open. |
+| `unresolvedMaterialityCannotReachFinalApprovalAfterValidSelection` | Expire the exact policy after valid Maker selection and independent endorsement; actual final approval is refused and no authority seal appears. |
+| `AdvertisingSealedAuthorityIT.causeBoundKnownDangerCanBeSealedWithoutConversionOrCostEvidence` | Actual impact capture preserves null economic/native/conservative ceilings and the exact exposure-only interpretation before the existing real seal/create positive path. |
+| `AdvertisingProjectionWriterTest.concurrentConflictUsesThePersistedIdentityForAllDependentEvidence` and both actual concurrent refresh paths | Return a different winning Case ID from the insert; every dependent reference uses it. Concurrent qualified refresh and different-asOf policy-missing refresh produce one Case/Task per actual cause, no duplicate foreign identity and no automatic command. |

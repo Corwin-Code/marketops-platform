@@ -7,9 +7,9 @@ Read-only review of the current workflows and their invoked scripts. No job was 
 | Context | Required execution |
 | --- | --- |
 | `governance` | `python3 scripts/validate_governance.py`; `python3 scripts/validate_production_readiness.py`; `python3 -m unittest discover -s tests -p 'test_*.py'` |
-| `backend-build` | `./mvnw -B -ntp clean -Dmarketops.build.gitCommit="${SOURCE_HEAD_SHA}" verify`; `bash scripts/verify_coverage_thresholds.sh backend`; `python3 scripts/verify_migration_artifact.py` |
+| `backend-build` | `python3 scripts/validation/collect_slice3_runtime_resources.py --output build/slice3-runtime-resources.json`; `./mvnw -B -ntp clean -Dmarketops.build.gitCommit="${SOURCE_HEAD_SHA}" verify`; `bash scripts/verify_coverage_thresholds.sh backend`; `python3 scripts/verify_migration_artifact.py` |
 | `architecture-boundary` | `./mvnw -B -ntp -Dtest='*ArchitectureTest' -DfailIfNoTests=true test` |
-| `backend-integration` | `./mvnw -B -ntp clean verify` |
+| `backend-integration` | `python3 scripts/validation/collect_slice3_runtime_resources.py --output build/slice3-runtime-resources.json`; `./mvnw -B -ntp clean verify` |
 | `frontend-lint` | `npm ci`; `npm run lint`; `npm run format:check` |
 | `frontend-typecheck` | `npm ci`; `npm run typecheck` |
 | `frontend-test` | `npm ci`; `npm run test:ci`; `bash scripts/verify_coverage_thresholds.sh frontend`; `npx playwright install --with-deps chromium`; `make env-init`; `make up`; `npm run test:browser`; `docker compose --project-name marketops-local --env-file .env.local -f infra/compose/docker-compose.yml down --volumes --remove-orphans`; `bash scripts/validation/advertising_browser_isolated.sh` |
@@ -42,7 +42,8 @@ The migration-artifact verifier builds uniquely SHA-tagged local images from the
 - cancelled/skipped/stale results listed separately and never counted as PASS.
 - production_write_enabled=false and external Gate/Provider obligations remain deferred.
 - downloaded advertising-capacity-receipt.json from each executing backend job; verify source/tested SHA, run/attempt/job/artifact and actual workload/timing assertions.
+- all three capacity JSONs plus runtime-resource JSON: verify dataset/source/resource SHA-256 links and distinguish host/JVM resources from Docker VM limits.
 
-Both backend report artifacts now include `target/advertising-capacity-receipt.json`, uploaded under `always()` with 14-day retention. The Maven steps inject exact source Head, tested merge SHA, run ID/attempt, job and artifact identity. Inspect the downloaded receipt and actual capacity assertions. Because missing upload files only warn, the existence of the report artifact alone does not prove that capacity executed or passed.
+Both backend jobs collect safe host/Docker resource fields before Maven and upload three capacity JSONs (receipt, actual synthetic dataset, source-input hashes) plus `build/slice3-runtime-resources.json`, under `always()` with 14-day retention. The resource collector asks Docker only for CPU count, memory and server version; it does not inspect container environments, credentials or shared databases. The dataset contains only the test-generated synthetic organization. Inspect every linked SHA-256 and actual timing/workload assertion. Host/JVM resource values and Docker VM limits are recorded separately. Missing upload files only warn, so artifact existence alone does not prove capacity ran or passed. The workflow injects source/tested/run/job/artifact variables, while the current helper records its actual GITHUB metadata, measured checkout and file hashes; final source Head/job/artifact binding must also use the authoritative workflow/run API.
 
 No independent Controller verdict, Ready, merge or production enablement is produced by these engineering checks.

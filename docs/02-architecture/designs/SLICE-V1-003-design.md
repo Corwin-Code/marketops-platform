@@ -135,6 +135,11 @@ relative/absolute step and native grid. Intermediate Protection targets require
 explicit policy permission. `AdBidUnitConversion` converts native minor units
 and RUB economics before comparing ceilings and exposure; unknown denomination
 cannot form a usable grid. Runtime adapters do not choose or round a target.
+Both proposed expected effect and the actual Preview compare an intermediate
+Protection target against the native-unit ceiling after the exact policy
+headroom. A target above that conservative ceiling remains
+`RECOVERY_IN_PROGRESS_NOT_HEALTHY`, even when below raw Max CPC. Cause-bound
+Protection retains absent numerical Max CPC and the exposure-only interpretation.
 
 Generating choices takes no reservation and creates no additional responsibility
 Task. The public human route permits only selection or rejection of a generated
@@ -170,7 +175,11 @@ inputs use the same disclosure decision. Financial roles also require live
 `ADVERTISING_DECISION_EVIDENCE_VIEW` scope covering every affected store and
 variant; company-wide totals require organization coverage. A partially scoped
 reviewer cannot approve using masked evidence. Maker selection displays the
-permitted native intent without granting financial approval authority.
+permitted native intent without granting financial approval authority. Each
+historical candidate is checked against its own frozen complete affected set;
+current Case scope alone cannot expose an older recommendation. Financial basis
+is masked independently. Manual Bid/Budget/Status options require the current
+set to be complete and native view scope over its store and every product.
 
 `AuthenticatedInvocationIssuer` uses the actual authenticated SecurityContext
 and a separately configured private database login. The application login

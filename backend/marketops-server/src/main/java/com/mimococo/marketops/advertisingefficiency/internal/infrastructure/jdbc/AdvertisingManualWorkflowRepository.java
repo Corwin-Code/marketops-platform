@@ -57,6 +57,8 @@ public class AdvertisingManualWorkflowRepository {
                    AND candidate.candidate_basis=p.candidate_basis AND candidate.affected_set_digest=
                        (SELECT affected_set_digest FROM core.ad_affected_set WHERE id=c.affected_set_id)
                  WHERE c.id=:id AND c.superseded_at IS NULL AND p.effective_from<=statement_timestamp()
+                   AND EXISTS (SELECT 1 FROM core.ad_affected_set affected WHERE affected.id=c.affected_set_id
+                       AND affected.resolution_state='COMPLETE')
                    AND p.effective_to>statement_timestamp() AND (p.action_kind<>'AD_BID_CHANGE' OR candidate.id IS NOT NULL)
                  ORDER BY p.action_kind,p.policy_version,candidate.ordinal,candidate.id LIMIT 100
                 """).param("id", caseId).query((rs, n) -> new Option(rs.getObject("id", UUID.class),

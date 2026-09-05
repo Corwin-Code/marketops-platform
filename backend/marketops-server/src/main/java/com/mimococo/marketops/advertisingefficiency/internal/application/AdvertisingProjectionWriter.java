@@ -76,7 +76,10 @@ class AdvertisingProjectionWriter {
             String lane = scored.decision().lane().name();
             SustainedRun run = continueRun(existing.orElse(null), lane, calculatedAt);
 
-            projection.upsertCase(new AdvertisingProjectionRepository.CaseRow(
+            // A concurrent first calculation may have inserted the same key
+            // since findByKey. Every dependent row must use PostgreSQL's
+            // persisted identity, never the losing proposed insert UUID.
+            caseId = projection.upsertCase(new AdvertisingProjectionRepository.CaseRow(
                     caseId, calculation.organizationId(), calculation.storeId(),
                     calculation.platformCode(), calculation.adNativeObjectId(),
                     calculation.affectedSetId(), calculation.semanticProfileId(),

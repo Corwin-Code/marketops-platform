@@ -49,8 +49,12 @@ public class AdvertisingManualWorkflowService {
         Scope scope=caseScope(actor,caseId);
         ObjectNode result=mapper.createObjectNode();
         result.put("caseId",caseId.toString()); result.put("productionWriteEnabled",false);
-        result.set("options",mapper.valueToTree(workflow.options(caseId)));
-        result.set("allowedActions",mapper.valueToTree(permitted(actor,scope,ActionScopeCode.ADVERTISING_TASK_ACT)
+        // Diagnostic Case visibility does not grant access to native action proposals.
+        var visibleOptions=permitted(actor,scope,ActionScopeCode.ADVERTISING_VIEW)
+                ? workflow.options(caseId) : List.<AdvertisingManualWorkflowRepository.Option>of();
+        result.set("options",mapper.valueToTree(visibleOptions));
+        result.set("allowedActions",mapper.valueToTree(!visibleOptions.isEmpty()
+                && permitted(actor,scope,ActionScopeCode.ADVERTISING_TASK_ACT)
                 ? List.of("SELECT_MANUAL_PROPOSAL") : List.of()));
         return result;
     }

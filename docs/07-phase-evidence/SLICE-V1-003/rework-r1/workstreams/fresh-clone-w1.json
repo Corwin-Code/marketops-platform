@@ -1,0 +1,55 @@
+{
+  "criterion_or_finding_id": [
+    "S3-DR-022",
+    "S3-AC-199",
+    "S3-AC-200"
+  ],
+  "command": "bash scripts/fresh_clone_check.sh --offline",
+  "working_directory": "independent /tmp clone of W1; path with spaces and single quote",
+  "code_commit": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+  "code_tree": "014a09e3afda33fe97140041f8a6b1a65f6553a6",
+  "environment_id": "local-independent-git-objects-no-ignored-state",
+  "dataset_id_and_hash": "NONE: Git source verification only",
+  "started_at": "2026-09-05T03:14:41.605436+00:00",
+  "ended_at": "2026-09-05T03:14:56.485813+00:00",
+  "exit_code": 0,
+  "output_path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-r1-fresh-clone-w1-exact.log",
+  "output_sha256": "e850f01d091a7f31e518f9ce2cf6482d51ff858b4f298af46073c300ff8833ce",
+  "boundary": "Offline fresh-clone governance/readiness/all Python tests only; full runtime verified separately; no DB, Provider or credentials",
+  "production_write_enabled": false,
+  "test_counts": {
+    "python_validator_tests": 410,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "skipped_tests_and_reasons": "No skipped tests in executed Python suite; backend/browser are outside offline mode, not claimed by this receipt",
+  "declared_cpu_memory": {
+    "schemaVersion": "1.0",
+    "recordedAt": "2026-09-05T03:01:17.186141+00:00",
+    "host": {
+      "os": "Darwin",
+      "architecture": "arm64",
+      "logicalProcessors": 8,
+      "physicalMemoryBytes": 17179869184,
+      "processAffinityProcessors": null
+    },
+    "docker": {
+      "logicalProcessors": 4,
+      "memoryBytes": 6210576384,
+      "serverVersion": "29.7.2"
+    },
+    "github": {
+      "runId": null,
+      "runAttempt": null,
+      "job": null,
+      "testedCheckout": null
+    },
+    "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+  },
+  "initial_refusal": {
+    "reason": "Root working tree had docs-only CI review changes. Original script correctly refused dirty checkout; exact committed W1 was then independently cloned and certified.",
+    "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-r1-fresh-clone-w1.log",
+    "sha256": "08b9d1865e262b21d673263a89c24d7c34aeacd85e506369756adcc7630517d5"
+  }
+}

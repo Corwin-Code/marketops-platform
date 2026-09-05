@@ -1,9 +1,10 @@
 {
   "schemaVersion": "1.0",
   "scope": "READ_ONLY_CURRENT_WORKFLOW_REVIEW",
-  "reviewedAt": "2026-09-05T02:33:05.039189+00:00",
+  "reviewedAt": "2026-09-05T03:13:54.616164+00:00",
   "executionStatus": "NOT_EXECUTED_BY_THIS_REVIEW",
   "remoteHeadBinding": "PENDING_FINAL_PUBLISHED_HEAD",
+  "reviewedCodeCheckpoint": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
   "requiredContexts": [
     "governance",
     "backend-build",
@@ -20,14 +21,17 @@
   ],
   "inputs": {
     ".github/required-status-checks.json": "8f9192cc821b01de8c2c98ca1199c2e93cfa59b34eb2eef5baa91ce2eb046907",
-    ".github/workflows/backend.yml": "6b24234ac18fcd8f359c09a5b4b25e280f539353b94dcac47884889bf0996ee9",
+    ".github/workflows/backend.yml": "75a089bfed130919f31ce67b06db58965308c2133e8b8781aa7ba1aaf1676fd7",
     ".github/workflows/frontend.yml": "5de9570d16aaa5ffe66ae612898a649b4269141244d64a0d44d0f4bdc27cb540",
     ".github/workflows/governance.yml": "be11fddc4cc617a1f0b5c9206e5ca9cdfd7db12a8841d9db39fe4430e152926f",
     ".github/workflows/infrastructure.yml": "ec0f1ade32d02ee79ec52c345eb979a6c9f0ab856cacf901852c6936ae3065a5",
     ".github/workflows/security.yml": "654540b595c8257c9e625dcb8728dec94445386f647ee4a8d82b45e80dd5ad28",
     "scripts/verify_terraform.py": "94b7ad91e809607cb0984298bd00c77e710498b24950acb5e897d2b99b37c1a9",
-    "scripts/verify_migration_artifact.py": "49f53bc51afe8a55af1b97a8d1a09a4c63158c921908b991f0a4dc1f9c0a0b8e",
-    "scripts/validation/advertising_browser_isolated.sh": "87880fc625983eb3ea31feb0bb7d3d5fd3c47842c2394267d366d393ce11156f",
+    "scripts/verify_migration_artifact.py": "8d6ad9f0394012d5323996658d43b174d62174a89133149402d9f399271da191",
+    "scripts/validation/advertising_browser_isolated.sh": "1d881d56a841ddf36858f91d24183bbabd1ef9d19a9d676b01d33d42087f440f",
+    "scripts/validation/collect_slice3_runtime_resources.py": "2b378a05a77b96727f38209c7e268926325afa28c7e1f3a0c46e79990536e559",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCapacityEvidence.java": "757c21736c1d957c8aaa00b96e0cb139be037d41ad33cc790a7311123ef1bd61",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java": "73b9174ab63b3f1e8ea8704a6845fc4132f8f16fc6c346014e547fe523ff6259",
     "Makefile": "c0d8f1711cc6d989d2a6dfbedc3192c5053da619c414964e72b7bd8f1bc7bdbb",
     "backend/marketops-server/pom.xml": "02dd0836c54bbc3298ce326bee0f61077acea4366c734ba82c6710ffafb6079b",
     "frontend/marketops-console/package.json": "05567a1f945b783ae8f6d28e15816f2cfee414706c21982b7c1afe4f4539e8d2"
@@ -55,6 +59,7 @@
       "context": "backend-build",
       "workflow": "backend.yml",
       "commands": [
+        "python3 scripts/validation/collect_slice3_runtime_resources.py --output build/slice3-runtime-resources.json",
         "./mvnw -B -ntp clean -Dmarketops.build.gitCommit=\"${SOURCE_HEAD_SHA}\" verify",
         "bash scripts/verify_coverage_thresholds.sh backend",
         "python3 scripts/verify_migration_artifact.py"
@@ -82,9 +87,53 @@
           "MARKETOPS_EVIDENCE_WORKFLOW_RUN_ID": "github.run_id",
           "MARKETOPS_EVIDENCE_WORKFLOW_RUN_ATTEMPT": "github.run_attempt",
           "MARKETOPS_EVIDENCE_WORKFLOW_JOB": "backend-build",
-          "MARKETOPS_EVIDENCE_ARTIFACT_NAME": "backend-test-reports"
+          "MARKETOPS_EVIDENCE_ARTIFACT_NAME": "backend-test-reports",
+          "SLICE3_RUNTIME_RESOURCE_RECEIPT": "../../build/slice3-runtime-resources.json"
         },
-        "limit": "Workflow wiring is read-only evidence. A missing receipt is not a passing capacity result even though upload uses warn; collect and validate the actual final-run payload, timings, workload and every identity field."
+        "limit": "Read-only workflow review, not executed capacity evidence. The current helper consumes GITHUB metadata, measured local Head and file hashes; it does not consume all MARKETOPS_EVIDENCE_* variables. Final evidence must bind the actual source PR Head, tested merge, run/attempt, job and artifact using the workflow/run API and payload/resource hashes. Missing uploaded files only warn and cannot be counted as a passing capacity run.",
+        "artifactPaths": [
+          "backend/marketops-server/target/advertising-capacity-receipt.json",
+          "backend/marketops-server/target/advertising-capacity-dataset.json",
+          "backend/marketops-server/target/advertising-capacity-source-inputs.json",
+          "build/slice3-runtime-resources.json"
+        ],
+        "actualCapacityPayloadIdentity": [
+          "datasetId",
+          "datasetPath/datasetSha256",
+          "sourceInputsPath/sourceInputsSha256",
+          "startedAt/datasetCapturedAt",
+          "measuredLocalGitHead",
+          "GITHUB_SHA/GITHUB_REF/GITHUB_EVENT_NAME/GITHUB_RUN_ID/GITHUB_RUN_ATTEMPT",
+          "runtimeResourceReceipt/runtimeResourceReceiptSha256"
+        ],
+        "datasetScope": "Exact ordered rows of core.ad_native_object/core.ad_affected_set/core.ad_object_configuration_observation/ledger.ad_object_fact/ops.ad_containment for the one randomly generated synthetic organization; 1000 objects, one shared product/listing and 200 explicit regression oracles.",
+        "sourceScope": "SHA-256 of each regular src/main and src/test file plus pom.xml. Source contents are not duplicated in the source-input manifest.",
+        "resourceCollection": {
+          "hostFields": [
+            "OS",
+            "architecture",
+            "logical CPU count",
+            "physical memory bytes",
+            "process-affinity count when available"
+          ],
+          "dockerCommand": "docker info --format \"{{.NCPU}} {{.MemTotal}} {{.ServerVersion}}\"",
+          "githubFields": [
+            "GITHUB_RUN_ID",
+            "GITHUB_RUN_ATTEMPT",
+            "GITHUB_JOB",
+            "GITHUB_SHA"
+          ],
+          "effects": [
+            "writes named local JSON and prints those selected resource fields"
+          ],
+          "notCollected": [
+            "container environments",
+            "Docker configuration or registry credentials",
+            "container contents",
+            "Provider or cloud API",
+            "shared database data"
+          ]
+        }
       }
     },
     {
@@ -99,6 +148,7 @@
       "context": "backend-integration",
       "workflow": "backend.yml",
       "commands": [
+        "python3 scripts/validation/collect_slice3_runtime_resources.py --output build/slice3-runtime-resources.json",
         "./mvnw -B -ntp clean verify"
       ],
       "cwd": "backend/marketops-server",
@@ -117,9 +167,53 @@
           "MARKETOPS_EVIDENCE_WORKFLOW_RUN_ID": "github.run_id",
           "MARKETOPS_EVIDENCE_WORKFLOW_RUN_ATTEMPT": "github.run_attempt",
           "MARKETOPS_EVIDENCE_WORKFLOW_JOB": "backend-integration",
-          "MARKETOPS_EVIDENCE_ARTIFACT_NAME": "backend-integration-reports"
+          "MARKETOPS_EVIDENCE_ARTIFACT_NAME": "backend-integration-reports",
+          "SLICE3_RUNTIME_RESOURCE_RECEIPT": "../../build/slice3-runtime-resources.json"
         },
-        "limit": "Workflow wiring is read-only evidence. A missing receipt is not a passing capacity result even though upload uses warn; collect and validate the actual final-run payload, timings, workload and every identity field."
+        "limit": "Read-only workflow review, not executed capacity evidence. The current helper consumes GITHUB metadata, measured local Head and file hashes; it does not consume all MARKETOPS_EVIDENCE_* variables. Final evidence must bind the actual source PR Head, tested merge, run/attempt, job and artifact using the workflow/run API and payload/resource hashes. Missing uploaded files only warn and cannot be counted as a passing capacity run.",
+        "artifactPaths": [
+          "backend/marketops-server/target/advertising-capacity-receipt.json",
+          "backend/marketops-server/target/advertising-capacity-dataset.json",
+          "backend/marketops-server/target/advertising-capacity-source-inputs.json",
+          "build/slice3-runtime-resources.json"
+        ],
+        "actualCapacityPayloadIdentity": [
+          "datasetId",
+          "datasetPath/datasetSha256",
+          "sourceInputsPath/sourceInputsSha256",
+          "startedAt/datasetCapturedAt",
+          "measuredLocalGitHead",
+          "GITHUB_SHA/GITHUB_REF/GITHUB_EVENT_NAME/GITHUB_RUN_ID/GITHUB_RUN_ATTEMPT",
+          "runtimeResourceReceipt/runtimeResourceReceiptSha256"
+        ],
+        "datasetScope": "Exact ordered rows of core.ad_native_object/core.ad_affected_set/core.ad_object_configuration_observation/ledger.ad_object_fact/ops.ad_containment for the one randomly generated synthetic organization; 1000 objects, one shared product/listing and 200 explicit regression oracles.",
+        "sourceScope": "SHA-256 of each regular src/main and src/test file plus pom.xml. Source contents are not duplicated in the source-input manifest.",
+        "resourceCollection": {
+          "hostFields": [
+            "OS",
+            "architecture",
+            "logical CPU count",
+            "physical memory bytes",
+            "process-affinity count when available"
+          ],
+          "dockerCommand": "docker info --format \"{{.NCPU}} {{.MemTotal}} {{.ServerVersion}}\"",
+          "githubFields": [
+            "GITHUB_RUN_ID",
+            "GITHUB_RUN_ATTEMPT",
+            "GITHUB_JOB",
+            "GITHUB_SHA"
+          ],
+          "effects": [
+            "writes named local JSON and prints those selected resource fields"
+          ],
+          "notCollected": [
+            "container environments",
+            "Docker configuration or registry credentials",
+            "container contents",
+            "Provider or cloud API",
+            "shared database data"
+          ]
+        }
       }
     },
     {
@@ -278,6 +372,7 @@
     "artifact IDs/names and downloaded SHA-256 including reports and runtime evidence",
     "cancelled/skipped/stale results listed separately and never counted as PASS",
     "production_write_enabled=false and external Gate/Provider obligations remain deferred",
-    "downloaded advertising-capacity-receipt.json from each executing backend job; verify source/tested SHA, run/attempt/job/artifact and actual workload/timing assertions"
+    "downloaded advertising-capacity-receipt.json from each executing backend job; verify source/tested SHA, run/attempt/job/artifact and actual workload/timing assertions",
+    "all three capacity JSONs plus runtime-resource JSON: verify dataset/source/resource SHA-256 links and distinguish host/JVM resources from Docker VM limits"
   ]
 }

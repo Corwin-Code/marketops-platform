@@ -145,7 +145,7 @@ slice_v1_003_acceptance_status_machine_readable: docs/07-phase-evidence/SLICE-V1
 slice_v1_003_executable_evidence: docs/07-phase-evidence/SLICE-V1-003/rework-r1/README.md
 slice_v1_003_migration_inventory: docs/07-phase-evidence/SLICE-V1-003/rework-r1/MIGRATION-INVENTORY.json
 slice_v1_003_deferred_release_register: docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-REL-DEFERRED-REGISTER.json
-slice_v1_003_measurements: docs/07-phase-evidence/SLICE-V1-003/measurements/
+slice_v1_003_measurements: docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/
 slice_v1_003_runbooks: docs/06-runbooks/
 slice_v1_003_engineering_closure_claim: NOT_MADE
 slice_v1_003_r2_implementation_handoff: docs/07-phase-evidence/SLICE-V1-003/r2-implementation-handoff.md

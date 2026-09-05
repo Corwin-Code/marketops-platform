@@ -32,7 +32,7 @@
         },
         {
           "path": "docs/00-governance/CURRENT_STATE.md",
-          "sha256_at_receipt": "49f7e18e3c0bc0198cd0bc10ae4c9359ff50a28b87f8ec8b36d9402a85691bb6"
+          "sha256_at_receipt": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf"
         }
       ],
       "fix_commits": [],
@@ -51,12 +51,12 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
-          "sha256": "d80eba969070c55d5ba2ebbacd474e9f31bd6435f07e707baddb31ff1755888c",
+          "sha256": "9b9de08e8286a3ab7d923dcd6ed8db145bd622b8f700c781d42f2ec1a608b054",
           "row_id": "S3-DR-001"
         }
       ],
       "remaining_limitations": [
-        "Current governance run passes 400 tests; this is not full local verification or remote CI.",
+        "Current governance run passes 410 tests; this is not full local verification or remote CI.",
         "Exact clean measured commit, one Draft PR, final Head CI and Controller verdict remain pending."
       ],
       "required_rework": [
@@ -91,7 +91,8 @@
       "root_cause": "The original gatherer depended on an extra promotion fee feed after canonical platform fees already covered those costs, and nullable/partial SQL aggregates could not support the real calculator path. Earlier authority fixtures bypassed this path.",
       "same_class_scan": [
         "Scanned all five effective-policy resolver SQL fragments for schema-qualified whole-row alias errors.",
-        "Scanned canonical Metric readers and duplicate promotion/fee dependencies, including Outcome transitive caller."
+        "Scanned canonical Metric readers and duplicate promotion/fee dependencies, including Outcome transitive caller.",
+        "Inspected every upsertCase caller (one production caller, AdvertisingProjectionWriter). A concurrent ON CONFLICT update retains the existing database UUID; the writer formerly retained its losing proposed UUID. Qualified same-asOf refresh can accidentally serialize through qualification_period upserts. Repository upsert now atomically returns the persisted UUID via RETURNING id, and the writer uses it for every dependent projection row without adding object locks or changing the Case key. Both qualification-present and qualification-absent/different-asOf actual PG contention pass."
       ],
       "changed_files": [
         {
@@ -133,6 +134,14 @@
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeService.java",
           "sha256_at_receipt": "d33a5bdc7f82f03e8dd9e3978abc0dac1704bf01bf491a03ab23a6ec26cc96d1"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
+          "sha256_at_receipt": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingProjectionRepository.java",
+          "sha256_at_receipt": "f53f98a59e2c6c0ad46e2d8964aecdfd613a6ddfec6fbb37900501a16ec05d57"
         }
       ],
       "fix_commits": [],
@@ -154,10 +163,34 @@
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
             "method": "acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory",
-            "line": 140,
-            "run": "source-r17",
-            "verification": "PENDING_R18_AFTER_FIXTURE_TIMESTAMP_CAST",
-            "evidenceLimit": "Method exists and compiles. R17 stopped during fixture initialization before the application journey. W1 contains explicit timestamp casts but no positive runtime claim until rerun."
+            "line": 198,
+            "run": "source-r29",
+            "verification": "TARGETED_ASSERTIONS_PASSED",
+            "evidenceLimit": "R29 real PostgreSQL/MetricEngine/application/three-person approval/fixture worker/Raw/Outcome path passed; it is an isolated synthetic Provider proof with production writes disabled, not real Provider enablement or final CI verification."
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+            "method": "concurrentCanonicalRefreshCreatesOneCaseAndOneResponsibilityTask",
+            "run": "root-final-targeted-r34",
+            "verification": "TARGETED_ASSERTIONS_PASSED",
+            "evidenceLimit": "Four simultaneous same-asOf actual qualified refreshes produce exactly one PROVEN_ADVERTISING_LOSS Case, one responsibility Task and one generated candidate.",
+            "line": 140
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+            "method": "concurrentDifferentAsOfWithoutQualificationPoliciesKeepsOneTaskPerActualCause",
+            "run": "root-final-targeted-r34",
+            "verification": "TARGETED_ASSERTIONS_PASSED",
+            "evidenceLimit": "Four simultaneous actual refreshes use distinct microsecond asOf values with all qualification policies cancelled and zero qualification-period rows. They retain exactly one Case and one Task for each legitimate cause: DECISION_POLICY_UNRESOLVED and OFFICIAL_AD_FACT_DEFECT. The shifted window excludes the indivisible report for three competing requests; zero candidates/commands or Provider calls are produced.",
+            "line": 164
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriterTest.java",
+            "method": "concurrentConflictUsesThePersistedIdentityForAllDependentEvidence",
+            "run": "root-final-targeted-r34",
+            "verification": "TARGETED_ASSERTIONS_PASSED",
+            "evidenceLimit": "Unit fault injects a persisted UUID different from the proposed UUID returned by the atomic database upsert; WrittenCase and every dependent evidence row use that persisted UUID.",
+            "line": 399
           }
         ],
         "negative": [
@@ -179,23 +212,23 @@
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
             "method": "missingEconomicsCreatesResponsibilityAndNeverAFabricatedCandidate",
             "line": 127,
-            "run": "source-r17",
-            "verification": "PENDING_R18_AFTER_FIXTURE_TIMESTAMP_CAST",
-            "evidenceLimit": "Method exists and compiles. R17 stopped during fixture initialization before the application journey. W1 contains explicit timestamp casts but no positive runtime claim until rerun."
+            "run": "source-r29",
+            "verification": "TARGETED_ASSERTIONS_PASSED",
+            "evidenceLimit": "R29 real PostgreSQL/MetricEngine/application/three-person approval/fixture worker/Raw/Outcome path passed; it is an isolated synthetic Provider proof with production writes disabled, not real Provider enablement or final CI verification."
           }
         ]
       },
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
-          "sha256": "ec169205fcd13699ff302b8b7a8444727b1367eb818237f013f4b3af316d4a5b",
+          "sha256": "e94a0d6bdc8b6beb4b05fadaf093d6e427fce1045f0de4cf7c7ae96798a26125",
           "row_id": "S3-DR-002"
         }
       ],
       "remaining_limitations": [
-        "Local targeted 248-test superset passed; final full tests, exact published commit and CI still required.",
-        "F020 actual orchestration + projection evidence belongs to UI stream; source economics reader PG and calculator units do not substitute for that path.",
-        "New complete VerticalPath2 is implemented but R17 initialization failed. Corrected W1 fixture awaits r18; do not mark F002 verified from the segmented passing suites."
+        "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required.",
+        "R29 proves actual accepted facts through MetricEngine/projection/three-person approval/real worker with an in-process synthetic Provider, Raw/readback and early/Retained/actual financial/corrected Outcome history. It never enables a real Provider.",
+        "F020 scale/latency proofs are independently owned by UI; small vertical success does not prove production-sized capacity."
       ],
       "required_rework": [
         "Make the canonical calculator consume an explicit confirmed/zero/unavailable promotion-cost fact and all other required profit components without hidden defaults.",
@@ -214,9 +247,9 @@
         "S3-AC-169",
         "S3-AC-195"
       ],
-      "implemented_behavior": "The real gatherer reads canonical Metric v2 and actual facts, covered fees remain usable, unknown report components survive aggregation, dependent defects retain their own Case and responsibility, and the targeted worker invokes this calculator before projection. Runtime policy ambiguity SQL now uses a valid whole-row alias.",
+      "implemented_behavior": "The real gatherer reads canonical Metric v2 and actual facts, covered fees remain usable, unknown report components survive aggregation, dependent defects retain their own Case and responsibility, and the targeted worker invokes this calculator before projection. Runtime policy ambiguity SQL now uses a valid whole-row alias. Atomic Case upsert returns the persisted identity on both insert and conflict, so all dependent rows and responsibility intake reference the winning Case under concurrent recalculation.",
       "transitive_impact": [
-        "Changes feed proposal generation, read projections and targeted/hourly refresh. Shared responsibility and the UI actual orchestration benchmark provide the remaining full vertical evidence."
+        "Canonical accepted facts now traverse the real MetricEngine, calculation/projection/proposal, distinct Maker/Ops/Owner approval, command worker with an in-process fixture Provider, Raw/readback and early/Retained/Settled/revised Outcome history. Atomic persisted identity also protects purpose evidence, rank factors, affected variants and responsibility intake during concurrent refresh. Capacity evidence remains independently owned by the orchestration stream."
       ],
       "controller_verdict": "PENDING_INDEPENDENT_REVIEW"
     },
@@ -312,12 +345,12 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
-          "sha256": "ec169205fcd13699ff302b8b7a8444727b1367eb818237f013f4b3af316d4a5b",
+          "sha256": "e94a0d6bdc8b6beb4b05fadaf093d6e427fce1045f0de4cf7c7ae96798a26125",
           "row_id": "S3-DR-003"
         }
       ],
       "remaining_limitations": [
-        "Local targeted 248-test superset passed; final full tests, exact published commit and CI still required."
+        "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required."
       ],
       "required_rework": [
         "Aggregate each cost/revenue component by the exact deterministically linked sale-event/Variant quantities, preserving currency, sale stage, cost version and evidence lineage.",
@@ -472,12 +505,12 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
-          "sha256": "ec169205fcd13699ff302b8b7a8444727b1367eb818237f013f4b3af316d4a5b",
+          "sha256": "e94a0d6bdc8b6beb4b05fadaf093d6e427fce1045f0de4cf7c7ae96798a26125",
           "row_id": "S3-DR-004"
         }
       ],
       "remaining_limitations": [
-        "Local targeted 248-test superset passed; final full tests, exact published commit and CI still required."
+        "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required."
       ],
       "required_rework": [
         "Resolve and apply versioned purpose/platform/scope Freshness and Qualification Profiles for Watch, Task, Recommendation, write and Outcome.",
@@ -596,12 +629,12 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
-          "sha256": "ec169205fcd13699ff302b8b7a8444727b1367eb818237f013f4b3af316d4a5b",
+          "sha256": "e94a0d6bdc8b6beb4b05fadaf093d6e427fce1045f0de4cf7c7ae96798a26125",
           "row_id": "S3-DR-005"
         }
       ],
       "remaining_limitations": [
-        "Local targeted 248-test superset passed; final full tests, exact published commit and CI still required."
+        "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required."
       ],
       "required_rework": [
         "Represent Canonical Rank as Lane → hard sub-tier → ordered factor tuple → stable Case identity.",
@@ -651,15 +684,31 @@
       "changed_files": [
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
-          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+          "sha256": "288ee84a9da99ae6356e6fe89488e14f9b5f249cc4c87d13c790a716a2fca824"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingResponsibilityService.java",
           "sha256": "c2138e16a21e988e0fd2835cd017821b0d2901476fdd5fd4050936f31ccbd8a3"
         },
         {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/AdvertisingCause.java",
+          "sha256": "f7be0ccefa60f7fc04a9fe44472ca855ea9ffaeadab9bf6123f07f9917f7de10"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
+          "sha256": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955"
+        },
+        {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AdvertisingWorkflowRepository.java",
           "sha256": "250a890e31ae6a752522faec5e7083c02def9ef2adda64de2ca528a30297b2ee"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql",
+          "sha256": "42e91b569f88dbbeb16f85ffbf10f3b5fee56fbdf06f47fb0d3744472f856116"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0057__bind_advertising_responsibility_and_human_decisions.sql",
+          "sha256": "3f594755b354a7e1cf351fcc20541ed1bc9997bbedc1c131d5ac25999f136813"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
@@ -670,12 +719,24 @@
           "sha256": "63e9b430b11bd9f6d31ed6c46bb5970fbca2b3d8cda29d0378e6ad55cec6a4e4"
         },
         {
-          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloMonitor.java",
-          "sha256": "5910d34502bf8b17398ddd581b794a54a8a1d32f87ec2c3e21684cc28460ceb9"
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/WorkTaskService.java",
+          "sha256": "980130890e401a04d67dad3c41978aa6f27725c4e04c6bde13b853daf5903139"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClock.java",
           "sha256": "6986c107e3b1291138f4a1d60e2a9a5ab61634ea2512500e01b4f4a8ebc1f829"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0061__bind_advertising_exception_risk_and_preview_evidence.sql",
+          "sha256": "5f6ead6500e6e8f1480678816d20c90ff4c56475f9ccf165d3ce5209c1d8147b"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+          "sha256": "82e67694601ff6ae8e6d67770bc38bc1f804d214ff38cf9997f22d60d1c20146"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloMonitor.java",
+          "sha256": "5910d34502bf8b17398ddd581b794a54a8a1d32f87ec2c3e21684cc28460ceb9"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingExceptionService.java",
@@ -686,70 +747,277 @@
       "tests": {
         "positive": [
           {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
-            "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
-            "class": "AdvertisingHumanWorkflowIT",
-            "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement"
-          },
-          {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
-            "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
-            "class": "AdvertisingHumanWorkflowIT",
-            "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage"
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+            "sha256": "970af1693f7c095b7012890d91e7bce12f0884e98b0c9c2aba3377caf79a7dce",
+            "class": "AdvertisingProposalServiceTest",
+            "method": "eachActionableLaneRoutesResponsibilityEvenWhenNoBidPolicyExists",
+            "line": 453,
+            "assertions": "Four explicit lane/cause/role tuples call responsibility even when target policy is absent; no candidate intake.",
+            "evidenceKind": "UNIT_WITH_MOCKED_PORTS",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
           },
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
-            "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+            "sha256": "970af1693f7c095b7012890d91e7bce12f0884e98b0c9c2aba3377caf79a7dce",
             "class": "AdvertisingProposalServiceTest",
-            "method": "aMissingServiceLevelNeverInventsAReviewWindow"
+            "method": "watchNeverCreatesResponsibilityEvenIfRepeated",
+            "line": 462,
+            "assertions": "Two Watch proposals never invoke responsibility or candidate intake.",
+            "evidenceKind": "UNIT_WITH_MOCKED_PORTS",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+            "sha256": "c092558a68943b4b31373ee935868ca989b2f640a6ac7aac5a6fb89bcceb6908",
+            "class": "AdvertisingVerticalPathIT",
+            "method": "missingEconomicsCreatesResponsibilityAndNeverAFabricatedCandidate",
+            "line": 127,
+            "assertions": "Actual refresh with missing canonical economics creates responsibility while derived candidate/baseline/command remain absent.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+            "sha256": "c092558a68943b4b31373ee935868ca989b2f640a6ac7aac5a6fb89bcceb6908",
+            "class": "AdvertisingVerticalPathIT",
+            "method": "concurrentCanonicalRefreshCreatesOneCaseAndOneResponsibilityTask",
+            "line": 140,
+            "assertions": "Four real concurrent canonical refreshes and replay retain one Case and Task for the cause.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+            "sha256": "c092558a68943b4b31373ee935868ca989b2f640a6ac7aac5a6fb89bcceb6908",
+            "class": "AdvertisingVerticalPathIT",
+            "method": "concurrentDifferentAsOfWithoutQualificationPoliciesKeepsOneTaskPerActualCause",
+            "line": 164,
+            "assertions": "Different asOf calculations without qualification policy retain one Case/Task per each actual canonical cause; shifted report-window edges legitimately create the additional OFFICIAL_AD_FACT_DEFECT cause.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": null
           },
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
-            "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
             "class": "AdvertisingHumanWorkflowIT",
-            "method": "unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness"
+            "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage",
+            "line": 405,
+            "assertions": "Four intakes for a preexisting Case return one Task/RAISED; repeated three-choice persistence retains exact recommendation IDs.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingResponsibilityBoundaryIT.java",
+            "sha256": "200be018063bfced2c8e57a8a802252ddc69b95d9a446e5e26d45f07b665349a",
+            "class": "AdvertisingResponsibilityBoundaryIT",
+            "method": "differentCauseOwnersKeepSeparateTasksWithExplicitCanonicalObjectLinks",
+            "line": 182,
+            "assertions": "Protection/Operator and economics-blocked Data Repair/Finance have different Case/Task/recommendation/profile IDs; both exact AD_NATIVE_OBJECT subjects and per-cause role/lineage are asserted.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": null
           },
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
-            "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
             "class": "AdvertisingHumanWorkflowIT",
-            "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns"
-          },
-          {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
-            "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
-            "class": "StaffedResponseClockTest",
-            "method": "repeatedDstHourCountsActualStaffedTime"
-          },
-          {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/domain/StaffedResponseClockTest.java",
-            "sha256": "0b737c774d0aad0346cffde8f1ebe1c152003a6f9bdd01861d3a99e3f7252129",
-            "class": "StaffedResponseClockTest",
-            "method": "exceptionPausesOnlyItsMatchingStaffedIntervalAndNeverAcknowledgement"
+            "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement",
+            "line": 230,
+            "assertions": "VIEWED then ACKNOWLEDGED preserve null firstAttributableActionAt; fabricated repair and hiding unresolved risk are refused.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
           },
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
-            "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
             "class": "AdvertisingHumanWorkflowIT",
-            "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent"
+            "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+            "line": 101,
+            "assertions": "Real approved command creation records ACTION_RECORDED in the same Shared Task journal.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingResponsibilityBoundaryIT.java",
+            "sha256": "200be018063bfced2c8e57a8a802252ddc69b95d9a446e5e26d45f07b665349a",
+            "class": "AdvertisingResponsibilityBoundaryIT",
+            "method": "noProtectionResponseAxisCanBecomeWeakerThanOptimization",
+            "line": 153,
+            "assertions": "Five one-variable faults independently change ack/action/escalation/coverage/timezone; each actual Profile UPDATE is rejected with SQLSTATE 23514 and exact strength message.",
+            "evidenceKind": "REAL_POSTGRESQL_BOUNDARY",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-responsibility-r31"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingResponsibilityBoundaryIT.java",
+            "sha256": "200be018063bfced2c8e57a8a802252ddc69b95d9a446e5e26d45f07b665349a",
+            "class": "AdvertisingResponsibilityBoundaryIT",
+            "method": "differentCauseOwnersKeepSeparateTasksWithExplicitCanonicalObjectLinks",
+            "line": 182,
+            "assertions": "Finance Data Repair Task resolves its exact DATA_REPAIR Profile and action deadline; added after r31.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": null
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingResponsibilityBoundaryIT.java",
+            "sha256": "200be018063bfced2c8e57a8a802252ddc69b95d9a446e5e26d45f07b665349a",
+            "class": "AdvertisingResponsibilityBoundaryIT",
+            "method": "unstaffedProtectionShowsOngoingHarmAgeAndTheNextStaffedResponseTogether",
+            "line": 240,
+            "assertions": "Real workflow and SLO show OUT_OF_COVERAGE_ACTIVE_HARM, future nextStaffedResponseAt, >=7200-second exposure, unchanged firstRaised, OPEN/ACTION_REQUIRED and no action pause or command.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-responsibility-r31"
           },
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
-            "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
             "class": "AdvertisingHumanWorkflowIT",
-            "method": "restoredRoleCannotResurrectAnExceptionAndSameTaskReopens"
+            "method": "unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness",
+            "line": 365,
+            "assertions": "Actual maintenance escalates once, leaves null acknowledgement/action deadlines and no command.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
           },
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
-            "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
             "class": "AdvertisingHumanWorkflowIT",
-            "method": "restoredCaseAuthorityCannotRestoreAcceptedRiskAndViewReadsTheReopenedTask"
+            "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns",
+            "line": 379,
+            "assertions": "Later active Profile/calendar yields a deadline on the same Task; old asOf remains unresolved and firstRaised/unique RAISED remain.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+            "sha256": "970af1693f7c095b7012890d91e7bce12f0884e98b0c9c2aba3377caf79a7dce",
+            "class": "AdvertisingProposalServiceTest",
+            "method": "aMissingServiceLevelNeverInventsAReviewWindow",
+            "line": 349,
+            "assertions": "Absent service-level policy produces no guessed recommendation review window.",
+            "evidenceKind": "UNIT_WITH_MOCKED_PORTS",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
           },
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
-            "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
             "class": "AdvertisingHumanWorkflowIT",
-            "method": "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit"
+            "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent",
+            "line": 246,
+            "assertions": "New assertions compare lane/cause and spend/profit/efficiency to pre-request canonical Case JSON; request/approval snapshots remain exactly equal and the full Case row is unchanged.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": null
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit",
+            "line": 306,
+            "assertions": "Blank endorsement reason is refused and state remains REQUESTED; masked role cannot retrieve profit snapshot or full preview.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "restoredRoleCannotResurrectAnExceptionAndSameTaskReopens",
+            "line": 294,
+            "assertions": "Owner revocation then restoration cannot resurrect acceptance; INVALIDATED and same Task OPEN/REOPENED.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "restoredCaseAuthorityCannotRestoreAcceptedRiskAndViewReadsTheReopenedTask",
+            "line": 349,
+            "assertions": "Case policy digest change then restoration remains permanently INVALIDATED and the workflow reads reopened Task/no pause.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent",
+            "line": 246,
+            "assertions": "New assertions bind actual requester/endorser/approver IDs, exact Bundle, and effectiveFrom < reviewDue < expires; earlier real three-person activation remains proved.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": null
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent",
+            "line": 246,
+            "assertions": "New replay assertions require identical Task and unique RAISED/binding; full canonical Case row remains unchanged. Existing assertions refuse preview/selection/action reset and preserve acknowledgement deadline.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": null
           }
         ],
         "negative": []
@@ -757,7 +1025,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/human-decisions-traceability.json",
-          "sha256": "e5701039a35d57cd3a82496328e120dcc1b529b16e756e2ebc06b3fe771e2762",
+          "sha256": "27c171309bcc849ac4b0171abb2202a3dacdfe2e70f711ecfe5ed74a97a7a88e",
           "row_id": "S3-DR-006"
         }
       ],
@@ -815,7 +1083,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
-          "sha256": "f8353f652eb610a3d01762ef3e7d33832aedee7c5a47b575f330675364fd537e",
+          "sha256": "6309b15299ba3c882fcb8e63c31577a1223fb84ff9f4bd822a874a5ed875aaf8",
           "row_id": "S3-DR-007"
         }
       ],
@@ -881,19 +1149,31 @@
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
-          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+          "sha256": "3160795088cc4ce43e2672d6c867ef6648ec22d4304480378e080892efaaf45c"
         },
         {
-          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
-          "sha256": "8da7700eee24418b11d6812f383072b1334de434a5a22799d41a3073f9fa1763"
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         },
         {
-          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
-          "sha256": "876f4184f807a85ae97a8bead24d3afe8b9a4734084dd8c1c41e2710d40b1e68"
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql",
+          "sha256": "42e91b569f88dbbeb16f85ffbf10f3b5fee56fbdf06f47fb0d3744472f856116"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/AdvertisingDisclosurePolicy.java",
+          "sha256": "f8229072d70bb801e0c730702e35aa52e8e24cec57958e7c44220e6a80741a1e"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
-          "sha256": "fca1236dfb2d24da5ba0cc760e319a07aa8ce97c310176f816d419ef68425910"
+          "sha256": "82e67694601ff6ae8e6d67770bc38bc1f804d214ff38cf9997f22d60d1c20146"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AdvertisingWorkflowRepository.java",
+          "sha256": "250a890e31ae6a752522faec5e7083c02def9ef2adda64de2ca528a30297b2ee"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+          "sha256": "a3ce59928d89130734c0e0ff61e6b12ff1330102d6e4043f55c3a6b377a6ef56"
         }
       ],
       "fix_commits": [],
@@ -901,51 +1181,133 @@
         "positive": [
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
-            "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
             "class": "AdvertisingHumanWorkflowIT",
-            "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+            "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+            "line": 101,
+            "assertions": "New exact assertions check zero ordinary amount/ratio and sealed maker/endorser/final_approver IDs against the three live actors; existing real chain and shared baseline passed r30.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": null
           },
           {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
-            "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
-            "class": "AdvertisingMaterialityIT",
-            "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution"
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "makerWithAnAdditionalOperationsRoleCannotEndorseTheirOwnSelection",
+            "line": 184,
+            "assertions": "Same Maker with a genuine extra Ops role is refused ACTION_NOT_PERMITTED, remains VALIDATED/zero endorsement; different Ops then succeeds.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
           },
           {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
-            "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
-            "class": "AdvertisingMaterialityIT",
-            "method": "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval"
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+            "sha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+            "class": "AdvertisingSealedAuthorityIT",
+            "method": "makerProofCannotBecomeOwnersFinalApproval",
+            "line": 101,
+            "assertions": "DB proof of Maker cannot become Owner final authority.",
+            "evidenceKind": "REAL_POSTGRESQL_BOUNDARY",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "source-r17"
           },
           {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
-            "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
-            "class": "AdvertisingMaterialityIT",
-            "method": "missingSpendKeepsItsUnknownValueAndCannotRetainAnOrdinaryRoute"
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "unresolvedMaterialityCannotReachFinalApprovalAfterValidSelection",
+            "line": 214,
+            "assertions": "After valid select/endorse the exact materiality authority expires; final approval is refused with zero seal and unchanged READY_FOR_REVIEW.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": null
           },
           {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
-            "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
-            "class": "AdvertisingOrdinaryApprovalIT",
-            "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand"
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+            "sha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+            "class": "AdvertisingSealedAuthorityIT",
+            "method": "storeOnlyApprovalGrantCannotAuthoriseUndisclosedAffectedProducts",
+            "line": 119,
+            "assertions": "Store-only approver proof lacks complete affected Product scope and is refused.",
+            "evidenceKind": "REAL_POSTGRESQL_BOUNDARY",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "source-r17"
           },
           {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
-            "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
-            "class": "AdvertisingOrdinaryApprovalIT",
-            "method": "fixedCriticalSalesRemainMaterialDespiteThePromotedOrdinaryEnvelope"
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+            "line": 101,
+            "assertions": "r30 assertions verify risk/configuration/MaxCPC/ceiling/expected effect/recovery/policies/materiality/metric/periods/frozen plan/exposure/alternatives/uncertainty keys and exact target/profile/product IDs, three stages and all materiality axes.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
           },
           {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
-            "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
-            "class": "AdvertisingOrdinaryApprovalIT",
-            "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit",
+            "line": 306,
+            "assertions": "Masked role cannot see profit-bearing review or prepare full preview.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
           },
           {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
-            "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
-            "class": "AdvertisingOrdinaryApprovalIT",
-            "method": "unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+            "line": 101,
+            "assertions": "Selection, immutable authorization and command carry the same baseline ID; only one command is created.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+            "sha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+            "class": "AdvertisingSealedAuthorityIT",
+            "method": "finalApprovalCannotSwapInAnUnapprovedBaseline",
+            "line": 130,
+            "assertions": "App final approval cannot replace selected baseline with a different candidate plan.",
+            "evidenceKind": "REAL_POSTGRESQL_BOUNDARY",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "source-r17"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+            "sha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+            "class": "AdvertisingSealedAuthorityIT",
+            "method": "changedPolicyAfterEndorsementCannotBeSilentlySealed",
+            "line": 142,
+            "assertions": "Changed policy after endorsement is independently rejected at seal.",
+            "evidenceKind": "REAL_POSTGRESQL_BOUNDARY",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "source-r17"
           }
         ],
         "negative": []
@@ -953,7 +1315,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/human-decisions-traceability.json",
-          "sha256": "e5701039a35d57cd3a82496328e120dcc1b529b16e756e2ebc06b3fe771e2762",
+          "sha256": "27c171309bcc849ac4b0171abb2202a3dacdfe2e70f711ecfe5ed74a97a7a88e",
           "row_id": "S3-DR-008"
         }
       ],
@@ -1089,7 +1451,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "c17f24da0f6b03dc10523ce48c18d957658bc9475791762a44125037354bd115",
+          "sha256": "48858573bad841ded03eced21c695b15d5b74eb487a08b30c2a127c9bbc8a5a5",
           "row_id": "S3-DR-009"
         }
       ],
@@ -1133,7 +1495,7 @@
       "same_class_scan": [
         "Every application-callable advertising command/reservation/containment/compensation/Bundle sink and its table/function grant was inspected, including a real pg_proc/has_function_privilege inventory.",
         "Caller actor/bundle/expiry and arbitrary GUC identity were removed from the public creator. The scan extended one-use physical backend/transaction binding to Manual/Bundle/Containment/Compensation and trusted Outcome Planner attestation.",
-        "A remaining app EXECUTE grant on V0050 reopen_ad_lineage_after_regression was found in the current database. The obsolete caller-role route is now revoked in V0058; actual isolated SQL confirms denial and the Java suite now asserts SQLSTATE 42501. Current Java/full execution remains pending."
+        "A remaining app EXECUTE grant on V0050 reopen_ad_lineage_after_regression was found in the current database. The obsolete caller-role route is now revoked in V0058; actual isolated SQL confirms denial and the Java suite now asserts SQLSTATE 42501. Current Java control suites passed in W1 r18; full validation remains pending."
       ],
       "changed_files": [
         {
@@ -1264,7 +1626,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "c17f24da0f6b03dc10523ce48c18d957658bc9475791762a44125037354bd115",
+          "sha256": "48858573bad841ded03eced21c695b15d5b74eb487a08b30c2a127c9bbc8a5a5",
           "row_id": "S3-DR-010"
         }
       ],
@@ -1324,145 +1686,427 @@
       "changed_files": [
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
-          "sha256": "855d12055379c97bbfeef09623757691a64db6d5cf13118a3a5a9874ca1f79ba"
+          "sha256": "288ee84a9da99ae6356e6fe89488e14f9b5f249cc4c87d13c790a716a2fca824"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingCandidateRepository.java",
+          "sha256": "51dabb109a1f0b3dcc4f7cf1e5d891afd29370f634f293dcdd41e46c840819de"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSet.java",
           "sha256": "199652071fcfde0a4b0ecad90fb23435e6492ddc706d0153be14fb6a58477832"
         },
         {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidate.java",
+          "sha256": "f503e478d23964cffef194b0909f54e6190267735e44c8c0843e06961f4df8ee"
+        },
+        {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdBidUnitConversion.java",
           "sha256": "5954b7ddd01a809c025881ad2206070d3c130b729311effb92c611e35d6fa1b7"
         },
         {
-          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
-          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
-        },
-        {
-          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
-          "sha256": "b335bb929c7ac6e12e472fa0f747cda991ba16bb0d1608053ea18a92aa4accfd"
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0045__create_ad_bid_command_from_approval.sql",
+          "sha256": "89cdd51222a110ae8aa4e844a8654268fa3ecc1a7d1ba3ff170d24ce05364398"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
           "sha256": "2a082d60d87530eaecddeed1390c92164d7d812279041eb2e51b990ee4ff078a"
         },
         {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/infrastructure/jdbc/AdvertisingWorkflowRepository.java",
+          "sha256": "250a890e31ae6a752522faec5e7083c02def9ef2adda64de2ca528a30297b2ee"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/infrastructure/jdbc/AdBidCommandRepository.java",
+          "sha256": "c31e606f10e5ae757586428525e56a58b4a49509cf8b77cd576a1a2ec46e71de"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java",
+          "sha256": "3160795088cc4ce43e2672d6c867ef6648ec22d4304480378e080892efaaf45c"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdActionDependencyPolicy.java",
+          "sha256": "9c6322aff05d954bb7318b3d499d46c3545fc1a581642148531e674a2daff067"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
+        },
+        {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDecisionRepository.java",
           "sha256": "8da7700eee24418b11d6812f383072b1334de434a5a22799d41a3073f9fa1763"
         },
         {
-          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/GuardrailService.java",
-          "sha256": "876f4184f807a85ae97a8bead24d3afe8b9a4734084dd8c1c41e2710d40b1e68"
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql",
+          "sha256": "42e91b569f88dbbeb16f85ffbf10f3b5fee56fbdf06f47fb0d3744472f856116"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/AdvertisingDisclosurePolicy.java",
+          "sha256": "f8229072d70bb801e0c730702e35aa52e8e24cec57958e7c44220e6a80741a1e"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
-          "sha256": "fca1236dfb2d24da5ba0cc760e319a07aa8ce97c310176f816d419ef68425910"
+          "sha256": "82e67694601ff6ae8e6d67770bc38bc1f804d214ff38cf9997f22d60d1c20146"
         }
       ],
       "fix_commits": [],
       "tests": {
         "positive": [
           {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
-            "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
-            "class": "BidCandidateSetTest",
-            "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing"
-          },
-          {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
-            "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
-            "class": "BidCandidateSetTest",
-            "method": "minorUnitBidComparesAgainstConvertedEconomicsAndAbsoluteBounds"
-          },
-          {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
-            "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
-            "class": "BidCandidateSetTest",
-            "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor"
-          },
-          {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
-            "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
-            "class": "BidCandidateSetTest",
-            "method": "intermediateProtectionRequiresExplicitPolicyPermission"
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+            "sha256": "970af1693f7c095b7012890d91e7bce12f0884e98b0c9c2aba3377caf79a7dce",
+            "class": "AdvertisingProposalServiceTest",
+            "method": "theCandidateRecordsTheBasisAndTheCeiling",
+            "line": 143,
+            "assertions": "Captured record call names policy UUID/version 3, basis, affected digest and ceiling.",
+            "evidenceKind": "UNIT_WITH_MOCKED_PORTS",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
           },
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
-            "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
+            "sha256": "970af1693f7c095b7012890d91e7bce12f0884e98b0c9c2aba3377caf79a7dce",
             "class": "AdvertisingProposalServiceTest",
-            "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease"
+            "method": "anUnresolvedTargetPolicyProposesNothing",
+            "line": 206,
+            "assertions": "Unresolved target policy produces no recommendation.",
+            "evidenceKind": "UNIT_WITH_MOCKED_PORTS",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
           },
           {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
-            "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
-            "class": "AdvertisingProposalServiceTest",
-            "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis"
-          },
-          {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
-            "sha256": "bf083527b1ce226332856e435d4125fa2a05d8eb3566b780a1d3c11ff080fbe4",
-            "class": "AdvertisingProposalServiceTest",
-            "method": "causeBoundRequiresExactlyOneCurrentPurposeProofForEveryDependency"
-          },
-          {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
-            "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
-            "class": "AdBidGuardrailTest",
-            "method": "theConservativePolicyCeilingCannotBeReplacedWithTheRawEconomicCeiling"
-          },
-          {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidGuardrailTest.java",
-            "sha256": "6c836265a743a4578a582352e31e25b4eb6c7432b57f0ff3cd25762267ca3e01",
-            "class": "AdBidGuardrailTest",
-            "method": "absentHeadroomAuthorityCannotSilentlyUseZero"
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateTest.java",
+            "sha256": "81d86f7263b452ba29d376529798d750faabd12ed9cabb74c19791e2e42a8a3b",
+            "class": "BidCandidateTest",
+            "method": "headroomKeepsTheTargetBelowTheCeiling",
+            "line": 133,
+            "assertions": "Max CPC 40 plus explicit 10% headroom yields target 36, not 40.",
+            "evidenceKind": "DOMAIN_UNIT",
+            "run": null,
+            "executionStatus": "CURRENT_ASSERTIONS_INSPECTED_EXECUTION_PENDING",
+            "identityLimit": "Current file hash is an inspection identity; an older run is evidence only for the stated unchanged assertions, not all later assertions in that file."
           },
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
-            "sha256": "09a22af09183402ecda3ebb286a7211494110f26a37fc8ff22d3c754eb63339e",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
             "class": "AdvertisingHumanWorkflowIT",
-            "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand"
+            "method": "previewUsesPolicyHeadroomRatherThanRawMaxCpc",
+            "line": 171,
+            "assertions": "Actual preview distinguishes exact selected target 20 from raw Max CPC 22 and the independent 19.80/20.02 conservative ceilings.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+            "sha256": "970af1693f7c095b7012890d91e7bce12f0884e98b0c9c2aba3377caf79a7dce",
+            "class": "AdvertisingProposalServiceTest",
+            "method": "intermediateBelowRawMaxCpcStillReportsRecoveryUntilTheConservativeCeiling",
+            "line": 430,
+            "assertions": "Major/minor policy-generated targets retain their own magnitude and conservative-bound interpretation.",
+            "evidenceKind": "UNIT_WITH_MOCKED_PORTS",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+            "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+            "class": "BidCandidateSetTest",
+            "method": "finiteOrderedSetIsDeterministicAndAZeroPolicyGeneratesNothing",
+            "line": 20,
+            "assertions": "Deterministic finite ordering and zero-count refusal.",
+            "evidenceKind": "DOMAIN_UNIT",
+            "run": "source-r17",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Current file hash is an inspection identity; an older run is evidence only for the stated unchanged assertions, not all later assertions in that file."
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage",
+            "line": 405,
+            "assertions": "Actual persistence yields three distinct choices and same IDs on replay, without any reservation.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "anOutOfSetCandidateIsRefusedAndARejectedFiniteChoiceNeverStartsAction",
+            "line": 199,
+            "assertions": "New real-service test rejects unknown candidate RESOURCE_NOT_FOUND, cancels published choice, refuses its reselection, leaves zero selection/command and Task OPEN.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": null
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+            "line": 101,
+            "assertions": "The positive Maker chooses an exact persisted candidate before endorsement.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+            "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+            "class": "BidCandidateSetTest",
+            "method": "providerRoundingCannotCrossTheAuthorizedAbsoluteOrRelativeFloor",
+            "line": 38,
+            "assertions": "Provider normalization cannot repair a candidate by crossing its authorized bound.",
+            "evidenceKind": "DOMAIN_UNIT",
+            "run": "source-r17",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Current file hash is an inspection identity; an older run is evidence only for the stated unchanged assertions, not all later assertions in that file."
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+            "sha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+            "class": "AdvertisingSealedAuthorityIT",
+            "method": "realApplicationCreatorUsesExactImmutableApprovalAndMinimumFrozenExpiry",
+            "line": 37,
+            "assertions": "Actual app-role creator derives captured target/unit/authority and minimum expiry from the immutable seal.",
+            "evidenceKind": "REAL_POSTGRESQL_BOUNDARY",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "source-r17"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+            "sha256": "1987ba56522abf19c08525c46674add23a099714d8c79c178ab8c2f6bb0294c7",
+            "class": "AdBidWritePortContractTest",
+            "method": "unitIsPartOfTheIdentity",
+            "line": 45,
+            "assertions": "Unit changes request identity, so equal numbers with different units are not the same command.",
+            "evidenceKind": "DOMAIN_UNIT",
+            "run": null,
+            "executionStatus": "CURRENT_ASSERTIONS_INSPECTED_EXECUTION_PENDING",
+            "identityLimit": "Current file hash is an inspection identity; an older run is evidence only for the stated unchanged assertions, not all later assertions in that file."
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+            "sha256": "970af1693f7c095b7012890d91e7bce12f0884e98b0c9c2aba3377caf79a7dce",
+            "class": "AdvertisingProposalServiceTest",
+            "method": "intermediateBelowRawMaxCpcStillReportsRecoveryUntilTheConservativeCeiling",
+            "line": 430,
+            "assertions": "Both major/minor targets below raw Max CPC but above headroom ceiling retain recovery interpretation and exact conservative amount.",
+            "evidenceKind": "UNIT_WITH_MOCKED_PORTS",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "previewUsesPolicyHeadroomRatherThanRawMaxCpc",
+            "line": 171,
+            "assertions": "Real preview reports recovery at 19.80 ceiling and outcome-verification-required at 20.02; raw 22 and target 20 remain explicit.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateSetTest.java",
+            "sha256": "c8244706bc0a383f22be83d34fdac1d0f1fd4c85551b76abdc3b8f14fc7bdf14",
+            "class": "BidCandidateSetTest",
+            "method": "intermediateProtectionRequiresExplicitPolicyPermission",
+            "line": 30,
+            "assertions": "The finite set includes intermediate recovery only with explicit permission.",
+            "evidenceKind": "DOMAIN_UNIT",
+            "run": "source-r17",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Current file hash is an inspection identity; an older run is evidence only for the stated unchanged assertions, not all later assertions in that file."
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+            "sha256": "970af1693f7c095b7012890d91e7bce12f0884e98b0c9c2aba3377caf79a7dce",
+            "class": "AdvertisingProposalServiceTest",
+            "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease",
+            "line": 385,
+            "assertions": "Closed irrelevant-financial uncertainty does not erase a qualified decrease.",
+            "evidenceKind": "UNIT_WITH_MOCKED_PORTS",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+            "sha256": "970af1693f7c095b7012890d91e7bce12f0884e98b0c9c2aba3377caf79a7dce",
+            "class": "AdvertisingProposalServiceTest",
+            "method": "anUnnamedCauseGetsNoCauseBoundStep",
+            "line": 254,
+            "assertions": "Unaccepted cause cannot borrow the cause-bound direction.",
+            "evidenceKind": "UNIT_WITH_MOCKED_PORTS",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+            "sha256": "970af1693f7c095b7012890d91e7bce12f0884e98b0c9c2aba3377caf79a7dce",
+            "class": "AdvertisingProposalServiceTest",
+            "method": "unknownCriticalSafetyCannotBeExcusedByTheCauseBoundBasis",
+            "line": 398,
+            "assertions": "Critical-safety unknown remains a blocker.",
+            "evidenceKind": "UNIT_WITH_MOCKED_PORTS",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+            "sha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+            "class": "AdvertisingSealedAuthorityIT",
+            "method": "causeBoundStepCannotExceedExactOwnerPolicyRatio",
+            "line": 188,
+            "assertions": "Actual creator refuses a cause-bound amount outside exact Owner step ratio.",
+            "evidenceKind": "REAL_POSTGRESQL_BOUNDARY",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "source-r17"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+            "sha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+            "class": "AdvertisingSealedAuthorityIT",
+            "method": "causeBoundProtectionCannotTreatMissingDangerAsFreshEvidence",
+            "line": 197,
+            "assertions": "Actual seal refuses missing canonical danger proof.",
+            "evidenceKind": "REAL_POSTGRESQL_BOUNDARY",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "source-r17"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalServiceTest.java",
+            "sha256": "970af1693f7c095b7012890d91e7bce12f0884e98b0c9c2aba3377caf79a7dce",
+            "class": "AdvertisingProposalServiceTest",
+            "method": "missingProfitKeepsItsUncertaintyButDoesNotSilenceAQualifiedOneSidedDecrease",
+            "line": 385,
+            "assertions": "Captured proposal explicitly reports EXPOSURE_LIMIT_ONLY_NOT_PROFITABILITY_OR_HEALTH and retains the absent Max-CPC state.",
+            "evidenceKind": "UNIT_WITH_MOCKED_PORTS",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
+          },
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+            "sha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+            "class": "AdvertisingSealedAuthorityIT",
+            "method": "causeBoundKnownDangerCanBeSealedWithoutConversionOrCostEvidence",
+            "line": 165,
+            "assertions": "Actual impact capture explicitly asserts NOT_AVAILABLE economic Max CPC with null economic/native/conservative amounts, exact cause-bound basis and EXPOSURE_LIMIT_ONLY_NOT_PROFITABILITY_OR_HEALTH; actual seal/creator preserve the four danger dependencies without cost/conversion.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": null
           },
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
             "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
             "class": "AdvertisingMaterialityIT",
-            "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution"
+            "method": "aSingleHardAxisCannotBeCompensatedByTheRemainingOrdinaryEvidence",
+            "line": 49,
+            "assertions": "Ten separate fault-seeded axes force materiality despite all remaining ordinary evidence.",
+            "evidenceKind": "REAL_POSTGRESQL_BOUNDARY",
+            "run": "source-r17",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Current file hash is an inspection identity; an older run is evidence only for the stated unchanged assertions, not all later assertions in that file."
           },
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
             "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
             "class": "AdvertisingMaterialityIT",
-            "method": "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval"
+            "method": "completeOrdinaryAssessmentExposesEveryIndependentAxisButGrantsNoExecution",
+            "line": 33,
+            "assertions": "A complete classification exposes axes and ORDINARY route without creating execution authority.",
+            "evidenceKind": "REAL_POSTGRESQL_BOUNDARY",
+            "run": "source-r17",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Current file hash is an inspection identity; an older run is evidence only for the stated unchanged assertions, not all later assertions in that file."
           },
           {
             "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java",
             "sha256": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
             "class": "AdvertisingMaterialityIT",
-            "method": "missingSpendKeepsItsUnknownValueAndCannotRetainAnOrdinaryRoute"
+            "method": "expiredMaterialityAuthorityIsUnresolvedRatherThanAPromotedApproval",
+            "line": 75,
+            "assertions": "Expired Owner materiality authority yields MATERIALITY_UNRESOLVED.",
+            "evidenceKind": "REAL_POSTGRESQL_BOUNDARY",
+            "run": "source-r17",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Current file hash is an inspection identity; an older run is evidence only for the stated unchanged assertions, not all later assertions in that file."
           },
           {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
-            "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
-            "class": "AdvertisingOrdinaryApprovalIT",
-            "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand"
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "unresolvedMaterialityCannotReachFinalApprovalAfterValidSelection",
+            "line": 214,
+            "assertions": "New real-service final approval refuses a route that became unresolved after valid select/endorse, retaining READY_FOR_REVIEW and zero seal.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": null
           },
           {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
-            "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
-            "class": "AdvertisingOrdinaryApprovalIT",
-            "method": "fixedCriticalSalesRemainMaterialDespiteThePromotedOrdinaryEnvelope"
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+            "line": 101,
+            "assertions": "r30 assertions verify risk/configuration/MaxCPC/ceiling/expected effect/recovery/policies/materiality/metric/periods/frozen plan/exposure/alternatives/uncertainty keys and exact target/profile/product IDs, three stages and all materiality axes.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
           },
           {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
-            "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
-            "class": "AdvertisingOrdinaryApprovalIT",
-            "method": "regressionAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
-          },
-          {
-            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
-            "sha256": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405",
-            "class": "AdvertisingOrdinaryApprovalIT",
-            "method": "unknownEvidenceAfterOrdinaryEndorsementCannotUseOpsFinalApproval"
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+            "sha256": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5",
+            "class": "AdvertisingHumanWorkflowIT",
+            "method": "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit",
+            "line": 306,
+            "assertions": "Masked role cannot see profit-bearing review or prepare full preview.",
+            "evidenceKind": "REAL_POSTGRESQL_SERVICE",
+            "run": "root-final-targeted-r34",
+            "executionStatus": "TARGETED_ASSERTION_PASSED",
+            "identityLimit": "Exact current named assertions passed the complete class in r34; current hashes are inspected frozen working-tree bytes, not a committed final or CI identity.",
+            "priorObservedRun": "root-recovery-r30"
           }
         ],
         "negative": []
@@ -1470,7 +2114,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/human-decisions-traceability.json",
-          "sha256": "e5701039a35d57cd3a82496328e120dcc1b529b16e756e2ebc06b3fe771e2762",
+          "sha256": "27c171309bcc849ac4b0171abb2202a3dacdfe2e70f711ecfe5ed74a97a7a88e",
           "row_id": "S3-DR-011"
         }
       ],
@@ -1680,7 +2324,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "c17f24da0f6b03dc10523ce48c18d957658bc9475791762a44125037354bd115",
+          "sha256": "48858573bad841ded03eced21c695b15d5b74eb487a08b30c2a127c9bbc8a5a5",
           "row_id": "S3-DR-012"
         }
       ],
@@ -1830,7 +2474,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "c17f24da0f6b03dc10523ce48c18d957658bc9475791762a44125037354bd115",
+          "sha256": "48858573bad841ded03eced21c695b15d5b74eb487a08b30c2a127c9bbc8a5a5",
           "row_id": "S3-DR-013"
         }
       ],
@@ -1987,7 +2631,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "c17f24da0f6b03dc10523ce48c18d957658bc9475791762a44125037354bd115",
+          "sha256": "48858573bad841ded03eced21c695b15d5b74eb487a08b30c2a127c9bbc8a5a5",
           "row_id": "S3-DR-014"
         }
       ],
@@ -2173,14 +2817,14 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
-          "sha256": "ec169205fcd13699ff302b8b7a8444727b1367eb818237f013f4b3af316d4a5b",
+          "sha256": "e94a0d6bdc8b6beb4b05fadaf093d6e427fce1045f0de4cf7c7ae96798a26125",
           "row_id": "S3-DR-015"
         }
       ],
       "remaining_limitations": [
-        "Local targeted 248-test superset passed; final full tests, exact published commit and CI still required.",
-        "Actual financial Retained/Settled positive PostgreSQL transitions beyond existing canonical financial reader negatives and mocked service orchestration.",
-        "AC168 Finance review routing repair and actual evidence, owned jointly with root/norm."
+        "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required.",
+        "R29 proves actual accepted facts through MetricEngine/projection/three-person approval/real worker with an in-process synthetic Provider, Raw/readback and early/Retained/actual financial/corrected Outcome history. It never enables a real Provider.",
+        "FrozenOutcomeIT uses an explicitly declared pre-action synthetic golden baseline for fault isolation; VerticalPathIT separately proves genuine Planner-derived baseline. Finance6 and actual OutcomeService contradiction tests preserve original Task and append the Finance responsibility."
       ],
       "required_rework": [
         "Freeze the complete evaluation plan before external execution, including company total, critical units, 30-day retained window, both profit axes, evidence/sample/coverage/confounder policy and exact versions.",
@@ -2238,7 +2882,7 @@
       "same_class_scan": [
         "Inspected all five containment kinds, entity/affected-set/version/Store/account scope resolution, explicit human Stop, automatic regression, reenablement, technical attestation and command/manual invalidation.",
         "Digest equality was insufficient for overlapping affected sets; canonical membership now controls intersection. Reenablement requires independent evidence and new exact authority, and cannot resurrect historical approvals.",
-        "Real privilege inventory found the obsolete V0050 caller-role reopen route still executable; its applied exact revoke closes a duplicate ingress. The old gate fixture now uses explicit privilege and permanent-invalidation assertions; the SQL probe passed and Java verification remains pending."
+        "Real privilege inventory found the obsolete V0050 caller-role reopen route still executable; its applied exact revoke closes a duplicate ingress. The old gate fixture now uses explicit privilege and permanent-invalidation assertions; the SQL probe passed and Java control suites passed in W1 r18; full validation remains pending."
       ],
       "changed_files": [
         {
@@ -2371,7 +3015,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "c17f24da0f6b03dc10523ce48c18d957658bc9475791762a44125037354bd115",
+          "sha256": "48858573bad841ded03eced21c695b15d5b74eb487a08b30c2a127c9bbc8a5a5",
           "row_id": "S3-DR-016"
         }
       ],
@@ -2543,7 +3187,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
-          "sha256": "c17f24da0f6b03dc10523ce48c18d957658bc9475791762a44125037354bd115",
+          "sha256": "48858573bad841ded03eced21c695b15d5b74eb487a08b30c2a127c9bbc8a5a5",
           "row_id": "S3-DR-017"
         }
       ],
@@ -2596,7 +3240,7 @@
         "Export, notification, attachment and AI advertising disclosure paths are absent or unproved; manual evidence grade/verifier scope is forgeable as described in S3-DR-007."
       ],
       "root_cause": "Generic store visibility directly exposed canonical economic and cross-scope DTO fields.",
-      "same_class_scan": "Case, recommendation, manual packet, nested outcome/axes, containment, brief, export/attachment/notification/AI, command history and scope revocation.",
+      "same_class_scan": "Case diagnostics versus frozen native candidate/recommendation/command scope, all three Manual option kinds, manual packet, nested outcome/axes, containment, brief, export/attachment/notification/AI, current and revoked grants, and generic conservativeCeiling masking.",
       "changed_files": [],
       "fix_commits": [],
       "tests": {
@@ -2606,7 +3250,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
-          "sha256": "f8353f652eb610a3d01762ef3e7d33832aedee7c5a47b575f330675364fd537e",
+          "sha256": "6309b15299ba3c882fcb8e63c31577a1223fb84ff9f4bd822a874a5ed875aaf8",
           "row_id": "S3-DR-018"
         }
       ],
@@ -2661,7 +3305,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
-          "sha256": "f8353f652eb610a3d01762ef3e7d33832aedee7c5a47b575f330675364fd537e",
+          "sha256": "6309b15299ba3c882fcb8e63c31577a1223fb84ff9f4bd822a874a5ed875aaf8",
           "row_id": "S3-DR-019"
         }
       ],
@@ -2714,7 +3358,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
-          "sha256": "f8353f652eb610a3d01762ef3e7d33832aedee7c5a47b575f330675364fd537e",
+          "sha256": "6309b15299ba3c882fcb8e63c31577a1223fb84ff9f4bd822a874a5ed875aaf8",
           "row_id": "S3-DR-020"
         }
       ],
@@ -2766,7 +3410,7 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
-          "sha256": "f8353f652eb610a3d01762ef3e7d33832aedee7c5a47b575f330675364fd537e",
+          "sha256": "6309b15299ba3c882fcb8e63c31577a1223fb84ff9f4bd822a874a5ed875aaf8",
           "row_id": "S3-DR-021"
         }
       ],
@@ -2809,7 +3453,7 @@
       ],
       "root_cause": "Acceptance, runtime evidence and Git publication did not share a measured input identity; aggregate tests were used despite incomplete named behaviors and verification classes.",
       "same_class_scan": [
-        "Scanned every AC against all six current source/test shards and all 22 Frozen findings. Newly identified old vertical bypass is being replaced with a real canonical path; its closure remains pending."
+        "Scanned every AC against all six current source/test shards and all 22 Frozen findings. The prior vertical bypass has been replaced with an actual accepted Canonical-to-Metric-to-calculation-to-human-to-command/readback-to-Outcome path; complete targeted execution passes in r34, while full immutable verification is pending."
       ],
       "changed_files": [
         {
@@ -2826,7 +3470,7 @@
         },
         {
           "path": "docs/00-governance/CURRENT_STATE.md",
-          "sha256_at_receipt": "49f7e18e3c0bc0198cd0bc10ae4c9359ff50a28b87f8ec8b36d9402a85691bb6"
+          "sha256_at_receipt": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf"
         }
       ],
       "fix_commits": [],
@@ -2845,12 +3489,12 @@
       "evidence": [
         {
           "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
-          "sha256": "d80eba969070c55d5ba2ebbacd474e9f31bd6435f07e707baddb31ff1755888c",
+          "sha256": "9b9de08e8286a3ab7d923dcd6ed8db145bd622b8f700c781d42f2ec1a608b054",
           "row_id": "S3-DR-022"
         }
       ],
       "remaining_limitations": [
-        "Current governance run passes 400 tests; this is not full local verification or remote CI.",
+        "Current governance run passes 410 tests; this is not full local verification or remote CI.",
         "Exact clean measured commit, one Draft PR, final Head CI and Controller verdict remain pending."
       ],
       "required_rework": [

@@ -425,6 +425,47 @@ class AdvertisingProposalServiceTest {
         verifyNoInteractions(intake);
     }
 
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.CsvSource({"CURRENCY_MAJOR,100,87,81", "CURRENCY_MINOR,10000,8700,8100"})
+    void intermediateBelowRawMaxCpcStillReportsRecoveryUntilTheConservativeCeiling(
+            String unit,String current,String target,String conservative) {
+        when(policies.resolveBidGrid(OBJECT)).thenReturn(Optional.of(
+                new AdvertisingPolicyRepository.ObjectBidContext("SEARCH_KEYWORD","PROVEN_INDEPENDENT",
+                    new ProviderBidGrid(unit,"RUB",0,BigDecimal.ONE,BigDecimal.ONE,new BigDecimal("50000"),true,"VERIFIED"))));
+        when(policies.resolveBidTargetPolicy(any(),anyString(),any(),anyString(),anyString(),
+                eq(BidCandidate.MAX_CPC_BOUNDED),any())).thenReturn(Optional.of(
+                    new AdvertisingPolicyRepository.TargetPolicy(POLICY,3,1,new BigDecimal("0.13"),
+                        new BigDecimal("100"),"RUB",new BigDecimal("0.10"),false,null,List.of())));
+        when(candidates.allowsIntermediateTarget(POLICY)).thenReturn(true);
+        assertThat(proposeFor(lossCaseWith(new BigDecimal(current),new BigDecimal("90")))).containsExactly(PROPOSAL);
+        var effect=proposal().expectedEffect();
+        assertThat(effect).containsEntry("interpretation","RECOVERY_IN_PROGRESS_NOT_HEALTHY");
+        assertThat(new BigDecimal(effect.get("targetBid"))).isEqualByComparingTo(target);
+        assertThat(new BigDecimal(effect.get("conservativeCeiling"))).isEqualByComparingTo(conservative);
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.CsvSource({
+        "PROVEN_ADVERTISING_LOSS,PROTECTION,P2,MARKETPLACE_OPERATOR",
+        "PROFIT_ECONOMICS_BLOCKED,DATA_REPAIR,,FINANCE_ANALYST",
+        "OFFICIAL_AD_FACT_DEFECT,DATA_REPAIR,,TECH_DATA",
+        "RECOVERABLE_ADVERTISING_PROFIT,OPTIMIZATION,,MARKETPLACE_OPERATOR"})
+    void eachActionableLaneRoutesResponsibilityEvenWhenNoBidPolicyExists(
+            AdvertisingCause cause,AdvertisingLane lane,ProtectionTier tier,String accountable) {
+        when(policies.resolveBidTargetPolicy(any(),anyString(),any(),anyString(),anyString(),anyString(),any()))
+                .thenReturn(Optional.empty());
+        assertThat(proposeFor(caseFor(cause,lane,tier))).isEmpty();
+        verify(responsibility).ensureResponsibility(CASE,RUN,accountable);
+        verifyNoInteractions(intake);
+    }
+
+    @Test void watchNeverCreatesResponsibilityEvenIfRepeated() {
+        var quiet=caseFor(AdvertisingCause.IMMATURE_SIGNAL,AdvertisingLane.WATCH,null);
+        assertThat(proposeFor(quiet)).isEmpty();assertThat(proposeFor(quiet)).isEmpty();
+        verify(responsibility,never()).ensureResponsibility(any(),any(),anyString());
+        verifyNoInteractions(intake);
+    }
+
     private List<UUID> proposeFor(AdCaseCalculation.ScoredCase scored) {
         AdCaseCalculation calculation = calculation(scored);
         return service.proposeFor(calculation, List.of(

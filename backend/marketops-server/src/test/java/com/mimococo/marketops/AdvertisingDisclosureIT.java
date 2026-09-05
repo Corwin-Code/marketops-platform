@@ -179,6 +179,8 @@ class AdvertisingDisclosureIT {
         var migration = new DriverManagerDataSource(DATABASE.getJdbcUrl(),
                 TestDatabase.migrationRole(), TestDatabase.migrationPassword());
         var candidateGraph = AdvertisingR1Fixture.seedUnapproved(migration);
+        seed.sql("UPDATE ops.recommendation SET expected_effect=expected_effect||jsonb_build_object('conservativeCeiling',987654321) WHERE id=:id")
+                .param("id",candidateGraph.id("recommendation")).update();
         var row = recommendations.require(candidateGraph.id("recommendation"));
         assertThat(row.proposedParameters().keySet()).containsExactlyInAnyOrder("candidateId", "direction", "targetBid");
         var canonicalScope = scopes.recommendationScope(candidateGraph.id("organization"), row.id()).orElseThrow();
@@ -221,12 +223,7 @@ class AdvertisingDisclosureIT {
         users.grantScope("disclosure-fixture",user,ActionScopeCode.ADVERTISING_VIEW,ResourceScopeType.STORE,actual.id("store"),null);
         var actor=new AuthenticatedActor(user,actual.id("organization"),actual.id("provider"),"https://fixture.invalid/issuer",
                 "Synthetic native reader","0".repeat(64),null,Instant.now(),Instant.now().plusSeconds(3600),true,Set.of(BusinessRoleCode.MARKETPLACE_OPERATOR));
-        seed.sql("UPDATE iam.identity_provider SET issuer=:issuer WHERE id=:id")
-                .param("issuer",com.mimococo.marketops.identityaccess.internal.web.BrowserSigningFixture.ISSUER)
-                .param("id",actual.id("provider")).update();
-        seed.sql("UPDATE iam.user_account SET credentials_valid_from=now()-interval '1 day' WHERE id=:id").param("id",user).update();
-        String subject=seed.sql("SELECT external_subject FROM iam.user_account WHERE id=:id").param("id",user).query(String.class).single();
-        String jwt=com.mimococo.marketops.identityaccess.internal.web.BrowserSigningFixture.token(subject);
+        String jwt=browserToken(actual.id("provider"),user);
         users.grantScope("disclosure-fixture",user,ActionScopeCode.DIAGNOSTIC_VIEW,ResourceScopeType.STORE,actual.id("store"),null);
         UUID historicalPacket=UUID.randomUUID();
         // An expired, unapproved historical read oracle has no proposal, baseline or action authority.
@@ -264,8 +261,10 @@ class AdvertisingDisclosureIT {
         assertThat(httpWorkflow(jwt,"/recommendations/"+actual.id("recommendation")).statusCode()).isEqualTo(403);
         assertThat(httpWorkflow(jwt,"/stores/"+actual.id("store")+"/recommendations").body()).isEqualTo("[]");
         assertThat(httpWorkflow(jwt,"/stores/"+actual.id("store")+"/recommendation-counts").body()).isEqualTo("{}");
-        assertThat(workflow.workflow(actor,actual.id("caseId")).candidates()).singleElement()
-                .satisfies(candidate->assertThat(candidate.commandId()).isNull());
+        assertThat(workflow.workflow(actor,actual.id("caseId")).candidates()).isEmpty();
+        var hiddenWorkflow=http(jwt,"/cases/"+actual.id("caseId")+"/workflow");
+        assertThat(hiddenWorkflow.statusCode()).isEqualTo(200);
+        assertThat(new tools.jackson.databind.ObjectMapper().readTree(hiddenWorkflow.body()).path("candidates").isEmpty()).isTrue();
         assertThat(http(jwt,"/commands/"+command).statusCode()).isEqualTo(403);
         assertThat(http(jwt,"/commands/"+command+"/outcomes").statusCode()).isEqualTo(403);
         assertThat(http(jwt,"/manual-packets/"+historicalPacket+"/outcomes").statusCode()).isEqualTo(403);
@@ -279,7 +278,10 @@ class AdvertisingDisclosureIT {
         assertThat(httpWorkflow(jwt,"/stores/"+actual.id("store")+"/recommendations").body()).contains(actual.id("recommendation").toString());
         assertThat(httpWorkflow(jwt,"/stores/"+actual.id("store")+"/recommendation-counts").body()).isEqualTo("{}");
         assertThat(workflow.workflow(actor,actual.id("caseId")).candidates()).singleElement()
-                .satisfies(candidate->assertThat(candidate.commandId()).isEqualTo(command));
+                .satisfies(candidate->{assertThat(candidate.commandId()).isEqualTo(command);assertThat(candidate.basis()).isEqualTo("MASKED");});
+        var visibleWorkflow=new tools.jackson.databind.ObjectMapper().readTree(http(jwt,"/cases/"+actual.id("caseId")+"/workflow").body());
+        assertThat(visibleWorkflow.path("candidates").get(0).path("basis").asText()).isEqualTo("MASKED");
+        assertThat(visibleWorkflow.path("candidates").get(0).path("commandId").asText()).isEqualTo(command.toString());
         var nativeCommand=commands.command(command).orElseThrow();
         var projected=disclosure.command(actor,nativeCommand);
         assertThat(projected.path("id").asText()).isEqualTo(command.toString());
@@ -298,10 +300,93 @@ class AdvertisingDisclosureIT {
         users.revokeScope("disclosure-fixture",grant.id(),"Exact product scope revoked",grant.version());
         assertThat(httpWorkflow(jwt,"/recommendations/"+actual.id("recommendation")).statusCode()).isEqualTo(403);
         assertThat(httpWorkflow(jwt,"/stores/"+actual.id("store")+"/recommendations").body()).isEqualTo("[]");
+        assertThat(workflow.workflow(actor,actual.id("caseId")).candidates()).isEmpty();
+        assertThat(new tools.jackson.databind.ObjectMapper().readTree(http(jwt,"/cases/"+actual.id("caseId")+"/workflow").body()).path("candidates").isEmpty()).isTrue();
         assertThatThrownBy(()->disclosure.command(actor,nativeCommand)).isInstanceOf(OperationRejectedException.class);
         assertThatThrownBy(()->disclosure.requireCommandRead(maker,command)).isInstanceOf(OperationRejectedException.class);
         assertThat(http(jwt,"/commands/"+command+"/outcomes").statusCode()).isEqualTo(403);
         assertThat(http(jwt,"/reservations").body()).isEqualTo("[]");
+    }
+
+    @Test
+    void manualNativeOptionsRequireEveryProductAndACompleteAffectedSetOverActualHttp() throws Exception {
+        var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
+        var manual=AdvertisingR1Fixture.seedManual(migration);
+        UUID user=manual.id("executorUser");
+        users.assignRole("manual-disclosure-fixture",user,BusinessRoleCode.MARKETPLACE_OPERATOR,null);
+        users.grantScope("manual-disclosure-fixture",user,ActionScopeCode.ADVERTISING_VIEW,
+                ResourceScopeType.STORE,manual.id("store"),null);
+        users.grantScope("manual-disclosure-fixture",user,ActionScopeCode.ADVERTISING_TASK_ACT,
+                ResourceScopeType.ORGANIZATION,manual.id("organization"),null);
+        String jwt=browserToken(manual.id("provider"),user);
+        // Native option read oracles only: no proposal, packet, approval, command or action authority.
+        for(String kind:List.of("AD_BID_CHANGE","AD_BUDGET_CHANGE","AD_STATUS_CHANGE")) {
+            seed.sql("""
+                    INSERT INTO core.ad_manual_policy(id,organization_id,store_id,semantic_profile_id,policy_version,cause_code,
+                      outcome_policy_id,action_kind,candidate_basis,target_budget,target_status,currency_code,verification_mode,
+                      configuration_max_age_seconds,packet_lease_seconds,effective_from,effective_to,
+                      approved_by_user_id,approved_at,evidence_reference)
+                    VALUES(gen_random_uuid(),:org,:store,:profile,1,'PROVEN_ADVERTISING_LOSS',:outcome,:kind,
+                      CASE WHEN :kind='AD_BID_CHANGE' THEN 'MAX_CPC_BOUNDED' END,
+                      CASE WHEN :kind='AD_BUDGET_CHANGE' THEN 700 END,
+                      CASE WHEN :kind='AD_STATUS_CHANGE' THEN 'PAUSED' END,
+                      'RUB','INDEPENDENT_OR_OFFICIAL',3600,1800,now()-interval '1 minute',now()+interval '1 hour',
+                      :owner,now(),'fixture://native-manual-option-read-oracle')
+                    """).param("org",manual.id("organization")).param("store",manual.id("store"))
+                    .param("profile",manual.id("profile")).param("outcome",manual.id("outcome"))
+                    .param("kind",kind).param("owner",manual.id("ownerUser")).update();
+        }
+        var mapper=new tools.jackson.databind.ObjectMapper();
+        String path="/cases/"+manual.id("caseId")+"/manual-options";
+        var partial=http(jwt,path);
+        assertThat(partial.statusCode()).isEqualTo(200);
+        assertThat(mapper.readTree(partial.body()).path("options").isEmpty()).isTrue();
+        assertThat(mapper.readTree(partial.body()).path("allowedActions").isEmpty()).isTrue();
+        var productGrant=users.grantScope("manual-disclosure-fixture",user,ActionScopeCode.ADVERTISING_VIEW,
+                ResourceScopeType.PRODUCT_VARIANT,manual.id("productVariant"),null);
+        var visible=http(jwt,path);
+        assertThat(visible.statusCode()).isEqualTo(200);
+        var options=mapper.readTree(visible.body());
+        assertThat(options.path("options").size()).isEqualTo(3);
+        assertThat(options.path("allowedActions").get(0).asText()).isEqualTo("SELECT_MANUAL_PROPOSAL");
+        assertThat(options.path("productionWriteEnabled").asBoolean()).isFalse();
+        for(var option:options.path("options")) assertThat(option.path("apiProfileState").asText()).isEqualTo("UNVERIFIED");
+        users.revokeScope("manual-disclosure-fixture",productGrant.id(),"Native product visibility revoked",productGrant.version());
+        assertThat(mapper.readTree(http(jwt,path).body()).path("options").isEmpty()).isTrue();
+        users.grantScope("manual-disclosure-fixture",user,ActionScopeCode.ADVERTISING_VIEW,
+                ResourceScopeType.PRODUCT_VARIANT,manual.id("productVariant"),null);
+        UUID incomplete=UUID.randomUUID();
+        // Keep the known Product membership so this tests completeness separately from grant checks.
+        seed.sql("""
+                INSERT INTO core.ad_affected_set SELECT revised.* FROM core.ad_affected_set original
+                CROSS JOIN LATERAL jsonb_populate_record(NULL::core.ad_affected_set,to_jsonb(original)||jsonb_build_object(
+                  'id',:id::text,'affected_set_digest',:digest,'resolution_state','INCOMPLETE',
+                  'unresolved_reason_codes','["MAPPING_UNRESOLVED"]'::jsonb,'resolved_at',clock_timestamp())) revised
+                WHERE original.id=:original
+                """).param("id",incomplete).param("digest",com.mimococo.marketops.shared.Digest.ofText("manual-partial:"+incomplete))
+                .param("original",manual.id("affectedSet")).update();
+        seed.sql("UPDATE mart.ad_case SET affected_set_id=:affected WHERE id=:id")
+                .param("affected",incomplete).param("id",manual.id("caseId")).update();
+        var incompleteView=http(jwt,path);
+        assertThat(incompleteView.statusCode()).isEqualTo(200);
+        assertThat(mapper.readTree(incompleteView.body()).path("options").isEmpty()).isTrue();
+        assertThat(mapper.readTree(incompleteView.body()).path("allowedActions").isEmpty()).isTrue();
+    }
+
+    private String browserToken(UUID fixtureProvider,UUID user) throws Exception {
+        String issuer=com.mimococo.marketops.identityaccess.internal.web.BrowserSigningFixture.ISSUER;
+        UUID provider=seed.sql("SELECT id FROM iam.identity_provider WHERE issuer=:issuer")
+                .param("issuer",issuer).query(UUID.class).optional().orElseGet(()->{
+                    seed.sql("UPDATE iam.identity_provider SET issuer=:issuer WHERE id=:id")
+                            .param("issuer",issuer).param("id",fixtureProvider).update();
+                    return fixtureProvider;
+                });
+        // The issuer is globally unique; each graph keeps its own organization, subject and grants.
+        seed.sql("UPDATE iam.user_account SET identity_provider_id=:provider,external_subject=:subject,credentials_valid_from=now()-interval '1 day' WHERE id=:id")
+                .param("provider",provider).param("subject","disclosure-"+user).param("id",user).update();
+        String subject=seed.sql("SELECT external_subject FROM iam.user_account WHERE id=:id")
+                .param("id",user).query(String.class).single();
+        return com.mimococo.marketops.identityaccess.internal.web.BrowserSigningFixture.token(subject);
     }
 
     private java.net.http.HttpResponse<String> httpWorkflow(String jwt,String path) throws Exception {

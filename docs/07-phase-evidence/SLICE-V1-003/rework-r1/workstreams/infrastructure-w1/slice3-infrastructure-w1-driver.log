@@ -1,0 +1,5 @@
+terraform-mock-verification PASS /tmp/marketops-s3-r1-infra-w1-boi0to3r/terraform-mock-verification.log
+terraform-plan-unit PASS /tmp/marketops-s3-r1-infra-w1-boi0to3r/terraform-plan-unit.log
+runtime-unit PASS /tmp/marketops-s3-r1-infra-w1-boi0to3r/runtime-unit.log
+telemetry-unit PASS /tmp/marketops-s3-r1-infra-w1-boi0to3r/telemetry-unit.log
+RECEIPT /tmp/marketops-s3-r1-infra-w1-boi0to3r/receipt.json

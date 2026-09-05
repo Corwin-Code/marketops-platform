@@ -55,6 +55,7 @@ class AdvertisingHumanWorkflowIT {
     @Autowired GuardrailService guardrails;
     @Autowired com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingCandidateRepository candidates;
     @Autowired DataSource application;
+    @Autowired tools.jackson.databind.ObjectMapper json;
     private JdbcClient seed;
     private AdvertisingR1Fixture.Graph graph;
     private UUID task;
@@ -98,6 +99,13 @@ class AdvertisingHumanWorkflowIT {
     @AfterEach void clearIdentity() { SecurityContextHolder.clearContext(); }
 
     @Test void realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand() {
+        seed.sql("""
+                INSERT INTO core.ad_outcome_critical_unit_rule(id,outcome_policy_id,organization_id,
+                    product_variant_id,store_id,reason,evidence_reference)
+                VALUES(gen_random_uuid(),:policy,:org,:variant,:store,
+                    'Explicit synthetic protected sales unit','fixture://human-preview/critical')
+                """).param("policy",graph.id("outcome")).param("org",graph.id("organization"))
+                .param("variant",graph.id("productVariant")).param("store",graph.id("store")).update();
         UUID recommendation=graph.id("recommendation");
         assertThat(recommendations.require(recommendation).state()).isEqualTo(RecommendationState.DRAFT);
         var selected=humans.select(maker,graph.id("caseId"),graph.id("candidate"),0,"Choose generated bounded decrease");
@@ -110,11 +118,43 @@ class AdvertisingHumanWorkflowIT {
         var preview=guardrails.previewAdBidChange(recommendations.require(recommendation),GuardrailPurpose.IMPACT_PREVIEW);
         assertThat(preview.evidence().path("risk").path("absoluteProfit").has("state")).isTrue();
         assertThat(preview.evidence().path("submittedConfiguration").path("target").decimalValue()).isEqualByComparingTo("20");
+        assertThat(preview.projection().affectedSetDigest()).isNotBlank();
+        assertThat(preview.affectedVariantCount()).isEqualTo(1);
+        assertThat(preview.projection().decisionBundleId()).isEqualTo(graph.id("bundle"));
+        assertThat(preview.projection().materialityRoute()).isEqualTo("MATERIAL_IMPACT");
+        assertThat(seed.sql("SELECT ordinary_nonzero_envelope_amount=0 AND ordinary_relative_envelope_ratio=0 FROM core.ad_materiality_policy WHERE id=:id")
+                .param("id",graph.id("materiality")).query(Boolean.class).single()).isTrue();
+        var evidence=preview.evidence();
+        assertThat(evidence.properties()).extracting(java.util.Map.Entry::getKey).contains(
+                "risk","submittedConfiguration","economicMaxCpc","submittedUnitMaxCpc","conservativeCeiling",
+                "expectedEffect","recoveryState","policyVersions","materiality","metricEvidence","qualificationPeriods",
+                "frozenOutcomePlan","aggregateExposure","alternatives","uncertainty");
+        assertThat(evidence.path("risk").properties()).extracting(java.util.Map.Entry::getKey).contains(
+                "platform","account","store","object","affectedSet","productVariantIds","lane","cause",
+                "officialSpend","absoluteProfit","profitPerAdRub","conversion","diagnostics","salesEvidence",
+                "purposeEvidence","containment","policyDigest","bundleId");
+        assertThat(evidence.path("risk").path("productVariantIds").get(0).asText()).isEqualTo(graph.id("productVariant").toString());
+        assertThat(evidence.path("risk").path("diagnostics").isArray()).isTrue();
+        assertThat(evidence.path("risk").path("salesEvidence").isArray()).isTrue();
+        assertThat(evidence.path("risk").path("purposeEvidence").size()).isGreaterThan(0);
+        assertThat(evidence.path("submittedConfiguration").path("current").decimalValue()).isEqualByComparingTo("30");
+        assertThat(evidence.path("submittedConfiguration").path("semanticProfileId").asText()).isEqualTo(graph.id("profile").toString());
+        assertThat(evidence.path("frozenOutcomePlan").path("stages").size()).isEqualTo(3);
+        assertThat(evidence.path("frozenOutcomePlan").path("criticalSalesUnits").size()).isGreaterThan(0);
+        assertThat(evidence.path("materiality").path("axes").properties()).extracting(java.util.Map.Entry::getKey).containsExactlyInAnyOrder(
+                "absoluteBidChange","relativeBidChange","officialSpendExposure","affectedVariants","criticalSalesExposure",
+                "cumulativeBidChange","lifecycleAndCohort","direction");
+        assertThat(evidence.path("aggregateExposure").properties()).extracting(java.util.Map.Entry::getKey)
+                .containsExactlyInAnyOrder("measurement","failingAxes","activeInterventions","reservations");
+        assertThat(evidence.path("uncertainty").path("blockers").isArray()).isTrue();
         login(owner);
         var approved=approvals.approve(owner,recommendation,"Exact per-command Owner approval",endorsed.version());
         assertThat(approved.state()).isEqualTo(RecommendationState.APPROVED);
         UUID command=execution.createCommand(owner,recommendation,recommendations.require(recommendation).version()).commandId();
         assertThat(command).isNotNull();
+        assertThat(seed.sql("SELECT maker_user_id=:maker AND endorser_user_id=:ops AND final_approver_user_id=:owner FROM ops.ad_action_authorization WHERE recommendation_id=:id")
+                .param("maker",maker.userId()).param("ops",ops.userId()).param("owner",owner.userId())
+                .param("id",recommendation).query(Boolean.class).single()).isTrue();
         assertThat(seed.sql("""
                 SELECT s.outcome_baseline_id=a.outcome_baseline_id AND a.outcome_baseline_id=cmd.outcome_baseline_id
                 FROM ops.ad_candidate_selection s JOIN ops.ad_action_authorization a USING(recommendation_id)
@@ -122,6 +162,69 @@ class AdvertisingHumanWorkflowIT {
                 """).param("id",recommendation).query(Boolean.class).single()).isTrue();
         assertThat(tasks.journal(task)).extracting(event->event.eventKind()).contains("ACTION_RECORDED");
         assertThat(seed.sql("SELECT count(*) FROM ops.ad_bid_command WHERE recommendation_id=:id").param("id",recommendation).query(Long.class).single()).isEqualTo(1);
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.CsvSource({
+        "0.10,19.8000,RECOVERY_IN_PROGRESS_NOT_HEALTHY",
+        "0.09,20.0200,OUTCOME_VERIFICATION_REQUIRED"})
+    void previewUsesPolicyHeadroomRatherThanRawMaxCpc(String headroom,String conservative,String recovery) {
+        seed.sql("UPDATE core.ad_bid_target_policy SET ceiling_headroom_ratio=:headroom,allow_protection_intermediate_target=true WHERE id=:id")
+                .param("headroom",new java.math.BigDecimal(headroom)).param("id",graph.id("targetPolicy")).update();
+        var selected=humans.select(maker,graph.id("caseId"),graph.id("candidate"),0,"Compare the exact conservative ceiling");
+        humans.endorse(ops,selected.id(),selected.version(),"Review intermediate recovery");
+        humans.preparePreview(owner,selected.id());
+        var preview=guardrails.previewAdBidChange(recommendations.require(selected.id()),GuardrailPurpose.IMPACT_PREVIEW);
+        assertThat(preview.evidence().path("submittedUnitMaxCpc").path("amount").decimalValue()).isEqualByComparingTo("22");
+        assertThat(preview.evidence().path("submittedConfiguration").path("target").decimalValue()).isEqualByComparingTo("20");
+        assertThat(preview.evidence().path("conservativeCeiling").path("amount").decimalValue()).isEqualByComparingTo(conservative);
+        assertThat(preview.evidence().path("recoveryState").asText()).isEqualTo(recovery);
+    }
+
+    @Test void makerWithAnAdditionalOperationsRoleCannotEndorseTheirOwnSelection() {
+        role("executorUser","OPS_LEAD");scope("executorUser","AD_BID_CHANGE_ENDORSE");
+        scope("executorUser","ADVERTISING_DECISION_EVIDENCE_VIEW");
+        var selected=humans.select(maker,graph.id("caseId"),graph.id("candidate"),0,"Three different people remain required");
+        var samePerson=actor("executorUser",BusinessRoleCode.OPS_LEAD);
+        assertThatThrownBy(()->humans.endorse(samePerson,selected.id(),selected.version(),"Attempt own endorsement"))
+                .isInstanceOf(OperationRejectedException.class)
+                .satisfies(failure->assertThat(((OperationRejectedException)failure).errorCode()).isEqualTo(com.mimococo.marketops.shared.ErrorCode.ACTION_NOT_PERMITTED));
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_candidate_endorsement WHERE recommendation_id=:id")
+                .param("id",selected.id()).query(Long.class).single()).isZero();
+        assertThat(recommendations.require(selected.id()).state()).isEqualTo(RecommendationState.VALIDATED);
+        assertThat(humans.endorse(ops,selected.id(),selected.version(),"Independent Operations endorsement").state())
+                .isEqualTo(RecommendationState.READY_FOR_REVIEW);
+    }
+
+    @Test void anOutOfSetCandidateIsRefusedAndARejectedFiniteChoiceNeverStartsAction() {
+        assertThatThrownBy(()->humans.select(maker,graph.id("caseId"),UUID.randomUUID(),0,"Unpublished target choice"))
+                .isInstanceOf(OperationRejectedException.class)
+                .satisfies(failure->assertThat(((OperationRejectedException)failure).errorCode()).isEqualTo(com.mimococo.marketops.shared.ErrorCode.RESOURCE_NOT_FOUND));
+        var rejected=humans.rejectCandidate(maker,graph.id("caseId"),graph.id("candidate"),0,"Reject this finite choice");
+        assertThat(rejected.state()).isEqualTo(RecommendationState.CANCELLED);
+        assertThatThrownBy(()->humans.select(maker,graph.id("caseId"),graph.id("candidate"),rejected.version(),"Revive a rejected choice"))
+                .isInstanceOf(OperationRejectedException.class);
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_candidate_selection WHERE case_id=:id")
+                .param("id",graph.id("caseId")).query(Long.class).single()).isZero();
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_bid_command WHERE organization_id=:org")
+                .param("org",graph.id("organization")).query(Long.class).single()).isZero();
+        assertThat(tasks.find(task).orElseThrow().state()).isEqualTo("OPEN");
+    }
+
+    @Test void unresolvedMaterialityCannotReachFinalApprovalAfterValidSelection() {
+        var selected=humans.select(maker,graph.id("caseId"),graph.id("candidate"),0,"Select valid current policy");
+        var endorsed=humans.endorse(ops,selected.id(),selected.version(),"Independent review while policy is current");
+        seed.sql("UPDATE core.ad_materiality_policy SET effective_to=clock_timestamp() WHERE id=:id")
+                .param("id",graph.id("materiality")).update();
+        assertThat(seed.sql("SELECT ops.ad_materiality_assessment(:bundle,:candidate)->>'route'")
+                .param("bundle",graph.id("bundle")).param("candidate",graph.id("candidate")).query(String.class).single())
+                .isEqualTo("MATERIALITY_UNRESOLVED");
+        login(owner);
+        assertThatThrownBy(()->approvals.approve(owner,selected.id(),"Cannot approve unresolved route",endorsed.version()))
+                .isInstanceOf(OperationRejectedException.class);
+        assertThat(recommendations.require(selected.id()).state()).isEqualTo(RecommendationState.READY_FOR_REVIEW);
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_action_authorization WHERE recommendation_id=:id")
+                .param("id",selected.id()).query(Long.class).single()).isZero();
     }
 
     @Test void responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement() {
@@ -140,12 +243,38 @@ class AdvertisingHumanWorkflowIT {
                 .isInstanceOf(OperationRejectedException.class);
     }
 
-    @Test void ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent() {
+    @Test void ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent() throws Exception {
+        seed.sql("UPDATE mart.ad_case SET bundle_id=:bundle WHERE id=:id")
+                .param("bundle",graph.id("bundle")).param("id",graph.id("caseId")).update();
         var original=slo.statusForCase(graph.id("caseId")).orElseThrow();
+        var beforeCase=json.readTree(seed.sql("SELECT to_jsonb(c)::text FROM mart.ad_case c WHERE id=:id")
+                .param("id",graph.id("caseId")).query(String.class).single());
         var request=request();
+        var initialRisk=exceptions.review(owner,request.id());
         var endorsed=exceptions.endorse(ops,request.id(),request.version(),"Operations accepts exact known risk");
         var active=exceptions.approve(owner,request.id(),endorsed.version(),"Owner accepts bounded risk until review");
         var paused=slo.statusForCase(graph.id("caseId")).orElseThrow();
+        var acceptedRisk=exceptions.review(owner,request.id());
+        assertThat(acceptedRisk.knownConsequenceJson()).isEqualTo(initialRisk.knownConsequenceJson());
+        assertThat(acceptedRisk.exposureSnapshotJson()).isEqualTo(initialRisk.exposureSnapshotJson());
+        var consequence=json.readTree(acceptedRisk.knownConsequenceJson());
+        var exposure=json.readTree(acceptedRisk.exposureSnapshotJson());
+        assertThat(consequence.path("lane")).isEqualTo(beforeCase.path("lane"));
+        assertThat(consequence.path("cause")).isEqualTo(beforeCase.path("cause_code"));
+        assertThat(exposure.path("spend")).isEqualTo(beforeCase.path("official_spend_amount"));
+        assertThat(exposure.path("profit")).isEqualTo(beforeCase.path("contribution_profit_amount"));
+        assertThat(exposure.path("efficiency")).isEqualTo(beforeCase.path("profit_per_ad_rub_value"));
+        assertThat(acceptedRisk.bundleId()).isEqualTo(graph.id("bundle"));
+        assertThat(active.requesterUserId()).isEqualTo(maker.userId());
+        assertThat(active.endorserUserId()).isEqualTo(ops.userId());
+        assertThat(active.approverUserId()).isEqualTo(owner.userId());
+        assertThat(active.reviewDueAt()).isAfter(active.effectiveFrom()).isBefore(active.expiresAt());
+        assertThat(json.readTree(seed.sql("SELECT to_jsonb(c)::text FROM mart.ad_case c WHERE id=:id")
+                .param("id",graph.id("caseId")).query(String.class).single())).isEqualTo(beforeCase);
+        assertThat(responsibilities.ensureResponsibility(graph.id("caseId"),graph.id("calculationRun"),"MARKETPLACE_OPERATOR")).isEqualTo(task);
+        assertThat(tasks.journal(task)).filteredOn(event->event.eventKind().equals("RAISED")).hasSize(1);
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_case_responsibility WHERE case_id=:id")
+                .param("id",graph.id("caseId")).query(Long.class).single()).isEqualTo(1);
         assertThat(paused.actionPaused()).isTrue();
         assertThat(paused.acknowledgementDueAt()).isEqualTo(original.acknowledgementDueAt());
         assertThat(workflows.workflow(maker,graph.id("caseId")).operatingDisposition()).isEqualTo("ACCEPTED_EXCEPTION_ACTIVE");

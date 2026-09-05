@@ -23,15 +23,22 @@ The reviewed starting Head is `a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb`.
 | [Outcome](workstreams/outcome.md) | Trusted pre-execution baseline, stage-distinct evaluation and revisions. |
 | [Console and orchestration](workstreams/console-disclosure.md) | Scoped disclosure, Manual workflows, triggers, capacity and browser evidence. |
 | [CI gate review](workstreams/ci-gates-review.md) | Required contexts and exact workflow/job/artifact collection requirements. |
+| [Facts/Outcome fault assertions](workstreams/facts-outcome-fault-seeding.json) | Canonical facts, freshness, actual concurrent calculation and distinct Outcome/late-revision boundaries. |
 | [Human fault assertions](workstreams/human-decisions-fault-seeding.md) | SLO, risk, amount/unit, conservative ceiling and each independent Materiality fault. |
 | [Command fault assertions](workstreams/command-controls-fault-seeding.md) | Positive controls and schema, privilege, creator, transmission, retry and containment boundaries. |
 | [Disclosure and Manual fault assertions](workstreams/disclosure-manual-fault-seeding.md) | Exact role/scope, actor, evidence grade and actual HTTP boundaries. |
+| [Final targeted rerun](workstreams/final-targeted-r34.json) | All 97 selected backend tests pass, including real vertical/concurrent paths, Human16, Disclosure7 and Sealed15; clean full verification remains separate. |
+| [Semantic mapping review](workstreams/human-governance-mapping-review-supplement.md) | Each of 41 human/governance criteria is mapped to actual assertions with explicit domain, PostgreSQL, HTTP and remaining verification limits. |
+| [W1 committed identity](workstreams/slice3-r1-w1-identity.json) | Clean implementation checkpoint `60638b1fc1a227b50f4b3ede1ba0bb983407bfdc`, protected authorities/history and all 65 migration identities. |
+| [W1 independent clone](workstreams/fresh-clone-w1.json) | Exact committed source, independent Git objects, no ignored local configuration/build state, and 410 passing governance tests; offline scope only. |
+| [W1 infrastructure](workstreams/infrastructure-w1/receipt.json) | Seven Terraform mock cases and 29 Python cases passed on an exact source copy; local plans only, with raw/compressed hashes. |
 
 Workstream logs distinguish individual passing suites from their containing
 failed or partial run. Working-tree measurements do not bind a future Git Head.
 The identity collector in `scripts/validation/collect_slice3_rework_identity.py`
-will record the clean measured commit/tree, protected history, migration hashes
-and runtime/build/test/CI input digest after the implementation checkpoint.
+recorded the clean W1 measured commit/tree, protected history, migration hashes
+and runtime/build/test/CI input digest. Subsequent test-fixture repairs and
+evidence additions require their own checkpoint and final verification binding.
 Full clean verification, isolated browser/capacity/migration artifacts, final
 append-only publication, one Draft PR and exact current-Head CI remain pending.
 

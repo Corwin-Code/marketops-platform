@@ -1,0 +1,7 @@
+disable_checkpoint = true
+provider_installation {
+  filesystem_mirror {
+    path = "/private/tmp/marketops-s3-r1-infra-w1-boi0to3r/provider-mirror"
+    include = ["registry.terraform.io/yandex-cloud/yandex"]
+  }
+}

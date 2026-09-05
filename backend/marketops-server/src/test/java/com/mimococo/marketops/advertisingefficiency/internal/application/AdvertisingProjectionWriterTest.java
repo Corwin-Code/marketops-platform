@@ -72,6 +72,8 @@ class AdvertisingProjectionWriterTest {
     @BeforeEach
     void nothingStoredYet() {
         when(projection.findByKey(any(), anyString())).thenReturn(Optional.empty());
+        when(projection.upsertCase(any())).thenAnswer(call ->
+                ((AdvertisingProjectionRepository.CaseRow) call.getArgument(0)).id());
     }
 
     @Test
@@ -392,6 +394,15 @@ class AdvertisingProjectionWriterTest {
         AdvertisingProjectionRepository.CaseRow row = storedCase();
         assertThat(row.calculationKind()).isEqualTo("RECONCILIATION");
         assertThat(row.reconciliationRunId()).isEqualTo(run);
+    }
+
+    @Test void concurrentConflictUsesThePersistedIdentityForAllDependentEvidence() {
+        org.mockito.Mockito.doReturn(EXISTING).when(projection).upsertCase(any());
+        var written=write(calculation(protectionCase()));
+        assertThat(storedCase().id()).isNotEqualTo(EXISTING);
+        assertThat(written.cases().getFirst().caseId()).isEqualTo(EXISTING);
+        verify(projection,org.mockito.Mockito.atLeastOnce()).insertEvidence(any(),eq(EXISTING),any(),
+                any(),any(),any(),any(),any(),any(),any(),any(),any(),any());
     }
 
     private AdvertisingProjectionWriter.Written write(AdCaseCalculation calculation) {

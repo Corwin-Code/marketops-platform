@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "kind": "FINDING_AND_AC_EVIDENCE_SHARD",
-  "generatedAt": "2026-09-05T02:08:17.647925+00:00",
+  "generatedAt": "2026-09-05T03:26:36.179422+00:00",
   "owner": "command-controls",
   "normativeInputs": {
     "contract": {
@@ -22,7 +22,7 @@
     },
     "matchingAcCount": 60
   },
-  "status": "TARGETED_R12_248_PASSED_R15_FINANCE6_AND_FROZEN10_PASSED_WITH_WHOLE_BATCH_PARTIAL_FAILURE; CURRENT_OLD_SUITE_REWORK_AND_FINAL_FULL_VERIFICATION_PENDING",
+  "status": "TARGETED_R12_248_PASS; R15_FINANCE6_FROZEN10_SUITE_PASS_WITH_BATCH_PARTIAL_FAILURE; W1_R18_GATE8_PRIVILEGE10_TRANSMISSION7_SUITE_PASS_WITH_BATCH_PARTIAL_FAILURE; FINAL_FULL_AND_REMOTE_VERIFICATION_PENDING",
   "identityNotice": "Hashes identify the current inspected files, not the files necessarily tested by a preceding local run. Parent must replace pending status only with exact final measured commit/tree and current local/remote gate evidence.",
   "authorityBoundary": {
     "acceptedContractChanged": false,
@@ -167,6 +167,41 @@
         "AdvertisingOutcomeServiceTest": 18,
         "AdvertisingHumanWorkflowIT": 11
       }
+    },
+    {
+      "id": "source-r18-control-suite-pass-whole-run-failed",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT,AdBidWriteGateAdversarialIT,AdvertisingPrivilegeBoundaryIT,AdvertisingTransmissionBoundaryIT test > /tmp/slice3-vertical-control-r18.log 2>&1",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "codeHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 27,
+      "passed": 26,
+      "failures": 0,
+      "errors": 1,
+      "skips": 0,
+      "sourceSuitesPassed": {
+        "AdBidWriteGateAdversarialIT": 8,
+        "AdvertisingPrivilegeBoundaryIT": 10,
+        "AdvertisingTransmissionBoundaryIT": 7
+      },
+      "otherSuiteResult": {
+        "AdvertisingVerticalPathIT": {
+          "tests": 2,
+          "passed": 1,
+          "errors": 1
+        }
+      },
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r18.log",
+      "logSha256": "7daf4fff0f738e727f74dbdc81044351032e13db68b6c63ca601d224c0501b6c",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r18.log",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "environment": "No extra variables passed; execution owner confirms inherited safe local Testcontainers/JDK environment. Independent PostgreSQL and synthetic issuer credentials; productionWrites=false, no real Provider. Not a full environment inventory.",
+      "identityLimit": "Execution owner confirms clean W1 at start. Local targeted suite, not full clean verify and not GitHub CI.",
+      "finishedAt": "2026-09-05T11:14:29+08:00",
+      "elapsedSeconds": 43.125,
+      "errorsPreserved": [
+        "AdvertisingVerticalPathIT.acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory:147 NoSuchElementException: no proven-loss case produced. Source workstream diagnosis and rerun remain separate."
+      ]
     }
   ],
   "findings": [
@@ -292,7 +327,12 @@
         "AdBidCommandRequest is now recommendation/version/reservation only; ApprovalService seals in the final-approval transaction.",
         "Worker lease, transmission, status/readback and permitted retry consume the same historical authorization and expiry.",
         "Reconciliation expiry appends invalidation and escalates task responsibility without renewing approval or releasing uncertain reservations."
-      ]
+      ],
+      "additionalCurrentControlRun": {
+        "id": "source-r18-control-suite-pass-whole-run-failed",
+        "status": "APPLICABLE_GATE_PRIVILEGE_TRANSMISSION_TESTS_PASSED; WHOLE_BATCH_PARTIAL_FAILURE",
+        "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-r18-receipt.json"
+      }
     },
     {
       "id": "S3-DR-010",
@@ -451,13 +491,18 @@
       "sameClassScan": [
         "Every application-callable advertising command/reservation/containment/compensation/Bundle sink and its table/function grant was inspected, including a real pg_proc/has_function_privilege inventory.",
         "Caller actor/bundle/expiry and arbitrary GUC identity were removed from the public creator. The scan extended one-use physical backend/transaction binding to Manual/Bundle/Containment/Compensation and trusted Outcome Planner attestation.",
-        "A remaining app EXECUTE grant on V0050 reopen_ad_lineage_after_regression was found in the current database. The obsolete caller-role route is now revoked in V0058; actual isolated SQL confirms denial and the Java suite now asserts SQLSTATE 42501. Current Java/full execution remains pending."
+        "A remaining app EXECUTE grant on V0050 reopen_ad_lineage_after_regression was found in the current database. The obsolete caller-role route is now revoked in V0058; actual isolated SQL confirms denial and the Java suite now asserts SQLSTATE 42501. Current Java control suites passed in W1 r18; full validation remains pending."
       ],
       "transitiveImpact": [
         "Identity issuer is separately configured, default NOLOGIN/unconfigured and never provisioned with real credentials.",
         "All actor consumers recheck live credentials, authentication, step-up, roles and exact Store/affected Product authority.",
         "Baseline freezing now requires a trusted Planner payload attestation; shape-correct arbitrary app JSON cannot create approval authority."
-      ]
+      ],
+      "additionalCurrentControlRun": {
+        "id": "source-r18-control-suite-pass-whole-run-failed",
+        "status": "APPLICABLE_GATE_PRIVILEGE_TRANSMISSION_TESTS_PASSED; WHOLE_BATCH_PARTIAL_FAILURE",
+        "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-r18-receipt.json"
+      }
     },
     {
       "id": "S3-DR-012",
@@ -653,7 +698,12 @@
         "Execution worker and Raw write port retain actual request/response custody and immutable operation snapshots.",
         "Retry requires independent current database proof and exact prior ownership; compensation uses distinct RESTORE identity and cannot overwrite a third-party value.",
         "Console readback now carries its own bid unit; downstream Outcome/release reads the actual observed value, currency and unit instead of trusting the match label."
-      ]
+      ],
+      "additionalCurrentControlRun": {
+        "id": "source-r18-control-suite-pass-whole-run-failed",
+        "status": "APPLICABLE_GATE_PRIVILEGE_TRANSMISSION_TESTS_PASSED; WHOLE_BATCH_PARTIAL_FAILURE",
+        "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-r18-receipt.json"
+      }
     },
     {
       "id": "S3-DR-013",
@@ -934,7 +984,12 @@
         "Command and Manual execution share held exposure; pending recommendations cannot reserve.",
         "Preview and gates consume the same scope-level exposure snapshot with per-axis usage/state/limit/headroom, rather than separate arithmetic.",
         "Outcome observations remain durable when release is not yet allowed; legitimate release can be followed by quarantine reacquisition without stealing another holder."
-      ]
+      ],
+      "additionalCurrentControlRun": {
+        "id": "source-r18-control-suite-pass-whole-run-failed",
+        "status": "APPLICABLE_GATE_PRIVILEGE_TRANSMISSION_TESTS_PASSED; WHOLE_BATCH_PARTIAL_FAILURE",
+        "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-r18-receipt.json"
+      }
     },
     {
       "id": "S3-DR-016",
@@ -1102,13 +1157,18 @@
       "sameClassScan": [
         "Inspected all five containment kinds, entity/affected-set/version/Store/account scope resolution, explicit human Stop, automatic regression, reenablement, technical attestation and command/manual invalidation.",
         "Digest equality was insufficient for overlapping affected sets; canonical membership now controls intersection. Reenablement requires independent evidence and new exact authority, and cannot resurrect historical approvals.",
-        "Real privilege inventory found the obsolete V0050 caller-role reopen route still executable; its applied exact revoke closes a duplicate ingress. The old gate fixture now uses explicit privilege and permanent-invalidation assertions; the SQL probe passed and Java verification remains pending."
+        "Real privilege inventory found the obsolete V0050 caller-role reopen route still executable; its applied exact revoke closes a duplicate ingress. The old gate fixture now uses explicit privilege and permanent-invalidation assertions; the SQL probe passed and Java control suites passed in W1 r18; full validation remains pending."
       ],
       "transitiveImpact": [
         "Pending approval/command/manual assets are invalidated while already transmitted facts retain observation-only reconciliation.",
         "Task regression handling and Finance settled-contradiction review preserve original lineage and task ages; a conclusive no-improvement contradiction does not fabricate regression.",
         "Store/account technical Stop remains separately scoped; business roles cannot manufacture security attestation."
-      ]
+      ],
+      "additionalCurrentControlRun": {
+        "id": "source-r18-control-suite-pass-whole-run-failed",
+        "status": "APPLICABLE_GATE_PRIVILEGE_TRANSMISSION_TESTS_PASSED; WHOLE_BATCH_PARTIAL_FAILURE",
+        "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-r18-receipt.json"
+      }
     },
     {
       "id": "S3-DR-017",
@@ -1268,7 +1328,12 @@
         "Bundle publication uses Maker proposal, independent Ops endorsement and distinct Owner activation; prior authority is retired atomically and permanently invalidated.",
         "Ordinary Ops final approval is allowed only through an exact accepted promotion with lower-risk canonical axes; any hard trigger retains Material Owner authority.",
         "Production enablement remains false. Engineering fictional Gate fixtures do not verify real OZON/WILDBERRIES Provider capability or authorize external transport."
-      ]
+      ],
+      "additionalCurrentControlRun": {
+        "id": "source-r18-control-suite-pass-whole-run-failed",
+        "status": "APPLICABLE_GATE_PRIVILEGE_TRANSMISSION_TESTS_PASSED; WHOLE_BATCH_PARTIAL_FAILURE",
+        "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-r18-receipt.json"
+      }
     }
   ],
   "acceptanceCriteria": [
@@ -8303,7 +8368,6 @@
     }
   ],
   "pending": [
-    "Exact obsolete caller-role reopen revoke and faithful old gate/privilege suites are now applied; independent SQL probe passed, Java/current full validation pending",
     "Full repository local validation on immutable final rework commit/tree",
     "Protected-main upgrade, complete same-class/adversarial verification and current browser/capacity evidence",
     "One authorized append-only branch push and one Draft PR",

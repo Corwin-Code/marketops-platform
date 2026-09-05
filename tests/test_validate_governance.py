@@ -2908,7 +2908,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
         return (
             Path(__file__).resolve().parents[1]
             / "docs/03-work-items"
-            / "SLICE-V1-002-stockout-availability-risk-and-accountable-response.md"
+            / "SLICE-V1-003-advertising-traffic-efficiency.md"
         ).read_bytes()
 
     def validate(
@@ -2928,6 +2928,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
 
     def test_exact_v1_state_is_valid(self) -> None:
         self.assertEqual([], self.validate())
+        self.assertEqual([], self.validate(slice_contract_bytes=self.slice_contract_bytes()))
 
     def test_old_phase_wp_design_state_is_rejected(self) -> None:
         current = self.current().replace(
@@ -3117,10 +3118,12 @@ class V1CurrentStateContractTests(unittest.TestCase):
 
     def test_contract_byte_change_with_old_hash_is_rejected(self) -> None:
         mutated = self.slice_contract_bytes().replace(
-            b"Stockout & Availability Risk",
-            b"Stockout & Availability R1sk",
+            b"Advertising & Traffic Efficiency",
+            b"Advertising & Traffic Efficiencx",
             1,
         )
+        self.assertNotEqual(mutated, self.slice_contract_bytes())
+        self.assertEqual(len(mutated), len(self.slice_contract_bytes()))
         errors = self.validate(slice_contract_bytes=mutated)
         self.assertTrue(any("immutable" in error for error in errors))
         self.assertTrue(any("does not match" in error for error in errors))

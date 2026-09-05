@@ -2,7 +2,7 @@
 
 This shard covers seven Frozen Findings and all **60** distinct associated ACs. Every AC text was checked against the exact accepted Contract. All 22 original findings were read to identify shared dependencies. It does not modify the accepted Contract, Frozen Finding Set or Controller verdict.
 
-**Current status:** canonical baseline, Ordinary approval and control corrections passed the coherent 248-test source-r12 superset. The new Finance review V0065 correction and final full/remote verification remain pending; 88-test and 14-test runs are historical records.
+**Current status:** canonical baseline, Ordinary approval and control corrections passed the coherent 248-test source-r12 superset. FinanceReview6 and FrozenOutcome10 subsequently passed locally in r15, and W1 Gate8/Privilege10/Transmission7 passed in r18. Both later batches retain their recorded unrelated failures; final full/remote verification remains pending. The 88-test and 14-test runs are historical records.
 
 ## Preserved executed runs
 
@@ -95,7 +95,7 @@ Source run `source-r12` completed at 2026-09-05 09:53:38 Asia/Taipei: **248/248 
 
 The Ordinary positive uses the real Maker → independent Ops endorsement → same Ops final approval → command path and a genuine trusted planner proof. Bundle promotion references are frozen at the initial INSERT, with the reciprocal FK deferred only to transaction commit. Orphan commit, missing Owner evidence, inactive promotion and later content mutation are rejected. Cause-bound fixture transformation now asserts its exact source template; the conservative MaxCPC headroom predicate remains enforced.
 
-This result precedes the additive Finance review V0065 correction. That correction and final repository-wide/remote verification remain pending. The additional AC shard maps 20 new criteria and strengthens AC006, producing 80 unique criteria with the original shard; a source/test mapping is not independent acceptance or Controller approval.
+This result precedes the additive Finance review V0065 correction. That correction subsequently passed FinanceReview6/FrozenOutcome10 locally in r15; final repository-wide/remote verification remains pending. The additional AC shard maps 20 new criteria and strengthens AC006, producing 80 unique criteria with the original shard; a source/test mapping is not independent acceptance or Controller approval.
 
 ## Per-finding same-class and transitive review
 
@@ -115,7 +115,7 @@ Transitive impact:
 
 - Every application-callable advertising command/reservation/containment/compensation/Bundle sink and its table/function grant was inspected, including a real pg_proc/has_function_privilege inventory.
 - Caller actor/bundle/expiry and arbitrary GUC identity were removed from the public creator. The scan extended one-use physical backend/transaction binding to Manual/Bundle/Containment/Compensation and trusted Outcome Planner attestation.
-- A remaining app EXECUTE grant on V0050 reopen_ad_lineage_after_regression was found in the current database. The obsolete caller-role route is now revoked in V0058; actual isolated SQL confirms denial and the Java suite now asserts SQLSTATE 42501. Current Java/full execution remains pending.
+- A remaining app EXECUTE grant on V0050 reopen_ad_lineage_after_regression was found in the current database. The obsolete caller-role route is now revoked in V0058; actual isolated SQL confirms denial and the Java suite now asserts SQLSTATE 42501. W1 r18 subsequently passed the current Java control suites; full verification remains pending.
 
 Transitive impact:
 
@@ -163,7 +163,7 @@ Transitive impact:
 
 - Inspected all five containment kinds, entity/affected-set/version/Store/account scope resolution, explicit human Stop, automatic regression, reenablement, technical attestation and command/manual invalidation.
 - Digest equality was insufficient for overlapping affected sets; canonical membership now controls intersection. Reenablement requires independent evidence and new exact authority, and cannot resurrect historical approvals.
-- Real privilege inventory found the obsolete V0050 caller-role reopen route still executable; its applied exact revoke closes a duplicate ingress. The old gate fixture now uses explicit privilege and permanent-invalidation assertions; the SQL probe passed and Java verification remains pending.
+- Real privilege inventory found the obsolete V0050 caller-role reopen route still executable; its applied exact revoke closes a duplicate ingress. The old gate fixture now uses explicit privilege and permanent-invalidation assertions; the SQL probe and W1 r18 Java control suites passed; full verification remains pending.
 
 Transitive impact:
 
@@ -182,3 +182,7 @@ Transitive impact:
 - Bundle publication uses Maker proposal, independent Ops endorsement and distinct Owner activation; prior authority is retired atomically and permanently invalidated.
 - Ordinary Ops final approval is allowed only through an exact accepted promotion with lower-risk canonical axes; any hard trigger retains Material Owner authority.
 - Production enablement remains false. Engineering fictional Gate fixtures do not verify real OZON/WILDBERRIES Provider capability or authorize external transport.
+
+## W1 r18 control verification
+
+Exact W1 `60638b1fc1a227b50f4b3ede1ba0bb983407bfdc` passed Gate **8/8**, Privilege **10/10** and Transmission **7/7** in source-r18. Its whole batch remains **27 tests / 26 passed / 0 failures / 1 error / 0 skipped**: the Vertical positive journey lacked a proven-loss Case. The original failure log is preserved with SHA-256 `7daf4fff0f738e727f74dbdc81044351032e13db68b6c63ca601d224c0501b6c`. `command-controls-r18-receipt.json` contains the exact command, time, execution scope and limitations. This result does not replace full clean verification or final remote CI.

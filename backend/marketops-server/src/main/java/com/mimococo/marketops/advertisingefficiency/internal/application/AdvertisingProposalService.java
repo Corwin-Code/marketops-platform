@@ -196,7 +196,7 @@ class AdvertisingProposalService {
                 // before.
                 com.mimococo.marketops.advertisingefficiency.internal.domain
                         .AdPriorityPolicy.workflowPriority(scored.ranking().score()),
-                expectedEffect(scored, candidate),
+                expectedEffect(scored, candidate, policy.get().limits()),
                 riskLabel(scored.decision().lane()), VALIDATION_HORIZON_DAYS,
                 Duration.ofMinutes(responseProfile.get().actionMinutes()),
                 calculationRunId, entityVersionDigest, List.of())));
@@ -206,7 +206,8 @@ class AdvertisingProposalService {
 
     /** What the case expects the change to achieve, in values the console shows. */
     private static Map<String, String> expectedEffect(AdCaseCalculation.ScoredCase scored,
-                                                      BidCandidate candidate) {
+                                                      BidCandidate candidate,
+                                                      com.mimococo.marketops.advertisingefficiency.internal.domain.BidStepLimits limits) {
         Map<String, String> effect = new java.util.LinkedHashMap<>();
         effect.put("cause", scored.decision().cause().name());
         effect.put("lane", scored.decision().lane().name());
@@ -219,9 +220,12 @@ class AdvertisingProposalService {
             effect.put("interpretation", "EXPOSURE_LIMIT_ONLY_NOT_PROFITABILITY_OR_HEALTH");
             effect.put("maxCpc", "UNAVAILABLE");
             effect.put("financialUncertainty", String.join(",",scored.decision().blockerCodes()));
-        } else if (scored.maxCpc().writeGrade()
-                && com.mimococo.marketops.advertisingefficiency.internal.domain.AdBidUnitConversion.toMajor(candidate.providerNormalizedAmount(),candidate.bidUnitCode()).compareTo(scored.maxCpc().ceiling().amount()) > 0) {
-            effect.put("interpretation", "RECOVERY_IN_PROGRESS_NOT_HEALTHY");
+        } else if (scored.maxCpc().writeGrade()) {
+            BigDecimal conservativeCeiling = limits.applyCeilingHeadroom(ceilingAmount(scored.maxCpc(),candidate.bidUnitCode()));
+            effect.put("conservativeCeiling",conservativeCeiling.toPlainString());
+            effect.put("interpretation",BidCandidate.PROTECTION_DECREASE.equals(candidate.direction())
+                    && candidate.providerNormalizedAmount().compareTo(conservativeCeiling)>0
+                    ?"RECOVERY_IN_PROGRESS_NOT_HEALTHY":"OUTCOME_VERIFICATION_REQUIRED");
         }
         return Map.copyOf(effect);
     }

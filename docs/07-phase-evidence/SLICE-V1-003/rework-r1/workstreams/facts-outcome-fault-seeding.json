@@ -1,0 +1,965 @@
+{
+  "schemaVersion": 1,
+  "kind": "SYSTEMATIC_FAULT_SEEDING_MATRIX",
+  "owner": "source_audit",
+  "generatedAt": "2026-09-05T04:07:25.660321+00:00",
+  "scope": [
+    "S3-DR-002",
+    "S3-DR-003",
+    "S3-DR-004",
+    "S3-DR-005",
+    "S3-DR-015"
+  ],
+  "verificationStatus": "TARGETED_NAMED_ASSERTIONS_PASSED_FINAL_CLEAN_AND_CI_PENDING",
+  "methodology": "Each row names an intentionally altered input/authority, the reached boundary and asserted response. Successful DB constraint/privilege refusal is labeled separately from actual calculator/Planner/Outcome execution. Failed development iterations are preserved in the traceability runs and are not counted as passing fault seeds. No coverage percentage substitutes for these assertions.",
+  "baselineAndProviderLimit": "FrozenOutcome fault fixtures explicitly use synthetic pre-action golden baselines for isolation; separate source-r29 VerticalPathIT proves actual fact/Metric/Planner-derived baseline, real application worker and in-process fake Provider Raw/readback. All actual Provider connections remain absent and production_write_enabled=false.",
+  "rows": [
+    {
+      "id": "FACTS-OUTCOME-FAULT-001",
+      "findingIds": [
+        "S3-DR-002"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+        "method": "missingEconomicsCreatesResponsibilityAndNeverAFabricatedCandidate",
+        "line": 127
+      },
+      "seededFaultOrAdverseBoundary": "Omit cost authority and settled fee/tax facts while accepting actual official spend, traffic and sales; run real MetricEngine and advertising refresh.",
+      "expectedRefusalOrState": "A real Case and responsibility Task remain visible; zero proposals/candidates/baselines/commands and zero fixture Provider calls.",
+      "boundaryActuallyReached": "REAL_PG_METRIC_ENGINE_REFRESH_PROPOSAL",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r29",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r29.log",
+      "logSha256": "234b28703331f19c2a0b1983639a7e3332ee43edfa62cdf95419bc2c0dd2af39",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-002",
+      "findingIds": [
+        "S3-DR-003"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java",
+        "method": "incompleteLineMoneyCannotDisappearInsideSum",
+        "line": 58
+      },
+      "seededFaultOrAdverseBoundary": "One atomic affected line has null revenue/currency while its peer is known.",
+      "expectedRefusalOrState": "Object profit unresolved with LINE_ECONOMICS_OR_MAPPING_UNRESOLVED; no SQL/domain partial total masquerades as complete.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-003",
+      "findingIds": [
+        "S3-DR-003"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java",
+        "method": "mixedCurrenciesFailTheWholeAtomicObject",
+        "line": 64
+      },
+      "seededFaultOrAdverseBoundary": "Mix RUB and USD affected line revenue.",
+      "expectedRefusalOrState": "Whole object profit unresolved.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-004",
+      "findingIds": [
+        "S3-DR-003"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java",
+        "method": "missingOneVariantCpaDoesNotReuseTheOtherPolicy",
+        "line": 69
+      },
+      "seededFaultOrAdverseBoundary": "Remove only the second variant CPA policy.",
+      "expectedRefusalOrState": "Profit remains measurable, allowable spend absent; no first-policy fallback.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-005",
+      "findingIds": [
+        "S3-DR-003"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java",
+        "method": "confirmedZeroSpendLeavesTheRatioUndefined",
+        "line": 75
+      },
+      "seededFaultOrAdverseBoundary": "Use confirmed spend zero.",
+      "expectedRefusalOrState": "Absolute contribution3820 is retained; profit per ad RUB is UNDEFINED, not zero/infinity.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-006",
+      "findingIds": [
+        "S3-DR-003"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java",
+        "method": "estimatedInputCannotBecomeConfirmedProfit",
+        "line": 81
+      },
+      "seededFaultOrAdverseBoundary": "Downgrade one cost input to PROVISIONAL_OR_ESTIMATED.",
+      "expectedRefusalOrState": "Computed monetary result is insufficient for write.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-007",
+      "findingIds": [
+        "S3-DR-003"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java",
+        "method": "affectedSetOrderCannotChooseWhichCostOrPolicyWins",
+        "line": 52
+      },
+      "seededFaultOrAdverseBoundary": "Reverse two variants with quantities10 and1 and different CPA ratios/costs.",
+      "expectedRefusalOrState": "Entire calculated result equals original ordering.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-008",
+      "findingIds": [
+        "S3-DR-003"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingAttributedEconomicsTest.java",
+        "method": "retainedCohortDoesNotChargeItsReturnLossTwice",
+        "line": 88
+      },
+      "seededFaultOrAdverseBoundary": "Retained cohort already incorporates return outcome while a nonzero return-loss Metric also exists.",
+      "expectedRefusalOrState": "Contribution3700/profit3600; returned sales are not charged the same return loss twice.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-009",
+      "findingIds": [
+        "S3-DR-003",
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "method": "partialMissingMoneyAndTrafficNeverDisappearInsideSqlSum",
+        "line": 60
+      },
+      "seededFaultOrAdverseBoundary": "Second accepted official subreport has null spend and clicks.",
+      "expectedRefusalOrState": "Real SQL spend/clicks stay null although temporal coverage is1.",
+      "boundaryActuallyReached": "REAL_PG_CANONICAL_FACT_REPOSITORY_OR_GATHERER",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-010",
+      "findingIds": [
+        "S3-DR-003",
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "method": "completeSubreportsDoNotInventCoverageOfMissingDays",
+        "line": 65
+      },
+      "seededFaultOrAdverseBoundary": "Only half of required observation interval is covered.",
+      "expectedRefusalOrState": "Real SQL union coverage0.5.",
+      "boundaryActuallyReached": "REAL_PG_CANONICAL_FACT_REPOSITORY_OR_GATHERER",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-011",
+      "findingIds": [
+        "S3-DR-003",
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "method": "overlapIsUnqualifiedEvenWhenUnionCoversTheWholeWindow",
+        "line": 69
+      },
+      "seededFaultOrAdverseBoundary": "Add overlapping complete official reports over an otherwise fully covered interval.",
+      "expectedRefusalOrState": "Coverage remains1 but everyWindowComplete=false.",
+      "boundaryActuallyReached": "REAL_PG_CANONICAL_FACT_REPOSITORY_OR_GATHERER",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-012",
+      "findingIds": [
+        "S3-DR-003",
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "method": "laterCorrectionDoesNotRewriteWhatWasAvailableAtActionTime",
+        "line": 74
+      },
+      "seededFaultOrAdverseBoundary": "Accept a spend correction100→70 after the original asOf.",
+      "expectedRefusalOrState": "Historical asOf remains100; later read70; valid window remains complete.",
+      "boundaryActuallyReached": "REAL_PG_CANONICAL_FACT_REPOSITORY_OR_GATHERER",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-013",
+      "findingIds": [
+        "S3-DR-003",
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "method": "differentCurrenciesNeverBecomeOneMonetaryTotal",
+        "line": 81
+      },
+      "seededFaultOrAdverseBoundary": "Accepted reports use RUB and USD in adjacent windows.",
+      "expectedRefusalOrState": "Aggregate currency unresolved.",
+      "boundaryActuallyReached": "REAL_PG_CANONICAL_FACT_REPOSITORY_OR_GATHERER",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-014",
+      "findingIds": [
+        "S3-DR-003",
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "method": "unmappedLineIsRetainedAsUnknownInsteadOfDisappearingFromCoverageDenominator",
+        "line": 151
+      },
+      "seededFaultOrAdverseBoundary": "Accept9 sales on a listing lacking variant mapping.",
+      "expectedRefusalOrState": "Event count9 retained; productVariant=null and monetary total unresolved.",
+      "boundaryActuallyReached": "REAL_PG_CANONICAL_FACT_REPOSITORY_OR_GATHERER",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-015",
+      "findingIds": [
+        "S3-DR-003",
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "method": "retainedCohortCannotBeLabeledSettledWithoutActualFinancialFacts",
+        "line": 172
+      },
+      "seededFaultOrAdverseBoundary": "Retained10 units first lacks financial facts, then only4 settled, then all10.",
+      "expectedRefusalOrState": "No complete Settled claim for missing/partial cohort; full4+6 yields750.",
+      "boundaryActuallyReached": "REAL_PG_CANONICAL_FACT_REPOSITORY_OR_GATHERER",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-016",
+      "findingIds": [
+        "S3-DR-003",
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "method": "aFinancialLineCannotBeCountedTwiceThroughAmbiguousRetainedCohorts",
+        "line": 182
+      },
+      "seededFaultOrAdverseBoundary": "Two retained cohorts reuse ambiguous native order/line for one financial line.",
+      "expectedRefusalOrState": "Financial completeness=false.",
+      "boundaryActuallyReached": "REAL_PG_CANONICAL_FACT_REPOSITORY_OR_GATHERER",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-017",
+      "findingIds": [
+        "S3-DR-003",
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "method": "conflictedSpecificPolicyNeverFallsBackToBroaderPolicy",
+        "line": 201
+      },
+      "seededFaultOrAdverseBoundary": "Introduce conflicting applicable specific CPA versions with an available organization fallback.",
+      "expectedRefusalOrState": "Resolution empty while conflict applies; after precise interval closure original specific policy resolves.",
+      "boundaryActuallyReached": "REAL_PG_CANONICAL_FACT_REPOSITORY_OR_GATHERER",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-018",
+      "findingIds": [
+        "S3-DR-003",
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
+        "method": "aLaterMetricNeverErasesTheEconomicsVisibleAtAnEarlierDecisionInstant",
+        "line": 212
+      },
+      "seededFaultOrAdverseBoundary": "Store later canonical cost900 after earlier cost100 and query each logical asOf.",
+      "expectedRefusalOrState": "Earlier advertising gather uses100; later gather900.",
+      "boundaryActuallyReached": "REAL_PG_CANONICAL_FACT_REPOSITORY_OR_GATHERER",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-019",
+      "findingIds": [
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingPurposeFreshnessTest.java",
+        "method": "newlyAcceptedOldSourceIsStillStale",
+        "line": 33
+      },
+      "seededFaultOrAdverseBoundary": "Accept a one-hour-old official source under a30-minute bound.",
+      "expectedRefusalOrState": "Purpose freshness returns nonempty failures despite current acceptance.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-020",
+      "findingIds": [
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingPurposeFreshnessTest.java",
+        "method": "taskVisibilityCannotPromoteTheSameFactIntoWriteGrade",
+        "line": 38
+      },
+      "seededFaultOrAdverseBoundary": "Use45-minute-old source with Task120-minute and Write30-minute profiles.",
+      "expectedRefusalOrState": "Task purpose succeeds; write purpose fails independently.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-021",
+      "findingIds": [
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingPurposeFreshnessTest.java",
+        "method": "missingCoverageOrOpenCorrectionCannotPassACompleteWindowFlag",
+        "line": 53
+      },
+      "seededFaultOrAdverseBoundary": "Independently remove coverage and open correction window under complete/closed policy.",
+      "expectedRefusalOrState": "Both changes cause purpose failures.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-022",
+      "findingIds": [
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingPurposeFreshnessTest.java",
+        "method": "absentProfileHasAnExplicitUnresolvedReason",
+        "line": 58
+      },
+      "seededFaultOrAdverseBoundary": "Remove exact Task purpose profile.",
+      "expectedRefusalOrState": "eligible=false,expiresAt=null,exact FRESHNESS_PROFILE_UNRESOLVED reason.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-023",
+      "findingIds": [
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingQualificationBoundaryTest.java",
+        "method": "aRetainedConversionStillUsesTheIndependentlyMeasuredCompletedCount",
+        "line": 58
+      },
+      "seededFaultOrAdverseBoundary": "Keep10 Retained events fixed while independent Completed count falls20→19→0.",
+      "expectedRefusalOrState": "Minimum20 qualifies only20; missing/zero Completed never borrowed from Retained.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-024",
+      "findingIds": [
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingQualificationBoundaryTest.java",
+        "method": "everyPublishedSampleSpendAndWindowBoundaryMustIndependentlyPass",
+        "line": 63
+      },
+      "seededFaultOrAdverseBoundary": "Independently tighten required Completed21,Retained11,traffic101,spend100.0001 or window29days against20/10/100/100/30 facts.",
+      "expectedRefusalOrState": "All five isolated boundary violations return qualification=false.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-025",
+      "findingIds": [
+        "S3-DR-004"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingQualificationBoundaryTest.java",
+        "method": "goodSamplesCannotOverrideMissingComparableHistoryOrAProviderIncident",
+        "line": 70
+      },
+      "seededFaultOrAdverseBoundary": "Keep good samples while removing comparable history or setting Provider incident open.",
+      "expectedRefusalOrState": "Both cases remain unqualified.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-026",
+      "findingIds": [
+        "S3-DR-005"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityLexicographicTest.java",
+        "method": "earlierSloOutranksArbitrarilyLargeLaterCommercialTerms",
+        "line": 24
+      },
+      "seededFaultOrAdverseBoundary": "Give later SLO candidate enormous999999999 financial terms.",
+      "expectedRefusalOrState": "Earlier deadline still ranks first.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-027",
+      "findingIds": [
+        "S3-DR-005"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityLexicographicTest.java",
+        "method": "criticalExposurePrecedesSpend",
+        "line": 32
+      },
+      "seededFaultOrAdverseBoundary": "Lower-priority candidate spend999999999 competes with larger required critical exposure.",
+      "expectedRefusalOrState": "Critical exposure remains lexicographically prior.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-028",
+      "findingIds": [
+        "S3-DR-005"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityLexicographicTest.java",
+        "method": "missingIsExplicitAndDifferentFromConfirmedZero",
+        "line": 36
+      },
+      "seededFaultOrAdverseBoundary": "Compare unresolved loss with confirmed zero.",
+      "expectedRefusalOrState": "Missing factor is null with UNRESOLVED display reason; known zero ranks ahead.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-029",
+      "findingIds": [
+        "S3-DR-005"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityLexicographicTest.java",
+        "method": "unrelatedWeightsCannotChangeCanonicalOrder",
+        "line": 47
+      },
+      "seededFaultOrAdverseBoundary": "Change legacy weights to0 and999999999.",
+      "expectedRefusalOrState": "Canonical ranking for same inputs compares equal.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-030",
+      "findingIds": [
+        "S3-DR-005"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdPriorityLexicographicTest.java",
+        "method": "independentProfitAxesRemainOrderedAcrossAllInputPermutations",
+        "line": 61
+      },
+      "seededFaultOrAdverseBoundary": "Shuffle candidate order24 times; increase later ratio/spend dramatically and include missing axes.",
+      "expectedRefusalOrState": "Exact independent absolute/ratio/missing ordering remains stable for every permutation.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-031",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+        "method": "absentActualCompanySalesKeepsCriticalUnitUnknownAndReservationHeld",
+        "line": 155
+      },
+      "seededFaultOrAdverseBoundary": "Omit actual Completed/company sales and complete coverage for a frozen required unit.",
+      "expectedRefusalOrState": "Actual service verdict INDETERMINATE; reservation remains held; tryRelease=false.",
+      "boundaryActuallyReached": "REAL_PG_OUTCOME_SERVICE_AND_RELEASE_GATE",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-032",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+        "method": "completeSourceCoverageCanProveZeroCompanyAndCriticalSalesRegression",
+        "line": 161
+      },
+      "seededFaultOrAdverseBoundary": "Supply full source coverage but no sales against nonzero frozen baseline.",
+      "expectedRefusalOrState": "Actual zero is REGRESSED, containment opens and reservation remains held.",
+      "boundaryActuallyReached": "REAL_PG_OUTCOME_SERVICE_AND_CONTAINMENT",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-033",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+        "method": "lateCompletedSalesRegressionPreservesHistoryAndReacquiresQuarantine",
+        "line": 167
+      },
+      "seededFaultOrAdverseBoundary": "After early successful safety, supersede Completed1000 with500.",
+      "expectedRefusalOrState": "OPERATIONAL_REVISED revision2 is REGRESSED, earlier UNCHANGED immutable, hold reacquired.",
+      "boundaryActuallyReached": "REAL_PG_OUTCOME_REVISION_AND_CONTAINMENT",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-034",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+        "method": "ownerBlockingProviderIncidentCannotPassOtherwiseCompleteSalesSafety",
+        "line": 178
+      },
+      "seededFaultOrAdverseBoundary": "Open Owner-blocking report Provider incident with otherwise complete sales.",
+      "expectedRefusalOrState": "Actual service remains INDETERMINATE and cannot release.",
+      "boundaryActuallyReached": "REAL_PG_OUTCOME_PURPOSE_FRESHNESS",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-035",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+        "method": "aReviewedActionCannotSwapItsFrozenBaseline",
+        "line": 188
+      },
+      "seededFaultOrAdverseBoundary": "Attempt direct migration-level replacement of command baseline ID.",
+      "expectedRefusalOrState": "DB trigger rejects reviewed action baseline replacement before it can affect observations.",
+      "boundaryActuallyReached": "DATABASE_MUTATION_TRIGGER_REFUSAL",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-036",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+        "method": "matureActualSettlementContradictionDoesNotOverwritePriorRetainedSuccess",
+        "line": 217
+      },
+      "seededFaultOrAdverseBoundary": "After primary Retained success publish actual financial800 contradicting1000 baseline.",
+      "expectedRefusalOrState": "SETTLED REGRESSED; prior Retained IMPROVED preserved; containment plus exactly one Finance secondary task and one original responsibility.",
+      "boundaryActuallyReached": "REAL_PG_OUTCOME_SERVICE_FINANCE_AND_HISTORY",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-037",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+        "method": "matureUnallocatedFinancialFactCannotBecomeSettledEfficiencySuccess",
+        "line": 232
+      },
+      "seededFaultOrAdverseBoundary": "Publish favorable actual financial1100 but omit exact ad settlement allocation.",
+      "expectedRefusalOrState": "SETTLED INDETERMINATE, profit null, no false containment/Finance contradiction; company1100 remains visible.",
+      "boundaryActuallyReached": "REAL_PG_FINANCIAL_COHORT_AND_OUTCOME",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-038",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "method": "insufficientCompanyHistoryFreezesAnExplicitIncompletePlanAndCannotBeSelected",
+        "line": 159
+      },
+      "seededFaultOrAdverseBoundary": "Make canonical Completed source coverage incomplete before actual manual Planner.",
+      "expectedRefusalOrState": "Attested baseline remains INCOMPLETE with OUTCOME_BASELINE_INSUFFICIENT; packet cannot be selected; original responsibility remains.",
+      "boundaryActuallyReached": "REAL_PG_PLANNER_AND_MANUAL_SELECTION_GATE",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-039",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "method": "applicationCannotInsertOrSelfAttestACanonicalLookingBaseline",
+        "line": 185
+      },
+      "seededFaultOrAdverseBoundary": "App role attempts direct baseline INSERT, private attestation INSERT and issuer grant function.",
+      "expectedRefusalOrState": "All three denied by actual privileges; valid trusted baseline remains canonical.",
+      "boundaryActuallyReached": "DATABASE_PRIVILEGE_BOUNDARY_REFUSAL",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-040",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "method": "aPlannerProofRejectsChangedValuesAnotherTransactionAndReplay",
+        "line": 198
+      },
+      "seededFaultOrAdverseBoundary": "With actual trusted proof mutate company sales to999999, bind wrong backend, bind wrong transaction or replay consumed proof.",
+      "expectedRefusalOrState": "All four rejected by exact canonical planner proof gate; original exact proof succeeds once.",
+      "boundaryActuallyReached": "REAL_PG_SECURITY_DEFINER_FREEZE_PROOF_GATE",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-041",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+        "method": "evenAnAttestedPayloadCannotOmitAStageOrChangeItsOwnerPolicy",
+        "line": 228
+      },
+      "seededFaultOrAdverseBoundary": "Remove one of three stages from signed payload, then change typed Owner material profit threshold.",
+      "expectedRefusalOrState": "Freeze refuses canonical shape; existing attested baseline becomes noncanonical after policy change.",
+      "boundaryActuallyReached": "REAL_PG_FREEZE_SHAPE_AND_CURRENT_POLICY_VALIDATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-042",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/DualAxisVerdictTest.java",
+        "method": "oneAxisCannotPayForTheOther",
+        "line": 49
+      },
+      "seededFaultOrAdverseBoundary": "Raise profit per RUB0.10→9.00 while absolute contribution falls50000→100 beyond band.",
+      "expectedRefusalOrState": "Dual-axis verdict is REGRESSION; no blended score compensates a failed axis.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-043",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/DualAxisVerdictTest.java",
+        "method": "incompleteSalesEvidenceIsUnresolved",
+        "line": 83
+      },
+      "seededFaultOrAdverseBoundary": "Both profit axes improve but sales preservation evidence is incomplete.",
+      "expectedRefusalOrState": "Dual-axis verdict remains UNRESOLVED.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-044",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/DualAxisVerdictTest.java",
+        "method": "absentThresholdIsUnresolved",
+        "line": 115
+      },
+      "seededFaultOrAdverseBoundary": "Remove the required absolute materiality threshold.",
+      "expectedRefusalOrState": "No success verdict can be constructed from an absent threshold.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-045",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/SalesPreservationTest.java",
+        "method": "healthyTotalCannotRescueARequiredUnit",
+        "line": 31
+      },
+      "seededFaultOrAdverseBoundary": "Company total passes while a frozen required critical unit fails.",
+      "expectedRefusalOrState": "Sales preservation NOT_PRESERVED despite aggregate improvement.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-046",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/SalesPreservationTest.java",
+        "method": "unresolvedRequiredUnitIsNeverAPass",
+        "line": 53
+      },
+      "seededFaultOrAdverseBoundary": "Company passes but required critical-unit evidence is unresolved.",
+      "expectedRefusalOrState": "Sales preservation remains unresolved, never PASS.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-047",
+      "findingIds": [
+        "S3-DR-015"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/SalesPreservationTest.java",
+        "method": "knownCriticalFailureIsNotSilencedByUnknownTotal",
+        "line": 66
+      },
+      "seededFaultOrAdverseBoundary": "Required unit has a measured failure while aggregate evidence is unknown.",
+      "expectedRefusalOrState": "Measured failure still yields NOT_PRESERVED; unknown aggregate cannot suppress danger.",
+      "boundaryActuallyReached": "DOMAIN_CALCULATOR",
+      "observed": "PASS: the cited named method completed with every declared assertion; its containing suite had zero failures/errors/skips in the cited run.",
+      "run": "source-r17",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r17.log",
+      "logSha256": "7d6072d4f0d1455f3df7a8fa702006804aabfb92ae18a63d91fd4f3348965009",
+      "proofLimit": "Named assertions only; this is not final clean/CI closure."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-048",
+      "findingIds": [
+        "S3-DR-002"
+      ],
+      "criterionIds": [
+        "S3-AC-062"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+        "method": "concurrentDifferentAsOfWithoutQualificationPoliciesKeepsOneTaskPerActualCause",
+        "line": 164
+      },
+      "seededFaultOrAdverseBoundary": "Cancel every optimization qualification policy and launch four actual refreshes at distinct microsecond asOf values, so no qualification-period upsert can accidentally serialize Case creation.",
+      "expectedRefusalOrState": "All refreshes complete; exactly two legitimate cause identities remain, each with exactly one Case and one responsibility Task. No candidate, command or Provider call is fabricated.",
+      "boundaryActuallyReached": "REAL_PG_CONCURRENT_REFRESH_CASE_UPSERT_RESPONSIBILITY",
+      "observed": "PASS: named method completed in R34; Vertical4 and Writer17 each had zero failures, errors and skips. The whole targeted run passed 97/97.",
+      "run": "root-final-targeted-r34",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-r1-final-targeted-r34.log",
+      "logSha256": "99d23ed4863889787405f870116cb33dc40877aa433adeee2b58a1c75cc2c77c",
+      "proofLimit": "Named targeted assertions only; final clean and CI closure remains pending."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-049",
+      "findingIds": [
+        "S3-DR-002"
+      ],
+      "criterionIds": [
+        "S3-AC-062"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriterTest.java",
+        "method": "concurrentConflictUsesThePersistedIdentityForAllDependentEvidence",
+        "line": 399
+      },
+      "seededFaultOrAdverseBoundary": "Make the database upsert return the existing winning Case UUID while the writer proposed a different UUID.",
+      "expectedRefusalOrState": "Returned WrittenCase and each dependent evidence insertion use the persisted UUID, preventing losing-identity references.",
+      "boundaryActuallyReached": "APPLICATION_WRITER_WITH_EXPLICIT_UPSERT_CONFLICT_TEST_DOUBLE",
+      "observed": "PASS: named method completed in R34; Vertical4 and Writer17 each had zero failures, errors and skips. The whole targeted run passed 97/97.",
+      "run": "root-final-targeted-r34",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-r1-final-targeted-r34.log",
+      "logSha256": "99d23ed4863889787405f870116cb33dc40877aa433adeee2b58a1c75cc2c77c",
+      "proofLimit": "Named targeted assertions only; final clean and CI closure remains pending."
+    }
+  ]
+}

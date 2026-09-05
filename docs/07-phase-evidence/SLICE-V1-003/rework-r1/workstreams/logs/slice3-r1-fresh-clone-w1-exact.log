@@ -1,0 +1,19 @@
+fresh-clone: certifying commit 60638b1fc1a227b50f4b3ede1ba0bb983407bfdc
+fresh-clone: cloned into the special-character acceptance path
+fresh-clone: no ignored build or configuration state crossed the clone boundary
+Governance validation passed.
+Production readiness validation over 2211 files.
+TC-GLOBAL-001 Compromise Retirement Check: PASS
+TC-GLOBAL-002 Functional JavaDoc Rewrite Check: PASS
+TC-GLOBAL-003 Production Naming Check: PASS
+TC-GLOBAL-004 Deferred Evidence Boundary Check: PASS
+Production readiness validation passed.
+env-init: FAILED — target is not ignored by Git; refusing to write
+env-init: refusing to overwrite in a non-interactive shell
+----------------------------------------------------------------------
+Ran 410 tests in 1.781s
+
+OK
+Assembled 200 exact criteria and 22 exact findings; all remain verification-pending.
+fresh-clone: governance, readiness and validator tests pass in the clone
+fresh-clone: PASS (offline) for commit 60638b1fc1a227b50f4b3ede1ba0bb983407bfdc

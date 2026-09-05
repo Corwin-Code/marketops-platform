@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "kind": "CONTROL_FAULT_SEEDING_METHOD_RECEIPT",
-  "reviewedAt": "2026-09-05T02:40:17.456923+00:00",
+  "reviewedAt": "2026-09-05T03:26:36.188311+00:00",
   "status": "TARGETED_BOUNDARY_EVIDENCE_WITH_EXPLICIT_LIMITS_FINAL_HEAD_FULL_VERIFICATION_PENDING",
   "distinctions": [
     "Schema/privilege early refusal is not a live gate evaluation.",
@@ -75,6 +75,17 @@
       "proves": "Actual canonical financial evidence and shared Outcome service preserve primary retained history and route a contradictory settled result to Finance review.",
       "limit": "Logical synthetic history in isolated PostgreSQL; no real financial/provider evidence.",
       "run": "source-r15-local-suite-pass-whole-run-failed"
+    },
+    {
+      "id": "W1_REAL_SEALED_GATE_GRAPH",
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java",
+        "method": "seedExactCommand",
+        "line": 40
+      },
+      "proves": "Each test independently calls the real issuer, seals immutable approval and calls the idempotent public creator. Canonical baseline, seal, invalidation, Stop and reservation reasons are absent before the injected fault.",
+      "limit": "Global/capability transport flags and the execution guardrail remain closed. A named fault demonstrates its live gate axis, not an otherwise-open APPLY gate.",
+      "run": "source-r18-control-suite-pass-whole-run-failed"
     }
   ],
   "faults": [
@@ -939,6 +950,217 @@
       "boundaryExercised": "ACTUAL_CANONICAL_REVIEW_CONTEXT",
       "lastReferencedRun": "source-r15-local-suite-pass-whole-run-failed",
       "evidenceLimit": "No real Provider or shared/production environment is accessed."
+    },
+    {
+      "id": "W1_MISSING_COMMAND",
+      "findings": [
+        "010"
+      ],
+      "positiveControl": "W1_REAL_SEALED_GATE_GRAPH",
+      "injectedVariable": "Unknown command UUID.",
+      "expectedResult": "Exactly COMMAND_NOT_FOUND.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java",
+        "method": "anAbsentCommandIsRefusedByName",
+        "line": 69
+      },
+      "boundaryExercised": "ACTUAL_LIVE_GATE",
+      "lastReferencedRun": "source-r18-control-suite-pass-whole-run-failed",
+      "evidenceLimit": "Global/capability transport flags and the execution guardrail remain closed. A named fault demonstrates its live gate axis, not an otherwise-open APPLY gate."
+    },
+    {
+      "id": "W1_AUTHENTICATED_KILL",
+      "findings": [
+        "009",
+        "016"
+      ],
+      "positiveControl": "W1_REAL_SEALED_GATE_GRAPH",
+      "injectedVariable": "Valid scoped Ops invocation activates capability Kill.",
+      "expectedResult": "KILL_SWITCH_ACTIVE and AUTHORITY_PERMANENTLY_INVALIDATED; no quarantine conflation.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java",
+        "method": "aKillSwitchAddsItsReasonAndPermanentlyInvalidatesAuthority",
+        "line": 75
+      },
+      "boundaryExercised": "ACTUAL_LIVE_GATE",
+      "lastReferencedRun": "source-r18-control-suite-pass-whole-run-failed",
+      "evidenceLimit": "Global/capability transport flags and the execution guardrail remain closed. A named fault demonstrates its live gate axis, not an otherwise-open APPLY gate."
+    },
+    {
+      "id": "W1_AUTHENTICATED_HOLD",
+      "findings": [
+        "009",
+        "016"
+      ],
+      "positiveControl": "W1_REAL_SEALED_GATE_GRAPH",
+      "injectedVariable": "Valid scoped Ops invocation activates entity hold.",
+      "expectedResult": "QUARANTINE_ACTIVE and AUTHORITY_PERMANENTLY_INVALIDATED; no Kill conflation.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java",
+        "method": "aQuarantineIsNotAKillSwitch",
+        "line": 83
+      },
+      "boundaryExercised": "ACTUAL_LIVE_GATE",
+      "lastReferencedRun": "source-r18-control-suite-pass-whole-run-failed",
+      "evidenceLimit": "Global/capability transport flags and the execution guardrail remain closed. A named fault demonstrates its live gate axis, not an otherwise-open APPLY gate."
+    },
+    {
+      "id": "W1_RESTORATION_PRIVILEGE",
+      "findings": [
+        "009",
+        "016"
+      ],
+      "positiveControl": "W1_REAL_SEALED_GATE_GRAPH",
+      "injectedVariable": "App attempts direct containment state restoration.",
+      "expectedResult": "Root SQLException SQLSTATE 42501 permission denied.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java",
+        "method": "aKillSwitchAddsItsReasonAndPermanentlyInvalidatesAuthority",
+        "line": 75
+      },
+      "boundaryExercised": "EARLY_DATABASE_PRIVILEGE",
+      "lastReferencedRun": "source-r18-control-suite-pass-whole-run-failed",
+      "evidenceLimit": "This is the named privilege/schema/admission boundary, not successful Provider transmission. Owning-role historical injections are explicitly synthetic adversarial oracles."
+    },
+    {
+      "id": "W1_RESTORED_AUTHORITY_REUSE",
+      "findings": [
+        "009",
+        "016"
+      ],
+      "positiveControl": "W1_REAL_SEALED_GATE_GRAPH",
+      "injectedVariable": "Migration-role historical oracle apparently restores dependencies; existing approval is reused.",
+      "expectedResult": "Named Stop axis disappears but invalidation remains; reservation MO097 and directly invoked creator MO092 refuse; command count remains one.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java",
+        "method": "aKillSwitchAddsItsReasonAndPermanentlyInvalidatesAuthority",
+        "line": 75
+      },
+      "boundaryExercised": "ACTUAL_GATE_AND_DISTINCT_RESERVATION_CREATOR_BOUNDARIES",
+      "lastReferencedRun": "source-r18-control-suite-pass-whole-run-failed",
+      "evidenceLimit": "Global/capability transport flags and the execution guardrail remain closed. A named fault demonstrates its live gate axis, not an otherwise-open APPLY gate."
+    },
+    {
+      "id": "W1_ENVELOPE_RESTORATION",
+      "findings": [
+        "009",
+        "014",
+        "017"
+      ],
+      "positiveControl": "W1_REAL_SEALED_GATE_GRAPH",
+      "injectedVariable": "Exact exposure envelope CANCELLED then restored by owning-role oracle.",
+      "expectedResult": "AGGREGATE_ENVELOPE_UNRESOLVED appears then disappears, while permanent invalidation and reservation/creator refusals remain.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java",
+        "method": "aResolvedEnvelopeCannotRevivePriorAuthority",
+        "line": 112
+      },
+      "boundaryExercised": "ACTUAL_LIVE_GATE_AND_CANONICAL_ADMISSION",
+      "lastReferencedRun": "source-r18-control-suite-pass-whole-run-failed",
+      "evidenceLimit": "Global/capability transport flags and the execution guardrail remain closed. A named fault demonstrates its live gate axis, not an otherwise-open APPLY gate."
+    },
+    {
+      "id": "W1_RELEASE_APP_ASSERTION",
+      "findings": [
+        "014"
+      ],
+      "positiveControl": "W1_REAL_SEALED_GATE_GRAPH",
+      "injectedVariable": "App writes configuration_resolved boolean without factual observation.",
+      "expectedResult": "SQLSTATE 42501; canonical release returns false.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java",
+        "method": "aLiveReservationCannotBeReleasedEarly",
+        "line": 91
+      },
+      "boundaryExercised": "EARLY_PRIVILEGE_AND_CANONICAL_RELEASE",
+      "lastReferencedRun": "source-r18-control-suite-pass-whole-run-failed",
+      "evidenceLimit": "This is the named privilege/schema/admission boundary, not successful Provider transmission. Owning-role historical injections are explicitly synthetic adversarial oracles."
+    },
+    {
+      "id": "W1_RELEASE_INVALID_SHAPE",
+      "findings": [
+        "014"
+      ],
+      "positiveControl": "W1_REAL_SEALED_GATE_GRAPH",
+      "injectedVariable": "Owning-role attempt releases reservation without required conditions.",
+      "expectedResult": "SQLSTATE 23514 ad_action_reservation_release_conditions_ck.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java",
+        "method": "aLiveReservationCannotBeReleasedEarly",
+        "line": 91
+      },
+      "boundaryExercised": "EARLY_SCHEMA_CONSTRAINT",
+      "lastReferencedRun": "source-r18-control-suite-pass-whole-run-failed",
+      "evidenceLimit": "This is the named privilege/schema/admission boundary, not successful Provider transmission. Owning-role historical injections are explicitly synthetic adversarial oracles."
+    },
+    {
+      "id": "W1_RELEASE_STALE_WORK",
+      "findings": [
+        "014"
+      ],
+      "positiveControl": "W1_REAL_SEALED_GATE_GRAPH",
+      "injectedVariable": "Owning-role synthetic stale-worker oracle forces a fully shaped released reservation.",
+      "expectedResult": "Live gate adds RESERVATION_CONFLICT.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java",
+        "method": "aLiveReservationCannotBeReleasedEarly",
+        "line": 91
+      },
+      "boundaryExercised": "ACTUAL_LIVE_GATE",
+      "lastReferencedRun": "source-r18-control-suite-pass-whole-run-failed",
+      "evidenceLimit": "Global/capability transport flags and the execution guardrail remain closed. A named fault demonstrates its live gate axis, not an otherwise-open APPLY gate."
+    },
+    {
+      "id": "W1_PRIVATE_PROOF_READ",
+      "findings": [
+        "010"
+      ],
+      "positiveControl": "W1_REAL_SEALED_GATE_GRAPH",
+      "injectedVariable": "Enumerate app privileges for public lineage and private issuer/planner proof ledgers.",
+      "expectedResult": "Private proof ledgers have no SELECT; every listed immutable/control table denies app INSERT/UPDATE/DELETE.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AdvertisingPrivilegeBoundaryIT.java",
+        "method": "lineageTablesRefuseEveryWrite",
+        "line": 228
+      },
+      "boundaryExercised": "DATABASE_PRIVILEGE_INVENTORY",
+      "lastReferencedRun": "source-r18-control-suite-pass-whole-run-failed",
+      "evidenceLimit": "This is the named privilege/schema/admission boundary, not successful Provider transmission. Owning-role historical injections are explicitly synthetic adversarial oracles."
+    },
+    {
+      "id": "W1_OBSOLETE_INGRESS",
+      "findings": [
+        "010",
+        "016"
+      ],
+      "positiveControl": "W1_REAL_SEALED_GATE_GRAPH",
+      "injectedVariable": "Direct app invokes obsolete caller-asserted release and caller-role reopen.",
+      "expectedResult": "Both root SQLSTATE 42501, preserving canonical ingress only.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AdvertisingPrivilegeBoundaryIT.java",
+        "method": "obsoleteCallerAssertionRoutesRefuseAtThePrivilegeBoundary",
+        "line": 305
+      },
+      "boundaryExercised": "EARLY_DATABASE_PRIVILEGE",
+      "lastReferencedRun": "source-r18-control-suite-pass-whole-run-failed",
+      "evidenceLimit": "This is the named privilege/schema/admission boundary, not successful Provider transmission. Owning-role historical injections are explicitly synthetic adversarial oracles."
+    },
+    {
+      "id": "W1_DIRECT_COMMAND_INSERT",
+      "findings": [
+        "010"
+      ],
+      "positiveControl": "W1_REAL_SEALED_GATE_GRAPH",
+      "injectedVariable": "App directly INSERTs command row.",
+      "expectedResult": "Direct JDBC refusal message contains permission denied; this method does not independently assert SQLSTATE.",
+      "actualTest": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AdvertisingPrivilegeBoundaryIT.java",
+        "method": "applicationRoleCannotInsertACommand",
+        "line": 249
+      },
+      "boundaryExercised": "EARLY_DATABASE_PRIVILEGE",
+      "lastReferencedRun": "source-r18-control-suite-pass-whole-run-failed",
+      "evidenceLimit": "This is the named privilege/schema/admission boundary, not successful Provider transmission. Owning-role historical injections are explicitly synthetic adversarial oracles."
     }
   ],
   "sourceRuns": [
@@ -1004,6 +1226,41 @@
         "AdvertisingOutcomeServiceTest": 18,
         "AdvertisingHumanWorkflowIT": 11
       }
+    },
+    {
+      "id": "source-r18-control-suite-pass-whole-run-failed",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT,AdBidWriteGateAdversarialIT,AdvertisingPrivilegeBoundaryIT,AdvertisingTransmissionBoundaryIT test > /tmp/slice3-vertical-control-r18.log 2>&1",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "codeHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 27,
+      "passed": 26,
+      "failures": 0,
+      "errors": 1,
+      "skips": 0,
+      "sourceSuitesPassed": {
+        "AdBidWriteGateAdversarialIT": 8,
+        "AdvertisingPrivilegeBoundaryIT": 10,
+        "AdvertisingTransmissionBoundaryIT": 7
+      },
+      "otherSuiteResult": {
+        "AdvertisingVerticalPathIT": {
+          "tests": 2,
+          "passed": 1,
+          "errors": 1
+        }
+      },
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r18.log",
+      "logSha256": "7daf4fff0f738e727f74dbdc81044351032e13db68b6c63ca601d224c0501b6c",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r18.log",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "environment": "No extra variables passed; execution owner confirms inherited safe local Testcontainers/JDK environment. Independent PostgreSQL and synthetic issuer credentials; productionWrites=false, no real Provider. Not a full environment inventory.",
+      "identityLimit": "Execution owner confirms clean W1 at start. Local targeted suite, not full clean verify and not GitHub CI.",
+      "finishedAt": "2026-09-05T11:14:29+08:00",
+      "elapsedSeconds": 43.125,
+      "errorsPreserved": [
+        "AdvertisingVerticalPathIT.acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory:147 NoSuchElementException: no proven-loss case produced. Source workstream diagnosis and rerun remain separate."
+      ]
     }
   ],
   "historicControlRuns": [
@@ -1121,10 +1378,12 @@
     "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java": "46e7201cb85fffbe2eb9357a157161c92de9c53583046b4ce867f323da50093d",
     "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java": "0e93e3bba6c25b89a578ff646758febf987c639cd084dac2c40c2b8cab895a25",
     "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingFinanceReviewIT.java": "a3a42a660bad1a12b5637bf3d7893edf8eadbbe54d9d23b76d621a5532f1de4d",
-    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java": "e6be6bd39f19195f1576f858e01e5338538835968592a3d6d8d25eda41ed83ea"
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java": "e6be6bd39f19195f1576f858e01e5338538835968592a3d6d8d25eda41ed83ea",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdBidWriteGateAdversarialIT.java": "a87e2d86e7d094204094da28533b4f309e0e2a2a5df84b3d55f3f2bada3b847e",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/database/AdvertisingPrivilegeBoundaryIT.java": "38e174735b2950c003069f84baad7a548f154935f0d588596a757dd74bfa567b"
   },
   "pending": [
-    "The two old gate/privilege suites and exact obsolete-ingress revoke are applied. Independent SQL probes pass; their new Java/current full execution is pending and not counted in historic PASS references.",
+    "W1 Gate8/Privilege10/Transmission7 passed locally in r18; the whole batch has one Vertical error and remains PARTIAL_FAILURE.",
     "Full current Head verify, runtime artifacts, remote twelve-gate evidence and independent Controller verdict remain separate."
   ],
   "productionWriteEnabled": false,

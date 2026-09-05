@@ -57,7 +57,7 @@ public class AdvertisingWorkflowQueryService {
                         rs.getString("coverage_state"),instant(rs,"next_staffed_response_at")))
                 .optional().orElse(null);
         List<Candidate> candidates = jdbc.sql("""
-                SELECT c.id,c.ordinal,c.current_bid_amount,c.provider_normalized_amount,c.currency_code,
+                SELECT c.id,c.ad_native_object_id,c.affected_set_digest,c.ordinal,c.current_bid_amount,c.provider_normalized_amount,c.currency_code,
                        c.bid_unit_code,c.candidate_basis,r.id AS recommendation_id,r.state,r.version,
                        s.maker_user_id,e.endorser_user_id,command.id command_id
                 FROM ops.ad_bid_candidate c JOIN ops.recommendation r
@@ -71,10 +71,13 @@ public class AdvertisingWorkflowQueryService {
                 ORDER BY c.generated_at DESC,c.ordinal,c.id,r.id LIMIT 64
                 """).param("case", caseId).query((rs,n) -> new Candidate(rs.getObject("id", UUID.class),
                         rs.getInt("ordinal"),rs.getBigDecimal("current_bid_amount"),rs.getBigDecimal("provider_normalized_amount"),
-                        rs.getString("currency_code"),rs.getString("bid_unit_code"),rs.getString("candidate_basis"),
+                        rs.getString("currency_code"),rs.getString("bid_unit_code"),
+                        disclosure.mayReadDecisionEvidence(actor,rs.getObject("ad_native_object_id",UUID.class),rs.getString("affected_set_digest"))
+                                ?rs.getString("candidate_basis"):"MASKED",
                         rs.getObject("recommendation_id", UUID.class),rs.getString("state"),rs.getLong("version"),
                         rs.getObject("maker_user_id", UUID.class),rs.getObject("endorser_user_id", UUID.class),rs.getObject("command_id", UUID.class))).list();
-        candidates=candidates.stream().map(candidate -> candidate.commandId()==null
+        candidates=candidates.stream().filter(candidate -> disclosure.mayReadNativeRecommendation(actor,candidate.recommendationId()))
+                .map(candidate -> candidate.commandId()==null
                 || disclosure.mayReadNativeCommand(actor,candidate.commandId()) ? candidate
                 : new Candidate(candidate.id(),candidate.ordinal(),candidate.currentBidAmount(),candidate.targetBidAmount(),
                         candidate.currency(),candidate.unit(),candidate.basis(),candidate.recommendationId(),candidate.state(),

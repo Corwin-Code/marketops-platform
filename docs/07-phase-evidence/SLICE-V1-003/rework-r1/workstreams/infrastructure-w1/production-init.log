@@ -1,0 +1,13 @@
+Initializing modules...
+- database in ../../modules/database
+- network in ../../modules/network
+- object_storage in ../../modules/object-storage
+- observability in ../../modules/observability
+- workload in ../../modules/workload
+- workload_identity in ../../modules/workload-identity
+Initializing provider plugins...
+- Reusing previous version of yandex-cloud/yandex from the dependency lock file
+- Installing yandex-cloud/yandex v0.220.0...
+- Installed yandex-cloud/yandex v0.220.0 (unauthenticated)
+
+Terraform has been successfully initialized!

@@ -1,6 +1,6 @@
 {
   "kind": "SLICE_V1_003_R1_WORKING_TREE_MIGRATION_INVENTORY",
-  "generated_at": "2026-09-05T03:11:18.189719+00:00",
+  "generated_at": "2026-09-05T04:07:48.078110+00:00",
   "protected_base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
   "reviewed_head": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
   "binding": "Current inspected bytes; exact committed migration identity is separately recorded by collect_slice3_rework_identity.py after checkpoint. This inventory alone asserts no successful migration.",

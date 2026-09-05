@@ -1,0 +1,200 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------< com.mimococo.marketops:marketops-server >---------------
+[INFO] Building MarketOps Server 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-toolchain-and-dependencies) @ marketops-server ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[INFO] Rule 2: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[INFO] 
+[INFO] --- jacoco:0.8.15:prepare-agent (prepare-coverage) @ marketops-server ---
+[INFO] argLine set to -javaagent:/Users/chzhengx/.m2/repository/org/jacoco/org.jacoco.agent/0.8.15/org.jacoco.agent-0.8.15-runtime.jar=destfile=/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/jacoco.exec
+[INFO] 
+[INFO] --- spring-boot:4.1.0:build-info (build-info) @ marketops-server ---
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ marketops-server ---
+[INFO] Copying 5 resources from src/main/resources to target/classes
+[INFO] Copying 66 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ marketops-server ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ marketops-server ---
+[INFO] Copying 4 resources from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ marketops-server ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 270 source files with javac [debug deprecation parameters release 21] to target/test-classes
+[INFO] Extracting Javadoc into /Users/chzhengx/Code/personal/marketops-platform/./build/generated-spring-modulith/javadoc.json.
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[83,65] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[86,74] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[90,83] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[113,49] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[162,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[205,52] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[285,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[287,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java:[263,69] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[31,46] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[72,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[77,46] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[83,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidatorTest.java:[161,56] redundant cast to java.lang.String
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdaptersTest.java:[103,70] unchecked generic array creation for varargs parameter of type java.util.Optional<java.lang.String>[]
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ marketops-server ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT
+11:32:00.339 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+11:32:00.342 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+11:32:00.353 [main] INFO org.testcontainers.DockerClientFactory -- Testcontainers version: 2.0.5
+11:32:00.712 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Loaded org.testcontainers.dockerclient.UnixSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+11:32:01.258 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with local Unix socket (unix:///var/run/docker.sock)
+11:32:01.258 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+11:32:01.281 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 29.7.2
+  API Version: 1.55
+  Operating System: Docker Desktop
+  Total Memory: 5922 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/chzhengx/Library/Containers/com.docker.docker/Data/docker-cli.sock
+11:32:01.560 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Creating container for image: testcontainers/ryuk:0.14.0
+11:32:01.741 [main] INFO org.testcontainers.utility.RegistryAuthLocator -- Credential helper/store (docker-credential-desktop) does not have credentials for https://index.docker.io/v1/
+11:32:01.939 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Container testcontainers/ryuk:0.14.0 is starting: b5df9f1c7023205f2e139e0b68932624f244191482426c41d9d497ee14363ab4
+11:32:02.251 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Container testcontainers/ryuk:0.14.0 started in PT0.691388S
+11:32:02.262 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+11:32:02.262 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+11:32:02.263 [main] INFO org.testcontainers.DockerClientFactory -- ✔︎ Docker server version should be at least 1.6.0
+11:32:02.263 [main] INFO tc.postgres:18.4 -- Creating container for image: postgres:18.4
+11:32:02.404 [main] INFO tc.postgres:18.4 -- Container postgres:18.4 is starting: 2f94036d92b037a80674949d08c2a0f9b958e0e1fbf6ce0c97ab6db233b4b617
+11:32:03.542 [main] INFO tc.postgres:18.4 -- Container postgres:18.4 started in PT1.279289S
+11:32:03.544 [main] INFO tc.postgres:18.4 -- Container is started (JDBC URL: jdbc:postgresql://localhost:52493/marketops?loggerLevel=OFF)
+11:32:04.064 [main] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:postgresql://localhost:52493/marketops?loggerLevel=OFF (PostgreSQL 18.4)
+11:32:04.162 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "public"."flyway_schema_history" does not exist yet
+11:32:04.166 [main] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 65 migrations (execution time 00:00.051s)
+11:32:04.183 [main] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "public"."flyway_schema_history" ...
+11:32:04.243 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "public": << Empty Schema >>
+11:32:04.254 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0001 - create foundation schemas"
+11:32:04.276 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0002 - enable btree gist extension"
+11:32:04.322 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0003 - create metadata audit event"
+11:32:04.346 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0004 - create core organization metadata"
+11:32:04.390 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0005 - create iam access metadata"
+11:32:04.427 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0006 - create platform registry metadata"
+11:32:04.486 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0007 - create ingestion control plane authority"
+11:32:04.524 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0008 - attach control epoch triggers"
+11:32:04.550 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0009 - create control boundary kinds and decision evidence"
+11:32:04.578 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0010 - create ingestion run checkpoint and raw evidence"
+11:32:04.620 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0011 - create human identity and business authorization"
+11:32:04.661 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0012 - create product listing identity and mapping"
+11:32:04.714 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0013 - create cross domain operating facts"
+11:32:04.766 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0014 - create internal fact intake and file import"
+11:32:04.825 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0015 - create canonical metric definitions and values"
+11:32:04.855 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0016 - create deterministic diagnosis rules and findings"
+11:32:04.887 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0017 - create ai projection invocation and output"
+11:32:04.955 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0018 - create recommendation task and approval workflow"
+11:32:04.995 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0019 - create commercial policy and guardrails"
+11:32:05.039 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0020 - create price command outbox readback and write gate"
+11:32:05.093 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0021 - create platform api profile and request shape"
+11:32:05.122 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0022 - create ingestion run lifecycle and replay guard"
+11:32:05.161 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0023 - create declared normalization and drift observation"
+11:32:05.189 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0024 - create capability write operation shape"
+11:32:05.210 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0025 - create price command attempt completion and lease recovery"
+11:32:05.236 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0026 - rename operational capability column to action kind"
+11:32:05.263 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0027 - create account bound registry verification"
+11:32:05.294 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0028 - create bounded diagnostic export"
+11:32:05.334 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0029 - version profit economics and commercial inputs"
+11:32:05.390 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0030 - create availability risk policy inbound and case"
+11:32:05.620 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0031 - track sustained availability lane"
+11:32:05.667 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0032 - create availability fact feed cursor"
+11:32:05.696 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0033 - track case improvement observation"
+11:32:05.712 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0034 - close availability deep review findings"
+11:32:05.786 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0035 - close availability targeted findings"
+11:32:05.840 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0036 - create advertising identity and official facts"
+11:32:05.905 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0037 - create advertising conversion freshness and qualification"
+11:32:05.961 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0038 - create advertising case projection and orchestration"
+11:32:06.035 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0039 - create advertising target materiality and manual shadow"
+11:32:06.084 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0040 - widen write registry for ad bid capability"
+11:32:06.112 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0041 - create advertising containment and decision bundle"
+11:32:06.167 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0042 - create ad bid command outbox readback and gate"
+11:32:06.226 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0043 - create ad bid attempt lifecycle and readback"
+11:32:06.241 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0044 - supersede advertising cases whose cause no longer holds"
+11:32:06.253 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0045 - create ad bid command from approval"
+11:32:06.263 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0046 - capture ad bid authority for guardrail evaluation"
+11:32:06.276 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0047 - refuse a zero target bid in the parameter contract"
+11:32:06.286 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0048 - serialize advertising reservations against overlap"
+11:32:06.299 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0049 - create advertising outcome plan and lineage"
+11:32:06.325 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0050 - cause specific outcomes and same lineage reopen"
+11:32:06.355 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0051 - bind each decision to its own authority"
+11:32:06.365 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0052 - a guardrail verdict names the policy that authorised it"
+11:32:06.379 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0053 - the write gate must refuse rather than raise"
+11:32:06.391 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0054 - index the demand carry forward lookup"
+11:32:06.402 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0055 - record what happened to a task and who did it"
+11:32:06.430 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0056 - publish the daily brief and weekly review as projections"
+11:32:06.472 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0057 - bind advertising responsibility and human decisions"
+11:32:06.531 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0058 - seal advertising authority and control execution"
+11:32:06.653 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0059 - freeze advertising outcome baselines and critical units"
+11:32:06.721 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0060 - govern manual proposals packets and configuration proof"
+11:32:06.763 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0061 - bind advertising exception risk and preview evidence"
+11:32:06.790 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0062 - share frozen outcome authority with governed manual"
+11:32:06.808 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0063 - wire advertising changes expiries and slo recovery"
+11:32:06.840 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0064 - reconcile expired advertising authority"
+11:32:06.866 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "public" to version "0065 - route settled advertising contradictions to finance review"
+11:32:06.889 [main] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 65 migrations to schema "public", now at version v0065 (execution time 00:01.863s)
+[INFO] Running TC-AD-PRIV-101 nothing in the advertising schema may be deleted
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.130 s -- in TC-AD-PRIV-101 nothing in the advertising schema may be deleted
+[INFO] Running TC-AD-PRIV-104 the migration role owns everything and the application owns none
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in TC-AD-PRIV-104 the migration role owns everything and the application owns none
+[INFO] Running TC-AD-PRIV-102 the controlled-write lineage is read-only to the application
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.061 s -- in TC-AD-PRIV-102 the controlled-write lineage is read-only to the application
+[INFO] Running TC-AD-PRIV-103 every sanctioned route is a function, and only those
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.065 s -- in TC-AD-PRIV-103 every sanctioned route is a function, and only those
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.895 s -- in com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT
+11:32:07.497 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.mimococo.marketops.MarketOpsServerApplication for test class com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT
+11:32:07.559 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.mimococo.marketops.MarketOpsServerApplication for test class com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT
+11:32:07.629 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Creating container for image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
+11:32:07.876 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 is starting: 899e4d5eee99f94bcd2998e32929903e773a222359bcb6bee43ed22e881b6ce9
+11:32:09.050 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3 started in PT1.420574S
+11:32:09.050 [main] INFO tc.postgres:17.6-bookworm@sha256:f3bd19... -- Container is started (JDBC URL: jdbc:postgresql://localhost:52526/marketops?loggerLevel=OFF)
+{"@timestamp":"2026-09-05T03:32:09.543078Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Starting AdvertisingVerticalPathIT v0.1.0-SNAPSHOT using Java 21.0.10 with PID 90165 (started by chzhengx in /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T03:32:09.551481Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"The following 1 profile is active: \"ci\"","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T03:32:16.019994Z","log":{"level":"INFO","logger":"com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Started AdvertisingVerticalPathIT in 6.835 seconds (process running for 16.523)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T03:32:17.737857Z","log":{"level":"INFO","logger":"com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationService"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"An analytics run completed","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"analytics_run_completed","storeId":"625f2003-c57f-40b5-bf16-c7e1218a72bb","window":"D30","subjectCount":1,"valueCount":33,"findingCount":9}
+{"@timestamp":"2026-09-05T03:32:18.218339Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"4a8618c2-45af-4abc-8ce0-dff127f3d45d","action":"CREATE","actorId":"advertising-calculation"}
+{"@timestamp":"2026-09-05T03:32:18.653481Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"4a8618c2-45af-4abc-8ce0-dff127f3d45d","action":"STATUS_CHANGE","actorId":"238814bb-14af-4c3e-a919-a2f22c499973"}
+{"@timestamp":"2026-09-05T03:32:18.739371Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"4a8618c2-45af-4abc-8ce0-dff127f3d45d","action":"STATUS_CHANGE","actorId":"9c74b8e0-b0b5-4d19-a214-652e07b289e3"}
+{"@timestamp":"2026-09-05T03:32:18.893375Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"approval-decision","entityId":"94e17e96-d662-4932-bfec-ae2103b5b112","action":"APPROVAL_DECISION","actorId":"c3464127-fd81-4f33-ae6d-4c1adf5a3c95"}
+{"@timestamp":"2026-09-05T03:32:18.897365Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"4a8618c2-45af-4abc-8ce0-dff127f3d45d","action":"STATUS_CHANGE","actorId":"c3464127-fd81-4f33-ae6d-4c1adf5a3c95"}
+{"@timestamp":"2026-09-05T03:32:19.027658Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"4a8618c2-45af-4abc-8ce0-dff127f3d45d","action":"STATUS_CHANGE","actorId":"c3464127-fd81-4f33-ae6d-4c1adf5a3c95"}
+{"@timestamp":"2026-09-05T03:32:19.028878Z","log":{"level":"INFO","logger":"com.mimococo.marketops.adminobservability.internal.audit.JdbcMetadataAuditStore"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Metadata change recorded","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"metadata_change_recorded","sourceDomain":"operationsworkflow","entityType":"recommendation","entityId":"4a8618c2-45af-4abc-8ce0-dff127f3d45d","action":"COMMAND_TRANSITION","actorId":"c3464127-fd81-4f33-ae6d-4c1adf5a3c95"}
+{"@timestamp":"2026-09-05T03:32:19.628325Z","log":{"level":"INFO","logger":"com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationService"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"An analytics run completed","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"analytics_run_completed","storeId":"625f2003-c57f-40b5-bf16-c7e1218a72bb","window":"D30","subjectCount":1,"valueCount":33,"findingCount":9}
+{"@timestamp":"2026-09-05T03:32:20.669377Z","log":{"level":"INFO","logger":"com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationService"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"An analytics run completed","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none","event":"analytics_run_completed","storeId":"234c4061-d248-441c-bb9a-741c0bb4bbf7","window":"D30","subjectCount":1,"valueCount":33,"findingCount":9}
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.78 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT
+[INFO] Running com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.359 s -- in com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest
+[INFO] Running com.mimococo.marketops.AdBidWriteGateAdversarialIT
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.581 s -- in com.mimococo.marketops.AdBidWriteGateAdversarialIT
+[INFO] Running com.mimococo.marketops.AdvertisingTransmissionBoundaryIT
+{"@timestamp":"2026-09-05T03:32:30.583703Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingTransmissionBoundaryIT"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Starting AdvertisingTransmissionBoundaryIT v0.1.0-SNAPSHOT using Java 21.0.10 with PID 90165 (started by chzhengx in /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T03:32:30.586669Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingTransmissionBoundaryIT"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"The following 1 profile is active: \"ci\"","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+{"@timestamp":"2026-09-05T03:32:34.296009Z","log":{"level":"INFO","logger":"com.mimococo.marketops.AdvertisingTransmissionBoundaryIT"},"process":{"pid":90165,"thread":{"name":"main"}},"service":{"name":"marketops-server","version":"0.1.0-SNAPSHOT","environment":"ci","node":{}},"message":"Started AdvertisingTransmissionBoundaryIT in 3.75 seconds (process running for 34.799)","ecs":{"version":"8.11"},"application":"marketops-server","environment":"ci","buildVersion":"0.1.0-SNAPSHOT","correlationId":"none"}
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.355 s -- in com.mimococo.marketops.AdvertisingTransmissionBoundaryIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  45.535 s
+[INFO] Finished at: 2026-09-05T11:32:37+08:00
+[INFO] ------------------------------------------------------------------------

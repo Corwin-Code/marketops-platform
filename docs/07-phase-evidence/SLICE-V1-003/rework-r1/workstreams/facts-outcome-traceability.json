@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "kind": "FINDING_AND_AC_EVIDENCE_SHARD",
-  "generatedAt": "2026-09-05T01:55:14.363051+00:00",
+  "generatedAt": "2026-09-05T04:07:25.397836+00:00",
   "owner": "facts-outcome",
   "normativeInputs": {
     "contract": {
@@ -1617,6 +1617,622 @@
         "StaffedResponseClockTest": 6,
         "AdvertisingTransmissionBoundaryIT": 7
       }
+    },
+    {
+      "id": "source-r18",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT,AdBidWriteGateAdversarialIT,AdvertisingPrivilegeBoundaryIT,AdvertisingTransmissionBoundaryIT test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "baseHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 27,
+      "passed": 26,
+      "failures": 0,
+      "errors": 1,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r18.log",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r18.log",
+      "logSha256": "7daf4fff0f738e727f74dbdc81044351032e13db68b6c63ca601d224c0501b6c",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "safeEnvironment": "No command-specific environment overrides. Isolated Testcontainers PostgreSQL and in-process fixture Provider; application production_write_enabled=false. No real Provider transport.",
+      "identityLimit": "R18 started on clean W1; R19-R29 are working-tree iterations based on W1. The supplied build.gitCommit identifies the base, not a clean source claim. Final exact clean source/CI validation remains pending.",
+      "diagnosisOrResult": "Positive actual Metric values AVAILABLE but fixture 70-day-old effective cost made canonical confidence STALE; the missing-economics negative and all 25 control tests passed.",
+      "mavenReportedFinish": "2026-09-05T11:14:29+08:00",
+      "mavenReportedDuration": "43.125 s",
+      "reportedSuites": [
+        {
+          "reportedName": "TC-AD-PRIV-101 nothing in the advertising schema may be deleted",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "TC-AD-PRIV-104 the migration role owns everything and the application owns none",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "TC-AD-PRIV-102 the controlled-write lineage is read-only to the application",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "TC-AD-PRIV-103 every sanctioned route is a function, and only those",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT",
+          "tests": 0,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+          "tests": 2,
+          "failures": 0,
+          "errors": 1,
+          "skips": 0
+        },
+        {
+          "reportedName": "com.mimococo.marketops.AdBidWriteGateAdversarialIT",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "com.mimococo.marketops.AdvertisingTransmissionBoundaryIT",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        }
+      ],
+      "sourceSuitesPassed": {
+        "AdBidWriteGateAdversarialIT": 8,
+        "AdvertisingTransmissionBoundaryIT": 7
+      }
+    },
+    {
+      "id": "source-r19",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "baseHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 2,
+      "passed": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r19.log",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r19.log",
+      "logSha256": "96da79caf8442595cd8a7135e301701da6fe991630b15b858bee384677f9d970",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "safeEnvironment": "No command-specific environment overrides. Isolated Testcontainers PostgreSQL and in-process fixture Provider; application production_write_enabled=false. No real Provider transport.",
+      "identityLimit": "R18 started on clean W1; R19-R29 are working-tree iterations based on W1. The supplied build.gitCommit identifies the base, not a clean source claim. Final exact clean source/CI validation remains pending.",
+      "diagnosisOrResult": "Diagnostic asserted actual calculated causes: IMMATURE_SIGNAL, negative profit -1000 with STALE canonical cost, no fabricated danger.",
+      "mavenReportedFinish": "2026-09-05T11:19:59+08:00",
+      "mavenReportedDuration": "22.667 s",
+      "reportedSuites": [
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skips": 0
+        }
+      ],
+      "sourceSuitesPassed": {}
+    },
+    {
+      "id": "source-r20",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT,AdvertisingNonGoalsTest test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "baseHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 9,
+      "passed": 7,
+      "failures": 0,
+      "errors": 2,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r20.log",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r20.log",
+      "logSha256": "718a469c8810a4bca7f89a70d87fe65a437e4a6b1c50a2996c2bbc4e12d311be",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "safeEnvironment": "No command-specific environment overrides. Isolated Testcontainers PostgreSQL and in-process fixture Provider; application production_write_enabled=false. No real Provider transport.",
+      "identityLimit": "R18 started on clean W1; R19-R29 are working-tree iterations based on W1. The supplied build.gitCommit identifies the base, not a clean source claim. Final exact clean source/CI validation remains pending.",
+      "diagnosisOrResult": "Fixture used invalid generic COMPLETE return-coverage enum. Schema rejected both setup paths; NonGoals7 passed. Correct enum is COMPLETE_OBSERVED or COMPLETE_ZERO.",
+      "mavenReportedFinish": "2026-09-05T11:22:26+08:00",
+      "mavenReportedDuration": "22.761 s",
+      "reportedSuites": [
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+          "tests": 2,
+          "failures": 0,
+          "errors": 2,
+          "skips": 0
+        },
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        }
+      ],
+      "sourceSuitesPassed": {
+        "AdvertisingNonGoalsTest": 7
+      }
+    },
+    {
+      "id": "source-r21",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT,AdvertisingNonGoalsTest test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "baseHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 9,
+      "passed": 8,
+      "failures": 0,
+      "errors": 1,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r21.log",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r21.log",
+      "logSha256": "bcb5f0c26313e3f003201d375d67bc9e2b124613e1f95658b0ec1c516fad19b9",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "safeEnvironment": "No command-specific environment overrides. Isolated Testcontainers PostgreSQL and in-process fixture Provider; application production_write_enabled=false. No real Provider transport.",
+      "identityLimit": "R18 started on clean W1; R19-R29 are working-tree iterations based on W1. The supplied build.gitCommit identifies the base, not a clean source claim. Final exact clean source/CI validation remains pending.",
+      "diagnosisOrResult": "Fresh canonical economics, PROVEN_ADVERTISING_LOSS, profit -1000, MaxCPC25 and exactly one real bid proposal passed; synthetic endpoint mixed-case code rejected by existing CHECK.",
+      "mavenReportedFinish": "2026-09-05T11:23:48+08:00",
+      "mavenReportedDuration": "22.805 s",
+      "reportedSuites": [
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+          "tests": 2,
+          "failures": 0,
+          "errors": 1,
+          "skips": 0
+        },
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        }
+      ],
+      "sourceSuitesPassed": {
+        "AdvertisingNonGoalsTest": 7
+      }
+    },
+    {
+      "id": "source-r22",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "baseHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 2,
+      "passed": 1,
+      "failures": 0,
+      "errors": 1,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r22.log",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r22.log",
+      "logSha256": "59cc7bc585ccb70161dd42c3c25588124a2e8c3b2629a0e79a13485588b92235",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "safeEnvironment": "No command-specific environment overrides. Isolated Testcontainers PostgreSQL and in-process fixture Provider; application production_write_enabled=false. No real Provider transport.",
+      "identityLimit": "R18 started on clean W1; R19-R29 are working-tree iterations based on W1. The supplied build.gitCommit identifies the base, not a clean source claim. Final exact clean source/CI validation remains pending.",
+      "diagnosisOrResult": "Synthetic operation incorrectly put etag version_token_header on APPLY. Existing READBACK-only header CHECK rejected it.",
+      "mavenReportedFinish": "2026-09-05T11:24:51+08:00",
+      "mavenReportedDuration": "22.962 s",
+      "reportedSuites": [
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+          "tests": 2,
+          "failures": 0,
+          "errors": 1,
+          "skips": 0
+        }
+      ],
+      "sourceSuitesPassed": {}
+    },
+    {
+      "id": "source-r23",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "baseHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 2,
+      "passed": 1,
+      "failures": 0,
+      "errors": 1,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r23.log",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r23.log",
+      "logSha256": "86cdb64adbe4bf907dbc51c48c68f96a2e0c371d677bf69e25bdcfe51bd9e3c8",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "safeEnvironment": "No command-specific environment overrides. Isolated Testcontainers PostgreSQL and in-process fixture Provider; application production_write_enabled=false. No real Provider transport.",
+      "identityLimit": "R18 started on clean W1; R19-R29 are working-tree iterations based on W1. The supplied build.gitCommit identifies the base, not a clean source claim. Final exact clean source/CI validation remains pending.",
+      "diagnosisOrResult": "Actual synthetic operation shape, Maker select/Ops endorse/Owner preview+approval/ExecutionService command creation passed. Test queried reservation FK in wrong direction.",
+      "mavenReportedFinish": "2026-09-05T11:25:40+08:00",
+      "mavenReportedDuration": "23.920 s",
+      "reportedSuites": [
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+          "tests": 2,
+          "failures": 0,
+          "errors": 1,
+          "skips": 0
+        }
+      ],
+      "sourceSuitesPassed": {}
+    },
+    {
+      "id": "source-r24",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "baseHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 2,
+      "passed": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r24.log",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r24.log",
+      "logSha256": "2f8d6619e64403bc52e2bc91fe6ae726680ec03ec4a1fcc22998e64d5e7bfb90",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "safeEnvironment": "No command-specific environment overrides. Isolated Testcontainers PostgreSQL and in-process fixture Provider; application production_write_enabled=false. No real Provider transport.",
+      "identityLimit": "R18 started on clean W1; R19-R29 are working-tree iterations based on W1. The supplied build.gitCommit identifies the base, not a clean source claim. Final exact clean source/CI validation remains pending.",
+      "diagnosisOrResult": "Actual command execution gate was nonempty; diagnostic added exact reason projection instead of cardinality only.",
+      "mavenReportedFinish": "2026-09-05T11:26:40+08:00",
+      "mavenReportedDuration": "22.901 s",
+      "reportedSuites": [
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skips": 0
+        }
+      ],
+      "sourceSuitesPassed": {}
+    },
+    {
+      "id": "source-r25",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "baseHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 2,
+      "passed": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r25.log",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r25.log",
+      "logSha256": "00d7c71c8139946e0a9ef19c613e6f01077f3f12a46016a5bd6d6fe43222105b",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "safeEnvironment": "No command-specific environment overrides. Isolated Testcontainers PostgreSQL and in-process fixture Provider; application production_write_enabled=false. No real Provider transport.",
+      "identityLimit": "R18 started on clean W1; R19-R29 are working-tree iterations based on W1. The supplied build.gitCommit identifies the base, not a clean source claim. Final exact clean source/CI validation remains pending.",
+      "diagnosisOrResult": "EXACT_GATE_AUTHORITY_ABSENT_OR_EXCEEDED: topology fixture Gate target20 differed from actual generated target. Fix freezes exact synthetic Owner current/target/unit/currency before any human selection.",
+      "mavenReportedFinish": "2026-09-05T11:27:32+08:00",
+      "mavenReportedDuration": "23.704 s",
+      "reportedSuites": [
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skips": 0
+        }
+      ],
+      "sourceSuitesPassed": {}
+    },
+    {
+      "id": "source-r26",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "baseHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 2,
+      "passed": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r26.log",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r26.log",
+      "logSha256": "923e98f8b6c32947ea20e6b99b6105aa0aded627570dc0e74cd134cacbffade2",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "safeEnvironment": "No command-specific environment overrides. Isolated Testcontainers PostgreSQL and in-process fixture Provider; application production_write_enabled=false. No real Provider transport.",
+      "identityLimit": "R18 started on clean W1; R19-R29 are working-tree iterations based on W1. The supplied build.gitCommit identifies the base, not a clean source claim. Final exact clean source/CI validation remains pending.",
+      "diagnosisOrResult": "Real worker APPLY/readback/Raw custody and early Completed/company/every-critical release passed. Retained was correctly INDETERMINATE with stale mature economic evidence.",
+      "mavenReportedFinish": "2026-09-05T11:28:37+08:00",
+      "mavenReportedDuration": "23.877 s",
+      "reportedSuites": [
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skips": 0
+        }
+      ],
+      "sourceSuitesPassed": {}
+    },
+    {
+      "id": "source-r27",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "baseHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 2,
+      "passed": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r27.log",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r27.log",
+      "logSha256": "2e11d260606b39e4891aa95a6faf909d421bf8b7dd1bf6a188c706862f942d6d",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "safeEnvironment": "No command-specific environment overrides. Isolated Testcontainers PostgreSQL and in-process fixture Provider; application production_write_enabled=false. No real Provider transport.",
+      "identityLimit": "R18 started on clean W1; R19-R29 are working-tree iterations based on W1. The supplied build.gitCommit identifies the base, not a clean source claim. Final exact clean source/CI validation remains pending.",
+      "diagnosisOrResult": "Explicit Retained unresolved reason PROFIT_AXIS_EVIDENCE_INCOMPLETE. Mature fixture must publish current Completed revision, settled fees/returns and nonoverlapping cost version, then actual MetricEngine recalculates.",
+      "mavenReportedFinish": "2026-09-05T11:29:35+08:00",
+      "mavenReportedDuration": "23.214 s",
+      "reportedSuites": [
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skips": 0
+        }
+      ],
+      "sourceSuitesPassed": {}
+    },
+    {
+      "id": "source-r28",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "baseHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PASS",
+      "tests": 2,
+      "passed": 2,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r28.log",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r28.log",
+      "logSha256": "91639d785e2ada46eca5e77aca92bc152aca624e48560f79ba47b4688843af81",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "safeEnvironment": "No command-specific environment overrides. Isolated Testcontainers PostgreSQL and in-process fixture Provider; application production_write_enabled=false. No real Provider transport.",
+      "identityLimit": "R18 started on clean W1; R19-R29 are working-tree iterations based on W1. The supplied build.gitCommit identifies the base, not a clean source claim. Final exact clean source/CI validation remains pending.",
+      "diagnosisOrResult": "Complete real canonical vertical positive and missing-economics negative passed. No real Provider, no preseeded Case/Metric/candidate/recommendation/baseline; production_write_enabled=false.",
+      "mavenReportedFinish": "2026-09-05T11:31:07+08:00",
+      "mavenReportedDuration": "24.122 s",
+      "reportedSuites": [
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        }
+      ],
+      "sourceSuitesPassed": {
+        "AdvertisingVerticalPathIT": 2
+      }
+    },
+    {
+      "id": "source-r29",
+      "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT,AdBidWriteGateAdversarialIT,AdvertisingPrivilegeBoundaryIT,AdvertisingTransmissionBoundaryIT,AdvertisingNonGoalsTest test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "baseHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+      "recordedResult": "PASS",
+      "tests": 34,
+      "passed": 34,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r29.log",
+      "originalLocalLog": "/tmp/slice3-vertical-control-r29.log",
+      "logSha256": "234b28703331f19c2a0b1983639a7e3332ee43edfa62cdf95419bc2c0dd2af39",
+      "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+      "safeEnvironment": "No command-specific environment overrides. Isolated Testcontainers PostgreSQL and in-process fixture Provider; application production_write_enabled=false. No real Provider transport.",
+      "identityLimit": "R18 started on clean W1; R19-R29 are working-tree iterations based on W1. The supplied build.gitCommit identifies the base, not a clean source claim. Final exact clean source/CI validation remains pending.",
+      "diagnosisOrResult": "Final narrow superset34 passed, including full actual canonical vertical journey and all revised control/non-goal tests. Full clean/CI proof remains pending.",
+      "mavenReportedFinish": "2026-09-05T11:32:37+08:00",
+      "mavenReportedDuration": "45.535 s",
+      "reportedSuites": [
+        {
+          "reportedName": "TC-AD-PRIV-101 nothing in the advertising schema may be deleted",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "TC-AD-PRIV-104 the migration role owns everything and the application owns none",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "TC-AD-PRIV-102 the controlled-write lineage is read-only to the application",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "TC-AD-PRIV-103 every sanctioned route is a function, and only those",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT",
+          "tests": 0,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "com.mimococo.marketops.AdBidWriteGateAdversarialIT",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "com.mimococo.marketops.AdvertisingTransmissionBoundaryIT",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        }
+      ],
+      "sourceSuitesPassed": {
+        "AdvertisingVerticalPathIT": 2,
+        "AdvertisingNonGoalsTest": 7,
+        "AdBidWriteGateAdversarialIT": 8,
+        "AdvertisingTransmissionBoundaryIT": 7
+      }
+    },
+    {
+      "id": "root-recovery-r30",
+      "command": "./mvnw -B -ntp -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingProposalServiceTest,AdvertisingHumanWorkflowIT,AdvertisingVerticalPathIT test",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+      "recordedResult": "PASS",
+      "tests": 46,
+      "passed": 46,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-r1-root-recovery-r30.log",
+      "logSha256": "d007bb17bec72c64113e738c0af0eeb2ecfde241f68e814e77aa43671e18e16b",
+      "identityLimit": "Parent-executed working-tree targeted run; source agent imports exact command and observed log, not final clean/CI identity.",
+      "reportedSuites": [
+        {
+          "reportedName": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+          "tests": 14,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProposalServiceTest",
+          "tests": 29,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        }
+      ]
+    },
+    {
+      "id": "root-final-targeted-r34",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+        "-Dtest=AdvertisingProjectionWriterTest,AdvertisingVerticalPathIT,AdvertisingHumanWorkflowIT,AdvertisingResponsibilityBoundaryIT,AdvertisingDisclosureIT,AdvertisingProposalServiceTest,AdvertisingSealedAuthorityIT",
+        "test"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+      "recordedResult": "PASS",
+      "tests": 97,
+      "passed": 97,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "finishedAt": "2026-09-05T12:03:06+08:00",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-r1-final-targeted-r34.log",
+      "logSha256": "99d23ed4863889787405f870116cb33dc40877aa433adeee2b58a1c75cc2c77c",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-targeted-r34.json",
+      "identityLimit": "W1 plus uncommitted R1 changes, not exact-W1 source. Final clean committed-source verification and exact published-head CI remain pending.",
+      "reportedSuites": [
+        {
+          "reportedName": "AdvertisingResponsibilityBoundaryIT",
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "AdvertisingSealedAuthorityIT",
+          "tests": 15,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "AdvertisingProposalServiceTest",
+          "tests": 29,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "AdvertisingHumanWorkflowIT",
+          "tests": 16,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "AdvertisingVerticalPathIT",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "AdvertisingProjectionWriterTest",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "reportedName": "AdvertisingDisclosureIT",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0
+        }
+      ]
     }
   ],
   "findings": [
@@ -1661,13 +2277,14 @@
       ],
       "controllerVerdict": "NOT_PROVIDED_BY_IMPLEMENTER",
       "rootCause": "The original gatherer depended on an extra promotion fee feed after canonical platform fees already covered those costs, and nullable/partial SQL aggregates could not support the real calculator path. Earlier authority fixtures bypassed this path.",
-      "implementedBehavior": "The real gatherer reads canonical Metric v2 and actual facts, covered fees remain usable, unknown report components survive aggregation, dependent defects retain their own Case and responsibility, and the targeted worker invokes this calculator before projection. Runtime policy ambiguity SQL now uses a valid whole-row alias.",
+      "implementedBehavior": "The real gatherer reads canonical Metric v2 and actual facts, covered fees remain usable, unknown report components survive aggregation, dependent defects retain their own Case and responsibility, and the targeted worker invokes this calculator before projection. Runtime policy ambiguity SQL now uses a valid whole-row alias. Atomic Case upsert returns the persisted identity on both insert and conflict, so all dependent rows and responsibility intake reference the winning Case under concurrent recalculation.",
       "sameClassScan": [
         "Scanned all five effective-policy resolver SQL fragments for schema-qualified whole-row alias errors.",
-        "Scanned canonical Metric readers and duplicate promotion/fee dependencies, including Outcome transitive caller."
+        "Scanned canonical Metric readers and duplicate promotion/fee dependencies, including Outcome transitive caller.",
+        "Inspected every upsertCase caller (one production caller, AdvertisingProjectionWriter). A concurrent ON CONFLICT update retains the existing database UUID; the writer formerly retained its losing proposed UUID. Qualified same-asOf refresh can accidentally serialize through qualification_period upserts. Repository upsert now atomically returns the persisted UUID via RETURNING id, and the writer uses it for every dependent projection row without adding object locks or changing the Case key. Both qualification-present and qualification-absent/different-asOf actual PG contention pass."
       ],
       "transitiveImpact": [
-        "Changes feed proposal generation, read projections and targeted/hourly refresh. Shared responsibility and the UI actual orchestration benchmark provide the remaining full vertical evidence."
+        "Canonical accepted facts now traverse the real MetricEngine, calculation/projection/proposal, distinct Maker/Ops/Owner approval, command worker with an in-process fixture Provider, Raw/readback and early/Retained/Settled/revised Outcome history. Atomic persisted identity also protects purpose evidence, rank factors, affected variants and responsibility intake during concurrent refresh. Capacity evidence remains independently owned by the orchestration stream."
       ],
       "changedFiles": [
         {
@@ -1709,6 +2326,14 @@
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeService.java",
           "sha256_at_receipt": "d33a5bdc7f82f03e8dd9e3978abc0dac1704bf01bf491a03ab23a6ec26cc96d1"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
+          "sha256_at_receipt": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingProjectionRepository.java",
+          "sha256_at_receipt": "f53f98a59e2c6c0ad46e2d8964aecdfd613a6ddfec6fbb37900501a16ec05d57"
         }
       ],
       "positiveTests": [
@@ -1728,10 +2353,34 @@
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
           "method": "acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory",
-          "line": 140,
-          "run": "source-r17",
-          "verification": "PENDING_R18_AFTER_FIXTURE_TIMESTAMP_CAST",
-          "evidenceLimit": "Method exists and compiles. R17 stopped during fixture initialization before the application journey. W1 contains explicit timestamp casts but no positive runtime claim until rerun."
+          "line": 198,
+          "run": "source-r29",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R29 real PostgreSQL/MetricEngine/application/three-person approval/fixture worker/Raw/Outcome path passed; it is an isolated synthetic Provider proof with production writes disabled, not real Provider enablement or final CI verification."
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+          "method": "concurrentCanonicalRefreshCreatesOneCaseAndOneResponsibilityTask",
+          "run": "root-final-targeted-r34",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "Four simultaneous same-asOf actual qualified refreshes produce exactly one PROVEN_ADVERTISING_LOSS Case, one responsibility Task and one generated candidate.",
+          "line": 140
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+          "method": "concurrentDifferentAsOfWithoutQualificationPoliciesKeepsOneTaskPerActualCause",
+          "run": "root-final-targeted-r34",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "Four simultaneous actual refreshes use distinct microsecond asOf values with all qualification policies cancelled and zero qualification-period rows. They retain exactly one Case and one Task for each legitimate cause: DECISION_POLICY_UNRESOLVED and OFFICIAL_AD_FACT_DEFECT. The shifted window excludes the indivisible report for three competing requests; zero candidates/commands or Provider calls are produced.",
+          "line": 164
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriterTest.java",
+          "method": "concurrentConflictUsesThePersistedIdentityForAllDependentEvidence",
+          "run": "root-final-targeted-r34",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "Unit fault injects a persisted UUID different from the proposed UUID returned by the atomic database upsert; WrittenCase and every dependent evidence row use that persisted UUID.",
+          "line": 399
         }
       ],
       "negativeTests": [
@@ -1753,19 +2402,23 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
           "method": "missingEconomicsCreatesResponsibilityAndNeverAFabricatedCandidate",
           "line": 127,
-          "run": "source-r17",
-          "verification": "PENDING_R18_AFTER_FIXTURE_TIMESTAMP_CAST",
-          "evidenceLimit": "Method exists and compiles. R17 stopped during fixture initialization before the application journey. W1 contains explicit timestamp casts but no positive runtime claim until rerun."
+          "run": "source-r29",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R29 real PostgreSQL/MetricEngine/application/three-person approval/fixture worker/Raw/Outcome path passed; it is an isolated synthetic Provider proof with production writes disabled, not real Provider enablement or final CI verification."
         }
       ],
       "evidenceRuns": [
         "source-r11",
-        "source-r12"
+        "source-r12",
+        "source-r15",
+        "source-r17",
+        "source-r29",
+        "root-final-targeted-r34"
       ],
       "evidenceLimits": [
-        "Local targeted 248-test superset passed; final full tests, exact published commit and CI still required.",
-        "F020 actual orchestration + projection evidence belongs to UI stream; source economics reader PG and calculator units do not substitute for that path.",
-        "New complete VerticalPath2 is implemented but R17 initialization failed. Corrected W1 fixture awaits r18; do not mark F002 verified from the segmented passing suites."
+        "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required.",
+        "R29 proves actual accepted facts through MetricEngine/projection/three-person approval/real worker with an in-process synthetic Provider, Raw/readback and early/Retained/actual financial/corrected Outcome history. It never enables a real Provider.",
+        "F020 scale/latency proofs are independently owned by UI; small vertical success does not prove production-sized capacity."
       ]
     },
     {
@@ -1894,10 +2547,12 @@
       ],
       "evidenceRuns": [
         "source-r11",
-        "source-r12"
+        "source-r12",
+        "source-r15",
+        "source-r17"
       ],
       "evidenceLimits": [
-        "Local targeted 248-test superset passed; final full tests, exact published commit and CI still required."
+        "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required."
       ]
     },
     {
@@ -2085,10 +2740,12 @@
       ],
       "evidenceRuns": [
         "source-r11",
-        "source-r12"
+        "source-r12",
+        "source-r15",
+        "source-r17"
       ],
       "evidenceLimits": [
-        "Local targeted 248-test superset passed; final full tests, exact published commit and CI still required."
+        "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required."
       ]
     },
     {
@@ -2201,10 +2858,12 @@
       ],
       "evidenceRuns": [
         "source-r11",
-        "source-r12"
+        "source-r12",
+        "source-r15",
+        "source-r17"
       ],
       "evidenceLimits": [
-        "Local targeted 248-test superset passed; final full tests, exact published commit and CI still required."
+        "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required."
       ]
     },
     {
@@ -2426,12 +3085,15 @@
       ],
       "evidenceRuns": [
         "source-r11",
-        "source-r12"
+        "source-r12",
+        "source-r15",
+        "source-r17",
+        "source-r29"
       ],
       "evidenceLimits": [
-        "Local targeted 248-test superset passed; final full tests, exact published commit and CI still required.",
-        "Actual financial Retained/Settled positive PostgreSQL transitions beyond existing canonical financial reader negatives and mocked service orchestration.",
-        "AC168 Finance review routing repair and actual evidence, owned jointly with root/norm."
+        "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required.",
+        "R29 proves actual accepted facts through MetricEngine/projection/three-person approval/real worker with an in-process synthetic Provider, Raw/readback and early/Retained/actual financial/corrected Outcome history. It never enables a real Provider.",
+        "FrozenOutcomeIT uses an explicitly declared pre-action synthetic golden baseline for fault isolation; VerticalPathIT separately proves genuine Planner-derived baseline. Finance6 and actual OutcomeService contradiction tests preserve original Task and append the Finance responsibility."
       ]
     }
   ],
@@ -2484,7 +3146,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
-          "sha256_at_receipt": "4b592de80cf3bdfe397d6f29c173a9f8ec9f458ab7cda81f8c48dbb41924dd12"
+          "sha256_at_receipt": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955"
         }
       ],
       "testReferences": [
@@ -2531,7 +3193,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
-          "sha256_at_receipt": "4b592de80cf3bdfe397d6f29c173a9f8ec9f458ab7cda81f8c48dbb41924dd12"
+          "sha256_at_receipt": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955"
         }
       ],
       "testReferences": [
@@ -2578,7 +3240,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
-          "sha256_at_receipt": "4b592de80cf3bdfe397d6f29c173a9f8ec9f458ab7cda81f8c48dbb41924dd12"
+          "sha256_at_receipt": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955"
         }
       ],
       "testReferences": [
@@ -2815,10 +3477,10 @@
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
           "method": "acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory",
-          "line": 140,
-          "run": "source-r17",
-          "verification": "PENDING_R18_AFTER_FIXTURE_TIMESTAMP_CAST",
-          "evidenceLimit": "Method exists and compiles. R17 stopped during fixture initialization before the application journey. W1 contains explicit timestamp casts but no positive runtime claim until rerun."
+          "line": 198,
+          "run": "source-r29",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R29 real PostgreSQL/MetricEngine/application/three-person approval/fixture worker/Raw/Outcome path passed; it is an isolated synthetic Provider proof with production writes disabled, not real Provider enablement or final CI verification."
         }
       ],
       "sameClassScan": "Scanned SUM/COALESCE, report overlap/union coverage and supersession as-of predicates across Spend, clicks, linkage and company facts; unknown survives SQL aggregation.",
@@ -2871,10 +3533,10 @@
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
           "method": "acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory",
-          "line": 140,
-          "run": "source-r17",
-          "verification": "PENDING_R18_AFTER_FIXTURE_TIMESTAMP_CAST",
-          "evidenceLimit": "Method exists and compiles. R17 stopped during fixture initialization before the application journey. W1 contains explicit timestamp casts but no positive runtime claim until rerun."
+          "line": 198,
+          "run": "source-r29",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R29 real PostgreSQL/MetricEngine/application/three-person approval/fixture worker/Raw/Outcome path passed; it is an isolated synthetic Provider proof with production writes disabled, not real Provider enablement or final CI verification."
         }
       ],
       "sameClassScan": "Scanned SUM/COALESCE, report overlap/union coverage and supersession as-of predicates across Spend, clicks, linkage and company facts; unknown survives SQL aggregation.",
@@ -5176,6 +5838,52 @@
       ]
     },
     {
+      "id": "S3-AC-062",
+      "acceptedText": "concurrency, replay and repeated calculation cannot duplicate a Case or active cause Task.",
+      "contractLine": 2384,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
+          "sha256_at_receipt": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingProjectionRepository.java",
+          "sha256_at_receipt": "f53f98a59e2c6c0ad46e2d8964aecdfd613a6ddfec6fbb37900501a16ec05d57"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+          "method": "concurrentCanonicalRefreshCreatesOneCaseAndOneResponsibilityTask",
+          "run": "root-final-targeted-r34",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "Four simultaneous same-asOf actual qualified refreshes produce exactly one PROVEN_ADVERTISING_LOSS Case, one responsibility Task and one generated candidate.",
+          "line": 140
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+          "method": "concurrentDifferentAsOfWithoutQualificationPoliciesKeepsOneTaskPerActualCause",
+          "run": "root-final-targeted-r34",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "Four simultaneous actual refreshes use distinct microsecond asOf values with all qualification policies cancelled and zero qualification-period rows. They retain exactly one Case and one Task for each legitimate cause: DECISION_POLICY_UNRESOLVED and OFFICIAL_AD_FACT_DEFECT. The shifted window excludes the indivisible report for three competing requests; zero candidates/commands or Provider calls are produced.",
+          "line": 164
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriterTest.java",
+          "method": "concurrentConflictUsesThePersistedIdentityForAllDependentEvidence",
+          "run": "root-final-targeted-r34",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "Unit fault injects a persisted UUID different from the proposed UUID returned by the atomic database upsert; WrittenCase and every dependent evidence row use that persisted UUID.",
+          "line": 399
+        }
+      ],
+      "sameClassScan": "Inspected every upsertCase caller (one production caller, AdvertisingProjectionWriter). A concurrent ON CONFLICT update retains the existing database UUID; the writer formerly retained its losing proposed UUID. Qualified same-asOf refresh can accidentally serialize through qualification_period upserts. Repository upsert now atomically returns the persisted UUID via RETURNING id, and the writer uses it for every dependent projection row without adding object locks or changing the Case key. Both qualification-present and qualification-absent/different-asOf actual PG contention pass.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_ASSERTIONS_PASSED_FINAL_INTEGRATED_VALIDATION_PENDING",
+      "evidenceLimits": [
+        "R34 actual targeted 97/97 PASS includes Vertical4 and Writer17. This is working-tree evidence; final clean committed-source verification and exact published-head CI remain required."
+      ]
+    },
+    {
       "id": "S3-AC-064",
       "acceptedText": "human SLO distinguishes acknowledgement from action decision/first attributable action.",
       "contractLine": 2386,
@@ -5197,14 +5905,14 @@
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
           "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns",
-          "line": 250,
+          "line": 379,
           "run": "source-r12",
           "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
           "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage",
-          "line": 276,
+          "line": 405,
           "run": "source-r12",
           "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
         }
@@ -5237,14 +5945,14 @@
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
           "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns",
-          "line": 250,
+          "line": 379,
           "run": "source-r12",
           "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
           "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage",
-          "line": 276,
+          "line": 405,
           "run": "source-r12",
           "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
         }
@@ -5277,14 +5985,14 @@
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
           "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns",
-          "line": 250,
+          "line": 379,
           "run": "source-r12",
           "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
           "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage",
-          "line": 276,
+          "line": 405,
           "run": "source-r12",
           "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
         }
@@ -5317,14 +6025,14 @@
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
           "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns",
-          "line": 250,
+          "line": 379,
           "run": "source-r12",
           "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
           "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage",
-          "line": 276,
+          "line": 405,
           "run": "source-r12",
           "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
         }
@@ -5762,10 +6470,10 @@
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
           "method": "acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory",
-          "line": 140,
-          "run": "source-r17",
-          "verification": "PENDING_R18_AFTER_FIXTURE_TIMESTAMP_CAST",
-          "evidenceLimit": "Method exists and compiles. R17 stopped during fixture initialization before the application journey. W1 contains explicit timestamp casts but no positive runtime claim until rerun."
+          "line": 198,
+          "run": "source-r29",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R29 real PostgreSQL/MetricEngine/application/three-person approval/fixture worker/Raw/Outcome path passed; it is an isolated synthetic Provider proof with production writes disabled, not real Provider enablement or final CI verification."
         }
       ],
       "sameClassScan": "Scanned direct INSERT/freeze/reuse and every API/Manual seal/creator/gate consumer. App cannot manufacture trusted money/JSON, independent proof binds full typed payload+org+baseline+backend+transaction and is single-use. Reviewed chains cannot silently replace baseline.",
@@ -5824,10 +6532,10 @@
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
           "method": "acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory",
-          "line": 140,
-          "run": "source-r17",
-          "verification": "PENDING_R18_AFTER_FIXTURE_TIMESTAMP_CAST",
-          "evidenceLimit": "Method exists and compiles. R17 stopped during fixture initialization before the application journey. W1 contains explicit timestamp casts but no positive runtime claim until rerun."
+          "line": 198,
+          "run": "source-r29",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R29 real PostgreSQL/MetricEngine/application/three-person approval/fixture worker/Raw/Outcome path passed; it is an isolated synthetic Provider proof with production writes disabled, not real Provider enablement or final CI verification."
         }
       ],
       "sameClassScan": "Scanned direct INSERT/freeze/reuse and every API/Manual seal/creator/gate consumer. App cannot manufacture trusted money/JSON, independent proof binds full typed payload+org+baseline+backend+transaction and is single-use. Reviewed chains cannot silently replace baseline.",
@@ -6404,10 +7112,10 @@
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
           "method": "acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory",
-          "line": 140,
-          "run": "source-r17",
-          "verification": "PENDING_R18_AFTER_FIXTURE_TIMESTAMP_CAST",
-          "evidenceLimit": "Method exists and compiles. R17 stopped during fixture initialization before the application journey. W1 contains explicit timestamp casts but no positive runtime claim until rerun."
+          "line": 198,
+          "run": "source-r29",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R29 real PostgreSQL/MetricEngine/application/three-person approval/fixture worker/Raw/Outcome path passed; it is an isolated synthetic Provider proof with production writes disabled, not real Provider enablement or final CI verification."
         }
       ],
       "sameClassScan": "Scanned 30-day Retained cohort and financial-line matching, stage-consistent baselines, revision supersession and stage labels.",
@@ -6467,10 +7175,10 @@
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
           "method": "acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory",
-          "line": 140,
-          "run": "source-r17",
-          "verification": "PENDING_R18_AFTER_FIXTURE_TIMESTAMP_CAST",
-          "evidenceLimit": "Method exists and compiles. R17 stopped during fixture initialization before the application journey. W1 contains explicit timestamp casts but no positive runtime claim until rerun."
+          "line": 198,
+          "run": "source-r29",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R29 real PostgreSQL/MetricEngine/application/three-person approval/fixture worker/Raw/Outcome path passed; it is an isolated synthetic Provider proof with production writes disabled, not real Provider enablement or final CI verification."
         }
       ],
       "sameClassScan": "Scanned stage-specific supersedes predicates, append-only observation and automatic narrow regression activation.",
@@ -6945,8 +7653,7 @@
     }
   ],
   "pending": [
-    "UI/root exact same-asOf capacity replay, full disclosure/browser and canonical ordering evidence.",
-    "Complete clean verification and exact published head CI evidence; no local targeted result is final VERIFIED.",
-    "W1: all existing fact/Outcome/Finance suites and historical Metric correction passed targeted r17. New VerticalPath2 awaits runtime after timestamp CAST repair. Norm gate/privilege assertions await corrected rerun. Full immutable clean verify and exact-head CI remain mandatory."
+    "Cross-stream capacity, disclosure/browser and generic Shared Spine proofs retain their own exact evidence; this shard does not infer their current status.",
+    "Complete clean verification and exact published-head CI evidence; targeted working-tree success is not final VERIFIED."
   ]
 }

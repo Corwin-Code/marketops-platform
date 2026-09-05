@@ -1,0 +1,6 @@
+Initializing provider plugins...
+- Reusing previous version of yandex-cloud/yandex from the dependency lock file
+- Installing yandex-cloud/yandex v0.220.0...
+- Installed yandex-cloud/yandex v0.220.0 (unauthenticated)
+
+Terraform has been successfully initialized!

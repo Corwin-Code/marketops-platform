@@ -164,6 +164,17 @@ class AdvertisingSealedAuthorityIT {
 
     @Test void causeBoundKnownDangerCanBeSealedWithoutConversionOrCostEvidence() throws Exception {
         graph=AdvertisingR1Fixture.seedOutcome(migration,sql->causeBound(sql,"0.4"));
+        var constructor=com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingImpactEvidenceService.class
+                .getDeclaredConstructor(JdbcClient.class,tools.jackson.databind.ObjectMapper.class);
+        constructor.setAccessible(true);
+        var impact=constructor.newInstance(JdbcClient.create(application),new tools.jackson.databind.ObjectMapper());
+        var preview=impact.capture(graph.id("recommendation"),java.time.Instant.now(),graph.id("bundle"));
+        assertThat(preview.path("economicMaxCpc").path("state").asText()).isEqualTo("NOT_AVAILABLE");
+        assertThat(preview.path("economicMaxCpc").path("amount").isNull()).isTrue();
+        assertThat(preview.path("submittedUnitMaxCpc").path("amount").isNull()).isTrue();
+        assertThat(preview.path("conservativeCeiling").path("amount").isNull()).isTrue();
+        assertThat(preview.path("submittedConfiguration").path("basis").asText()).isEqualTo("CAUSE_BOUND_PROTECTION_STEP");
+        assertThat(preview.path("recoveryState").asText()).isEqualTo("EXPOSURE_LIMIT_ONLY_NOT_PROFITABILITY_OR_HEALTH");
         try(var app=transaction()) {
             UUID authority=AdvertisingR1Fixture.seal(app,graph,proof(app,graph.id("ownerUser")));
             assertThat(AdvertisingR1Fixture.createCommand(app,graph)).isNotNull();app.commit();
