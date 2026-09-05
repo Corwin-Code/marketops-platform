@@ -40,7 +40,12 @@ test('TC-BROWSER-013 authenticated evidence, approval, command and readback jour
   await page.route(queuePath, (target) => target.abort('failed'));
   await page.goto('/');
   await page.getByRole('button', { name: 'Continue to sign in' }).click();
-  await expect(page.getByRole('alert')).toContainText('The platform did not answer');
+  const queueFailure = page
+    .getByLabel('Priority queue')
+    .getByRole('alert')
+    .filter({ hasText: /^The platform did not answer\. Nothing was changed\.$/u });
+  await expect(queueFailure).toHaveCount(1);
+  await expect(queueFailure).toHaveText('The platform did not answer. Nothing was changed.');
   await expect(page.getByRole('button', { name: fixture.subjectId, exact: true })).toHaveCount(0);
   await page.unroute(queuePath);
   await page.getByRole('button', { name: 'Sign out' }).click();
