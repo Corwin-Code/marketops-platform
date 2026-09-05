@@ -1,0 +1,31 @@
+{
+  "head": "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+  "tree": "dbab770cd974aa5a90d0dc63468ab7f8a48e4002",
+  "backendSourceManifestSha256": "554643f9828b872a147dd375984ad164a2b9350a95351bcdb1faa7375621016f",
+  "jars": [
+    {
+      "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar",
+      "preservedJar": "/tmp/slice3-r1-full-clean-w3-fd3e00e3/artifacts/jars/marketops-server-0.1.0-SNAPSHOT.jar",
+      "sha256": "d99c2eac3a55350936e45aac8e06560589d4c79cf456c7f6f7f9f39c39af8658",
+      "bytes": 42346242,
+      "head": "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+      "tree": "dbab770cd974aa5a90d0dc63468ab7f8a48e4002",
+      "embeddedBuildInfo": [
+        {
+          "path": "META-INF/build-info.properties",
+          "sha256": "2bce25244c048147c35d3bebd32ffae3c73156b30730a4a73f080570e21814e0",
+          "properties": {
+            "build.artifact": "marketops-server",
+            "build.gitCommit": "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+            "build.group": "com.mimococo.marketops",
+            "build.name": "MarketOps Server",
+            "build.time": "2026-01-01T00\\:00\\:00Z",
+            "build.version": "0.1.0-SNAPSHOT"
+          }
+        }
+      ],
+      "embeddedSourceStampMatchesHead": true
+    }
+  ],
+  "sourceStable": true
+}

@@ -91,18 +91,22 @@ public class AdvertisingDisclosureService implements AdvertisingDisclosurePolicy
 
     @Override
     public boolean mayReadDecisionEvidence(AuthenticatedActor actor, UUID objectId) {
-        return mayReadDecisionEvidence(actor, objectId, null);
+        return scopes.objectScope(actor.organizationId(),objectId)
+                .map(scope -> completeEvidenceScope(actor,scope)).orElse(false);
     }
 
     @Override
     public boolean mayReadDecisionEvidence(AuthenticatedActor actor, UUID objectId, String digest) {
+        if(digest==null) return false;
         return scopes.objectScope(actor.organizationId(), objectId, digest)
                 .map(scope -> completeEvidenceScope(actor, scope)).orElse(false);
     }
 
     @Override
     public void requireDecisionEvidence(AuthenticatedActor actor, UUID objectId) {
-        requireDecisionEvidence(actor, objectId, null);
+        if(!mayReadDecisionEvidence(actor,objectId)) {
+            throw OperationRejectedException.of(ErrorCode.APPROVAL_EVIDENCE_SCOPE_BLOCKED);
+        }
     }
 
     @Override
@@ -137,10 +141,10 @@ public class AdvertisingDisclosureService implements AdvertisingDisclosurePolicy
     }
 
     public ObjectNode caseView(AuthenticatedActor actor, AdvertisingCaseView view, Channel channel) {
-        var scope = scopes.objectScope(actor.organizationId(), view.adNativeObjectId(), view.affectedSetDigest())
+        var scope = scopes.caseObjectScope(actor.organizationId(), view.adNativeObjectId(), view.affectedSetDigest())
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
         authorization.require(actor, ActionScopeCode.ADVERTISING_VIEW, ResourceScope.store(scope.storeId()));
-        boolean full = completeEvidenceScope(actor, scope)
+        boolean full = view.affectedSetDigest()!=null && completeEvidenceScope(actor, scope)
                 && view.affectedSetDigest().equals(scope.affectedSetDigest());
         ObjectNode raw = mapper.valueToTree(view);
         ObjectNode result = full ? raw : allow(raw, "id", "storeId", "platformCode", "adNativeObjectId",

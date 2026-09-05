@@ -85,7 +85,12 @@ class AdvertisingDisclosureIT {
             assertThat(projected.path("rankScore").isNull()).isTrue();
             assertThat(projected.path("affectedProductVariantIds").get(0).asText())
                     .isEqualTo(graph.productVariantId().toString());
-            assertThat(projected.toString()).doesNotContain("1200", "4500", "18.0000");
+            for(String field:List.of("contributionProfitAmount","profitPerAdRubValue","officialSpendAmount",
+                    "eligibleTrafficCount","adLinkedConversionValue","maxCpcAmount","attributionGapRatio",
+                    "recoverableProfitAmount","rankScore","profitCurrencyCode")) {
+                assertThat(projected.path(field).isNull()).as("%s must be masked in %s",field,channel).isTrue();
+            }
+            assertNoFinancialSentinelAmount(projected);
             assertThat(projected.path("productionWriteEnabled").asBoolean()).isFalse();
             assertThat(projected.path("semanticProfile").path("verificationState").asText())
                     .isEqualTo("UNVERIFIED");
@@ -371,6 +376,68 @@ class AdvertisingDisclosureIT {
         assertThat(incompleteView.statusCode()).isEqualTo(200);
         assertThat(mapper.readTree(incompleteView.body()).path("options").isEmpty()).isTrue();
         assertThat(mapper.readTree(incompleteView.body()).path("allowedActions").isEmpty()).isTrue();
+    }
+
+    @Test
+    void anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission() throws Exception {
+        var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
+        var actual=AdvertisingR1Fixture.seedManual(migration);UUID user=actual.id("ownerUser"),unknown=UUID.randomUUID();
+        var visibility=users.grantScope("unknown-disclosure-fixture",user,ActionScopeCode.ADVERTISING_VIEW,
+                ResourceScopeType.ORGANIZATION,actual.id("organization"),null);
+        users.grantScope("unknown-disclosure-fixture",user,ActionScopeCode.ADVERTISING_DECISION_EVIDENCE_VIEW,
+                ResourceScopeType.ORGANIZATION,actual.id("organization"),null);
+        String jwt=browserToken(actual.id("provider"),user);
+        // Typed historical read oracle: the real classification/Task persistence
+        // path is exercised independently by AdvertisingEfficiencyFlowIT.
+        seed.sql("""
+                INSERT INTO mart.ad_case SELECT unknown_case.* FROM mart.ad_case original
+                JOIN core.ad_affected_set future ON future.id=original.affected_set_id
+                CROSS JOIN LATERAL jsonb_populate_record(NULL::mart.ad_case,to_jsonb(original)||jsonb_build_object(
+                  'id',:id::text,'case_key',:key,'lane','DATA_REPAIR','protection_tier',NULL,
+                  'cause_code','AFFECTED_SET_UNRESOLVED','affected_set_id',NULL,
+                  'blocker_codes',jsonb_build_array('AFFECTED_SET_NEVER_RESOLVED'),
+                  'as_of',future.resolved_at-interval '1 second','calculated_at',clock_timestamp())) unknown_case
+                WHERE original.id=:original
+                """).param("id",unknown).param("key","synthetic-unknown-set-"+unknown)
+                .param("original",actual.id("caseId")).update();
+        assertThat(scopes.objectScope(actual.id("organization"),actual.id("object")).orElseThrow()
+                .productVariantIds()).containsExactly(actual.id("productVariant"));
+        assertThat(scopes.caseObjectScope(actual.id("organization"),actual.id("object"),null).orElseThrow()
+                .productVariantIds()).isEmpty();
+        var response=http(jwt,"/cases/"+unknown);assertThat(response.statusCode()).isEqualTo(200);
+        var body=new tools.jackson.databind.ObjectMapper().readTree(response.body());
+        assertThat(body.path("lane").asText()).isEqualTo("DATA_REPAIR");
+        assertThat(body.path("affectedSetResolution").asText()).isEqualTo("UNRESOLVED");
+        assertThat(body.path("affectedSetDigest").isNull()).isTrue();
+        assertThat(body.path("affectedProductVariantIds").isEmpty()).isTrue();
+        assertThat(body.path("affectedListingVariantIds").isEmpty()).isTrue();
+        assertThat(body.path("disclosureState").asText()).isEqualTo("MASKED");
+        assertThat(body.path("contributionProfitAmount").isNull()).isTrue();
+        assertThat(body.path("productionWriteEnabled").asBoolean()).isFalse();
+        assertThat(http(jwt,"/queue?lane=DATA_REPAIR").body()).contains(unknown.toString());
+        var actor=new AuthenticatedActor(user,actual.id("organization"),actual.id("provider"),
+                "https://fixture.invalid/issuer","Synthetic unknown-case reviewer","0".repeat(64),null,
+                Instant.now(),Instant.now().plusSeconds(3600),true,Set.of(BusinessRoleCode.OWNER));
+        assertThat(disclosure.mayReadDecisionEvidence(actor,actual.id("object"))).isTrue();
+        assertThat(disclosure.mayReadDecisionEvidence(actor,actual.id("object"),null)).isFalse();
+        users.grantScope("unknown-disclosure-fixture",user,ActionScopeCode.DIAGNOSTIC_VIEW,
+                ResourceScopeType.ORGANIZATION,actual.id("organization"),null);
+        users.revokeScope("unknown-disclosure-fixture",visibility.id(),"Advertising visibility revoked",visibility.version());
+        assertThat(http(jwt,"/cases/"+unknown).statusCode()).isEqualTo(403);
+    }
+
+    private void assertNoFinancialSentinelAmount(tools.jackson.databind.JsonNode node) {
+        // Check value semantics, not substrings of timestamps or UUIDs. Both JSON
+        // numbers and whole numeric strings count as monetary disclosure.
+        if(node.isNumber() || node.isTextual() && node.asText().matches("-?[0-9]+(?:\\.[0-9]+)?")) {
+            var value=node.isNumber()?node.decimalValue():new java.math.BigDecimal(node.asText());
+            for(String forbidden:List.of("1200","4500","18.0000")) {
+                assertThat(value.abs().compareTo(new java.math.BigDecimal(forbidden)))
+                        .as("financial sentinel must not cross a masked projection").isNotZero();
+            }
+        } else {
+            for(var child:node) assertNoFinancialSentinelAmount(child);
+        }
     }
 
     private String browserToken(UUID fixtureProvider,UUID user) throws Exception {

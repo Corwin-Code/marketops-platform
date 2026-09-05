@@ -127,12 +127,15 @@ export function AdvertisingCaseView({
           ))}
         </ul>
       </section>
-      <section aria-label="Complete affected set">
-        <h3>Complete affected set</h3>
+      <section aria-label="Affected set">
+        <h3>Affected set</h3>
         <p>
           {detail.affectedSetResolution} · {detail.affectedSetDigest ?? 'Digest unresolved'}
         </p>
         <p>Structural membership stays visible when economic evidence is masked.</p>
+        {detail.affectedSetResolution !== 'COMPLETE' && (
+          <p>Full impact is unknown until the affected set is complete.</p>
+        )}
         <ul>
           {detail.affectedProductVariantIds.map((id) => (
             <li key={id}>{id}</li>

@@ -186,7 +186,7 @@ CREATE TABLE mart.ad_case (
     store_id                    uuid           NOT NULL,
     platform_code               text           NOT NULL,
     ad_native_object_id         uuid           NOT NULL,
-    affected_set_id             uuid           NOT NULL,
+    affected_set_id             uuid,
     semantic_profile_id         uuid           NOT NULL,
     lineage_generation          integer        NOT NULL,
     case_key                    text           NOT NULL,
@@ -243,6 +243,13 @@ CREATE TABLE mart.ad_case (
     CONSTRAINT ad_case_affected_set_fk
         FOREIGN KEY (affected_set_id, organization_id)
         REFERENCES core.ad_affected_set (id, organization_id),
+    -- An object first observed before any affected-set resolution still needs
+    -- a Data Repair Case and a governed responsibility Task. No controlled-write
+    -- lane or unrelated defect may use absence as a substitute for a frozen set.
+    CONSTRAINT ad_case_unresolved_affected_set_ck
+        CHECK (affected_set_id IS NOT NULL OR
+               (lane = 'DATA_REPAIR' AND cause_code = 'AFFECTED_SET_UNRESOLVED'
+                AND 'AFFECTED_SET_NEVER_RESOLVED' = ANY(blocker_codes))),
     CONSTRAINT ad_case_semantic_profile_fk
         FOREIGN KEY (semantic_profile_id, platform_code)
         REFERENCES platform.ad_semantic_profile (id, platform_code),

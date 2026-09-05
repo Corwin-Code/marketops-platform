@@ -1,0 +1,3800 @@
+{
+  "kind": "NAMED_PYTHON_EXECUTION_INDEX_NOT_CRITERION_ASSESSMENT",
+  "runDirectory": "/private/tmp/slice3-r1-pre-w4-governance-named-r2",
+  "runReceiptSha256": "b1a960d571f535657057aa93ca03e6935443d701f5a377306385feee68f2e84f",
+  "containingGovernanceResult": "PASSED_WITH_NAMED_EVIDENCE",
+  "makeExitCode": 0,
+  "sourceBoundaryStable": true,
+  "sourceBefore": {
+    "head": "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+    "tree": "dbab770cd974aa5a90d0dc63468ab7f8a48e4002",
+    "status": [
+      " M .github/workflows/backend.yml",
+      " M backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
+      " M backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
+      " M backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java",
+      " M backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingExceptionService.java",
+      " M backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+      " M backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+      " M backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
+      " M backend/marketops-server/src/main/resources/db/migration/V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+      " M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+      " M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+      " M backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/WorkTaskJournalIT.java",
+      " M docs/07-phase-evidence/SLICE-V1-003/rework-r1/FINDING-CLOSURE-MATRIX.json",
+      " M docs/07-phase-evidence/SLICE-V1-003/rework-r1/MIGRATION-INVENTORY.json",
+      " M docs/07-phase-evidence/SLICE-V1-003/rework-r1/README.md",
+      " M docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-AC-REWORK-STATUS.json",
+      " M docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-additional-ac.json",
+      " M docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
+      " M docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-disclosure.md",
+      " M docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
+      " M docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-fault-seeding.json",
+      " M docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
+      " M docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-priority.md",
+      " M docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+      " M docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/human-decisions-traceability.json",
+      " M frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      " M frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/ci-job-budget-w3/README.md",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/ci-job-budget-w3/measured-run-receipt.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/ci-job-budget-w3/receipt.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f001-f022-governance-proof-review.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f001-f022-governance-proof-review.md",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w2/testcase-count-reconciliation.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3-publishability-scan.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/README.md",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/archive-artifact-index.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/backend-source-after.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/backend-source-before.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/fixture-datasets.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/postgres-test-image-inventory.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/preserved-artifact-manifest.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/raw-test-artifacts.tar.gz",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/run-receipt.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/runtime-resources.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/test-report-inventory.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/testcase-count-reconciliation.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/verified-jar-identity.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-evidence-secret-scan.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-root-repairs.md",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r36/README.md",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r36/archive-index.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r36/raw-reports.tar.gz",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r36/receipt.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r36/runtime-resources.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r36/source-after.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r36/source-before.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r37/README.md",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r37/archive-index.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r37/raw-reports.tar.gz",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r37/receipt.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r37/runtime-resources.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r37/source-after.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r37/source-before.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/README.md",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/archive-index.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/r37-r38-source-delta.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/raw-reports.tar.gz",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/receipt.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/runtime-resources.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/source-after.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/source-before.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-ui/disclosure-r37/receipt.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-ui/disclosure-r37/runtime-resources.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-ui/disclosure-r37/source-before.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-ui/frontend-source-inputs.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-ui/receipt.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w4-governance-attempt-1/README.md",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w4-governance-attempt-1/receipt.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/slice3-r1-w3-identity.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/unknown-affected-set-review.json",
+      "?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/unknown-affected-set-review.md"
+    ],
+    "trackedDiffSha256": "fb067ef605bdfdc7627d0046dd777b0f335bba47464f42b411deb35fbeff2a1f"
+  },
+  "shards": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
+      "sha256": "2a6299cbee944e162304b7fdab8a1182e969ad44b9c835af1b82d9ebf33a5b56"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-additional-ac.json",
+      "sha256": "cb000fa28f9b91a783c6d94fd47c95e9a3a1a982a91d092ec073ca41f8d1c8f1"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
+      "sha256": "2b0175e61559b9359e8eb1afb62659d1564e0a756dc98ef840b1d8e9e33bccc6"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
+      "sha256": "17c5fa80307c4242f6f3e6dd10aee53e58db01b30c7001a9c4c7e93b94dd784f"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/human-decisions-traceability.json",
+      "sha256": "397014a4f52469be52735339d7cff8d23b6ab6b017a81d2d68dfde8a418a62b2"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+      "sha256": "14a2522fe92cc354dd13c1441bf1b4a84a183e1c71795b2a6d0b5445d505e603"
+    }
+  ],
+  "references": [
+    {
+      "id": "da5fe15f1aa468c8e48e",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_exact_v1_state_is_valid",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-001",
+          "key": "testReferences",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        },
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-003",
+          "key": "testReferences",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        },
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-001",
+          "key": "positiveTests",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_exact_v1_state_is_valid",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "V1CurrentStateContractTests",
+          "method": "test_exact_v1_state_is_valid",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "V1CurrentStateContractTests.test_exact_v1_state_is_valid",
+          "sourceLine": 2929,
+          "methodSourceSha256": "c474377b9cd30fb00cd515d8c73f605979a18a181598dd26261cf4ca58e59db8",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:19.010644+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:19.080160+00:00",
+          "elapsedSeconds": 0.06952199999999986
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "b411dba280ac114a7aee",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_contract_byte_change_with_old_hash_is_rejected",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-001",
+          "key": "testReferences",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        },
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-001",
+          "key": "negativeTests",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_contract_byte_change_with_old_hash_is_rejected",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "V1CurrentStateContractTests",
+          "method": "test_contract_byte_change_with_old_hash_is_rejected",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "V1CurrentStateContractTests.test_contract_byte_change_with_old_hash_is_rejected",
+          "sourceLine": 3119,
+          "methodSourceSha256": "b65abca68de9112cfbd79a0d8ab70ac8694f1589909e9429ffedd7fbfb4ccb5d",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.761247+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.809549+00:00",
+          "elapsedSeconds": 0.04830245799999999
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "5056c00827038f1574ca",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_hash_change_with_original_contract_is_rejected",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-001",
+          "key": "testReferences",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        },
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-001",
+          "key": "negativeTests",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_hash_change_with_original_contract_is_rejected",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "V1CurrentStateContractTests",
+          "method": "test_hash_change_with_original_contract_is_rejected",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "V1CurrentStateContractTests.test_hash_change_with_original_contract_is_rejected",
+          "sourceLine": 3131,
+          "methodSourceSha256": "c9eb0e7b9369ce4b830d313115776908533e3d08f912d7d467a1ca5f362d05b5",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:19.117098+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:19.154215+00:00",
+          "elapsedSeconds": 0.03712574999999996
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "96f80817f0b0ee11cead",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_coordinated_contract_and_hash_change_is_not_an_amendment",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-001",
+          "key": "testReferences",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        },
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-001",
+          "key": "negativeTests",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_coordinated_contract_and_hash_change_is_not_an_amendment",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "V1CurrentStateContractTests",
+          "method": "test_coordinated_contract_and_hash_change_is_not_an_amendment",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "V1CurrentStateContractTests.test_coordinated_contract_and_hash_change_is_not_an_amendment",
+          "sourceLine": 3140,
+          "methodSourceSha256": "8b1d41f22309f91eec162d4d37938ff38727aaabaa74b85c71253f7f29611911",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.809989+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.841679+00:00",
+          "elapsedSeconds": 0.03169241699999992
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "a2740abb0ab2923284f4",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_slice_v1_002_owner_evidence_byte_change_is_rejected",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-002",
+          "key": "testReferences",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_slice_v1_002_owner_evidence_byte_change_is_rejected",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "V1CurrentStateContractTests",
+          "method": "test_slice_v1_002_owner_evidence_byte_change_is_rejected",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "V1CurrentStateContractTests.test_slice_v1_002_owner_evidence_byte_change_is_rejected",
+          "sourceLine": 3017,
+          "methodSourceSha256": "e15b39a134d10ceec8d024fac2857543b200e33222726536cd49fac793ca1ee7",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:19.679446+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:19.681322+00:00",
+          "elapsedSeconds": 0.00186608399999999
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "bfe7b51e689361efb51c",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_slice_v1_002_original_owner_statement_byte_change_is_rejected",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-002",
+          "key": "testReferences",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_slice_v1_002_original_owner_statement_byte_change_is_rejected",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "V1CurrentStateContractTests",
+          "method": "test_slice_v1_002_original_owner_statement_byte_change_is_rejected",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "V1CurrentStateContractTests.test_slice_v1_002_original_owner_statement_byte_change_is_rejected",
+          "sourceLine": 3028,
+          "methodSourceSha256": "357f60fb26104cadfc57590bd33fd4b8a0a257525ad99da89d121870f05fedb2",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:19.677432+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:19.678948+00:00",
+          "elapsedSeconds": 0.0015158749999999444
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "38e1ec472f79e3f07ead",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_wrong_contract_gate_and_authorization_are_rejected",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-003",
+          "key": "testReferences",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_wrong_contract_gate_and_authorization_are_rejected",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "V1CurrentStateContractTests",
+          "method": "test_wrong_contract_gate_and_authorization_are_rejected",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "V1CurrentStateContractTests.test_wrong_contract_gate_and_authorization_are_rejected",
+          "sourceLine": 2959,
+          "methodSourceSha256": "2fd25a0814d39df30609fda0b91e7fb2db1205852c2d5b8d0adf62cd358b3547",
+          "status": "PASSED",
+          "subtests": [
+            {
+              "ordinal": 1,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 2,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 3,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            }
+          ],
+          "startedAtUTC": "2026-09-05T05:19:19.691000+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:19.789703+00:00",
+          "elapsedSeconds": 0.09870929200000012
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "637cfff6ff9d9288519a",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_exact_owner_authorization_and_both_frozen_representations_pass",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-003",
+          "key": "testReferences",
+          "claimedClass": "Slice3R1AuthorityTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        },
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-001",
+          "key": "positiveTests",
+          "claimedClass": "Slice3R1AuthorityTests",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.Slice3R1AuthorityTests.test_exact_owner_authorization_and_both_frozen_representations_pass",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "Slice3R1AuthorityTests",
+          "method": "test_exact_owner_authorization_and_both_frozen_representations_pass",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "Slice3R1AuthorityTests.test_exact_owner_authorization_and_both_frozen_representations_pass",
+          "sourceLine": 2880,
+          "methodSourceSha256": "7de37b08167d7aa78330cc604e95dda9134f57487c1bcc692a3db96d57f04077",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.675811+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.676598+00:00",
+          "elapsedSeconds": 0.0007868330000000423
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "fa82824b9660830ccb89",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_each_missing_or_changed_authority_is_refused",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-003",
+          "key": "testReferences",
+          "claimedClass": "Slice3R1AuthorityTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        },
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-001",
+          "key": "negativeTests",
+          "claimedClass": "Slice3R1AuthorityTests",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.Slice3R1AuthorityTests.test_each_missing_or_changed_authority_is_refused",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "Slice3R1AuthorityTests",
+          "method": "test_each_missing_or_changed_authority_is_refused",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "Slice3R1AuthorityTests.test_each_missing_or_changed_authority_is_refused",
+          "sourceLine": 2885,
+          "methodSourceSha256": "2de97e5377c020c897794490d1214ac9e9335ac9e25a70ff02ed7ef1c7b686bd",
+          "status": "PASSED",
+          "subtests": [
+            {
+              "ordinal": 1,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 2,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 3,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 4,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 5,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 6,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            }
+          ],
+          "startedAtUTC": "2026-09-05T05:19:18.670522+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.675490+00:00",
+          "elapsedSeconds": 0.004968292000000041
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "cf2c4e9e0bbe98cfd763",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_exact_backlog_delivery_plan_and_slice_are_valid",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-004",
+          "key": "testReferences",
+          "claimedClass": "V1SliceContractTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.V1SliceContractTests.test_exact_backlog_delivery_plan_and_slice_are_valid",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "V1SliceContractTests",
+          "method": "test_exact_backlog_delivery_plan_and_slice_are_valid",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "V1SliceContractTests.test_exact_backlog_delivery_plan_and_slice_are_valid",
+          "sourceLine": 3443,
+          "methodSourceSha256": "44ad30892357ae821fea8c7ff06cb180a657076a6cba31889ed73d2f081b04fb",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:19.878833+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:19.881281+00:00",
+          "elapsedSeconds": 0.002447832999999733
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "e4ec2da365b7c91444ab",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_exact_capability_ai_product_and_design_gate_contracts_are_valid",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-007",
+          "key": "testReferences",
+          "claimedClass": "V1CapabilityAiAndWriteContractTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.V1CapabilityAiAndWriteContractTests.test_exact_capability_ai_product_and_design_gate_contracts_are_valid",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "V1CapabilityAiAndWriteContractTests",
+          "method": "test_exact_capability_ai_product_and_design_gate_contracts_are_valid",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "V1CapabilityAiAndWriteContractTests.test_exact_capability_ai_product_and_design_gate_contracts_are_valid",
+          "sourceLine": 3505,
+          "methodSourceSha256": "006089203a3e4505f6f026295e5d5ba89599062d17832326e86c95ba4d594ec7",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.681966+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.684151+00:00",
+          "elapsedSeconds": 0.002185207999999994
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "572455438ab4866f36de",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_enabled_global_or_platform_write_is_rejected",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-008",
+          "key": "testReferences",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_enabled_global_or_platform_write_is_rejected",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "V1CurrentStateContractTests",
+          "method": "test_enabled_global_or_platform_write_is_rejected",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "V1CurrentStateContractTests.test_enabled_global_or_platform_write_is_rejected",
+          "sourceLine": 2983,
+          "methodSourceSha256": "e0fb9d0c18e7899770ccaca69d7149ca03ddf0dbc4b579133b845c5c7f28080a",
+          "status": "PASSED",
+          "subtests": [
+            {
+              "ordinal": 1,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 2,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 3,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            }
+          ],
+          "startedAtUTC": "2026-09-05T05:19:18.907167+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:19.008548+00:00",
+          "elapsedSeconds": 0.10138729099999999
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "b687813dbb98e61cffc7",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_rework_identity_phase_and_actor_cannot_drift",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-AC-008",
+          "key": "testReferences",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "claimedRun": "governance-r12"
+        },
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-001",
+          "key": "negativeTests",
+          "claimedClass": "V1CurrentStateContractTests",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_rework_identity_phase_and_actor_cannot_drift",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "V1CurrentStateContractTests",
+          "method": "test_rework_identity_phase_and_actor_cannot_drift",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "V1CurrentStateContractTests.test_rework_identity_phase_and_actor_cannot_drift",
+          "sourceLine": 3163,
+          "methodSourceSha256": "79c1fa78c6ff98ac914a6624f5fc9a7daad46da9c7cc4eeab767bf3b6decd620",
+          "status": "PASSED",
+          "subtests": [
+            {
+              "ordinal": 1,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 2,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 3,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 4,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 5,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 6,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 7,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 8,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 9,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 10,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 11,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 12,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            },
+            {
+              "ordinal": 13,
+              "status": "PASSED",
+              "parameters": "NOT_RECORDED"
+            }
+          ],
+          "startedAtUTC": "2026-09-05T05:19:19.239965+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:19.670020+00:00",
+          "elapsedSeconds": 0.430058292
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "f17785a6fb5c3b30b35f",
+      "path": "tests/test_validate_production_readiness.py",
+      "method": "test_frontend_test_requires_authored_source_expression",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-001",
+          "key": "positiveTests",
+          "claimedClass": "RepositoryContractPatternTests",
+          "claimedHash": null,
+          "claimedRun": null
+        },
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-001",
+          "key": "negativeTests",
+          "claimedClass": "RepositoryContractPatternTests",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_frontend_test_requires_authored_source_expression",
+          "runtimeModule": "test_validate_production_readiness",
+          "runtimeClass": "RepositoryContractPatternTests",
+          "method": "test_frontend_test_requires_authored_source_expression",
+          "sourcePath": "tests/test_validate_production_readiness.py",
+          "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+          "declaringCallable": "RepositoryContractPatternTests.test_frontend_test_requires_authored_source_expression",
+          "sourceLine": 447,
+          "methodSourceSha256": "52e96062a1a234b158ce2bbd729466046141240b7995e4372b0a628d46e8457d",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:20.310984+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:20.311701+00:00",
+          "elapsedSeconds": 0.000716666000000199
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "f5ac534a61970bcb7039",
+      "path": "tests/test_required_status_checks.py",
+      "method": "test_inventory_requires_infrastructure_validation",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-001",
+          "key": "positiveTests",
+          "claimedClass": "RequiredStatusChecksTests",
+          "claimedHash": null,
+          "claimedRun": null
+        },
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-022",
+          "key": "positiveTests",
+          "claimedClass": "RequiredStatusChecksTests",
+          "claimedHash": null,
+          "claimedRun": null
+        },
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-022",
+          "key": "negativeTests",
+          "claimedClass": "RequiredStatusChecksTests",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_required_status_checks.RequiredStatusChecksTests.test_inventory_requires_infrastructure_validation",
+          "runtimeModule": "test_required_status_checks",
+          "runtimeClass": "RequiredStatusChecksTests",
+          "method": "test_inventory_requires_infrastructure_validation",
+          "sourcePath": "tests/test_required_status_checks.py",
+          "sourceSha256": "bf938e4f904934bf32e2d67cc912ab444d91a29f1b355351c23b005427f00d6a",
+          "declaringCallable": "RequiredStatusChecksTests.test_inventory_requires_infrastructure_validation",
+          "sourceLine": 8,
+          "methodSourceSha256": "9c8418b54ee2f0a7acd456fdd52a77618c54608185ddad1ee362249849e65864",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.220749+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.221503+00:00",
+          "elapsedSeconds": 0.0007540830000000165
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "bf938e4f904934bf32e2d67cc912ab444d91a29f1b355351c23b005427f00d6a",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "d65973db47e1736a26b7",
+      "path": "tests/test_validate_production_readiness.py",
+      "method": "test_checkout_head_and_identity_divergence_are_rejected",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-001",
+          "key": "negativeTests",
+          "claimedClass": "RepositoryContractPatternTests",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_checkout_head_and_identity_divergence_are_rejected",
+          "runtimeModule": "test_validate_production_readiness",
+          "runtimeClass": "RepositoryContractPatternTests",
+          "method": "test_checkout_head_and_identity_divergence_are_rejected",
+          "sourcePath": "tests/test_validate_production_readiness.py",
+          "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+          "declaringCallable": "RepositoryContractPatternTests.test_checkout_head_and_identity_divergence_are_rejected",
+          "sourceLine": 466,
+          "methodSourceSha256": "ab1700891f94101bf1c3e130c77d10124741fe3df08b9bdf8d18acfb0030896f",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:20.303150+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:20.303972+00:00",
+          "elapsedSeconds": 0.0008218339999999102
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "e670f282e0001131c0a0",
+      "path": "tests/test_validate_production_readiness.py",
+      "method": "test_ci_source_resolver_cannot_fall_back_to_repository_head",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-001",
+          "key": "negativeTests",
+          "claimedClass": "RepositoryContractPatternTests",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_ci_source_resolver_cannot_fall_back_to_repository_head",
+          "runtimeModule": "test_validate_production_readiness",
+          "runtimeClass": "RepositoryContractPatternTests",
+          "method": "test_ci_source_resolver_cannot_fall_back_to_repository_head",
+          "sourcePath": "tests/test_validate_production_readiness.py",
+          "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+          "declaringCallable": "RepositoryContractPatternTests.test_ci_source_resolver_cannot_fall_back_to_repository_head",
+          "sourceLine": 484,
+          "methodSourceSha256": "73654c75761294cf0f5589f4080f729ed115e81caaeebf4ebb123bda1571d1ba",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:20.304217+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:20.304721+00:00",
+          "elapsedSeconds": 0.000503499999999768
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "79f08c3294d56741f51c",
+      "path": "tests/test_validate_governance.py",
+      "method": "test_remote_publication_cannot_reconstruct_checkpoint",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-001",
+          "key": "negativeTests",
+          "claimedClass": "Dr0004GovernanceContractTests",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_validate_governance.Dr0004GovernanceContractTests.test_remote_publication_cannot_reconstruct_checkpoint",
+          "runtimeModule": "test_validate_governance",
+          "runtimeClass": "Dr0004GovernanceContractTests",
+          "method": "test_remote_publication_cannot_reconstruct_checkpoint",
+          "sourcePath": "tests/test_validate_governance.py",
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "declaringCallable": "Dr0004GovernanceContractTests.test_remote_publication_cannot_reconstruct_checkpoint",
+          "sourceLine": 4054,
+          "methodSourceSha256": "bb6927d41c0aff4912fbef16bf91b331004f25c0f0259f81053616cef5c97e90",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.585274+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.589894+00:00",
+          "elapsedSeconds": 0.004619540999999949
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "36664367adcb5bb43f3d",
+      "path": "tests/test_assemble_slice3_rework_evidence.py",
+      "method": "test_complete_mapping_preserves_authority_and_never_inherits_pass",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-022",
+          "key": "positiveTests",
+          "claimedClass": "EvidenceAssemblyTest",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_complete_mapping_preserves_authority_and_never_inherits_pass",
+          "runtimeModule": "test_assemble_slice3_rework_evidence",
+          "runtimeClass": "EvidenceAssemblyTest",
+          "method": "test_complete_mapping_preserves_authority_and_never_inherits_pass",
+          "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "declaringCallable": "EvidenceAssemblyTest.test_complete_mapping_preserves_authority_and_never_inherits_pass",
+          "sourceLine": 47,
+          "methodSourceSha256": "ba356af96f2575de1f17794b5b0b7dea4e3f8972ae299a399981ab37be473325",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.107013+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.160190+00:00",
+          "elapsedSeconds": 0.05318233299999997
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "9e1545e960305b1f97f0",
+      "path": "tests/test_assemble_slice3_rework_evidence.py",
+      "method": "test_javascript_test_titles_require_the_actual_literal_title",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-022",
+          "key": "positiveTests",
+          "claimedClass": "EvidenceAssemblyTest",
+          "claimedHash": null,
+          "claimedRun": null
+        },
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-022",
+          "key": "negativeTests",
+          "claimedClass": "EvidenceAssemblyTest",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_javascript_test_titles_require_the_actual_literal_title",
+          "runtimeModule": "test_assemble_slice3_rework_evidence",
+          "runtimeClass": "EvidenceAssemblyTest",
+          "method": "test_javascript_test_titles_require_the_actual_literal_title",
+          "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "declaringCallable": "EvidenceAssemblyTest.test_javascript_test_titles_require_the_actual_literal_title",
+          "sourceLine": 91,
+          "methodSourceSha256": "468604c6e69f74cd155c7783ac5eb7c42781500db492046180d66c3b5ca0c565",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.160551+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.167082+00:00",
+          "elapsedSeconds": 0.006530124999999998
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "e1b1f5de90e5cf948394",
+      "path": "tests/test_assemble_slice3_rework_evidence.py",
+      "method": "test_changed_contract_is_rejected_before_writing_matrices",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-022",
+          "key": "negativeTests",
+          "claimedClass": "EvidenceAssemblyTest",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_changed_contract_is_rejected_before_writing_matrices",
+          "runtimeModule": "test_assemble_slice3_rework_evidence",
+          "runtimeClass": "EvidenceAssemblyTest",
+          "method": "test_changed_contract_is_rejected_before_writing_matrices",
+          "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "declaringCallable": "EvidenceAssemblyTest.test_changed_contract_is_rejected_before_writing_matrices",
+          "sourceLine": 60,
+          "methodSourceSha256": "dd2866357f4ff8a7fb2c734757d5adceb53c6ac479f2d9e149b1893c71a3fa84",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.092924+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.099227+00:00",
+          "elapsedSeconds": 0.006306666999999988
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "7e3b3e00b1a758c64e9f",
+      "path": "tests/test_assemble_slice3_rework_evidence.py",
+      "method": "test_changed_frozen_findings_are_rejected_before_writing_matrices",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-022",
+          "key": "negativeTests",
+          "claimedClass": "EvidenceAssemblyTest",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_changed_frozen_findings_are_rejected_before_writing_matrices",
+          "runtimeModule": "test_assemble_slice3_rework_evidence",
+          "runtimeClass": "EvidenceAssemblyTest",
+          "method": "test_changed_frozen_findings_are_rejected_before_writing_matrices",
+          "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "declaringCallable": "EvidenceAssemblyTest.test_changed_frozen_findings_are_rejected_before_writing_matrices",
+          "sourceLine": 66,
+          "methodSourceSha256": "376324f2b51060ec24dbf382ef35e6354506c00035281bfb0e0402ad9e24846d",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.099477+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.106495+00:00",
+          "elapsedSeconds": 0.007023124999999963
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "32222563cfb43c1d5526",
+      "path": "tests/test_assemble_slice3_rework_evidence.py",
+      "method": "test_modified_criterion_is_not_treated_as_the_accepted_criterion",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-022",
+          "key": "negativeTests",
+          "claimedClass": "EvidenceAssemblyTest",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_modified_criterion_is_not_treated_as_the_accepted_criterion",
+          "runtimeModule": "test_assemble_slice3_rework_evidence",
+          "runtimeClass": "EvidenceAssemblyTest",
+          "method": "test_modified_criterion_is_not_treated_as_the_accepted_criterion",
+          "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "declaringCallable": "EvidenceAssemblyTest.test_modified_criterion_is_not_treated_as_the_accepted_criterion",
+          "sourceLine": 72,
+          "methodSourceSha256": "31fb2193c8ae0de14608132bf57ee6200c53ad87279ab938821a3610ca342d0c",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.167338+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.180297+00:00",
+          "elapsedSeconds": 0.01296345900000001
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "3e3189152cd342344765",
+      "path": "tests/test_assemble_slice3_rework_evidence.py",
+      "method": "test_a_missing_criterion_prevents_a_complete_matrix",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-022",
+          "key": "negativeTests",
+          "claimedClass": "EvidenceAssemblyTest",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_a_missing_criterion_prevents_a_complete_matrix",
+          "runtimeModule": "test_assemble_slice3_rework_evidence",
+          "runtimeClass": "EvidenceAssemblyTest",
+          "method": "test_a_missing_criterion_prevents_a_complete_matrix",
+          "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "declaringCallable": "EvidenceAssemblyTest.test_a_missing_criterion_prevents_a_complete_matrix",
+          "sourceLine": 78,
+          "methodSourceSha256": "0913fabdfe1fd05edd8a8841d1dd9319b90a153b9274866a2d6f89d56f5a0c3b",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.034310+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.085718+00:00",
+          "elapsedSeconds": 0.05140791699999997
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "ec5914103caf4ec20ab0",
+      "path": "tests/test_assemble_slice3_rework_evidence.py",
+      "method": "test_a_nonexistent_test_method_is_not_accepted_as_evidence",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-022",
+          "key": "negativeTests",
+          "claimedClass": "EvidenceAssemblyTest",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_a_nonexistent_test_method_is_not_accepted_as_evidence",
+          "runtimeModule": "test_assemble_slice3_rework_evidence",
+          "runtimeClass": "EvidenceAssemblyTest",
+          "method": "test_a_nonexistent_test_method_is_not_accepted_as_evidence",
+          "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "declaringCallable": "EvidenceAssemblyTest.test_a_nonexistent_test_method_is_not_accepted_as_evidence",
+          "sourceLine": 83,
+          "methodSourceSha256": "e135e2385394755ac1f8d807568bad9fc7d74f7c2daf6905cace019680ae30a6",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.085970+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.092664+00:00",
+          "elapsedSeconds": 0.006694707999999994
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    },
+    {
+      "id": "88b991bc67bc76cbeb11",
+      "path": "tests/test_assemble_slice3_rework_evidence.py",
+      "method": "test_references_cannot_escape_the_repository",
+      "shardClaims": [
+        {
+          "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+          "rowId": "S3-DR-022",
+          "key": "negativeTests",
+          "claimedClass": "EvidenceAssemblyTest",
+          "claimedHash": null,
+          "claimedRun": null
+        }
+      ],
+      "matches": [
+        {
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_references_cannot_escape_the_repository",
+          "runtimeModule": "test_assemble_slice3_rework_evidence",
+          "runtimeClass": "EvidenceAssemblyTest",
+          "method": "test_references_cannot_escape_the_repository",
+          "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "declaringCallable": "EvidenceAssemblyTest.test_references_cannot_escape_the_repository",
+          "sourceLine": 87,
+          "methodSourceSha256": "6507e28bfdc2463dbc78e9cc112eaa4ece649c06336ab153d7b7336222c5213d",
+          "status": "PASSED",
+          "subtests": [],
+          "startedAtUTC": "2026-09-05T05:19:18.180537+00:00",
+          "finishedAtUTC": "2026-09-05T05:19:18.186243+00:00",
+          "elapsedSeconds": 0.005709583000000018
+        }
+      ],
+      "assessment": "NOT_PERFORMED",
+      "currentSourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+      "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+      "resultPath": "/private/tmp/slice3-r1-pre-w4-governance-named-r2/named-unittest-results.json",
+      "resultSha256": "8a3886c487dbc8e1a09e4475a7206f329738838f98326d7b51b39c269d31614a"
+    }
+  ],
+  "criteria": [
+    {
+      "id": "S3-AC-001",
+      "pythonReferenceIds": [
+        "5056c00827038f1574ca",
+        "96f80817f0b0ee11cead",
+        "b411dba280ac114a7aee",
+        "da5fe15f1aa468c8e48e"
+      ],
+      "matches": [
+        {
+          "referenceId": "5056c00827038f1574ca",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_hash_change_with_original_contract_is_rejected",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_hash_change_with_original_contract_is_rejected",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_hash_change_with_original_contract_is_rejected",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_hash_change_with_original_contract_is_rejected",
+              "sourceLine": 3131,
+              "methodSourceSha256": "c9eb0e7b9369ce4b830d313115776908533e3d08f912d7d467a1ca5f362d05b5",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:19.117098+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:19.154215+00:00",
+              "elapsedSeconds": 0.03712574999999996
+            }
+          ]
+        },
+        {
+          "referenceId": "96f80817f0b0ee11cead",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_coordinated_contract_and_hash_change_is_not_an_amendment",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_coordinated_contract_and_hash_change_is_not_an_amendment",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_coordinated_contract_and_hash_change_is_not_an_amendment",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_coordinated_contract_and_hash_change_is_not_an_amendment",
+              "sourceLine": 3140,
+              "methodSourceSha256": "8b1d41f22309f91eec162d4d37938ff38727aaabaa74b85c71253f7f29611911",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.809989+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.841679+00:00",
+              "elapsedSeconds": 0.03169241699999992
+            }
+          ]
+        },
+        {
+          "referenceId": "b411dba280ac114a7aee",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_contract_byte_change_with_old_hash_is_rejected",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_contract_byte_change_with_old_hash_is_rejected",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_contract_byte_change_with_old_hash_is_rejected",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_contract_byte_change_with_old_hash_is_rejected",
+              "sourceLine": 3119,
+              "methodSourceSha256": "b65abca68de9112cfbd79a0d8ab70ac8694f1589909e9429ffedd7fbfb4ccb5d",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.761247+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.809549+00:00",
+              "elapsedSeconds": 0.04830245799999999
+            }
+          ]
+        },
+        {
+          "referenceId": "da5fe15f1aa468c8e48e",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_exact_v1_state_is_valid",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_exact_v1_state_is_valid",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_exact_v1_state_is_valid",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_exact_v1_state_is_valid",
+              "sourceLine": 2929,
+              "methodSourceSha256": "c474377b9cd30fb00cd515d8c73f605979a18a181598dd26261cf4ca58e59db8",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:19.010644+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:19.080160+00:00",
+              "elapsedSeconds": 0.06952199999999986
+            }
+          ]
+        }
+      ],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-002",
+      "pythonReferenceIds": [
+        "a2740abb0ab2923284f4",
+        "bfe7b51e689361efb51c"
+      ],
+      "matches": [
+        {
+          "referenceId": "a2740abb0ab2923284f4",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_slice_v1_002_owner_evidence_byte_change_is_rejected",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_slice_v1_002_owner_evidence_byte_change_is_rejected",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_slice_v1_002_owner_evidence_byte_change_is_rejected",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_slice_v1_002_owner_evidence_byte_change_is_rejected",
+              "sourceLine": 3017,
+              "methodSourceSha256": "e15b39a134d10ceec8d024fac2857543b200e33222726536cd49fac793ca1ee7",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:19.679446+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:19.681322+00:00",
+              "elapsedSeconds": 0.00186608399999999
+            }
+          ]
+        },
+        {
+          "referenceId": "bfe7b51e689361efb51c",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_slice_v1_002_original_owner_statement_byte_change_is_rejected",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_slice_v1_002_original_owner_statement_byte_change_is_rejected",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_slice_v1_002_original_owner_statement_byte_change_is_rejected",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_slice_v1_002_original_owner_statement_byte_change_is_rejected",
+              "sourceLine": 3028,
+              "methodSourceSha256": "357f60fb26104cadfc57590bd33fd4b8a0a257525ad99da89d121870f05fedb2",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:19.677432+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:19.678948+00:00",
+              "elapsedSeconds": 0.0015158749999999444
+            }
+          ]
+        }
+      ],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-003",
+      "pythonReferenceIds": [
+        "38e1ec472f79e3f07ead",
+        "637cfff6ff9d9288519a",
+        "da5fe15f1aa468c8e48e",
+        "fa82824b9660830ccb89"
+      ],
+      "matches": [
+        {
+          "referenceId": "38e1ec472f79e3f07ead",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_wrong_contract_gate_and_authorization_are_rejected",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_wrong_contract_gate_and_authorization_are_rejected",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_wrong_contract_gate_and_authorization_are_rejected",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_wrong_contract_gate_and_authorization_are_rejected",
+              "sourceLine": 2959,
+              "methodSourceSha256": "2fd25a0814d39df30609fda0b91e7fb2db1205852c2d5b8d0adf62cd358b3547",
+              "status": "PASSED",
+              "subtests": [
+                {
+                  "ordinal": 1,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 2,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 3,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                }
+              ],
+              "startedAtUTC": "2026-09-05T05:19:19.691000+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:19.789703+00:00",
+              "elapsedSeconds": 0.09870929200000012
+            }
+          ]
+        },
+        {
+          "referenceId": "637cfff6ff9d9288519a",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_exact_owner_authorization_and_both_frozen_representations_pass",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.Slice3R1AuthorityTests.test_exact_owner_authorization_and_both_frozen_representations_pass",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "Slice3R1AuthorityTests",
+              "method": "test_exact_owner_authorization_and_both_frozen_representations_pass",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "Slice3R1AuthorityTests.test_exact_owner_authorization_and_both_frozen_representations_pass",
+              "sourceLine": 2880,
+              "methodSourceSha256": "7de37b08167d7aa78330cc604e95dda9134f57487c1bcc692a3db96d57f04077",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.675811+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.676598+00:00",
+              "elapsedSeconds": 0.0007868330000000423
+            }
+          ]
+        },
+        {
+          "referenceId": "da5fe15f1aa468c8e48e",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_exact_v1_state_is_valid",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_exact_v1_state_is_valid",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_exact_v1_state_is_valid",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_exact_v1_state_is_valid",
+              "sourceLine": 2929,
+              "methodSourceSha256": "c474377b9cd30fb00cd515d8c73f605979a18a181598dd26261cf4ca58e59db8",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:19.010644+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:19.080160+00:00",
+              "elapsedSeconds": 0.06952199999999986
+            }
+          ]
+        },
+        {
+          "referenceId": "fa82824b9660830ccb89",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_each_missing_or_changed_authority_is_refused",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.Slice3R1AuthorityTests.test_each_missing_or_changed_authority_is_refused",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "Slice3R1AuthorityTests",
+              "method": "test_each_missing_or_changed_authority_is_refused",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "Slice3R1AuthorityTests.test_each_missing_or_changed_authority_is_refused",
+              "sourceLine": 2885,
+              "methodSourceSha256": "2de97e5377c020c897794490d1214ac9e9335ac9e25a70ff02ed7ef1c7b686bd",
+              "status": "PASSED",
+              "subtests": [
+                {
+                  "ordinal": 1,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 2,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 3,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 4,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 5,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 6,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                }
+              ],
+              "startedAtUTC": "2026-09-05T05:19:18.670522+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.675490+00:00",
+              "elapsedSeconds": 0.004968292000000041
+            }
+          ]
+        }
+      ],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-004",
+      "pythonReferenceIds": [
+        "cf2c4e9e0bbe98cfd763"
+      ],
+      "matches": [
+        {
+          "referenceId": "cf2c4e9e0bbe98cfd763",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_exact_backlog_delivery_plan_and_slice_are_valid",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1SliceContractTests.test_exact_backlog_delivery_plan_and_slice_are_valid",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1SliceContractTests",
+              "method": "test_exact_backlog_delivery_plan_and_slice_are_valid",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1SliceContractTests.test_exact_backlog_delivery_plan_and_slice_are_valid",
+              "sourceLine": 3443,
+              "methodSourceSha256": "44ad30892357ae821fea8c7ff06cb180a657076a6cba31889ed73d2f081b04fb",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:19.878833+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:19.881281+00:00",
+              "elapsedSeconds": 0.002447832999999733
+            }
+          ]
+        }
+      ],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-005",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-006",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-007",
+      "pythonReferenceIds": [
+        "e4ec2da365b7c91444ab"
+      ],
+      "matches": [
+        {
+          "referenceId": "e4ec2da365b7c91444ab",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_exact_capability_ai_product_and_design_gate_contracts_are_valid",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CapabilityAiAndWriteContractTests.test_exact_capability_ai_product_and_design_gate_contracts_are_valid",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CapabilityAiAndWriteContractTests",
+              "method": "test_exact_capability_ai_product_and_design_gate_contracts_are_valid",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CapabilityAiAndWriteContractTests.test_exact_capability_ai_product_and_design_gate_contracts_are_valid",
+              "sourceLine": 3505,
+              "methodSourceSha256": "006089203a3e4505f6f026295e5d5ba89599062d17832326e86c95ba4d594ec7",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.681966+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.684151+00:00",
+              "elapsedSeconds": 0.002185207999999994
+            }
+          ]
+        }
+      ],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-008",
+      "pythonReferenceIds": [
+        "572455438ab4866f36de",
+        "b687813dbb98e61cffc7"
+      ],
+      "matches": [
+        {
+          "referenceId": "572455438ab4866f36de",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_enabled_global_or_platform_write_is_rejected",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_enabled_global_or_platform_write_is_rejected",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_enabled_global_or_platform_write_is_rejected",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_enabled_global_or_platform_write_is_rejected",
+              "sourceLine": 2983,
+              "methodSourceSha256": "e0fb9d0c18e7899770ccaca69d7149ca03ddf0dbc4b579133b845c5c7f28080a",
+              "status": "PASSED",
+              "subtests": [
+                {
+                  "ordinal": 1,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 2,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 3,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                }
+              ],
+              "startedAtUTC": "2026-09-05T05:19:18.907167+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:19.008548+00:00",
+              "elapsedSeconds": 0.10138729099999999
+            }
+          ]
+        },
+        {
+          "referenceId": "b687813dbb98e61cffc7",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_rework_identity_phase_and_actor_cannot_drift",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_rework_identity_phase_and_actor_cannot_drift",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_rework_identity_phase_and_actor_cannot_drift",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_rework_identity_phase_and_actor_cannot_drift",
+              "sourceLine": 3163,
+              "methodSourceSha256": "79c1fa78c6ff98ac914a6624f5fc9a7daad46da9c7cc4eeab767bf3b6decd620",
+              "status": "PASSED",
+              "subtests": [
+                {
+                  "ordinal": 1,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 2,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 3,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 4,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 5,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 6,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 7,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 8,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 9,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 10,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 11,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 12,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 13,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                }
+              ],
+              "startedAtUTC": "2026-09-05T05:19:19.239965+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:19.670020+00:00",
+              "elapsedSeconds": 0.430058292
+            }
+          ]
+        }
+      ],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-009",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-010",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-011",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-012",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-013",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-014",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-015",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-016",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-017",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-018",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-019",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-020",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-021",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-022",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-023",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-024",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-025",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-026",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-027",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-028",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-029",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-030",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-031",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-032",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-033",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-034",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-035",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-036",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-037",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-038",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-039",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-040",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-041",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-042",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-043",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-044",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-045",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-046",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-047",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-048",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-049",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-050",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-051",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-052",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-053",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-054",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-055",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-056",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-057",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-058",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-059",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-060",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-061",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-062",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-063",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-064",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-065",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-066",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-067",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-068",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-069",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-070",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-071",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-072",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-073",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-074",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-075",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-076",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-077",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-078",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-079",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-080",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-081",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-082",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-083",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-084",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-085",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-086",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-087",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-088",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-089",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-090",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-091",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-092",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-093",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-094",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-095",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-096",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-097",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-098",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-099",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-100",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-101",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-102",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-103",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-104",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-105",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-106",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-107",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-108",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-109",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-110",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-111",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-112",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-113",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-114",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-115",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-116",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-117",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-118",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-119",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-120",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-121",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-122",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-123",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-124",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-125",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-126",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-127",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-128",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-129",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-130",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-131",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-132",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-133",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-134",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-135",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-136",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-137",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-138",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-139",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-140",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-141",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-142",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-143",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-144",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-145",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-146",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-147",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-148",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-149",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-150",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-151",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-152",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-153",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-154",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-155",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-156",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-157",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-158",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-159",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-160",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-161",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-162",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-163",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-164",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-165",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-166",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-167",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-168",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-169",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-170",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-171",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-172",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-173",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-174",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-175",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-176",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-177",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-178",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-179",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-180",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-181",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-182",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-183",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-184",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-185",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-186",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-187",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-188",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-189",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-190",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-191",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-192",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-193",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-194",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-195",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-196",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-197",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-198",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-199",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-AC-200",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    }
+  ],
+  "findings": [
+    {
+      "id": "S3-DR-001",
+      "pythonReferenceIds": [
+        "5056c00827038f1574ca",
+        "637cfff6ff9d9288519a",
+        "79f08c3294d56741f51c",
+        "96f80817f0b0ee11cead",
+        "b411dba280ac114a7aee",
+        "b687813dbb98e61cffc7",
+        "d65973db47e1736a26b7",
+        "da5fe15f1aa468c8e48e",
+        "e670f282e0001131c0a0",
+        "f17785a6fb5c3b30b35f",
+        "f5ac534a61970bcb7039",
+        "fa82824b9660830ccb89"
+      ],
+      "matches": [
+        {
+          "referenceId": "5056c00827038f1574ca",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_hash_change_with_original_contract_is_rejected",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_hash_change_with_original_contract_is_rejected",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_hash_change_with_original_contract_is_rejected",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_hash_change_with_original_contract_is_rejected",
+              "sourceLine": 3131,
+              "methodSourceSha256": "c9eb0e7b9369ce4b830d313115776908533e3d08f912d7d467a1ca5f362d05b5",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:19.117098+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:19.154215+00:00",
+              "elapsedSeconds": 0.03712574999999996
+            }
+          ]
+        },
+        {
+          "referenceId": "637cfff6ff9d9288519a",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_exact_owner_authorization_and_both_frozen_representations_pass",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.Slice3R1AuthorityTests.test_exact_owner_authorization_and_both_frozen_representations_pass",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "Slice3R1AuthorityTests",
+              "method": "test_exact_owner_authorization_and_both_frozen_representations_pass",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "Slice3R1AuthorityTests.test_exact_owner_authorization_and_both_frozen_representations_pass",
+              "sourceLine": 2880,
+              "methodSourceSha256": "7de37b08167d7aa78330cc604e95dda9134f57487c1bcc692a3db96d57f04077",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.675811+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.676598+00:00",
+              "elapsedSeconds": 0.0007868330000000423
+            }
+          ]
+        },
+        {
+          "referenceId": "79f08c3294d56741f51c",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_remote_publication_cannot_reconstruct_checkpoint",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.Dr0004GovernanceContractTests.test_remote_publication_cannot_reconstruct_checkpoint",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "Dr0004GovernanceContractTests",
+              "method": "test_remote_publication_cannot_reconstruct_checkpoint",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "Dr0004GovernanceContractTests.test_remote_publication_cannot_reconstruct_checkpoint",
+              "sourceLine": 4054,
+              "methodSourceSha256": "bb6927d41c0aff4912fbef16bf91b331004f25c0f0259f81053616cef5c97e90",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.585274+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.589894+00:00",
+              "elapsedSeconds": 0.004619540999999949
+            }
+          ]
+        },
+        {
+          "referenceId": "96f80817f0b0ee11cead",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_coordinated_contract_and_hash_change_is_not_an_amendment",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_coordinated_contract_and_hash_change_is_not_an_amendment",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_coordinated_contract_and_hash_change_is_not_an_amendment",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_coordinated_contract_and_hash_change_is_not_an_amendment",
+              "sourceLine": 3140,
+              "methodSourceSha256": "8b1d41f22309f91eec162d4d37938ff38727aaabaa74b85c71253f7f29611911",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.809989+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.841679+00:00",
+              "elapsedSeconds": 0.03169241699999992
+            }
+          ]
+        },
+        {
+          "referenceId": "b411dba280ac114a7aee",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_contract_byte_change_with_old_hash_is_rejected",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_contract_byte_change_with_old_hash_is_rejected",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_contract_byte_change_with_old_hash_is_rejected",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_contract_byte_change_with_old_hash_is_rejected",
+              "sourceLine": 3119,
+              "methodSourceSha256": "b65abca68de9112cfbd79a0d8ab70ac8694f1589909e9429ffedd7fbfb4ccb5d",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.761247+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.809549+00:00",
+              "elapsedSeconds": 0.04830245799999999
+            }
+          ]
+        },
+        {
+          "referenceId": "b687813dbb98e61cffc7",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_rework_identity_phase_and_actor_cannot_drift",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_rework_identity_phase_and_actor_cannot_drift",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_rework_identity_phase_and_actor_cannot_drift",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_rework_identity_phase_and_actor_cannot_drift",
+              "sourceLine": 3163,
+              "methodSourceSha256": "79c1fa78c6ff98ac914a6624f5fc9a7daad46da9c7cc4eeab767bf3b6decd620",
+              "status": "PASSED",
+              "subtests": [
+                {
+                  "ordinal": 1,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 2,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 3,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 4,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 5,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 6,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 7,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 8,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 9,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 10,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 11,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 12,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 13,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                }
+              ],
+              "startedAtUTC": "2026-09-05T05:19:19.239965+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:19.670020+00:00",
+              "elapsedSeconds": 0.430058292
+            }
+          ]
+        },
+        {
+          "referenceId": "d65973db47e1736a26b7",
+          "path": "tests/test_validate_production_readiness.py",
+          "method": "test_checkout_head_and_identity_divergence_are_rejected",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_checkout_head_and_identity_divergence_are_rejected",
+              "runtimeModule": "test_validate_production_readiness",
+              "runtimeClass": "RepositoryContractPatternTests",
+              "method": "test_checkout_head_and_identity_divergence_are_rejected",
+              "sourcePath": "tests/test_validate_production_readiness.py",
+              "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+              "declaringCallable": "RepositoryContractPatternTests.test_checkout_head_and_identity_divergence_are_rejected",
+              "sourceLine": 466,
+              "methodSourceSha256": "ab1700891f94101bf1c3e130c77d10124741fe3df08b9bdf8d18acfb0030896f",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:20.303150+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:20.303972+00:00",
+              "elapsedSeconds": 0.0008218339999999102
+            }
+          ]
+        },
+        {
+          "referenceId": "da5fe15f1aa468c8e48e",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_exact_v1_state_is_valid",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_exact_v1_state_is_valid",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "V1CurrentStateContractTests",
+              "method": "test_exact_v1_state_is_valid",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "V1CurrentStateContractTests.test_exact_v1_state_is_valid",
+              "sourceLine": 2929,
+              "methodSourceSha256": "c474377b9cd30fb00cd515d8c73f605979a18a181598dd26261cf4ca58e59db8",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:19.010644+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:19.080160+00:00",
+              "elapsedSeconds": 0.06952199999999986
+            }
+          ]
+        },
+        {
+          "referenceId": "e670f282e0001131c0a0",
+          "path": "tests/test_validate_production_readiness.py",
+          "method": "test_ci_source_resolver_cannot_fall_back_to_repository_head",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_ci_source_resolver_cannot_fall_back_to_repository_head",
+              "runtimeModule": "test_validate_production_readiness",
+              "runtimeClass": "RepositoryContractPatternTests",
+              "method": "test_ci_source_resolver_cannot_fall_back_to_repository_head",
+              "sourcePath": "tests/test_validate_production_readiness.py",
+              "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+              "declaringCallable": "RepositoryContractPatternTests.test_ci_source_resolver_cannot_fall_back_to_repository_head",
+              "sourceLine": 484,
+              "methodSourceSha256": "73654c75761294cf0f5589f4080f729ed115e81caaeebf4ebb123bda1571d1ba",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:20.304217+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:20.304721+00:00",
+              "elapsedSeconds": 0.000503499999999768
+            }
+          ]
+        },
+        {
+          "referenceId": "f17785a6fb5c3b30b35f",
+          "path": "tests/test_validate_production_readiness.py",
+          "method": "test_frontend_test_requires_authored_source_expression",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_frontend_test_requires_authored_source_expression",
+              "runtimeModule": "test_validate_production_readiness",
+              "runtimeClass": "RepositoryContractPatternTests",
+              "method": "test_frontend_test_requires_authored_source_expression",
+              "sourcePath": "tests/test_validate_production_readiness.py",
+              "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+              "declaringCallable": "RepositoryContractPatternTests.test_frontend_test_requires_authored_source_expression",
+              "sourceLine": 447,
+              "methodSourceSha256": "52e96062a1a234b158ce2bbd729466046141240b7995e4372b0a628d46e8457d",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:20.310984+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:20.311701+00:00",
+              "elapsedSeconds": 0.000716666000000199
+            }
+          ]
+        },
+        {
+          "referenceId": "f5ac534a61970bcb7039",
+          "path": "tests/test_required_status_checks.py",
+          "method": "test_inventory_requires_infrastructure_validation",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_required_status_checks.RequiredStatusChecksTests.test_inventory_requires_infrastructure_validation",
+              "runtimeModule": "test_required_status_checks",
+              "runtimeClass": "RequiredStatusChecksTests",
+              "method": "test_inventory_requires_infrastructure_validation",
+              "sourcePath": "tests/test_required_status_checks.py",
+              "sourceSha256": "bf938e4f904934bf32e2d67cc912ab444d91a29f1b355351c23b005427f00d6a",
+              "declaringCallable": "RequiredStatusChecksTests.test_inventory_requires_infrastructure_validation",
+              "sourceLine": 8,
+              "methodSourceSha256": "9c8418b54ee2f0a7acd456fdd52a77618c54608185ddad1ee362249849e65864",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.220749+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.221503+00:00",
+              "elapsedSeconds": 0.0007540830000000165
+            }
+          ]
+        },
+        {
+          "referenceId": "fa82824b9660830ccb89",
+          "path": "tests/test_validate_governance.py",
+          "method": "test_each_missing_or_changed_authority_is_refused",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_validate_governance.Slice3R1AuthorityTests.test_each_missing_or_changed_authority_is_refused",
+              "runtimeModule": "test_validate_governance",
+              "runtimeClass": "Slice3R1AuthorityTests",
+              "method": "test_each_missing_or_changed_authority_is_refused",
+              "sourcePath": "tests/test_validate_governance.py",
+              "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+              "declaringCallable": "Slice3R1AuthorityTests.test_each_missing_or_changed_authority_is_refused",
+              "sourceLine": 2885,
+              "methodSourceSha256": "2de97e5377c020c897794490d1214ac9e9335ac9e25a70ff02ed7ef1c7b686bd",
+              "status": "PASSED",
+              "subtests": [
+                {
+                  "ordinal": 1,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 2,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 3,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 4,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 5,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                },
+                {
+                  "ordinal": 6,
+                  "status": "PASSED",
+                  "parameters": "NOT_RECORDED"
+                }
+              ],
+              "startedAtUTC": "2026-09-05T05:19:18.670522+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.675490+00:00",
+              "elapsedSeconds": 0.004968292000000041
+            }
+          ]
+        }
+      ],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-002",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-003",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-004",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-005",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-006",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-007",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-008",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-009",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-010",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-011",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-012",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-013",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-014",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-015",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-016",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-017",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-018",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-019",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-020",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-021",
+      "pythonReferenceIds": [],
+      "matches": [],
+      "assessment": "NOT_PERFORMED"
+    },
+    {
+      "id": "S3-DR-022",
+      "pythonReferenceIds": [
+        "32222563cfb43c1d5526",
+        "36664367adcb5bb43f3d",
+        "3e3189152cd342344765",
+        "7e3b3e00b1a758c64e9f",
+        "88b991bc67bc76cbeb11",
+        "9e1545e960305b1f97f0",
+        "e1b1f5de90e5cf948394",
+        "ec5914103caf4ec20ab0",
+        "f5ac534a61970bcb7039"
+      ],
+      "matches": [
+        {
+          "referenceId": "32222563cfb43c1d5526",
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "method": "test_modified_criterion_is_not_treated_as_the_accepted_criterion",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_modified_criterion_is_not_treated_as_the_accepted_criterion",
+              "runtimeModule": "test_assemble_slice3_rework_evidence",
+              "runtimeClass": "EvidenceAssemblyTest",
+              "method": "test_modified_criterion_is_not_treated_as_the_accepted_criterion",
+              "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+              "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+              "declaringCallable": "EvidenceAssemblyTest.test_modified_criterion_is_not_treated_as_the_accepted_criterion",
+              "sourceLine": 72,
+              "methodSourceSha256": "31fb2193c8ae0de14608132bf57ee6200c53ad87279ab938821a3610ca342d0c",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.167338+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.180297+00:00",
+              "elapsedSeconds": 0.01296345900000001
+            }
+          ]
+        },
+        {
+          "referenceId": "36664367adcb5bb43f3d",
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "method": "test_complete_mapping_preserves_authority_and_never_inherits_pass",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_complete_mapping_preserves_authority_and_never_inherits_pass",
+              "runtimeModule": "test_assemble_slice3_rework_evidence",
+              "runtimeClass": "EvidenceAssemblyTest",
+              "method": "test_complete_mapping_preserves_authority_and_never_inherits_pass",
+              "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+              "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+              "declaringCallable": "EvidenceAssemblyTest.test_complete_mapping_preserves_authority_and_never_inherits_pass",
+              "sourceLine": 47,
+              "methodSourceSha256": "ba356af96f2575de1f17794b5b0b7dea4e3f8972ae299a399981ab37be473325",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.107013+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.160190+00:00",
+              "elapsedSeconds": 0.05318233299999997
+            }
+          ]
+        },
+        {
+          "referenceId": "3e3189152cd342344765",
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "method": "test_a_missing_criterion_prevents_a_complete_matrix",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_a_missing_criterion_prevents_a_complete_matrix",
+              "runtimeModule": "test_assemble_slice3_rework_evidence",
+              "runtimeClass": "EvidenceAssemblyTest",
+              "method": "test_a_missing_criterion_prevents_a_complete_matrix",
+              "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+              "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+              "declaringCallable": "EvidenceAssemblyTest.test_a_missing_criterion_prevents_a_complete_matrix",
+              "sourceLine": 78,
+              "methodSourceSha256": "0913fabdfe1fd05edd8a8841d1dd9319b90a153b9274866a2d6f89d56f5a0c3b",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.034310+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.085718+00:00",
+              "elapsedSeconds": 0.05140791699999997
+            }
+          ]
+        },
+        {
+          "referenceId": "7e3b3e00b1a758c64e9f",
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "method": "test_changed_frozen_findings_are_rejected_before_writing_matrices",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_changed_frozen_findings_are_rejected_before_writing_matrices",
+              "runtimeModule": "test_assemble_slice3_rework_evidence",
+              "runtimeClass": "EvidenceAssemblyTest",
+              "method": "test_changed_frozen_findings_are_rejected_before_writing_matrices",
+              "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+              "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+              "declaringCallable": "EvidenceAssemblyTest.test_changed_frozen_findings_are_rejected_before_writing_matrices",
+              "sourceLine": 66,
+              "methodSourceSha256": "376324f2b51060ec24dbf382ef35e6354506c00035281bfb0e0402ad9e24846d",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.099477+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.106495+00:00",
+              "elapsedSeconds": 0.007023124999999963
+            }
+          ]
+        },
+        {
+          "referenceId": "88b991bc67bc76cbeb11",
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "method": "test_references_cannot_escape_the_repository",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_references_cannot_escape_the_repository",
+              "runtimeModule": "test_assemble_slice3_rework_evidence",
+              "runtimeClass": "EvidenceAssemblyTest",
+              "method": "test_references_cannot_escape_the_repository",
+              "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+              "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+              "declaringCallable": "EvidenceAssemblyTest.test_references_cannot_escape_the_repository",
+              "sourceLine": 87,
+              "methodSourceSha256": "6507e28bfdc2463dbc78e9cc112eaa4ece649c06336ab153d7b7336222c5213d",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.180537+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.186243+00:00",
+              "elapsedSeconds": 0.005709583000000018
+            }
+          ]
+        },
+        {
+          "referenceId": "9e1545e960305b1f97f0",
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "method": "test_javascript_test_titles_require_the_actual_literal_title",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_javascript_test_titles_require_the_actual_literal_title",
+              "runtimeModule": "test_assemble_slice3_rework_evidence",
+              "runtimeClass": "EvidenceAssemblyTest",
+              "method": "test_javascript_test_titles_require_the_actual_literal_title",
+              "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+              "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+              "declaringCallable": "EvidenceAssemblyTest.test_javascript_test_titles_require_the_actual_literal_title",
+              "sourceLine": 91,
+              "methodSourceSha256": "468604c6e69f74cd155c7783ac5eb7c42781500db492046180d66c3b5ca0c565",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.160551+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.167082+00:00",
+              "elapsedSeconds": 0.006530124999999998
+            }
+          ]
+        },
+        {
+          "referenceId": "e1b1f5de90e5cf948394",
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "method": "test_changed_contract_is_rejected_before_writing_matrices",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_changed_contract_is_rejected_before_writing_matrices",
+              "runtimeModule": "test_assemble_slice3_rework_evidence",
+              "runtimeClass": "EvidenceAssemblyTest",
+              "method": "test_changed_contract_is_rejected_before_writing_matrices",
+              "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+              "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+              "declaringCallable": "EvidenceAssemblyTest.test_changed_contract_is_rejected_before_writing_matrices",
+              "sourceLine": 60,
+              "methodSourceSha256": "dd2866357f4ff8a7fb2c734757d5adceb53c6ac479f2d9e149b1893c71a3fa84",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.092924+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.099227+00:00",
+              "elapsedSeconds": 0.006306666999999988
+            }
+          ]
+        },
+        {
+          "referenceId": "ec5914103caf4ec20ab0",
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "method": "test_a_nonexistent_test_method_is_not_accepted_as_evidence",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_a_nonexistent_test_method_is_not_accepted_as_evidence",
+              "runtimeModule": "test_assemble_slice3_rework_evidence",
+              "runtimeClass": "EvidenceAssemblyTest",
+              "method": "test_a_nonexistent_test_method_is_not_accepted_as_evidence",
+              "sourcePath": "tests/test_assemble_slice3_rework_evidence.py",
+              "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+              "declaringCallable": "EvidenceAssemblyTest.test_a_nonexistent_test_method_is_not_accepted_as_evidence",
+              "sourceLine": 83,
+              "methodSourceSha256": "e135e2385394755ac1f8d807568bad9fc7d74f7c2daf6905cace019680ae30a6",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.085970+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.092664+00:00",
+              "elapsedSeconds": 0.006694707999999994
+            }
+          ]
+        },
+        {
+          "referenceId": "f5ac534a61970bcb7039",
+          "path": "tests/test_required_status_checks.py",
+          "method": "test_inventory_requires_infrastructure_validation",
+          "matchStatus": "EXACT_NAMED_UNITTEST_RESULT_MATCHED",
+          "unittestResults": [
+            {
+              "unittestId": "test_required_status_checks.RequiredStatusChecksTests.test_inventory_requires_infrastructure_validation",
+              "runtimeModule": "test_required_status_checks",
+              "runtimeClass": "RequiredStatusChecksTests",
+              "method": "test_inventory_requires_infrastructure_validation",
+              "sourcePath": "tests/test_required_status_checks.py",
+              "sourceSha256": "bf938e4f904934bf32e2d67cc912ab444d91a29f1b355351c23b005427f00d6a",
+              "declaringCallable": "RequiredStatusChecksTests.test_inventory_requires_infrastructure_validation",
+              "sourceLine": 8,
+              "methodSourceSha256": "9c8418b54ee2f0a7acd456fdd52a77618c54608185ddad1ee362249849e65864",
+              "status": "PASSED",
+              "subtests": [],
+              "startedAtUTC": "2026-09-05T05:19:18.220749+00:00",
+              "finishedAtUTC": "2026-09-05T05:19:18.221503+00:00",
+              "elapsedSeconds": 0.0007540830000000165
+            }
+          ]
+        }
+      ],
+      "assessment": "NOT_PERFORMED"
+    }
+  ],
+  "summary": {
+    "EXACT_NAMED_UNITTEST_RESULT_MATCHED": 26
+  },
+  "limits": [
+    "Current test file bytes must equal measured, stable callback-bound source bytes.",
+    "File-only and ambiguous references never become method evidence.",
+    "A method result only proves its actual assertions; complete governance/AC/finding/Controller assessment is separate.",
+    "Non-Python JUnit/frontend/browser evidence is not inherited into this index."
+  ],
+  "controllerVerdict": "NOT_ISSUED"
+}

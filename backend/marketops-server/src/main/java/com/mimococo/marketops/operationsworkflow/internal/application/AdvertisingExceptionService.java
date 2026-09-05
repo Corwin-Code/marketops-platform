@@ -141,11 +141,11 @@ public class AdvertisingExceptionService {
         int changed=jdbc.sql("""
                 UPDATE ops.ad_accepted_exception x SET state=CASE WHEN x.expires_at<=:now THEN 'EXPIRED' ELSE 'INVALIDATED' END,
                     ended_at=:now,end_reason='BOUND_RISK_OR_AUTHORITY_NO_LONGER_CURRENT',version=x.version+1
-                FROM mart.ad_case c JOIN core.ad_affected_set a ON a.id=c.affected_set_id
+                FROM mart.ad_case c LEFT JOIN core.ad_affected_set a ON a.id=c.affected_set_id
                 WHERE x.case_id=:case AND c.id=x.case_id AND x.state IN('REQUESTED','ENDORSED','ACTIVE')
                   AND (x.expires_at<=:now OR x.review_due_at<=:now OR x.authority_valid_until<=:now OR c.superseded_at IS NOT NULL
                     OR c.cause_code<>x.cause_code OR c.lane<>x.lane OR c.semantic_profile_id<>x.semantic_profile_id
-                    OR a.affected_set_digest<>x.affected_set_digest OR a.resolution_state<>'COMPLETE'
+                    OR a.affected_set_digest IS DISTINCT FROM x.affected_set_digest OR a.resolution_state IS DISTINCT FROM 'COMPLETE'
                     OR c.policy_version_digest<>x.policy_version_digest OR c.bundle_id IS DISTINCT FROM x.bundle_id
                     OR c.evidence_state<>x.known_consequence->>'evidenceState'
                     OR to_jsonb(c.blocker_codes) IS DISTINCT FROM x.known_consequence->'blockers'

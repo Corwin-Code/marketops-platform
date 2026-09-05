@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { AdvertisingQueue } from '../advertising/AdvertisingQueue';
 import { AdvertisingCaseView } from '../advertising/AdvertisingCaseView';
@@ -189,6 +189,38 @@ describe('the advertising queue', () => {
 });
 
 describe('the advertising case view', () => {
+  it('shows unresolved impact as unknown when the known member list is empty', async () => {
+    const unknownCase = {
+      ...PROTECTION_CASE,
+      lane: 'DATA_REPAIR',
+      protectionTier: null,
+      causeCode: 'AFFECTED_SET_UNRESOLVED',
+      affectedSetDigest: null,
+      affectedSetResolution: 'UNRESOLVED',
+      affectedVariantCount: 0,
+      affectedProductVariantIds: [],
+      affectedListingVariantIds: [],
+    };
+    expect(parseAdvertisingCase(unknownCase)?.affectedSetDigest).toBeUndefined();
+    render(
+      <AdvertisingCaseView
+        context={context(respondWith(unknownCase))}
+        caseId={unknownCase.id}
+        onBack={() => undefined}
+      />,
+    );
+
+    const affectedSet = await screen.findByRole('region', { name: 'Affected set' });
+    expect(affectedSet).toHaveTextContent('UNRESOLVED · Digest unresolved');
+    expect(affectedSet).toHaveTextContent(
+      'Full impact is unknown until the affected set is complete.',
+    );
+    expect(within(affectedSet).queryAllByRole('listitem')).toHaveLength(0);
+    expect(
+      screen.queryByRole('heading', { name: 'Complete affected set' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('TC-UI-ADV-010 shows every measure with its own state', async () => {
     render(
       <AdvertisingCaseView

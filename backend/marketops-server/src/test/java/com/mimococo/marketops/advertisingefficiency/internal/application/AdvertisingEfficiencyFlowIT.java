@@ -272,7 +272,7 @@ class AdvertisingEfficiencyFlowIT {
                 .isEqualTo(AdvertisingCause.PROFIT_ECONOMICS_BLOCKED.name());
         assertThat(view.accountableRoleCode()).isEqualTo("FINANCE_ANALYST");
         assertThat(view.lane()).isEqualTo(AdvertisingLane.DATA_REPAIR.name());
-        assertThat(view.blockerCodes()).contains("ATTRIBUTABLE_NET_SALES");
+        assertThat(view.blockerCodes()).contains("AD_LINKED_QUANTITY_LINEAGE_UNAVAILABLE");
     }
 
     @Test
@@ -385,10 +385,15 @@ class AdvertisingEfficiencyFlowIT {
     @Order(15)
     @DisplayName("TC-AD-FLOW-015 the targeted worker drains what a fact enqueued, and says how long it took")
     void theTargetedWorkerDrainsAndMeasures() {
+        // Earlier authored facts and policy publication now really enqueue
+        // work through database triggers. Complete that existing request before
+        // testing creation of this distinct newer accepted-fact request.
+        drain();
+        Instant acceptedAt = queueNow();
         UUID requestId = UUID.randomUUID();
         assertThat(queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
                 requestId, ORGANIZATION, AD_OBJECT, "AD_SPEND_OR_TRAFFIC",
-                "fact://advertising-loop-it/spend", AS_OF.minusSeconds(120), AS_OF,
+                "fact://advertising-loop-it/spend", acceptedAt, acceptedAt,
                 "advertising-loop-it")))
                 .isEqualTo(AdvertisingRecalculationRepository.EnqueueOutcome.CREATED);
 
@@ -454,11 +459,14 @@ class AdvertisingEfficiencyFlowIT {
         // shared seam but of the two workers that call it, because a schedule
         // that read a different window or a different policy version would
         // differ here and nowhere else.
-        queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
+        drain();
+        Instant acceptedAt = queueNow();
+        assertThat(queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
                 UUID.randomUUID(), ORGANIZATION, AD_OBJECT, "AD_SPEND_OR_TRAFFIC",
-                "fact://advertising-loop-it/parity", AS_OF.minusSeconds(60), AS_OF,
-                "advertising-loop-it-parity"));
-        targeted.runOnce(50);
+                "fact://advertising-loop-it/parity", acceptedAt, acceptedAt,
+                "advertising-loop-it-parity")))
+                .isEqualTo(AdvertisingRecalculationRepository.EnqueueOutcome.CREATED);
+        assertThat(targeted.runOnce(50)).isPositive();
         String afterTargeted = caseFingerprint();
 
         reconciliation.sweep(ORGANIZATION, "MANUAL").orElseThrow();
@@ -498,10 +506,12 @@ class AdvertisingEfficiencyFlowIT {
     @DisplayName("TC-AD-FLOW-020 two workers cannot hold the same unit of work")
     void twoWorkersCannotHoldTheSameRequest() {
         drain();
-        queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
+        Instant acceptedAt = queueNow();
+        assertThat(queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
                 UUID.randomUUID(), ORGANIZATION, AD_OBJECT, "AD_SPEND_OR_TRAFFIC",
-                "fact://advertising-loop-it/lease", AS_OF.plusSeconds(10), AS_OF,
-                "advertising-loop-it-lease"));
+                "fact://advertising-loop-it/lease", acceptedAt, acceptedAt,
+                "advertising-loop-it-lease")))
+                .isEqualTo(AdvertisingRecalculationRepository.EnqueueOutcome.CREATED);
         Instant now = Instant.now();
 
         var first = queue.claim("worker-a", now.plusSeconds(300), 10, now);
@@ -520,10 +530,12 @@ class AdvertisingEfficiencyFlowIT {
     @DisplayName("TC-AD-FLOW-021 a lease that outlived its worker is reclaimed, and the attempt is counted")
     void anExpiredLeaseIsReclaimed() {
         drain();
-        queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
+        Instant acceptedAt = queueNow();
+        assertThat(queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
                 UUID.randomUUID(), ORGANIZATION, AD_OBJECT, "AD_SPEND_OR_TRAFFIC",
-                "fact://advertising-loop-it/restart", AS_OF.plusSeconds(20), AS_OF,
-                "advertising-loop-it-restart"));
+                "fact://advertising-loop-it/restart", acceptedAt, acceptedAt,
+                "advertising-loop-it-restart")))
+                .isEqualTo(AdvertisingRecalculationRepository.EnqueueOutcome.CREATED);
         Instant now = Instant.now();
 
         var died = queue.claim("worker-that-died", now.minusSeconds(1), 10, now);
@@ -546,9 +558,14 @@ class AdvertisingEfficiencyFlowIT {
     @DisplayName("TC-AD-FLOW-022 the same object arriving twice coalesces rather than queueing twice")
     void asecondFactForTheSameObjectCoalesces() {
         drain();
+        // Both facts are newer than prior completed work. The first arrival has
+        // the later acceptance time; the second must preserve the earlier SLO
+        // start rather than resetting it to arrival order.
+        Instant earlierAcceptedAt = queueNow();
+        Instant laterAcceptedAt = earlierAcceptedAt.plusNanos(1_000);
         assertThat(queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
                 UUID.randomUUID(), ORGANIZATION, AD_OBJECT, "AD_SPEND_OR_TRAFFIC",
-                "fact://advertising-loop-it/replay-1", AS_OF.plusSeconds(40), AS_OF,
+                "fact://advertising-loop-it/replay-1", laterAcceptedAt, queueNow(),
                 "advertising-loop-it-replay")))
                 .isEqualTo(AdvertisingRecalculationRepository.EnqueueOutcome.CREATED);
 
@@ -557,7 +574,7 @@ class AdvertisingEfficiencyFlowIT {
         // kept, because that is the latency the service level is measured from.
         assertThat(queue.enqueue(new AdvertisingRecalculationRepository.NewRequest(
                 UUID.randomUUID(), ORGANIZATION, AD_OBJECT, "AD_CONFIGURATION",
-                "fact://advertising-loop-it/replay-2", AS_OF.plusSeconds(30), AS_OF,
+                "fact://advertising-loop-it/replay-2", earlierAcceptedAt, queueNow(),
                 "advertising-loop-it-replay")))
                 .isEqualTo(AdvertisingRecalculationRepository.EnqueueOutcome.COALESCED);
 
@@ -567,7 +584,7 @@ class AdvertisingEfficiencyFlowIT {
         assertThat(count("SELECT count(*) FROM ops.ad_recalculation_request"
                 + " WHERE organization_id = '" + ORGANIZATION + "'"
                 + " AND state IN ('PENDING', 'LEASED')"
-                + " AND fact_accepted_at = '" + AS_OF.plusSeconds(30) + "'")).isEqualTo(1);
+                + " AND fact_accepted_at = '" + earlierAcceptedAt + "'")).isEqualTo(1);
         drain();
     }
 
@@ -587,12 +604,119 @@ class AdvertisingEfficiencyFlowIT {
                 .isEqualTo(AdvertisingRecalculationRepository.EnqueueOutcome.SUPPRESSED);
     }
 
+    @Autowired private com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingTaskGovernance taskGovernance;
+    @Autowired private com.mimococo.marketops.operationsworkflow.internal.application.WorkTaskService tasks;
+    @Autowired private com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingWorkflowQueryService workflows;
+
+    @Test
+    @Order(24)
+    @DisplayName("a future affected-set resolution cannot erase today's unknown repair responsibility")
+    void futureAffectedSetRemainsUnknownWithAGovernedRepairTask() {
+        UUID object = UUID.randomUUID();
+        UUID futureSet = UUID.randomUUID();
+        seed.sql("""
+            INSERT INTO core.ad_native_object(id,organization_id,store_id,platform_code,semantic_profile_id,
+                native_object_kind,native_object_key,native_campaign_key,bidding_mode,control_granularity_state,
+                lineage_key,lineage_generation,observation_state,first_observed_at,last_observed_at,status,created_at,updated_at)
+            VALUES(:id,:org,:store,'OZON',:profile,'CAMPAIGN',:key,:key,'MANUAL_BID','UNKNOWN',:key,1,
+                'OBSERVED',:at,:at,'ACTIVE',:at,:at)
+            """).param("id",object).param("org",ORGANIZATION).param("store",STORE).param("profile",SEMANTIC_PROFILE)
+                .param("key","future-set-"+object).param("at",java.sql.Timestamp.from(AS_OF.minusSeconds(3600))).update();
+        seed.sql("""
+            INSERT INTO core.ad_affected_set(id,organization_id,ad_native_object_id,affected_set_digest,
+                product_variant_ids,platform_listing_variant_ids,resolution_state,unresolved_reason_codes,resolved_at,created_at)
+            VALUES(:id,:org,:object,:digest,ARRAY[:variant]::uuid[],ARRAY[:listing]::uuid[],'COMPLETE','{}',:at,:at)
+            """).param("id",futureSet).param("org",ORGANIZATION).param("object",object)
+                .param("digest","f".repeat(64)).param("variant",VARIANT).param("listing",LISTING_VARIANT)
+                .param("at",java.sql.Timestamp.from(AS_OF.plusSeconds(3600))).update();
+        var result=refresh.refresh(ORGANIZATION,object,AS_OF,AdvertisingProjectionWriter.TARGETED,null,
+                "historical-unknown-affected-set").orElseThrow();
+        assertThat(result.proposed()).isEmpty();
+        UUID caseId=jdbc.sql("SELECT id FROM mart.ad_case WHERE organization_id=:org AND ad_native_object_id=:object")
+                .param("org",ORGANIZATION).param("object",object).query(UUID.class).single();
+        var view=cases.caseById(ORGANIZATION,caseId,List.of(STORE),List.of()).orElseThrow();
+        assertThat(view.lane()).isEqualTo("DATA_REPAIR");
+        assertThat(view.causeCode()).isEqualTo("AFFECTED_SET_UNRESOLVED");
+        assertThat(view.blockerCodes()).contains("AFFECTED_SET_NEVER_RESOLVED");
+        assertThat(view.affectedSetResolution()).isEqualTo("UNRESOLVED");
+        assertThat(view.affectedSetDigest()).isNull();
+        assertThat(view.affectedVariantCount()).isZero();
+        assertThat(view.variants()).isEmpty();
+        assertThat(jdbc.sql("SELECT affected_set_id IS NULL FROM mart.ad_case WHERE id=:id")
+                .param("id",caseId).query(Boolean.class).single()).isTrue();
+        assertThat(jdbc.sql("SELECT count(*) FROM core.ad_affected_set WHERE ad_native_object_id=:id")
+                .param("id",object).query(Integer.class).single()).isEqualTo(1);
+        assertThat(jdbc.sql("SELECT count(*) FROM ops.ad_bid_candidate WHERE case_id=:id")
+                .param("id",caseId).query(Integer.class).single()).isZero();
+        UUID taskId=jdbc.sql("SELECT task_id FROM ops.ad_case_responsibility WHERE case_id=:id")
+                .param("id",caseId).query(UUID.class).single();
+        var context=taskGovernance.context(taskId).orElseThrow();
+        assertThat(context.store()).isEqualTo(STORE);
+        assertThat(context.variants()).isEmpty();
+        assertThat(context.affectedSetDigest()).isNull();
+
+        seed.sql("""
+            INSERT INTO iam.user_role_assignment(id,organization_id,user_id,role_code,status,effective_from,reason,created_at,updated_at)
+            VALUES(gen_random_uuid(),:org,:user,'OPS_LEAD','ACTIVE',now()-interval '1 day','Synthetic repair operator',now(),now())
+            ON CONFLICT DO NOTHING
+            """).param("org",ORGANIZATION).param("user",USER).update();
+        for(String action:List.of("TASK_ASSIGN","DIAGNOSTIC_VIEW")) grantRepairScope(action);
+        var actor=new com.mimococo.marketops.identityaccess.AuthenticatedActor(USER,ORGANIZATION,PROVIDER,
+                "https://id.example.test/ads","Synthetic repair operator","a".repeat(64),"b".repeat(64),
+                Instant.now(),Instant.now().plusSeconds(1800),true,
+                java.util.Set.of(com.mimococo.marketops.identityaccess.BusinessRoleCode.OPS_LEAD));
+        assertMissingAdvertisingScope(()->tasks.recordView(actor,taskId));
+        assertThat(tasks.journal(taskId)).noneMatch(event->"VIEWED".equals(event.eventKind()));
+        grantRepairScope("ADVERTISING_VIEW");
+        tasks.recordView(actor,taskId);
+        assertThat(tasks.journal(taskId).stream().filter(event->"VIEWED".equals(event.eventKind())).count()).isEqualTo(1);
+        var workflow=workflows.workflow(actor,caseId);
+        assertThat(workflow.taskId()).isEqualTo(taskId);
+        assertThat(workflow.candidates()).isEmpty();
+        seed.sql("UPDATE iam.user_scope_grant SET status='REVOKED' WHERE user_id=:user AND action_code='ADVERTISING_VIEW'")
+                .param("user",USER).update();
+        assertMissingAdvertisingScope(()->tasks.recordView(actor,taskId));
+        assertThat(tasks.journal(taskId).stream().filter(event->"VIEWED".equals(event.eventKind())).count()).isEqualTo(1);
+        // Absence is permitted only for this explicit repair cause, never as a
+        // shortcut into another lane or a differently qualified economic case.
+        Throwable refusal=org.assertj.core.api.Assertions.catchThrowable(()->jdbc.sql(
+                "UPDATE mart.ad_case SET cause_code='PROFIT_ECONOMICS_BLOCKED' WHERE id=:id").param("id",caseId).update());
+        assertThat(refusal).isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+        while(refusal.getCause()!=null) refusal=refusal.getCause();
+        assertThat(refusal).isInstanceOf(java.sql.SQLException.class);
+        assertThat(((java.sql.SQLException)refusal).getSQLState()).isEqualTo("23514");
+        assertThat(refusal.getMessage()).contains("ad_case_unresolved_affected_set_ck");
+        assertThat(count("SELECT count(*) FROM ops.ad_bid_command")).isZero();
+    }
+
+    private static void assertMissingAdvertisingScope(org.assertj.core.api.ThrowableAssert.ThrowingCallable action) {
+        Throwable refusal=org.assertj.core.api.Assertions.catchThrowable(action);
+        assertThat(refusal).isInstanceOf(com.mimococo.marketops.shared.OperationRejectedException.class);
+        assertThat(((com.mimococo.marketops.shared.OperationRejectedException)refusal).errorCode())
+                .isEqualTo(com.mimococo.marketops.shared.ErrorCode.RESOURCE_SCOPE_DENIED);
+    }
+
+    private void grantRepairScope(String action) {
+        seed.sql("""
+            INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,store_ref_id,
+                effective_from,status,reason,created_at,updated_at)
+            VALUES(gen_random_uuid(),:org,:user,:action,:store,now()-interval '1 day','ACTIVE',
+                'Synthetic scoped repair permission',now(),now())
+            ON CONFLICT DO NOTHING
+            """).param("org",ORGANIZATION).param("user",USER).param("action",action).param("store",STORE).update();
+    }
+
     /** Finish whatever is queued, so the next case starts from a known state. */
     private void drain() {
         Instant now = Instant.now();
         for (var claimed : queue.claim("advertising-flow-it-drain", now.plusSeconds(60), 100, now)) {
             queue.finish(claimed.id(), "COMPLETED", null, now);
         }
+    }
+
+    /** New queue events follow completed work; PostgreSQL stores microseconds. */
+    private static Instant queueNow() {
+        return Instant.now().truncatedTo(java.time.temporal.ChronoUnit.MICROS);
     }
 
     // ------------------------------------------------------------------
@@ -693,7 +817,7 @@ class AdvertisingEfficiencyFlowIT {
                         attribution_model_native, report_window_complete, correction_window_open,
                         source_time, recorded_at)
                 VALUES ('%s', '%s', '%s', '%s', '%s', 'ozon-report-2026-08',
-                        TIMESTAMPTZ '2026-08-20T00:00:00Z', TIMESTAMPTZ '2026-09-03T00:00:00Z',
+                        TIMESTAMPTZ '2026-08-05T12:00:00Z', TIMESTAMPTZ '2026-09-04T12:00:00Z',
                         'RUB', 4500.0000, 120000, 90000, 3000, 40, 45, 60000.0000,
                         'D7', 'last-click', true, false,
                         TIMESTAMPTZ '2026-09-04T10:00:00Z', now())
@@ -823,7 +947,11 @@ class AdvertisingEfficiencyFlowIT {
     }
 
     private void sql(String statement) {
-        seed.sql(statement).update();
+        // All authored fact/authority rows are available at the fixture's explicit
+        // historical evaluation instant; wall-clock insertion must not leak future facts.
+        // Live role/scope grants in the unknown-set authorization test use direct
+        // seed.sql with actual now(), outside this authored-fact helper.
+        seed.sql(statement.replace("now()", "TIMESTAMPTZ '" + AS_OF + "'")).update();
     }
 
     private long count(String query) {

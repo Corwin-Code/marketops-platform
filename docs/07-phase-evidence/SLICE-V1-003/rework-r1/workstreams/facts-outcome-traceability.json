@@ -1,12 +1,13 @@
 {
   "schemaVersion": "1.0",
   "kind": "FINDING_AND_AC_EVIDENCE_SHARD",
-  "generatedAt": "2026-09-05T04:07:25.397836+00:00",
+  "generatedAt": "2026-09-05T05:14:12.435443+00:00",
   "owner": "facts-outcome",
   "normativeInputs": {
     "contract": {
       "path": "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md",
-      "sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c"
+      "sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c",
+      "sha256_at_receipt": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c"
     },
     "frozenFindings": {
       "path": "docs/07-phase-evidence/SLICE-V1-003/SLICE-V1-003-FROZEN-FINDING-SET-001.json",
@@ -18,7 +19,8 @@
         "measured_commit": "ae099e1913af2c99c2a0909dfca0842d5d15b1bd",
         "measured_tree": "18bca0325a8fb19fe32d1ef3c413577a872d911e"
       },
-      "findingCountRead": 22
+      "findingCountRead": 22,
+      "sha256_at_receipt": "f4af74f5086772dc70c3ec3cc7aa8808e9441e96109d301b145e70c18f6131a0"
     },
     "matchingAcCount": 86
   },
@@ -2233,6 +2235,347 @@
           "skips": 0
         }
       ]
+    },
+    {
+      "id": "source-full-clean-w2",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "clean",
+        "-Dmarketops.build.gitCommit=b871d6376f8ab88cd2544ac913e62453e9425475",
+        "verify"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+      "recordedResult": "FAILED",
+      "head": "b871d6376f8ab88cd2544ac913e62453e9425475",
+      "tree": "c3b1cdd9c9dc5877f968d8782c7a124429f14637",
+      "startedAtUTC": "2026-09-05T04:11:17.192086+00:00",
+      "finishedAtUTC": "2026-09-05T04:11:55.760702+00:00",
+      "elapsedSeconds": 38.569,
+      "tests": 1545,
+      "passed": 1542,
+      "failures": 3,
+      "errors": 0,
+      "skips": 0,
+      "suiteDeclaredTests": 1544,
+      "mavenConsoleSummaries": [
+        {
+          "phase": "surefire",
+          "line": 1104,
+          "counts": {
+            "tests": 1545,
+            "failures": 3,
+            "errors": 0,
+            "skipped": 0
+          }
+        }
+      ],
+      "countBasis": "Exact raw testcase nodes, matching Maven console summaries; suite declarations retain the one known nested-name discrepancy. Original run receipt unchanged.",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w2/maven-clean-verify.log",
+      "logSha256": "377bfec752c765b6ec3fe9505821308e37bf2fe9892fa88cf8a1e65792b3e472",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w2/run-receipt.json",
+      "rawArtifacts": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w2/raw-test-artifacts.tar.gz",
+      "backendSourceStable": true,
+      "cleanAfter": true,
+      "identityLimit": "This run measured an exact clean commit. It failed, so passing individual suites are only those named assertions and do not establish full closure or CI verification."
+    },
+    {
+      "id": "source-full-clean-w3",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "clean",
+        "-Dmarketops.build.gitCommit=fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+        "verify"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+      "recordedResult": "FAILED",
+      "head": "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+      "tree": "dbab770cd974aa5a90d0dc63468ab7f8a48e4002",
+      "startedAtUTC": "2026-09-05T04:18:27.389559+00:00",
+      "finishedAtUTC": "2026-09-05T04:46:51.962903+00:00",
+      "elapsedSeconds": 1704.575,
+      "tests": 2262,
+      "passed": 2245,
+      "failures": 11,
+      "errors": 6,
+      "skips": 0,
+      "suiteDeclaredTests": 2261,
+      "mavenConsoleSummaries": [
+        {
+          "phase": "surefire",
+          "line": 836,
+          "counts": {
+            "tests": 1546,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        {
+          "phase": "failsafe",
+          "line": 10066,
+          "counts": {
+            "tests": 716,
+            "failures": 11,
+            "errors": 6,
+            "skipped": 0
+          }
+        }
+      ],
+      "countBasis": "Exact raw testcase nodes, matching Maven console summaries; suite declarations retain the one known nested-name discrepancy. Original run receipt unchanged.",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/maven-clean-verify.log",
+      "logSha256": "b404dd75038055c9c171ef70bd98ce3355dfb7a822005caa67bc823ab597be03",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/run-receipt.json",
+      "rawArtifacts": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/raw-test-artifacts.tar.gz",
+      "backendSourceStable": true,
+      "cleanAfter": true,
+      "identityLimit": "This run measured an exact clean commit. It failed, so passing individual suites are only those named assertions and do not establish full closure or CI verification."
+    },
+    {
+      "id": "source-post-w3-targeted-r38",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+        "-Dtest=AdvertisingEfficiencyFlowIT",
+        "test"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+      "recordedResult": "PASS",
+      "tests": 24,
+      "passed": 24,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "startedAtUTC": "2026-09-05T05:12:49.751638+00:00",
+      "finishedAtUTC": "2026-09-05T05:13:14.071800+00:00",
+      "elapsedSeconds": 24.316,
+      "sourceBeforeSha256": "460b4bb10c84244186011ba17a33d5a0aa6f25d0615ae66369d263d4a60cb6cb",
+      "sourceAfterSha256": "460b4bb10c84244186011ba17a33d5a0aa6f25d0615ae66369d263d4a60cb6cb",
+      "sourceStable": true,
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/receipt.json",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/maven.log",
+      "logSha256": "e236bd47dfc849d19963b54fef0687052ca578e859e9d844dc4aaab648ab192a",
+      "reportedSuites": [
+        {
+          "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT",
+          "declared": {
+            "tests": 24,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "actual": {
+            "tests": 24,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "path": "/tmp/slice3-r1-post-w3-targeted-r38/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT.xml",
+          "sha256": "abb728dcf87d2d4ac93468d88a1c254847826d2c6f0c32ec187631aef9af0b4e",
+          "sha256_at_receipt": "abb728dcf87d2d4ac93468d88a1c254847826d2c6f0c32ec187631aef9af0b4e"
+        }
+      ],
+      "identityLimit": "W3 plus current uncommitted repairs; exact source bytes bound in source-before/after, not exact W3 commit source. Exact new clean full verification and published-head CI remain pending.",
+      "sourceDeltaFromPriorRun": {
+        "priorRun": "root-post-w3-targeted-r37",
+        "changes": [
+          {
+            "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+            "r37AfterSha256": "96eeb818f810eb64aea9364abd16cc5e7fa5021aaa6fc50193e9d707fe520dfd",
+            "r38BeforeSha256": "6dc7703192abc958666d68a48244c3d31cbdaeb7ad18d4f586d4bf7310b040b5"
+          }
+        ],
+        "unchangedOtherClassesPassingAssertions": 74,
+        "limit": "Separate partial-class evidence from failed R37 and full Flow24 from R38; no single 98-test PASS claimed."
+      }
+    },
+    {
+      "id": "root-post-w3-targeted-r37",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+        "-Dtest=WorkTaskJournalIT,ControlEpochTriggerIT,AdvertisingDisclosureIT,AdvertisingEfficiencyFlowIT,AdvertisingCanonicalFactsIT,AdvertisingHumanWorkflowIT,AdvertisingResponsibilityBoundaryIT,ModuleBoundaryArchitectureTest",
+        "test"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+      "recordedResult": "PARTIAL_FAILURE",
+      "tests": 98,
+      "passed": 94,
+      "failures": 4,
+      "errors": 0,
+      "skips": 0,
+      "startedAtUTC": "2026-09-05T05:04:38.172518+00:00",
+      "finishedAtUTC": "2026-09-05T05:06:04.777520+00:00",
+      "elapsedSeconds": 86.599,
+      "sourceStable": true,
+      "sourceBeforeSha256": "79ab860826ad590c858cd2cd935e3e9b20c262d706050b9e8ea8e8d3a0c25a99",
+      "sourceAfterSha256": "79ab860826ad590c858cd2cd935e3e9b20c262d706050b9e8ea8e8d3a0c25a99",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r37/receipt.json",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r37/maven.log",
+      "logSha256": "f4837017e6868c16826a5a32ddaf01158ce30901a3ac4c73e891f5363656180b",
+      "reportedSuites": [
+        {
+          "class": "com.mimococo.marketops.AdvertisingDisclosureIT",
+          "declared": {
+            "tests": 8,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "actual": {
+            "tests": 8,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "path": "/tmp/slice3-r1-post-w3-targeted-r37/reports/TEST-com.mimococo.marketops.AdvertisingDisclosureIT.xml",
+          "sha256": "f9fefdc92dd42bde2d2783eaabc34d0801d5aaa33c5a7de60f35a7ae78822e0c"
+        },
+        {
+          "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+          "declared": {
+            "tests": 16,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "actual": {
+            "tests": 16,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "path": "/tmp/slice3-r1-post-w3-targeted-r37/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+          "sha256": "a8f6def5ce2dd1597e7082bc94591e71bd2674ef34ea3d205237f3eb24762b33"
+        },
+        {
+          "class": "com.mimococo.marketops.AdvertisingResponsibilityBoundaryIT",
+          "declared": {
+            "tests": 9,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "actual": {
+            "tests": 9,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "path": "/tmp/slice3-r1-post-w3-targeted-r37/reports/TEST-com.mimococo.marketops.AdvertisingResponsibilityBoundaryIT.xml",
+          "sha256": "c957b206f1ffa88d346bd208abcfa01a7493a15717d3774e133b450219cc205a"
+        },
+        {
+          "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCanonicalFactsIT",
+          "declared": {
+            "tests": 11,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "actual": {
+            "tests": 11,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "path": "/tmp/slice3-r1-post-w3-targeted-r37/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCanonicalFactsIT.xml",
+          "sha256": "39b66b289db80b49de90198363d45544ab969c384dac134f8669e206982aa653"
+        },
+        {
+          "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT",
+          "declared": {
+            "tests": 24,
+            "failures": 4,
+            "errors": 0,
+            "skipped": 0
+          },
+          "actual": {
+            "tests": 24,
+            "failures": 4,
+            "errors": 0,
+            "skipped": 0
+          },
+          "path": "/tmp/slice3-r1-post-w3-targeted-r37/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT.xml",
+          "sha256": "cfd6cf9f9bc1f211b42da9326770e05f2b61fdcc83d813af87ac9502f54fbcdd"
+        },
+        {
+          "class": "com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest",
+          "declared": {
+            "tests": 12,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "actual": {
+            "tests": 12,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "path": "/tmp/slice3-r1-post-w3-targeted-r37/reports/TEST-com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest.xml",
+          "sha256": "19b8db06f8191bb1c6d54bc67441e08745614e0d28969a05400703c42a4fc714"
+        },
+        {
+          "class": "com.mimococo.marketops.database.ControlEpochTriggerIT",
+          "declared": {
+            "tests": 11,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "actual": {
+            "tests": 11,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "path": "/tmp/slice3-r1-post-w3-targeted-r37/reports/TEST-com.mimococo.marketops.database.ControlEpochTriggerIT.xml",
+          "sha256": "86915fbcd504438fb5524db5ef4e19cc95889c95fac8f69def7a1fc2730f4d7a"
+        },
+        {
+          "class": "com.mimococo.marketops.operationsworkflow.internal.application.WorkTaskJournalIT",
+          "declared": {
+            "tests": 7,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "actual": {
+            "tests": 7,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "path": "/tmp/slice3-r1-post-w3-targeted-r37/reports/TEST-com.mimococo.marketops.operationsworkflow.internal.application.WorkTaskJournalIT.xml",
+          "sha256": "631b432cde85dce3561cffca3289937ba5c6bf066954cf7ee38a7331227b8af3"
+        }
+      ],
+      "unchangedOtherClassesPassingAssertions": 74,
+      "unchangedOtherPassingClasses": [
+        "com.mimococo.marketops.AdvertisingDisclosureIT",
+        "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+        "com.mimococo.marketops.AdvertisingResponsibilityBoundaryIT",
+        "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCanonicalFactsIT",
+        "com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest",
+        "com.mimococo.marketops.database.ControlEpochTriggerIT",
+        "com.mimococo.marketops.operationsworkflow.internal.application.WorkTaskJournalIT"
+      ],
+      "sourceDeltaToR38": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+          "r37AfterSha256": "96eeb818f810eb64aea9364abd16cc5e7fa5021aaa6fc50193e9d707fe520dfd",
+          "r38BeforeSha256": "6dc7703192abc958666d68a48244c3d31cbdaeb7ad18d4f586d4bf7310b040b5"
+        }
+      ],
+      "identityLimit": "R37 was a failed targeted run. Seven unchanged classes passed 74 assertions locally; R38 separately passed the changed Flow24. This is not one 98-test passing run, and new clean full verification / exact CI remain required."
     }
   ],
   "findings": [
@@ -2281,7 +2624,8 @@
       "sameClassScan": [
         "Scanned all five effective-policy resolver SQL fragments for schema-qualified whole-row alias errors.",
         "Scanned canonical Metric readers and duplicate promotion/fee dependencies, including Outcome transitive caller.",
-        "Inspected every upsertCase caller (one production caller, AdvertisingProjectionWriter). A concurrent ON CONFLICT update retains the existing database UUID; the writer formerly retained its losing proposed UUID. Qualified same-asOf refresh can accidentally serialize through qualification_period upserts. Repository upsert now atomically returns the persisted UUID via RETURNING id, and the writer uses it for every dependent projection row without adding object locks or changing the Case key. Both qualification-present and qualification-absent/different-asOf actual PG contention pass."
+        "Inspected every upsertCase caller (one production caller, AdvertisingProjectionWriter). A concurrent ON CONFLICT update retains the existing database UUID; the writer formerly retained its losing proposed UUID. Qualified same-asOf refresh can accidentally serialize through qualification_period upserts. Repository upsert now atomically returns the persisted UUID via RETURNING id, and the writer uses it for every dependent projection row without adding object locks or changing the Case key. Both qualification-present and qualification-absent/different-asOf actual PG contention pass.",
+        "Full W3 exposed that historical gather correctly excluded a future affected-set resolution, while the mart Case required a non-null set even for the explicit AFFECTED_SET_UNRESOLVED repair cause. The follow-up allows null only for that DATA_REPAIR cause with its mandatory NEVER_RESOLVED blocker. Diagnostic Case/Task/workflow reads use explicit unknown handling; governed candidates/manual/action/Outcome joins continue to require complete sets. Task governance cannot fall back to generic scope, and exception invalidation handles a missing current set."
       ],
       "transitiveImpact": [
         "Canonical accepted facts now traverse the real MetricEngine, calculation/projection/proposal, distinct Maker/Ops/Owner approval, command worker with an in-process fixture Provider, Raw/readback and early/Retained/Settled/revised Outcome history. Atomic persisted identity also protects purpose evidence, rank factors, affected variants and responsibility intake during concurrent refresh. Capacity evidence remains independently owned by the orchestration stream."
@@ -2317,7 +2661,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomePlanningService.java",
@@ -2334,6 +2678,22 @@
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingProjectionRepository.java",
           "sha256_at_receipt": "f53f98a59e2c6c0ad46e2d8964aecdfd613a6ddfec6fbb37900501a16ec05d57"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+          "sha256_at_receipt": "914ad07848313cac3ffbd865ee80d6a1c31bcc2b5d8e4edbc256785b35a55f92"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+          "sha256_at_receipt": "2a463e17c6acf58272c14431835013f97a0f1e21c7410338c5b0d42bf716804f"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingExceptionService.java",
+          "sha256_at_receipt": "000873256394f2c0e5d8456082f401574e30b20c1aef3048e9d06d3e7e7cfc95"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java",
+          "sha256_at_receipt": "5dfe373493b6370130d800eae43f3e0c06d36c1012bee567248a604f8295d6b9"
         }
       ],
       "positiveTests": [
@@ -2381,6 +2741,14 @@
           "verification": "TARGETED_ASSERTIONS_PASSED",
           "evidenceLimit": "Unit fault injects a persisted UUID different from the proposed UUID returned by the atomic database upsert; WrittenCase and every dependent evidence row use that persisted UUID.",
           "line": 399
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+          "method": "futureAffectedSetRemainsUnknownWithAGovernedRepairTask",
+          "run": "source-post-w3-targeted-r38",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R38 actual PostgreSQL full 24-method flow passed. This method proves historical future-set exclusion, explicit unknown Case+Task, no candidate/command, retained advertising scope under generic grants, exact scope revoke refusal, and database rejection of null sets outside the explicit repair cause. Final clean/CI remain pending.",
+          "line": 614
         }
       ],
       "negativeTests": [
@@ -2405,6 +2773,14 @@
           "run": "source-r29",
           "verification": "TARGETED_ASSERTIONS_PASSED",
           "evidenceLimit": "R29 real PostgreSQL/MetricEngine/application/three-person approval/fixture worker/Raw/Outcome path passed; it is an isolated synthetic Provider proof with production writes disabled, not real Provider enablement or final CI verification."
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+          "method": "futureAffectedSetRemainsUnknownWithAGovernedRepairTask",
+          "run": "source-post-w3-targeted-r38",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R38 actual PostgreSQL full 24-method flow passed. This method proves historical future-set exclusion, explicit unknown Case+Task, no candidate/command, retained advertising scope under generic grants, exact scope revoke refusal, and database rejection of null sets outside the explicit repair cause. Final clean/CI remain pending.",
+          "line": 614
         }
       ],
       "evidenceRuns": [
@@ -2413,12 +2789,15 @@
         "source-r15",
         "source-r17",
         "source-r29",
-        "root-final-targeted-r34"
+        "root-final-targeted-r34",
+        "source-full-clean-w3",
+        "source-post-w3-targeted-r38"
       ],
       "evidenceLimits": [
         "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required.",
         "R29 proves actual accepted facts through MetricEngine/projection/three-person approval/real worker with an in-process synthetic Provider, Raw/readback and early/Retained/actual financial/corrected Outcome history. It never enables a real Provider.",
-        "F020 scale/latency proofs are independently owned by UI; small vertical success does not prove production-sized capacity."
+        "F020 scale/latency proofs are independently owned by UI; small vertical success does not prove production-sized capacity.",
+        "The W3-found unknown affected-set sink and transitive permission follow-up passed all 24 actual advertising flow tests in R38. The other seven complete selected classes passed 74 assertions locally in the failed R37 run; only EfficiencyFlowIT source changed between these runs, as recorded by the source delta proof. These are two runs, not one 98-test passing run. Full clean verification on the next exact checkpoint and exact CI remain required."
       ]
     },
     {
@@ -2549,7 +2928,8 @@
         "source-r11",
         "source-r12",
         "source-r15",
-        "source-r17"
+        "source-r17",
+        "source-full-clean-w3"
       ],
       "evidenceLimits": [
         "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required."
@@ -2662,7 +3042,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdCaseCalculation.java",
@@ -2678,7 +3058,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java",
-          "sha256_at_receipt": "68462851bf7e467694376297ff0077b4c6d8800ef09e07349ad2a9354e878670"
+          "sha256_at_receipt": "5dfe373493b6370130d800eae43f3e0c06d36c1012bee567248a604f8295d6b9"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
@@ -2742,7 +3122,8 @@
         "source-r11",
         "source-r12",
         "source-r15",
-        "source-r17"
+        "source-r17",
+        "source-full-clean-w3"
       ],
       "evidenceLimits": [
         "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required."
@@ -2811,7 +3192,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java",
-          "sha256_at_receipt": "68462851bf7e467694376297ff0077b4c6d8800ef09e07349ad2a9354e878670"
+          "sha256_at_receipt": "5dfe373493b6370130d800eae43f3e0c06d36c1012bee567248a604f8295d6b9"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
@@ -2860,7 +3241,8 @@
         "source-r11",
         "source-r12",
         "source-r15",
-        "source-r17"
+        "source-r17",
+        "source-full-clean-w3"
       ],
       "evidenceLimits": [
         "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required."
@@ -3088,7 +3470,8 @@
         "source-r12",
         "source-r15",
         "source-r17",
-        "source-r29"
+        "source-r29",
+        "source-full-clean-w3"
       ],
       "evidenceLimits": [
         "Targeted named assertions passed in the cited runs; exact final clean verification, published commit and CI remain required.",
@@ -3376,6 +3759,14 @@
           "line": 116,
           "run": "source-r12",
           "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+          "method": "futureAffectedSetRemainsUnknownWithAGovernedRepairTask",
+          "run": "source-post-w3-targeted-r38",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R38 actual PostgreSQL full 24-method flow passed. This method proves historical future-set exclusion, explicit unknown Case+Task, no candidate/command, retained advertising scope under generic grants, exact scope revoke refusal, and database rejection of null sets outside the explicit repair cause. Final clean/CI remain pending.",
+          "line": 614
         }
       ],
       "sameClassScan": "Audited every baseline reusable path and Manual/API consumer; exact calculation, affected set, policy and attested payload must still match.",
@@ -3443,36 +3834,41 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "partialMissingMoneyAndTrafficNeverDisappearInsideSqlSum",
           "line": 60,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "completeSubreportsDoNotInventCoverageOfMissingDays",
           "line": 65,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "overlapIsUnqualifiedEvenWhenUnionCoversTheWholeWindow",
           "line": 69,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "laterCorrectionDoesNotRewriteWhatWasAvailableAtActionTime",
           "line": 74,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "aLaterMetricNeverErasesTheEconomicsVisibleAtAnEarlierDecisionInstant",
           "line": 212,
-          "run": "source-r17",
-          "evidenceLimit": "Actual PostgreSQL earlier/later Metric selection passed; proves this historical economic input boundary only, not every criterion conjunct."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
@@ -3506,29 +3902,33 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "partialMissingMoneyAndTrafficNeverDisappearInsideSqlSum",
           "line": 60,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "completeSubreportsDoNotInventCoverageOfMissingDays",
           "line": 65,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "overlapIsUnqualifiedEvenWhenUnionCoversTheWholeWindow",
           "line": 69,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "laterCorrectionDoesNotRewriteWhatWasAvailableAtActionTime",
           "line": 74,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
@@ -3562,36 +3962,41 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "partialMissingMoneyAndTrafficNeverDisappearInsideSqlSum",
           "line": 60,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "completeSubreportsDoNotInventCoverageOfMissingDays",
           "line": 65,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "overlapIsUnqualifiedEvenWhenUnionCoversTheWholeWindow",
           "line": 69,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "laterCorrectionDoesNotRewriteWhatWasAvailableAtActionTime",
           "line": 74,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "aLaterMetricNeverErasesTheEconomicsVisibleAtAnEarlierDecisionInstant",
           "line": 212,
-          "run": "source-r17",
-          "evidenceLimit": "Actual PostgreSQL earlier/later Metric selection passed; proves this historical economic input boundary only, not every criterion conjunct."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned SUM/COALESCE, report overlap/union coverage and supersession as-of predicates across Spend, clicks, linkage and company facts; unknown survives SQL aggregation.",
@@ -3635,8 +4040,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "unmappedLineIsRetainedAsUnknownInsteadOfDisappearingFromCoverageDenominator",
           "line": 151,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Searched Provider attributed values and estimated allocation paths; linked canonical events and company sales are separate readers and cannot use Provider observations as canonical conversion.",
@@ -3682,8 +4088,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "unmappedLineIsRetainedAsUnknownInsteadOfDisappearingFromCoverageDenominator",
           "line": 151,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Searched Provider attributed values and estimated allocation paths; linked canonical events and company sales are separate readers and cannot use Provider observations as canonical conversion.",
@@ -3729,8 +4136,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "unmappedLineIsRetainedAsUnknownInsteadOfDisappearingFromCoverageDenominator",
           "line": 151,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Searched Provider attributed values and estimated allocation paths; linked canonical events and company sales are separate readers and cannot use Provider observations as canonical conversion.",
@@ -3776,8 +4184,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "retainedCohortCannotBeLabeledSettledWithoutActualFinancialFacts",
           "line": 172,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned stage aliases and all window math: early Completed is safety-only, Retained fixed 720 hours, Settled needs actual financial cohort.",
@@ -3821,8 +4230,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "retainedCohortCannotBeLabeledSettledWithoutActualFinancialFacts",
           "line": 172,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned stage aliases and all window math: early Completed is safety-only, Retained fixed 720 hours, Settled needs actual financial cohort.",
@@ -3870,15 +4280,17 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "actualCompanyAndEveryCriticalUnitReleaseOnlyEarlySafetyWithoutProfitSuccess",
           "line": 136,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "absentActualCompanySalesKeepsCriticalUnitUnknownAndReservationHeld",
           "line": 155,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Audited complete affected-product company-channel mappings and each frozen critical listing independently; totals cannot compensate individual decline or unknown.",
@@ -3926,15 +4338,17 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "actualCompanyAndEveryCriticalUnitReleaseOnlyEarlySafetyWithoutProfitSuccess",
           "line": 136,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "absentActualCompanySalesKeepsCriticalUnitUnknownAndReservationHeld",
           "line": 155,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Audited complete affected-product company-channel mappings and each frozen critical listing independently; totals cannot compensate individual decline or unknown.",
@@ -3982,15 +4396,17 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "actualCompanyAndEveryCriticalUnitReleaseOnlyEarlySafetyWithoutProfitSuccess",
           "line": 136,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "absentActualCompanySalesKeepsCriticalUnitUnknownAndReservationHeld",
           "line": 155,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Audited complete affected-product company-channel mappings and each frozen critical listing independently; totals cannot compensate individual decline or unknown.",
@@ -4231,8 +4647,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "retainedCohortCannotBeLabeledSettledWithoutActualFinancialFacts",
           "line": 172,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Audited baseline and observation stage fields, frozen freshness, currency/lineage evidence and correction history.",
@@ -4264,15 +4681,17 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "sqlLineageAndUnequalVariantQuantitiesReconcileWithoutMeanOrFirstPolicy",
           "line": 128,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "unmappedLineIsRetainedAsUnknownInsteadOfDisappearingFromCoverageDenominator",
           "line": 151,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
@@ -4316,15 +4735,17 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "sqlLineageAndUnequalVariantQuantitiesReconcileWithoutMeanOrFirstPolicy",
           "line": 128,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "unmappedLineIsRetainedAsUnknownInsteadOfDisappearingFromCoverageDenominator",
           "line": 151,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
@@ -4368,15 +4789,17 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "sqlLineageAndUnequalVariantQuantitiesReconcileWithoutMeanOrFirstPolicy",
           "line": 128,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "unmappedLineIsRetainedAsUnknownInsteadOfDisappearingFromCoverageDenominator",
           "line": 151,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
@@ -4571,7 +4994,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         }
       ],
       "testReferences": [
@@ -4614,8 +5037,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "conflictedSpecificPolicyNeverFallsBackToBroaderPolicy",
           "line": 201,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned every purpose reader and scoped profile resolver for fallback, implicit defaults, latest accepted/source substitution, overlapping effective policies and effective cost applicability; persisted per-kind eligibility/expiry cannot be promoted by another purpose.",
@@ -4645,7 +5069,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         }
       ],
       "testReferences": [
@@ -4688,8 +5112,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "conflictedSpecificPolicyNeverFallsBackToBroaderPolicy",
           "line": 201,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned every purpose reader and scoped profile resolver for fallback, implicit defaults, latest accepted/source substitution, overlapping effective policies and effective cost applicability; persisted per-kind eligibility/expiry cannot be promoted by another purpose.",
@@ -4719,7 +5144,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         }
       ],
       "testReferences": [
@@ -4762,15 +5187,17 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "conflictedSpecificPolicyNeverFallsBackToBroaderPolicy",
           "line": 201,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "aLaterMetricNeverErasesTheEconomicsVisibleAtAnEarlierDecisionInstant",
           "line": 212,
-          "run": "source-r17",
-          "evidenceLimit": "Actual PostgreSQL earlier/later Metric selection passed; proves this historical economic input boundary only, not every criterion conjunct."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned every purpose reader and scoped profile resolver for fallback, implicit defaults, latest accepted/source substitution, overlapping effective policies and effective cost applicability; persisted per-kind eligibility/expiry cannot be promoted by another purpose.",
@@ -4800,7 +5227,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         }
       ],
       "testReferences": [
@@ -4843,8 +5270,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "conflictedSpecificPolicyNeverFallsBackToBroaderPolicy",
           "line": 201,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned every purpose reader and scoped profile resolver for fallback, implicit defaults, latest accepted/source substitution, overlapping effective policies and effective cost applicability; persisted per-kind eligibility/expiry cannot be promoted by another purpose.",
@@ -4874,7 +5302,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         }
       ],
       "testReferences": [
@@ -4917,8 +5345,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "conflictedSpecificPolicyNeverFallsBackToBroaderPolicy",
           "line": 201,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned every purpose reader and scoped profile resolver for fallback, implicit defaults, latest accepted/source substitution, overlapping effective policies and effective cost applicability; persisted per-kind eligibility/expiry cannot be promoted by another purpose.",
@@ -4944,7 +5373,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         }
       ],
       "testReferences": [
@@ -5002,7 +5431,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         }
       ],
       "testReferences": [
@@ -5081,7 +5510,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         }
       ],
       "testReferences": [
@@ -5139,7 +5568,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         }
       ],
       "testReferences": [
@@ -5170,6 +5599,14 @@
           "line": 38,
           "run": "source-r12",
           "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+          "method": "futureAffectedSetRemainsUnknownWithAGovernedRepairTask",
+          "run": "source-post-w3-targeted-r38",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R38 actual PostgreSQL full 24-method flow passed. This method proves historical future-set exclusion, explicit unknown Case+Task, no candidate/command, retained advertising scope under generic grants, exact scope revoke refusal, and database rejection of null sets outside the explicit repair cause. Final clean/CI remain pending.",
+          "line": 614
         }
       ],
       "sameClassScan": "Audited separate Watch/Task/Recommendation/Write purposes, consecutive evidence-window query and independent DataRepair responsibility; missing qualification does not manufacture an Optimization write.",
@@ -5197,7 +5634,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         }
       ],
       "testReferences": [
@@ -5390,6 +5827,14 @@
           "line": 418,
           "run": "source-r12",
           "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+          "method": "futureAffectedSetRemainsUnknownWithAGovernedRepairTask",
+          "run": "source-post-w3-targeted-r38",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R38 actual PostgreSQL full 24-method flow passed. This method proves historical future-set exclusion, explicit unknown Case+Task, no candidate/command, retained advertising scope under generic grants, exact scope revoke refusal, and database rejection of null sets outside the explicit repair cause. Final clean/CI remain pending.",
+          "line": 614
         }
       ],
       "sameClassScan": "Scanned independent one-sided danger vs missing economic facts; cause-bound permission has exact one-per-required-kind unexpired evidence, closed financial-uncertainty allowance and critical unknown refusal.",
@@ -5417,7 +5862,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java",
-          "sha256_at_receipt": "68462851bf7e467694376297ff0077b4c6d8800ef09e07349ad2a9354e878670"
+          "sha256_at_receipt": "5dfe373493b6370130d800eae43f3e0c06d36c1012bee567248a604f8295d6b9"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
@@ -5493,7 +5938,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java",
-          "sha256_at_receipt": "68462851bf7e467694376297ff0077b4c6d8800ef09e07349ad2a9354e878670"
+          "sha256_at_receipt": "5dfe373493b6370130d800eae43f3e0c06d36c1012bee567248a604f8295d6b9"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
@@ -5569,7 +6014,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java",
-          "sha256_at_receipt": "68462851bf7e467694376297ff0077b4c6d8800ef09e07349ad2a9354e878670"
+          "sha256_at_receipt": "5dfe373493b6370130d800eae43f3e0c06d36c1012bee567248a604f8295d6b9"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
@@ -5645,7 +6090,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java",
-          "sha256_at_receipt": "68462851bf7e467694376297ff0077b4c6d8800ef09e07349ad2a9354e878670"
+          "sha256_at_receipt": "5dfe373493b6370130d800eae43f3e0c06d36c1012bee567248a604f8295d6b9"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
@@ -5721,7 +6166,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java",
-          "sha256_at_receipt": "68462851bf7e467694376297ff0077b4c6d8800ef09e07349ad2a9354e878670"
+          "sha256_at_receipt": "5dfe373493b6370130d800eae43f3e0c06d36c1012bee567248a604f8295d6b9"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java",
@@ -5797,7 +6242,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         }
       ],
       "testReferences": [
@@ -5828,6 +6273,14 @@
           "line": 38,
           "run": "source-r12",
           "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+          "method": "futureAffectedSetRemainsUnknownWithAGovernedRepairTask",
+          "run": "source-post-w3-targeted-r38",
+          "verification": "TARGETED_ASSERTIONS_PASSED",
+          "evidenceLimit": "R38 actual PostgreSQL full 24-method flow passed. This method proves historical future-set exclusion, explicit unknown Case+Task, no candidate/command, retained advertising scope under generic grants, exact scope revoke refusal, and database rejection of null sets outside the explicit repair cause. Final clean/CI remain pending.",
+          "line": 614
         }
       ],
       "sameClassScan": "Audited separate Watch/Task/Recommendation/Write purposes, consecutive evidence-window query and independent DataRepair responsibility; missing qualification does not manufacture an Optimization write.",
@@ -6062,8 +6515,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "targetedObjectScopeEvaluatesActualDueOutcomeAndReplayDoesNotAppendAnotherRevision",
           "line": 145,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned targeted and hourly calls for global per-object Outcome scans and swallowed failures; object/org scope, same asOf, due stage and remaining work are explicit.",
@@ -6091,8 +6545,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "targetedObjectScopeEvaluatesActualDueOutcomeAndReplayDoesNotAppendAnotherRevision",
           "line": 145,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned targeted and hourly calls for global per-object Outcome scans and swallowed failures; object/org scope, same asOf, due stage and remaining work are explicit.",
@@ -6464,8 +6919,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "aReviewedActionCannotSwapItsFrozenBaseline",
           "line": 188,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
@@ -6526,8 +6982,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "aReviewedActionCannotSwapItsFrozenBaseline",
           "line": 188,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
@@ -6588,8 +7045,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "aReviewedActionCannotSwapItsFrozenBaseline",
           "line": 188,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned direct INSERT/freeze/reuse and every API/Manual seal/creator/gate consumer. App cannot manufacture trusted money/JSON, independent proof binds full typed payload+org+baseline+backend+transaction and is single-use. Reviewed chains cannot silently replace baseline.",
@@ -6743,8 +7201,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "conflictedSpecificPolicyNeverFallsBackToBroaderPolicy",
           "line": 201,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned exact scoped effective policy, all three purpose freshness profiles, minimum validUntil and plan/freshness JSON snapshots; late observation uses frozen policy/profile rather than latest policy.",
@@ -6792,8 +7251,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "conflictedSpecificPolicyNeverFallsBackToBroaderPolicy",
           "line": 201,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned exact scoped effective policy, all three purpose freshness profiles, minimum validUntil and plan/freshness JSON snapshots; late observation uses frozen policy/profile rather than latest policy.",
@@ -6841,15 +7301,17 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "conflictedSpecificPolicyNeverFallsBackToBroaderPolicy",
           "line": 201,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "aLaterMetricNeverErasesTheEconomicsVisibleAtAnEarlierDecisionInstant",
           "line": 212,
-          "run": "source-r17",
-          "evidenceLimit": "Actual PostgreSQL earlier/later Metric selection passed; proves this historical economic input boundary only, not every criterion conjunct."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned exact scoped effective policy, all three purpose freshness profiles, minimum validUntil and plan/freshness JSON snapshots; late observation uses frozen policy/profile rather than latest policy.",
@@ -7026,22 +7488,25 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "retainedCohortCannotBeLabeledSettledWithoutActualFinancialFacts",
           "line": 172,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "aFinancialLineCannotBeCountedTwiceThroughAmbiguousRetainedCohorts",
           "line": 182,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "matureRetainedAndFavorableActualSettlementPreserveBothStageHistories",
           "line": 204,
-          "run": "source-r15",
-          "evidenceLimit": "Actual method passed in targeted r15; whole r15 has two unrelated historical fixture failures and final exact-head clean/CI evidence remains pending."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned 30-day Retained cohort and financial-line matching, stage-consistent baselines, revision supersession and stage labels.",
@@ -7092,22 +7557,25 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "retainedCohortCannotBeLabeledSettledWithoutActualFinancialFacts",
           "line": 172,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "aFinancialLineCannotBeCountedTwiceThroughAmbiguousRetainedCohorts",
           "line": 182,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "matureRetainedAndFavorableActualSettlementPreserveBothStageHistories",
           "line": 204,
-          "run": "source-r15",
-          "evidenceLimit": "Actual method passed in targeted r15; whole r15 has two unrelated historical fixture failures and final exact-head clean/CI evidence remains pending."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
@@ -7162,15 +7630,17 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "lateCompletedSalesRegressionPreservesHistoryAndReacquiresQuarantine",
           "line": 167,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "matureActualSettlementContradictionDoesNotOverwritePriorRetainedSuccess",
           "line": 217,
-          "run": "source-r15",
-          "evidenceLimit": "Actual method passed in targeted r15; whole r15 has two unrelated historical fixture failures and final exact-head clean/CI evidence remains pending."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
@@ -7224,15 +7694,17 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "lateCompletedSalesRegressionPreservesHistoryAndReacquiresQuarantine",
           "line": 167,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "matureRetainedAndFavorableActualSettlementPreserveBothStageHistories",
           "line": 204,
-          "run": "source-r15",
-          "evidenceLimit": "Actual method passed in targeted r15; whole r15 has two unrelated historical fixture failures and final exact-head clean/CI evidence remains pending."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned stage-specific supersedes predicates, append-only observation and automatic narrow regression activation.",
@@ -7260,22 +7732,25 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "retainedCohortCannotBeLabeledSettledWithoutActualFinancialFacts",
           "line": 172,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "aFinancialLineCannotBeCountedTwiceThroughAmbiguousRetainedCohorts",
           "line": 182,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "matureUnallocatedFinancialFactCannotBecomeSettledEfficiencySuccess",
           "line": 232,
-          "run": "source-r15",
-          "evidenceLimit": "Actual method passed in targeted r15; whole r15 has two unrelated historical fixture failures and final exact-head clean/CI evidence remains pending."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned actual settlement cohort matching and ambiguous attribution; allocation estimates cannot become final values.",
@@ -7315,8 +7790,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "lateCompletedSalesRegressionPreservesHistoryAndReacquiresQuarantine",
           "line": 167,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeServiceTest.java",
@@ -7329,8 +7805,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "matureActualSettlementContradictionDoesNotOverwritePriorRetainedSuccess",
           "line": 217,
-          "run": "source-r15",
-          "evidenceLimit": "Actual method passed in targeted r15; whole r15 has two unrelated historical fixture failures and final exact-head clean/CI evidence remains pending."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "All current SETTLED and SETTLED_REVISED contradictions derive Finance linked Shared WorkTask from canonical action lineage, preserving original Case task age, idempotent role-specific binding, and separately retaining active Advertising/Ops containment. No caller may nominate a role or verdict.",
@@ -7383,8 +7860,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "aReviewedActionCannotSwapItsFrozenBaseline",
           "line": 188,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Scanned direct INSERT/freeze/reuse and every API/Manual seal/creator/gate consumer. App cannot manufacture trusted money/JSON, independent proof binds full typed payload+org+baseline+backend+transaction and is single-use. Reviewed chains cannot silently replace baseline.",
@@ -7417,8 +7895,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "targetedObjectScopeEvaluatesActualDueOutcomeAndReplayDoesNotAppendAnotherRevision",
           "line": 145,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeServiceTest.java",
@@ -7461,15 +7940,17 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "laterCorrectionDoesNotRewriteWhatWasAvailableAtActionTime",
           "line": 74,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "targetedObjectScopeEvaluatesActualDueOutcomeAndReplayDoesNotAppendAnotherRevision",
           "line": 145,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
@@ -7489,15 +7970,17 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "ownerBlockingProviderIncidentCannotPassOtherwiseCompleteSalesSafety",
           "line": 178,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "aLaterMetricNeverErasesTheEconomicsVisibleAtAnEarlierDecisionInstant",
           "line": 212,
-          "run": "source-r17",
-          "evidenceLimit": "Actual PostgreSQL earlier/later Metric selection passed; proves this historical economic input boundary only, not every criterion conjunct."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Actual PG adversarial matrix includes app direct SQL, actor-independent trusted proof, wrong backend/TX, changed payload, proof replay, missing stage, modified policy, blocking incident, late correction, object scope and Outcome replay.",
@@ -7536,8 +8019,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "sqlLineageAndUnequalVariantQuantitiesReconcileWithoutMeanOrFirstPolicy",
           "line": 128,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Canonical stale/incomplete, mapping/linkage and regression runbooks were rewritten against final authority/stage behavior; this shard preserves criterion text and actual method/log identity.",
@@ -7573,15 +8057,17 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "laterCorrectionDoesNotRewriteWhatWasAvailableAtActionTime",
           "line": 74,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "targetedObjectScopeEvaluatesActualDueOutcomeAndReplayDoesNotAppendAnotherRevision",
           "line": 145,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         },
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
@@ -7601,8 +8087,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
           "method": "ownerBlockingProviderIncidentCannotPassOtherwiseCompleteSalesSafety",
           "line": 178,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Actual PG adversarial matrix includes app direct SQL, actor-independent trusted proof, wrong backend/TX, changed payload, proof replay, missing stage, modified policy, blocking incident, late correction, object scope and Outcome replay.",
@@ -7641,8 +8128,9 @@
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCanonicalFactsIT.java",
           "method": "sqlLineageAndUnequalVariantQuantitiesReconcileWithoutMeanOrFirstPolicy",
           "line": 128,
-          "run": "source-r12",
-          "evidenceLimit": "Actual method exists. A named targeted class PASS proves these assertions only; no substitute for unrelated parts of the criterion."
+          "run": "source-full-clean-w3",
+          "evidenceLimit": "Exact clean W3 full run passed this complete named suite (Frozen10/Canonical11). Whole full verification failed in four other classes; current unknown-set follow-up must still be retested before integrated closure.",
+          "verification": "NAMED_ASSERTIONS_PASSED_IN_FAILED_FULL_RUN"
         }
       ],
       "sameClassScan": "Canonical stale/incomplete, mapping/linkage and regression runbooks were rewritten against final authority/stage behavior; this shard preserves criterion text and actual method/log identity.",
@@ -7654,6 +8142,7 @@
   ],
   "pending": [
     "Cross-stream capacity, disclosure/browser and generic Shared Spine proofs retain their own exact evidence; this shard does not infer their current status.",
-    "Complete clean verification and exact published-head CI evidence; targeted working-tree success is not final VERIFIED."
+    "Complete clean verification and exact published-head CI evidence; targeted working-tree success is not final VERIFIED.",
+    "W3 was a failed clean full run. The complete R38 Flow24 passed, and the seven unchanged other classes have 74 local passing assertions from the failed R37 run, but a new exact clean unselected full verification and remote CI are still required."
   ]
 }

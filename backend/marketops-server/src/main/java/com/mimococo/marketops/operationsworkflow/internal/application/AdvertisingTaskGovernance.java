@@ -27,8 +27,8 @@ public class AdvertisingTaskGovernance {
     public Optional<Context> context(UUID taskId) {
         return jdbc.sql("""
                 SELECT b.case_id,b.organization_id,b.owner_role_code,c.store_id,c.ad_native_object_id,
-                       a.product_variant_ids,a.affected_set_digest FROM ops.ad_case_responsibility b
-                JOIN mart.ad_case c ON c.id=b.case_id JOIN core.ad_affected_set a ON a.id=c.affected_set_id
+                       coalesce(a.product_variant_ids, ARRAY[]::uuid[]) AS product_variant_ids,a.affected_set_digest FROM ops.ad_case_responsibility b
+                JOIN mart.ad_case c ON c.id=b.case_id LEFT JOIN core.ad_affected_set a ON a.id=c.affected_set_id
                 WHERE b.task_id=:task
                 UNION ALL
                 SELECT review.case_id,review.organization_id,review.required_role_code,k.store_id,k.ad_native_object_id,
@@ -129,7 +129,7 @@ public class AdvertisingTaskGovernance {
                     """;
             case "DATA_OR_MAPPING_REPAIR" -> """
                     SELECT EXISTS(SELECT 1 FROM ops.metadata_audit_event e JOIN mart.ad_case c ON c.id=:case
-                    JOIN core.ad_affected_set a ON a.id=c.affected_set_id WHERE e.id=:id AND e.actor_id=:actorText
+                    LEFT JOIN core.ad_affected_set a ON a.id=c.affected_set_id WHERE e.id=:id AND e.actor_id=:actorText
                     AND e.action IN ('CREATE','UPDATE','STATUS_CHANGE') AND e.denial_code IS NULL
                     AND e.occurred_at>=c.created_at
                     AND (e.entity_id=c.ad_native_object_id OR e.entity_id=ANY(a.product_variant_ids)

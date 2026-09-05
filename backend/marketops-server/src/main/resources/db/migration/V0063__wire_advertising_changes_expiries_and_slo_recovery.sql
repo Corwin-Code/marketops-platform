@@ -36,6 +36,13 @@ CREATE TABLE ops.ad_recalculation_due (
 CREATE INDEX ad_recalculation_due_ready_ix ON ops.ad_recalculation_due(due_at) WHERE delivered_at IS NULL;
 GRANT SELECT,UPDATE ON ops.ad_recalculation_due TO marketops_app;
 
+-- Like ad_recalculation_request, this is an internal wakeup queue. The canonical
+-- policies and current command gates remain authoritative for every expiry.
+INSERT INTO platform.control_route_inventory
+    (schema_name,table_name,route_kind,scope_kind,routing_note)
+VALUES ('ops','ad_recalculation_due','NO_ROUTE',NULL,
+    'Internal advertising deadline wakeups; not an acquisition job or write authority; canonical consumers revalidate every expiry');
+
 CREATE FUNCTION ops.enqueue_ad_change(p_org uuid,p_object uuid,p_class text,p_reference text,p_accepted timestamptz)
 RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,ops AS $$
 BEGIN

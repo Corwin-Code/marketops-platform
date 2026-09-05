@@ -36,8 +36,8 @@ public class AdvertisingWorkflowQueryService {
     @Transactional
     public Workflow workflow(AuthenticatedActor actor, UUID caseId) {
         var scope = jdbc.sql("""
-                SELECT c.organization_id,c.store_id,a.product_variant_ids
-                FROM mart.ad_case c JOIN core.ad_affected_set a ON a.id=c.affected_set_id
+                SELECT c.organization_id,c.store_id,coalesce(a.product_variant_ids, ARRAY[]::uuid[]) AS product_variant_ids
+                FROM mart.ad_case c LEFT JOIN core.ad_affected_set a ON a.id=c.affected_set_id
                 WHERE c.id=:id
                 """).param("id", caseId).query((rs, n) -> new Scope(rs.getObject("organization_id", UUID.class),
                         rs.getObject("store_id", UUID.class), List.of((UUID[])rs.getArray("product_variant_ids").getArray())))

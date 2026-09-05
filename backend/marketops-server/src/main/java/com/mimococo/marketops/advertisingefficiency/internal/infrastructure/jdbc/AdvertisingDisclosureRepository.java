@@ -27,6 +27,15 @@ public class AdvertisingDisclosureRepository {
     }
 
     public Optional<ObjectScope> objectScope(UUID organizationId, UUID objectId, String digest) {
+        return resolveObjectScope(organizationId,objectId,digest,true);
+    }
+
+    /** A missing historical Case set never resolves to a later current set. */
+    public Optional<ObjectScope> caseObjectScope(UUID organizationId,UUID objectId,String digest) {
+        return resolveObjectScope(organizationId,objectId,digest,false);
+    }
+
+    private Optional<ObjectScope> resolveObjectScope(UUID organizationId,UUID objectId,String digest,boolean allowLatest) {
         return jdbc.sql("""
                 SELECT o.store_id, a.product_variant_ids, a.platform_listing_variant_ids,
                        a.resolution_state, a.affected_set_digest, s.timezone,
@@ -38,12 +47,13 @@ public class AdvertisingDisclosureRepository {
                   LEFT JOIN LATERAL (
                       SELECT af.* FROM core.ad_affected_set af
                        WHERE af.organization_id = o.organization_id AND af.ad_native_object_id = o.id
-                         AND (cast(:digest AS text) IS NULL OR af.affected_set_digest = :digest)
+                         AND ((:allowLatest AND cast(:digest AS text) IS NULL) OR af.affected_set_digest = :digest)
                        ORDER BY af.resolved_at DESC, af.id LIMIT 1
                   ) a ON true
                  WHERE o.organization_id = :organizationId AND o.id = :objectId
                 """)
                 .param("organizationId", organizationId).param("objectId", objectId).param("digest", digest)
+                .param("allowLatest",allowLatest)
                 .query((rs, index) -> new ObjectScope(rs.getObject("store_id", UUID.class),
                         ids(rs.getArray("product_variant_ids")),
                         ids(rs.getArray("platform_listing_variant_ids")),

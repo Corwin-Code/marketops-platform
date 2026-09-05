@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "SYSTEMATIC_FAULT_SEEDING_MATRIX",
   "owner": "source_audit",
-  "generatedAt": "2026-09-05T04:07:25.660321+00:00",
+  "generatedAt": "2026-09-05T05:14:12.708485+00:00",
   "scope": [
     "S3-DR-002",
     "S3-DR-003",
@@ -960,6 +960,84 @@
       "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-r1-final-targeted-r34.log",
       "logSha256": "99d23ed4863889787405f870116cb33dc40877aa433adeee2b58a1c75cc2c77c",
       "proofLimit": "Named targeted assertions only; final clean and CI closure remains pending."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-050",
+      "seedCode": "CORE_AFFECTED_SET_RESOLVES_ONLY_AFTER_ASOF",
+      "findingIds": [
+        "S3-DR-002"
+      ],
+      "criterionIds": [
+        "S3-AC-014",
+        "S3-AC-051",
+        "S3-AC-055",
+        "S3-AC-061"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+        "method": "futureAffectedSetRemainsUnknownWithAGovernedRepairTask",
+        "line": 614
+      },
+      "seededFaultOrAdverseBoundary": "Make the only complete affected-set resolution occur one hour after the actual calculator evaluation instant.",
+      "expectedRefusalOrState": "An explicit UNRESOLVED Data Repair Case and responsibility Task are written without a fabricated historical set, member, candidate or command.",
+      "boundaryActuallyReached": "REAL_PG_GATHER_CALCULATOR_PROJECTION_TASK",
+      "observed": "PASS in R38: the complete AdvertisingEfficiencyFlowIT24 passed with zero failures/errors/skips; the other seven classes passed 74 local assertions in the earlier failed R37 run.",
+      "run": "source-post-w3-targeted-r38",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/maven.log",
+      "logSha256": "e236bd47dfc849d19963b54fef0687052ca578e859e9d844dc4aaab648ab192a",
+      "proofLimit": "Named targeted assertions; new clean full verification and exact CI remain pending."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-051",
+      "seedCode": "GENERIC_SCOPE_WITHOUT_ADVERTISING_SCOPE",
+      "findingIds": [
+        "S3-DR-002"
+      ],
+      "criterionIds": [
+        "S3-AC-014",
+        "S3-AC-051",
+        "S3-AC-055",
+        "S3-AC-061"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+        "method": "futureAffectedSetRemainsUnknownWithAGovernedRepairTask",
+        "line": 614
+      },
+      "seededFaultOrAdverseBoundary": "Grant TASK_ASSIGN and DIAGNOSTIC_VIEW but omit, then revoke, exact ADVERTISING_VIEW on an unknown-set Task.",
+      "expectedRefusalOrState": "Exact RESOURCE_SCOPE_DENIED before AD permission; one VIEWED after the scoped AD grant; exact refusal after revoke leaves the count at one. The Task stays under advertising governance.",
+      "boundaryActuallyReached": "REAL_PG_TASK_RESOURCE_AUTHORIZATION",
+      "observed": "PASS in R38: the complete AdvertisingEfficiencyFlowIT24 passed with zero failures/errors/skips; the other seven classes passed 74 local assertions in the earlier failed R37 run.",
+      "run": "source-post-w3-targeted-r38",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/maven.log",
+      "logSha256": "e236bd47dfc849d19963b54fef0687052ca578e859e9d844dc4aaab648ab192a",
+      "proofLimit": "Named targeted assertions; new clean full verification and exact CI remain pending."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-052",
+      "seedCode": "NULL_SET_OUTSIDE_EXPLICIT_REPAIR_CAUSE",
+      "findingIds": [
+        "S3-DR-002"
+      ],
+      "criterionIds": [
+        "S3-AC-014",
+        "S3-AC-051",
+        "S3-AC-055",
+        "S3-AC-061"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+        "method": "futureAffectedSetRemainsUnknownWithAGovernedRepairTask",
+        "line": 614
+      },
+      "seededFaultOrAdverseBoundary": "Attempt to update a null-set Case to PROFIT_ECONOMICS_BLOCKED through the app role.",
+      "expectedRefusalOrState": "PostgreSQL SQLSTATE23514/ad_case_unresolved_affected_set_ck rejects the statement; the explicit unknown repair remains intact.",
+      "boundaryActuallyReached": "DATABASE_CHECK_BOUNDARY",
+      "observed": "PASS in R38: the complete AdvertisingEfficiencyFlowIT24 passed with zero failures/errors/skips; the other seven classes passed 74 local assertions in the earlier failed R37 run.",
+      "run": "source-post-w3-targeted-r38",
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/maven.log",
+      "logSha256": "e236bd47dfc849d19963b54fef0687052ca578e859e9d844dc4aaab648ab192a",
+      "proofLimit": "Named targeted assertions; new clean full verification and exact CI remain pending."
     }
   ]
 }

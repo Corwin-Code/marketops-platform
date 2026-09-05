@@ -88,14 +88,14 @@ public class AdvertisingQueryRepository {
                    c.attribution_gap_state, c.attribution_gap_ratio,
                    c.current_bid_state, c.current_bid_amount, c.recoverable_profit_amount,
                    %s * %s AS visible_rank,
-                   c.policy_version_digest, a.affected_set_digest, a.resolution_state,
-                   cardinality(a.product_variant_ids) AS affected_variant_count,
+                   c.policy_version_digest, a.affected_set_digest, coalesce(a.resolution_state, 'UNRESOLVED') AS resolution_state,
+                   coalesce(cardinality(a.product_variant_ids), 0) AS affected_variant_count,
                    c.as_of, c.calculated_at, c.sustained_lane, c.sustained_cycles,
                    c.sustained_since, c.calculation_id
               FROM mart.ad_case c
               JOIN core.ad_native_object obj
                 ON obj.id = c.ad_native_object_id AND obj.organization_id = c.organization_id
-              JOIN core.ad_affected_set a
+              LEFT JOIN core.ad_affected_set a
                 ON a.id = c.affected_set_id AND a.organization_id = c.organization_id
              WHERE c.organization_id = :organizationId
                AND c.store_id = ANY (:permittedStoreIds)

@@ -8,6 +8,8 @@ import com.mimococo.marketops.TestDatabase;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessRoleCode;
 import com.mimococo.marketops.operationsworkflow.WorkTaskEventView;
+import com.mimococo.marketops.shared.ErrorCode;
+import com.mimococo.marketops.shared.OperationRejectedException;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
@@ -119,6 +121,14 @@ class WorkTaskJournalIT {
     @Order(1)
     @DisplayName("TC-WF-JOURNAL-001 opening the page is recorded, and cannot be read as engagement")
     void aViewIsNotAnAcknowledgement() {
+        // Assignment authority does not grant diagnostic read access. A refused
+        // page open must not leave a journal entry claiming that it was read.
+        assertThatThrownBy(() -> tasks.recordView(holder, taskId))
+                .isInstanceOfSatisfying(OperationRejectedException.class,
+                        refusal -> assertThat(refusal.errorCode())
+                                .isEqualTo(ErrorCode.RESOURCE_SCOPE_DENIED));
+        assertThat(tasks.journal(taskId)).isEmpty();
+        UUID readGrant = grantDiagnosticView(graph.executorUserId());
         tasks.recordView(holder, taskId);
 
         List<WorkTaskEventView> journal = tasks.journal(taskId);
@@ -134,6 +144,18 @@ class WorkTaskJournalIT {
         assertThat(view.action()).isFalse();
         assertThat(view.satisfiesActionStage()).isFalse();
         assertThat(view.outcome()).isFalse();
+
+        // Revocation denies a new view and preserves the existing journal entry.
+        seed.sql("""
+                UPDATE iam.user_scope_grant SET status='REVOKED',
+                    reason='Synthetic diagnostic read revocation', updated_at=now() WHERE id=:id
+                """)
+                .param("id", readGrant).update();
+        assertThatThrownBy(() -> tasks.recordView(holder, taskId))
+                .isInstanceOfSatisfying(OperationRejectedException.class,
+                        refusal -> assertThat(refusal.errorCode())
+                                .isEqualTo(ErrorCode.RESOURCE_SCOPE_DENIED));
+        assertThat(tasks.journal(taskId)).hasSize(1);
 
         // And the schema refuses one that tried. A console that logged every
         // render could not turn those renders into acknowledgements even by
@@ -408,7 +430,7 @@ class WorkTaskJournalIT {
     }
 
     /**
-     * The one grant these cases need, at organization scope.
+     * Assignment authority at organization scope, separate from diagnostic read access.
      *
      * <p>Seeded rather than assumed, because a test whose actor could do
      * anything would prove nothing about a product whose whole authorization
@@ -427,5 +449,17 @@ class WorkTaskJournalIT {
                 VALUES (gen_random_uuid(), :organization, :user, 'TASK_ASSIGN', :organization,
                         now() - interval '1 hour', 'ACTIVE', now(), now())
                 """).param("organization", graph.organizationId()).param("user", userId).update();
+    }
+
+    private static UUID grantDiagnosticView(UUID userId) {
+        UUID grantId = UUID.randomUUID();
+        seed.sql("""
+                INSERT INTO iam.user_scope_grant (id, organization_id, user_id, action_code,
+                        organization_ref_id, effective_from, status, created_at, updated_at)
+                VALUES (:id, :organization, :user, 'DIAGNOSTIC_VIEW', :organization,
+                        now() - interval '1 hour', 'ACTIVE', now(), now())
+                """).param("id", grantId).param("organization", graph.organizationId())
+                .param("user", userId).update();
+        return grantId;
     }
 }

@@ -719,14 +719,227 @@
       ],
       "positiveTests": [
         {
-          "path": "tests/test_validate_governance.py"
+          "path": "tests/test_validate_governance.py",
+          "class": "Slice3R1AuthorityTests",
+          "method": "test_exact_owner_authorization_and_both_frozen_representations_pass",
+          "unittestId": "test_validate_governance.Slice3R1AuthorityTests.test_exact_owner_authorization_and_both_frozen_representations_pass",
+          "line": 2880,
+          "endLine": 2883,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "6c02dd865778883e4684fd5c8675275db14f0cd195cbeea9a722f43d503819c5",
+          "assertion": "Reads actual repository files for every SLICE3_R1_AUTHORITY_HASHES entry and asserts validator errors == [].",
+          "proofBoundary": "Exact current Owner authorization and Frozen byte-identity validator; does not inspect GitHub or claim publication.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual(errors, [])"
+          ]
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_exact_v1_state_is_valid",
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_exact_v1_state_is_valid",
+          "line": 2929,
+          "endLine": 2931,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "4a4fe87f98c50215ffd0948902f59a405c11daaca398cae7a5c5f93fb866e81a",
+          "assertion": "Asserts current governance state is valid both normally and with explicit accepted Slice 3 Contract bytes.",
+          "proofBoundary": "Static actual governance/accepted bytes; no arbitrary current Head/PR state is obtained by this method.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual([], self.validate())",
+            "self.assertEqual([], self.validate(slice_contract_bytes=self.slice_contract_bytes()))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_production_readiness.py",
+          "class": "RepositoryContractPatternTests",
+          "method": "test_frontend_test_requires_authored_source_expression",
+          "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_frontend_test_requires_authored_source_expression",
+          "line": 447,
+          "endLine": 464,
+          "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+          "methodSourceSha256": "51df078755b8478fdea57114ba055aaa6722c9d8cfffd3c04b7defa11482af41",
+          "assertion": "Known synthetic workflow/resolver contract yields no violations; removing source Head or replacing PR source expression with merge github.sha yields violations.",
+          "proofBoundary": "Synthetic source-pattern fixture only; actual CI checkout, runtime package and browser identities remain separate executable evidence.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual([], browser_source_identity_contract_violations(workflow, config, scenario, resolver))",
+            "self.assertTrue(browser_source_identity_contract_violations(mutated, config, scenario, resolver))"
+          ]
+        },
+        {
+          "path": "tests/test_required_status_checks.py",
+          "class": "RequiredStatusChecksTests",
+          "method": "test_inventory_requires_infrastructure_validation",
+          "unittestId": "test_required_status_checks.RequiredStatusChecksTests.test_inventory_requires_infrastructure_validation",
+          "line": 8,
+          "endLine": 21,
+          "sourceSha256": "bf938e4f904934bf32e2d67cc912ab444d91a29f1b355351c23b005427f00d6a",
+          "methodSourceSha256": "9b2ba46af258622d7d9166fdca0031edfd3f10663f3ad8d23cbc04d4bced182b",
+          "assertion": "Exact sorted REQUIRED_STATUS_CONTEXTS and strict policy pass; removal of infrastructure-validation causes a named diagnostic.",
+          "proofBoundary": "Required-context inventory validator. Does not query branch protection or run/check conclusions.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual([], errors)",
+            "self.assertTrue(any(('infrastructure-validation' in error for error in errors)))"
+          ]
         }
       ],
       "negativeTests": [
         {
-          "path": "tests/test_validate_governance.py"
+          "path": "tests/test_validate_governance.py",
+          "class": "Slice3R1AuthorityTests",
+          "method": "test_each_missing_or_changed_authority_is_refused",
+          "unittestId": "test_validate_governance.Slice3R1AuthorityTests.test_each_missing_or_changed_authority_is_refused",
+          "line": 2885,
+          "endLine": 2897,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "cfee56f0a2d726bc256c40c412350adc21c46f50a64a4d37f98a3ac2589aa1e4",
+          "assertion": "For every actual authority file, remove it or append one byte; each subtest requires exactly one error naming the altered path.",
+          "proofBoundary": "Actual document-byte fault in memory; no authority file is modified and no remote action is verified.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual(len(errors), 1)",
+            "self.assertIn(name, errors[0])"
+          ]
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_contract_byte_change_with_old_hash_is_rejected",
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_contract_byte_change_with_old_hash_is_rejected",
+          "line": 3119,
+          "endLine": 3129,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "a32b1fa2756c1de1bb97b75d83eab37adc1eeb6ae9be04715152c8abb2353dc7",
+          "assertion": "Changes the final y in Advertising & Traffic Efficiency to x; proves bytes differ and length remains equal, then requires immutable and hash-mismatch diagnostics.",
+          "proofBoundary": "A real equal-length mutation of accepted bytes; not merely a fabricated hash.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertNotEqual(mutated, self.slice_contract_bytes())",
+            "self.assertEqual(len(mutated), len(self.slice_contract_bytes()))",
+            "self.assertTrue(any(('immutable' in error for error in errors)))",
+            "self.assertTrue(any(('does not match' in error for error in errors)))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_hash_change_with_original_contract_is_rejected",
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_hash_change_with_original_contract_is_rejected",
+          "line": 3131,
+          "endLine": 3138,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "71a8010883af2586d5d8bd743a4860c34644280cd24b497e0b03a4c22c1bb02c",
+          "assertion": "Replaces accepted hash in actual current state with zeros and requires active_slice_contract_sha256 diagnostic.",
+          "proofBoundary": "Current static metadata refusal, not remote Git identity proof.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertTrue(any(('active_slice_contract_sha256' in error for error in errors)))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_coordinated_contract_and_hash_change_is_not_an_amendment",
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_coordinated_contract_and_hash_change_is_not_an_amendment",
+          "line": 3140,
+          "endLine": 3152,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "6326069d97c3169a129467876a1dffa5f032a22909b06b84d3088f165565591b",
+          "assertion": "Changes Contract and its declared SHA together and requires an additive Amendment diagnostic.",
+          "proofBoundary": "Prevents re-hashing an edited original from creating authority.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertTrue(any(('additive Amendment' in error for error in errors)))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_rework_identity_phase_and_actor_cannot_drift",
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_rework_identity_phase_and_actor_cannot_drift",
+          "line": 3163,
+          "endLine": 3215,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "6a10cf5f28cb9513eac7ea6eda3f0b1dfd2e42015b58cb5f78accfc02618b94e",
+          "assertion": "Each mutation first assertIn checks the exact source token, then rejects active actor, current candidate production claim, Gate EV, and protected historical identity/closure changes.",
+          "proofBoundary": "Mixed active-Slice3 and historical-Slice1/2 static assertions. It does not validate arbitrary final current Head against GitHub.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertIn(old, self.current())",
+            "self.assertTrue(self.validate(current=self.current().replace(old, new, 1)))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_production_readiness.py",
+          "class": "RepositoryContractPatternTests",
+          "method": "test_frontend_test_requires_authored_source_expression",
+          "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_frontend_test_requires_authored_source_expression",
+          "line": 447,
+          "endLine": 464,
+          "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+          "methodSourceSha256": "51df078755b8478fdea57114ba055aaa6722c9d8cfffd3c04b7defa11482af41",
+          "assertion": "Known synthetic workflow/resolver contract yields no violations; removing source Head or replacing PR source expression with merge github.sha yields violations.",
+          "proofBoundary": "Synthetic source-pattern fixture only; actual CI checkout, runtime package and browser identities remain separate executable evidence.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual([], browser_source_identity_contract_violations(workflow, config, scenario, resolver))",
+            "self.assertTrue(browser_source_identity_contract_violations(mutated, config, scenario, resolver))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_production_readiness.py",
+          "class": "RepositoryContractPatternTests",
+          "method": "test_checkout_head_and_identity_divergence_are_rejected",
+          "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_checkout_head_and_identity_divergence_are_rejected",
+          "line": 466,
+          "endLine": 482,
+          "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+          "methodSourceSha256": "588baf1552d80d12b6227ae1ab3d145290c05319cdd4eb4db5c209d98e22178f",
+          "assertion": "Rejects fixture code that reads checkout HEAD in place of authored source resolver and rejects a divergent asserted checkoutHead.",
+          "proofBoundary": "Source-pattern negative, not execution of a browser/checkout.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertTrue(browser_source_identity_contract_violations(workflow, config, checkout_head, resolver))",
+            "self.assertTrue(browser_source_identity_contract_violations(workflow, config, divergent, resolver))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_production_readiness.py",
+          "class": "RepositoryContractPatternTests",
+          "method": "test_ci_source_resolver_cannot_fall_back_to_repository_head",
+          "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_ci_source_resolver_cannot_fall_back_to_repository_head",
+          "line": 484,
+          "endLine": 491,
+          "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+          "methodSourceSha256": "001896575de462f948fae0a3ea43632f05c61fe25ed99c47246eed74f5f1e9f2",
+          "assertion": "Disables fixture CI branch with if(false) and requires refusal.",
+          "proofBoundary": "Source-pattern negative, not a real GitHub run.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertTrue(browser_source_identity_contract_violations(workflow, config, scenario, mutated))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "Dr0004GovernanceContractTests",
+          "method": "test_remote_publication_cannot_reconstruct_checkpoint",
+          "unittestId": "test_validate_governance.Dr0004GovernanceContractTests.test_remote_publication_cannot_reconstruct_checkpoint",
+          "line": 4054,
+          "endLine": 4062,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "effb54e3738f9bc9ef78a93891ebae20bbb85e955e169fc7b7f2c89abf73357e",
+          "assertion": "Mutates governance handoff prohibition to permit reconstruction during publication and requires DR-0004 handoff diagnostic.",
+          "proofBoundary": "Text-protocol enforcement only; cannot prove actual append-only transport bytes.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertTrue(any(('DR-0004 handoff' in error for error in errors)))"
+          ]
         }
       ],
+      "testClassification": "Reviewed named methods preserve exact assertions and limits; no static check substitutes for actual identity/clone/remote CI receipts.",
       "status": "REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING",
       "evidenceLimits": [
         "Current governance run passes 410 tests; this is not full local verification or remote CI.",
@@ -763,14 +976,194 @@
       ],
       "positiveTests": [
         {
-          "path": "tests/test_validate_governance.py"
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_complete_mapping_preserves_authority_and_never_inherits_pass",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_complete_mapping_preserves_authority_and_never_inherits_pass",
+          "line": 47,
+          "endLine": 58,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "10ed90143be2607453ca793e0bef3ca3b656f596c42515e3fc3210663e00baaf",
+          "assertion": "Copies actual accepted Contract/Frozen/current matrices into TemporaryDirectory; supplies all 200 rows falsely claiming VERIFIED; assembly writes 200 pending rows, closure false, production false, with Contract/Frozen hashes unchanged.",
+          "proofBoundary": "Tests matrix assembly behavior against artificial references, not completeness of the real 200-AC implementation or actual test execution. ROOT is patched only to a temporary directory.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual(200, len(result['entries']))",
+            "self.assertFalse(result['closure_claim_made'])",
+            "self.assertFalse(result['production_write_enabled'])",
+            "self.assertTrue(all((row['status'] == 'REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING' for row in result['entries'])))",
+            "self.assertEqual(contract_before, assembly.digest(self.root / assembly.CONTRACT))",
+            "self.assertEqual(frozen_before, assembly.digest(self.root / assembly.FROZEN))"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_javascript_test_titles_require_the_actual_literal_title",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_javascript_test_titles_require_the_actual_literal_title",
+          "line": 91,
+          "endLine": 97,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "ff559b1b3e95653c21988ac8db221d803d3a0e07e953a9ca0d2b0260bb36a246",
+          "assertion": "Exact TS literal test title resolves; replacement with another title raises Missing test method.",
+          "proofBoundary": "Existence/title identity validator only; neither frontend execution nor assertion semantics is proved.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual(1, len(assembly.references(actual, ('tests',))))",
+            "self.assertRaisesRegex(ValueError, 'Missing test method')"
+          ]
+        },
+        {
+          "path": "tests/test_required_status_checks.py",
+          "class": "RequiredStatusChecksTests",
+          "method": "test_inventory_requires_infrastructure_validation",
+          "unittestId": "test_required_status_checks.RequiredStatusChecksTests.test_inventory_requires_infrastructure_validation",
+          "line": 8,
+          "endLine": 21,
+          "sourceSha256": "bf938e4f904934bf32e2d67cc912ab444d91a29f1b355351c23b005427f00d6a",
+          "methodSourceSha256": "9b2ba46af258622d7d9166fdca0031edfd3f10663f3ad8d23cbc04d4bced182b",
+          "assertion": "Exact sorted REQUIRED_STATUS_CONTEXTS and strict policy pass; removal of infrastructure-validation causes a named diagnostic.",
+          "proofBoundary": "Required-context inventory validator. Does not query branch protection or run/check conclusions.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual([], errors)",
+            "self.assertTrue(any(('infrastructure-validation' in error for error in errors)))"
+          ]
         }
       ],
       "negativeTests": [
         {
-          "path": "tests/test_validate_governance.py"
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_changed_contract_is_rejected_before_writing_matrices",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_changed_contract_is_rejected_before_writing_matrices",
+          "line": 60,
+          "endLine": 64,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "0b0b91a97cf6b98bf8b830d55a528b4a86b1d828c9ad2dead1a0a773285e14ab",
+          "assertion": "Appending a byte to the temp accepted Contract raises Accepted Contract identity changed.",
+          "proofBoundary": "Actual byte fault in isolated temp copy; name does not itself assert matrix postfailure bytes, but rejection occurs before assembly output writes in implementation.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertRaisesRegex(ValueError, 'Accepted Contract identity changed')"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_changed_frozen_findings_are_rejected_before_writing_matrices",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_changed_frozen_findings_are_rejected_before_writing_matrices",
+          "line": 66,
+          "endLine": 70,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "0d54bc2425e3131decc1620daeef2de1d6887d5fe2129f7dde2bacb2d2d7cc50",
+          "assertion": "Appending a byte to temp Frozen raises Frozen Finding Set identity changed.",
+          "proofBoundary": "Exact frozen-input identity refusal in isolated temp copy.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertRaisesRegex(ValueError, 'Frozen Finding Set identity changed')"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_modified_criterion_is_not_treated_as_the_accepted_criterion",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_modified_criterion_is_not_treated_as_the_accepted_criterion",
+          "line": 72,
+          "endLine": 76,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "1df71c11aba8e156004ed7b3824faabc27443619dcc76b0c319930c9cb23474b",
+          "assertion": "Changes first criterion text in a shard and requires Altered accepted criterion.",
+          "proofBoundary": "Prevents criterion text drift; does not judge implementation adequacy.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertRaisesRegex(ValueError, 'Altered accepted criterion')"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_a_missing_criterion_prevents_a_complete_matrix",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_a_missing_criterion_prevents_a_complete_matrix",
+          "line": 78,
+          "endLine": 81,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "9076d73d5a0516fd84e96a6330a7605b238de40b6728f8618d64a736f608d87b",
+          "assertion": "Drops the first criterion and requires Unmapped accepted criteria.",
+          "proofBoundary": "ID completeness, not semantic completion.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertRaisesRegex(ValueError, 'Unmapped accepted criteria')"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_a_nonexistent_test_method_is_not_accepted_as_evidence",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_a_nonexistent_test_method_is_not_accepted_as_evidence",
+          "line": 83,
+          "endLine": 85,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "2a01c853a4835d928dcab547df4071ff9e8e835880a148a47401ec45d2f5c985",
+          "assertion": "References missing method and requires Missing test method.",
+          "proofBoundary": "Source declaration existence, not actual execution or assertion semantics.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertRaisesRegex(ValueError, 'Missing test method')"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_references_cannot_escape_the_repository",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_references_cannot_escape_the_repository",
+          "line": 87,
+          "endLine": 89,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "bf50084551fb4b90669a36253553b72852b0383c87789ef838fa81eb3685a374",
+          "assertion": "References ../unrelated.py and requires Invalid evidence path.",
+          "proofBoundary": "Repository scope boundary, not remote artifact identity.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertRaisesRegex(ValueError, 'Invalid evidence path')"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_javascript_test_titles_require_the_actual_literal_title",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_javascript_test_titles_require_the_actual_literal_title",
+          "line": 91,
+          "endLine": 97,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "ff559b1b3e95653c21988ac8db221d803d3a0e07e953a9ca0d2b0260bb36a246",
+          "assertion": "Exact TS literal test title resolves; replacement with another title raises Missing test method.",
+          "proofBoundary": "Existence/title identity validator only; neither frontend execution nor assertion semantics is proved.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual(1, len(assembly.references(actual, ('tests',))))",
+            "self.assertRaisesRegex(ValueError, 'Missing test method')"
+          ]
+        },
+        {
+          "path": "tests/test_required_status_checks.py",
+          "class": "RequiredStatusChecksTests",
+          "method": "test_inventory_requires_infrastructure_validation",
+          "unittestId": "test_required_status_checks.RequiredStatusChecksTests.test_inventory_requires_infrastructure_validation",
+          "line": 8,
+          "endLine": 21,
+          "sourceSha256": "bf938e4f904934bf32e2d67cc912ab444d91a29f1b355351c23b005427f00d6a",
+          "methodSourceSha256": "9b2ba46af258622d7d9166fdca0031edfd3f10663f3ad8d23cbc04d4bced182b",
+          "assertion": "Exact sorted REQUIRED_STATUS_CONTEXTS and strict policy pass; removal of infrastructure-validation causes a named diagnostic.",
+          "proofBoundary": "Required-context inventory validator. Does not query branch protection or run/check conclusions.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual([], errors)",
+            "self.assertTrue(any(('infrastructure-validation' in error for error in errors)))"
+          ]
         }
       ],
+      "testClassification": "Reviewed named methods preserve exact assertions and limits; no static check substitutes for actual identity/clone/remote CI receipts.",
       "status": "REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING",
       "evidenceLimits": [
         "Current governance run passes 410 tests; this is not full local verification or remote CI.",

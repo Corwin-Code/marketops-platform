@@ -20,7 +20,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-          "sha256_at_receipt": "6a66a73e6a2b6b28b1987b8ff5d969963ec11209d351a95b22fa60a7beca0a29"
+          "sha256_at_receipt": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
@@ -66,7 +66,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0051__bind_each_decision_to_its_own_authority.sql",
@@ -110,7 +110,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-          "sha256_at_receipt": "6a66a73e6a2b6b28b1987b8ff5d969963ec11209d351a95b22fa60a7beca0a29"
+          "sha256_at_receipt": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         }
       ],
       "testReferences": [
@@ -142,7 +142,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-          "sha256_at_receipt": "6dee295229029cb7ad932a5fef18e51fbd1634367429defb7664b611c5816447"
+          "sha256_at_receipt": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0045__create_ad_bid_command_from_approval.sql",
@@ -150,7 +150,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-          "sha256_at_receipt": "6a66a73e6a2b6b28b1987b8ff5d969963ec11209d351a95b22fa60a7beca0a29"
+          "sha256_at_receipt": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         }
       ],
       "testReferences": [
@@ -260,7 +260,7 @@
       "sourceReferences": [
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
-          "sha256_at_receipt": "60c44c25f705a2dcbc901cc31c52383238b0bdbad1747ab36117d5ae6cc6c02c"
+          "sha256_at_receipt": "37373c73a881cc24604b60cfd5018041be4179e6cee4de5387186bc4cfb9bffe"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDecisionService.java",
@@ -272,7 +272,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-          "sha256_at_receipt": "6a66a73e6a2b6b28b1987b8ff5d969963ec11209d351a95b22fa60a7beca0a29"
+          "sha256_at_receipt": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         }
       ],
       "testReferences": [
@@ -310,11 +310,11 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-          "sha256_at_receipt": "6a66a73e6a2b6b28b1987b8ff5d969963ec11209d351a95b22fa60a7beca0a29"
+          "sha256_at_receipt": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
-          "sha256_at_receipt": "4b592de80cf3bdfe397d6f29c173a9f8ec9f458ab7cda81f8c48dbb41924dd12"
+          "sha256_at_receipt": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955"
         }
       ],
       "testReferences": [
@@ -348,7 +348,7 @@
       "sourceReferences": [
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-          "sha256_at_receipt": "6a66a73e6a2b6b28b1987b8ff5d969963ec11209d351a95b22fa60a7beca0a29"
+          "sha256_at_receipt": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
@@ -466,7 +466,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-          "sha256_at_receipt": "6a66a73e6a2b6b28b1987b8ff5d969963ec11209d351a95b22fa60a7beca0a29"
+          "sha256_at_receipt": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdBidWriteAdapter.java",
@@ -512,7 +512,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-          "sha256_at_receipt": "6a66a73e6a2b6b28b1987b8ff5d969963ec11209d351a95b22fa60a7beca0a29"
+          "sha256_at_receipt": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         }
       ],
       "testReferences": [
@@ -550,7 +550,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-          "sha256_at_receipt": "6a66a73e6a2b6b28b1987b8ff5d969963ec11209d351a95b22fa60a7beca0a29"
+          "sha256_at_receipt": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorker.java",
@@ -630,7 +630,7 @@
       "sourceReferences": [
         {
           "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
-          "sha256_at_receipt": "6e3b9c3dc90af733276b1d620f03c7095bca2db0606a898e31669e079203e044"
+          "sha256_at_receipt": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/config/AdBidWriteProperties.java",
@@ -666,7 +666,7 @@
       "sourceReferences": [
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-          "sha256_at_receipt": "6a66a73e6a2b6b28b1987b8ff5d969963ec11209d351a95b22fa60a7beca0a29"
+          "sha256_at_receipt": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/config/AdBidWriteProperties.java",
@@ -698,7 +698,7 @@
       "sourceReferences": [
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-          "sha256_at_receipt": "6a66a73e6a2b6b28b1987b8ff5d969963ec11209d351a95b22fa60a7beca0a29"
+          "sha256_at_receipt": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
@@ -710,7 +710,7 @@
         },
         {
           "path": "scripts/verify_migration_artifact.py",
-          "sha256_at_receipt": "49f53bc51afe8a55af1b97a8d1a09a4c63158c921908b991f0a4dc1f9c0a0b8e"
+          "sha256_at_receipt": "8d6ad9f0394012d5323996658d43b174d62174a89133149402d9f399271da191"
         }
       ],
       "testReferences": [
@@ -748,11 +748,11 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-          "sha256_at_receipt": "6a66a73e6a2b6b28b1987b8ff5d969963ec11209d351a95b22fa60a7beca0a29"
+          "sha256_at_receipt": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
-          "sha256_at_receipt": "830ad6b65a33e56c6367bcdae0f1d2d137f37ea1d339240061a81f4d70cc89ed"
+          "sha256_at_receipt": "bf95f43f036b7fbe61faf2e461c9da1f03b24055143ca5b2b42d8f8ce123b26f"
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql",
@@ -800,11 +800,11 @@
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-          "sha256_at_receipt": "6a66a73e6a2b6b28b1987b8ff5d969963ec11209d351a95b22fa60a7beca0a29"
+          "sha256_at_receipt": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
         },
         {
           "path": "backend/marketops-server/src/main/resources/db/migration/V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
-          "sha256_at_receipt": "830ad6b65a33e56c6367bcdae0f1d2d137f37ea1d339240061a81f4d70cc89ed"
+          "sha256_at_receipt": "bf95f43f036b7fbe61faf2e461c9da1f03b24055143ca5b2b42d8f8ce123b26f"
         }
       ],
       "testReferences": [
@@ -862,7 +862,7 @@
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
-          "sha256_at_receipt": "a8fc936236f3301916415a5f50136d485bd79857e4c799e4ab010b52fede392e"
+          "sha256_at_receipt": "914ad07848313cac3ffbd865ee80d6a1c31bcc2b5d8e4edbc256785b35a55f92"
         },
         {
           "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeService.java",
