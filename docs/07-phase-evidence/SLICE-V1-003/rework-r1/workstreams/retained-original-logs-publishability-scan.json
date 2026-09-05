@@ -1,0 +1,215 @@
+{
+  "kind": "PUBLISHABLE_EVIDENCE_SECRET_SHAPE_SCAN",
+  "utc": "2026-09-05T10:19:45.752088+00:00",
+  "basis": "Repository SECRET_PATTERNS plus JWT shape; all text/archive members in explicit input paths, no matched values printed",
+  "inputPaths": [
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r1/runtime.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r2/runtime.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r3/runtime.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/runtime.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/maven-clean-verify.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/testcase-count-reconciliation.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/00-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/01-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/02-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/03-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/04-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/05-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/06-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/07-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/00-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/01-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/02-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/03-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/04-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/05-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/06-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/07-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/00-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/01-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/02-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/03-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/04-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/05-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/06-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/07-command.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/slice3-pagination-static-format-check.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/slice3-pagination-static-lint.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/slice3-pagination-static-typecheck.log",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w5-governance/make-governance.log"
+  ],
+  "files": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r1/runtime.log",
+      "sha256": "d1144b8482bfcc7fdcc6eecd9c49377da7dbeb8aa7313679a03f6117be6fc47f",
+      "bytes": 88
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r2/runtime.log",
+      "sha256": "4224474b0674544c512981f59943b11756c38104c83834d7c8c85ec5ac393224",
+      "bytes": 140867
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r3/runtime.log",
+      "sha256": "b1d87f4e43269988a2787c8a15215606502ac658c670be9bcc4ec6b6ed09773f",
+      "bytes": 465306
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r4/runtime.log",
+      "sha256": "8fe7a2134bcc5dc7e72cdb9fa1a5df80641eaa38c61bcd61f3fb5c87cebe7bfd",
+      "bytes": 425428
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/maven-clean-verify.log",
+      "sha256": "6091827e1ec739e784dd55256f22f39c503cfb2d7e7586db79b0305ebe7cc85c",
+      "bytes": 4542499
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w4/testcase-count-reconciliation.log",
+      "sha256": "9f1f42b775eb11b513c59d483f5b3ab80edc65c25441f59ed7de68f173c348a5",
+      "bytes": 898
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/00-command.log",
+      "sha256": "4c57de53a649428fd3a0f7c30da5b41f25521aaa8e501506ac4d1a229d9d38a6",
+      "bytes": 29348
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/01-command.log",
+      "sha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d",
+      "bytes": 128
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/02-command.log",
+      "sha256": "6dc5469ab86afde7b3e58edff37fd7bc4d1ec9309be180b1161ba838cad7bbf6",
+      "bytes": 441
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/03-command.log",
+      "sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a",
+      "bytes": 62
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/04-command.log",
+      "sha256": "1bb86fb16aa31b2a8dd64cec30b0d6eb0a9f94e5abc3660ca23488c9d247dee9",
+      "bytes": 13248
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/05-command.log",
+      "sha256": "4817c107a4ccab0c4074cc5c5ec6ee156c7d5cb0deb201bbd49f584200a6e2b0",
+      "bytes": 290
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/06-command.log",
+      "sha256": "7beeed36815f7f4e17d5d217f347fe30ccc50e4eba0d962ca74f9179f2efb3b8",
+      "bytes": 438
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r1/07-command.log",
+      "sha256": "e3354678dbe1f1f52c8c50f49cc070da9f15c229e0627a70e2705c3b6700a6e3",
+      "bytes": 234
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/00-command.log",
+      "sha256": "4c57de53a649428fd3a0f7c30da5b41f25521aaa8e501506ac4d1a229d9d38a6",
+      "bytes": 29348
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/01-command.log",
+      "sha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d",
+      "bytes": 128
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/02-command.log",
+      "sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1",
+      "bytes": 61
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/03-command.log",
+      "sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a",
+      "bytes": 62
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/04-command.log",
+      "sha256": "db5961a75ad7d9386566278d05c34a4a105c31490c61786f96bec56a5aa5a2ea",
+      "bytes": 13179
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/05-command.log",
+      "sha256": "465824143af337daaf9f048269ab6aa1e2c5e432d03654d18bca1a43a272b111",
+      "bytes": 290
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/06-command.log",
+      "sha256": "0e191f47b62e3cd0a913f230f9cb42a6b785bfeabaf14b4472a3b540becaa4d3",
+      "bytes": 438
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r2/07-command.log",
+      "sha256": "e3354678dbe1f1f52c8c50f49cc070da9f15c229e0627a70e2705c3b6700a6e3",
+      "bytes": 234
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/00-command.log",
+      "sha256": "4c57de53a649428fd3a0f7c30da5b41f25521aaa8e501506ac4d1a229d9d38a6",
+      "bytes": 29348
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/01-command.log",
+      "sha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d",
+      "bytes": 128
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/02-command.log",
+      "sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1",
+      "bytes": 61
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/03-command.log",
+      "sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a",
+      "bytes": 62
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/04-command.log",
+      "sha256": "d028979ee3f6fa7190aaf8b08b91b912a579e2b3e6c1b83b46f7ff458d108d49",
+      "bytes": 12993
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/05-command.log",
+      "sha256": "4435dce5f9c1a25fded4cbfcfa0403bbecb74b59bdb1862b01456fda68712c36",
+      "bytes": 290
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/06-command.log",
+      "sha256": "80b37bfc9c29dec416e259fc58c457548c2a07b11a9e58fc66a147b9453274d1",
+      "bytes": 438
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/07-command.log",
+      "sha256": "e3354678dbe1f1f52c8c50f49cc070da9f15c229e0627a70e2705c3b6700a6e3",
+      "bytes": 234
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/slice3-pagination-static-format-check.log",
+      "sha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d",
+      "bytes": 128
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/slice3-pagination-static-lint.log",
+      "sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1",
+      "bytes": 61
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/slice3-pagination-static-typecheck.log",
+      "sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a",
+      "bytes": 62
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/pre-w5-governance/make-governance.log",
+      "sha256": "aeb11cfe5c524918b5b5411630b561259f5b268c9e77506583c4b32feef97228",
+      "bytes": 1040
+    }
+  ],
+  "findings": [],
+  "pass": true
+}
