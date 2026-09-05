@@ -1,0 +1,874 @@
+{
+  "kind": "W7_EXACT_HEAD_SECURITY_READBACK",
+  "generatedAtUTC": "2026-09-05T11:33:26.139315+00:00",
+  "repository": "Corwin-Code/marketops-platform",
+  "pullRequest": 30,
+  "sourceIdentity": {
+    "head": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+    "previousHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "changedPaths": [
+      "frontend/marketops-console/tests/browser/business-journey.spec.ts"
+    ],
+    "comparisonStatus": "ahead",
+    "comparisonTotalCommits": 1,
+    "remoteTreeTruncated": false,
+    "exactUnchangedObjectProof": [
+      {
+        "path": "backend/marketops-server/src",
+        "w6LocalExactGitObject": "2aa432f7c2a2a2d49572901590ba1a28be1e2390",
+        "w7RemoteExactGitObject": "2aa432f7c2a2a2d49572901590ba1a28be1e2390",
+        "unchanged": true
+      },
+      {
+        "path": "frontend/marketops-console/package-lock.json",
+        "w6LocalExactGitObject": "493dd4239383e73416fe230b91a8a0f088cfcc4a",
+        "w7RemoteExactGitObject": "493dd4239383e73416fe230b91a8a0f088cfcc4a",
+        "unchanged": true
+      },
+      {
+        "path": ".github/workflows/security.yml",
+        "w6LocalExactGitObject": "bbc2ccf10f96c382ff1e57f764b8127ca5b8dbe5",
+        "w7RemoteExactGitObject": "bbc2ccf10f96c382ff1e57f764b8127ca5b8dbe5",
+        "unchanged": true
+      }
+    ],
+    "lockSha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4",
+    "mergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+    "mergeParents": [
+      "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "3e4039259c0a56d0f10319cdcae79cab66f81983"
+    ],
+    "mergeTree": "3fbe57fc39f0d4d969e571ea895354e81c4fe1b8",
+    "boundary": "W7 was published from a separate checkout while local W6 full verify continues. No git fetch/checkout performed. Remote API tree and exact compare prove unchanged backend/security/lock; use W6 per-alert engineering review plus independent current W7 scan."
+  },
+  "securityRun": {
+    "id": 33963350077,
+    "run_attempt": 1,
+    "head_sha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-09-05T11:26:42Z",
+    "updated_at": "2026-09-05T11:30:14Z",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350077"
+  },
+  "jobs": [
+    {
+      "id": 101298991105,
+      "name": "dependency-review",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-05T11:26:44Z",
+      "completed_at": "2026-09-05T11:26:53Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350077/job/101298991105"
+    },
+    {
+      "id": 101298991284,
+      "name": "codeql-typescript",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-05T11:26:44Z",
+      "completed_at": "2026-09-05T11:27:47Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350077/job/101298991284"
+    },
+    {
+      "id": 101298991340,
+      "name": "codeql-java",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-05T11:26:45Z",
+      "completed_at": "2026-09-05T11:30:14Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33963350077/job/101298991340"
+    }
+  ],
+  "aggregateCodeQL": {
+    "id": 101299099534,
+    "name": "CodeQL",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-09-05T11:27:39Z",
+    "completed_at": "2026-09-05T11:27:42Z",
+    "output": {
+      "title": "87 new alerts",
+      "summary": "### New alerts in code changed by this pull request\n\n * 11 warnings\n * 76 notes\n\n_Alerts not introduced by this pull request might have been detected because the code changes were too large._\n\nSee annotations below for details.\n\n[View all branch alerts](/Corwin-Code/marketops-platform/security/code-scanning?query=pr%3A30+tool%3ACodeQL+is%3Aopen).",
+      "text": null,
+      "annotations_count": 87,
+      "annotations_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101299099534/annotations"
+    },
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/runs/101299099534"
+  },
+  "analyses": [
+    {
+      "ref": "refs/pull/30/merge",
+      "commit_sha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "analysis_key": ".github/workflows/security.yml:codeql-java",
+      "environment": "{}",
+      "category": "/language:java-kotlin",
+      "error": "",
+      "created_at": "2026-09-05T11:30:04Z",
+      "results_count": 91,
+      "rules_count": 240,
+      "id": 1729143817,
+      "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/code-scanning/analyses/1729143817",
+      "sarif_id": "23624b16-a91d-11f1-9c44-043489fe65dc",
+      "tool": {
+        "name": "CodeQL",
+        "guid": null,
+        "version": "2.26.4"
+      },
+      "deletable": true,
+      "warning": ""
+    },
+    {
+      "ref": "refs/pull/30/merge",
+      "commit_sha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "analysis_key": ".github/workflows/security.yml:codeql-typescript",
+      "environment": "{}",
+      "category": "/language:javascript-typescript",
+      "error": "",
+      "created_at": "2026-09-05T11:27:40Z",
+      "results_count": 1,
+      "rules_count": 201,
+      "id": 1729139824,
+      "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/code-scanning/analyses/1729139824",
+      "sarif_id": "cd201ec2-a91c-11f1-94f8-85a5c9672694",
+      "tool": {
+        "name": "CodeQL",
+        "guid": null,
+        "version": "2.26.4"
+      },
+      "deletable": true,
+      "warning": ""
+    }
+  ],
+  "alertDelta": {
+    "w6OpenCount": 87,
+    "w7OpenCount": 87,
+    "addedNumbers": [],
+    "removedNumbers": [],
+    "fixedOriginal99Numbers": [
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129
+    ],
+    "fixedHighCount": 11,
+    "fixedMediumCount": 1,
+    "currentOpenSecuritySeverityCount": 0,
+    "currentGroups": [
+      {
+        "ruleId": "java/deprecated-call",
+        "securitySeverity": null,
+        "level": "note",
+        "count": 52
+      },
+      {
+        "ruleId": "java/dereferenced-value-may-be-null",
+        "securitySeverity": null,
+        "level": "warning",
+        "count": 7
+      },
+      {
+        "ruleId": "java/internal-representation-exposure",
+        "securitySeverity": null,
+        "level": "note",
+        "count": 1
+      },
+      {
+        "ruleId": "java/local-variable-is-never-read",
+        "securitySeverity": null,
+        "level": "note",
+        "count": 2
+      },
+      {
+        "ruleId": "java/misleading-indentation",
+        "securitySeverity": null,
+        "level": "warning",
+        "count": 3
+      },
+      {
+        "ruleId": "java/missing-case-in-switch",
+        "securitySeverity": null,
+        "level": "warning",
+        "count": 1
+      },
+      {
+        "ruleId": "java/uncaught-number-format-exception",
+        "securitySeverity": null,
+        "level": "note",
+        "count": 1
+      },
+      {
+        "ruleId": "java/unused-parameter",
+        "securitySeverity": null,
+        "level": "note",
+        "count": 20
+      }
+    ],
+    "priorTriageFile": "w6-codeql-99-to-87-delta.json",
+    "perAlertDeltaFile": "w6-w7-alert-delta.json"
+  },
+  "rawSarifResultCount": 92,
+  "rawSarifResults": [
+    {
+      "number": 66,
+      "ruleId": "java/spring-disabled-csrf-protection",
+      "level": "error",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 74,
+      "ruleId": "java/xss",
+      "level": "error",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 75,
+      "ruleId": "java/user-controlled-bypass",
+      "level": "error",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 76,
+      "ruleId": "java/user-controlled-bypass",
+      "level": "error",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 130,
+      "ruleId": "java/local-variable-is-never-read",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 131,
+      "ruleId": "java/local-variable-is-never-read",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 132,
+      "ruleId": "java/uncaught-number-format-exception",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 133,
+      "ruleId": "java/internal-representation-exposure",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 134,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 135,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 136,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 137,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 138,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 139,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 140,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 141,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 142,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 143,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 144,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 145,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 146,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 147,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 148,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 149,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 150,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 151,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 154,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 152,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 153,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 159,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 155,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 162,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 156,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 157,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 158,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 164,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 165,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 166,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 168,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 160,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 161,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 172,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 163,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 173,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 174,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 175,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 176,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 177,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 178,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 179,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 169,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 170,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 171,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 167,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 180,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 181,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 182,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 183,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 184,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 185,
+      "ruleId": "java/deprecated-call",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 186,
+      "ruleId": "java/missing-case-in-switch",
+      "level": "warning",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 187,
+      "ruleId": "java/misleading-indentation",
+      "level": "warning",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 188,
+      "ruleId": "java/misleading-indentation",
+      "level": "warning",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 189,
+      "ruleId": "java/misleading-indentation",
+      "level": "warning",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 190,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "level": "warning",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 191,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "level": "warning",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 192,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "level": "warning",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 193,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "level": "warning",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 194,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "level": "warning",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 195,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "level": "warning",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 196,
+      "ruleId": "java/dereferenced-value-may-be-null",
+      "level": "warning",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 197,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 198,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 199,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 200,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 201,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 202,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 203,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 204,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 205,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 206,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 207,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 208,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 209,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 210,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 211,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 212,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 213,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 214,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 215,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 216,
+      "ruleId": "java/unused-parameter",
+      "level": "note",
+      "file": "java-w7.sarif.json"
+    },
+    {
+      "number": 73,
+      "ruleId": "js/empty-password-in-configuration-file",
+      "level": "warning",
+      "file": "typescript-w7.sarif.json"
+    }
+  ],
+  "historicalDismissedSecurity": [
+    {
+      "number": 66,
+      "state": "dismissed",
+      "dismissed_at": "2026-08-28T02:58:13Z",
+      "dismissed_reason": "false positive",
+      "dismissed_comment": "False positive. This API is bearer-only and STATELESS: cookies, query/form tokens and servlet sessions cannot authenticate; no auth cookie/session is issued; hostile-Origin mutation is refused. Reassess if ambient auth or CORS/Origin rules change."
+    },
+    {
+      "number": 73,
+      "state": "dismissed",
+      "dismissed_at": "2026-08-28T03:00:13Z",
+      "dismissed_reason": "false positive",
+      "dismissed_comment": "False positive. Production disables in-app Flyway; this empty value only clears the inherited migration-secret placeholder. The server gets only the app-role secret; a separate migration runner uses its own credential. Reassess if that boundary changes."
+    },
+    {
+      "number": 74,
+      "state": "dismissed",
+      "dismissed_at": "2026-08-28T03:00:47Z",
+      "dismissed_reason": "false positive",
+      "dismissed_comment": "False positive. The sink is Apache HttpUriRequestBase.setEntity for an outbound provider request, not browser output. Exact bytes are required; HTTPS, destination, DNS, redirect, header and size controls remain enforced. Reassess if bytes are rendered to users."
+    },
+    {
+      "number": 75,
+      "state": "dismissed",
+      "dismissed_at": "2026-08-28T03:02:16Z",
+      "dismissed_reason": "false positive",
+      "dismissed_comment": "False positive. The part-number branch denies invalid input and returns no data. Successful reads require stored ownership/live scope, DB authorization before I/O, and DB reauthorization after I/O. Reassess if the guard or authorization sequence changes."
+    },
+    {
+      "number": 76,
+      "state": "dismissed",
+      "dismissed_at": "2026-08-28T03:02:48Z",
+      "dismissed_reason": "false positive",
+      "dismissed_comment": "False positive. Length/hash mismatch returns no bytes. Success requires pre-I/O DB authorization, exact custody integrity checks, and post-I/O DB reauthorization; mid-read revocation is refused. Reassess if integrity or authorization order changes."
+    }
+  ],
+  "dependencyGraphComparison": [
+    {
+      "change_type": "removed",
+      "manifest": "frontend/marketops-console/package-lock.json",
+      "ecosystem": "npm",
+      "name": "fast-uri",
+      "version": "3.1.5",
+      "package_url": "pkg:npm/fast-uri",
+      "license": "BSD-3-Clause",
+      "source_repository_url": "https://github.com/fastify/fast-uri",
+      "scope": "development",
+      "vulnerabilities": [
+        {
+          "severity": "high",
+          "advisory_ghsa_id": "GHSA-jqff-g426-hqxp",
+          "advisory_summary": "fast-uri vulnerable to host confusion via percent-encoded scheme normalization",
+          "advisory_url": "https://github.com/advisories/GHSA-jqff-g426-hqxp"
+        },
+        {
+          "severity": "high",
+          "advisory_ghsa_id": "GHSA-fph4-wmhf-6fwf",
+          "advisory_summary": "fast-uri vulnerable to server-side request forgery via repeated hostname percent-decoding",
+          "advisory_url": "https://github.com/advisories/GHSA-fph4-wmhf-6fwf"
+        },
+        {
+          "severity": "high",
+          "advisory_ghsa_id": "GHSA-f65p-4m7j-42xc",
+          "advisory_summary": "fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization",
+          "advisory_url": "https://github.com/advisories/GHSA-f65p-4m7j-42xc"
+        },
+        {
+          "severity": "high",
+          "advisory_ghsa_id": "GHSA-5jgf-p345-68v8",
+          "advisory_summary": "fast-uri vulnerable to host confusion via skipped IDN canonicalization on scheme-relative references",
+          "advisory_url": "https://github.com/advisories/GHSA-5jgf-p345-68v8"
+        }
+      ]
+    },
+    {
+      "change_type": "added",
+      "manifest": "frontend/marketops-console/package-lock.json",
+      "ecosystem": "npm",
+      "name": "fast-uri",
+      "version": "3.1.6",
+      "package_url": "pkg:npm/fast-uri@3.1.6",
+      "license": "BSD-3-Clause",
+      "source_repository_url": "https://github.com/fastify/fast-uri",
+      "scope": "development",
+      "vulnerabilities": []
+    }
+  ],
+  "defaultMainOpenDependabotCount": 4,
+  "securityArtifacts": {
+    "total_count": 0,
+    "artifacts": []
+  },
+  "assessment": "W7 Security run, all scanner/dependency jobs and independent aggregate CodeQL PASS on the exact tested merge. The twelve repaired CodeQL security alerts remain fixed; the same 87 non-security quality alerts remain, with no new alert. W6 per-alert engineering review is reusable because the entire backend source tree is exact unchanged. Branch fast-uri3.1.6 still removes all four known HIGH advisories; default main retains its four open alerts.",
+  "limits": [
+    "Five unchanged historical HIGH false-positive dismissals remain in raw SARIF and were not changed during R1; raw scans are not described as zero security-rule results.",
+    "Security alone does not prove the full backend/browser/CI suite or confer Controller approval. Parent owns final multi-source acceptance.",
+    "Only read-only GitHub GETs and immutable Git-object reads were used. Local W6 verification checkout, source, dependencies, alerts and workflows were not modified.",
+    "No downloadable Actions artifacts exist for this run; both raw SARIF API responses and the actual full job log are saved directly."
+  ]
+}

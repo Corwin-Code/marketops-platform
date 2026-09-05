@@ -1,0 +1,37 @@
+{
+  "kind": "EXACT_W6_READ_ONLY_ENVIRONMENT_AND_INDEPENDENT_CLONE",
+  "head": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+  "commands": [
+    {
+      "name": "doctor",
+      "command": [
+        "make",
+        "doctor"
+      ],
+      "workingDirectory": "/Users/chzhengx/Code/personal/marketops-platform",
+      "startedAt": "2026-09-05T11:13:40.705337+00:00",
+      "endedAt": "2026-09-05T11:13:41.629844+00:00",
+      "exitCode": 0,
+      "output": "doctor.log",
+      "sha256": "5cd26f315199333354fac55e3696192d083532d35cfafa4c2c5cccf4c32df8d1"
+    },
+    {
+      "name": "fresh-clone-offline",
+      "command": [
+        "bash",
+        "scripts/fresh_clone_check.sh",
+        "--offline"
+      ],
+      "workingDirectory": "/Users/chzhengx/Code/personal/marketops-platform",
+      "startedAt": "2026-09-05T11:13:41.630135+00:00",
+      "endedAt": "2026-09-05T11:14:00.321391+00:00",
+      "exitCode": 0,
+      "output": "fresh-clone-offline.log",
+      "sha256": "82a7c93da2b9f88bd43045eaf84b1c43fe428dc423efc752d631a997ec8f3155"
+    }
+  ],
+  "headAfter": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "statusAfter": "",
+  "boundary": "Doctor only inspects dependencies and busy ports. Existing user containers and ignored configuration untouched. Fresh clone --offline uses --no-local independent Git objects and excludes ignored build/configuration; no shared ports/DB/Provider access. This is not full-mode fresh-clone runtime verification."
+}

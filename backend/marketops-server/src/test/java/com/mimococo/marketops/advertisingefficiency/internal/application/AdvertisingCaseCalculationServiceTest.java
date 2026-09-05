@@ -8,6 +8,7 @@ import com.mimococo.marketops.advertisingefficiency.AdEvidenceState;
 import com.mimococo.marketops.advertisingefficiency.AdvertisingCause;
 import com.mimococo.marketops.advertisingefficiency.AdvertisingLane;
 import com.mimococo.marketops.advertisingefficiency.internal.domain.AdCaseCalculation;
+import com.mimococo.marketops.advertisingefficiency.internal.domain.AdRankFactor;
 import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingEvidenceRepository;
 import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingPolicyRepository;
 import java.math.BigDecimal;
@@ -542,6 +543,44 @@ class AdvertisingCaseCalculationServiceTest {
                 e.economics(),e.variantAvailability(),e.windowStart(),e.asOf(),new AdvertisingEvidenceGatherer.Authorities(
                         Map.of(),Map.of(),Map.of(),false,List.of(),Map.of(),compensation,false,
                         new AdvertisingEvidenceRepository.CriticalSignals(regressed,unknown,new BigDecimal("1000"),null,null,List.of(ID))));
+    }
+
+    private AdRankFactor calculatedAge(Instant origin, Instant asOf) {
+        var e=withCritical(true,false,false);
+        var authority=e.authorities();
+        var evidence=new AdvertisingEvidenceGatherer.Evidence(e.object(),e.affectedSet(),e.configuration(),e.objectFacts(),
+                e.completedSales(),e.retainedSales(),e.variantShares(),e.containment(),e.conversion(),e.allowableCpa(),
+                e.writeQualification(),e.taskQualification(),Optional.of(weights()),e.economics(),e.variantAvailability(),
+                e.windowStart(),asOf,new AdvertisingEvidenceGatherer.Authorities(authority.cpaByVariant(),authority.freshness(),
+                authority.sustainedPeriods(),authority.comparableBaseline(),authority.metricValueIds(),
+                Map.of("__OBJECT_DEPENDENCIES__",new AdvertisingEvidenceRepository.RankContext(origin,null,0,1,0)),
+                authority.compensationPending(),authority.providerIncidentOpen(),authority.criticalSignals(),authority.canonicalCompletedEventCount()));
+        var result=service.calculateFrom(evidence);
+        assertThat(result.cases().getFirst().decision().protectionTier())
+                .isEqualTo(com.mimococo.marketops.advertisingefficiency.ProtectionTier.P1);
+        return result.cases().getFirst().ranking().factors().stream()
+                .filter(factor->factor.code()==AdRankFactor.Code.CASE_AGE)
+                .findFirst().orElseThrow();
+    }
+
+    @Test void aPersistedMicrosecondOriginCannotGiveTheSameCalculationNegativeAge() {
+        assertThat(calculatedAge(AS_OF.plusNanos(123457000),AS_OF.plusNanos(123456789)).value())
+                .isEqualByComparingTo("0");
+    }
+
+    @Test void microsecondRoundingAcrossASecondBoundaryStillRepresentsAgeZero() {
+        assertThat(calculatedAge(AS_OF.plusSeconds(1),AS_OF.plusNanos(999999999)).value())
+                .isEqualByComparingTo("0");
+    }
+
+    @Test void aGenuinelyFutureCaseOriginRemainsUnknownInsteadOfZero() {
+        var factor=calculatedAge(AS_OF.plusNanos(123458000),AS_OF.plusNanos(123456789));
+        assertThat(factor.value()).isNull();
+        assertThat(factor.displayNote()).isEqualTo("PRIORITY_POLICY_UNRESOLVED:CASE_AGE");
+    }
+
+    @Test void anExistingCaseKeepsItsPositiveElapsedAge() {
+        assertThat(calculatedAge(AS_OF.minusSeconds(129600),AS_OF).value()).isEqualByComparingTo("1.5");
     }
     @Test void productionCalculationKeepsCriticalP1EvenWhenOtherEvidenceIsMissing() {
         var result=service.calculateFrom(withCritical(true,true,false));

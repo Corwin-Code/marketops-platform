@@ -1,0 +1,43 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from migration.Dockerfile
+#1 transferring dockerfile: 976B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/eclipse-temurin:21-jre-noble@sha256:96975602e131485862eb8cd32927face8a06d7591a5e865944b634a701d9df72
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 480B done
+#4 DONE 0.0s
+
+#5 [1/6] FROM docker.io/library/eclipse-temurin:21-jre-noble@sha256:96975602e131485862eb8cd32927face8a06d7591a5e865944b634a701d9df72
+#5 resolve docker.io/library/eclipse-temurin:21-jre-noble@sha256:96975602e131485862eb8cd32927face8a06d7591a5e865944b634a701d9df72 0.0s done
+#5 DONE 0.0s
+
+#6 [2/6] WORKDIR /opt/marketops
+#6 CACHED
+
+#7 [3/6] COPY --chown=10001:10001 --chmod=0444 backend/marketops-server/target/marketops-server-*.jar /opt/marketops/app.jar
+#7 CACHED
+
+#8 [4/6] RUN test "$(sha256sum /opt/marketops/app.jar | cut -d ' ' -f1)" = "0000000000000000000000000000000000000000000000000000000000000000"
+#8 ERROR: process "/bin/sh -c test \"$(sha256sum /opt/marketops/app.jar | cut -d ' ' -f1)\" = \"$ARTIFACT_SHA256\"" did not complete successfully: exit code: 1
+------
+ > [4/6] RUN test "$(sha256sum /opt/marketops/app.jar | cut -d ' ' -f1)" = "0000000000000000000000000000000000000000000000000000000000000000":
+------
+migration.Dockerfile:5
+--------------------
+   3 |     COPY --chown=10001:10001 --chmod=0444 backend/marketops-server/target/marketops-server-*.jar /opt/marketops/app.jar
+   4 |     ARG ARTIFACT_SHA256
+   5 | >>> RUN test "$(sha256sum /opt/marketops/app.jar | cut -d ' ' -f1)" = "$ARTIFACT_SHA256"
+   6 |     LABEL org.marketops.artifact-sha256=$ARTIFACT_SHA256
+   7 |     COPY --chown=10001:10001 --chmod=0444 infra/yandex/runtime/certs/yandex-root.crt /opt/marketops/certs/yandex-root.crt
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c test \"$(sha256sum /opt/marketops/app.jar | cut -d ' ' -f1)\" = \"$ARTIFACT_SHA256\"" did not complete successfully: exit code: 1
+
+View build details: docker-desktop://dashboard/build/default/default/mwb3ywuf8u59prnq9xc1nb5fj

@@ -1,0 +1,294 @@
+[
+  {
+    "id": 101297026242,
+    "run_id": 33962619043,
+    "workflow_name": "Backend",
+    "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/runs/33962619043",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTwsbvM8AAAAXlcX0wg",
+    "head_sha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/jobs/101297026242",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619043/job/101297026242",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-09-05T11:10:35Z",
+    "started_at": "2026-09-05T11:10:37Z",
+    "completed_at": null,
+    "name": "backend-build",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T11:10:38Z",
+        "completed_at": "2026-09-05T11:10:39Z"
+      },
+      {
+        "name": "Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T11:10:39Z",
+        "completed_at": "2026-09-05T11:10:42Z"
+      },
+      {
+        "name": "Set up Java",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T11:10:42Z",
+        "completed_at": "2026-09-05T11:10:44Z"
+      },
+      {
+        "name": "Record host and Docker resource limits",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-09-05T11:10:44Z",
+        "completed_at": "2026-09-05T11:10:44Z"
+      },
+      {
+        "name": "Run full backend verification and the combined coverage gate",
+        "status": "in_progress",
+        "conclusion": null,
+        "number": 5,
+        "started_at": "2026-09-05T11:10:44Z",
+        "completed_at": null
+      },
+      {
+        "name": "Prove the backend coverage gate rejects an unmet threshold",
+        "status": "pending",
+        "conclusion": null,
+        "number": 6,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Verify packaged migration resolver and isolated runtime artifacts",
+        "status": "pending",
+        "conclusion": null,
+        "number": 7,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Publish the dependency inventory and the software bill of materials",
+        "status": "pending",
+        "conclusion": null,
+        "number": 8,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Publish the test reports",
+        "status": "pending",
+        "conclusion": null,
+        "number": 9,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Post Set up Java",
+        "status": "pending",
+        "conclusion": null,
+        "number": 17,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Post Checkout repository",
+        "status": "pending",
+        "conclusion": null,
+        "number": 18,
+        "started_at": null,
+        "completed_at": null
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101297026242",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000001047,
+    "runner_name": "GitHub Actions 1000001047",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  {
+    "id": 101297026384,
+    "run_id": 33962619043,
+    "workflow_name": "Backend",
+    "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/runs/33962619043",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTwsbvM8AAAAXlcX1UA",
+    "head_sha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/jobs/101297026384",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619043/job/101297026384",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-09-05T11:10:35Z",
+    "started_at": "2026-09-05T11:10:37Z",
+    "completed_at": null,
+    "name": "backend-integration",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T11:10:38Z",
+        "completed_at": "2026-09-05T11:10:39Z"
+      },
+      {
+        "name": "Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T11:10:39Z",
+        "completed_at": "2026-09-05T11:10:42Z"
+      },
+      {
+        "name": "Set up Java",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T11:10:42Z",
+        "completed_at": "2026-09-05T11:10:44Z"
+      },
+      {
+        "name": "Record host and Docker resource limits",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-09-05T11:10:44Z",
+        "completed_at": "2026-09-05T11:10:45Z"
+      },
+      {
+        "name": "Run the database and application integration tests",
+        "status": "in_progress",
+        "conclusion": null,
+        "number": 5,
+        "started_at": "2026-09-05T11:10:45Z",
+        "completed_at": null
+      },
+      {
+        "name": "Publish the integration test reports",
+        "status": "pending",
+        "conclusion": null,
+        "number": 6,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Post Set up Java",
+        "status": "pending",
+        "conclusion": null,
+        "number": 11,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Post Checkout repository",
+        "status": "pending",
+        "conclusion": null,
+        "number": 12,
+        "started_at": null,
+        "completed_at": null
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101297026384",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000001050,
+    "runner_name": "GitHub Actions 1000001050",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  {
+    "id": 101297026387,
+    "run_id": 33962619043,
+    "workflow_name": "Backend",
+    "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/runs/33962619043",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTwsbvM8AAAAXlcX1Uw",
+    "head_sha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/jobs/101297026387",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619043/job/101297026387",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-09-05T11:10:35Z",
+    "started_at": "2026-09-05T11:10:37Z",
+    "completed_at": "2026-09-05T11:11:26Z",
+    "name": "architecture-boundary",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T11:10:38Z",
+        "completed_at": "2026-09-05T11:10:40Z"
+      },
+      {
+        "name": "Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T11:10:40Z",
+        "completed_at": "2026-09-05T11:10:44Z"
+      },
+      {
+        "name": "Set up Java",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T11:10:44Z",
+        "completed_at": "2026-09-05T11:10:48Z"
+      },
+      {
+        "name": "Run the boundary rules, their fixtures and the module verification",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-09-05T11:10:48Z",
+        "completed_at": "2026-09-05T11:11:24Z"
+      },
+      {
+        "name": "Post Set up Java",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-09-05T11:11:24Z",
+        "completed_at": "2026-09-05T11:11:24Z"
+      },
+      {
+        "name": "Post Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-09-05T11:11:24Z",
+        "completed_at": "2026-09-05T11:11:24Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-09-05T11:11:24Z",
+        "completed_at": "2026-09-05T11:11:24Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101297026387",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000001049,
+    "runner_name": "GitHub Actions 1000001049",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  }
+]

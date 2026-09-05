@@ -225,6 +225,38 @@
       "startedAtUTC": "2026-09-05T10:42:33.942996+00:00",
       "finishedAtUTC": "2026-09-05T10:45:33.403956+00:00",
       "logSha256": "2c68f2aec3656c444f85aba92a695837a79f33b4d99b111d0a3dd424bd6d8c00"
+    },
+    {
+      "run": "r24",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/receipt.json",
+      "receiptSha256": "58b9cd02f4e48cceedfda3994b5b7ee3f6bf46f73a008baf4c2f2df52ad1139e",
+      "counts": {
+        "tests": 130,
+        "failures": 1,
+        "errors": 2,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": false,
+      "startedAtUTC": "2026-09-05T12:24:50.935811+00:00",
+      "finishedAtUTC": "2026-09-05T12:32:40.085682+00:00",
+      "logSha256": "4d7dbbee52d2a8fe6b948b173811d4bb665958e599502ee49458baf68264ae76"
+    },
+    {
+      "run": "r25",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+      "receiptSha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+      "counts": {
+        "tests": 72,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sourceStable": true,
+      "pass": true,
+      "startedAtUTC": "2026-09-05T12:42:37.294063+00:00",
+      "finishedAtUTC": "2026-09-05T12:50:12.037347+00:00",
+      "logSha256": "ad22dd8a992c14b45fb930a8fb75887a18c9f2a5a6d156d6ef6bc536bd27351c"
     }
   ]
 }

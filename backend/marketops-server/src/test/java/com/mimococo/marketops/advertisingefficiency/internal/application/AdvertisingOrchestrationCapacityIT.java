@@ -3,6 +3,8 @@ package com.mimococo.marketops.advertisingefficiency.internal.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import com.mimococo.marketops.AdvertisingR1Fixture;
 import com.mimococo.marketops.TestDatabase;
+import com.mimococo.marketops.advertisingefficiency.internal.domain.AdRankFactor;
+import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingEvidenceRepository;
 import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingRecalculationRepository;
 import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingTraceRepository;
 import com.mimococo.marketops.operationsworkflow.AdvertisingDecisionAuthority;
@@ -38,6 +40,7 @@ class AdvertisingOrchestrationCapacityIT {
     @Autowired AdvertisingTraceRepository trace;
     @Autowired AdvertisingBriefService briefs;
     @Autowired AdvertisingDecisionAuthority decisions;
+    @Autowired AdvertisingEvidenceRepository facts;
     @Autowired ObjectMapper mapper;
     @DynamicPropertySource static void properties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url",DATABASE::getJdbcUrl);
@@ -136,7 +139,9 @@ class AdvertisingOrchestrationCapacityIT {
 
     @Test void replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach() throws Exception {
         var graph=AdvertisingR1Fixture.seedManual(migration());var seed=JdbcClient.create(migration());UUID org=graph.id("organization"),object=graph.id("object");
-        Instant now=Instant.now();
+        // These timestamps are persisted and compared exactly; use the database's
+        // actual precision instead of platform-dependent Instant.now() nanoseconds.
+        Instant now=seed.sql("SELECT clock_timestamp() AS at").query(Timestamp.class).single().toInstant();
         var first=queue.claim("interrupted-worker",now.minusSeconds(1),10000,now).stream().filter(r->r.organizationId().equals(org)).findFirst().orElseThrow();
         var second=queue.claim("replacement-worker",now.plusSeconds(300),10000,now.plusSeconds(1)).stream().filter(r->r.organizationId().equals(org)).findFirst().orElseThrow();
         Instant newer=now.plusSeconds(2);
@@ -157,10 +162,28 @@ class AdvertisingOrchestrationCapacityIT {
 
     @Test void sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization() throws Exception {
         var graph=AdvertisingR1Fixture.seedManual(migration());var other=AdvertisingR1Fixture.seedManual(migration());var seed=JdbcClient.create(migration());
-        Instant at=Instant.now();
+        // Force round-up on every platform: .123456789 becomes .123457 in PG.
+        // Keep the full calculation equality oracle; do not round its result away.
+        Instant at=Instant.now().plusSeconds(1).truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
+                .plusNanos(123456789);
         var targetedResult=refresh.refresh(graph.id("organization"),graph.id("object"),at,"TARGETED",null,"oracle-targeted").orElseThrow();
+        var projectedCaseIds=targetedResult.written().cases().stream().map(row->row.caseId()).toList();
+        assertThat(projectedCaseIds).isNotEmpty().doesNotContain(graph.id("caseId"));
+        // The fixture also carries an earlier, unrelated synthetic Case key.
+        // Only the Cases actually produced by this calculation are this oracle.
+        var persistedOrigins=seed.sql("SELECT created_at FROM mart.ad_case WHERE id IN (:ids)")
+                .param("ids",projectedCaseIds).query(Timestamp.class).list();
+        assertThat(persistedOrigins).hasSize(projectedCaseIds.size()).allSatisfy(origin->
+                assertThat(origin.toInstant()).isEqualTo(at.truncatedTo(java.time.temporal.ChronoUnit.MICROS).plusNanos(1000)).isAfter(at));
         var sweepResult=refresh.refresh(graph.id("organization"),graph.id("object"),at,"RECONCILIATION",null,"oracle-sweep").orElseThrow();
         assertThat(sweepResult.calculation()).isEqualTo(targetedResult.calculation());
+        var ages=sweepResult.calculation().cases().stream().flatMap(row->row.ranking().factors().stream())
+                .filter(factor->factor.code()==AdRankFactor.Code.CASE_AGE).toList();
+        assertThat(ages).isNotEmpty().allSatisfy(factor->assertThat(factor.value()).isEqualByComparingTo("0"));
+        // A truly earlier read must still exclude these future Case origins.
+        assertThat(facts.rankContexts(graph.id("organization"),graph.id("object"),at.minusSeconds(1)).values())
+                .isNotEmpty().extracting(AdvertisingEvidenceRepository.RankContext::caseId)
+                .doesNotContainAnyElementsOf(projectedCaseIds);
         assertThat(sweepResult.written().cases().stream().map(row->row.caseId()).toList()).containsExactlyElementsOf(targetedResult.written().cases().stream().map(row->row.caseId()).toList());
         seed.sql("UPDATE ops.ad_recalculation_request SET state='COMPLETED',completed_at=now(),lease_owner=NULL,leased_until=NULL WHERE organization_id IN(:first,:other)")
                 .param("first",graph.id("organization")).param("other",other.id("organization")).update();

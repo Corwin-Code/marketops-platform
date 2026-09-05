@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "gh",
+    "run",
+    "view",
+    "33963350093",
+    "--repo",
+    "Corwin-Code/marketops-platform",
+    "--job",
+    "101299023501",
+    "--log"
+  ],
+  "safeEnvironmentOverride": {
+    "XDG_CACHE_HOME": "/tmp/slice3-w7-backend-failure-review/gh-cache"
+  },
+  "startedAtUTC": "2026-09-05T12:09:07.434167+00:00",
+  "finishedAtUTC": "2026-09-05T12:09:12.252550+00:00",
+  "exitCode": 0
+}

@@ -1,0 +1,514 @@
+{
+  "kind": "PUBLISHABLE_EVIDENCE_SECRET_SHAPE_SCAN",
+  "utc": "2026-09-05T12:54:44.809923+00:00",
+  "basis": "Repository SECRET_PATTERNS plus JWT shape; all text and ZIP/TAR/GZIP archive members in explicit input paths, no matched values printed",
+  "inputPaths": [
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/nanosecond-same-class-review",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f013-raw-dedup",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/reconciliation-duration-repair",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/frozen-22-clause-review",
+    "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/prepared-assessment-union-w8"
+  ],
+  "files": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/analysis.json",
+      "sha256": "245ab9d7ea2156e0458d771ff047940bc6423a44d4750206f9642f48c49bc5b0",
+      "bytes": 8469
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/artifacts-index.json",
+      "sha256": "0b0e5edc7b1a3d6c519e5092b41555c12f6ee567301bbe1233473ba978e0deb2",
+      "bytes": 1871
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/artifacts-index.request.json",
+      "sha256": "40c94170c117c816d04822a967f8355648d1d54ccb6e55d379848a975c44ae46",
+      "bytes": 353
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/artifacts-index.response.txt",
+      "sha256": "17fef5252e6d09f6bb9f68be90251a3e4cefc61ff7ca4c55ce81227b9506afd5",
+      "bytes": 2927
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/artifacts-index.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/backend-build.log",
+      "sha256": "8a497478447a3f64cb2de1dd4d5884fe0e4a1369edc9767db9bbd0046eff8656",
+      "bytes": 5565339
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/backend-build.request.json",
+      "sha256": "0208fb68d8286044a74bf83270fd1fa77c218ee451ab2f86ba784c744064adff",
+      "bytes": 402
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/backend-build.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/backend-integration.log",
+      "sha256": "748370ddf23b55f814e85b7f627a5c5dc7979980da1b86b96e481898a69dc746",
+      "bytes": 5605462
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/backend-integration.request.json",
+      "sha256": "7c6cb18a317bb636c52782276d751b753187379b322fc5451aef5a140422f4d8",
+      "bytes": 402
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/backend-integration.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/build-analysis.py",
+      "sha256": "cf778c4bbedc1bc42f1349615411e0117d8589c7c9d32c1c8ce0222b43fbf3c5",
+      "bytes": 10633
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/capacity-same-asof-exact-differences.json",
+      "sha256": "c942fcda7e78d6719db73ce2a6999387be5672403afac9741039b47989636317",
+      "bytes": 1051
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/capture-api.py",
+      "sha256": "5bbb959c55f83214274615ebf1bdbd83af0981ac01426764c93be0b17fd31295",
+      "bytes": 961
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/independent-price-isolation-review.json",
+      "sha256": "1b1ef9da794b40d2f16584f57aaa75b365b65ced049d80a18f915bad39c005af",
+      "bytes": 4140
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/job-build101299023501.json",
+      "sha256": "f925c4593191eaf2827fb46e820a727e1fa90a1f764ee61efe466836a5ff9ca4",
+      "bytes": 3872
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/job-build101299023501.request.json",
+      "sha256": "6fcd90599cb1eea66e40697e471658713621bb78acb11d1dd79a1fdfc8f686c7",
+      "bytes": 331
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/job-build101299023501.response.txt",
+      "sha256": "3c8bad2628369af6b08ceb6138cdb31ec94d5653300ddf51dfc9c499e7c1606d",
+      "bytes": 4465
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/job-build101299023501.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/job-integration101299023481.json",
+      "sha256": "386aaffb5406fdc9fae6c169516c7d40af362f084c6e20dfc396cd997ec82a8f",
+      "bytes": 3093
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/job-integration101299023481.request.json",
+      "sha256": "10e67cd0e0e73ba82c5f725def7c2e8fe2543167dbb8c3f92cf4c6eecc5c4478",
+      "bytes": 331
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/job-integration101299023481.response.txt",
+      "sha256": "5c83940f9b68a1333dd291b4b1e10e8fcae6c9ebb2579156f4f9d74b413d0d0d",
+      "bytes": 3861
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/job-integration101299023481.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/manifest.json",
+      "sha256": "f7cb99a9bb57239cbe6bcae208c07d2b69ea62db8a4f48b97ea8d7d53c29bb70",
+      "bytes": 8647
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-report-manifest.json",
+      "sha256": "16b37af294cc249a04a3d2b954377f0d49263d2448f0e8fbf973abe7c9fac6f7",
+      "bytes": 9621
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-build/TEST-com.mimococo.marketops.PriceCommandWorkerIT.failures.json",
+      "sha256": "c6973837e7db6df6be54841aa68d080afc42b4d2dd4a58c8a9b3d0591216857c",
+      "bytes": 2432
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-build/TEST-com.mimococo.marketops.PriceCommandWorkerIT.xml",
+      "sha256": "edc6ff3fd77518a2ae2dce4f588cc3931364e4927fefae25bd22cc8d661051e3",
+      "bytes": 47871
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-build/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.failures.json",
+      "sha256": "e63a321c37f8e16a12280f75df392e13e101d8683420de6cbc91eec2c2f0fa8d",
+      "bytes": 792
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-build/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+      "sha256": "fd52540302bf12d7053923f2a0b63c73b7b9b50452bfe69e7dc9585568a69445",
+      "bytes": 40572
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-build/advertising-capacity-dataset.json",
+      "sha256": "753627a42a1311d11f4422705e5bdf70416d6f306f23e48281b5d4a775f3c6dc",
+      "bytes": 4077576
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-build/advertising-capacity-receipt.json",
+      "sha256": "1f62aa2c493acf5d34f17ab6eaac04aa2d7228f20e650564b9ec0f0dc6bec372",
+      "bytes": 2851
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-build/advertising-capacity-source-inputs.json",
+      "sha256": "8688a5816158ad27664a3a4f24e8e61d5632a7d3fa88762c809afd2a4d0c8dd5",
+      "bytes": 199640
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-build/com.mimococo.marketops.PriceCommandWorkerIT.txt",
+      "sha256": "ea92edc56f573e78a69ceaf5277ecb6d8e9cd758175a88b7676528f5bc84409f",
+      "bytes": 2547
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-build/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.txt",
+      "sha256": "e6079e7d4b57f3db8bd341277c653706c755dee9a2cca230d85ea25fdce7a6ce",
+      "bytes": 999
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-integration/TEST-com.mimococo.marketops.PriceCommandWorkerIT.failures.json",
+      "sha256": "c6973837e7db6df6be54841aa68d080afc42b4d2dd4a58c8a9b3d0591216857c",
+      "bytes": 2432
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-integration/TEST-com.mimococo.marketops.PriceCommandWorkerIT.xml",
+      "sha256": "db2826b71823b886dc112036fafadebab2e239fec2865bb1e1db876db1dca84b",
+      "bytes": 47777
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-integration/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.failures.json",
+      "sha256": "af992a675f3e1ad49410d4a416deaf8e0de6b1c78a4f42fc034c05d6dc922029",
+      "bytes": 71595
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-integration/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+      "sha256": "01a1803b5d8c89832d35629948bad92d071f4bccf218c256076cbf80e302280c",
+      "bytes": 110995
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-integration/advertising-capacity-dataset.json",
+      "sha256": "2727c720b1b475e53c49587312860b78346e16aac04a566e9dc321f2e4318f39",
+      "bytes": 4077576
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-integration/advertising-capacity-receipt.json",
+      "sha256": "c819147ef01a4c14ee716b32d9ba3fbecfd076308fb2b206edf0af1e999d2aea",
+      "bytes": 2864
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-integration/advertising-capacity-source-inputs.json",
+      "sha256": "c592d2bbe2a4d76b1913bcd71163b5ec149b6ffe8aacf59a36fbb99e01a06213",
+      "bytes": 199640
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-integration/com.mimococo.marketops.PriceCommandWorkerIT.txt",
+      "sha256": "a5a3a2050c64c0b9bfb3e1134efde543bfe7833ac9b6f5e17d47a097fe98b080",
+      "bytes": 2547
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/original-reports/backend-integration/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.txt",
+      "sha256": "1c3fb0342cdb9720587fd541a9d6dfec4bc6c8e85c5ca9036fd8e1149c13e9f8",
+      "bytes": 36560
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/prepared-four-file-repair.patch",
+      "sha256": "06e16b6aa7d7b625c70a3f09df0b9d5585faea0e31fefea1d77bb761b7042556",
+      "bytes": 14834
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/publishability-scan.json",
+      "sha256": "a8e5a6806c47f4d634109fc0ead25d7b8f4040821882b15d8d75526a4410280d",
+      "bytes": 303
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/run33963350093.json",
+      "sha256": "8ee995439f9fe16fc2773ff474ba4c181ca0c3972307555da5e1fd47202a22bd",
+      "bytes": 15232
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/run33963350093.request.json",
+      "sha256": "ff6653995513db8502784d0fc21f23516699a19c6ff3a60451d87081702c729e",
+      "bytes": 331
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/run33963350093.response.txt",
+      "sha256": "115fa744aa416535ff6f712f610a834863747b7a824b49386ddf19291b827832",
+      "bytes": 15080
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/run33963350093.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/source-repair-hashes.json",
+      "sha256": "2cf40c73a5fea000f77e1f71306748e754acf511cddb7fa64668c07b861f55c6",
+      "bytes": 659
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/capacity/advertising-capacity-dataset.json",
+      "sha256": "1d68f682702f357e7a3807f9dde31ed782c788c7e4849fc5473deeaa8b6cf81f",
+      "bytes": 4077576
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/capacity/advertising-capacity-receipt.json",
+      "sha256": "0b9775e44e862e6f1f27b4cdf7b171aa3b32a42f118951e0aa2a0ad5e5580780",
+      "bytes": 2704
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/capacity/advertising-capacity-source-inputs.json",
+      "sha256": "cdf2fc8ec965543c3a4511cdcab0f2018deaa929be397cdd48b697ba75689014",
+      "bytes": 199640
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/collector.py",
+      "sha256": "86e365b6f96f679988e9ad503c61ed01a5ae13edbdf7e7de866f4d642ac3a95a",
+      "bytes": 4551
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/maven.log",
+      "sha256": "4d7dbbee52d2a8fe6b948b173811d4bb665958e599502ee49458baf68264ae76",
+      "bytes": 53578
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/receipt.json",
+      "sha256": "58b9cd02f4e48cceedfda3994b5b7ee3f6bf46f73a008baf4c2f2df52ad1139e",
+      "bytes": 9071
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/reports/TEST-com.mimococo.marketops.AdvertisingReservationIT.xml",
+      "sha256": "dfd1d93dc325031210488f40e904b3a20af523a57571e2f3e84dcfe3c4a261b9",
+      "bytes": 66072
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/reports/TEST-com.mimococo.marketops.PriceCommandWorkerIT.xml",
+      "sha256": "49cd27deeeef441ec468a86e437842cf61fe00beeb5eaa1a20ec508837750407",
+      "bytes": 48286
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest.xml",
+      "sha256": "7a32197a4bcd1f767c0bd8762d9f3778c6ad3fb7ea9c29a9614cc14d34717758",
+      "bytes": 44387
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT.xml",
+      "sha256": "82aa5e9359b091f84b8aa836e47d586c6d9078cdc86bb0cf8288bcff44c4ba7f",
+      "bytes": 44798
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+      "sha256": "251930340a24007901831ac8bbe7f976d0227694c7c99d366392d5db07d2c8a5",
+      "bytes": 41928
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityLexicographicTest.xml",
+      "sha256": "6c19420d99c88452f16df62d066e2fddf5e21f41eccb6bc19db59fca89a73d32",
+      "bytes": 40759
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/runtime-resources.json",
+      "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4",
+      "bytes": 591
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/source-after.json",
+      "sha256": "e4c237c9106b1b3f1ba9b3ca6f17ca4d87ce46a9d48d08219081b85689c4db12",
+      "bytes": 198505
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/source-before.json",
+      "sha256": "e4c237c9106b1b3f1ba9b3ca6f17ca4d87ce46a9d48d08219081b85689c4db12",
+      "bytes": 198505
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/capacity/advertising-capacity-dataset.json",
+      "sha256": "2783396a367b24b648725f42228cb02456d6d38a72ec96f7261a2d77ac4973aa",
+      "bytes": 4077576
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/capacity/advertising-capacity-receipt.json",
+      "sha256": "fb9b11588d09eadf32128d4b9c2192977d030654b34fc69364649e1d5a451b43",
+      "bytes": 2764
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/capacity/advertising-capacity-source-inputs.json",
+      "sha256": "5b4898fccafe074f317a5bd61ddde25551b9cec46ebe722f03160ad9110d4247",
+      "bytes": 199860
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/collector.py",
+      "sha256": "cfdecd1cf37eeb4f6c82ebe854b647d0fa6efc76e0d6f40b7170beb6e662b27b",
+      "bytes": 4733
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/maven.log",
+      "sha256": "ad22dd8a992c14b45fb930a8fb75887a18c9f2a5a6d156d6ef6bc536bd27351c",
+      "bytes": 56579
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+      "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c",
+      "bytes": 9873
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+      "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3",
+      "bytes": 63987
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingReservationIT.xml",
+      "sha256": "6f1bf6bcd207caffd965f093b6e70c65d92c36d3baa97d94dab2df240af1a714",
+      "bytes": 59813
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+      "sha256": "b9844fdb3f8b095bbae468ab530694560d251cf7ada43d6d70db082dd6ea7f49",
+      "bytes": 41368
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest.xml",
+      "sha256": "7196ad541e0f9ada0394b6939aa283dbcd669e97c01ade46db798b52f260e6ac",
+      "bytes": 39746
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.operationsworkflow.internal.domain.StaffedResponseClockTest.xml",
+      "sha256": "97105c53f0a26cf1d4b87f9230472e573065fb36888350318e1b59006306b7d8",
+      "bytes": 39993
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+      "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4",
+      "bytes": 591
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-after.json",
+      "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "bytes": 198724
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+      "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+      "bytes": 198724
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/nanosecond-same-class-review/manifest.json",
+      "sha256": "a2adab5018b8e5d7d5b92d1ff35cec26ab6bdd2bb2432a65b692149ecb20f137",
+      "bytes": 590
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/nanosecond-same-class-review/query-1.json",
+      "sha256": "63184b4ac15cb6a91a1448f28b951947aa439d5e5dd0d4d9f97bfd5b516c65c5",
+      "bytes": 339
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/nanosecond-same-class-review/query-1.txt",
+      "sha256": "8212719b3fce42c19ab8c8f838489d424a3c8fa480b3bf101663881e4f4bd25c",
+      "bytes": 4349
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/nanosecond-same-class-review/query-2.json",
+      "sha256": "a569058a02b3a37239d4f3074d6e4f35c385f0f20cda017012f208b2686de631",
+      "bytes": 3168
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/nanosecond-same-class-review/query-2.txt",
+      "sha256": "a7591c3645670d29b2e52fabd8896bcc496320b7ac99afa63ce39055640dd13d",
+      "bytes": 20780
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/nanosecond-same-class-review/review.json",
+      "sha256": "0734caca395943defe664d485e23f2c0caed0eedea0e692905583896377c268e",
+      "bytes": 10208
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f013-raw-dedup/AdvertisingReservationIT.java",
+      "sha256": "07bc7b9df95537bb09d6feae44716103f889f644152124a3372414a783221df3",
+      "bytes": 47982
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f013-raw-dedup/patch.diff",
+      "sha256": "35fd63d33cad8bd7415d94c65c12a5014fd8a91856aea57a5ce4d5428859cd13",
+      "bytes": 2711
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f013-raw-dedup/review.json",
+      "sha256": "90500cb313eea9f5ca56af92a82f8e354552c5ad29f6d9135b23355d48d3274f",
+      "bytes": 784
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/reconciliation-duration-repair/receipt.json",
+      "sha256": "dd7946f33c8de68a0de0b83dff60fd6a49b25993c6b2d8cc365191da5b40d57a",
+      "bytes": 2658
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/reconciliation-duration-repair/repair.patch",
+      "sha256": "ecde13cecfc7f4a613aaa32df7df2a276be4466df5a32582bc64dcccc3278f71",
+      "bytes": 8047
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/reconciliation-duration-repair/worker.before.java",
+      "sha256": "1e01dfc83ee8dcf7dd02ce0129fc09233c072cad950e0984237201b061652e41",
+      "bytes": 8970
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/frozen-22-clause-review/README.md",
+      "sha256": "ca05956e75981867850595032a2f141defb669daf7944f27c0f076ba4ba21291",
+      "bytes": 1568
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/frozen-22-clause-review/browser-evidence.json",
+      "sha256": "a4fa219c8db38499c3bb157abed5dd4f244aa59262fedc19c0c28bc9301706a9",
+      "bytes": 54133
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/frozen-22-clause-review/manifest.json",
+      "sha256": "e30e5f734b3871b1ae17a2fe1cc96649bf9f3d34a134d6da22773acdc2116cd1",
+      "bytes": 954
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/frozen-22-clause-review/named-proof-catalog.json",
+      "sha256": "299c6507f2a1d334d1732e25397183f2d16f44bc246fb50cd0e0b11375225b9a",
+      "bytes": 308476
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/frozen-22-clause-review/review.json",
+      "sha256": "dac7e4d844add31fe3a8f620d986af41e68c42345ad2ef4df69221a4e4876c1d",
+      "bytes": 711094
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/prepared-assessment-union-w8/collector.py",
+      "sha256": "baabdb7f8bfd878788cfa6b978f35bea749b4267c188a9025f98e4656fb6d4b1",
+      "bytes": 4190
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/prepared-assessment-union-w8/per-criterion-reviewed-contributions.json",
+      "sha256": "ad8457cd9d7b9f1ca44d80721c9481d133dddc5c262e102dfe3972d5a53e6892",
+      "bytes": 486311
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/prepared-assessment-union-w8/receipt.json",
+      "sha256": "4414b1fb122c8a1755bf207d158b5779dad6a76c0d3c9cb42c4388c9aa7a3fa6",
+      "bytes": 288
+    }
+  ],
+  "findings": [],
+  "pass": true
+}

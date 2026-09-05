@@ -633,9 +633,7 @@ class AdvertisingCaseCalculationService {
                 : AdMeasure.notAvailable(AdEvidenceState.NOT_AVAILABLE);
         var rankContext = evidence.authorities().rankContexts().getOrDefault(identity.caseKey(),
                 evidence.authorities().rankContexts().get("__OBJECT_DEPENDENCIES__"));
-        BigDecimal ageDays = rankContext == null ? BigDecimal.ZERO : BigDecimal.valueOf(
-                Duration.between(rankContext.firstRaisedAt(), evidence.asOf()).toSeconds())
-                .divide(BigDecimal.valueOf(86400), CONTEXT);
+        BigDecimal ageDays = caseAgeDays(rankContext, evidence.asOf());
         BigDecimal maturity = evidence.objectFacts().filter(facts -> facts.everyWindowComplete()
                         && !facts.anyCorrectionWindowOpen())
                 .map(AdvertisingEvidenceRepository.ObjectFactAggregate::coverageRatio).orElse(null);
@@ -667,6 +665,24 @@ class AdvertisingCaseCalculationService {
                 profit.absoluteProfit(), profit.profitPerAdRub(), officialSpend,
                 eligibleTraffic, conversion, maxCpc, attributionGap, currentBid, recoverable,
                 currency, variantDiagnostics(evidence));
+    }
+
+    private static BigDecimal caseAgeDays(AdvertisingEvidenceRepository.RankContext context, Instant asOf) {
+        if (context == null) { return BigDecimal.ZERO; }
+        Instant firstRaised = context.firstRaisedAt();
+        if (firstRaised == null) { return null; }
+        if (firstRaised.isAfter(asOf)) {
+            // JDBC/PostgreSQL persist timestamptz at rounded microsecond precision.
+            // Re-reading that same origin can place it < 1 microsecond after the
+            // original Java Instant; Duration.toSeconds would then produce -1.
+            Instant persistedAsOf = asOf.truncatedTo(java.time.temporal.ChronoUnit.MICROS)
+                    .plusNanos(asOf.getNano() % 1000 >= 500 ? 1000 : 0);
+            // Only the identical representable instant is age zero. A genuinely
+            // future origin stays unknown, rather than inventing an ordinary age.
+            return firstRaised.equals(persistedAsOf) ? BigDecimal.ZERO : null;
+        }
+        return BigDecimal.valueOf(Duration.between(firstRaised, asOf).toSeconds())
+                .divide(BigDecimal.valueOf(86400), CONTEXT);
     }
 
     private static List<AdCaseCalculation.VariantDiagnostic> variantDiagnostics(

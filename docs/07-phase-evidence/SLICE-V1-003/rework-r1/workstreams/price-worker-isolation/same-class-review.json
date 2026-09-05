@@ -1,0 +1,39 @@
+{
+  "kind": "WHOLE_QUEUE_WORKER_TEST_ISOLATION_SAME_CLASS_REVIEW",
+  "atUTC": "2026-09-05T12:15:16.934095+00:00",
+  "reviewedCallers": [
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java",
+      "sha256": "f81b97a5fb8433a59b5e6ce29fcb2972f05b7eb185843349a6e83d1a35194e68",
+      "independentDatabaseDeclared": true
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AvailabilityRecalculationLoopIT.java",
+      "sha256": "cb683767eb83126fbd9c9bddc4ff97520ceb81e575d6239674763ebf4f1d8104",
+      "independentDatabaseDeclared": true
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/DiagnosticExportIT.java",
+      "sha256": "ea0b395e6e1c844b5c5ae7d0cc968bb85fc53a1bf703e518d11c8e7d683c416f",
+      "independentDatabaseDeclared": true
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/RepresentativePerformanceIT.java",
+      "sha256": "ea34b99e6a66488f3b4f2540a5d0e0598a5bef6995d9b417ee85981dea7d5e01",
+      "independentDatabaseDeclared": true
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+      "sha256": "3d8298cdb98fa57f05327f89c78bd69b3fb330a0cb15df26025ce9a58a6b9c8e",
+      "independentDatabaseDeclared": true
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+      "sha256": "73b9174ab63b3f1e8ea8704a6845fc4132f8f16fc6c346014e547fe523ff6259",
+      "independentDatabaseDeclared": true
+    }
+  ],
+  "remainingScopedCaller": "StoredRawReplayIT passes exact IngestionControlPlaneFixture.JOB; it is not a whole-database unscoped claim.",
+  "sameClassConclusion": "All other whole-queue application worker tests already declare independent PostgreSQL. PriceCommandWorkerIT now follows the same fixture boundary. Within its own class AfterEach retires exactly the current Store allowlist, so earlier PENDING fixtures are gated; no broad SQL truncation, production query filter, global disablement or weakened current command assertions added.",
+  "scope": "A source review and fixture repair; actual selected/full execution remains pending."
+}

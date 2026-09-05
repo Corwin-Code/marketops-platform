@@ -1,0 +1,166 @@
+{
+  "recordedAtUTC": "2026-09-05T11:25:35.095427+00:00",
+  "scope": "Textual evidence in /tmp/slice3-w6-browser-evidence, including raw logs, named results and SBOM; no binary image content scan or general data-classification claim.",
+  "scannerSource": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/scripts/validate_governance.py",
+    "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97",
+    "bytes": 259144
+  },
+  "exactSecretPatternCount": 7,
+  "additionalJwtBearerPatterns": 2,
+  "files": [
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+      "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b",
+      "bytes": 6790
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+      "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8",
+      "bytes": 11248
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+      "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f",
+      "bytes": 591
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime.log",
+      "sha256": "06b33bbd93ee3036a13745023cad565b7468fe9ac002eee60465ceb8239ae6ad",
+      "bytes": 502546
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+      "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453",
+      "bytes": 255829
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/synthetic-data-identities.json",
+      "sha256": "80414ec65c66b53f80617d072f3e24c73f09b54bc6bc2ae3de7944c63c0df20c",
+      "bytes": 38694
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/frontend-sbom.json",
+      "sha256": "0b04d09a9ff034df3d7d202b4ec9aa7fcdb3626e6a233a296e7502c736087273",
+      "bytes": 619664
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/frontend-tests.json",
+      "sha256": "42177abf643d91082873c895cc5aee970a7a11becc678c8956696a80293bac7f",
+      "bytes": 838838
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/legacy-isolation-adapter.ts",
+      "sha256": "c431ddd77a45cdc8c769912afe102bbcc18b683bb9f74b19c5ed996bf3d356ba",
+      "bytes": 1001
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/legacy-test-input-delta.json",
+      "sha256": "5c84937cbca7f6de70e54e9f0aac65f9313dd4fd4057b79e3d63b7bf798dee48",
+      "bytes": 4975
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/00-command.log",
+      "sha256": "fc6c36fd9f3a9043765f00433b75717d6364f7c50b64bdde48950c2e20301965",
+      "bytes": 517
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/01-command.log",
+      "sha256": "991ebb2157d252d4cf337cfb4e799f4751f1374f78e7f28454783b13b6e7d6bd",
+      "bytes": 782
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/02-command.log",
+      "sha256": "92d4b2f8e1977a642be7f4b374625ab91cc1dfbbd7c53b94718ba216337e1276",
+      "bytes": 663
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/03-command.log",
+      "sha256": "c650b6f135370dbadac7f1182a1804a338d446d4394090767191b52957e14d7c",
+      "bytes": 29353
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/04-command.log",
+      "sha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d",
+      "bytes": 128
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/05-command.log",
+      "sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1",
+      "bytes": 61
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/06-command.log",
+      "sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a",
+      "bytes": 62
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/07-command.log",
+      "sha256": "b91cca118cd3f9bc48a1727271fe70b62c708b6a62018c35f90ecfb861dd2882",
+      "bytes": 12838
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/08-command.log",
+      "sha256": "1053965fb5a3be5cbf18379cb6f25bba3b7575628e93a7b1a7ec56947fc2b0b0",
+      "bytes": 290
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/09-command.log",
+      "sha256": "d2c5f13ead6290e08cf9399ae43012c0c9fe2b1b215149356512f91475e6c917",
+      "bytes": 438
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/10-command.log",
+      "sha256": "e3354678dbe1f1f52c8c50f49cc070da9f15c229e0627a70e2705c3b6700a6e3",
+      "bytes": 234
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/named-browser-results.json",
+      "sha256": "9f885aeb600047dac5979ee9d9ce3ebb7e0456eb1cf25269fc8a953e3c1327ef",
+      "bytes": 14729
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/receipt.json",
+      "sha256": "9db406520e3ebe379297b9f832ccbeefe1e12e819e3a34bfd23cbec93352a0dc",
+      "bytes": 10237
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/runtime-resources.json",
+      "sha256": "dbd880ea5dd7ff1c8916521357b8d7427377fd3924894036e0ea811e66bee856",
+      "bytes": 591
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/runtime.log",
+      "sha256": "f2a476b9fff57287d4b5f07e75534d7ad6601a876b38da430b6eea252f3d73c2",
+      "bytes": 177258
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/source-inputs.json",
+      "sha256": "0c16c94bdc1eefb10ec38bb4ecd86b724e8e4fd36ec38207697b76f2814718c8",
+      "bytes": 597452
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/synthetic-data-identities.json",
+      "sha256": "8fce55a43cd344fcf52f744698f36f4e3a308328b90de7d2040c2df367dcbe74",
+      "bytes": 345
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/verification-summary.json",
+      "sha256": "85b9e05d6d769251ac6d39988cb6cb2ead82a4fa6dedb9d657ef55169cdf3fee",
+      "bytes": 5655
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/visual-review/review.json",
+      "sha256": "95ad95f62cd8b7e106ea4871c15adb153bb4d12b66ff1c19574ed5f6cf90b08c",
+      "bytes": 5384
+    },
+    {
+      "path": "/tmp/slice3-w6-browser-evidence/visual-review/viewport-index.json",
+      "sha256": "15ebafb0855b93fddb066029fcec979df1b27e1c23d3ae5b6b30a073557a2f40",
+      "bytes": 3930
+    }
+  ],
+  "findings": [],
+  "passed": true,
+  "limits": "No copied raw trace/HAR or browser request headers. Filenames and SHA only are emitted for matches; this check cannot prove absence of every conceivable secret/PII."
+}

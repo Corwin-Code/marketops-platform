@@ -1,0 +1,8 @@
+﻿2026-09-05T11:10:54.8974912Z ##[group]Run echo "tested_merge_sha=${GITHUB_SHA}" >> "${GITHUB_STEP_SUMMARY}"
+2026-09-05T11:10:54.8975486Z [36;1mecho "tested_merge_sha=${GITHUB_SHA}" >> "${GITHUB_STEP_SUMMARY}"[0m
+2026-09-05T11:10:54.8975996Z [36;1mecho "source_head_sha=${SOURCE_HEAD_SHA}" >> "${GITHUB_STEP_SUMMARY}"[0m
+2026-09-05T11:10:54.8976664Z [36;1mecho 'Synthetic plans only; no account calls, apply, deployment or production enablement.' >> "${GITHUB_STEP_SUMMARY}"[0m
+2026-09-05T11:10:54.9013319Z shell: /usr/bin/bash -e {0}
+2026-09-05T11:10:54.9013585Z env:
+2026-09-05T11:10:54.9013849Z   SOURCE_HEAD_SHA: 3ed3f4c87c336cb07188e470528f328358fb279f
+2026-09-05T11:10:54.9014198Z ##[endgroup]

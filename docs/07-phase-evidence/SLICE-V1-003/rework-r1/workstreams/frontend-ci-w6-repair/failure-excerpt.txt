@@ -1,0 +1,44 @@
+2026-09-05T11:13:14.6415836Z   1) tests/browser/business-journey.spec.ts:4:1 › TC-BROWSER-013 authenticated evidence, approval, command and readback journey 
+2026-09-05T11:13:14.6416798Z 
+2026-09-05T11:13:14.6417164Z     Error: expect(locator).toContainText(expected) failed
+2026-09-05T11:13:14.6417602Z 
+2026-09-05T11:13:14.6417826Z     Locator: getByRole('alert')
+2026-09-05T11:13:14.6418425Z     Expected substring: "The platform did not answer"
+2026-09-05T11:13:14.6419265Z     Error: strict mode violation: getByRole('alert') resolved to 4 elements:
+2026-09-05T11:13:14.6420682Z         1) <p role="alert">Your profile does not have advertising access for…</p> aka getByText('Your profile does not have').first()
+2026-09-05T11:13:14.6422060Z         2) <p role="alert">Your profile does not have advertising access for…</p> aka getByText('Your profile does not have').nth(1)
+2026-09-05T11:13:14.6423057Z         3) <p role="alert">Your profile does not have advertising access for…</p> aka getByText('Your profile does not have').nth(2)
+2026-09-05T11:13:14.6423938Z         4) <p role="alert">The platform did not answer. Nothing was changed.</p> aka getByText('The platform did not answer.')
+2026-09-05T11:13:14.6424387Z 
+2026-09-05T11:13:14.6424480Z     Call log:
+2026-09-05T11:13:14.6425152Z       - Expect "toContainText" with timeout 20000ms
+2026-09-05T11:13:14.6425765Z       - waiting for getByRole('alert')
+2026-09-05T11:13:14.6426009Z 
+2026-09-05T11:13:14.6426019Z 
+2026-09-05T11:13:14.6426152Z       41 |   await page.goto('/');
+2026-09-05T11:13:14.6426598Z       42 |   await page.getByRole('button', { name: 'Continue to sign in' }).click();
+2026-09-05T11:13:14.6427230Z     > 43 |   await expect(page.getByRole('alert')).toContainText('The platform did not answer');
+2026-09-05T11:13:14.6427739Z          |                                         ^
+2026-09-05T11:13:14.6428297Z       44 |   await expect(page.getByRole('button', { name: fixture.subjectId, exact: true })).toHaveCount(0);
+2026-09-05T11:13:14.6428854Z       45 |   await page.unroute(queuePath);
+2026-09-05T11:13:14.6429283Z       46 |   await page.getByRole('button', { name: 'Sign out' }).click();
+2026-09-05T11:13:14.6430098Z         at /home/runner/work/marketops-platform/marketops-platform/frontend/marketops-console/tests/browser/business-journey.spec.ts:43:41
+2026-09-05T11:13:14.6430637Z 
+2026-09-05T11:13:14.6431089Z     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+2026-09-05T11:13:14.6431838Z     test-results/business-journey-TC-BROWSE-72f22-ommand-and-readback-journey/test-failed-1.png
+2026-09-05T11:13:14.6432619Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-09-05T11:13:14.6432920Z 
+2026-09-05T11:13:14.6433476Z     Error Context: test-results/business-journey-TC-BROWSE-72f22-ommand-and-readback-journey/error-context.md
+2026-09-05T11:13:14.6434976Z 
+2026-09-05T11:13:14.6435478Z     attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-09-05T11:13:14.6436185Z     test-results/business-journey-TC-BROWSE-72f22-ommand-and-readback-journey/trace.zip
+2026-09-05T11:13:14.6436675Z     Usage:
+2026-09-05T11:13:14.6436791Z 
+2026-09-05T11:13:14.6437255Z         npx playwright show-trace test-results/business-journey-TC-BROWSE-72f22-ommand-and-readback-journey/trace.zip
+2026-09-05T11:13:14.6437746Z 
+2026-09-05T11:13:14.6438109Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-09-05T11:13:14.6438405Z 
+2026-09-05T11:13:14.6438495Z   1 failed
+2026-09-05T11:13:14.6439166Z     tests/browser/business-journey.spec.ts:4:1 › TC-BROWSER-013 authenticated evidence, approval, command and readback journey 
+2026-09-05T11:13:14.6439777Z   24 passed (1.1m)
+2026-09-05T11:13:14.7143217Z ##[error]Process completed with exit code 1.

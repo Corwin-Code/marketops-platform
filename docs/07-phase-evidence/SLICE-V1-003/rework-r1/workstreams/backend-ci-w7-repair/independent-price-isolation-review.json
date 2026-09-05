@@ -1,0 +1,69 @@
+{
+  "reviewer": "source_audit, independent of Root author",
+  "reviewedAtUTC": "2026-09-05T12:27:09.055310+00:00",
+  "sourceIdentity": {
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java",
+    "failedW7GitSourceSha256": "f792d74746eb6f2582e8f0f167a45b4b289002e3459cbc6c8d5e6c8a9e4c7385",
+    "preparedRepairWorkingSourceSha256": "f81b97a5fb8433a59b5e6ce29fcb2972f05b7eb185843349a6e83d1a35194e68",
+    "repairHasNotYetPassedTargetedOrFullVerification": true
+  },
+  "onlyContainerDeclarationAndTwoDatasourceBindingsChanged": true,
+  "preservedAssertions": [
+    "All 18 test method bodies are byte-identical after removing only the declared isolation patch.",
+    "beforeCall retains transaction-not-active and independent connection committed IN_FLIGHT/current command/request digest count exactly 1.",
+    "unknownWriteOutcome still requires UNKNOWN_REQUIRES_READBACK and global runOnce(10)==0.",
+    "quietPass and interruptedDispatchIsNeverReapplied retain whole-worker/no-new-APPLY assertions.",
+    "AfterEach still revokes only the current command Store allowlist; no global table clear or production filter."
+  ],
+  "sameClassReview": [
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java",
+      "originalReviewSourceSha256": "f81b97a5fb8433a59b5e6ce29fcb2972f05b7eb185843349a6e83d1a35194e68",
+      "currentSourceSha256": "f81b97a5fb8433a59b5e6ce29fcb2972f05b7eb185843349a6e83d1a35194e68",
+      "sameSource": true,
+      "isolatedContainerDeclared": true,
+      "differenceExplanation": null
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AvailabilityRecalculationLoopIT.java",
+      "originalReviewSourceSha256": "cb683767eb83126fbd9c9bddc4ff97520ceb81e575d6239674763ebf4f1d8104",
+      "currentSourceSha256": "cb683767eb83126fbd9c9bddc4ff97520ceb81e575d6239674763ebf4f1d8104",
+      "sameSource": true,
+      "isolatedContainerDeclared": true,
+      "differenceExplanation": null
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/DiagnosticExportIT.java",
+      "originalReviewSourceSha256": "ea0b395e6e1c844b5c5ae7d0cc968bb85fc53a1bf703e518d11c8e7d683c416f",
+      "currentSourceSha256": "ea0b395e6e1c844b5c5ae7d0cc968bb85fc53a1bf703e518d11c8e7d683c416f",
+      "sameSource": true,
+      "isolatedContainerDeclared": true,
+      "differenceExplanation": null
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/RepresentativePerformanceIT.java",
+      "originalReviewSourceSha256": "ea34b99e6a66488f3b4f2540a5d0e0598a5bef6995d9b417ee85981dea7d5e01",
+      "currentSourceSha256": "ea34b99e6a66488f3b4f2540a5d0e0598a5bef6995d9b417ee85981dea7d5e01",
+      "sameSource": true,
+      "isolatedContainerDeclared": true,
+      "differenceExplanation": null
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+      "originalReviewSourceSha256": "3d8298cdb98fa57f05327f89c78bd69b3fb330a0cb15df26025ce9a58a6b9c8e",
+      "currentSourceSha256": "3d8298cdb98fa57f05327f89c78bd69b3fb330a0cb15df26025ce9a58a6b9c8e",
+      "sameSource": true,
+      "isolatedContainerDeclared": true,
+      "differenceExplanation": null
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java",
+      "originalReviewSourceSha256": "73b9174ab63b3f1e8ea8704a6845fc4132f8f16fc6c346014e547fe523ff6259",
+      "currentSourceSha256": "4219099c5e847e8512e5d5b9a421d89f44a119f32881247a90ef76cac23c5b97",
+      "sameSource": false,
+      "isolatedContainerDeclared": true,
+      "differenceExplanation": "CapacityIT was subsequently changed by the authorized source-agent precision repair; its independent database remains unchanged."
+    }
+  ],
+  "conclusion": "Source-level narrow fixture isolation is coherent; actual selected/full verification is pending. No production Price behavior was modified."
+}

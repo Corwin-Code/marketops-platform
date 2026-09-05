@@ -1,0 +1,81 @@
+{
+  "recordedAtUTC": "2026-09-05T11:25:34.616674+00:00",
+  "originalScreenshotCount": 26,
+  "representativeOriginalsInspected": 8,
+  "derivedViewportIndex": {
+    "path": "/tmp/slice3-w6-browser-evidence/visual-review/viewport-index.json",
+    "sha256": "15ebafb0855b93fddb066029fcec979df1b27e1c23d3ae5b6b30a073557a2f40",
+    "bytes": 3930
+  },
+  "observations": [
+    {
+      "original": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/maker-minimum-disclosure.png",
+        "sha256": "8633f594d4fd8bdd18062c09fab4a14d5d7a3fd585f1e74badce77ca00b6cdbc",
+        "bytes": 306002
+      },
+      "observation": "Full screenshot inspected. Maker financial fields/cause/factors are MASKED while exact native bid and structural affected members remain. No observed overlap or clipped identity/value in this viewport."
+    },
+    {
+      "original": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-real--22caa-sclosure-and-exact-versions/owner-exact-decision-evidence.png",
+        "sha256": "604497146b6b1f8b559361a2c92e82f3980d910f1fb57f39805929c0306b686c",
+        "bytes": 4443784
+      },
+      "observation": "Top and bottom viewport derivatives inspected from the 38694-pixel full screenshot. Authorized financial detail and exact submitted native bid/unit/step/profile are readable; unresolved supporting inputs stay explicit. Middle pages are not claimed visually inspected."
+    },
+    {
+      "original": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-independent-proof-early-safety-pending.png",
+        "sha256": "91eae1940b3284e7b274318a18dedd87e3a28fce7986a896e1b838c731a64b25",
+        "bytes": 1754173
+      },
+      "observation": "Top and bottom derivatives inspected. Placement/CURRENCY_MINOR/step5/precision0/derived readback remain UNVERIFIED synthetic; early safety not due and unresolved sales preservation remain visible, with no business-success assertion."
+    },
+    {
+      "original": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-independent-proof-early-safety-pending.png",
+        "sha256": "e470efc6545d48c5e867b4d7ff0b11cbfdf0e9daa699ed73ad32ee40b6ca45e4",
+        "bytes": 1753181
+      },
+      "observation": "Top derivative inspected. Keyword/CURRENCY_MAJOR/step0.5/precision2/exact-field semantics remain UNVERIFIED synthetic, visibly different from Wildberries."
+    },
+    {
+      "original": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-HISTO-1effc-state-and-separate-outcomes/HISTORY_REGRESSION-actual-http-history.png",
+        "sha256": "c35edb0b75012ba3ea882fb7970696ea72e7cfa72b3e94404c4dfbf244962fe2",
+        "bytes": 660876
+      },
+      "observation": "Bottom derivative inspected. Earlier Settled reading and later regression/restatement both persist; synthetic read-oracle and computationEvidence=false are explicit, with exact-prior-bid compensation separate."
+    },
+    {
+      "original": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-page-two-six-visible-cases.png",
+        "sha256": "182b331d94cba95f47d96732f435ba199748d11e1b085d4cfdf954d1d2857b4a",
+        "bytes": 331063
+      },
+      "observation": "Full screenshot inspected. Page2 contains six distinct visible Watch rows, previous enabled/next disabled. Financial fields remain masked. This image supplements actual HTTP and keyboard assertions, not independent pagination arithmetic."
+    },
+    {
+      "original": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-acknowledgement-not-action.png",
+        "sha256": "e1a86d0a3ec277da58ebebb2beddd78e612a6dec57c2a190b37ac78d85e27aa1",
+        "bytes": 305836
+      },
+      "observation": "Full screenshot inspected. Acknowledgement control and active action responsibility remain distinct; screenshot supplements the actual API assertion acknowledgedAt!=null and firstAttributableActionAt==null."
+    },
+    {
+      "original": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/screenshots/governed-advertising-HISTO-d95fb-state-and-separate-outcomes/maker-native-unknown-history-masked.png",
+        "sha256": "5a4ae2e42998a482c9d585cb70c633c282372de60738b03b6bbb20cdd70cfd28",
+        "bytes": 379553
+      },
+      "observation": "Full screenshot inspected. Native UNKNOWN_REQUIRES_READBACK history remains visible, economics masked, absent outcome explicit, and compensation separate; no absent outcome becomes neutral or healthy."
+    }
+  ],
+  "limits": [
+    "Visual inspection is representative, not all screenshot pixels. Original files are untouched; sips derivatives only support inspection.",
+    "Legacy success paths use screenshot only-on-failure; 25 passed and emitted zero screenshots. No legacy visual screenshot review is claimed.",
+    "Synthetic lane/history rows establish actual HTTP rendering and scope behavior only, not canonical economic classification, Provider responses or outcome calculation truth."
+  ]
+}

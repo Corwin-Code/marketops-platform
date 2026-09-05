@@ -1,0 +1,12 @@
+diff --git a/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java b/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java
+index 21abe8a..487f1f0 100644
+--- a/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java
++++ b/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingImpactEvidenceService.java
+@@ -39,6 +39,7 @@ public class AdvertisingImpactEvidenceService {
+                         THEN 'RECOVERY_IN_PROGRESS_NOT_HEALTHY' ELSE 'OUTCOME_VERIFICATION_REQUIRED' END,
+                     'policyVersions',ops.ad_bundle_authority_snapshot(CAST(:bundle AS uuid)),
+                     'materiality',ops.ad_materiality_assessment(CAST(:bundle AS uuid),cd.id),
++                    'crossDomainIsolation',ops.ad_action_isolation_snapshot(c.affected_set_id,baseline.id,CAST(:at AS timestamptz)),
+                     'metricEvidence',coalesce((SELECT jsonb_agg(jsonb_build_object('evidenceId',e.id,
+                         'role',e.evidence_role,'metric',to_jsonb(m)) ORDER BY e.id)
+                         FROM mart.ad_case_evidence e JOIN mart.metric_value m ON m.id=e.metric_value_id

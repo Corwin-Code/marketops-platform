@@ -46,6 +46,7 @@ class AdvertisingHumanWorkflowIT {
     @Autowired AdvertisingHumanDecisionService humans;
     @Autowired AdvertisingExceptionService exceptions;
     @Autowired AdvertisingTaskSloQuery slo;
+    @Autowired com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingTaskSloService taskSlo;
     @Autowired com.mimococo.marketops.operationsworkflow.AdvertisingReconciliationMaintenance maintenance;
     @Autowired AdvertisingWorkflowQueryService workflows;
     @Autowired WorkTaskService tasks;
@@ -468,6 +469,43 @@ class AdvertisingHumanWorkflowIT {
         assertThat(seed.sql("SELECT count(*) FROM ops.ad_bid_candidate WHERE case_id=:case").param("case",otherCase).query(Long.class).single()).isEqualTo(3);
         assertThat(seed.sql("SELECT count(*) FROM ops.ad_case_responsibility WHERE organization_id=:org").param("org",graph.id("organization")).query(Long.class).single()).isEqualTo(2);
         assertThat(seed.sql("SELECT count(*) FROM ops.ad_action_reservation WHERE organization_id=:org").param("org",graph.id("organization")).query(Long.class).single()).isZero();
+    }
+
+    @Test void staffedTaskAgeUsesTheExactPersistedMicrosecondOrigin() {
+        assertRoundedTaskOrigin(false);
+    }
+
+    @Test void unresolvedProfileTaskAgeUsesTheExactPersistedMicrosecondOrigin() {
+        assertRoundedTaskOrigin(true);
+    }
+
+    private void assertRoundedTaskOrigin(boolean missingProfile) {
+        Instant at=Instant.now().plusSeconds(1).truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
+                .plusNanos(123456789);
+        // A migration-role synthetic origin oracle passes actual nanoseconds
+        // through PostgreSQL; both production SLO entry points must agree.
+        seed.sql("UPDATE ops.ad_case_responsibility SET first_raised_at=:at,recorded_at=:at WHERE case_id=:id")
+                .param("at",java.sql.Timestamp.from(at)).param("id",graph.id("caseId")).update();
+        if(missingProfile) seed.sql("UPDATE ops.ad_case_responsibility SET profile_snapshot='{}'::jsonb WHERE case_id=:id")
+                .param("id",graph.id("caseId")).update();
+        Instant persisted=seed.sql("SELECT first_raised_at FROM ops.ad_case_responsibility WHERE case_id=:id")
+                .param("id",graph.id("caseId")).query((rs,n)->rs.getTimestamp(1).toInstant()).single();
+        assertThat(persisted).isEqualTo(at.truncatedTo(java.time.temporal.ChronoUnit.MICROS).plusNanos(1000)).isAfter(at);
+        var fromCase=slo.statusForCase(graph.id("caseId"),at).orElseThrow();
+        var fromTask=taskSlo.status(task,at);
+        assertThat(fromTask).isNotNull().isEqualTo(fromCase);
+        assertThat(fromCase.wallClockExposureAgeSeconds()).isZero();
+        if(missingProfile) {
+            assertThat(fromCase.coverageState()).isEqualTo("PROFILE_OR_CALENDAR_MISSING");
+            assertThat(fromCase.acknowledgementDueAt()).isNull();
+        } else {
+            assertThat(fromCase.coverageState()).isNotEqualTo("PROFILE_OR_CALENDAR_MISSING");
+            assertThat(fromCase.acknowledgementDueAt()).isAfter(persisted);
+            assertThat(fromCase.actionDueAt()).isAfter(persisted);
+        }
+        assertThat(slo.statusForCase(graph.id("caseId"),at.minusSeconds(1))).isEmpty();
+        assertThat(taskSlo.status(task,at.minusSeconds(1))).isNull();
+        assertThat(taskSlo.status(task,persisted.plusSeconds(129600)).wallClockExposureAgeSeconds()).isEqualTo(129600);
     }
 
     private AdvertisingExceptionService.View request() {

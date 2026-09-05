@@ -1,0 +1,50 @@
+diff --git a/backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql b/backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql
+index 9a932c2..7095ea2 100644
+--- a/backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql
++++ b/backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql
+@@ -172,6 +172,7 @@ BEGIN
+        IN ('PAUSED','STOPPED') THEN 'PROTECTION_DECREASE' ELSE 'OPTIMIZATION_INCREASE' END);
+  END IF;
+  deadline:=least(policy.effective_to,task_recommendation.valid_until,
++   (SELECT effective_to FROM platform.ad_semantic_profile WHERE id=policy.semantic_profile_id),
+    cfg.observed_at+make_interval(secs=>policy.configuration_max_age_seconds),clock_timestamp()+make_interval(secs=>policy.packet_lease_seconds));
+  INSERT INTO ops.ad_manual_proposal(id,organization_id,case_id,responsibility_recommendation_id,policy_id,candidate_id,
+    ad_native_object_id,store_id,affected_set_id,affected_set_digest,observed_configuration_id,action_kind,intended_state,
+@@ -185,6 +186,7 @@ END $$;
+ CREATE FUNCTION ops.ad_manual_proposal_current(p_proposal uuid) RETURNS boolean
+ LANGUAGE sql STABLE SECURITY DEFINER SET search_path=pg_catalog,ops,core,mart,pg_temp AS $$
+  SELECT p.expires_at>statement_timestamp() AND p.authority_snapshot=ops.ad_manual_snapshot(p.case_id,p.policy_id,p.observed_configuration_id)
++ AND cardinality(ops.ad_action_isolation_failures(p.affected_set_id,NULL,statement_timestamp()))=0
+  AND EXISTS(SELECT 1 FROM mart.ad_case c WHERE c.id=p.case_id AND c.superseded_at IS NULL)
+  AND EXISTS(SELECT 1 FROM ops.recommendation r WHERE r.id=p.responsibility_recommendation_id AND r.state='TASK_ONLY' AND r.valid_until>statement_timestamp())
+  AND NOT EXISTS(SELECT 1 FROM core.ad_object_configuration_observation n WHERE n.ad_native_object_id=p.ad_native_object_id
+@@ -209,7 +211,8 @@ BEGIN
+    AND b.affected_set_digest=proposal.affected_set_digest AND b.outcome_policy_id=policy.outcome_policy_id
+    AND b.case_calculation_id=(SELECT calculation_id FROM mart.ad_case WHERE id=proposal.case_id)
+    AND b.state='COMPLETE' AND b.valid_until>clock_timestamp()
+-   AND ops.ad_outcome_baseline_is_canonical(b.id,clock_timestamp()) IS TRUE) THEN RAISE EXCEPTION 'manual selection scope or authority denied' USING ERRCODE='MO064'; END IF;
++   AND ops.ad_outcome_baseline_is_canonical(b.id,clock_timestamp()) IS TRUE
++   AND cardinality(ops.ad_action_isolation_failures(b.affected_set_id,b.id,clock_timestamp()))=0) THEN RAISE EXCEPTION 'manual selection scope or authority denied' USING ERRCODE='MO064'; END IF;
+  INSERT INTO ops.ad_manual_execution_packet(id,organization_id,case_id,ad_native_object_id,store_id,platform_code,
+    affected_set_id,affected_set_digest,semantic_profile_id,action_kind,observed_configuration_id,intended_state,
+    reason,evidence_reference,maker_user_id,expected_impact,verification_plan,state,issued_at,expires_at,correlation_id,
+@@ -240,7 +243,8 @@ BEGIN
+  OR packet.state<>(CASE WHEN p_approve THEN 'MANUAL_PACKET_ENDORSED' ELSE 'MANUAL_PACKET_DRAFT' END)
+  OR NOT coalesce(ops.ad_manual_proposal_current(packet.proposal_id),false)
+  OR NOT EXISTS(SELECT 1 FROM ops.ad_outcome_baseline b WHERE b.id=packet.outcome_baseline_id AND b.manual_proposal_id=packet.proposal_id AND b.state='COMPLETE' AND b.valid_until>clock_timestamp()
+-   AND ops.ad_outcome_baseline_is_canonical(b.id,clock_timestamp()) IS TRUE)
++   AND ops.ad_outcome_baseline_is_canonical(b.id,clock_timestamp()) IS TRUE
++   AND cardinality(ops.ad_action_isolation_failures(b.affected_set_id,b.id,clock_timestamp()))=0)
+  OR NOT ops.ad_manual_actor_scoped(g.actor_user_id,packet.organization_id,packet.store_id,packet.affected_set_id,role_code,action_code)
+  OR NOT ops.ad_manual_actor_scoped(g.actor_user_id,packet.organization_id,packet.store_id,packet.affected_set_id,
+    role_code,'ADVERTISING_DECISION_EVIDENCE_VIEW') THEN RAISE EXCEPTION 'manual approval scope, independence or authority denied' USING ERRCODE='MO064'; END IF;
+@@ -261,7 +265,8 @@ BEGIN
+  OR packet.state<>'MANUAL_PACKET_ISSUED' OR packet.approver_user_id IS NULL OR packet.endorser_user_id IS NULL
+  OR NOT coalesce(ops.ad_manual_proposal_current(packet.proposal_id),false)
+  OR NOT EXISTS(SELECT 1 FROM ops.ad_outcome_baseline b WHERE b.id=packet.outcome_baseline_id AND b.manual_proposal_id=packet.proposal_id AND b.state='COMPLETE' AND b.valid_until>clock_timestamp()
+-   AND ops.ad_outcome_baseline_is_canonical(b.id,clock_timestamp()) IS TRUE)
++   AND ops.ad_outcome_baseline_is_canonical(b.id,clock_timestamp()) IS TRUE
++   AND cardinality(ops.ad_action_isolation_failures(b.affected_set_id,b.id,clock_timestamp()))=0)
+  OR NOT ops.ad_manual_actor_scoped(g.actor_user_id,packet.organization_id,packet.store_id,packet.affected_set_id,
+    'MARKETPLACE_OPERATOR','ADVERTISING_MANUAL_EXECUTE')
+  OR NOT ops.ad_manual_actor_scoped(packet.endorser_user_id,packet.organization_id,packet.store_id,packet.affected_set_id,

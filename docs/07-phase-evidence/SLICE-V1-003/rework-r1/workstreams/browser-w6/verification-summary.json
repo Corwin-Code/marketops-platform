@@ -1,0 +1,128 @@
+{
+  "recordedAtUTC": "2026-09-05T11:25:34.619697+00:00",
+  "sourceCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "sourceTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+  "repositoryTrackedAndUntrackedStatus": "CLEAN",
+  "advertising": {
+    "receipt": {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+      "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8",
+      "bytes": 11248
+    },
+    "namedTests": {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+      "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b",
+      "bytes": 6790
+    },
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "screenshots": 26,
+    "syntheticScenarioRoleIdentities": 27,
+    "sourceUnchanged": true,
+    "startedAt": "2026-09-05T11:09:13.275540+00:00",
+    "finishedAt": "2026-09-05T11:10:53.167393+00:00",
+    "durationSeconds": 99.892,
+    "resources": {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+      "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f",
+      "bytes": 591
+    },
+    "sourceManifest": {
+      "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+      "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453",
+      "bytes": 255829
+    }
+  },
+  "legacy": {
+    "receipt": {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/receipt.json",
+      "sha256": "9db406520e3ebe379297b9f832ccbeefe1e12e819e3a34bfd23cbec93352a0dc",
+      "bytes": 10237
+    },
+    "namedTests": {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/named-browser-results.json",
+      "sha256": "9f885aeb600047dac5979ee9d9ce3ebb7e0456eb1cf25269fc8a953e3c1327ef",
+      "bytes": 14729
+    },
+    "passed": 25,
+    "failed": 0,
+    "skipped": 0,
+    "screenshots": 0,
+    "originalTrackedInputsUnchanged": true,
+    "oldBaselineDelta": {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/legacy-test-input-delta.json",
+      "sha256": "5c84937cbca7f6de70e54e9f0aac65f9313dd4fd4057b79e3d63b7bf798dee48",
+      "bytes": 4975
+    },
+    "startedAt": "2026-09-05T11:11:27.562113+00:00",
+    "finishedAt": "2026-09-05T11:13:09.954107+00:00",
+    "durationSeconds": 102.392,
+    "resources": {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/runtime-resources.json",
+      "sha256": "dbd880ea5dd7ff1c8916521357b8d7427377fd3924894036e0ea811e66bee856",
+      "bytes": 591
+    },
+    "sourceManifest": {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/source-inputs.json",
+      "sha256": "0c16c94bdc1eefb10ec38bb4ecd86b724e8e4fd36ec38207697b76f2814718c8",
+      "bytes": 597452
+    }
+  },
+  "frontendQuality": {
+    "result": "PASS",
+    "sourceCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "sourceTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+    "node": "v24.19.0",
+    "npm": "11.17.0",
+    "sourceManifestSha256": "0c16c94bdc1eefb10ec38bb4ecd86b724e8e4fd36ec38207697b76f2814718c8",
+    "lockSha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4",
+    "tests": {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/frontend-tests.json",
+      "sha256": "42177abf643d91082873c895cc5aee970a7a11becc678c8956696a80293bac7f",
+      "total": 308,
+      "passed": 308,
+      "failed": 0,
+      "pending": 0
+    },
+    "sbom": {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/frontend-sbom.json",
+      "sha256": "0b04d09a9ff034df3d7d202b4ec9aa7fcdb3626e6a233a296e7502c736087273"
+    },
+    "actualSbomSchemaValidation": "Command includes --validate; exit0; no skip-validator warning; fresh optional validators installed.",
+    "sbomCommandLog": {
+      "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/logs/10-command.log",
+      "sha256": "e3354678dbe1f1f52c8c50f49cc070da9f15c229e0627a70e2705c3b6700a6e3",
+      "bytes": 234
+    }
+  },
+  "visualReview": {
+    "path": "/tmp/slice3-w6-browser-evidence/visual-review/review.json",
+    "sha256": "95ad95f62cd8b7e106ea4871c15adb153bb4d12b66ff1c19574ed5f6cf90b08c",
+    "bytes": 5384
+  },
+  "cleanup": {
+    "legacy": {
+      "project": "slice3-legacy-8nrjjc2z",
+      "exitCode": 0,
+      "observedLog": "runtime.log explicitly records own container, volume and network Removed. Private archive also removed by wrapper.",
+      "log": {
+        "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/runtime.log",
+        "sha256": "f2a476b9fff57287d4b5f07e75534d7ad6601a876b38da430b6eea252f3d73c2",
+        "bytes": 177258
+      }
+    },
+    "advertising": {
+      "scriptCompletedWithExit": 0,
+      "scope": "Only fresh mktemp namespace/container/network owned by advertising_browser_isolated.sh",
+      "limitation": "EXIT trap invokes exact-name container/network deletion and private directory removal. Cleanup commands suppress errors and the random namespace was not included in raw log, so this receipt does not claim independent post-run Docker inventory verification."
+    },
+    "activeBrowserMavenSessionsOwnedByThisAgent": 0
+  },
+  "engineeringBoundary": "Local W6 tests passed. Root final clean backend still running; exact latest CI not passed (W6 frontend-test has a separate diagnosed old global-alert locator failure). No AC approval, independent Controller verdict, real Provider access or production enablement is inferred.",
+  "pendingRemoteFailure": {
+    "path": "/tmp/slice3-w6-frontend-ci-repair/root-cause.json",
+    "sha256": "2b939eefc3bc509cba778ce82b81eb0946950c22ca4e5d49f36b8a0034720fab",
+    "bytes": 3187
+  }
+}

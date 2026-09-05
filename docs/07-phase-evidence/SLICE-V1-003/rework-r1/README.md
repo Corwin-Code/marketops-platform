@@ -60,6 +60,28 @@ The reviewed starting Head is `a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb`.
 | [W1 committed identity](workstreams/slice3-r1-w1-identity.json) | Clean implementation checkpoint `60638b1fc1a227b50f4b3ede1ba0bb983407bfdc`, protected authorities/history and all 65 migration identities. |
 | [W1 independent clone](workstreams/fresh-clone-w1.json) | Exact committed source, independent Git objects, no ignored local configuration/build state, and 410 passing governance tests; offline scope only. |
 | [W1 infrastructure](workstreams/infrastructure-w1/receipt.json) | Seven Terraform mock cases and 29 Python cases passed on an exact source copy; local plans only, with raw/compressed hashes. |
+| [W6 complete clean verification](workstreams/full-clean-w6/run-receipt.json) | Exact clean Head 3ed3f4c: all 2,472 actual testcase nodes pass (1,552 unit, 920 integration), zero failures/errors/skips; JaCoCo and the packaged JAR identity pass. The 188 original XML reports and [count reconciliation](workstreams/full-clean-w6/testcase-count-reconciliation.json) preserve the original suite-declared 2,471 count separately. All three advertising capacity cases pass in 408.736 seconds; the declared 1,000-object workload records critical P95 37.148 seconds, maximum 265.047 seconds and a 136.393-second sweep. These are W6 observations, not results for later repairs. |
+| [W6 packaged artifact check](workstreams/validation-w6/packaged-migration/receipt.json) | The exact full-verified W6 JAR passes the packaged resolver and minimal synthetic container check. This check connects to no database or Provider; the full-run PostgreSQL migration evidence remains separate. |
+| [W6 coverage refusal proof](workstreams/validation-w6/negative-coverage/receipt.json) | Deliberately forced 100% line/branch thresholds fail with the expected coverage reason; the repository enforcement script passes. Original accepted thresholds, complete execution data and the verified JAR remain byte-identical. |
+| [W6 actual browser and frontend verification](workstreams/browser-w6/verification-summary.json) | Exact W6 source passes 12 advertising and 25 original browser journeys, plus fresh dependency installation, all 308 frontend tests and actual SBOM validation. Twenty-six advertising screenshots and the [visual review](workstreams/browser-w6/visual-review/review.json) retain the synthetic read-oracle and UNVERIFIED-platform boundaries. |
+| [W7 actual frontend CI](workstreams/frontend-ci-w7/receipt.json) | Run 33963350083 attempt 1 on W7 Head 3e403925 / tested merge 1d48739f passes all four frontend jobs, 308 unit cases and all 25 original plus 12 advertising browser journeys. Exact [named browser results](workstreams/frontend-ci-w7/named-browser-results.json), artifact digests and 26 screenshots are retained. W7 changes only the original business-journey queue-alert assertion; W6 local results are not relabeled as W7 executions. |
+| [W6 exact security readback](workstreams/security-w6/summary.md) | Security and aggregate CodeQL pass; twelve repaired alerts are fixed and the remaining 87 open alerts are quality warnings/notes without security severity. Exact 99-to-87 reconciliation and individual triage remain preserved; raw SARIF also retains five historically dismissed HIGH findings. |
+| [W7 exact security readback](workstreams/security-w7/summary.md) | Security run 33963350077 attempt 1 and aggregate CodeQL pass on the exact W7 tested merge. The same twelve alerts remain fixed and all 87 quality alerts remain unchanged. The branch lock removes four fast-uri HIGH advisories; the four default-main Dependabot alerts are not claimed closed. |
+| [W7 failed backend CI](workstreams/ci-w7-failed/receipt.json) | Backend run 33963350093 attempt 1 fails: build job 101299023501 has 2 failures among 2,472 actual cases; integration job 101299023481 has 3 failures among 920 cases, both with zero errors/skips. The [original jobs and artifact identities](workstreams/ci-w7-failed/run-job-artifact-index.json) preserve the Case-age/replay precision and shared-test-queue Price worker failures. Ten of twelve required contexts pass; the two backend contexts fail. R24/R25 follow-up results are indexed below; a new clean checkpoint/full run/latest CI remain PENDING. |
+| [W7 CI root cause and repair](workstreams/backend-ci-w7-repair/analysis.json) | Original job logs and downloaded XML bind the two W7 backend failures to their actual tested merge. PostgreSQL timestamp precision and an unscoped shared test queue explain the failures; repaired source identity remains distinct. |
+| [R24 original repair attempt](workstreams/final-controls/r24/receipt.json) | All 18 Price worker, 34 calculation, 24 advertising flow and 10 priority tests pass; the containing 130-case run fails with one newly added projection-origin oracle failure and two Raw fixture setup errors. Both remaining capacity methods pass. The [individual review](workstreams/r24-individual-suite-review/review.json) preserves the outer-only resource binding limitation and the exact failures. |
+| [R25 complete affected verification](workstreams/final-controls/r25/receipt.json) | All 72 cases pass: Reservation 41, Human workflow 18, advertising capacity 3, exact-duration reconciliation worker 4 and staffed-clock 6. The run takes 454.739 seconds with unchanged source and exact inner/outer resource SHA. The [six-file source delta](workstreams/input-delta-r24-r25/receipt.json) identifies the Raw fixture, correct projection-origin oracle, Task SLO and reconciliation changes. The 1,000-object workload and missed-correction recovery remain intact; this selected run does not replace the new clean full checkpoint. |
+| [Time precision same-class review](workstreams/nanosecond-same-class-review/review.json) | Case and Task age distinguish the same persisted microsecond from a genuinely future origin. The [reconciliation repair](workstreams/reconciliation-duration-repair/receipt.json) checks exact negative/15-minute Duration boundaries before integer conversion; all original SLO thresholds remain unchanged. |
+| [Frozen-clause review](workstreams/frozen-22-clause-review/review.json) | All 115 original required-rework/verification clauses across 22 findings are reviewed against specific proof. The identified dedicated F013 scope refusal now passes in R25; final source/CI and the central assessment remain pending. Capacity is the declared UNVERIFIED zero-command topology, including brief publication, Outcome due scanning and blocked gate reads; it does not measure mature Outcome or admissible APPLY throughput. |
+| [Individual acceptance arguments](workstreams/prepared-assessment-union-w8/per-criterion-reviewed-contributions.json) | All 200 exact criteria retain 260 individual contributions, with 54 overlapping criteria and explicit proof scopes. The union preserves the original measured-source identities; it performs no automatic status promotion or Controller judgment. |
+| [Pre-W8 named governance](workstreams/pre-w8-governance/receipt.json) | All 410 actual methods pass with zero failures/errors/skips on the frozen repaired worktree. Exact accepted/Frozen authority and 200/22 mapping checks pass; central rows remain verification-pending. |
+
+The ZIP/TAR-aware [raw publication scan](workstreams/security-w6-w7-raw-scan.json)
+preserves 16 matches in the CodeQL rule-help metadata. The
+[exact-member triage](workstreams/security-w6-w7-secret-triage/review.json)
+identifies those matches as static teaching examples, with archive/member hashes
+and JSON pointers. The original scanner failure and raw SARIF are unchanged;
+this scoped review does not dismiss actual CodeQL findings.
 
 Workstream logs distinguish individual passing suites from their containing
 failed or partial run. Working-tree measurements do not bind a future Git Head.
@@ -67,12 +89,26 @@ The identity collector in `scripts/validation/collect_slice3_rework_identity.py`
 recorded the clean W1 measured commit/tree, protected history, migration hashes
 and runtime/build/test/CI input digest. Subsequent test-fixture repairs and
 evidence additions require their own checkpoint and final verification binding.
-W4 full clean verification passes. Subsequent bounded facts, priority, expiry,
-retry, actor-revocation, exposure, isolation and Gate scope repairs and their
-proof supplements require a new clean full run. Final isolated browser,
-packaged migration and exact latest-Head CI remain pending. The named branch
-is published and the unique Draft PR #30 is open; subsequent verified repairs
-will be appended to that same PR.
+W4 and W6 full clean verification are preserved as successful measurements of
+their exact source. W6 also passes the isolated browser, fresh frontend quality,
+packaged artifact and coverage-refusal checks indexed above. W7 frontend and
+security CI pass on its exact tested merge, but W7 backend CI fails. Its two
+backend job results are separate runs and must not be combined into one test
+count or hidden by the successful local W6 run.
+
+The W8 repair preparation addresses a real nanosecond-to-PostgreSQL-microsecond
+Case-age boundary, an over-precise replay oracle, and cross-test work pickup in
+the Price worker fixture. It also adds the dedicated missing compensation Gate-scope
+negative required by F013. R24 original failures and R25
+complete affected-class success are now recorded with their distinct source manifests. The repair checkpoint still
+requires a new complete clean backend run and latest exact-Head CI; earlier
+passing tests are not automatically rebound to changed source. Historical rows
+retain the verification limits that applied when their receipts were produced.
+The named branch is published and the unique Draft PR #30 is open; subsequent
+verified repairs will be appended to that same PR. The final engineering
+canonical-document patch remains unapplied pending the new full run and all
+required CI gates; this index declares neither all 22 findings complete nor a
+Controller verdict.
 
 `scripts/validation/assemble_slice3_rework_evidence.py` derives the central 200-AC
 index from the six named workstream shards. It checks exact accepted text and

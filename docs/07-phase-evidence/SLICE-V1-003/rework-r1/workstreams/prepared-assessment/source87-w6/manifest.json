@@ -1,0 +1,35 @@
+{
+  "generatedAtUTC": "2026-09-05T11:25:40.189550+00:00",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1647,
+      "sha256": "7983fc315716f0e0d5ae5ff698c319a334aaa004da283e74d0cc2152c54c6b1a"
+    },
+    {
+      "path": "build-source-w6-review.py",
+      "bytes": 10216,
+      "sha256": "0c8d0e7ab84c2f4cb2078525043c8fefdb3e6ee4d49c3001c25d2f24d633bd18"
+    },
+    {
+      "path": "committed-facts-outcome-shard-w6.json",
+      "bytes": 1087731,
+      "sha256": "8fbd69f4418ebbad25cf92ad6aaa9b9ab3d856719d99535713c4267d51848aa0"
+    },
+    {
+      "path": "reviewed-source-delta.patch",
+      "bytes": 29040,
+      "sha256": "525f35afc575865abbeb8c1269896237b4bc07a05eee1d844d67dc6224310a6f"
+    },
+    {
+      "path": "source-87-engineering-review-w6.json",
+      "bytes": 1481746,
+      "sha256": "1e5a8d701e676c56701009abf7877468ac6b894c7d1d260c50a681432521821e"
+    },
+    {
+      "path": "source-inventory-w5-w6.json",
+      "bytes": 41071,
+      "sha256": "4f7a1b4782d973e06a65768de852d5840f07cc6dc17450317f088060bec5782b"
+    }
+  ]
+}

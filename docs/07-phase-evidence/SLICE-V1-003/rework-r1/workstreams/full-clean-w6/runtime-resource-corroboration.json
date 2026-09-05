@@ -1,0 +1,9 @@
+{
+  "kind": "ACTUAL_RESOURCE_CORROBORATION_DURING_FULL_RUN",
+  "originalPreservedResourceSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+  "duringRunResourceSha256": "29f028852c60d0c28070c5c5fd76661a469898fa026ae21841fefc76114700d3",
+  "duringRunRecordedAt": "2026-09-05T11:15:19.142679+00:00",
+  "sameHostAndDockerLimits": true,
+  "originalCapacityInputFileUnchanged": true,
+  "limitation": "Initial default-sandbox sysctl resource refresh was refused by OS permissions; the original full-run collector preserves that failed cpuMemory observation. A separately approved read-only probe during the run independently confirms the same actual host and local Docker resource limits. No original receipt or resource input was overwritten."
+}

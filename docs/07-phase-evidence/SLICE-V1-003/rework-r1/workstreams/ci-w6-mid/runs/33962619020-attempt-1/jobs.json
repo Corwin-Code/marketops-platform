@@ -1,0 +1,110 @@
+[
+  {
+    "id": 101297026284,
+    "run_id": 33962619020,
+    "workflow_name": "Infrastructure",
+    "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/runs/33962619020",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTwsbvM8AAAAXlcX07A",
+    "head_sha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/jobs/101297026284",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619020/job/101297026284",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-09-05T11:10:35Z",
+    "started_at": "2026-09-05T11:10:38Z",
+    "completed_at": "2026-09-05T11:10:59Z",
+    "name": "infrastructure-validation",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T11:10:39Z",
+        "completed_at": "2026-09-05T11:10:39Z"
+      },
+      {
+        "name": "Checkout exact candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T11:10:40Z",
+        "completed_at": "2026-09-05T11:10:43Z"
+      },
+      {
+        "name": "Install checksum-pinned Terraform",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T11:10:43Z",
+        "completed_at": "2026-09-05T11:10:44Z"
+      },
+      {
+        "name": "Validate both environments and state bootstrap without credentials or apply",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-09-05T11:10:44Z",
+        "completed_at": "2026-09-05T11:10:54Z"
+      },
+      {
+        "name": "Test network and secret-delivery refusal controls",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-09-05T11:10:54Z",
+        "completed_at": "2026-09-05T11:10:54Z"
+      },
+      {
+        "name": "Test ephemeral runtime secret delivery",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-09-05T11:10:54Z",
+        "completed_at": "2026-09-05T11:10:54Z"
+      },
+      {
+        "name": "Record tested identities",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-09-05T11:10:54Z",
+        "completed_at": "2026-09-05T11:10:54Z"
+      },
+      {
+        "name": "Publish infrastructure verification evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-09-05T11:10:54Z",
+        "completed_at": "2026-09-05T11:10:57Z"
+      },
+      {
+        "name": "Post Checkout exact candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-09-05T11:10:57Z",
+        "completed_at": "2026-09-05T11:10:57Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-09-05T11:10:57Z",
+        "completed_at": "2026-09-05T11:10:57Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101297026284",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000001041,
+    "runner_name": "GitHub Actions 1000001041",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  }
+]

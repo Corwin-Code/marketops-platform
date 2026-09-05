@@ -1,0 +1,37 @@
+{
+  "kind": "R24_INDIVIDUAL_SUITE_REVIEW_CONTAINING_RUN_FAILED",
+  "receipt": "/tmp/slice3-r1-final-controls-r24/receipt.json",
+  "receiptSha256": "58b9cd02f4e48cceedfda3994b5b7ee3f6bf46f73a008baf4c2f2df52ad1139e",
+  "counts": {
+    "tests": 130,
+    "failures": 1,
+    "errors": 2,
+    "skipped": 0
+  },
+  "sourceStable": true,
+  "completePass": false,
+  "actualPassingCompleteClasses": {
+    "com.mimococo.marketops.PriceCommandWorkerIT": 18,
+    "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest": 34,
+    "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT": 24,
+    "com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityLexicographicTest": 10
+  },
+  "failures": [
+    {
+      "scope": "AdvertisingReservationIT two new parameterized F013 cases",
+      "reason": "Identical fictional readback response bytes attempted distinct raw_content inserts, violating unchanged SHA uniqueness before new Gate assertions. Exact immutable Raw reuse patch applied only after completion; no semantic PASS is claimed."
+    },
+    {
+      "scope": "AdvertisingOrchestrationCapacityIT sameAsOf round-up oracle",
+      "reason": "New min(created_at) assertion selected an unrelated preseeded Case, not the actual projection Case IDs. Original full calculation equality not reached in this method; targeted/workload+replay methods passed. Narrow query repair pending."
+    }
+  ],
+  "capacityResourceBoundary": {
+    "outerReceiptContainsFreshMeasuredResourceSha": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4",
+    "innerResourceReceipt": "NOT_SUPPLIED_BY_OUTER_RUNNER",
+    "innerResourceSha": "NOT_AVAILABLE",
+    "limit": "R24 collector did not export SLICE3_RUNTIME_RESOURCE_RECEIPT; inner NOT_SUPPLIED is preserved. This selected run cannot substitute for final full-run resource/publication identity. The complete full runner exports the original current measured resource receipt."
+  },
+  "nextVerification": "R25 full affected classes and new clean W8 full+CI required",
+  "production_write_enabled": false
+}

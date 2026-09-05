@@ -1,0 +1,143 @@
+{
+  "kind": "TARGETED_R25_F013_RAW_AND_SAME_CLASS_TIME_PRECISION_REPAIR",
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+  "command": [
+    "./mvnw",
+    "-B",
+    "-ntp",
+    "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+    "-Dtest=AdvertisingReservationIT,AdvertisingHumanWorkflowIT,AdvertisingOrchestrationCapacityIT,AdvertisingReconciliationWorkerTest,StaffedResponseClockTest",
+    "test"
+  ],
+  "baseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+  "baseTree": "3fbe57fc39f0d4d969e571ea895354e81c4fe1b8",
+  "workingTreeStatusBefore": "M backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java\n M backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java\n M backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java\n M docs/07-phase-evidence/SLICE-V1-003/rework-r1/README.md\n?? backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-w6/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/ci-w6-mid/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/ci-w7-failed/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f013-raw-dedup/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r24/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/finding-fix-path-history-w6.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/frontend-ci-w6-repair/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/frontend-ci-w7/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/frozen-22-clause-review/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w6/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/gov-infra-provenance-w6/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/individual-backend-join-w6.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/input-delta-w6-w7/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/measured-assessment-w6/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/named-junit-w6.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/named-junit-w6.md\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/named-python-pre-w6.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/nanosecond-same-class-review/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/prepared-assessment/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/prepared-canonical-w6/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/prepared-readme-w8/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/price-worker-isolation/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/publication-w6-attempt-1/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/publication-w6-attempt-2/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/publication-w7/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/r24-individual-suite-review/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/root-fast-forward-w7/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6-w7-raw-scan.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6-w7-secret-triage/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/slice3-r1-w6-identity.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/slice3-r1-w7-identity.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/validation-w6/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/w7-ci-and-measured-assessment-publication-scan.json",
+  "sourceBinding": "Exact source manifests bind W7 plus the R24 repair checkpoint and explicit Raw content deduplication, correct projected Case oracle, Task SLO as-of boundary and Reconciliation exact Duration controls. Actual R24 failures remain preserved. All listed relevant classes run completely; full unselected verify and latest CI remain separately required.",
+  "sourceBeforeSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+  "resourcesSha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4",
+  "boundary": "Synthetic isolated PostgreSQL only; no real Provider/shared/production. production_write_enabled=false.",
+  "startedAtUTC": "2026-09-05T12:42:37.294063+00:00",
+  "finishedAtUTC": "2026-09-05T12:50:12.037347+00:00",
+  "elapsedSeconds": 454.739,
+  "exitCode": 0,
+  "logSha256": "ad22dd8a992c14b45fb930a8fb75887a18c9f2a5a6d156d6ef6bc536bd27351c",
+  "sourceAfterSha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a",
+  "sourceStable": true,
+  "capacityArtifacts": [
+    {
+      "path": "/tmp/slice3-r1-final-controls-r25/capacity/advertising-capacity-receipt.json",
+      "sha256": "fb9b11588d09eadf32128d4b9c2192977d030654b34fc69364649e1d5a451b43"
+    },
+    {
+      "path": "/tmp/slice3-r1-final-controls-r25/capacity/advertising-capacity-dataset.json",
+      "sha256": "2783396a367b24b648725f42228cb02456d6d38a72ec96f7261a2d77ac4973aa"
+    },
+    {
+      "path": "/tmp/slice3-r1-final-controls-r25/capacity/advertising-capacity-source-inputs.json",
+      "sha256": "5b4898fccafe074f317a5bd61ddde25551b9cec46ebe722f03160ad9110d4247"
+    }
+  ],
+  "reports": [
+    {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "declared": {
+        "tests": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+      "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingReservationIT",
+      "declared": {
+        "tests": 41,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 41,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.AdvertisingReservationIT.xml",
+      "sha256": "6f1bf6bcd207caffd965f093b6e70c65d92c36d3baa97d94dab2df240af1a714"
+    },
+    {
+      "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+      "declared": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+      "sha256": "b9844fdb3f8b095bbae468ab530694560d251cf7ada43d6d70db082dd6ea7f49"
+    },
+    {
+      "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest",
+      "declared": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest.xml",
+      "sha256": "7196ad541e0f9ada0394b6939aa283dbcd669e97c01ade46db798b52f260e6ac"
+    },
+    {
+      "class": "com.mimococo.marketops.operationsworkflow.internal.domain.StaffedResponseClockTest",
+      "declared": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-final-controls-r25/reports/TEST-com.mimococo.marketops.operationsworkflow.internal.domain.StaffedResponseClockTest.xml",
+      "sha256": "97105c53f0a26cf1d4b87f9230472e573065fb36888350318e1b59006306b7d8"
+    }
+  ],
+  "counts": {
+    "tests": 72,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "expectedClasses": [
+    "AdvertisingReservationIT",
+    "AdvertisingHumanWorkflowIT",
+    "AdvertisingOrchestrationCapacityIT",
+    "AdvertisingReconciliationWorkerTest",
+    "StaffedResponseClockTest"
+  ],
+  "missingClasses": [],
+  "completeSelectedClassesPass": true,
+  "limit": "Complete clean unselected full verify and latest PR security/CI remain required. Historical W6/W7 browser evidence retains its actual source identity."
+}

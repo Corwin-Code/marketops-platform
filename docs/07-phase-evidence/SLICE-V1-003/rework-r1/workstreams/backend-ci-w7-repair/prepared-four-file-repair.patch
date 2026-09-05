@@ -1,0 +1,187 @@
+diff --git a/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java b/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java
+index c021937..11f1121 100644
+--- a/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java
++++ b/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java
+@@ -633,9 +633,7 @@ class AdvertisingCaseCalculationService {
+                 : AdMeasure.notAvailable(AdEvidenceState.NOT_AVAILABLE);
+         var rankContext = evidence.authorities().rankContexts().getOrDefault(identity.caseKey(),
+                 evidence.authorities().rankContexts().get("__OBJECT_DEPENDENCIES__"));
+-        BigDecimal ageDays = rankContext == null ? BigDecimal.ZERO : BigDecimal.valueOf(
+-                Duration.between(rankContext.firstRaisedAt(), evidence.asOf()).toSeconds())
+-                .divide(BigDecimal.valueOf(86400), CONTEXT);
++        BigDecimal ageDays = caseAgeDays(rankContext, evidence.asOf());
+         BigDecimal maturity = evidence.objectFacts().filter(facts -> facts.everyWindowComplete()
+                         && !facts.anyCorrectionWindowOpen())
+                 .map(AdvertisingEvidenceRepository.ObjectFactAggregate::coverageRatio).orElse(null);
+@@ -669,6 +667,24 @@ class AdvertisingCaseCalculationService {
+                 currency, variantDiagnostics(evidence));
+     }
+ 
++    private static BigDecimal caseAgeDays(AdvertisingEvidenceRepository.RankContext context, Instant asOf) {
++        if (context == null) { return BigDecimal.ZERO; }
++        Instant firstRaised = context.firstRaisedAt();
++        if (firstRaised == null) { return null; }
++        if (firstRaised.isAfter(asOf)) {
++            // JDBC/PostgreSQL persist timestamptz at rounded microsecond precision.
++            // Re-reading that same origin can place it < 1 microsecond after the
++            // original Java Instant; Duration.toSeconds would then produce -1.
++            Instant persistedAsOf = asOf.truncatedTo(java.time.temporal.ChronoUnit.MICROS)
++                    .plusNanos(asOf.getNano() % 1000 >= 500 ? 1000 : 0);
++            // Only the identical representable instant is age zero. A genuinely
++            // future origin stays unknown, rather than inventing an ordinary age.
++            return firstRaised.equals(persistedAsOf) ? BigDecimal.ZERO : null;
++        }
++        return BigDecimal.valueOf(Duration.between(firstRaised, asOf).toSeconds())
++                .divide(BigDecimal.valueOf(86400), CONTEXT);
++    }
++
+     private static List<AdCaseCalculation.VariantDiagnostic> variantDiagnostics(
+             AdvertisingEvidenceGatherer.Evidence evidence) {
+         List<AdCaseCalculation.VariantDiagnostic> diagnostics =
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java
+index 658dffc..9105398 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java
+@@ -55,6 +55,10 @@ import org.springframework.test.context.DynamicPropertySource;
+ @Import(PriceCommandWorkerIT.ScriptedPlatform.class)
+ class PriceCommandWorkerIT {
+ 
++    // runOnce claims every eligible command in its database. Its scripted
++    // platform must therefore share no work queue with other test classes.
++    private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE =
++            TestDatabase.isolatedContainer();
+     private static final String WORKER_NAMESPACE = "price-command-worker-it";
+ 
+     @Autowired
+@@ -81,7 +85,7 @@ class PriceCommandWorkerIT {
+ 
+     @DynamicPropertySource
+     static void databaseProperties(DynamicPropertyRegistry registry) {
+-        var container = TestDatabase.container();
++        var container = DATABASE;
+         registry.add("spring.datasource.url", container::getJdbcUrl);
+         registry.add("spring.datasource.username", TestDatabase::applicationRole);
+         registry.add("spring.datasource.password", TestDatabase::applicationPassword);
+@@ -92,7 +96,7 @@ class PriceCommandWorkerIT {
+     @BeforeEach
+     void seedOneExecutableCommand() {
+         arranger = JdbcClient.create(new org.springframework.jdbc.datasource.DriverManagerDataSource(
+-                TestDatabase.container().getJdbcUrl(), TestDatabase.migrationRole(), TestDatabase.migrationPassword()));
++                DATABASE.getJdbcUrl(), TestDatabase.migrationRole(), TestDatabase.migrationPassword()));
+         platform.reset();
+         PriceCommandFixture.resetSharedState(arranger);
+         commandId = PriceCommandFixture.seed(arranger, WORKER_NAMESPACE + "-" + UUID.randomUUID());
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java
+index be5b6d2..06fd311 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java
+@@ -8,6 +8,7 @@ import com.mimococo.marketops.advertisingefficiency.AdEvidenceState;
+ import com.mimococo.marketops.advertisingefficiency.AdvertisingCause;
+ import com.mimococo.marketops.advertisingefficiency.AdvertisingLane;
+ import com.mimococo.marketops.advertisingefficiency.internal.domain.AdCaseCalculation;
++import com.mimococo.marketops.advertisingefficiency.internal.domain.AdRankFactor;
+ import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingEvidenceRepository;
+ import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingPolicyRepository;
+ import java.math.BigDecimal;
+@@ -543,6 +544,44 @@ class AdvertisingCaseCalculationServiceTest {
+                         Map.of(),Map.of(),Map.of(),false,List.of(),Map.of(),compensation,false,
+                         new AdvertisingEvidenceRepository.CriticalSignals(regressed,unknown,new BigDecimal("1000"),null,null,List.of(ID))));
+     }
++
++    private AdRankFactor calculatedAge(Instant origin, Instant asOf) {
++        var e=withCritical(true,false,false);
++        var authority=e.authorities();
++        var evidence=new AdvertisingEvidenceGatherer.Evidence(e.object(),e.affectedSet(),e.configuration(),e.objectFacts(),
++                e.completedSales(),e.retainedSales(),e.variantShares(),e.containment(),e.conversion(),e.allowableCpa(),
++                e.writeQualification(),e.taskQualification(),Optional.of(weights()),e.economics(),e.variantAvailability(),
++                e.windowStart(),asOf,new AdvertisingEvidenceGatherer.Authorities(authority.cpaByVariant(),authority.freshness(),
++                authority.sustainedPeriods(),authority.comparableBaseline(),authority.metricValueIds(),
++                Map.of("__OBJECT_DEPENDENCIES__",new AdvertisingEvidenceRepository.RankContext(origin,null,0,1,0)),
++                authority.compensationPending(),authority.providerIncidentOpen(),authority.criticalSignals(),authority.canonicalCompletedEventCount()));
++        var result=service.calculateFrom(evidence);
++        assertThat(result.cases().getFirst().decision().protectionTier())
++                .isEqualTo(com.mimococo.marketops.advertisingefficiency.ProtectionTier.P1);
++        return result.cases().getFirst().ranking().factors().stream()
++                .filter(factor->factor.code()==AdRankFactor.Code.CASE_AGE)
++                .findFirst().orElseThrow();
++    }
++
++    @Test void aPersistedMicrosecondOriginCannotGiveTheSameCalculationNegativeAge() {
++        assertThat(calculatedAge(AS_OF.plusNanos(123457000),AS_OF.plusNanos(123456789)).value())
++                .isEqualByComparingTo("0");
++    }
++
++    @Test void microsecondRoundingAcrossASecondBoundaryStillRepresentsAgeZero() {
++        assertThat(calculatedAge(AS_OF.plusSeconds(1),AS_OF.plusNanos(999999999)).value())
++                .isEqualByComparingTo("0");
++    }
++
++    @Test void aGenuinelyFutureCaseOriginRemainsUnknownInsteadOfZero() {
++        var factor=calculatedAge(AS_OF.plusNanos(123458000),AS_OF.plusNanos(123456789));
++        assertThat(factor.value()).isNull();
++        assertThat(factor.displayNote()).isEqualTo("PRIORITY_POLICY_UNRESOLVED:CASE_AGE");
++    }
++
++    @Test void anExistingCaseKeepsItsPositiveElapsedAge() {
++        assertThat(calculatedAge(AS_OF.minusSeconds(129600),AS_OF).value()).isEqualByComparingTo("1.5");
++    }
+     @Test void productionCalculationKeepsCriticalP1EvenWhenOtherEvidenceIsMissing() {
+         var result=service.calculateFrom(withCritical(true,true,false));
+         assertThat(result.cases().getFirst().decision().cause()).isEqualTo(AdvertisingCause.CRITICAL_SALES_UNIT_AT_RISK);
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java
+index 04cc809..cd5b4b4 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java
+@@ -3,6 +3,8 @@ package com.mimococo.marketops.advertisingefficiency.internal.application;
+ import static org.assertj.core.api.Assertions.assertThat;
+ import com.mimococo.marketops.AdvertisingR1Fixture;
+ import com.mimococo.marketops.TestDatabase;
++import com.mimococo.marketops.advertisingefficiency.internal.domain.AdRankFactor;
++import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingEvidenceRepository;
+ import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingRecalculationRepository;
+ import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingTraceRepository;
+ import com.mimococo.marketops.operationsworkflow.AdvertisingDecisionAuthority;
+@@ -38,6 +40,7 @@ class AdvertisingOrchestrationCapacityIT {
+     @Autowired AdvertisingTraceRepository trace;
+     @Autowired AdvertisingBriefService briefs;
+     @Autowired AdvertisingDecisionAuthority decisions;
++    @Autowired AdvertisingEvidenceRepository facts;
+     @Autowired ObjectMapper mapper;
+     @DynamicPropertySource static void properties(DynamicPropertyRegistry registry) {
+         registry.add("spring.datasource.url",DATABASE::getJdbcUrl);
+@@ -136,7 +139,9 @@ class AdvertisingOrchestrationCapacityIT {
+ 
+     @Test void replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach() throws Exception {
+         var graph=AdvertisingR1Fixture.seedManual(migration());var seed=JdbcClient.create(migration());UUID org=graph.id("organization"),object=graph.id("object");
+-        Instant now=Instant.now();
++        // These timestamps are persisted and compared exactly; use the database's
++        // actual precision instead of platform-dependent Instant.now() nanoseconds.
++        Instant now=seed.sql("SELECT clock_timestamp() AS at").query(Timestamp.class).single().toInstant();
+         var first=queue.claim("interrupted-worker",now.minusSeconds(1),10000,now).stream().filter(r->r.organizationId().equals(org)).findFirst().orElseThrow();
+         var second=queue.claim("replacement-worker",now.plusSeconds(300),10000,now.plusSeconds(1)).stream().filter(r->r.organizationId().equals(org)).findFirst().orElseThrow();
+         Instant newer=now.plusSeconds(2);
+@@ -157,10 +162,23 @@ class AdvertisingOrchestrationCapacityIT {
+ 
+     @Test void sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization() throws Exception {
+         var graph=AdvertisingR1Fixture.seedManual(migration());var other=AdvertisingR1Fixture.seedManual(migration());var seed=JdbcClient.create(migration());
+-        Instant at=Instant.now();
++        // Force round-up on every platform: .123456789 becomes .123457 in PG.
++        // Keep the full calculation equality oracle; do not round its result away.
++        Instant at=Instant.now().plusSeconds(1).truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
++                .plusNanos(123456789);
+         var targetedResult=refresh.refresh(graph.id("organization"),graph.id("object"),at,"TARGETED",null,"oracle-targeted").orElseThrow();
++        Instant persistedOrigin=seed.sql("SELECT min(created_at) FROM mart.ad_case WHERE organization_id=:org AND ad_native_object_id=:object")
++                .param("org",graph.id("organization")).param("object",graph.id("object")).query(Timestamp.class).single().toInstant();
++        assertThat(persistedOrigin).isEqualTo(at.truncatedTo(java.time.temporal.ChronoUnit.MICROS).plusNanos(1000));
++        assertThat(persistedOrigin).isAfter(at);
+         var sweepResult=refresh.refresh(graph.id("organization"),graph.id("object"),at,"RECONCILIATION",null,"oracle-sweep").orElseThrow();
+         assertThat(sweepResult.calculation()).isEqualTo(targetedResult.calculation());
++        var ages=sweepResult.calculation().cases().stream().flatMap(row->row.ranking().factors().stream())
++                .filter(factor->factor.code()==AdRankFactor.Code.CASE_AGE).toList();
++        assertThat(ages).isNotEmpty().allSatisfy(factor->assertThat(factor.value()).isEqualByComparingTo("0"));
++        // A truly earlier read must still exclude these future Case origins.
++        assertThat(facts.rankContexts(graph.id("organization"),graph.id("object"),at.minusSeconds(1)).values())
++                .isNotEmpty().allSatisfy(context->assertThat(context.caseId()).isNull());
+         assertThat(sweepResult.written().cases().stream().map(row->row.caseId()).toList()).containsExactlyElementsOf(targetedResult.written().cases().stream().map(row->row.caseId()).toList());
+         seed.sql("UPDATE ops.ad_recalculation_request SET state='COMPLETED',completed_at=now(),lease_owner=NULL,leased_until=NULL WHERE organization_id IN(:first,:other)")
+                 .param("first",graph.id("organization")).param("other",other.id("organization")).update();

@@ -1,0 +1,574 @@
+{
+  "kind": "W6_REMOTE_GOVERNANCE_INFRASTRUCTURE_PROVENANCE_REVIEW",
+  "observedAtUTC": "2026-09-05T11:25:56.455872+00:00",
+  "sourceHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "sourceTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+  "testedMerge": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+  "parents": [
+    "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "3ed3f4c87c336cb07188e470528f328358fb279f"
+  ],
+  "mergeApi": {
+    "path": "/tmp/slice3-w6-gov-infra-provenance/tested-merge-git-commit-api.json",
+    "sha256": "eea53f6688f51e6b7ecca140088f0bf295a5817b9ccc242e9d8675a12d4d5131",
+    "bytes": 2687
+  },
+  "mergeFetch": {
+    "argv": [
+      "gh",
+      "api",
+      "repos/Corwin-Code/marketops-platform/git/commits/34fae1e0985865874f9ec44a3be93cd67d3c61a6"
+    ],
+    "exitCode": 0
+  },
+  "runs": [
+    {
+      "runId": 33962619014,
+      "attempt": 1,
+      "jobId": 101297026216,
+      "jobName": "governance",
+      "workflow": ".github/workflows/governance.yml",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-05T11:10:37Z",
+      "completedAt": "2026-09-05T11:11:03Z",
+      "jobApiHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "actualCheckout": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+      "checkoutMember": "governance/2_Checkout repository.txt",
+      "apiInputs": [
+        {
+          "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619014-attempt-1/run.json",
+          "sha256": "43eb42c6a619bc43f1a7e01a9937edd2269b491cb25c4fd54fe974c85dc821b1",
+          "bytes": 15244
+        },
+        {
+          "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619014-attempt-1/jobs.json",
+          "sha256": "68162c8debef98aa91e530cd83767080c9f74de014d9cc34f78b6d8ec2c694a9",
+          "bytes": 3102
+        },
+        {
+          "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619014-attempt-1/artifacts.json",
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        }
+      ],
+      "rawLogs": {
+        "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619014-attempt-1/logs.zip",
+        "sha256": "e494d2dbdc454d2c7c42c5f06b39ad4e9f0f07bf3fc9a309b43daad008aace4d",
+        "bytes": 11802
+      },
+      "relevantLogMembers": [
+        {
+          "member": "governance/2_Checkout repository.txt",
+          "sha256": "3397a18d67a580bceaa173b6ccfd64a0afbdffa25ce49f95c6ce79ef2b7eb0ae",
+          "extract": "/tmp/slice3-w6-gov-infra-provenance/run-33962619014/2_Checkout repository.txt"
+        },
+        {
+          "member": "governance/3_Record the identifiers this run is about.txt",
+          "sha256": "41ecebeb6590d410ca509f16ff9b2317eace1ef2a298a30a6ca01f87d532c019",
+          "extract": "/tmp/slice3-w6-gov-infra-provenance/run-33962619014/3_Record the identifiers this run is about.txt"
+        },
+        {
+          "member": "governance/4_Validate governance, source integrity and common secret patterns.txt",
+          "sha256": "b6be9b6c05f783b134345377930511a09739f3091cfd3b0f489167081c240b02",
+          "extract": "/tmp/slice3-w6-gov-infra-provenance/run-33962619014/4_Validate governance, source integrity and common secret patterns.txt"
+        },
+        {
+          "member": "governance/5_Validate the three production readiness rules.txt",
+          "sha256": "734a96c7e03ba97340b366ec601f85750ba706b3b759e9263cc264207f43ce77",
+          "extract": "/tmp/slice3-w6-gov-infra-provenance/run-33962619014/5_Validate the three production readiness rules.txt"
+        },
+        {
+          "member": "governance/6_Run the validator's own tests.txt",
+          "sha256": "89bf9a989c5b9a68effa973f93ceadf05a578716defa9ab743ff3b1d293f9b04",
+          "extract": "/tmp/slice3-w6-gov-infra-provenance/run-33962619014/6_Run the validator's own tests.txt"
+        }
+      ],
+      "artifactCount": 0,
+      "scope": "This completed context only; not whole W6 CI or Controller approval."
+    },
+    {
+      "runId": 33962619020,
+      "attempt": 1,
+      "jobId": 101297026284,
+      "jobName": "infrastructure-validation",
+      "workflow": ".github/workflows/infrastructure.yml",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-05T11:10:38Z",
+      "completedAt": "2026-09-05T11:10:59Z",
+      "jobApiHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "actualCheckout": "34fae1e0985865874f9ec44a3be93cd67d3c61a6",
+      "checkoutMember": "infrastructure-validation/2_Checkout exact candidate.txt",
+      "apiInputs": [
+        {
+          "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619020-attempt-1/run.json",
+          "sha256": "da773a40b1f9cf0755dfeb290243ea753a012d601e97a8ee9512bad11239760b",
+          "bytes": 15251
+        },
+        {
+          "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619020-attempt-1/jobs.json",
+          "sha256": "b757e9fe4afa8b7c67e2f1614f98789376fff04a916efd67d432ae0860a25743",
+          "bytes": 3646
+        },
+        {
+          "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619020-attempt-1/artifacts.json",
+          "sha256": "f2aae3f77589075b5e51de7136e095dc8b119f8a291adb0b46dc47ea4ce90dbe",
+          "bytes": 880
+        }
+      ],
+      "rawLogs": {
+        "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619020-attempt-1/logs.zip",
+        "sha256": "cafe3742bd6e3f9d0b45b042931d79559e77e9e39b01c6a2e63acc88860e7d89",
+        "bytes": 16483
+      },
+      "relevantLogMembers": [
+        {
+          "member": "infrastructure-validation/2_Checkout exact candidate.txt",
+          "sha256": "0a18eebe04402d86f97034b3c63af008036cbcb6fcc6a74744df4fd2a382c997",
+          "extract": "/tmp/slice3-w6-gov-infra-provenance/run-33962619020/2_Checkout exact candidate.txt"
+        },
+        {
+          "member": "infrastructure-validation/3_Install checksum-pinned Terraform.txt",
+          "sha256": "f9422fb9289466bfa5a7b4d08c8ba5f6e7d8fbd7366246bfb726fd0fea214879",
+          "extract": "/tmp/slice3-w6-gov-infra-provenance/run-33962619020/3_Install checksum-pinned Terraform.txt"
+        },
+        {
+          "member": "infrastructure-validation/4_Validate both environments and state bootstrap without credentials or apply.txt",
+          "sha256": "9141ca6c0d5ef3787565dd19c2b114329ba26995cb539280b8f4f8549d0c6751",
+          "extract": "/tmp/slice3-w6-gov-infra-provenance/run-33962619020/4_Validate both environments and state bootstrap without credentials or apply.txt"
+        },
+        {
+          "member": "infrastructure-validation/5_Test network and secret-delivery refusal controls.txt",
+          "sha256": "bf5a58d04443a3c9674055e91e6e9a30a84215550b03eab1cb83728ad6b28004",
+          "extract": "/tmp/slice3-w6-gov-infra-provenance/run-33962619020/5_Test network and secret-delivery refusal controls.txt"
+        },
+        {
+          "member": "infrastructure-validation/6_Test ephemeral runtime secret delivery.txt",
+          "sha256": "07f8b593daed5ccdcce8e2184a6b0dd1f333ec970611a5e927a4f75e6b7faadb",
+          "extract": "/tmp/slice3-w6-gov-infra-provenance/run-33962619020/6_Test ephemeral runtime secret delivery.txt"
+        },
+        {
+          "member": "infrastructure-validation/7_Record tested identities.txt",
+          "sha256": "30e54b291b65b890a697e4a0f49c1c09e545a2bafa25a5f31322f9178af6c11d",
+          "extract": "/tmp/slice3-w6-gov-infra-provenance/run-33962619020/7_Record tested identities.txt"
+        },
+        {
+          "member": "infrastructure-validation/8_Publish infrastructure verification evidence.txt",
+          "sha256": "ab69883dff109ce4616b8b15f2781e351949046d4246004f3a620e3cdb505726",
+          "extract": "/tmp/slice3-w6-gov-infra-provenance/run-33962619020/8_Publish infrastructure verification evidence.txt"
+        }
+      ],
+      "artifactCount": 1,
+      "scope": "This completed context only; not whole W6 CI or Controller approval."
+    }
+  ],
+  "governance": {
+    "validators": [
+      {
+        "command": "python3 scripts/validate_governance.py",
+        "result": "PASS",
+        "logMember": "governance/4_Validate governance, source integrity and common secret patterns.txt"
+      },
+      {
+        "command": "python3 scripts/validate_production_readiness.py",
+        "result": "PASS",
+        "inspectedFiles": 2750,
+        "namedRules": [
+          "TC-GLOBAL-001",
+          "TC-GLOBAL-002",
+          "TC-GLOBAL-003",
+          "TC-GLOBAL-004"
+        ],
+        "logMember": "governance/5_Validate the three production readiness rules.txt"
+      }
+    ],
+    "python": {
+      "command": "python3 -m unittest discover -s tests -p 'test_*.py'",
+      "actualFrameworkTests": 410,
+      "seconds": 1.765,
+      "conclusion": "OK",
+      "logMember": "governance/6_Run the validator's own tests.txt",
+      "individualNamesRecorded": false
+    },
+    "negativeFixtureOutput": "The env-init refusal messages are intentional negative-fixture output within the successful suite; they are not job failures.",
+    "artifact": null,
+    "identitySummary": "Job log contains the literal summary-write shell commands and SOURCE_HEAD_SHA environment value. Download does not include expanded GITHUB_STEP_SUMMARY contents. Checkout and run APIs separately prove merge/source binding."
+  },
+  "infrastructure": {
+    "artifactApi": {
+      "id": 9968405495,
+      "node_id": "MDg6QXJ0aWZhY3Q5OTY4NDA1NDk1",
+      "name": "infrastructure-verification",
+      "size_in_bytes": 2316686,
+      "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9968405495",
+      "archive_download_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9968405495/zip",
+      "expired": false,
+      "digest": "sha256:cce26151aa700569eb3943529e3e56ba4b2de478ba87b629cb62f009bf3970ca",
+      "created_at": "2026-09-05T11:10:56Z",
+      "updated_at": "2026-09-05T11:10:56Z",
+      "expires_at": "2026-09-19T11:10:55Z",
+      "workflow_run": {
+        "id": 33962619020,
+        "repository_id": 1326128060,
+        "head_repository_id": 1326128060,
+        "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+        "head_sha": "3ed3f4c87c336cb07188e470528f328358fb279f"
+      }
+    },
+    "downloadedArtifact": {
+      "path": "/tmp/slice3-pr30-w6-mid-ci/runs/33962619020-attempt-1/artifact-9968405495.zip",
+      "sha256": "cce26151aa700569eb3943529e3e56ba4b2de478ba87b629cb62f009bf3970ca",
+      "bytes": 2316686
+    },
+    "digestMatchesApiAndJobUpload": true,
+    "uploadLogMember": "infrastructure-validation/8_Publish infrastructure verification evidence.txt",
+    "memberCount": 13,
+    "memberInventory": [
+      {
+        "member": "bootstrap-init.log",
+        "bytes": 489,
+        "sha256": "d3160ee0ce719ff5d362e0a4a32e758287172fbcd1b05f2c56d1bf6e3ea1a46f"
+      },
+      {
+        "member": "bootstrap-plan.jsonl",
+        "bytes": 3054848,
+        "sha256": "98c789e7f4636def3e5e58db304cc97b383d1f48338e927c2ec971763205df55"
+      },
+      {
+        "member": "bootstrap-validate.log",
+        "bytes": 38,
+        "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+      },
+      {
+        "member": "fmt.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "member": "production-init.log",
+        "bytes": 773,
+        "sha256": "aa9d712e0689b611a5e84c80bb0594c7dc2d6b95acb8ba7f3a802b0dd19dde57"
+      },
+      {
+        "member": "production-plan.jsonl",
+        "bytes": 9466796,
+        "sha256": "c7c9aac998ff815ef58a533418885fda2e63665095695850159bd7a07457652d"
+      },
+      {
+        "member": "production-validate.log",
+        "bytes": 38,
+        "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+      },
+      {
+        "member": "staging-init.log",
+        "bytes": 773,
+        "sha256": "aa9d712e0689b611a5e84c80bb0594c7dc2d6b95acb8ba7f3a802b0dd19dde57"
+      },
+      {
+        "member": "staging-plan.jsonl",
+        "bytes": 9466366,
+        "sha256": "e94731bce02e140da5400886469e87988baa34bbad7deb5901492d3388c94371"
+      },
+      {
+        "member": "staging-validate.log",
+        "bytes": 38,
+        "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+      },
+      {
+        "member": "summary.json",
+        "bytes": 2346,
+        "sha256": "37d49300704c4e6989720595351006d3462d8f2a2ddff82c629f9084d600d949"
+      },
+      {
+        "member": "verification.tfrc",
+        "bytes": 64,
+        "sha256": "bbd0f3318adbfddee23f2a81b6dfa831fa3dde2f63429abaf71e4b65c88702c3"
+      },
+      {
+        "member": "version.json",
+        "bytes": 125,
+        "sha256": "8a3cabea3c1a86d3d0f43a38d0c791976cb4a2362f105121e9106ab25de124b8"
+      }
+    ],
+    "summary": {
+      "terraform": "1.14.9",
+      "provider": "yandex-cloud/yandex 0.220.0",
+      "plans": [
+        {
+          "environment": "bootstrap",
+          "resource_count": 11,
+          "state_custody": "PASS",
+          "external_verification": "NOT_PERFORMED",
+          "plan_sha256": "98c789e7f4636def3e5e58db304cc97b383d1f48338e927c2ec971763205df55",
+          "apply": "NOT_EXECUTED"
+        },
+        {
+          "environment": "staging",
+          "resource_count": 75,
+          "network": "PASS",
+          "runtime": "PASS",
+          "secret_plan_persistence": "ABSENT",
+          "external_verification": "NOT_PERFORMED",
+          "foundation": {
+            "environment": "staging",
+            "resource_count": 67,
+            "network": "PASS",
+            "runtime": "NOT_CREATED_BEFORE_MIGRATION",
+            "secret_plan_persistence": "ABSENT",
+            "external_verification": "NOT_PERFORMED"
+          },
+          "unproven_runtime": "REFUSED_EXPECTED_MISSING_MIGRATION_EVIDENCE",
+          "plan_sha256": "e94731bce02e140da5400886469e87988baa34bbad7deb5901492d3388c94371",
+          "apply": "NOT_EXECUTED"
+        },
+        {
+          "environment": "production",
+          "resource_count": 75,
+          "network": "PASS",
+          "runtime": "PASS",
+          "secret_plan_persistence": "ABSENT",
+          "external_verification": "NOT_PERFORMED",
+          "foundation": {
+            "environment": "production",
+            "resource_count": 67,
+            "network": "PASS",
+            "runtime": "NOT_CREATED_BEFORE_MIGRATION",
+            "secret_plan_persistence": "ABSENT",
+            "external_verification": "NOT_PERFORMED"
+          },
+          "unproven_runtime": "REFUSED_EXPECTED_MISSING_MIGRATION_EVIDENCE",
+          "plan_sha256": "c7c9aac998ff815ef58a533418885fda2e63665095695850159bd7a07457652d",
+          "apply": "NOT_EXECUTED"
+        }
+      ],
+      "provider_installation": "LOCKFILE_VERIFIED_REGISTRY",
+      "lockfiles": {
+        "infra/yandex/bootstrap/.terraform.lock.hcl": "ad2cbf55acc008b0c54953b67a073a7ba494624cdfcb2c8d0d0af6a518669a37",
+        "infra/yandex/environments/staging/.terraform.lock.hcl": "ad2cbf55acc008b0c54953b67a073a7ba494624cdfcb2c8d0d0af6a518669a37",
+        "infra/yandex/environments/production/.terraform.lock.hcl": "ad2cbf55acc008b0c54953b67a073a7ba494624cdfcb2c8d0d0af6a518669a37"
+      },
+      "real_provider_api_calls": "NONE_MOCK_PROVIDER",
+      "deployment": "NOT_AUTHORIZED",
+      "state_inspection_scope": "WRITE_ONLY_SCHEMA_AND_SYNTHETIC_PLAN_VALUES_NO_REAL_STATE"
+    },
+    "summaryEqualsActualJobPrintedJson": true,
+    "summaryAllPlanDigestsMatchArtifactMembers": true,
+    "summaryLockfilesMatchW6Source": true,
+    "terraformTests": [
+      {
+        "environment": "bootstrap",
+        "path": "tests/bootstrap.tftest.hcl",
+        "run": "state_custody_plan",
+        "progress": "complete",
+        "status": "pass",
+        "timestamp": "2026-09-05T11:10:47.640322Z",
+        "member": "bootstrap-plan.jsonl",
+        "memberSha256": "98c789e7f4636def3e5e58db304cc97b383d1f48338e927c2ec971763205df55"
+      },
+      {
+        "environment": "staging",
+        "path": "tests/environment.tftest.hcl",
+        "run": "foundation_plan",
+        "progress": "complete",
+        "status": "pass",
+        "timestamp": "2026-09-05T11:10:50.303288Z",
+        "member": "staging-plan.jsonl",
+        "memberSha256": "e94731bce02e140da5400886469e87988baa34bbad7deb5901492d3388c94371"
+      },
+      {
+        "environment": "staging",
+        "path": "tests/environment.tftest.hcl",
+        "run": "unproven_runtime_rejected",
+        "progress": "complete",
+        "status": "pass",
+        "timestamp": "2026-09-05T11:10:50.496774Z",
+        "member": "staging-plan.jsonl",
+        "memberSha256": "e94731bce02e140da5400886469e87988baa34bbad7deb5901492d3388c94371"
+      },
+      {
+        "environment": "staging",
+        "path": "tests/environment.tftest.hcl",
+        "run": "full_environment_plan",
+        "progress": "complete",
+        "status": "pass",
+        "timestamp": "2026-09-05T11:10:50.733459Z",
+        "member": "staging-plan.jsonl",
+        "memberSha256": "e94731bce02e140da5400886469e87988baa34bbad7deb5901492d3388c94371"
+      },
+      {
+        "environment": "production",
+        "path": "tests/environment.tftest.hcl",
+        "run": "foundation_plan",
+        "progress": "complete",
+        "status": "pass",
+        "timestamp": "2026-09-05T11:10:53.857390Z",
+        "member": "production-plan.jsonl",
+        "memberSha256": "c7c9aac998ff815ef58a533418885fda2e63665095695850159bd7a07457652d"
+      },
+      {
+        "environment": "production",
+        "path": "tests/environment.tftest.hcl",
+        "run": "unproven_runtime_rejected",
+        "progress": "complete",
+        "status": "pass",
+        "timestamp": "2026-09-05T11:10:54.049011Z",
+        "member": "production-plan.jsonl",
+        "memberSha256": "c7c9aac998ff815ef58a533418885fda2e63665095695850159bd7a07457652d"
+      },
+      {
+        "environment": "production",
+        "path": "tests/environment.tftest.hcl",
+        "run": "full_environment_plan",
+        "progress": "complete",
+        "status": "pass",
+        "timestamp": "2026-09-05T11:10:54.284184Z",
+        "member": "production-plan.jsonl",
+        "memberSha256": "c7c9aac998ff815ef58a533418885fda2e63665095695850159bd7a07457652d"
+      }
+    ],
+    "terraformSummaries": [
+      {
+        "environment": "bootstrap",
+        "status": "pass",
+        "passed": 1,
+        "failed": 0,
+        "errored": 0,
+        "skipped": 0
+      },
+      {
+        "environment": "staging",
+        "status": "pass",
+        "passed": 3,
+        "failed": 0,
+        "errored": 0,
+        "skipped": 0
+      },
+      {
+        "environment": "production",
+        "status": "pass",
+        "passed": 3,
+        "failed": 0,
+        "errored": 0,
+        "skipped": 0
+      }
+    ],
+    "pythonSuites": [
+      {
+        "logMember": "infrastructure-validation/5_Test network and secret-delivery refusal controls.txt",
+        "count": 9,
+        "seconds": 0.113,
+        "conclusion": "OK",
+        "individualNamesRecorded": false
+      },
+      {
+        "logMember": "infrastructure-validation/6_Test ephemeral runtime secret delivery.txt",
+        "count": 13,
+        "seconds": 0.025,
+        "conclusion": "OK",
+        "individualNamesRecorded": false
+      }
+    ],
+    "actualCounts": {
+      "terraformTests": 7,
+      "pythonTests": 22,
+      "combinedInfrastructureTests": 29
+    },
+    "countLimit": "Do not describe this remote run as Python29 plus Terraform7. Its actual two Python summaries are9 and13.",
+    "sourceStamp": {
+      "embeddedInSummary": [
+        "Terraform version",
+        "provider version",
+        "lockfile hashes",
+        "plan hashes",
+        "nonexternal/apply boundaries"
+      ],
+      "notEmbeddedInSummary": [
+        "sourceHead",
+        "sourceTree",
+        "testedMerge",
+        "workflowRunId",
+        "runAttempt",
+        "jobId",
+        "artifactId",
+        "source script/test hashes"
+      ],
+      "bindingMechanism": "Raw API run/attempt/job plus observed checkout links W6 merge; that same job upload names exact artifact ID/digest, API names its workflow run/head, downloaded ZIP matches digest, and summary/plan payload hashes match. This is an external provenance envelope, not a self-stamped payload."
+    }
+  },
+  "reviewedW6Inputs": [
+    {
+      "path": ".github/workflows/governance.yml",
+      "sha256": "be11fddc4cc617a1f0b5c9206e5ca9cdfd7db12a8841d9db39fe4430e152926f",
+      "gitBlob": "7e77ddc0f18105de50a2792cd3cb46e7d23cec5f"
+    },
+    {
+      "path": ".github/workflows/infrastructure.yml",
+      "sha256": "ec0f1ade32d02ee79ec52c345eb979a6c9f0ab856cacf901852c6936ae3065a5",
+      "gitBlob": "382851b3bf780a70fe8a0c7de2eff1d4d58c98da"
+    },
+    {
+      "path": "scripts/verify_terraform.py",
+      "sha256": "94b7ad91e809607cb0984298bd00c77e710498b24950acb5e897d2b99b37c1a9",
+      "gitBlob": "b4072b39d3f73e34827fa32053695493e99ad6ae"
+    },
+    {
+      "path": "scripts/validate_terraform_plan.py",
+      "sha256": "0ab496e4430e0b2826b8eaac7dd73c0d41116fe2f7b64af898431f8d6968481a",
+      "gitBlob": "2bb730bd18506bc0550e3175a4e5114c38ac0437"
+    },
+    {
+      "path": "scripts/validate_governance.py",
+      "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97",
+      "gitBlob": "acf200b049cc15e9dac905bf0284da72f2fd30d8"
+    },
+    {
+      "path": "scripts/validate_production_readiness.py",
+      "sha256": "19d14227a280d2c2f998ec455ed1c83e9cd25ba78ba662561c58f6dd1b7051a6",
+      "gitBlob": "7c2b24ef3feb268d8c8ef057b625d7a7de5b64f2"
+    },
+    {
+      "path": "tests/test_validate_terraform_plan.py",
+      "sha256": "ab0c60a0c27683abf9f756a0641cd750e79385dde2e22ad79815862e4eb17bcf",
+      "gitBlob": "d9ee001e9798018efefbc78b85032a4fcca4cbaa"
+    },
+    {
+      "path": "tests/test_yandex_runtime.py",
+      "sha256": "397724db7c652b2037021df02d8e43677b724faa440a193792e0dcfd25b243bd",
+      "gitBlob": "c1424fe69544debd04937b2931bcf214cd27cf7e"
+    },
+    {
+      "path": "infra/yandex/runtime/bootstrap.py",
+      "sha256": "fb10cf3b1421d2997a9b79475e5f0fda0b6d3ff956ef78a56eacf3d17721ee52",
+      "gitBlob": "2e23b7a6715fcb4cfe6b1a8ca9ab9c809bb826bb"
+    },
+    {
+      "path": "infra/yandex/bootstrap/tests/bootstrap.tftest.hcl",
+      "sha256": "e2d7fbca7a478accbcddd6982e7cd6882637b42f98d4ae4e6a1b2fa2fd0684a0",
+      "gitBlob": "531c94d0722027d14140f35a14d328ca12c5a853"
+    },
+    {
+      "path": "infra/yandex/environments/staging/tests/environment.tftest.hcl",
+      "sha256": "4902f4fac690691fb90f00e54b5cbb654860d4b505a98e0b04b629a021051a9b",
+      "gitBlob": "12fb60a5f7fdf68a1cf2f497d160919d3f38fcc7"
+    },
+    {
+      "path": "infra/yandex/environments/production/tests/environment.tftest.hcl",
+      "sha256": "4902f4fac690691fb90f00e54b5cbb654860d4b505a98e0b04b629a021051a9b",
+      "gitBlob": "12fb60a5f7fdf68a1cf2f497d160919d3f38fcc7"
+    }
+  ],
+  "nonexternalBoundary": {
+    "observedConfiguration": "verify_terraform strips inherited credentials/proxies/TF environment, installs a private CLI config, uses backend=false, lockfile=readonly, and rejects tests without mock_provider yandex and explicit plan. All7 actual plans pass; no apply command exists in the executed script. Runtime Python tests use injected Mock transport and subprocess; HTTP reader patches its opener.",
+    "publicNetworkUse": "Tool and provider package downloads are real public registry traffic; do not claim an air-gapped or zero-network job.",
+    "businessBoundary": "No real Yandex account control-plane calls, credential access, deployment or provider write are authorized or evidenced. Environment names staging/production denote synthetic plan configurations.",
+    "proofLimit": "This is source/configuration plus mock-plan/runtime-test evidence, not packet capture or real-environment verification."
+  },
+  "limitations": [
+    "Governance has no downloadable test artifact or per-method remote events; actual410/OK is directly proven, individual410 named remote outcomes are not present.",
+    "Infrastructure Python outputs are also summary-only; explicit7 Terraform run identities are directly present in JSONL.",
+    "Step summary shell commands succeeded, but downloaded logs do not contain the expanded job-summary document; do not manufacture that document.",
+    "No post-job source tree stamp or per-source-file hashes are inside the infrastructure payload. Exact checkout tree, workflow commands and external artifact provenance supply contextual binding; state this distinction.",
+    "These two completed contexts do not promote final W6 full/remaining CI or any AC/finding to PASS."
+  ]
+}

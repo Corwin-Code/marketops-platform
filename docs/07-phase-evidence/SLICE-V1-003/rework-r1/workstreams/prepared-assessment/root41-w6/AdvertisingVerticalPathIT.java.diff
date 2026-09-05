@@ -1,0 +1,165 @@
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java
+index fe0de11..a89bb78 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java
+@@ -74,7 +74,7 @@ class AdvertisingVerticalPathIT {
+         start=Instant.now().truncatedTo(java.time.temporal.ChronoUnit.MICROS).minusSeconds(2);clock.at=start;provider.calls.clear();
+         var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
+         seed=JdbcClient.create(migration);graph=AdvertisingR1Fixture.seedUnapproved(migration,this::authorityOnly);
+-        try(var admin=DATABASE.createConnection("");var s=admin.createStatement()) { s.execute("ALTER ROLE marketops_identity_issuer LOGIN PASSWORD '"+ISSUER_PASSWORD+"'"); }
++        try(var admin=DATABASE.createConnection("")) { TestDatabase.enableSyntheticIdentityIssuer(admin,ISSUER_PASSWORD); }
+         role("executorUser","MARKETPLACE_OPERATOR");
+         for(String user:List.of("executorUser","verifierUser","ownerUser"))
+             for(String action:List.of("ADVERTISING_VIEW","ADVERTISING_TASK_ACT")) scope(user,action);
+@@ -245,7 +245,138 @@ class AdvertisingVerticalPathIT {
+         assertThat(seed.sql("SELECT count(*) FROM ops.ad_bid_command WHERE platform_code IN ('OZON','WILDBERRIES')").query(Integer.class).single()).isZero();
+     }
+ 
++    record MultiVariantFixture(UUID secondVariant,UUID secondListing,UUID firstCpa,UUID secondCpa) { }
++
++    @Test void canonicalTwoVariantMetricsAndCpasReconcileEveryLineAndPermutation() {
++        var fixture=twoVariantEconomicFacts(true);
++        var gatherer=context.getBean(AdvertisingEvidenceGatherer.class);
++        var evidence=gatherer.gather(graph.id("organization"),graph.id("object"),start).orElseThrow();
++        var result=canonicalTwoVariantResult(evidence);
++        assertThat(result.beforeAdContribution().value()).isEqualByComparingTo("5910");
++        assertThat(result.profit().absoluteProfit().value()).isEqualByComparingTo("-90");
++        assertThat(result.profit().profitPerAdRub().value()).isEqualByComparingTo("-0.015");
++        assertThat(result.allowableSpend().value()).isEqualByComparingTo("2712.5");
++        assertThat(evidence.authorities().cpaByVariant()).containsOnlyKeys(graph.id("productVariant"),fixture.secondVariant());
++        assertThat(evidence.authorities().cpaByVariant().get(graph.id("productVariant")).id()).isEqualTo(fixture.firstCpa());
++        assertThat(evidence.authorities().cpaByVariant().get(fixture.secondVariant()).id()).isEqualTo(fixture.secondCpa());
++        assertThat(evidence.economics().get(graph.id("listingVariant")).unitCost().value()).isEqualByComparingTo("500");
++        assertThat(evidence.economics().get(fixture.secondListing()).unitCost().value()).isEqualByComparingTo("900");
++        assertThat(evidence.economics().get(graph.id("listingVariant")).platformFeesPerUnit().value()).isEqualByComparingTo("2");
++        assertThat(evidence.economics().get(fixture.secondListing()).platformFeesPerUnit().value()).isEqualByComparingTo("50");
++        assertThat(evidence.economics().get(graph.id("listingVariant")).returnLossPerUnit().value()).isEqualByComparingTo("3");
++        assertThat(evidence.economics().get(fixture.secondListing()).returnLossPerUnit().value()).isEqualByComparingTo("70");
++        var calculation=context.getBean(AdvertisingCaseCalculationService.class).calculateFrom(evidence);
++        var refs=calculation.policies().inputReferences();
++        for(UUID listing:List.of(graph.id("listingVariant"),fixture.secondListing())) {
++            var actual=metrics.currentValuesAt(SubjectKind.PLATFORM_LISTING_VARIANT,listing,MetricWindow.D30,start);
++            for(MetricCode code:List.of(MetricCode.UNIT_COST,MetricCode.PLATFORM_FEES_PER_UNIT,MetricCode.RETURN_LOSS_PER_UNIT,MetricCode.VARIABLE_TAX_PER_UNIT)) {
++                var metric=actual.get(code);
++                assertThat(metric.definitionVersion()).isEqualTo(MetricCode.DEFINITION_VERSION);
++                assertThat(metric.confidenceState()).isEqualTo(ConfidenceState.CANONICAL_CONFIRMED);
++                assertThat(evidence.economics().get(listing).lineage()).contains(metric);
++                assertThat(result.lineage()).contains(metric.metricValueId());
++                assertThat(refs).anySatisfy(ref -> {
++                    assertThat(ref.id()).isEqualTo(metric.metricValueId());
++                    assertThat(ref.version()).isEqualTo(metric.definitionVersion());
++                    assertThat(ref.digest()).isEqualTo(metric.inputDigest());
++                });
++            }
++        }
++        assertThat(result.lineage()).contains(fixture.firstCpa(),fixture.secondCpa());
++        // Physical member order has no authority to select a representative
++        // cost or CPA. Keep the same set identity/digest and reverse both arrays.
++        sql("UPDATE core.ad_affected_set SET product_variant_ids=ARRAY[:second,:variant]::uuid[],platform_listing_variant_ids=ARRAY[:secondListing,:listing]::uuid[] WHERE id=:set")
++                .param("second",fixture.secondVariant()).param("secondListing",fixture.secondListing()).update();
++        var reversed=gatherer.gather(graph.id("organization"),graph.id("object"),start).orElseThrow();
++        assertThat(canonicalTwoVariantResult(reversed)).isEqualTo(result);
++        var rows=new ArrayList<>(reversed.completedSales().orElseThrow().lines());Collections.reverse(rows);
++        var aggregate=reversed.completedSales().orElseThrow();
++        var reordered=new com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingEvidenceRepository.LinkedSaleAggregate(
++                aggregate.eventCount(),aggregate.netSalesAmount(),aggregate.currencyCode(),aggregate.distinctVariants(),aggregate.latestEventId(),rows);
++        assertThat(AdvertisingAttributedEconomics.calculate(reordered,reversed.economics(),reversed.authorities().cpaByVariant(),
++                com.mimococo.marketops.advertisingefficiency.internal.domain.AdMeasure.available(new BigDecimal("6000"),com.mimococo.marketops.advertisingefficiency.AdEvidenceState.CANONICAL_CONFIRMED),"RUB"))
++                .isEqualTo(result);
++        assertThat(count("mart.ad_case")).isZero();assertThat(count("ops.ad_bid_candidate")).isZero();
++        assertThat(count("ops.ad_outcome_baseline")).isZero();assertThat(provider.calls).isEmpty();
++    }
++
++    @Test void missingSecondVariantCpaCannotBorrowFirstVariantAuthorityThroughTheRealGatherer() {
++        var fixture=twoVariantEconomicFacts(true);
++        sql("UPDATE core.ad_allowable_cpa_definition SET effective_to=CAST(:at AS timestamptz)-interval '1 second' WHERE id=:secondCpa")
++                .param("secondCpa",fixture.secondCpa()).update();
++        var evidence=context.getBean(AdvertisingEvidenceGatherer.class).gather(graph.id("organization"),graph.id("object"),start).orElseThrow();
++        assertThat(evidence.authorities().cpaByVariant()).containsOnlyKeys(graph.id("productVariant"));
++        var result=canonicalTwoVariantResult(evidence);
++        assertThat(result.profit().absoluteProfit().value()).isEqualByComparingTo("-90");
++        assertThat(result.allowableSpend().present()).isFalse();
++        var calculation=context.getBean(AdvertisingCaseCalculationService.class).calculateFrom(evidence);
++        assertThat(calculation.cases()).allSatisfy(kase->assertThat(kase.maxCpc().ceiling()).isNull());
++        assertThat(count("ops.ad_bid_candidate")).isZero();assertThat(provider.calls).isEmpty();
++    }
++
++    @Test void missingSecondVariantCostRemainsUnknownThroughTheActualMetricReader() {
++        var fixture=twoVariantEconomicFacts(false);
++        assertThat(metrics.currentValuesAt(SubjectKind.PLATFORM_LISTING_VARIANT,fixture.secondListing(),MetricWindow.D30,start)
++                .get(MetricCode.UNIT_COST).available()).isFalse();
++        var evidence=context.getBean(AdvertisingEvidenceGatherer.class).gather(graph.id("organization"),graph.id("object"),start).orElseThrow();
++        var result=canonicalTwoVariantResult(evidence);
++        assertThat(result.profit().resolved()).isFalse();
++        assertThat(result.profit().missingComponentCodes()).anyMatch(code->code.startsWith("LINE_ECONOMICS_OR_MAPPING_UNRESOLVED:"));
++        assertThat(result.allowableSpend().present()).isFalse();
++        assertThat(count("ops.ad_bid_candidate")).isZero();assertThat(provider.calls).isEmpty();
++    }
++
++    AdvertisingAttributedEconomics.Result canonicalTwoVariantResult(AdvertisingEvidenceGatherer.Evidence evidence) {
++        return AdvertisingAttributedEconomics.calculate(evidence.completedSales().orElseThrow(),evidence.economics(),evidence.authorities().cpaByVariant(),
++                com.mimococo.marketops.advertisingefficiency.internal.domain.AdMeasure.available(evidence.objectFacts().orElseThrow().spendAmount(),
++                        com.mimococo.marketops.advertisingefficiency.AdEvidenceState.CANONICAL_CONFIRMED),"RUB");
++    }
++
++    MultiVariantFixture twoVariantEconomicFacts(boolean secondCostAvailable) {
++        // Author only canonical facts and Owner policies before the first actual
++        // Metric run. No Metric, Case, candidate or baseline is inserted.
++        acceptPreActionFacts(true,false);
++        UUID secondVariant=UUID.randomUUID(),secondListing=UUID.randomUUID();
++        sql("INSERT INTO core.product_variant SELECT (jsonb_populate_record(NULL::core.product_variant,to_jsonb(original)||jsonb_build_object('id',:id,'sku_code',:sku))).* FROM core.product_variant original WHERE original.id=:variant")
++                .param("id",secondVariant).param("sku","multi-"+secondVariant).update();
++        sql("INSERT INTO core.platform_listing_variant SELECT (jsonb_populate_record(NULL::core.platform_listing_variant,to_jsonb(original)||jsonb_build_object('id',:id,'native_variant_key',:key,'native_sku_key',:key))).* FROM core.platform_listing_variant original WHERE original.id=:listing")
++                .param("id",secondListing).param("key",secondListing.toString()).update();
++        sql("INSERT INTO core.listing_mapping SELECT (jsonb_populate_record(NULL::core.listing_mapping,to_jsonb(original)||jsonb_build_object('id',gen_random_uuid(),'platform_listing_variant_id',:secondListing,'product_variant_id',:secondVariant))).* FROM core.listing_mapping original WHERE original.platform_listing_variant_id=:listing AND original.status='ACTIVE'")
++                .param("secondListing",secondListing).param("secondVariant",secondVariant).update();
++        sql("UPDATE core.ad_affected_set SET product_variant_ids=ARRAY[:variant,:second]::uuid[],platform_listing_variant_ids=ARRAY[:listing,:secondListing]::uuid[] WHERE id=:set")
++                .param("second",secondVariant).param("secondListing",secondListing).update();
++        var first=graph;var ids=new HashMap<>(graph.ids());ids.put("productVariant",secondVariant);ids.put("listingVariant",secondListing);
++        graph=new AdvertisingR1Fixture.Graph(Map.copyOf(ids),graph.platform());
++        Instant occurred=start.minusSeconds(7200);
++        try {
++            for(String stage:List.of("COMPLETED","RETAINED","SETTLED")) company(stage,"2000",1,occurred,"second-before",null);
++            linked("2000",1,start.minus(Duration.ofDays(30)),start,occurred);
++            coverage(start.minus(Duration.ofDays(61)),start.plusSeconds(300),true);context(start.minusSeconds(1));economicFacts(occurred);
++            if(secondCostAvailable) sql("INSERT INTO core.cost_version(id,organization_id,product_variant_id,cost_kind,currency_code,unit_cost,provenance_id,effective_from,status,created_at,updated_at) VALUES(gen_random_uuid(),:org,:variant,'PURCHASE','RUB',900,:source,CAST(:at AS timestamptz)-interval '6 hours','ACTIVE',:at,:at)").update();
++        } finally { graph=first; }
++        sql("UPDATE ledger.finance_fee_fact SET amount=CASE WHEN fee_category='COMMISSION' THEN CASE WHEN platform_listing_variant_id=:listing THEN 20 ELSE 50 END WHEN fee_category='VARIABLE_TAX' THEN 10 ELSE 0 END WHERE organization_id=:org").update();
++        sql("UPDATE ledger.return_fact SET loss_amount=CASE WHEN platform_listing_variant_id=:listing THEN 30 ELSE 70 END WHERE organization_id=:org").update();
++        sql("UPDATE core.ad_conversion_definition SET sale_stage='CANONICAL_AD_LINKED_COMPLETED_SALE' WHERE id=:conversion").update();
++        sql("INSERT INTO ledger.ad_linked_sale_event SELECT (jsonb_populate_record(NULL::ledger.ad_linked_sale_event,to_jsonb(original)||jsonb_build_object('id',gen_random_uuid(),'sale_stage','CANONICAL_AD_LINKED_COMPLETED_SALE'))).* FROM ledger.ad_linked_sale_event original WHERE original.organization_id=:org").update();
++        UUID firstCpa=UUID.randomUUID(),secondCpa=UUID.randomUUID();
++        for(var entry:List.of(Map.entry(graph.id("productVariant"),firstCpa),Map.entry(secondVariant,secondCpa))) {
++            boolean primary=entry.getKey().equals(graph.id("productVariant"));
++            sql("""
++              INSERT INTO core.ad_allowable_cpa_definition(id,organization_id,definition_version,scope_kind,product_variant_ref_id,sale_stage,
++                currency_code,contribution_basis,target_contribution_retention_ratio,return_loss_treatment,owner_user_id,reason,evidence_reference,effective_from,status,created_at)
++              VALUES(:id,:org,:version,'PRODUCT_VARIANT',:unit,'CANONICAL_AD_LINKED_COMPLETED_SALE','RUB','OPERATIONAL_CONTRIBUTION',:ratio,
++                'APPLIED_ONCE_ON_TOP',:owner,'Synthetic variant-specific economic retention','fixture://multi/cpa',CAST(:at AS timestamptz)-interval '1 day','ACTIVE',:at)
++              """).param("id",entry.getValue()).param("version",primary?2:3).param("unit",entry.getKey()).param("ratio",new BigDecimal(primary?"0.5":"0.25")).update();
++        }
++        assertThat(count("mart.metric_value")).isZero();
++        assertThat(analytics.run(graph.id("store"),MetricWindow.D30,"SCHEDULED",null).subjectCount()).isEqualTo(2);
++        return new MultiVariantFixture(secondVariant,secondListing,firstCpa,secondCpa);
++    }
++
+     void acceptPreActionFacts(boolean economicsAvailable) {
++        acceptPreActionFacts(economicsAvailable,true);
++    }
++    void acceptPreActionFacts(boolean economicsAvailable,boolean calculateMetrics) {
+         Instant occurred=start.minusSeconds(7200),from=start.minus(Duration.ofDays(30));
+         company("COMPLETED","10000",10,occurred,"before",null);
+         company("RETAINED","10000",10,occurred,"before",null);
+@@ -259,8 +390,10 @@ class AdvertisingVerticalPathIT {
+             economicsAuthority();
+             economicFacts(occurred);
+         }
+-        var run=analytics.run(graph.id("store"),MetricWindow.D30,"SCHEDULED",null);
+-        assertThat(run.subjectCount()).isEqualTo(1);
++        if(calculateMetrics) {
++            var run=analytics.run(graph.id("store"),MetricWindow.D30,"SCHEDULED",null);
++            assertThat(run.subjectCount()).isEqualTo(1);
++        }
+     }
+     JdbcClient.StatementSpec sql(String text) {
+         return seed.sql(text).param("org",graph.id("organization")).param("store",graph.id("store"))

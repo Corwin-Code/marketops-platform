@@ -1,0 +1,187 @@
+[
+  {
+    "job": "backend-build",
+    "artifactId": 9969058913,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969058913.zip",
+    "sourceZipSha256": "ea730a7d5e959622c65e04bfdade9d564627ea7d5a4f9e53a8c1784e548a8238",
+    "member": "backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.PriceCommandWorkerIT.xml",
+    "file": "original-reports/backend-build/TEST-com.mimococo.marketops.PriceCommandWorkerIT.xml",
+    "size": 47871,
+    "sha256": "edc6ff3fd77518a2ae2dce4f588cc3931364e4927fefae25bd22cc8d661051e3",
+    "suiteDeclared": {
+      "name": "com.mimococo.marketops.PriceCommandWorkerIT",
+      "tests": "18",
+      "failures": "1",
+      "errors": "0",
+      "skipped": "0"
+    },
+    "actualNodes": 18,
+    "failureNames": [
+      "unknownWriteOutcome"
+    ]
+  },
+  {
+    "job": "backend-build",
+    "artifactId": 9969058913,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969058913.zip",
+    "sourceZipSha256": "ea730a7d5e959622c65e04bfdade9d564627ea7d5a4f9e53a8c1784e548a8238",
+    "member": "backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+    "file": "original-reports/backend-build/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+    "size": 40572,
+    "sha256": "fd52540302bf12d7053923f2a0b63c73b7b9b50452bfe69e7dc9585568a69445",
+    "suiteDeclared": {
+      "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+      "tests": "3",
+      "failures": "1",
+      "errors": "0",
+      "skipped": "0"
+    },
+    "actualNodes": 3,
+    "failureNames": [
+      "replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach"
+    ]
+  },
+  {
+    "job": "backend-build",
+    "artifactId": 9969058913,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969058913.zip",
+    "sourceZipSha256": "ea730a7d5e959622c65e04bfdade9d564627ea7d5a4f9e53a8c1784e548a8238",
+    "member": "backend/marketops-server/target/failsafe-reports/com.mimococo.marketops.PriceCommandWorkerIT.txt",
+    "file": "original-reports/backend-build/com.mimococo.marketops.PriceCommandWorkerIT.txt",
+    "size": 2547,
+    "sha256": "ea92edc56f573e78a69ceaf5277ecb6d8e9cd758175a88b7676528f5bc84409f"
+  },
+  {
+    "job": "backend-build",
+    "artifactId": 9969058913,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969058913.zip",
+    "sourceZipSha256": "ea730a7d5e959622c65e04bfdade9d564627ea7d5a4f9e53a8c1784e548a8238",
+    "member": "backend/marketops-server/target/failsafe-reports/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.txt",
+    "file": "original-reports/backend-build/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.txt",
+    "size": 999,
+    "sha256": "e6079e7d4b57f3db8bd341277c653706c755dee9a2cca230d85ea25fdce7a6ce"
+  },
+  {
+    "job": "backend-build",
+    "artifactId": 9969058913,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969058913.zip",
+    "sourceZipSha256": "ea730a7d5e959622c65e04bfdade9d564627ea7d5a4f9e53a8c1784e548a8238",
+    "member": "backend/marketops-server/target/advertising-capacity-receipt.json",
+    "file": "original-reports/backend-build/advertising-capacity-receipt.json",
+    "size": 2851,
+    "sha256": "1f62aa2c493acf5d34f17ab6eaac04aa2d7228f20e650564b9ec0f0dc6bec372"
+  },
+  {
+    "job": "backend-build",
+    "artifactId": 9969058913,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969058913.zip",
+    "sourceZipSha256": "ea730a7d5e959622c65e04bfdade9d564627ea7d5a4f9e53a8c1784e548a8238",
+    "member": "backend/marketops-server/target/advertising-capacity-dataset.json",
+    "file": "original-reports/backend-build/advertising-capacity-dataset.json",
+    "size": 4077576,
+    "sha256": "753627a42a1311d11f4422705e5bdf70416d6f306f23e48281b5d4a775f3c6dc"
+  },
+  {
+    "job": "backend-build",
+    "artifactId": 9969058913,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969058913.zip",
+    "sourceZipSha256": "ea730a7d5e959622c65e04bfdade9d564627ea7d5a4f9e53a8c1784e548a8238",
+    "member": "backend/marketops-server/target/advertising-capacity-source-inputs.json",
+    "file": "original-reports/backend-build/advertising-capacity-source-inputs.json",
+    "size": 199640,
+    "sha256": "8688a5816158ad27664a3a4f24e8e61d5632a7d3fa88762c809afd2a4d0c8dd5"
+  },
+  {
+    "job": "backend-integration",
+    "artifactId": 9969056829,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969056829.zip",
+    "sourceZipSha256": "2acd2975a086f8e26f40b5c4e69dc49b44414629930f4b0e45b8d97364a1d103",
+    "member": "backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.PriceCommandWorkerIT.xml",
+    "file": "original-reports/backend-integration/TEST-com.mimococo.marketops.PriceCommandWorkerIT.xml",
+    "size": 47777,
+    "sha256": "db2826b71823b886dc112036fafadebab2e239fec2865bb1e1db876db1dca84b",
+    "suiteDeclared": {
+      "name": "com.mimococo.marketops.PriceCommandWorkerIT",
+      "tests": "18",
+      "failures": "1",
+      "errors": "0",
+      "skipped": "0"
+    },
+    "actualNodes": 18,
+    "failureNames": [
+      "unknownWriteOutcome"
+    ]
+  },
+  {
+    "job": "backend-integration",
+    "artifactId": 9969056829,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969056829.zip",
+    "sourceZipSha256": "2acd2975a086f8e26f40b5c4e69dc49b44414629930f4b0e45b8d97364a1d103",
+    "member": "backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+    "file": "original-reports/backend-integration/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+    "size": 110995,
+    "sha256": "01a1803b5d8c89832d35629948bad92d071f4bccf218c256076cbf80e302280c",
+    "suiteDeclared": {
+      "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+      "tests": "3",
+      "failures": "2",
+      "errors": "0",
+      "skipped": "0"
+    },
+    "actualNodes": 3,
+    "failureNames": [
+      "replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach",
+      "sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization"
+    ]
+  },
+  {
+    "job": "backend-integration",
+    "artifactId": 9969056829,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969056829.zip",
+    "sourceZipSha256": "2acd2975a086f8e26f40b5c4e69dc49b44414629930f4b0e45b8d97364a1d103",
+    "member": "backend/marketops-server/target/failsafe-reports/com.mimococo.marketops.PriceCommandWorkerIT.txt",
+    "file": "original-reports/backend-integration/com.mimococo.marketops.PriceCommandWorkerIT.txt",
+    "size": 2547,
+    "sha256": "a5a3a2050c64c0b9bfb3e1134efde543bfe7833ac9b6f5e17d47a097fe98b080"
+  },
+  {
+    "job": "backend-integration",
+    "artifactId": 9969056829,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969056829.zip",
+    "sourceZipSha256": "2acd2975a086f8e26f40b5c4e69dc49b44414629930f4b0e45b8d97364a1d103",
+    "member": "backend/marketops-server/target/failsafe-reports/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.txt",
+    "file": "original-reports/backend-integration/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.txt",
+    "size": 36560,
+    "sha256": "1c3fb0342cdb9720587fd541a9d6dfec4bc6c8e85c5ca9036fd8e1149c13e9f8"
+  },
+  {
+    "job": "backend-integration",
+    "artifactId": 9969056829,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969056829.zip",
+    "sourceZipSha256": "2acd2975a086f8e26f40b5c4e69dc49b44414629930f4b0e45b8d97364a1d103",
+    "member": "backend/marketops-server/target/advertising-capacity-dataset.json",
+    "file": "original-reports/backend-integration/advertising-capacity-dataset.json",
+    "size": 4077576,
+    "sha256": "2727c720b1b475e53c49587312860b78346e16aac04a566e9dc321f2e4318f39"
+  },
+  {
+    "job": "backend-integration",
+    "artifactId": 9969056829,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969056829.zip",
+    "sourceZipSha256": "2acd2975a086f8e26f40b5c4e69dc49b44414629930f4b0e45b8d97364a1d103",
+    "member": "backend/marketops-server/target/advertising-capacity-receipt.json",
+    "file": "original-reports/backend-integration/advertising-capacity-receipt.json",
+    "size": 2864,
+    "sha256": "c819147ef01a4c14ee716b32d9ba3fbecfd076308fb2b206edf0af1e999d2aea"
+  },
+  {
+    "job": "backend-integration",
+    "artifactId": 9969056829,
+    "sourceZip": "/tmp/slice3-pr30-w7-complete-ci/runs/33963350093-attempt-1/artifact-9969056829.zip",
+    "sourceZipSha256": "2acd2975a086f8e26f40b5c4e69dc49b44414629930f4b0e45b8d97364a1d103",
+    "member": "backend/marketops-server/target/advertising-capacity-source-inputs.json",
+    "file": "original-reports/backend-integration/advertising-capacity-source-inputs.json",
+    "size": 199640,
+    "sha256": "c592d2bbe2a4d76b1913bcd71163b5ec149b6ffe8aacf59a36fbb99e01a06213"
+  }
+]

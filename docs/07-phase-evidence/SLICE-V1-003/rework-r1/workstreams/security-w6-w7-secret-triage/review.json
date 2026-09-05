@@ -1,0 +1,970 @@
+{
+  "kind": "EXACT_ARCHIVED_SARIF_SECRET_SHAPE_FALSE_POSITIVE_TRIAGE",
+  "recordedAtUTC": "2026-09-05T12:12:23.158475+00:00",
+  "inputScan": {
+    "path": "/tmp/slice3-r1-w6-w7-new-evidence-scan.json",
+    "sha256": "ac9648258bd81e3aba86a8d4085bbdd8e983208143b2691498780fbdc6d4f33f",
+    "bytes": 909435
+  },
+  "originalScanner": {
+    "path": "/tmp/scan-slice3-evidence-v2.py",
+    "sha256": "2ca30ecfaaa76fc7fbe32a8ee888316ddeda5a1d93d22c67f2df8280c3b37bf1",
+    "bytes": 2149
+  },
+  "patternAuthority": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/scripts/validate_governance.py",
+    "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97",
+    "bytes": 259144
+  },
+  "triageScript": {
+    "path": "/tmp/triage-slice3-w6-w7-sarif-secret-shapes.py",
+    "sha256": "a7eb5e54a0e4baaf0b00baa056421af529e267c013a86efa9854d3283548f10b",
+    "bytes": 11401
+  },
+  "rule": {
+    "patternIndex": 6,
+    "meaning": "Case-insensitive password/passwd/secret/token/API-key assignment with a quoted literal of at least 12 characters."
+  },
+  "reviewedRawOccurrences": 16,
+  "reviewedMembers": 4,
+  "originalScanPassFlag": false,
+  "originalScanRetainedUnmodified": true,
+  "safeToPublishTheseFourOriginalSarifMembers": true,
+  "findings": [
+    {
+      "archive": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz",
+        "sha256": "bcc610a4f1dd579fa3e51f9da3d33ac9c1bf89232bb1e12daf94dfa59ddabefc",
+        "bytes": 1357503
+      },
+      "member": "analysis-typescript-w6.sarif.json",
+      "memberSha256": "6078baf62a2a865eecbe6f614928544c3ce6542097f81c1c01c7bf8379478d1f",
+      "memberBytes": 1035038,
+      "originalScanFinding": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/analysis-typescript-w6.sarif.json",
+        "patternIndex": 6,
+        "count": 4
+      },
+      "rawHits": [
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 3906,
+          "rawMemberColumn": 794,
+          "rawByteOffset": 717194,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        },
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 3906,
+          "rawMemberColumn": 1520,
+          "rawByteOffset": 717920,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        },
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 3907,
+          "rawMemberColumn": 790,
+          "rawByteOffset": 719761,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        },
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 3907,
+          "rawMemberColumn": 1516,
+          "rawByteOffset": 720487,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        }
+      ],
+      "decodedRuleHelpReview": [
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/81/help/markdown",
+          "sarifRuleId": "js/jwt-missing-verification",
+          "ruleIndex": 81,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "JWT missing secret or public key verification",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "2a7376043713c3885dcafd7c8d739ac8736c6add25040ef728cdb929f01ab884",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre",
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        },
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/81/help/text",
+          "sarifRuleId": "js/jwt-missing-verification",
+          "ruleIndex": 81,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "JWT missing secret or public key verification",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "2a7376043713c3885dcafd7c8d739ac8736c6add25040ef728cdb929f01ab884",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre",
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        },
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)",
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        },
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)",
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        }
+      ],
+      "sarifResultCount": 1,
+      "sarifResultRuleIds": [
+        "js/empty-password-in-configuration-file"
+      ],
+      "matchesInResults": 0,
+      "disposition": "SAFE_TO_PUBLISH_ORIGINAL_MEMBER_WITH_THIS_EXACT_FALSE_POSITIVE_TRIAGE",
+      "mutation": "NONE; original archived bytes and original scan pass=false preserved"
+    },
+    {
+      "archive": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz",
+        "sha256": "bcc610a4f1dd579fa3e51f9da3d33ac9c1bf89232bb1e12daf94dfa59ddabefc",
+        "bytes": 1357503
+      },
+      "member": "analysis-typescript-w6.sarif.response.txt",
+      "memberSha256": "49d124c09bce7fa2a94baa0f9c43b28c3027e053c02532f03c648495c522010b",
+      "memberBytes": 939722,
+      "originalScanFinding": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/analysis-typescript-w6.sarif.response.txt",
+        "patternIndex": 6,
+        "count": 4
+      },
+      "rawHits": [
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 30,
+          "rawMemberColumn": 649307,
+          "rawByteOffset": 650834,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        },
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 30,
+          "rawMemberColumn": 650043,
+          "rawByteOffset": 651570,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        },
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 30,
+          "rawMemberColumn": 651874,
+          "rawByteOffset": 653401,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        },
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 30,
+          "rawMemberColumn": 652610,
+          "rawByteOffset": 654137,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        }
+      ],
+      "decodedRuleHelpReview": [
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/81/help/markdown",
+          "sarifRuleId": "js/jwt-missing-verification",
+          "ruleIndex": 81,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "JWT missing secret or public key verification",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "2a7376043713c3885dcafd7c8d739ac8736c6add25040ef728cdb929f01ab884",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre",
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        },
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/81/help/text",
+          "sarifRuleId": "js/jwt-missing-verification",
+          "ruleIndex": 81,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "JWT missing secret or public key verification",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "2a7376043713c3885dcafd7c8d739ac8736c6add25040ef728cdb929f01ab884",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre",
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        },
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)",
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        },
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)",
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        }
+      ],
+      "sarifResultCount": 1,
+      "sarifResultRuleIds": [
+        "js/empty-password-in-configuration-file"
+      ],
+      "matchesInResults": 0,
+      "disposition": "SAFE_TO_PUBLISH_ORIGINAL_MEMBER_WITH_THIS_EXACT_FALSE_POSITIVE_TRIAGE",
+      "mutation": "NONE; original archived bytes and original scan pass=false preserved"
+    },
+    {
+      "archive": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz",
+        "sha256": "71db6de74646918ddf1bfb9b28b4dcb9e2a29d088033b332b23df9601e6ddd2c",
+        "bytes": 1410652
+      },
+      "member": "typescript-w7.sarif.json",
+      "memberSha256": "529ca8d2561a431507ef00159419996ff5ade3f88b748a9098455551dc135bfc",
+      "memberBytes": 1035038,
+      "originalScanFinding": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/typescript-w7.sarif.json",
+        "patternIndex": 6,
+        "count": 4
+      },
+      "rawHits": [
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 3906,
+          "rawMemberColumn": 794,
+          "rawByteOffset": 717194,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        },
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 3906,
+          "rawMemberColumn": 1520,
+          "rawByteOffset": 717920,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        },
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 3907,
+          "rawMemberColumn": 790,
+          "rawByteOffset": 719761,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        },
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 3907,
+          "rawMemberColumn": 1516,
+          "rawByteOffset": 720487,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        }
+      ],
+      "decodedRuleHelpReview": [
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/81/help/markdown",
+          "sarifRuleId": "js/jwt-missing-verification",
+          "ruleIndex": 81,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "JWT missing secret or public key verification",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "2a7376043713c3885dcafd7c8d739ac8736c6add25040ef728cdb929f01ab884",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre",
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        },
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/81/help/text",
+          "sarifRuleId": "js/jwt-missing-verification",
+          "ruleIndex": 81,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "JWT missing secret or public key verification",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "2a7376043713c3885dcafd7c8d739ac8736c6add25040ef728cdb929f01ab884",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre",
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        },
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)",
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        },
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)",
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        }
+      ],
+      "sarifResultCount": 1,
+      "sarifResultRuleIds": [
+        "js/empty-password-in-configuration-file"
+      ],
+      "matchesInResults": 0,
+      "disposition": "SAFE_TO_PUBLISH_ORIGINAL_MEMBER_WITH_THIS_EXACT_FALSE_POSITIVE_TRIAGE",
+      "mutation": "NONE; original archived bytes and original scan pass=false preserved"
+    },
+    {
+      "archive": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz",
+        "sha256": "71db6de74646918ddf1bfb9b28b4dcb9e2a29d088033b332b23df9601e6ddd2c",
+        "bytes": 1410652
+      },
+      "member": "typescript-w7.sarif.response.txt",
+      "memberSha256": "754799f768d51ef6e04fef472cff762b02b3ee8d5657971a768b8cfb450aa632",
+      "memberBytes": 939722,
+      "originalScanFinding": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/typescript-w7.sarif.response.txt",
+        "patternIndex": 6,
+        "count": 4
+      },
+      "rawHits": [
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 30,
+          "rawMemberColumn": 649307,
+          "rawByteOffset": 650834,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        },
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 30,
+          "rawMemberColumn": 650043,
+          "rawByteOffset": 651570,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        },
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 30,
+          "rawMemberColumn": 651874,
+          "rawByteOffset": 653401,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        },
+        {
+          "patternIndex": 6,
+          "rawMemberLine": 30,
+          "rawMemberColumn": 652610,
+          "rawByteOffset": 654137,
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "sanitizedContext": ");\\napp.use(bodyParser.urlencoded({ extended: false }))\\napp.use(session({\\n    [MATCH REDACTED]\\n}));\\n\\napp.post('/login', function (req, res) {\\n    // Check that username p",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "reason": "The matching assignment is inside the bad/good illustrative Express session configuration in bundled CodeQL help. It is not SARIF results, an analyzed repository artifact, a runtime identity, or an HTTP request credential.",
+          "safeToPublishThisOccurrenceUnchanged": true
+        }
+      ],
+      "decodedRuleHelpReview": [
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/81/help/markdown",
+          "sarifRuleId": "js/jwt-missing-verification",
+          "ruleIndex": 81,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "JWT missing secret or public key verification",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "2a7376043713c3885dcafd7c8d739ac8736c6add25040ef728cdb929f01ab884",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre",
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        },
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/81/help/text",
+          "sarifRuleId": "js/jwt-missing-verification",
+          "ruleIndex": 81,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "JWT missing secret or public key verification",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "2a7376043713c3885dcafd7c8d739ac8736c6add25040ef728cdb929f01ab884",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre",
+            "\nconst jwt = require(\"jsonwebtoken\");\n\nconst [MATCH REDACTED];\n\nvar token = jwt.sign({ foo: 'bar' }, secre"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        },
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/markdown",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "markdown",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)",
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        },
+        {
+          "sarifJsonPointer": "/runs/0/tool/extensions/0/rules/140/help/text",
+          "sarifRuleId": "js/session-fixation",
+          "ruleIndex": 140,
+          "helpFormat": "text",
+          "helpUriAsRecorded": null,
+          "shortDescription": "Failure to abandon session",
+          "decodedCount": 2,
+          "decodedHelpValueSha256": "1d7e2ebf8c59c4f94905ea79aa023c08b5dbae7a7dfbef9cafc706302b25956b",
+          "classification": "STATIC_CODEQL_RULE_HELP_EXAMPLE_NOT_APPLICATION_SECRET",
+          "sanitizedExampleContexts": [
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)",
+            "({ extended: false }))\napp.use(session({\n    [MATCH REDACTED]\n}));\n\napp.post('/login', function (req, res)"
+          ],
+          "note": "Additional decoded-string matches are recorded separately. The raw JSON-byte scanner did not claim to decode JSON escape sequences."
+        }
+      ],
+      "sarifResultCount": 1,
+      "sarifResultRuleIds": [
+        "js/empty-password-in-configuration-file"
+      ],
+      "matchesInResults": 0,
+      "disposition": "SAFE_TO_PUBLISH_ORIGINAL_MEMBER_WITH_THIS_EXACT_FALSE_POSITIVE_TRIAGE",
+      "mutation": "NONE; original archived bytes and original scan pass=false preserved"
+    }
+  ],
+  "formattedCopiesEqualOriginalResponseBodies": true,
+  "w6W7BundledRuleExtensionsExactlyEqual": true,
+  "sanitizedJustification": "Every raw hit is static CodeQL js/session-fixation help, duplicated as markdown/text and pretty JSON/raw API response. Decoded-string inspection also identifies js/jwt-missing-verification teaching examples. None is a measured application secret, source artifact credential or actual SARIF finding. The real SARIF results remain separate and unmodified.",
+  "scopeLimit": "This disposition covers these exact four SARIF member hashes and reviewed nested logs only. It does not dismiss CodeQL alerts, modify patterns, or certify all repository/CI data by inference.",
+  "scannerCoverage": {
+    "originalV2Behavior": "Top-level ZIP/TAR/GZIP members are scanned as text; nested compressed members are not recursively decompressed by v2.",
+    "rawSecurityCapturedLogMembersAlreadyListed": [
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/alert66-r2.stderr.txt",
+        "sha256": "76dfc2b7d5e2543f7a25907b000564548046c8542e2757e94085e6d48d461497",
+        "bytes": 95
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/alert66.stderr.txt",
+        "sha256": "76dfc2b7d5e2543f7a25907b000564548046c8542e2757e94085e6d48d461497",
+        "bytes": 95
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/alert73.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/alert74-r2.stderr.txt",
+        "sha256": "12e91a3386fd65f5aab007ae340dbb8c7d017c368e9ece2fd2bd6babd2a79738",
+        "bytes": 95
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/alert74.stderr.txt",
+        "sha256": "12e91a3386fd65f5aab007ae340dbb8c7d017c368e9ece2fd2bd6babd2a79738",
+        "bytes": 95
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/alert75-r2.stderr.txt",
+        "sha256": "2808cef00d9aa4dba2c7f20293b97ff02759d056744a7e4c2ddb27a21c0a74f4",
+        "bytes": 95
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/alert75.stderr.txt",
+        "sha256": "2808cef00d9aa4dba2c7f20293b97ff02759d056744a7e4c2ddb27a21c0a74f4",
+        "bytes": 95
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/alert76-r2.stderr.txt",
+        "sha256": "19946a9bf45261663bb70c71f8d0dd0fd563dd6327f370bd9c72030979fc7d66",
+        "bytes": 95
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/alert76.stderr.txt",
+        "sha256": "19946a9bf45261663bb70c71f8d0dd0fd563dd6327f370bd9c72030979fc7d66",
+        "bytes": 95
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/alerts-dismissed-final.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/alerts-fixed-final.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/alerts-initial.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/alerts-open-final.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/analyses-initial.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/analyses-poll2.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/analyses-poll3.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/analysis-java-w6.sarif.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/analysis-typescript-w6.sarif.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/checks-initial.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/checks-poll2.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/checks-poll3.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/dependabot-main-w6.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/dependency-comparison-w6.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/dependency-review-w6.log",
+        "sha256": "14d640b3886da00b6d4f9a6a32bfe87b3c311efbc2277631fb6100efd8bb7e4e",
+        "bytes": 25136
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/dependency-review-w6.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/head-lock-w6.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/merge-w6.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/pr30-initial.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/runs-initial.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/security-artifacts-final.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/security-jobs-final.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/security-jobs-w6-initial.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/security-run-final.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/security-run-poll2.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/security-run-w6.log",
+        "sha256": "4c30c72ac078af2c462ca6b41a6621f9e92f93a53bacb6e0c847319a167f327e",
+        "bytes": 955637
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/raw-evidence.tar.gz!/security-run-w6.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/alerts-dismissed-final.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/alerts-fixed-final.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/alerts-open-final.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/analyses-initial.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/analyses-poll2.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/analyses-poll3.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/checks-initial.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/checks-poll2.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/checks-poll3.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/compare-w6-w7.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/dependabot-main-final.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/dependencies-w7.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/java-w7.sarif.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/lock-w7.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/merge-w7.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/pr30-initial.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/runs-initial.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/security-artifacts-final.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/security-jobs-final.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/security-run-final.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/security-run-poll2.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/security-w7.log",
+        "sha256": "a782d357ffc30a24cae14cec52f776e853f6f346fe34f4930063e8be7bac94e1",
+        "bytes": 955724
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/security-w7.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/tree-w7.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/raw-evidence.tar.gz!/typescript-w7.sarif.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    ],
+    "supplementaryNestedArchiveTextScan": [],
+    "supplementaryNestedTextCount": 0,
+    "supplementaryNestedPatternHits": []
+  },
+  "matchedValuesPrintedOrSaved": false,
+  "repoOrArchiveChanges": "NONE"
+}

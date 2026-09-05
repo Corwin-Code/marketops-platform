@@ -1,0 +1,17 @@
+{
+  "kind": "EXACT_FULL_W6_JAR_PACKAGED_MIGRATION_VERIFICATION",
+  "head": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+  "command": [
+    "python3",
+    "scripts/verify_migration_artifact.py",
+    "--output",
+    "/tmp/slice3-r1-w6-packaged-migration/artifacts"
+  ],
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+  "startedAtUTC": "2026-09-05T11:53:50.753230+00:00",
+  "finishedAtUTC": "2026-09-05T11:54:00.023288+00:00",
+  "exitCode": 0,
+  "logSha256": "57f153ef7cd46c37eaf43db049c55bc0389cdd054319ed7ef347c0203b9c9059",
+  "scope": "Exact full-verified JAR, packaged resolver and minimal synthetic container boundary; no database connection or Provider call. Local public image build only."
+}

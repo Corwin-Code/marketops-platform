@@ -1,0 +1,67 @@
+{
+  "kind": "OUTSIDE_REPOSITORY_W8_README_REPAIR_CHECKPOINT_DRAFT",
+  "createdAtUTC": "2026-09-05T12:19:33.002530+00:00",
+  "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/README.md",
+  "baseSha256": "ee1d94c1add7df33cfcbe62ec362c7d778fe1922a66fa7e7146adf9dfb3154ed",
+  "proposedSha256": "4b00fb1981e697a3c90a471e07df0ae5397b8bee6b7be26b77e8253b53efc0bf",
+  "patchSha256": "af62ee685111a727206665d9ed6c74566f444194d09d1dc71e0eb90dff7fe75e",
+  "preservedOriginalTableRows": 50,
+  "newRows": 8,
+  "newLinksAllExist": true,
+  "repositoryUnmodifiedByPreparation": true,
+  "testsExecuted": false,
+  "r24Status": "PENDING_NOT_CLAIMED_PASSED",
+  "newFullAndLatestCiStatus": "PENDING",
+  "controllerVerdict": null,
+  "productionWriteEnabled": false,
+  "evidenceInputs": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w6/run-receipt.json",
+      "sha256": "d3e9012844be1a7d1810533e7d5b0ff3e1fe71afff3b0b55446abc9adcc2cdc3"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w6/testcase-count-reconciliation.json",
+      "sha256": "285bedf5cdef2ca0bcf8352df186b12107da445ab2e4c95578b183705e7e556a"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/validation-w6/packaged-migration/receipt.json",
+      "sha256": "bc4acde538d3122d1f61b83ffaa7449b0a5c5c52bb1a8ab6f38180e40be041b7"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/validation-w6/negative-coverage/receipt.json",
+      "sha256": "808cec03ec351b777ccd48a712a796a4b0c5071f45dbcfd2a8d3eb21740df6cd"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-w6/verification-summary.json",
+      "sha256": "85b9e05d6d769251ac6d39988cb6cb2ead82a4fa6dedb9d657ef55169cdf3fee"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-w6/visual-review/review.json",
+      "sha256": "95ad95f62cd8b7e106ea4871c15adb153bb4d12b66ff1c19574ed5f6cf90b08c"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/frontend-ci-w7/receipt.json",
+      "sha256": "496339c287afc40de553c472fb401f680ed59ec0e3542678f693e45ef97499c3"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/frontend-ci-w7/named-browser-results.json",
+      "sha256": "95fcf639dbe3972f93c4359f22471f2e24169fc2258ac42da08a20f9b6bd0a65"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w6/summary.md",
+      "sha256": "fb15eac3b08663fd941927e45954a0ca758c4f37c0c8d99d6cd2599eaf1274e4"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-w7/summary.md",
+      "sha256": "b6689d344cff1df42a4cb56358fba6ec2d86a616e8ccb5058238e17a0ff49125"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/ci-w7-failed/receipt.json",
+      "sha256": "0fed1a0064e9ec61170491d15251ca089b71437bd389d79d7e2fce754dd4e449"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/ci-w7-failed/run-job-artifact-index.json",
+      "sha256": "833be649aae45856461e62ccfaa86e7054a3890914e9f04c18341328db7d0926"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java
+@@ -444,7 +444,7 @@
+ 
+     /** A prior completed write/readback is historical input, never a live Provider call. */
+     private void fictionalReadback(UUID command,int bid) {
+-        UUID attempt=UUID.randomUUID(),raw=UUID.randomUUID(),content=UUID.randomUUID();
++        UUID attempt=UUID.randomUUID(),raw=UUID.randomUUID(),proposedContent=UUID.randomUUID();
+         String bytes="{\"bid\":"+bid+",\"currency\":\"RUB\",\"unit\":\"CURRENCY_MAJOR\"}";
+         seed.sql("""
+             INSERT INTO ops.ad_bid_command_attempt(id,command_id,attempt_no,purpose,fence_token,lease_owner,started_at,completed_at,
+@@ -452,10 +452,15 @@
+             SELECT :id,:command,coalesce(max(attempt_no),0)+1,'READBACK',1,'fictional-compensation',clock_timestamp(),clock_timestamp(),
+               'ACCEPTED','fictional-compensation',repeat('a',64),'{}' FROM ops.ad_bid_command_attempt WHERE command_id=:command
+             """).param("id",attempt).param("command",command).update();
+-        seed.sql("INSERT INTO raw.raw_content(id,hash_algorithm,hash_value,byte_length,object_ref) VALUES(:id,'SHA256',:hash,:length,:ref)")
+-                .param("id",content).param("hash",com.mimococo.marketops.shared.Digest.ofText(bytes))
++        String contentHash=com.mimococo.marketops.shared.Digest.ofText(bytes);
++        seed.sql("INSERT INTO raw.raw_content(id,hash_algorithm,hash_value,byte_length,object_ref) VALUES(:id,'SHA256',:hash,:length,:ref) ON CONFLICT(hash_algorithm,hash_value) DO NOTHING")
++                .param("id",proposedContent).param("hash",contentHash)
+                 .param("length",bytes.getBytes(java.nio.charset.StandardCharsets.UTF_8).length)
+-                .param("ref","object-ref://fictional/"+content).update();
++                .param("ref","object-ref://fictional/"+proposedContent).update();
++        // Equal immutable response bytes share one Raw content identity; observations remain distinct.
++        UUID content=seed.sql("SELECT id FROM raw.raw_content WHERE hash_algorithm='SHA256' AND hash_value=:hash AND byte_length=:length")
++                .param("hash",contentHash).param("length",bytes.getBytes(java.nio.charset.StandardCharsets.UTF_8).length)
++                .query(UUID.class).single();
+         seed.sql("""
+             INSERT INTO raw.ad_bid_response_observation(id,command_id,attempt_id,raw_content_id,request_digest,http_status,
+               response_headers,evidence_class,response_complete,observed_bid,observed_currency,observed_unit,observed_at,correlation_id)

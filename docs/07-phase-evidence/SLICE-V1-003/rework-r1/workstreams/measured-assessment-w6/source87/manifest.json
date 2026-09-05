@@ -1,0 +1,35 @@
+{
+  "generatedAtUTC": "2026-09-05T12:05:21.487057+00:00",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 2400,
+      "sha256": "0a41b15e3cfd939c5e0c15dc33c2aea3a9ac9e6dafd6f4a5bd0382e695f79752"
+    },
+    {
+      "path": "independent-frozen-xml-check.json",
+      "bytes": 1575,
+      "sha256": "45d1a19b2bca354a8aaf79d0b6a0bcb58f354a294a71ddf7d041302e4665f0b2"
+    },
+    {
+      "path": "reconcile-source87-frozen-w6.py",
+      "bytes": 12784,
+      "sha256": "72894bbc1a726a1499bfe4a49fdd036b1f42fd4edefef2c622a17993630eaac5"
+    },
+    {
+      "path": "source-identities.json",
+      "bytes": 42199,
+      "sha256": "ae62a23cb2592d31a0aaab779efa63bb1f69bceadcab7ac5725466f3711b502c"
+    },
+    {
+      "path": "source-method-xml-bindings.json",
+      "bytes": 482144,
+      "sha256": "e160f83965ab4ccdb6650485a67bcf3462aa0b33f0d6adfdc942499a79fe3b07"
+    },
+    {
+      "path": "source87-individual-measured-review.json",
+      "bytes": 3155452,
+      "sha256": "42d4ef570c2004a141aa49fc9928697db69a8144937d8fbda42ba7c766c3dd6e"
+    }
+  ]
+}

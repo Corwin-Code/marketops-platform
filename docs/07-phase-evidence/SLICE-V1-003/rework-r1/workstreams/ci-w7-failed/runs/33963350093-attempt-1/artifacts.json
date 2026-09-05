@@ -1,0 +1,42 @@
+[
+  {
+    "id": 9969058913,
+    "node_id": "MDg6QXJ0aWZhY3Q5OTY5MDU4OTEz",
+    "name": "backend-test-reports",
+    "size_in_bytes": 6064717,
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9969058913",
+    "archive_download_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9969058913/zip",
+    "expired": false,
+    "digest": "sha256:ea730a7d5e959622c65e04bfdade9d564627ea7d5a4f9e53a8c1784e548a8238",
+    "created_at": "2026-09-05T11:58:51Z",
+    "updated_at": "2026-09-05T11:58:51Z",
+    "expires_at": "2026-09-19T11:58:48Z",
+    "workflow_run": {
+      "id": 33963350093,
+      "repository_id": 1326128060,
+      "head_repository_id": 1326128060,
+      "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+      "head_sha": "3e4039259c0a56d0f10319cdcae79cab66f81983"
+    }
+  },
+  {
+    "id": 9969056829,
+    "node_id": "MDg6QXJ0aWZhY3Q5OTY5MDU2ODI5",
+    "name": "backend-integration-reports",
+    "size_in_bytes": 1011530,
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9969056829",
+    "archive_download_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9969056829/zip",
+    "expired": false,
+    "digest": "sha256:2acd2975a086f8e26f40b5c4e69dc49b44414629930f4b0e45b8d97364a1d103",
+    "created_at": "2026-09-05T11:58:41Z",
+    "updated_at": "2026-09-05T11:58:41Z",
+    "expires_at": "2026-09-19T11:58:39Z",
+    "workflow_run": {
+      "id": 33963350093,
+      "repository_id": 1326128060,
+      "head_repository_id": 1326128060,
+      "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+      "head_sha": "3e4039259c0a56d0f10319cdcae79cab66f81983"
+    }
+  }
+]

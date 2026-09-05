@@ -1,0 +1,17 @@
+MarketOps development environment report
+--------------------------------------------------------------
+repository path               PASS  relative-path tooling supports whitespace and single quotes
+java                          PASS  Java 21
+node                          PASS  v24.19.0
+container runtime             PASS  Docker Compose version v5.4.0
+make                          PASS  available
+python3                       PASS  3.9
+port 5432                     WARN  already in use
+                                    fix: stop the process using 5432, or change the configured port
+port 8080                     PASS  free
+port 5173                     PASS  free
+port 4173                     PASS  free
+local backend configuration   PASS  present
+local frontend configuration  PASS  present
+--------------------------------------------------------------
+All required prerequisites are satisfied.

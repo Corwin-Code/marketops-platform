@@ -39,9 +39,18 @@ public class AdvertisingTaskSloService implements com.mimococo.marketops.operati
         var row=jdbc.sql("""
                 SELECT r.case_id,r.first_raised_at,r.profile_snapshot::text,c.lane FROM ops.ad_case_responsibility r
                 JOIN mart.ad_case c ON c.id=r.case_id WHERE r.task_id=:id
-                """).param("id",taskId).query((rs,n)->new Binding(rs.getObject("case_id",UUID.class),
+                  AND r.first_raised_at<=:at AND r.recorded_at<=:at
+                """).param("id",taskId).param("at",Timestamp.from(now)).query((rs,n)->new Binding(rs.getObject("case_id",UUID.class),
                         rs.getTimestamp("first_raised_at").toInstant(),rs.getString("profile_snapshot"),rs.getString("lane"))).optional();
         if(row.isEmpty()) return null;
+        Instant raisedAt=row.get().raisedAt();
+        // Both SQL predicates use PostgreSQL's rounded microsecond timestamp.
+        // The original Java asOf may be a few nanoseconds earlier than that
+        // exact persisted origin. No genuinely future Task gets an age of zero.
+        Instant persistedNow=now.truncatedTo(java.time.temporal.ChronoUnit.MICROS)
+                .plusNanos(now.getNano()%1000>=500?1000:0);
+        if(raisedAt.isAfter(now) && !raisedAt.equals(persistedNow)) return null;
+        long exposureAge=raisedAt.isAfter(now)?0:java.time.Duration.between(raisedAt,now).toSeconds();
         var snapshot=json.readTree(row.get().snapshot());
         while(snapshot.path("resolvedAt").isTextual() && snapshot.path("unresolvedOriginal").isObject()
                 && java.time.OffsetDateTime.parse(snapshot.path("resolvedAt").asText()).toInstant().isAfter(now)) {
@@ -51,7 +60,7 @@ public class AdvertisingTaskSloService implements com.mimococo.marketops.operati
         if(!profile.path("staffed").asBoolean(false) || !profile.path("timezone").isTextual()
                 || !calendar.path("days").isArray() || !calendar.path("timezone").asText().equals(profile.path("timezone").asText())) {
             return new Status("PROFILE_OR_CALENDAR_MISSING",null,null,null,null,null,null,
-                    java.time.Duration.between(row.get().raisedAt(),now).toSeconds(),false,false,false);
+                    exposureAge,false,false,false);
         }
         Set<Integer> days=StreamSupport.stream(calendar.path("days").spliterator(),false)
                 .map(value->value.asInt()).collect(Collectors.toSet());
@@ -82,7 +91,7 @@ public class AdvertisingTaskSloService implements com.mimococo.marketops.operati
         boolean paused=pauses.stream().anyMatch(pause->!now.isBefore(pause.from()) && now.isBefore(pause.until()));
         return new Status(paused?"ACCEPTED_EXCEPTION_ACTIVE":coverage.contains(now)?"IN_COVERAGE":"PROTECTION".equals(row.get().lane())?"OUT_OF_COVERAGE_ACTIVE_HARM":"OUT_OF_COVERAGE",
                 ackDue,actionDue,escalationDue,StaffedResponseClock.nextStaffed(now,coverage),events.ack(),events.action(),
-                java.time.Duration.between(row.get().raisedAt(),now).toSeconds(),
+                exposureAge,
                 events.ack()==null?now.isAfter(ackDue):events.ack().isAfter(ackDue),
                 events.action()==null?!paused && now.isAfter(actionDue):events.action().isAfter(actionDue),paused);
     }
