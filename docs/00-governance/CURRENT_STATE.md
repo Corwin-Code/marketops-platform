@@ -33,9 +33,9 @@ slice_v1_003_rework_starting_head: a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb
 slice_v1_003_rework_starting_tree: fb4d242d62febd87191da9dce353bdef99f5a77d
 slice_v1_003_frozen_findings_sha256: 15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1
 slice_v1_003_rework_takeover: docs/07-phase-evidence/SLICE-V1-003/rework-r1/TAKEOVER_RECEIPT.md
-slice_v1_003_rework_status: ROOT_CAUSE_REWORK_IN_PROGRESS_NO_CLOSURE_CLAIM
+slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_CLOSURE_REVIEW_PENDING
 slice_v1_003_rework_transport: APPEND_ONLY_NAMED_BRANCH_ONE_DRAFT_PR_AND_CI_AUTHORIZED
-slice_v1_003_implementation_state: FULL_SCOPE_IMPLEMENTATION_IN_PROGRESS
+slice_v1_003_implementation_state: ENGINEERING_REWORK_IMPLEMENTED_AND_VERIFIED
 slice_v1_003_controlled_write_target: AD_BID_CHANGE
 slice_v1_003_controlled_write_provider_paths: STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE
 slice_v1_003_real_provider_calls: NONE
@@ -63,7 +63,7 @@ slice_v1_001_amendment_002_acceptance: HUMAN_OWNER_ACCEPTED_FOR_SUPPLEMENTAL_R2
 slice_v1_001_amendment_002_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-002-ACCEPTANCE-EVIDENCE.md
 slice_v1_001_amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923
 active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
-active_gate: SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION
+active_gate: CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION
 authorization: FULL_SCOPE_IMPLEMENTATION
 slice_v1_002_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED
 slice_v1_002_branch: fix/SLICE-V1-002-root-cause-rework-r1
@@ -147,7 +147,8 @@ slice_v1_003_migration_inventory: docs/07-phase-evidence/SLICE-V1-003/rework-r1/
 slice_v1_003_deferred_release_register: docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-REL-DEFERRED-REGISTER.json
 slice_v1_003_measurements: docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/
 slice_v1_003_runbooks: docs/06-runbooks/
-slice_v1_003_engineering_closure_claim: NOT_MADE
+slice_v1_003_engineering_closure_claim: CODEX_ENGINEERING_ASSESSMENT_ONLY_CONTROLLER_PENDING
+slice_v1_003_controller_verdict: PENDING_INDEPENDENT_REVIEW
 slice_v1_003_r2_implementation_handoff: docs/07-phase-evidence/SLICE-V1-003/r2-implementation-handoff.md
 accepted_contract_mutation: PROHIBITED_APPEND_ONLY_AMENDMENT_REQUIRED
 execution_envelope: EXECUTION_ENVELOPE_V1
@@ -225,7 +226,7 @@ slice_v1_001_snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e8482
 slice_v1_001_owner_acceptance_comment: 5469935477
 slice_v1_001_owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
 slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33
-candidate_state_scope: SLICE_V1_003_AUTHORIZED_R1_REWORK_PENDING_FULL_VERIFICATION
+candidate_state_scope: SLICE_V1_003_ENGINEERING_ASSESSED_CONTROLLER_CLOSURE_REVIEW_PENDING
 merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED
 production_deployment: NOT_AUTHORIZED
 gate_ev: NOT_AUTHORIZED
@@ -234,8 +235,8 @@ slice_v1_001_as_built_design: docs/02-architecture/designs/SLICE-V1-001-design.m
 slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
-next_authorized_actor: CODEX
-next_action: ROOT_CAUSE_REWORK_VERIFY_APPEND_ONLY_NAMED_BRANCH_DRAFT_PR_AND_CI
+next_authorized_actor: CONTROLLER
+next_action: INDEPENDENT_FINAL_CLOSURE_VERIFICATION_OF_EXACT_DRAFT_PR_HEAD
 slice_v1_001_handoff_pending: CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
@@ -623,25 +624,31 @@ capability anywhere in the module or in any migration.
 
 ## Next authorized action
 
-The repository gate remains `SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION`. Codex is
-executing the continuous root-cause rework authorized by
-`OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1`, bound to the exact 22-item Frozen
-Finding Set and the unchanged accepted Contract. The current work covers coherent
-source/migration/test repairs, same-class and transitive review, complete isolated
-verification, canonical evidence, append-only push on
-`feat/SLICE-V1-003-advertising-traffic-efficiency`, one Draft PR and exact current
-Head CI. The original Maker's local-only execution instruction remains historical;
-it is not the active R1 entry point.
+The next gate is `CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION` on the
+exact current Draft PR Head. Codex has completed the engineering rework and
+its scoped execution evidence assessment under
+`OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1`. The exact 22-item Frozen Finding
+Set, accepted Contract and all 24 production-blocking release obligations remain
+unchanged. This records the Codex engineering result; it is not independent
+Controller closure or Human Owner Formal Closure.
 
-The new authority does not permit mark Ready, merge, self-approval, force-push,
-direct main publication, shared or production environment access, real Provider
-calls, credential provisioning, deployment, Terraform apply, Gate EV, Gate E,
-Pilot or production enablement. `production_write_enabled=false` remains in force.
-The work-in-progress evidence index is
-[Codex R1](../07-phase-evidence/SLICE-V1-003/rework-r1/README.md). No inherited test
-count, earlier green CI, local partial batch or frozen-finding repair claim is an
-independent Controller closure verdict. Controller Final Closure Verification
-remains pending on the final exact published Head after all engineering checks.
+[The R1 evidence index](../07-phase-evidence/SLICE-V1-003/rework-r1/README.md)
+identifies the measured source commit/tree, complete local runs, exact current
+published Head/tested merge/CI artifacts and separately assessed finding and
+acceptance rows. Each of the 22 findings has its own root-cause, same-class,
+transitive and executed positive/negative evidence assessment. S3-AC-001 through
+S3-AC-199 have criterion-specific engineering assessments. S3-AC-200 retains
+its completed regression/governance/security execution evidence and remains
+pending independent Controller closure assessment of the unresolved-finding
+condition. No test count or automatically assembled mapping supplies that verdict.
+
+The PR remains Draft. Codex has not marked Ready, merged or self-approved.
+The next authorized actor is the independent Controller for closure verification
+of this same Frozen Finding Set. Accepted original and historical evidence remain
+preserved. Publication remains append-only on the named branch; no Ready, merge,
+force-push, direct-main publication, real Provider access, credential provisioning,
+shared/production access, deployment, Terraform apply, Gate EV/E, Pilot or
+production enablement is granted. `production_write_enabled=false` remains in force.
 
 ## SLICE-V1-003 Codex R1 execution record
 

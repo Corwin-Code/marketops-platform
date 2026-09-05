@@ -1,0 +1,533 @@
+{
+  "kind": "ACTUAL_R25_NAMED_SUPPORT_WITH_SEPARATE_W8_BYTE_COMPARISON",
+  "receipt": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+    "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+  },
+  "sourceManifest": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+    "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+  },
+  "resources": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+    "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+  },
+  "methods": {
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java#declaredThousandObjectPortfolioMeetsAdvertisingSloAndRepairsDroppedCorrections": {
+      "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+      "method": "declaredThousandObjectPortfolioMeetsAdvertisingSloAndRepairsDroppedCorrections",
+      "status": "PASSED",
+      "seconds": "380.412",
+      "testcaseOrdinal": 2,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+        "sha256": "b9844fdb3f8b095bbae468ab530694560d251cf7ada43d6d70db082dd6ea7f49"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "0e88b0a592e416b9d6d5885f2dd950c573317a1eaaf8e675c72849dd0c3b8a0e"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java#replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach": {
+      "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+      "method": "replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach",
+      "status": "PASSED",
+      "seconds": "0.374",
+      "testcaseOrdinal": 0,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+        "sha256": "b9844fdb3f8b095bbae468ab530694560d251cf7ada43d6d70db082dd6ea7f49"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "0e88b0a592e416b9d6d5885f2dd950c573317a1eaaf8e675c72849dd0c3b8a0e"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java#oneNanosecondClockReversalIsUnknownAndBreachedInsteadOfZeroLatency": {
+      "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest",
+      "method": "oneNanosecondClockReversalIsUnknownAndBreachedInsteadOfZeroLatency",
+      "status": "PASSED",
+      "seconds": "0.004",
+      "testcaseOrdinal": 1,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest.xml",
+        "sha256": "7196ad541e0f9ada0394b6939aa283dbcd669e97c01ade46db798b52f260e6ac"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "4aacb47a2738a3d53b702acaf587d6df10ceb97eba4644b918fe04f14e7134fb"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java#exactZeroLatencyIsMeasuredAndDoesNotBreach": {
+      "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest",
+      "method": "exactZeroLatencyIsMeasuredAndDoesNotBreach",
+      "status": "PASSED",
+      "seconds": "0.003",
+      "testcaseOrdinal": 3,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest.xml",
+        "sha256": "7196ad541e0f9ada0394b6939aa283dbcd669e97c01ade46db798b52f260e6ac"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "4aacb47a2738a3d53b702acaf587d6df10ceb97eba4644b918fe04f14e7134fb"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java#exactFifteenMinuteLatencyDoesNotBreachTheInclusiveBound": {
+      "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest",
+      "method": "exactFifteenMinuteLatencyDoesNotBreachTheInclusiveBound",
+      "status": "PASSED",
+      "seconds": "0.544",
+      "testcaseOrdinal": 0,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest.xml",
+        "sha256": "7196ad541e0f9ada0394b6939aa283dbcd669e97c01ade46db798b52f260e6ac"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "4aacb47a2738a3d53b702acaf587d6df10ceb97eba4644b918fe04f14e7134fb"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorkerTest.java#oneNanosecondBeyondFifteenMinutesBreachesBeforeMillisecondConversion": {
+      "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest",
+      "method": "oneNanosecondBeyondFifteenMinutesBreachesBeforeMillisecondConversion",
+      "status": "PASSED",
+      "seconds": "0.004",
+      "testcaseOrdinal": 2,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest.xml",
+        "sha256": "7196ad541e0f9ada0394b6939aa283dbcd669e97c01ade46db798b52f260e6ac"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "4aacb47a2738a3d53b702acaf587d6df10ceb97eba4644b918fe04f14e7134fb"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java#sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization": {
+      "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+      "method": "sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization",
+      "status": "PASSED",
+      "seconds": "0.487",
+      "testcaseOrdinal": 1,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+        "sha256": "b9844fdb3f8b095bbae468ab530694560d251cf7ada43d6d70db082dd6ea7f49"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "0e88b0a592e416b9d6d5885f2dd950c573317a1eaaf8e675c72849dd0c3b8a0e"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java#independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage": {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "method": "independentCauseKeepsOneConcurrentTaskAndThreeFiniteChoicesWithoutFutureSloLeakage",
+      "status": "PASSED",
+      "seconds": "0.4",
+      "testcaseOrdinal": 17,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+        "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java#staffedTaskAgeUsesTheExactPersistedMicrosecondOrigin": {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "method": "staffedTaskAgeUsesTheExactPersistedMicrosecondOrigin",
+      "status": "PASSED",
+      "seconds": "0.357",
+      "testcaseOrdinal": 13,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+        "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java#unresolvedProfileTaskAgeUsesTheExactPersistedMicrosecondOrigin": {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "method": "unresolvedProfileTaskAgeUsesTheExactPersistedMicrosecondOrigin",
+      "status": "PASSED",
+      "seconds": "0.422",
+      "testcaseOrdinal": 8,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+        "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java#responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement": {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "method": "responsibilityIsIndependentOfCandidateAndPageViewIsNotAcknowledgement",
+      "status": "PASSED",
+      "seconds": "0.34",
+      "testcaseOrdinal": 9,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+        "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java#realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand": {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "method": "realMakerOpsOwnerChainFreezesOneBaselineAndCreatesOneCommand",
+      "status": "PASSED",
+      "seconds": "0.803",
+      "testcaseOrdinal": 4,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+        "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java#anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns": {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "method": "anOwnerProfileBecomingAvailableRepairsTheSameTaskWithoutRewritingPastUnknowns",
+      "status": "PASSED",
+      "seconds": "0.466",
+      "testcaseOrdinal": 16,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+        "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java#unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness": {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "method": "unresolvedResponseProfileEscalatesOnceOnTheSameTaskWithoutClaimingTimeliness",
+      "status": "PASSED",
+      "seconds": "0.333",
+      "testcaseOrdinal": 5,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+        "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java#ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent": {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "method": "ownerAcceptedRiskPausesOnlyActionAndMustEndBeforeNewPreviewOrIntent",
+      "status": "PASSED",
+      "seconds": "0.744",
+      "testcaseOrdinal": 15,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+        "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java#exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit": {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "method": "exceptionReasonsAreAuditedAndPartiallyScopedReviewerCannotReadProfit",
+      "status": "PASSED",
+      "seconds": "0.473",
+      "testcaseOrdinal": 10,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+        "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java#restoredCaseAuthorityCannotRestoreAcceptedRiskAndViewReadsTheReopenedTask": {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "method": "restoredCaseAuthorityCannotRestoreAcceptedRiskAndViewReadsTheReopenedTask",
+      "status": "PASSED",
+      "seconds": "0.587",
+      "testcaseOrdinal": 3,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+        "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java#restoredRoleCannotResurrectAnExceptionAndSameTaskReopens": {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "method": "restoredRoleCannotResurrectAnExceptionAndSameTaskReopens",
+      "status": "PASSED",
+      "seconds": "1.012",
+      "testcaseOrdinal": 0,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+        "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990"
+    },
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java#anOutOfSetCandidateIsRefusedAndARejectedFiniteChoiceNeverStartsAction": {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "method": "anOutOfSetCandidateIsRefusedAndARejectedFiniteChoiceNeverStartsAction",
+      "status": "PASSED",
+      "seconds": "0.364",
+      "testcaseOrdinal": 7,
+      "xml": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+        "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+      },
+      "runReceipt": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+        "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+      },
+      "measuredSourceManifest": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+        "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+      },
+      "runtimeResources": {
+        "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/runtime-resources.json",
+        "sha256": "c75e6b8b08168729b1ddc5b8fc535dcbea36f56a47530c5db7f230c422d182d4"
+      },
+      "measuredBaseHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "measuredSourceState": "Exact W7 working tree plus listed repairs; later W8 bytes are compared separately, not declared the measured commit.",
+      "w8SourceEqualsMeasuredR25": true,
+      "measuredTestSourceSha256": "df6da13f737be1a15de0a83fb2f959f989fd0b17836720940238b1ee81d0c990"
+    }
+  },
+  "humanSuiteActualCases": 18,
+  "wholeR25ActualCases": 72,
+  "limit": "Actual selected working-tree R25 run; full W8 and independent Controller remain pending."
+}

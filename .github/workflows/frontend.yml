@@ -158,17 +158,19 @@ jobs:
           cache-dependency-path: frontend/marketops-console/package-lock.json
       - name: Install from the lockfile
         run: npm ci
-      - name: Build the console
-        run: npm run build
-        env:
-          MARKETOPS_BUILD_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
-          VITE_MARKETOPS_API_BASE_URL: http://127.0.0.1:8080
-          VITE_MARKETOPS_ENVIRONMENT: ci
       - name: Prove that only prefixed values reached the bundle
         # The canary rebuilds with withheld values in the environment and
         # searches the output for them, which is the only way to observe a
         # broadened prefix before someone opens the published file.
         run: npm run verify:bundle
+      - name: Build the console
+        # Replace the canary distribution with the authored-commit build that
+        # will be uploaded. The canary's public test settings are not release metadata.
+        run: npm run build
+        env:
+          MARKETOPS_BUILD_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+          VITE_MARKETOPS_API_BASE_URL: http://127.0.0.1:8080
+          VITE_MARKETOPS_ENVIRONMENT: ci
       - name: Produce the CycloneDX and dependency inventories
         run: |
           npm run sbom

@@ -105,6 +105,15 @@ becomes available, the same Task receives the missing binding and keeps the
 original unresolved snapshot, resolution time, first-raised time and journal.
 Historical SLO reads must use only authority recorded by their as-of time.
 
+The console presents event completion, deadline evaluation and the staffed
+Action clock separately. A false breach flag establishes `NOT_BREACHED` only
+with known coverage and that stage's valid deadline. Missing profiles, malformed
+or partial timing records, and unknown pause flags remain `UNRESOLVED`; no
+legacy deadline supplies missing live SLO authority. A recorded acknowledgement
+does not complete the Action stage. A known breach remains visible alongside a
+reported pause, and a completed Action is not displayed as an active clock.
+Wall-clock age preserves a known zero and rejects negative or invalid values.
+
 View, acknowledgement, attributable action and observed Outcome are separate
 journal events. Task event appends lock the Task before allocating a sequence.
 Assignment checks the proposed assignee's live role and complete scope.

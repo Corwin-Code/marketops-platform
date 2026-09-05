@@ -1,0 +1,72 @@
+{
+  "kind": "EXACT_MEASURED_FRONTEND_COMPLETE_QUALITY_RUN",
+  "startedHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "startedTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "initialGitStatus": "M frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx\n M frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx\n M frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx\n M frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx\n M frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+  "commands": [
+    {
+      "name": "node-version",
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T13:58:37.171066+00:00",
+      "finishedAtUTC": "2026-09-05T13:58:37.251761+00:00",
+      "exitCode": 0,
+      "log": "node-version.log",
+      "sha256": "b7677d3ec37ee1897ba07dc2cfe8292fe421c9ac93396cca5bbece486d1a2a41"
+    },
+    {
+      "name": "npm-version",
+      "argv": [
+        "npm",
+        "--version"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T13:58:37.251955+00:00",
+      "finishedAtUTC": "2026-09-05T13:58:37.458925+00:00",
+      "exitCode": 0,
+      "log": "npm-version.log",
+      "sha256": "a38e383f1e9080b0dd9001481f6e56b341000de90a05061b66734350ad3adc41"
+    },
+    {
+      "name": "installed-dependencies",
+      "argv": [
+        "npm",
+        "ls",
+        "--all"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T13:58:37.459101+00:00",
+      "finishedAtUTC": "2026-09-05T13:58:37.984395+00:00",
+      "exitCode": 0,
+      "log": "installed-dependencies.log",
+      "sha256": "1dd59f2816d9e3bf9dea9020fe4f0ca3c4665284f879eb056a0069f1223fa45e"
+    },
+    {
+      "name": "lint",
+      "argv": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T13:58:37.984796+00:00",
+      "finishedAtUTC": "2026-09-05T13:58:43.176409+00:00",
+      "exitCode": 1,
+      "log": "lint.log",
+      "sha256": "51f837b85e7a0031ed42a2d35eb83979338b33033343b3b02ead44647a78d77c"
+    }
+  ],
+  "sourceManifestBeforeSha256": "f115a45870a98e948b3ce9149172097a834db03a7ce4d62d8c3add7dda59f5c5",
+  "sourceManifestAfterSha256": "f115a45870a98e948b3ce9149172097a834db03a7ce4d62d8c3add7dda59f5c5",
+  "sourceStable": true,
+  "headAfter": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "statusAfter": "M frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx\n M frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx\n M frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx\n M frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx\n M frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+  "actualUnitSummary": null,
+  "productionWriteEnabled": false,
+  "boundary": "All configured frontend quality, actual coverage, build/bundle and SBOM validation on these exact source bytes. Dirty candidate execution is bound to its source diff and fingerprint, not relabeled as a future commit. Browser/HTTP, backend runtime and final remote CI require separate evidence.",
+  "pass": false,
+  "collectorSha256": "627ef0b67b00a6ead86051ad3466efeb004136f757d928c00b15207be7324854"
+}

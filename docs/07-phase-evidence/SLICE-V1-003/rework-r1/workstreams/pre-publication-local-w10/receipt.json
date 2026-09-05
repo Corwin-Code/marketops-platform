@@ -1,0 +1,88 @@
+{
+  "kind": "SLICE3_R1_FINAL_LOCAL_PRE_PUBLICATION_VERIFICATION",
+  "sourceHeadBeforeFinalCommit": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+  "commands": [
+    {
+      "command": "make governance",
+      "exitCode": 0,
+      "result": "418 tests PASS"
+    },
+    {
+      "command": "npm ci",
+      "runtime": "Node 24.19.0 / npm 11.17.0",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run format:check",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run test:ci",
+      "exitCode": 0,
+      "result": "22 files / 327 tests PASS"
+    },
+    {
+      "command": "bash scripts/verify_coverage_thresholds.sh frontend",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run verify:bundle",
+      "exitCode": 0
+    },
+    {
+      "command": "authored-Head ci loopback npm run build",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run sbom",
+      "exitCode": 0,
+      "result": "CycloneDX 1.6 JSON schema validation PASS"
+    },
+    {
+      "command": "npm ls --all --json",
+      "exitCode": 0
+    },
+    {
+      "command": "npm audit --json",
+      "exitCode": 0,
+      "result": "0 vulnerabilities"
+    }
+  ],
+  "frontendCoverage": {
+    "statements": "86.34% (1878/2175)",
+    "branches": "79.65% (1828/2295)",
+    "functions": "87.39% (513/587)",
+    "lines": "87.06% (1817/2087)"
+  },
+  "distributionOrder": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/frontend-distribution-order-repair/receipt.json",
+    "sha256": "59217a105f4244773529189b202a1c5d836ef3523081b6e0967e680c8749bedf"
+  },
+  "archive": {
+    "path": "original-evidence.tar.gz",
+    "bytes": 93192,
+    "sha256": "06b9976762b8752807cf7dd9913c9bf82b7a0ebb321cfc5daf1632a018568696"
+  },
+  "publicationScan": {
+    "files": 17,
+    "decodedBytes": 883455,
+    "matchCounts": {
+      "privateKey": 0,
+      "githubToken": 0,
+      "jwt": 0,
+      "signedQuery": 0
+    },
+    "result": "PASS"
+  },
+  "result": "PASS_LOCAL_PRE_PUBLICATION",
+  "boundary": "Dirty-worktree local evidence. The containing commit and exact final CI are established only by append-only remote readback.",
+  "productionWriteEnabled": false
+}

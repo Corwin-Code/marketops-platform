@@ -1,0 +1,37 @@
+[
+  {
+    "path": "/tmp/slice3-source87-w8-measured-final/actual-matched-case-index.json",
+    "sha256": "7a2ca2c8472ef84135fcf03fce6c4bba53613a030a7bc96c8007b54b10d23476",
+    "bytes": 141776
+  },
+  {
+    "path": "/tmp/slice3-source87-w8-measured-final/bind-script-before-final-wording-correction.py",
+    "sha256": "87b86d2578a163abd76330fd87b325c9ffd8fc1cc140cc76742ee0bb3963b24c",
+    "bytes": 14915
+  },
+  {
+    "path": "/tmp/slice3-source87-w8-measured-final/capacity-boundary-and-measurements.json",
+    "sha256": "29288687350a1240e3abec03d748ad7031d0506c8093c94ab7f9fca4e8e77f2c",
+    "bytes": 4129
+  },
+  {
+    "path": "/tmp/slice3-source87-w8-measured-final/final-wording-correction.json",
+    "sha256": "e0dcbb17e261a4b4eb6e79fdd242e1ff27f0d723a1356e811716575d1d2cc95d",
+    "bytes": 584
+  },
+  {
+    "path": "/tmp/slice3-source87-w8-measured-final/method-execution-evidence.json",
+    "sha256": "3f1d7946b3af66c7ea0f9432d7d4ca1251c626167f3b1b821ebf482c62c55883",
+    "bytes": 296946
+  },
+  {
+    "path": "/tmp/slice3-source87-w8-measured-final/source-identity-evidence.json",
+    "sha256": "93d044d7c1c1a7e9dfd3909930f386fdf3d559e7f50d8ff137fd3915248e6c17",
+    "bytes": 30145
+  },
+  {
+    "path": "/tmp/slice3-source87-w8-measured-final/source87-individual-measured-review.json",
+    "sha256": "7db2fe21812c115a0b4c2e1ae2534486eb0c40251734e49f7e53f7cb8ce4ab92",
+    "bytes": 1524138
+  }
+]

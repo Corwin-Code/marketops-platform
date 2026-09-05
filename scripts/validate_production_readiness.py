@@ -451,7 +451,7 @@ COMPLETION_STATE_TOKENS = (
     "d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d",
     "active_slice_amendment: NONE_ACCEPTED",
     "active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN",
-    "active_gate: SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION",
+    "active_gate: CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION",
     "authorization: FULL_SCOPE_IMPLEMENTATION",
     "slice_v1_002_contract_sha256: "
     "d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e",
@@ -555,7 +555,11 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33",
     "closure_snapshot_before_next_slice: SATISFIED_EXACT_OWNER_ACCEPTED",
     "merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED",
-    "next_authorized_actor: CODEX",
+    "slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_CLOSURE_REVIEW_PENDING",
+    "slice_v1_003_engineering_closure_claim: CODEX_ENGINEERING_ASSESSMENT_ONLY_CONTROLLER_PENDING",
+    "slice_v1_003_controller_verdict: PENDING_INDEPENDENT_REVIEW",
+    "gate_ev: NOT_AUTHORIZED",
+    "next_authorized_actor: CONTROLLER",
     "production_write_enabled: false",
     "bounded_real_write_verification_authorization: NONE",
     "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",
@@ -1170,11 +1174,27 @@ def check_repository_contracts(report: Report) -> None:
         frontend_manifest,
         (
             '"@cyclonedx/cyclonedx-npm"',
+            '"ajv": "8.20.0"',
+            '"ajv-formats": "3.0.1"',
+            '"ajv-formats-draft2019": "1.6.1"',
             '"@playwright/test"',
             '"fsevents": false',
             '"libxmljs2": false',
             '"test:browser"',
             '"sbom"',
+            '"sbom": "node scripts/generate-validated-sbom.mjs"',
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / FRONTEND / "scripts/generate-validated-sbom.mjs",
+        (
+            "'--validate'",
+            "skipped validating BOM|No JsonValidator available",
+            "CycloneDX JSON schema validation PASS",
+            "bom.bomFormat !== 'CycloneDX'",
+            "bom.specVersion !== '1.6'",
         ),
     )
     require_tokens(

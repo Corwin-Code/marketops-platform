@@ -1,0 +1,29 @@
+{
+  "kind": "ACTUAL_W8_POST_FULL_ENVIRONMENT_CLONE",
+  "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "fullRunReceiptSha256": "eca4c0db03e73e68c4c5e7c3737fd8f1068f6d2d71940128da1dbaf4e9c5f1a0",
+  "fullVerifiedJarSha256": "5d4adebaafed55176832fedac8a1fd1cf950c8a9d5b2f422a1dbe46ad2a12f35",
+  "commands": [
+    {
+      "name": "doctor",
+      "command": [
+        "make",
+        "doctor"
+      ],
+      "workingDirectory": "/Users/chzhengx/Code/personal/marketops-platform",
+      "startedAtUTC": "2026-09-05T13:39:56.765956+00:00",
+      "finishedAtUTC": "2026-09-05T13:39:58.376224+00:00",
+      "exitCode": 2,
+      "log": "doctor.log",
+      "sha256": "9b79c09398d94d559ef8dab9fa7c473790bdfb10f62f402fbba0949de0df2045"
+    }
+  ],
+  "headAfter": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "statusAfter": "",
+  "verifiedJarStillEqual": true,
+  "productionWriteEnabled": false,
+  "scope": "Doctor dependency/port inspection and independent Git-object fresh clone in offline mode. Existing user containers, busy5432 and ignored configuration untouched; no database connection or real Provider/shared/production access. This is not full-mode fresh-clone runtime evidence.",
+  "pass": false,
+  "collectorSha256": "eff4cc29bb55c24dd184d704c24268dd937a3766d682aa483e9f52624ccff683"
+}

@@ -121,10 +121,12 @@ def assemble() -> None:
             row["evidence"] = [{"path": relative.as_posix(), "sha256": digest(ROOT / relative), "row_id": identity}]
             row["remaining_limitations"] = shard.get("evidenceLimits", shard.get("pending", []))
         row["status"] = "REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING"
+        row["closed_by_codex_engineering_assessment"] = False
         row["controller_verdict"] = "PENDING_INDEPENDENT_REVIEW"
     for name, data in (("S3-AC-REWORK-STATUS.json", ac_matrix), ("FINDING-CLOSURE-MATRIX.json", finding_matrix)):
         data["assembly_boundary"] = "Source mappings only; no automatic PASS, engineering closure or Controller verdict."
         data["closure_claim_made"] = False
+        data["engineering_closure_claim_made"] = False
         data["production_write_enabled"] = False
         (ROOT / BASE / name).write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
     print(f"Assembled {len(criteria)} exact criteria and {len(frozen)} exact findings; all remain verification-pending.")

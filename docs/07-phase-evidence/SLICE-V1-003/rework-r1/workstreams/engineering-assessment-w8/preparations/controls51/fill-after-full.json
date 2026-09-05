@@ -1,0 +1,16 @@
+{
+  "kind": "LATER_READ_ONLY_BINDING_REQUIREMENTS",
+  "requiredFullDirectory": "/tmp/slice3-r1-full-clean-w8-9b6e6195",
+  "conditions": [
+    "Wait for Root completed unselected full receipt/source stability and frozen original XML/artifact inventory; never index live target output as final.",
+    "Require receipt authored source W8 and exact tree; recompute original receipt/log/report/source manifest hashes.",
+    "Join each named-proof-plan method to exact owning FQCN/nested declaration and parameter expansion; record all actual cases with report SHA/node identity/status.",
+    "Match every source reference to exact W8 Git blob and completed run source manifest; missing/changed/failed methods remain pending.",
+    "Retain R25 command/build metadata and both original W6 files. Completed W8 evidence is additive, not a rewrite.",
+    "Review each row semantic reason/positive-negative boundary and whole Frozen clause coverage before status change; no script may bulk PASS from names/counts.",
+    "Keep AC200 deterministic test evidence separate from pending independent no-blocker/major review.",
+    "Canonical governance tip requires actual changed Python tests (expected 412 if unchanged discovery) and all latest final-tip remote checks; classification NON_RUNTIME_CANONICAL_GOVERNANCE_AND_EVIDENCE_ONLY after actual input-delta proof."
+  ],
+  "finalActualResults": null,
+  "controllerVerdict": null
+}

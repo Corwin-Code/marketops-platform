@@ -1,0 +1,27 @@
+diff --git a/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java b/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java
+index 6e5dfa9..5b0a746 100644
+--- a/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java
++++ b/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingReconciliationWorker.java
+@@ -1,5 +1,6 @@
+ package com.mimococo.marketops.advertisingefficiency.internal.application;
+ 
++import com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingSlo;
+ import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingEvidenceRepository;
+ import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingRecalculationRepository;
+ import com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingTraceRepository;
+@@ -129,11 +130,12 @@ class AdvertisingReconciliationWorker {
+                     var firstCase=outcome.stream().flatMap(value->value.written().cases().stream())
+                             .sorted(java.util.Comparator.comparing(value->!"PROTECTION".equals(value.lane()))).findFirst();
+                     for(var unanswered:queue.unanswered(organizationId,object.id(),asOf)) {
+-                        long latency=Duration.between(unanswered.acceptedAt(),observedAt).toMillis();
++                        Duration latency=Duration.between(unanswered.acceptedAt(),observedAt);
+                         trace.recordSlo(ids.newId(),organizationId,object.id(),firstCase.map(value->value.caseId()).orElse(null),
+                                 firstCase.map(value->value.lane()).orElse("WATCH"),"RECONCILIATION",null,null,null,
+-                                unanswered.acceptedAt(),observedAt,observedAt,latency<0?null:latency,null,
+-                                latency<0||latency>900000,correlationId+":"+unanswered.id());
++                                unanswered.acceptedAt(),observedAt,observedAt,
++                                latency.isNegative()?null:latency.toMillis(),null,
++                                latency.isNegative()||AdvertisingSlo.breached(latency),correlationId+":"+unanswered.id());
+                     }
+                     if (outcome.map(result -> result.written().anyLaneChanged()).orElse(false)) {
+                         changed++;

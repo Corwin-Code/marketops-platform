@@ -1,0 +1,35 @@
+{
+  "receipt": {
+    "path": "/tmp/slice3-w8-frontend-ci/receipt.json",
+    "sha256": "292d246d74a4889abaeee33a6c35c960d1bbde954c4a98e51b3fc33976b9be52"
+  },
+  "namedBrowser": {
+    "path": "/tmp/slice3-w8-frontend-ci/named-browser-results.json",
+    "sha256": "e6600e46d0ec1ca45ea7b1e45cfb1985439384708860be7968de91c071dc3679"
+  },
+  "runtimeProvenance": {
+    "path": "/tmp/slice3-w8-frontend-ci/backend-runtime-provenance.json",
+    "sha256": "e99c87055c203bfbc04ecd125cbaccff7b0c7448906da19029f30bcd342bb1cf"
+  },
+  "visualReview": {
+    "path": "/tmp/slice3-w8-frontend-ci/visual-review.json",
+    "sha256": "79c37a51bff5fcd64c1df8705858a5ce634deaf62e81b1608ce151a203189c4b"
+  },
+  "publicationScan": {
+    "path": "/tmp/slice3-w8-frontend-ci/publication-scan.json",
+    "sha256": "c177b89beda6962737869d2eaa167147bb70c67ed561c61a05ccc3acd4accebf"
+  },
+  "counts": {
+    "frontendUnit": 308,
+    "legacyBrowser": 25,
+    "advertisingBrowser": 12,
+    "originalPng": 26
+  },
+  "scanMatches": 0,
+  "runId": 33967874665,
+  "attempt": 1,
+  "testedPrHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "testedMerge": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+  "tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "result": "ACTUAL_FRONTEND_CI_PASS; COMPLETE_BACKEND_AND_OTHER_GATES_SEPARATE"
+}

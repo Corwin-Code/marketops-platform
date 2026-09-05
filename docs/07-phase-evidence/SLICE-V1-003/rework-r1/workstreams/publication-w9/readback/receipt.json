@@ -1,0 +1,21 @@
+{
+  "kind": "W9_READ_ONLY_PUBLICATION_READBACK_SUPPLEMENT",
+  "result": "PASS",
+  "observedAtUTC": "2026-09-05T14:17:52.153241+00:00",
+  "head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+  "tree": "5eb85b0bf309d39fd9798c9b8b2186371710fecc",
+  "parent": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "pr": {
+    "autoMergeRequest": null,
+    "baseRefOid": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "headRefName": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "headRefOid": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+    "isDraft": true,
+    "mergedAt": null,
+    "state": "OPEN",
+    "url": "https://github.com/Corwin-Code/marketops-platform/pull/30"
+  },
+  "originalAttempt": "/tmp/slice3-r1-w9-publication-attempt-1",
+  "originalObservation": "Ordinary push exit0 advanced remote 9b6e619 to52a34f3. Immediate PR readback returned oldW8. Subsequent independent reads now confirmW9; no repeat push executed.",
+  "production_write_enabled": false
+}

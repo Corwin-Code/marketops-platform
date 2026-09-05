@@ -350,6 +350,25 @@ class RepositoryContractPatternTests(unittest.TestCase):
                 )
                 self.assertTrue(violations)
 
+    def test_slice3_engineering_result_keeps_controller_and_production_boundaries(self) -> None:
+        current = (ROOT / "docs/00-governance/CURRENT_STATE.md").read_text()
+        self.assertEqual([], contract_token_violations(current, required=COMPLETION_STATE_TOKENS))
+        for before, after in (
+            ("slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_CLOSURE_REVIEW_PENDING",
+             "slice_v1_003_rework_status: FORMALLY_CLOSED"),
+            ("slice_v1_003_controller_verdict: PENDING_INDEPENDENT_REVIEW",
+             "slice_v1_003_controller_verdict: APPROVE_FOR_HUMAN_MERGE"),
+            ("next_authorized_actor: CONTROLLER", "next_authorized_actor: CODEX"),
+            ("production_write_enabled: false", "production_write_enabled: true"),
+            ("gate_ev: NOT_AUTHORIZED", "gate_ev: AUTHORIZED"),
+        ):
+            with self.subTest(field=before.split(":", 1)[0]):
+                self.assertIn(before, current)
+                mutated = current.replace(before, after, 1)
+                self.assertNotEqual(current, mutated)
+                violations = contract_token_violations(mutated, required=COMPLETION_STATE_TOKENS)
+                self.assertTrue(any(before.split(":", 1)[0] in item for item in violations))
+
     def test_enabled_production_write_is_rejected(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)
         mutated = source.replace(

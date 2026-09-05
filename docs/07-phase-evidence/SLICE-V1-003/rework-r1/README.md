@@ -1,8 +1,13 @@
 # SLICE-V1-003 — Codex R1 evidence
 
 This is the active evidence index for `OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1`.
-Rework and verification are in progress. It does not assert engineering closure,
-Controller approval or production enablement. `production_write_enabled=false`.
+Codex has completed the scoped engineering rework and verification assessment:
+all 22 Frozen findings are `CLOSED_WITH_EVIDENCE` by Codex, S3-AC-001 through
+S3-AC-199 are `VERIFIED`, and S3-AC-200 is
+`CANDIDATE_PREREQUISITES_PASS_CONTROLLER_PENDING`. These are engineering
+dispositions, not an independent Controller or Human Owner closure verdict.
+All 24 release obligations remain production-blocking and
+`production_write_enabled=false`.
 
 The accepted Contract SHA-256 is
 `1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c`.
@@ -13,9 +18,10 @@ The reviewed starting Head is `a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb`.
 | Record | Purpose and current boundary |
 | --- | --- |
 | [Takeover receipt](TAKEOVER_RECEIPT.md) | Completed read-only authority, package and repository checks. |
-| [Finding matrix](FINDING-CLOSURE-MATRIX.json) | The exact 22 frozen findings; current-source verification remains explicit. |
-| [Acceptance status](S3-AC-REWORK-STATUS.json) | Exact 200 Contract criteria. No Maker status is inherited as verified. |
+| [Finding matrix](FINDING-CLOSURE-MATRIX.json) | All exact 22 Frozen findings with individual root cause, same-class scan, transitive impact, tests and Codex engineering closure evidence; Controller remains pending. |
+| [Acceptance status](S3-AC-REWORK-STATUS.json) | Exact 200 Contract criteria: 199 engineering-verified and AC200 Controller-pending. No Maker status is inherited. |
 | [Release obligations](S3-REL-DEFERRED-REGISTER.json) | All 24 exact obligations remain production-blocking. |
+| [Engineering verification](ENGINEERING_VERIFICATION.json) | Consolidated counts, measured source identities, execution layers, capacity/security limits and authority boundary. |
 | [Migration inventory](MIGRATION-INVENTORY.json) | All 65 inspected migrations and exact preserved V0001–V0035 comparisons; committed identity and execution are separate receipts. |
 | [Facts and priority](workstreams/facts-priority.md) | Canonical facts, economics, purpose freshness and deterministic rank. |
 | [Human decisions](workstreams/human-decisions.md) | Responsibility, clocks, Accepted Exception, finite targets and materiality. |
@@ -75,6 +81,19 @@ The reviewed starting Head is `a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb`.
 | [Frozen-clause review](workstreams/frozen-22-clause-review/review.json) | All 115 original required-rework/verification clauses across 22 findings are reviewed against specific proof. The identified dedicated F013 scope refusal now passes in R25; final source/CI and the central assessment remain pending. Capacity is the declared UNVERIFIED zero-command topology, including brief publication, Outcome due scanning and blocked gate reads; it does not measure mature Outcome or admissible APPLY throughput. |
 | [Individual acceptance arguments](workstreams/prepared-assessment-union-w8/per-criterion-reviewed-contributions.json) | All 200 exact criteria retain 260 individual contributions, with 54 overlapping criteria and explicit proof scopes. The union preserves the original measured-source identities; it performs no automatic status promotion or Controller judgment. |
 | [Pre-W8 named governance](workstreams/pre-w8-governance/receipt.json) | All 410 actual methods pass with zero failures/errors/skips on the frozen repaired worktree. Exact accepted/Frozen authority and 200/22 mapping checks pass; central rows remain verification-pending. |
+| [W8 complete clean backend](workstreams/full-clean-w8/run-receipt.json) | Exact clean Head `9b6e6195`: 2,484 actual test nodes pass (1,560 unit and 924 integration), zero failures/errors/skips; 189 original XML reports, unchanged 80/70 coverage thresholds, packaged JAR, migration and capacity evidence are retained. |
+| [Current named backend catalog](workstreams/current-named-backend/current-named-backend-evidence.json) | 390 exact methods expand to 522 passing nodes; current source bytes and W8/W9 raw report identities are rechecked. Test totals alone do not issue acceptance. |
+| [W8 exact required CI](workstreams/ci-w8/receipt.json) | Twelve required contexts and aggregate CodeQL pass on the exact W8 PR Head/tested merge; separate backend, frontend, governance/infrastructure and security artifacts retain raw evidence. |
+| [W9 SLO display quality](workstreams/ui-slo-repair-w9/quality-r4/receipt.json) | All 327 frontend tests plus lint, format, type, coverage, build, bundle-isolation and SBOM generation pass on a stable source fingerprint; 19 named cases cover the repaired response/clock boundary. |
+| [W9 actual browser](workstreams/browser-w9/receipt.json) | Twelve isolated advertising HTTP/JWT/IAM/SQL/rendering journeys pass on W9 Head `52a34f36`; 27 synthetic data identities and 26 screenshots are retained with visual review. |
+| [W9 exact CI assessment](workstreams/ci-w9/summary.json) | Twelve required jobs and aggregate CodeQL pass on W9 Head/tested merge. Raw logs/artifacts prove 2,484 backend nodes, 327 frontend tests, 25 legacy plus 12 advertising browser journeys, 410 governance tests and security disposition. |
+| [W9 distribution defect](workstreams/ci-w9/frontend-distribution-defect.json) | The W9 uploaded console lacks the authored Head and retains a canary `published-*` value; the original failing artifact is preserved rather than restamped. |
+| [Distribution-order repair](workstreams/frontend-distribution-order-repair/receipt.json) | The canary runs first and a second official build replaces it before upload. Local final bytes carry the authored Head, `ci` and loopback API with no canary UUID or unknown build-commit initializer; containing-Head CI must repeat the proof. |
+| Frontend SBOM validation repair | The JSON validator packages are direct exact lockfile dependencies and `generate-validated-sbom.mjs` fails if CycloneDX reports that validation was skipped; local and containing-Head CI must print the explicit schema-validation PASS. |
+| [Final local pre-publication run](workstreams/pre-publication-local-w10/receipt.json) | Node 24.19.0/npm 11.17.0: 418 governance tests, lint, format, typecheck, 327 frontend tests with coverage, negative coverage gate, bundle isolation, official distribution replacement, CycloneDX 1.6 schema validation, dependency inventory and zero-vulnerability npm audit all pass; raw logs are hash-preserved. |
+| [Individual 200-criterion assessment](workstreams/engineering-assessment-w9/criterion-engineering-assessment.json) | Exact accepted text, 260 specific contributions, current implementation hashes, named positive/adverse proof and measured execution bindings for each criterion. |
+| [Current UI81 assessment](workstreams/engineering-assessment-w9/ui81-current.json) | All 81 UI-related criteria, the 19 new SLO assertions and exact local/remote browser-title bindings with their source/unit boundaries. |
+| [Individual 22-finding assessment](workstreams/engineering-assessment-w9/finding-engineering-assessment.json) | Every Frozen finding and all 115 unmodified rework/verification clauses receive an individual engineering reason and evidence disposition. |
 
 The ZIP/TAR-aware [raw publication scan](workstreams/security-w6-w7-raw-scan.json)
 preserves 16 matches in the CodeQL rule-help metadata. The
@@ -83,38 +102,31 @@ identifies those matches as static teaching examples, with archive/member hashes
 and JSON pointers. The original scanner failure and raw SARIF are unchanged;
 this scoped review does not dismiss actual CodeQL findings.
 
-Workstream logs distinguish individual passing suites from their containing
-failed or partial run. Working-tree measurements do not bind a future Git Head.
-The identity collector in `scripts/validation/collect_slice3_rework_identity.py`
-recorded the clean W1 measured commit/tree, protected history, migration hashes
-and runtime/build/test/CI input digest. Subsequent test-fixture repairs and
-evidence additions require their own checkpoint and final verification binding.
-W4 and W6 full clean verification are preserved as successful measurements of
-their exact source. W6 also passes the isolated browser, fresh frontend quality,
-packaged artifact and coverage-refusal checks indexed above. W7 frontend and
-security CI pass on its exact tested merge, but W7 backend CI fails. Its two
-backend job results are separate runs and must not be combined into one test
-count or hidden by the successful local W6 run.
+Workstream logs keep failing, partial and passing runs under their original
+identities. W4, W6, W7 and all targeted attempts remain historical evidence.
+The final backend implementation bytes were measured by the clean W8 run and
+rechecked in W8 and W9 remote CI. W9 changes only the frontend SLO presentation
+and its tests; complete local quality, actual browser execution and exact remote
+CI bind those bytes to W9. The post-W9 workflow-only repair corrects the order
+of canary and official distribution builds. Its containing commit requires a
+fresh remote CI artifact readback, which is recorded externally after append-only
+publication because this committed index cannot refer to its own future commit.
 
-The W8 repair preparation addresses a real nanosecond-to-PostgreSQL-microsecond
-Case-age boundary, an over-precise replay oracle, and cross-test work pickup in
-the Price worker fixture. It also adds the dedicated missing compensation Gate-scope
-negative required by F013. R24 original failures and R25
-complete affected-class success are now recorded with their distinct source manifests. The repair checkpoint still
-requires a new complete clean backend run and latest exact-Head CI; earlier
-passing tests are not automatically rebound to changed source. Historical rows
-retain the verification limits that applied when their receipts were produced.
-The named branch is published and the unique Draft PR #30 is open; subsequent
-verified repairs will be appended to that same PR. The final engineering
-canonical-document patch remains unapplied pending the new full run and all
-required CI gates; this index declares neither all 22 findings complete nor a
-Controller verdict.
+The declared capacity result covers 1,000 `UNVERIFIED` native objects, 200
+critical objects and 1,200 Tasks in one synthetic organization/store/product
+topology. Critical P95 is 30,789 ms, maximum is 239,115 ms, targeted execution
+is 237,495 ms, the full sweep is 109,169 ms, hard-bound margin is 3,490,831 ms,
+and one dropped correction is recovered. The population admitted zero commands
+and contains no mature Outcomes. It provides no APPLY, mature Outcome or
+multi-store throughput claim.
 
-`scripts/validation/assemble_slice3_rework_evidence.py` derives the central 200-AC
-index from the six named workstream shards. It checks exact accepted text and
-actual source/test paths, and refuses missing criteria or nonexistent test
-methods. Assembly always leaves verification pending, even if an input shard
-claims PASS. The dedicated validator tests exercise those refusal boundaries.
+`scripts/validation/assemble_slice3_rework_evidence.py` remains the conservative
+mapping-stage generator and always clears any later engineering closure claim.
+`scripts/validation/finalize_slice3_rework_assessment.py` is the separate final
+derivation: it verifies immutable authorities, exact 41/87/51/81 contribution
+counts, the 260-to-200 union, W8/W9 measured evidence, 22 findings, 115 clauses,
+the AC200 boundary and unchanged 24-item release register before writing the
+central matrices. Its `--check` mode refuses stale checked-in output.
 
 Earlier Slice files outside this directory, including `r2-implementation-handoff.md`,
 `r3-implementation-handoff.md`, `S3-AC-STATUS.json`, `acceptance-status.md` and
@@ -122,6 +134,7 @@ Earlier Slice files outside this directory, including `r2-implementation-handoff
 identity or incomplete verification statements are not the current R1 result.
 They are preserved for review, without overwriting prior evidence.
 
-No real Provider, shared/production environment, Ready, merge, force-push,
-deployment, Gate EV/E activation or credential provisioning is authorized by
-this record. Independent Controller Final Closure Verification is pending.
+The unique PR remains Draft. No real Provider, shared/production environment,
+Ready, merge, force-push, deployment, Gate EV/E activation or credential
+provisioning is authorized by this record. Independent Controller Final Closure
+Verification remains the next gate.

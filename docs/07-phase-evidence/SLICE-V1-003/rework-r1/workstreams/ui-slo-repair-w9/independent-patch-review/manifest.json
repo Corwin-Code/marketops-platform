@@ -1,0 +1,18 @@
+{
+  "kind": "SLO_PATCH_STATIC_REVIEW_MANIFEST",
+  "files": [
+    {
+      "path": "/tmp/slice3-ui-slo-unknown-patch-independent-review/review.json",
+      "sha256": "3ee8634d32eaed678e5792765f29fb6b5061666c3299c9998fb02b6f73a0cd96"
+    },
+    {
+      "path": "/tmp/slice3-ui-slo-unknown-patch-independent-review/README.md",
+      "sha256": "9e18da6c2ab230c1ba95a7eb103afd700c3f7cac667d8720962d408955868374"
+    }
+  ],
+  "generator": {
+    "path": "/tmp/review-slice3-ui-slo-patch.py",
+    "sha256": "0c4ee3bf7eebd821f2f38162f0800e793f9b8d8f00abce9af2312fcfff1f8d91"
+  },
+  "controllerVerdict": null
+}

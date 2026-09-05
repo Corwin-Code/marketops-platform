@@ -74,6 +74,15 @@ Action deadline from valid accepted-risk pauses and actual journal events.
 Outside staffed coverage, continuing harm and wall-clock exposure remain visible.
 A valid pause affects only the Action stage, never acknowledgement or harm age.
 
+Read completion, timeliness and the staffed Action clock as separate facts in
+the console. `NOT_BREACHED` is the returned snapshot's evaluated result; it
+requires known coverage and a valid deadline for that stage. With missing
+profile/calendar, a partial record or an unknown pause state, `UNRESOLVED`
+must remain visible. A false breach flag alone does not establish an on-time
+response. Acknowledgement records receipt and does not complete Action.
+A completed Action can retain a breach, and a reported pause does not erase
+that breach. Wall-clock exposure continues to be reported independently.
+
 ## Accepted risk and recurrence
 
 A live selected candidate, endorsed/issued Manual intent, in-progress Task or
@@ -97,3 +106,7 @@ missing-profile recovery, permanent invalidation, concurrent responsibility and
 finite-choice identity. `StaffedResponseClockTest` checks staffed time and pause
 arithmetic. Actual run results, source Head and outstanding verification belong
 in `docs/07-phase-evidence/SLICE-V1-003/rework-r1/`, not in assumed runbook claims.
+`AdvertisingWorkflow.test.tsx` covers missing and malformed timing evidence,
+separate completed/breached/paused states and known-zero versus unknown age.
+The governed advertising browser journey checks actual HTTP missing-profile
+responses and keyboard acknowledgement without Action completion.

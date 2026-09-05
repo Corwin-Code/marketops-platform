@@ -1,0 +1,60 @@
+{
+  "kind": "ACTUAL_BACKEND_COVERAGE_THRESHOLD_REFUSAL",
+  "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "commands": [
+    {
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Djacoco.line.coverage=1.00",
+        "-Djacoco.branch.coverage=1.00",
+        "jacoco:check@verify-coverage"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+      "startedAtUTC": "2026-09-05T13:39:56.798272+00:00",
+      "finishedAtUTC": "2026-09-05T13:40:00.098206+00:00",
+      "elapsedSeconds": 3.3,
+      "exitCode": 1,
+      "log": "forced-threshold.log",
+      "logSha256": "f69bc8bbcca8faab12bb4df89ae5be02961298d1d4467e7ecb55f9ed17e5682a"
+    },
+    {
+      "argv": [
+        "bash",
+        "scripts/verify_coverage_thresholds.sh",
+        "backend"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "startedAtUTC": "2026-09-05T13:40:00.098576+00:00",
+      "finishedAtUTC": "2026-09-05T13:40:01.809776+00:00",
+      "elapsedSeconds": 1.711,
+      "exitCode": 0,
+      "log": "repository-enforcement-script.log",
+      "logSha256": "8fd45e330d40052efd84a64b65b8fdb109956153ed215c6dd5546465c57df7c8"
+    }
+  ],
+  "expectedFailureObserved": true,
+  "expectedCoverageReasonObserved": true,
+  "repositoryScriptPass": true,
+  "beforeSha256": {
+    "backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar": "5d4adebaafed55176832fedac8a1fd1cf950c8a9d5b2f422a1dbe46ad2a12f35",
+    "backend/marketops-server/target/jacoco.exec": "2ec23fc88d21941e8ff10bbf0fa02216f37678907b7b7cb62d729cdf3100c297",
+    "backend/marketops-server/target/site/jacoco/jacoco.xml": "18c0b01586a9d36a87ee81ae2087bfa428c4df06224190528907a0469864af4d",
+    "backend/marketops-server/pom.xml": "02dd0836c54bbc3298ce326bee0f61077acea4366c734ba82c6710ffafb6079b",
+    "scripts/verify_coverage_thresholds.sh": "695cc78d99d4c0c1b657319b13a36d40b5f0b2c39e204e48bf55a8f7d375b8de"
+  },
+  "afterSha256": {
+    "backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar": "5d4adebaafed55176832fedac8a1fd1cf950c8a9d5b2f422a1dbe46ad2a12f35",
+    "backend/marketops-server/target/jacoco.exec": "2ec23fc88d21941e8ff10bbf0fa02216f37678907b7b7cb62d729cdf3100c297",
+    "backend/marketops-server/target/site/jacoco/jacoco.xml": "18c0b01586a9d36a87ee81ae2087bfa428c4df06224190528907a0469864af4d",
+    "backend/marketops-server/pom.xml": "02dd0836c54bbc3298ce326bee0f61077acea4366c734ba82c6710ffafb6079b",
+    "scripts/verify_coverage_thresholds.sh": "695cc78d99d4c0c1b657319b13a36d40b5f0b2c39e204e48bf55a8f7d375b8de"
+  },
+  "artifactBytesUnchanged": true,
+  "sourceStable": true,
+  "scope": "Only existing complete execution data is checked. No recompilation, package, test selection, migration, Provider or application run. 100% is a deliberately impossible proof threshold; accepted thresholds are unchanged.",
+  "collectorSha256": "b016613ac4e83da60cb092d7ababd6db983822e74be4e168ac1ef78f38459ee1",
+  "pass": true
+}

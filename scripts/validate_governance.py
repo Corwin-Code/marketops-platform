@@ -397,7 +397,7 @@ V1_ACTIVE_STATE = {
     "active_slice_amendment": "NONE_ACCEPTED",
     "active_slice_contract_bytes": V1_SLICE_003_CONTRACT_BYTES,
     "active_slice_contract_lines": V1_SLICE_003_CONTRACT_LINES,
-    "active_gate": "SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION",
+    "active_gate": "CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION",
     "authorization": "FULL_SCOPE_IMPLEMENTATION",
     "slice_v1_003_owner_acceptance": "HUMAN_OWNER_ACCEPTED_EXACT",
     "slice_v1_003_owner_acceptance_statement_sha256": (
@@ -614,15 +614,19 @@ V1_ACTIVE_STATE = {
     "slice_v1_002_deferred_release_register": (
         "docs/07-phase-evidence/SLICE-V1-002/deferred-release-register.json"
     ),
+    "slice_v1_003_rework_status": "CODEX_ENGINEERING_COMPLETE_CONTROLLER_CLOSURE_REVIEW_PENDING",
+    "slice_v1_003_implementation_state": "ENGINEERING_REWORK_IMPLEMENTED_AND_VERIFIED",
+    "slice_v1_003_engineering_closure_claim": "CODEX_ENGINEERING_ASSESSMENT_ONLY_CONTROLLER_PENDING",
+    "slice_v1_003_controller_verdict": "PENDING_INDEPENDENT_REVIEW",
     "slice_v1_003_rework_authorization": "OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1",
     "slice_v1_003_rework_authorization_evidence_sha256":
         "23a2954d68abeebf87d7710f3ab749af5246cdfcbe4a3029dde73dbb34647a11",
     "slice_v1_003_rework_starting_head": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
     "slice_v1_003_frozen_findings_sha256":
         "15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1",
-    "next_authorized_actor": "CODEX",
+    "next_authorized_actor": "CONTROLLER",
     "next_action": (
-        "ROOT_CAUSE_REWORK_VERIFY_APPEND_ONLY_NAMED_BRANCH_DRAFT_PR_AND_CI"
+        "INDEPENDENT_FINAL_CLOSURE_VERIFICATION_OF_EXACT_DRAFT_PR_HEAD"
     ),
     "slice_v1_001_implementation_state": "ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_001_rework_phase": "R2_FORMAL_CLOSURE_ACCEPTED",
@@ -715,7 +719,7 @@ V1_ACTIVE_STATE = {
         "CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK"
     ),
     "candidate_state_scope": (
-        "SLICE_V1_003_AUTHORIZED_R1_REWORK_PENDING_FULL_VERIFICATION"
+        "SLICE_V1_003_ENGINEERING_ASSESSED_CONTROLLER_CLOSURE_REVIEW_PENDING"
     ),
     "merge_authorization": (
         "NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED"

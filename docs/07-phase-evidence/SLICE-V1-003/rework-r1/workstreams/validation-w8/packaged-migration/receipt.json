@@ -1,0 +1,31 @@
+{
+  "kind": "ACTUAL_W8_POST_FULL_PACKAGED_MIGRATION",
+  "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "fullRunReceiptSha256": "eca4c0db03e73e68c4c5e7c3737fd8f1068f6d2d71940128da1dbaf4e9c5f1a0",
+  "fullVerifiedJarSha256": "5d4adebaafed55176832fedac8a1fd1cf950c8a9d5b2f422a1dbe46ad2a12f35",
+  "commands": [
+    {
+      "name": "packaged-migration",
+      "command": [
+        "python3",
+        "scripts/verify_migration_artifact.py",
+        "--output",
+        "/tmp/slice3-r1-w8-packaged-migration/artifacts"
+      ],
+      "workingDirectory": "/Users/chzhengx/Code/personal/marketops-platform",
+      "startedAtUTC": "2026-09-05T13:39:56.761445+00:00",
+      "finishedAtUTC": "2026-09-05T13:40:10.917991+00:00",
+      "exitCode": 0,
+      "log": "packaged-migration.log",
+      "sha256": "42546d28f960c1b4e3ecfda5dd1e03fc903b7a85009218e52669e4f585ec4213"
+    }
+  ],
+  "headAfter": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "statusAfter": "",
+  "verifiedJarStillEqual": true,
+  "productionWriteEnabled": false,
+  "scope": "Exact full-verified JAR resolver and minimal synthetic local container build; no DB connection, Provider call, application run, shared port/environment or production deployment.",
+  "pass": true,
+  "collectorSha256": "eff4cc29bb55c24dd184d704c24268dd937a3766d682aa483e9f52624ccff683"
+}

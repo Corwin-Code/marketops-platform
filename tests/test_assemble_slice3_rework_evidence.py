@@ -47,15 +47,29 @@ class EvidenceAssemblyTest(unittest.TestCase):
     def test_complete_mapping_preserves_authority_and_never_inherits_pass(self):
         contract_before = assembly.digest(self.root / assembly.CONTRACT)
         frozen_before = assembly.digest(self.root / assembly.FROZEN)
+        # A later mapping preparation must revoke any earlier engineering claim.
+        for filename in ("S3-AC-REWORK-STATUS.json", "FINDING-CLOSURE-MATRIX.json"):
+            path = self.root / assembly.BASE / filename
+            previous = json.loads(path.read_text())
+            previous["engineering_closure_claim_made"] = True
+            if filename == "FINDING-CLOSURE-MATRIX.json":
+                for row in previous["entries"]:
+                    row["closed_by_codex_engineering_assessment"] = True
+            path.write_text(json.dumps(previous))
         assembly.assemble()
         result = assembly.read(assembly.BASE / "S3-AC-REWORK-STATUS.json")
         self.assertEqual(200, len(result["entries"]))
         self.assertFalse(result["closure_claim_made"])
+        self.assertFalse(result["engineering_closure_claim_made"])
         self.assertFalse(result["production_write_enabled"])
         self.assertTrue(all(row["status"] == "REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING"
                             for row in result["entries"]))
         self.assertEqual(contract_before, assembly.digest(self.root / assembly.CONTRACT))
         self.assertEqual(frozen_before, assembly.digest(self.root / assembly.FROZEN))
+        findings = assembly.read(assembly.BASE / "FINDING-CLOSURE-MATRIX.json")
+        self.assertFalse(findings["engineering_closure_claim_made"])
+        self.assertTrue(all(not row["closed_by_codex_engineering_assessment"]
+                            for row in findings["entries"]))
 
     def test_changed_contract_is_rejected_before_writing_matrices(self):
         path = self.root / assembly.CONTRACT

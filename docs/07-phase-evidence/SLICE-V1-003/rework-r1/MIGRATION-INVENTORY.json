@@ -1,9 +1,9 @@
 {
-  "kind": "SLICE_V1_003_R1_WORKING_TREE_MIGRATION_INVENTORY",
-  "generated_at": "2026-09-05T10:10:13.708695+00:00",
+  "kind": "SLICE_V1_003_R1_MEASURED_MIGRATION_INVENTORY",
+  "generated_at": "2026-09-05T14:37:56.620314+00:00",
   "protected_base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
   "reviewed_head": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
-  "binding": "Current inspected bytes; exact committed migration identity is separately recorded by collect_slice3_rework_identity.py after checkpoint. This inventory alone asserts no successful migration.",
+  "binding": "All65 current migration bytes independently equal clean full-measured backend W8 and browser-measured runtime W9; V0001\u2013V0035 equal protected Base and reviewed Head. Full migration execution, verified packaged artifact and final candidate Git identity remain separately evidenced.",
   "immutable_prefix_count": 35,
   "candidate_reworked_range": "0036-0056",
   "new_range": "0057-0065",
@@ -734,5 +734,14 @@
       "scope": "R1_ADDITIVE"
     }
   ],
-  "production_write_enabled": false
+  "production_write_enabled": false,
+  "measured_backend_head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "runtime_head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+  "measured_migration_execution": {
+    "fullRun": "workstreams/full-clean-w8/run-receipt.json",
+    "packagedArtifact": "workstreams/validation-w8/packaged-migration/receipt.json",
+    "fullRunResult": "PASS_2484_ACTUAL_CASES",
+    "packagedArtifactResult": "PASS_ALL_65_EXACT_MIGRATION_BYTES",
+    "history": "workstreams/central-before-final-assessment-w9/manifest.json"
+  }
 }

@@ -2965,7 +2965,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "active_slice_contract",
             ),
             (
-                "active_gate: SLICE_V1_003_FULL_SCOPE_IMPLEMENTATION",
+                "active_gate: CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION",
                 "active_gate: READY_FOR_DESIGN",
                 "active_gate",
             ),
@@ -3163,7 +3163,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
     def test_rework_identity_phase_and_actor_cannot_drift(self) -> None:
         mutations = (
             (
-                "next_authorized_actor: CODEX",
+                "next_authorized_actor: CONTROLLER",
                 "next_authorized_actor: SOMEBODY_ELSE",
             ),
             (
@@ -3184,7 +3184,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "slice_v1_001_closure_claim: OWNER_FORMALLY_CLOSED",
             ),
             (
-                "candidate_state_scope: SLICE_V1_003_AUTHORIZED_R1_REWORK_PENDING_FULL_VERIFICATION",
+                "candidate_state_scope: SLICE_V1_003_ENGINEERING_ASSESSED_CONTROLLER_CLOSURE_REVIEW_PENDING",
                 "candidate_state_scope: PRODUCTION_READY",
             ),
             (
@@ -3213,6 +3213,31 @@ class V1CurrentStateContractTests(unittest.TestCase):
             with self.subTest(field=old):
                 self.assertIn(old, self.current())
                 self.assertTrue(self.validate(current=self.current().replace(old, new, 1)))
+
+    def test_slice3_engineering_completion_cannot_claim_controller_or_merge_authority(self) -> None:
+        current = self.current()
+        self.assertEqual([], self.validate(current=current, slice_contract_bytes=self.slice_contract_bytes()))
+        mutations = (
+            ("slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_CLOSURE_REVIEW_PENDING",
+             "slice_v1_003_rework_status: CONTROLLER_VERIFIED"),
+            ("slice_v1_003_engineering_closure_claim: CODEX_ENGINEERING_ASSESSMENT_ONLY_CONTROLLER_PENDING",
+             "slice_v1_003_engineering_closure_claim: OWNER_FORMALLY_CLOSED"),
+            ("slice_v1_003_controller_verdict: PENDING_INDEPENDENT_REVIEW",
+             "slice_v1_003_controller_verdict: APPROVE_FOR_HUMAN_MERGE"),
+            ("active_gate: CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION",
+             "active_gate: READY_FOR_MERGE"),
+            ("next_action: INDEPENDENT_FINAL_CLOSURE_VERIFICATION_OF_EXACT_DRAFT_PR_HEAD",
+             "next_action: MARK_READY_AND_MERGE"),
+            ("merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED",
+             "merge_authorization: AUTHORIZED"),
+        )
+        for before, after in mutations:
+            with self.subTest(field=before.split(":", 1)[0]):
+                self.assertIn(before, current)
+                mutated = current.replace(before, after, 1)
+                self.assertNotEqual(current, mutated)
+                errors = self.validate(current=mutated)
+                self.assertTrue(any(before.split(":", 1)[0] in error for error in errors))
 
     def test_codeql_authority_and_persisted_dispositions_cannot_drift(self) -> None:
         root = Path(__file__).resolve().parents[1] / "docs/07-phase-evidence/SLICE-V1-001/rework-r1/codeql-v1.1"
