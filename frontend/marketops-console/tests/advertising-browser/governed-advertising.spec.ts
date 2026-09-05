@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import type { Browser, Page, APIRequestContext } from '@playwright/test';
+import type { Browser, Page, APIRequestContext, Locator } from '@playwright/test';
 
 type Role = 'MAKER' | 'OPS_LEAD' | 'OWNER';
 interface Fixture {
@@ -11,6 +11,15 @@ interface Fixture {
   recommendationId: string;
   commandId?: string;
   taskId: string;
+  storeId: string;
+  foreignCaseId?: string;
+  pagination?: {
+    visibleCaseIds: readonly string[];
+    watchCaseIds: readonly string[];
+    dataRepairCaseIds: readonly string[];
+    hiddenStoreId: string;
+    hiddenCaseIds: readonly string[];
+  };
   productionWriteEnabled: boolean;
   semanticVerificationState: string;
   apiCommandCount: number;
@@ -24,12 +33,24 @@ async function fixture(request: APIRequestContext, role: Role, scenario = 'API')
   expect(response.ok()).toBe(true);
   return (await response.json()) as Fixture;
 }
+/** Real Chromium Tab traversal, with focus checked before Enter; no click or programmatic focus. */
+async function activateWithKeyboard(page: Page, target: Locator): Promise<void> {
+  await expect(target).toBeVisible();
+  for (let step = 0; step < 100; step += 1) {
+    if (await target.evaluate((element) => element === document.activeElement)) break;
+    await page.keyboard.press('Tab');
+  }
+  await expect(target).toBeFocused();
+  await page.keyboard.press('Enter');
+}
+
 /** Only OIDC exchange is intercepted; every advertising, workflow and evidence response is real. */
 async function signIn(
   browser: Browser,
   request: APIRequestContext,
   role: Role,
   scenario = 'API',
+  keyboardOnly = false,
 ): Promise<{ page: Page; data: Fixture }> {
   const data = await fixture(request, role, scenario);
   expect(data.productionWriteEnabled).toBe(false);
@@ -60,10 +81,13 @@ async function signIn(
     });
   });
   await page.goto('http://127.0.0.1:4173/');
-  await page.getByRole('button', { name: 'Continue to sign in' }).click();
+  const signInButton = page.getByRole('button', { name: 'Continue to sign in' });
+  if (keyboardOnly) await activateWithKeyboard(page, signInButton);
+  else await signInButton.click();
   const row = page.locator(`[data-case-id="${data.caseId}"]`);
   await expect(row).toBeVisible();
-  await row.getByRole('button').click();
+  if (keyboardOnly) await activateWithKeyboard(page, row.getByRole('button'));
+  else await row.getByRole('button').click();
   await expect(page.getByLabel('Advertising workflow')).toHaveAttribute('data-state', 'loaded');
   await expect(page.getByLabel('Advertising case')).toContainText('(UTC)');
   await expect(page.getByLabel('Advertising case')).toContainText('(Europe/Moscow)');
@@ -465,3 +489,146 @@ for (const scenario of [
     await owner.page.context().close();
   });
 }
+
+test('real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets', async ({
+  browser,
+  request,
+}, testInfo) => {
+  const maker = await signIn(browser, request, 'MAKER', 'PAGINATION', true);
+  const expected = maker.data.pagination;
+  expect(expected).toBeDefined();
+  if (expected === undefined) throw new Error('Dedicated pagination seed is required');
+  expect(expected.visibleCaseIds).toHaveLength(56);
+  expect(expected.watchCaseIds).toHaveLength(53);
+  expect(expected.dataRepairCaseIds).toHaveLength(2);
+  await expect(maker.page.getByLabel('Advertising case')).toContainText(
+    'Синтетическая реклама — страница и клавиатура',
+  );
+
+  const acknowledgement = maker.page.waitForResponse(
+    (response) =>
+      response.url().endsWith(`/tasks/${maker.data.taskId}/acknowledgement`) &&
+      response.request().method() === 'POST',
+  );
+  await activateWithKeyboard(
+    maker.page,
+    maker.page.getByRole('button', { name: 'Acknowledge responsibility', exact: true }),
+  );
+  expect((await acknowledgement).status()).toBe(204);
+  const workflow = await request.get(
+    `${API}/api/v1/console/advertising/cases/${maker.data.caseId}/workflow`,
+    { headers: { Authorization: `Bearer ${maker.data.accessToken}` } },
+  );
+  expect(workflow.ok()).toBe(true);
+  const responsibility = (await workflow.json()) as {
+    slo: { acknowledgedAt: string | null; firstAttributableActionAt: string | null };
+  };
+  expect(responsibility.slo.acknowledgedAt).not.toBeNull();
+  // Keyboard ACK proves acknowledgement only; it must not start the Action-stage clock.
+  expect(responsibility.slo.firstAttributableActionAt).toBeNull();
+  await maker.page.screenshot({
+    path: testInfo.outputPath('keyboard-acknowledgement-not-action.png'),
+    fullPage: true,
+  });
+  await activateWithKeyboard(
+    maker.page,
+    maker.page.getByRole('button', { name: 'Back to the advertising queue', exact: true }),
+  );
+
+  const visibleRows = maker.page.locator('[data-case-id]');
+  const displayedIds = async (): Promise<readonly (string | null)[]> =>
+    visibleRows.evaluateAll((rows) => rows.map((row) => row.getAttribute('data-case-id')));
+  await expect(visibleRows).toHaveCount(50);
+  expect(await displayedIds()).toEqual(expected.visibleCaseIds.slice(0, 50));
+  const pages = maker.page.getByRole('navigation', { name: 'Advertising queue pages' });
+  await expect(pages.getByRole('button', { name: 'Previous page' })).toBeDisabled();
+
+  const expectQueueRequest = (offset: string, lane: string | null) =>
+    maker.page.waitForResponse((response) => {
+      const url = new URL(response.url());
+      return (
+        url.pathname === '/api/v1/console/advertising/queue' &&
+        url.searchParams.get('limit') === '50' &&
+        url.searchParams.get('offset') === offset &&
+        url.searchParams.get('lane') === lane &&
+        response.request().method() === 'GET'
+      );
+    });
+  const secondPageResponse = expectQueueRequest('50', null);
+  await activateWithKeyboard(maker.page, pages.getByRole('button', { name: 'Next page' }));
+  const secondPage = await secondPageResponse;
+  expect(secondPage.ok()).toBe(true);
+  const secondRows = (await secondPage.json()) as readonly { id: string }[];
+  expect(secondRows.map((row) => row.id)).toEqual(expected.visibleCaseIds.slice(50));
+  await expect(visibleRows).toHaveCount(6);
+  expect(await displayedIds()).toEqual(expected.visibleCaseIds.slice(50));
+  await expect(pages).toContainText('Page 2');
+  await expect(pages.getByRole('button', { name: 'Next page' })).toBeDisabled();
+  await maker.page.screenshot({
+    path: testInfo.outputPath('keyboard-page-two-six-visible-cases.png'),
+    fullPage: true,
+  });
+
+  const firstPageResponse = expectQueueRequest('0', null);
+  await activateWithKeyboard(maker.page, pages.getByRole('button', { name: 'Previous page' }));
+  const firstPage = await firstPageResponse;
+  expect(firstPage.ok()).toBe(true);
+  const firstRows = (await firstPage.json()) as readonly { id: string }[];
+  expect(firstRows.map((row) => row.id)).toEqual(expected.visibleCaseIds.slice(0, 50));
+  expect(new Set([...firstRows, ...secondRows].map((row) => row.id)).size).toBe(56);
+  await expect(visibleRows).toHaveCount(50);
+
+  const pageAgain = expectQueueRequest('50', null);
+  await activateWithKeyboard(maker.page, pages.getByRole('button', { name: 'Next page' }));
+  expect((await pageAgain).ok()).toBe(true);
+  await expect(visibleRows).toHaveCount(6);
+  const watchFirst = expectQueueRequest('0', 'WATCH');
+  await activateWithKeyboard(
+    maker.page,
+    maker.page.getByRole('button', { name: 'WATCH', exact: true }),
+  );
+  expect((await watchFirst).ok()).toBe(true);
+  await expect(visibleRows).toHaveCount(50);
+  expect(await displayedIds()).toEqual(expected.watchCaseIds.slice(0, 50));
+  await expect(pages).toContainText('Page 1');
+  const watchSecond = expectQueueRequest('50', 'WATCH');
+  await activateWithKeyboard(maker.page, pages.getByRole('button', { name: 'Next page' }));
+  expect((await watchSecond).ok()).toBe(true);
+  await expect(visibleRows).toHaveCount(3);
+  expect(await displayedIds()).toEqual(expected.watchCaseIds.slice(50));
+  await expect(pages.getByRole('button', { name: 'Next page' })).toBeDisabled();
+  await maker.page.screenshot({
+    path: testInfo.outputPath('keyboard-watch-second-page-three-cases.png'),
+    fullPage: true,
+  });
+  const repairFirst = expectQueueRequest('0', 'DATA_REPAIR');
+  await activateWithKeyboard(
+    maker.page,
+    maker.page.getByRole('button', { name: 'DATA_REPAIR', exact: true }),
+  );
+  expect((await repairFirst).ok()).toBe(true);
+  await expect(visibleRows).toHaveCount(2);
+  expect(await displayedIds()).toEqual(expected.dataRepairCaseIds);
+  await expect(pages).toContainText('Page 1');
+  await expect(pages.getByRole('button', { name: 'Previous page' })).toBeDisabled();
+  await expect(pages.getByRole('button', { name: 'Next page' })).toBeDisabled();
+
+  const headers = { Authorization: `Bearer ${maker.data.accessToken}` };
+  const complete = await request.get(`${API}/api/v1/console/advertising/queue?limit=200&offset=0`, {
+    headers,
+  });
+  expect(complete.ok()).toBe(true);
+  const scoped = (await complete.json()) as readonly { id: string; storeId: string }[];
+  expect(scoped.map((row) => row.id)).toEqual(expected.visibleCaseIds);
+  expect(scoped.every((row) => row.storeId === maker.data.storeId)).toBe(true);
+  // These known fixture IDs are intentional negative inputs, never application-generated links.
+  for (const hiddenId of [...expected.hiddenCaseIds, maker.data.foreignCaseId]) {
+    expect(hiddenId).toBeDefined();
+    const denied = await request.get(
+      `${API}/api/v1/console/advertising/cases/${hiddenId ?? 'missing'}`,
+      { headers },
+    );
+    expect([403, 404]).toContain(denied.status());
+  }
+  await maker.page.context().close();
+});

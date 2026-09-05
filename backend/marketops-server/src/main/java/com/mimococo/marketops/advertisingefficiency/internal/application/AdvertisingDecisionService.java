@@ -108,8 +108,14 @@ public class AdvertisingDecisionService implements AdvertisingDecisionAuthority 
                 current == null || target == null ? "MATERIALITY_UNRESOLVED"
                         : decisions.materialityRouteForRecommendation(row.recommendationId()),
                 axes, row.entityVersionDigest(), row.bundleId(), row.bundleVersion(),
-                com.mimococo.marketops.advertisingefficiency.internal.domain.AdActionDependencyPolicy
-                    .actionBlockers(row.candidateBasis(),row.causeCode(),row.blockerCodes()));
+                actionBlockers(row));
+    }
+
+    private List<String> actionBlockers(ProjectionRow row) {
+        var blockers = new ArrayList<>(com.mimococo.marketops.advertisingefficiency.internal.domain.AdActionDependencyPolicy
+                .actionBlockers(row.candidateBasis(),row.causeCode(),row.blockerCodes()));
+        blockers.addAll(decisions.isolationFailures(row.recommendationId(),clock.instant()));
+        return blockers.stream().distinct().toList();
     }
 
     private Optional<AdvertisingDecisionScope> scopeOf(DecisionRow row) {
@@ -171,6 +177,7 @@ public class AdvertisingDecisionService implements AdvertisingDecisionAuthority 
         if (row.leaseSeconds() == null) {
             reasons.add("APPROVAL_LEASE_POLICY_ABSENT");
         }
+        reasons.addAll(decisions.isolationFailures(row.recommendationId(),now));
         return List.copyOf(reasons);
     }
 

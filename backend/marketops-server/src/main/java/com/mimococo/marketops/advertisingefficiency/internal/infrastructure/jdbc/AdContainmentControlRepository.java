@@ -24,6 +24,12 @@ public class AdContainmentControlRepository {
                 .param("id",id).param("condition",condition).param("evidence",evidence)
                 .param("proof",proof).query(Object.class).optional();
     }
+    public UUID activateAuthorityVersion(UUID id, UUID authority, UUID reviewOwner,
+            String reason, String evidence, String proof) {
+        return jdbc.sql("SELECT ops.activate_ad_authority_version_containment(:id,:authority,:owner,:reason,:evidence,:proof)")
+                .param("id",id).param("authority",authority).param("owner",reviewOwner)
+                .param("reason",reason).param("evidence",evidence).param("proof",proof).query(UUID.class).single();
+    }
     public boolean reenable(UUID id, UUID bundle, String proof) {
         return Boolean.TRUE.equals(jdbc.sql("SELECT ops.reenable_ad_containment(:id,:bundle,:proof)")
                 .param("id",id).param("bundle",bundle).param("proof",proof).query(Boolean.class).single());

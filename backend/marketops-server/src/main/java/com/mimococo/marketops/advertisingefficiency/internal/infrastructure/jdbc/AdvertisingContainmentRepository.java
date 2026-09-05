@@ -27,9 +27,10 @@ import org.springframework.stereotype.Repository;
 public class AdvertisingContainmentRepository {
 
     private final JdbcClient jdbc;
+    private final tools.jackson.databind.ObjectMapper exposureJson;
 
-    AdvertisingContainmentRepository(JdbcClient jdbc) {
-        this.jdbc = jdbc;
+    AdvertisingContainmentRepository(JdbcClient jdbc,tools.jackson.databind.ObjectMapper exposureJson) {
+        this.jdbc = jdbc;this.exposureJson=exposureJson;
     }
 
     /**
@@ -318,75 +319,27 @@ public class AdvertisingContainmentRepository {
                 .single();
     }
 
-    /**
-     * The envelope in force and what is consumed against each of its axes.
-     *
-     * <p>The envelope is selected the same way the write gate selects it — the
-     * narrowest scope first, then the most recent — so the console reports the
-     * envelope that would actually apply rather than whichever one happened to
-     * be written last. Retired envelopes are still selectable, because the gate
-     * treats a retired envelope as binding rather than as absent.
-     *
-     * <p>The three consumption figures are counted here rather than read from
-     * anywhere, and each is counted independently. There is no place where one
-     * axis's slack is added to another's, in this method or in the gate.
-     */
-    public com.mimococo.marketops.advertisingefficiency.AdvertisingExposureView exposure(
-            UUID organizationId) {
-        long active = activeInterventionCount(organizationId);
-        long unresolved = jdbc.sql("""
-                SELECT count(*) FROM ops.ad_bid_command
-                 WHERE organization_id = :organizationId
-                   AND state IN ('UNKNOWN_REQUIRES_READBACK', 'READBACK_MISMATCH',
-                                 'LATER_CHANGE_OR_MISMATCH_INVESTIGATION', 'MANUAL_RESOLUTION')
-                """)
-                .param("organizationId", organizationId)
-                .query(Long.class)
-                .single();
+    /** All applicable scopes consume the same canonical six-axis reader as admission. */
+    public com.mimococo.marketops.advertisingefficiency.AdvertisingExposureView exposure(UUID organizationId) {
         return jdbc.sql("""
-                SELECT e.id, e.policy_version, e.scope_kind, e.currency_code,
-                       e.max_active_interventions, e.reserved_recovery_headroom_count,
-                       e.max_unresolved_transmitted_writes,
-                       e.max_cumulative_bid_change_amount, e.cumulative_window_hours,
-                       e.effective_from, e.status,
-                       (SELECT coalesce(sum(abs(c.target_bid_amount - c.prior_bid_amount)), 0)
-                          FROM ops.ad_bid_command c
-                         WHERE c.organization_id = e.organization_id
-                           AND c.created_at > statement_timestamp()
-                               - make_interval(hours => e.cumulative_window_hours))
-                           AS cumulative_bid_change_amount
-                  FROM core.ad_exposure_envelope e
-                 WHERE e.organization_id = :organizationId
-                   AND e.status IN ('ACTIVE', 'RETIRED')
-                   AND e.effective_from <= statement_timestamp()
-                   AND (e.effective_to IS NULL OR e.effective_to > statement_timestamp())
-                 ORDER BY CASE e.scope_kind WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END,
-                          e.effective_from DESC
-                 LIMIT 1
-                """)
-                .param("organizationId", organizationId)
-                .query((java.sql.ResultSet rs, int index) ->
-                        new com.mimococo.marketops.advertisingefficiency.AdvertisingExposureView(
-                                rs.getObject("id", UUID.class),
-                                rs.getInt("policy_version"),
-                                rs.getString("scope_kind"),
-                                rs.getString("currency_code"),
-                                active,
-                                rs.getInt("max_active_interventions"),
-                                rs.getInt("reserved_recovery_headroom_count"),
-                                unresolved,
-                                rs.getInt("max_unresolved_transmitted_writes"),
-                                rs.getBigDecimal("cumulative_bid_change_amount"),
-                                rs.getBigDecimal("max_cumulative_bid_change_amount"),
-                                rs.getInt("cumulative_window_hours"),
-                                rs.getTimestamp("effective_from").toInstant(),
-                                rs.getString("status")))
-                .optional()
-                // No envelope is not an empty envelope. Nothing may be written
-                // at all, and the consumption figures are still reported so an
-                // operator can see what is standing while none resolves.
-                .orElseGet(() -> com.mimococo.marketops.advertisingefficiency
-                        .AdvertisingExposureView.unresolved(active, unresolved));
+                WITH measurements AS MATERIALIZED (
+                  SELECT s.id store_id,ops.ad_exposure_snapshot(:org,s.id,'PROTECTION_DECREASE') value
+                  FROM core.store s WHERE s.organization_id=:org
+                ), envelopes AS (
+                  SELECT DISTINCT envelope.value FROM measurements m
+                  CROSS JOIN LATERAL jsonb_array_elements(m.value->'envelopes') envelope
+                )
+                SELECT statement_timestamp() measured_at,
+                  coalesce((SELECT jsonb_agg(value ORDER BY value->>'envelopeId') FROM envelopes),'[]'::jsonb)::text envelopes,
+                  ARRAY(SELECT store_id FROM measurements
+                    WHERE jsonb_exists(value->'reasons','AGGREGATE_ENVELOPE_UNRESOLVED') ORDER BY store_id) unresolved_stores
+                """).param("org",organizationId).query((rs,index)-> {
+                    var envelopes=List.of(exposureJson.readValue(rs.getString("envelopes"),
+                            com.mimococo.marketops.advertisingefficiency.AdvertisingExposureView.Envelope[].class));
+                    var stores=(UUID[])rs.getArray("unresolved_stores").getArray();
+                    return new com.mimococo.marketops.advertisingefficiency.AdvertisingExposureView(
+                            rs.getTimestamp("measured_at").toInstant(),envelopes,List.of(stores));
+                }).single();
     }
 
     private static com.mimococo.marketops.advertisingefficiency.AdvertisingReservationView

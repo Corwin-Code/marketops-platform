@@ -125,6 +125,9 @@ UPDATE core.ad_native_object SET control_granularity_state='PROVEN_INDEPENDENT',
 
 UPDATE mart.ad_case SET max_cpc_amount=22 WHERE id='6c4036a0-266a-5a8f-9695-41a160fc74d7';
 
+INSERT INTO iam.user_role_assignment(id,organization_id,user_id,role_code,status,effective_from,reason,created_at,updated_at) VALUES(gen_random_uuid(),'8689c119-8fa0-50b7-8ba2-f9bf3039d336','0998716b-6f78-56da-bbea-554b20cfd093','MARKETPLACE_OPERATOR','ACTIVE',now()-interval '1 day','synthetic Maker role',now(),now());
+INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,organization_ref_id,status,effective_from,reason,created_at,updated_at) VALUES(gen_random_uuid(),'8689c119-8fa0-50b7-8ba2-f9bf3039d336','0998716b-6f78-56da-bbea-554b20cfd093','ADVERTISING_TASK_ACT','8689c119-8fa0-50b7-8ba2-f9bf3039d336','ACTIVE',now()-interval '1 day','synthetic Maker scope',now(),now());
+
 INSERT INTO iam.user_role_assignment(id,organization_id,user_id,role_code,status,effective_from,reason,created_at,updated_at) VALUES(gen_random_uuid(),'8689c119-8fa0-50b7-8ba2-f9bf3039d336','9264ceb0-c29a-5837-9339-c84bfe73a444','OWNER','ACTIVE',now()-interval '1 day','synthetic role',now(),now());
 
 INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,organization_ref_id,status,effective_from,reason,created_at,updated_at) VALUES(gen_random_uuid(),'8689c119-8fa0-50b7-8ba2-f9bf3039d336','9264ceb0-c29a-5837-9339-c84bfe73a444','AD_BID_CHANGE_APPROVE','8689c119-8fa0-50b7-8ba2-f9bf3039d336','ACTIVE',now()-interval '1 day','synthetic scope',now(),now());

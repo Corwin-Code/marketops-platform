@@ -292,7 +292,13 @@ class AdvertisingEfficiencyFlowIT {
     void absentPriorityPolicyInventsNothing() {
         AdvertisingCaseView view = onlyCase();
 
-        assertThat(view.rankFactors()).isEmpty();
+        assertThat(view.rankFactors()).singleElement().satisfies(factor -> {
+            assertThat(factor.factorCode()).isEqualTo("EVIDENCE_MATURITY");
+            assertThat(factor.value()).isNull();
+            assertThat(factor.weight()).isEqualByComparingTo("0");
+            assertThat(factor.contribution()).isEqualByComparingTo("0");
+            assertThat(factor.displayNote()).isEqualTo("PRIORITY_POLICY_UNRESOLVED:PROFILE");
+        });
         assertThat(view.policyVersionDigest()).matches("^[0-9a-f]{64}$");
     }
 
@@ -642,6 +648,20 @@ class AdvertisingEfficiencyFlowIT {
         assertThat(view.affectedSetDigest()).isNull();
         assertThat(view.affectedVariantCount()).isZero();
         assertThat(view.variants()).isEmpty();
+        assertThat(view.rankFactors()).anySatisfy(factor -> {
+            assertThat(factor.value()).isNull();
+            assertThat(factor.displayNote()).startsWith("PRIORITY_POLICY_UNRESOLVED:");
+        });
+        Throwable missingRankReason=org.assertj.core.api.Assertions.catchThrowable(()->jdbc.sql("""
+                INSERT INTO mart.ad_case_rank_factor(id,case_id,organization_id,calculation_id,factor_code,
+                    factor_value,factor_weight,contribution,display_note)
+                SELECT gen_random_uuid(),case_id,organization_id,calculation_id,'CONFIDENCE_PENALTY',NULL,0,0,NULL
+                FROM mart.ad_case_rank_factor WHERE case_id=:id LIMIT 1
+                """).param("id",caseId).update());
+        assertThat(missingRankReason).isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+        while(missingRankReason.getCause()!=null) missingRankReason=missingRankReason.getCause();
+        assertThat(((java.sql.SQLException)missingRankReason).getSQLState()).isEqualTo("23514");
+        assertThat(missingRankReason.getMessage()).contains("ad_case_rank_factor_absent_ck");
         assertThat(jdbc.sql("SELECT affected_set_id IS NULL FROM mart.ad_case WHERE id=:id")
                 .param("id",caseId).query(Boolean.class).single()).isTrue();
         assertThat(jdbc.sql("SELECT count(*) FROM core.ad_affected_set WHERE ad_native_object_id=:id")

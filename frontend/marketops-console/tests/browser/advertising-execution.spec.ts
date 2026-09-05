@@ -77,23 +77,52 @@ async function routeIdentityProvider(page: Page): Promise<void> {
   });
 }
 
-/** An envelope with room on two axes and none on the third. */
-const ENVELOPE = {
+/** Current six-axis response fixtures; browser rendering only, not admission evidence. */
+const COMPANY_ENVELOPE = {
   envelopeId: '11111111-1111-4111-8111-111111111111',
   policyVersion: 3,
   scopeKind: 'ORGANIZATION',
   currencyCode: 'RUB',
-  activeInterventions: 7,
-  maxActiveInterventions: 10,
-  reservedRecoveryHeadroom: 3,
-  unresolvedTransmittedWrites: 0,
-  maxUnresolvedTransmittedWrites: 2,
-  cumulativeBidChangeAmount: '120.0000',
-  maxCumulativeBidChangeAmount: '500.0000',
-  cumulativeWindowHours: 24,
+  measurementWindowHours: 24,
+  retainedWindowDays: 30,
+  axes: {
+    activeInterventions: { usage: 7, limit: 10, state: 'EXCEEDED' },
+    associatedOfficialSpend: { usage: null, limit: 500, state: 'UNKNOWN', unit: 'RUB_MAJOR' },
+    affectedRetainedSalesShare: {
+      usage: 0.12,
+      limit: 0.2,
+      affectedSales: 120,
+      companySales: 1000,
+      state: 'AVAILABLE',
+    },
+    cumulativeBidChangeMajor: {
+      usage: 120,
+      limit: 500,
+      state: 'AVAILABLE',
+      unit: 'RUB_MAJOR',
+      windowHours: 24,
+    },
+    unresolvedTransmittedWrites: { usage: 0, limit: 2, state: 'AVAILABLE' },
+    reservedRecoveryHeadroom: { available: 3, reserved: 3, state: 'AVAILABLE' },
+  },
+  reasons: ['ACTIVE_INTERVENTIONS', 'ASSOCIATED_SPEND_UNRESOLVED'],
+};
+const ENVELOPE = {
+  measuredAt: '2026-09-04T00:00:00Z',
+  envelopes: [
+    COMPANY_ENVELOPE,
+    {
+      ...COMPANY_ENVELOPE,
+      envelopeId: '88888888-8888-4888-8888-888888888888',
+      policyVersion: 4,
+      scopeKind: 'STORE',
+      storeId: STORE_ID,
+      platformCode: 'SYNTHETIC_RENDER',
+    },
+  ],
+  unresolvedStoreIds: [],
   resolved: true,
-  exhaustedAxes: ['ACTIVE_INTERVENTIONS'],
-  status: 'ACTIVE',
+  status: 'MEASURED',
 };
 
 const RESERVATION = {
@@ -183,18 +212,46 @@ test.describe('TC-BROWSER-016 the execution surfaces render in a real browser', 
 
     const envelope = page.getByLabel('Exposure envelope');
     await expect(envelope).toBeVisible();
-    // Three axes, three limits. A single percentage would describe a quantity
-    // the product does not have.
-    await expect(envelope.locator('[data-axis]')).toHaveCount(3);
-    await expect(envelope.locator('[data-axis="ACTIVE_INTERVENTIONS"]')).toContainText(
-      '3 of 10 reserved for recovery',
+    // Every applicable scope keeps all six independent axes and its own limits.
+    await expect(envelope.getByRole('table')).toHaveCount(2);
+    await expect(envelope).toContainText('Version 3 at ORGANIZATION scope');
+    await expect(envelope).toContainText(
+      `Version 4 at STORE scope / SYNTHETIC_RENDER / Store ${STORE_ID}`,
     );
-    await expect(
-      envelope.locator('[data-axis="ACTIVE_INTERVENTIONS"] [data-exhausted="true"]'),
-    ).toHaveCount(1);
-    await expect(
-      envelope.locator('[data-axis="UNRESOLVED_TRANSMITTED_WRITES"] [data-exhausted="false"]'),
-    ).toHaveCount(1);
+    await expect(envelope).toContainText('Measurement window: 24 hours; Retained cohort: 30 days');
+    await expect(envelope).toContainText(ENVELOPE.measuredAt);
+    for (const item of ENVELOPE.envelopes) {
+      const scoped = envelope.locator(`[data-envelope="${item.envelopeId}"]`);
+      await expect(scoped.locator('[data-axis]')).toHaveCount(6);
+      for (const code of Object.keys(COMPANY_ENVELOPE.axes)) {
+        await expect(scoped.locator(`[data-axis="${code}"]`)).toHaveCount(1);
+      }
+      await expect(scoped.locator('[data-axis="activeInterventions"]')).toContainText(
+        '3 of 10 reserved for recovery',
+      );
+      await expect(
+        scoped.locator('[data-axis="activeInterventions"] [data-state="EXCEEDED"]'),
+      ).toHaveCount(1);
+      const unknownSpend = scoped.locator('[data-axis="associatedOfficialSpend"]');
+      await expect(unknownSpend).toContainText('not measured');
+      await expect(unknownSpend).toContainText('unknown; capacity unproven');
+      await expect(unknownSpend).not.toContainText('within current limit');
+      await expect(scoped.locator('[data-axis="affectedRetainedSalesShare"]')).toContainText(
+        'affected sales 120 / company sales 1000',
+      );
+      await expect(scoped.locator('[data-axis="cumulativeBidChangeMajor"]')).toContainText(
+        'RUB_MAJOR over 24 hours',
+      );
+      await expect(
+        scoped.locator('[data-axis="unresolvedTransmittedWrites"] td').first(),
+      ).toHaveText('0');
+      await expect(
+        scoped.locator('[data-axis="unresolvedTransmittedWrites"] [data-state="AVAILABLE"]'),
+      ).toHaveCount(1);
+      const headroom = scoped.locator('[data-axis="reservedRecoveryHeadroom"]');
+      await expect(headroom.locator('td').nth(0)).toHaveText('3');
+      await expect(headroom.locator('td').nth(1)).toHaveText('3');
+    }
   });
 
   test('a hold names its kind and every condition still outstanding', async ({ page }) => {
@@ -223,11 +280,11 @@ test.describe('TC-BROWSER-016 the execution surfaces render in a real browser', 
   test('no envelope is presented as no write at all, not as an empty one', async ({ page }) => {
     await routeIdentityProvider(page);
     await route(page, '/api/v1/console/advertising/exposure', {
-      envelopeId: null,
-      activeInterventions: 2,
-      unresolvedTransmittedWrites: 1,
+      measuredAt: ENVELOPE.measuredAt,
+      envelopes: [],
+      unresolvedStoreIds: [STORE_ID],
       resolved: false,
-      exhaustedAxes: ['AGGREGATE_ENVELOPE_UNRESOLVED'],
+      status: 'UNRESOLVED',
     });
     await route(page, '/api/v1/console/advertising/reservations', []);
     await route(page, '/api/v1/console/advertising/containments', []);

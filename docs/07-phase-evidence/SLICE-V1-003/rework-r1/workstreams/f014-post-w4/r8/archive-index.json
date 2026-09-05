@@ -1,0 +1,154 @@
+{
+  "kind": "RAW_TARGETED_ARCHIVE",
+  "sourceDirectory": "/tmp/slice3-r1-f014-r8",
+  "files": [
+    {
+      "original": "/tmp/slice3-r1-f014-r8/maven.log",
+      "archive": "maven.log.gz",
+      "originalSha256": "0aa353b3543a7844e47058132168b28a6a2bf01e463420cd0452b2c6043fdb22",
+      "archiveSha256": "5648c7421648e0be19778041f7087a84ccdb3d9ae546bf327f251f1dd8b328fa",
+      "originalBytes": 119656
+    },
+    {
+      "original": "/tmp/slice3-r1-f014-r8/receipt.json",
+      "archive": "receipt.json",
+      "originalSha256": "76c8262a15a18b98c6dcb4de9d97e3ef5b449cfd0b8becae90c4681f1ef58ed5",
+      "archiveSha256": "76c8262a15a18b98c6dcb4de9d97e3ef5b449cfd0b8becae90c4681f1ef58ed5",
+      "originalBytes": 15258
+    },
+    {
+      "original": "/tmp/slice3-r1-f014-r8/runtime-resources.json",
+      "archive": "runtime-resources.json",
+      "originalSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+      "archiveSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+      "originalBytes": 591
+    },
+    {
+      "original": "/tmp/slice3-r1-f014-r8/source-after.json",
+      "archive": "source-after.json",
+      "originalSha256": "19c421b2bf3d06fa3834190b509e904a2863b5ef6b85ebd6ccb6fa340cccf60c",
+      "archiveSha256": "19c421b2bf3d06fa3834190b509e904a2863b5ef6b85ebd6ccb6fa340cccf60c",
+      "originalBytes": 196141
+    },
+    {
+      "original": "/tmp/slice3-r1-f014-r8/source-before.json",
+      "archive": "source-before.json",
+      "originalSha256": "19c421b2bf3d06fa3834190b509e904a2863b5ef6b85ebd6ccb6fa340cccf60c",
+      "archiveSha256": "19c421b2bf3d06fa3834190b509e904a2863b5ef6b85ebd6ccb6fa340cccf60c",
+      "originalBytes": 196141
+    }
+  ],
+  "reports": [
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdBidWriteGateAdversarialIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.AdBidWriteGateAdversarialIT.xml",
+      "sha256": "b62a8db81b65dcacee7fbf4e0055c967474dd54484d3d3eb0e540231a8886a49",
+      "bytes": 40331
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingAggregateExposureIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.AdvertisingAggregateExposureIT.xml",
+      "sha256": "01498c12376144d223915e15fadb1bf632c1d56210b73aa8dcee6561800617fc",
+      "bytes": 44747
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+      "sha256": "87685c8235224630fd241050bc349fb0c8d0a81ebab6958f51b87e92c7271aee",
+      "bytes": 62067
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingManualWorkflowIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.AdvertisingManualWorkflowIT.xml",
+      "sha256": "f931cd50723a271de47422ab09e387f45c0d5f78af1775b17bf0c637cd5cfb3b",
+      "bytes": 44019
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingMaterialityIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.AdvertisingMaterialityIT.xml",
+      "sha256": "7a6d37ca75b28fe9e8208ee605ec137892c6b0499370869890ca03b8f066d234",
+      "bytes": 55560
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingOrdinaryApprovalIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.AdvertisingOrdinaryApprovalIT.xml",
+      "sha256": "8c4d39b63eb805d449f73f8613e87144a04ed4f4ef72ba84f3b94c5604d17208",
+      "bytes": 50597
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingReservationIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.AdvertisingReservationIT.xml",
+      "sha256": "0fe2a5e5fee7dab896804ddbc88a9f3b15c9a6fd0637bd34b3e6a31360b96cdf",
+      "bytes": 53223
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingSealedAuthorityIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.AdvertisingSealedAuthorityIT.xml",
+      "sha256": "043cd448de6a8b2b9adeeb11de81472611f96b1b47a7591178cee7cffeb38fe2",
+      "bytes": 53478
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingTransmissionBoundaryIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.AdvertisingTransmissionBoundaryIT.xml",
+      "sha256": "c26b5ff30cbe1e7c75f98d4f495c134f63317f5901fa5232d0c5a8b31a27536a",
+      "bytes": 41882
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.advertisingefficiency.AdvertisingRankFactorSerializationTest.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.advertisingefficiency.AdvertisingRankFactorSerializationTest.xml",
+      "sha256": "9e77d013150cad424f9ce45b24e353d626646e1c2c4f4dbc5bc5b80e4215c275",
+      "bytes": 39478
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingAttributedEconomicsTest.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingAttributedEconomicsTest.xml",
+      "sha256": "828a71acd14fa974fce73df2b4780d7418dbc8fcdec01b8e0bdd4686d293818e",
+      "bytes": 41038
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest.xml",
+      "sha256": "8e103b97e955e4224f182f6284a2370dab491734ab3b0b1845eb2ff5aace3ff9",
+      "bytes": 43917
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT.xml",
+      "sha256": "6637631b9931fde83838624fc36745b123a400609fc92cb1525882219447c185",
+      "bytes": 45153
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT.xml",
+      "sha256": "852fa151283bc142adaa51585613c5c2032772d4b64852349053f78c416572d9",
+      "bytes": 43104
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT.xml",
+      "sha256": "40b4bae0a0d2041d85e2b8d1b7e8f75ae0de99ec5c4886612d6ae811d0a77d99",
+      "bytes": 53420
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityLexicographicTest.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityLexicographicTest.xml",
+      "sha256": "d81382ca8f53da9613c98dda53917a3f4197cd6dc98cde376a598791b82da3b3",
+      "bytes": 41118
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityPolicyTest.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityPolicyTest.xml",
+      "sha256": "bc8fbbf065b78984d6c50094128b48dbd1108f12c698cccf767ea4c1c1c5045c",
+      "bytes": 41290
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r8/reports/TEST-com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT.xml",
+      "sha256": "91dd42bee256a9aa60557a98d4fc27d2c3712f9284a73b3397b3884722bf376b",
+      "bytes": 52338
+    }
+  ],
+  "reportsTarGzSha256": "1434d09971f42f5b760b9b524a4b75c9a0f6d36875d2a141f3b035e10ae39c08",
+  "transport": "Lossless compression; original receipt and all failure/success bytes are unmodified.",
+  "limits": "A targeted run on recorded uncommitted source is not a complete clean run, exact CI or Controller verdict."
+}

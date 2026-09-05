@@ -161,9 +161,10 @@ BEGIN
             USING ERRCODE = 'MO090';
     END IF;
 
-    -- A mutating operation happens at most once per command, ever. This is the
-    -- rule that makes a retry of an unacknowledged write impossible rather than
-    -- merely discouraged.
+    -- A second submission requires current same-command proof. A timeout has
+    -- no response body; verified native-key APPLY may instead rely on the
+    -- later official status and current Readback required by the retry predicate.
+    -- Without that verified identity, explicit non-application evidence remains mandatory.
     IF p_purpose IN ('APPLY', 'RESTORE')
         AND EXISTS (SELECT 1 FROM ops.ad_bid_command_attempt a
                      WHERE a.command_id = p_command_id AND a.purpose = p_purpose)
@@ -175,7 +176,8 @@ BEGIN
                              AND last_attempt.purpose = p_purpose
                            ORDER BY last_attempt.attempt_no DESC LIMIT 1)
               AND ops.ad_bid_retry_is_proven(p_command_id)
-              AND a.raw_observation_id IS NOT NULL
+              AND (a.raw_observation_id IS NOT NULL OR p_purpose='APPLY'
+                   AND a.operation_snapshot #>> '{adSemanticProfile,idempotency_semantics}'='VERIFIED_NATIVE_KEY')
               AND (a.error_code = 'provider_explicit_not_applied'
                    OR EXISTS(SELECT 1 FROM ops.ad_bid_command_attempt proof
                       WHERE proof.command_id=p_command_id AND proof.error_code='provider_explicit_not_applied'

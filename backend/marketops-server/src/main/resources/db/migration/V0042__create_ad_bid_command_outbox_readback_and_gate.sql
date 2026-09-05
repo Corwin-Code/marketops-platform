@@ -112,6 +112,9 @@ CREATE TABLE ops.ad_bid_command (
     attempt_no                    integer        NOT NULL DEFAULT 0,
     retry_budget_remaining        integer        NOT NULL,
     fence_token                   bigint         NOT NULL DEFAULT 1,
+    -- Set only when a governed RETRY_WAIT is leased. It permits a fresh,
+    -- read-only preflight at that new fence, never reuse of an older readback.
+    retry_preflight_fence         bigint,
     lease_owner                   text,
     lease_expires_at              timestamptz,
     next_attempt_at               timestamptz,
@@ -200,10 +203,14 @@ CREATE TABLE ops.ad_bid_command (
     CONSTRAINT ad_bid_command_attempt_ck CHECK (attempt_no >= 0),
     CONSTRAINT ad_bid_command_retry_budget_ck CHECK (retry_budget_remaining >= 0),
     CONSTRAINT ad_bid_command_fence_ck CHECK (fence_token > 0),
+    CONSTRAINT ad_bid_command_retry_preflight_fence_ck
+        CHECK (retry_preflight_fence > 0 AND retry_preflight_fence <= fence_token),
     CONSTRAINT ad_bid_command_lease_pairing_ck
         CHECK (num_nonnulls(lease_owner, lease_expires_at) <> 1),
     CONSTRAINT ad_bid_command_leased_state_ck
-        CHECK (state NOT IN ('LEASED', 'EXECUTING', 'PLATFORM_PENDING', 'READBACK_PENDING')
+        -- PLATFORM_PENDING may idle between polls. Every transport attempt
+        -- still requires a new, current observation lease and matching fence.
+        CHECK (state NOT IN ('LEASED', 'EXECUTING', 'READBACK_PENDING')
             OR lease_owner IS NOT NULL),
     CONSTRAINT ad_bid_command_terminal_ck
         CHECK ((state IN ('READBACK_MATCHED', 'FAILED_FINAL',
@@ -260,8 +267,12 @@ INSERT INTO ops.ad_bid_command_transition
         'a quarantine or kill activated before anything was sent'),
     ('LEASED', 'EXECUTING', true, false,
         'the adapter call is about to be made'),
+    ('LEASED', 'READBACK_PENDING', true, false,
+        'a governed retry must observe the current value at its new lease fence'),
     ('LEASED', 'PENDING', true, true,
         'the worker released the claim without calling the platform'),
+    ('LEASED', 'UNKNOWN_REQUIRES_READBACK', true, true,
+        'an abandoned retry preflight cannot restore permission to submit'),
     ('LEASED', 'TERMINATED_WITHOUT_PROVIDER_CALL', true, true,
         'live pre-transmission revalidation refused the send'),
     ('EXECUTING', 'PLATFORM_PENDING', true, false,
@@ -290,6 +301,8 @@ INSERT INTO ops.ad_bid_command_transition
         'a readback observed a third value that nothing in this lineage wrote'),
     ('READBACK_PENDING', 'RETRY_WAIT', true, true,
         'the readback is not yet available'),
+    ('READBACK_PENDING', 'EXECUTING', true, false,
+        'only a retry preflight at this lease fence may authorize governed reentry'),
     ('READBACK_PENDING', 'UNKNOWN_REQUIRES_READBACK', true, true,
         'the readback attempt itself could not be classified'),
     ('RETRY_WAIT', 'LEASED', false, false,
@@ -951,6 +964,26 @@ BEGIN
         END IF;
     END IF;
 
+    -- A retry lease invalidates the prior fence's readback. Its only route to
+    -- another APPLY is a newly recorded readback at this exact active lease.
+    IF command.state = 'LEASED' AND p_to_state = 'READBACK_PENDING' THEN
+        IF command.retry_preflight_fence IS DISTINCT FROM command.fence_token
+            OR NOT EXISTS (SELECT 1 FROM ops.ad_bid_command_attempt previous_apply
+                WHERE previous_apply.command_id = p_command_id AND previous_apply.purpose = 'APPLY') THEN
+            RAISE EXCEPTION 'a governed retry lease is required for preflight readback'
+                USING ERRCODE = 'MO092';
+        END IF;
+    END IF;
+    IF p_to_state = 'EXECUTING' THEN
+        IF (command.state = 'LEASED' AND command.retry_preflight_fence = command.fence_token)
+            OR (command.state = 'READBACK_PENDING'
+                AND (command.retry_preflight_fence IS DISTINCT FROM command.fence_token
+                    OR NOT ops.ad_bid_retry_is_proven(p_command_id))) THEN
+            RAISE EXCEPTION 'retry requires fresh proof at the current lease fence'
+                USING ERRCODE = 'MO092';
+        END IF;
+    END IF;
+
     -- Success requires evidence, in the same transaction, at the current fence.
     IF p_to_state = 'READBACK_MATCHED' THEN
         IF NOT EXISTS (
@@ -1005,6 +1038,8 @@ BEGIN
        SET state = p_to_state,
            lease_owner = CASE WHEN edge.releases_lease THEN NULL ELSE lease_owner END,
            lease_expires_at = CASE WHEN edge.releases_lease THEN NULL ELSE lease_expires_at END,
+           retry_preflight_fence = CASE WHEN edge.releases_lease OR p_to_state = 'EXECUTING'
+               THEN NULL ELSE retry_preflight_fence END,
            retry_budget_remaining = CASE WHEN p_to_state = 'RETRY_WAIT'
                THEN greatest(retry_budget_remaining - 1, 0) ELSE retry_budget_remaining END,
            next_attempt_at = CASE WHEN p_to_state = 'RETRY_WAIT'
@@ -1056,6 +1091,11 @@ BEGIN
         RAISE EXCEPTION 'this command cannot be claimed from %', command.state
             USING ERRCODE = 'MO091';
     END IF;
+    IF command.state = 'RETRY_WAIT' AND (command.next_attempt_at IS NULL
+        OR command.next_attempt_at > clock_timestamp() OR command.retry_budget_remaining <= 0) THEN
+        RAISE EXCEPTION 'retry delay and remaining budget must permit a new lease'
+            USING ERRCODE = 'MO092';
+    END IF;
     -- The gate is evaluated inside the same transaction that takes the lease, so
     -- a command cannot be claimed against authority that has already lapsed.
     reasons := ops.evaluate_ad_bid_write_gate(p_command_id);
@@ -1065,6 +1105,7 @@ BEGIN
     END IF;
     UPDATE ops.ad_bid_command
        SET state = 'LEASED', fence_token = fence_token + 1, attempt_no = attempt_no + 1,
+           retry_preflight_fence = CASE WHEN command.state = 'RETRY_WAIT' THEN fence_token + 1 ELSE NULL END,
            lease_owner = p_owner,
            lease_expires_at = clock_timestamp() + make_interval(secs => p_seconds),
            next_attempt_at = NULL, updated_at = clock_timestamp()
@@ -1176,7 +1217,7 @@ AS $$
 DECLARE recovered integer := 0;
 BEGIN
     WITH expired AS (
-        SELECT id, state FROM ops.ad_bid_command
+        SELECT id, state, retry_preflight_fence FROM ops.ad_bid_command
          WHERE lease_expires_at IS NOT NULL
            AND lease_expires_at <= clock_timestamp()
            AND state IN ('LEASED', 'EXECUTING', 'PLATFORM_PENDING',
@@ -1184,10 +1225,11 @@ BEGIN
          FOR UPDATE SKIP LOCKED)
     UPDATE ops.ad_bid_command c
        SET state = CASE expired.state
-               WHEN 'LEASED' THEN 'PENDING'
+               WHEN 'LEASED' THEN CASE WHEN expired.retry_preflight_fence IS NOT NULL
+                   THEN 'UNKNOWN_REQUIRES_READBACK' ELSE 'PENDING' END
                WHEN 'COMPENSATION_PENDING' THEN 'MANUAL_RESOLUTION'
                ELSE 'UNKNOWN_REQUIRES_READBACK' END,
-           lease_owner = NULL, lease_expires_at = NULL,
+           lease_owner = NULL, lease_expires_at = NULL, retry_preflight_fence = NULL,
            updated_at = clock_timestamp()
       FROM expired
      WHERE c.id = expired.id;
@@ -1198,7 +1240,7 @@ $$;
 REVOKE ALL ON FUNCTION ops.recover_expired_ad_bid_command_leases() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION ops.recover_expired_ad_bid_command_leases() TO marketops_app;
 
--- The migration asserts the five recovery edges exist, so a future transition
+-- The migration asserts the six recovery edges exist, so a future transition
 -- edit that removed one would fail here rather than at three in the morning.
 DO $verify$
 DECLARE missing text;
@@ -1206,6 +1248,7 @@ BEGIN
     SELECT string_agg(pair.from_state || '->' || pair.to_state, ', ') INTO missing
       FROM (VALUES
         ('LEASED', 'PENDING'),
+        ('LEASED', 'UNKNOWN_REQUIRES_READBACK'),
         ('EXECUTING', 'UNKNOWN_REQUIRES_READBACK'),
         ('PLATFORM_PENDING', 'UNKNOWN_REQUIRES_READBACK'),
         ('READBACK_PENDING', 'UNKNOWN_REQUIRES_READBACK'),

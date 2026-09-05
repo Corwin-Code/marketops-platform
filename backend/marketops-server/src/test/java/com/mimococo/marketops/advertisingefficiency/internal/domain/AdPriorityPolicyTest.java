@@ -139,7 +139,11 @@ class AdPriorityPolicyTest {
                 AdPriorityPolicy.unranked(AdvertisingLane.PROTECTION, ProtectionTier.P1);
 
         assertThat(ranking.score()).isEqualByComparingTo("500000");
-        assertThat(ranking.factors()).isEmpty();
+        assertThat(ranking.factors()).singleElement().satisfies(factor -> {
+            assertThat(factor.value()).isNull();
+            assertThat(factor.displayNote()).isEqualTo("PRIORITY_POLICY_UNRESOLVED:PROFILE");
+            assertThat(factor.contribution()).isZero();
+        });
     }
 
     @Test

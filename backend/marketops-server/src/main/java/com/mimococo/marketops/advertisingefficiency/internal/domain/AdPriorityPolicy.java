@@ -156,7 +156,7 @@ public final class AdPriorityPolicy {
 
     private static void factor(List<AdRankFactor> factors, AdRankFactor.Code code, BigDecimal value) {
         factors.add(new AdRankFactor(code, value, BigDecimal.ZERO, BigDecimal.ZERO,
-                value == null ? "UNRESOLVED:" + code : "LEXICOGRAPHIC:" + (factors.size() + 1)));
+                value == null ? "PRIORITY_POLICY_UNRESOLVED:" + code : "LEXICOGRAPHIC:" + (factors.size() + 1)));
     }
 
     /** Higher severity first; no later exposure can compensate for an earlier factor. */
@@ -176,13 +176,14 @@ public final class AdPriorityPolicy {
      * The severity-only rank used when no priority policy resolves.
      *
      * <p>An absent policy does not invent weights. The case still sorts into its
-     * lane and tier, and carries no factors at all, so the queue stays ordered
-     * and nobody mistakes a default for a published decision.
+     * lane and tier. The unavailable policy is explicit evidence metadata, so
+     * a visible severity band is never mistaken for complete ranking authority.
      */
     public static Ranking unranked(AdvertisingLane lane, ProtectionTier tier) {
         BigDecimal score = BAND.multiply(BigDecimal.valueOf(band(lane, tier)))
                 .setScale(4, RoundingMode.HALF_UP);
-        return new Ranking(score, List.of());
+        return new Ranking(score, List.of(new AdRankFactor(AdRankFactor.Code.EVIDENCE_MATURITY,
+                null, BigDecimal.ZERO, BigDecimal.ZERO, "PRIORITY_POLICY_UNRESOLVED:PROFILE")));
     }
 
     /**

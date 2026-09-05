@@ -44,6 +44,7 @@ class AdvertisingReservationIT {
         seed.sql("""
             INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,organization_ref_id,effective_from,status,reason,created_at,updated_at)
             VALUES(gen_random_uuid(),:org,:actor,:action,:org,now()-interval '1 day','ACTIVE','synthetic reviewed scope',now(),now())
+            ON CONFLICT DO NOTHING
             """).param("org",graph.id("organization")).param("actor",graph.id(person)).param("action",action).update();
     }
     private Connection transaction() throws SQLException { Connection c=application.getConnection();c.setAutoCommit(false);return c; }
@@ -54,12 +55,15 @@ class AdvertisingReservationIT {
         }
     }
     private UUID stop(String person,String scope,String kind,String cause) throws Exception {
+        return stop(graph.id(person),scope,kind,cause,graph.id("verifierUser"));
+    }
+    private UUID stop(UUID actor,String scope,String kind,String cause,UUID reviewOwner) throws Exception {
         UUID id=UUID.randomUUID();
         try(var app=transaction()) {
-            String proof=AdvertisingR1Fixture.proof(admin,app,graph,graph.id(person),"CONTAINMENT_STOP",graph.id("object"),id);
+            String proof=AdvertisingR1Fixture.proof(admin,app,graph,actor,"CONTAINMENT_STOP",graph.id("object"),id);
             try(var query=app.prepareStatement("SELECT ops.activate_ad_human_containment(?,?,?,?,?,?,?,?,?)")) {
                 query.setObject(1,id);query.setObject(2,graph.id("object"));query.setString(3,scope);query.setString(4,kind);
-                query.setString(5,cause);query.setObject(6,graph.id("verifierUser"));query.setString(7,"fictional safety incident");
+                query.setString(5,cause);query.setObject(6,reviewOwner);query.setString(7,"fictional safety incident");
                 query.setString(8,"fixture://reviewed-stop");query.setString(9,proof);query.execute();
             }
             app.commit();return id;
@@ -122,6 +126,95 @@ class AdvertisingReservationIT {
             """).param("newId",UUID.randomUUID()).param("id",graph.id("affectedSet")).update();
         assertThat(active("d".repeat(64))).contains("EMERGENCY_ENTITY_HOLD");
     }
+    @Test void operatorAndOperationsLeadCannotPromoteTheirStopToTechnicalAccountScope() throws Exception {
+        assertThatThrownBy(()->stop("executorUser","PLATFORM_STORE_CAPABILITY","KILL_SWITCH_ACTIVE","BUSINESS_HARM"))
+                .hasMessageContaining("stop exceeds actor scope or review owner is absent");
+        assertThatThrownBy(()->stop("verifierUser","PLATFORM_ACCOUNT_CAPABILITY","KILL_SWITCH_ACTIVE","CREDENTIAL_OR_SECURITY"))
+                .hasMessageContaining("stop exceeds actor scope or review owner is absent");
+        assertThat(active(digest())).isEmpty();
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_containment WHERE organization_id=:org")
+                .param("org",graph.id("organization")).query(Integer.class).single()).isZero();
+    }
+    @Test void technicalStoreGrantCannotStopAccountUntilAnExactAccountGrantExists() throws Exception {
+        UUID actor=independentTechnicalReviewer();
+        seed.sql("""
+            INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,store_ref_id,effective_from,status,reason,created_at,updated_at)
+            VALUES(gen_random_uuid(),:org,:actor,'ADVERTISING_TECHNICAL_STOP',:store,now()-interval '1 hour','ACTIVE','fictional Store stop grant',now(),now())
+            """).param("org",graph.id("organization")).param("actor",actor).param("store",graph.id("store")).update();
+        assertThatThrownBy(()->stop(actor,"PLATFORM_ACCOUNT_CAPABILITY","KILL_SWITCH_ACTIVE","CREDENTIAL_OR_SECURITY",graph.id("verifierUser")))
+                .hasMessageContaining("stop exceeds actor scope or review owner is absent");
+        assertThat(active(digest())).isEmpty();
+        UUID storeStop=stop(actor,"PLATFORM_STORE_CAPABILITY","KILL_SWITCH_ACTIVE","CREDENTIAL_OR_SECURITY",graph.id("verifierUser"));
+        assertThat(seed.sql("SELECT scope_kind FROM ops.ad_containment WHERE id=:id").param("id",storeStop)
+                .query(String.class).single()).isEqualTo("PLATFORM_STORE_CAPABILITY");
+        seed.sql("""
+            INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,marketplace_account_ref_id,effective_from,status,reason,created_at,updated_at)
+            VALUES(gen_random_uuid(),:org,:actor,'ADVERTISING_TECHNICAL_STOP',:account,now()-interval '1 hour','ACTIVE','fictional exact Account stop grant',now(),now())
+            """).param("org",graph.id("organization")).param("actor",actor).param("account",graph.id("account")).update();
+        UUID accountStop=stop(actor,"PLATFORM_ACCOUNT_CAPABILITY","KILL_SWITCH_ACTIVE","CREDENTIAL_OR_SECURITY",graph.id("verifierUser"));
+        assertThat(seed.sql("SELECT scope_kind,marketplace_account_id,capability_code,activated_by_user_id,review_owner_user_id FROM ops.ad_containment WHERE id=:id")
+                .param("id",accountStop).query().singleRow()).containsEntry("scope_kind","PLATFORM_ACCOUNT_CAPABILITY")
+                .containsEntry("marketplace_account_id",graph.id("account")).containsEntry("capability_code","ad-bid-change")
+                .containsEntry("activated_by_user_id",actor).containsEntry("review_owner_user_id",graph.id("verifierUser"));
+        assertThat(appRead.sql("SELECT ops.ad_active_containment(:org,:object,:store,:platform,'price-change',:digest)")
+                .param("org",graph.id("organization")).param("object",graph.id("object")).param("store",graph.id("store"))
+                .param("platform",graph.platform()).param("digest",digest())
+                .query((row,index)->(String[])row.getArray(1).getArray()).single()).isEmpty();
+    }
+    @Test void stopRequiresAnActualScopedReviewOwnerEvenForAnAuthorizedStopper() throws Exception {
+        assertThatThrownBy(()->stop(graph.id("verifierUser"),"PLATFORM_STORE_CAPABILITY","KILL_SWITCH_ACTIVE","BUSINESS_HARM",graph.id("executorUser")))
+                .hasMessageContaining("stop exceeds actor scope or review owner is absent");
+        assertThat(active(digest())).isEmpty();
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"bundle","profile","conversion","allowableCpa","qualification",
+            "targetPolicy","outcome","priority","humanSlo","approvalLease","exposure","materiality"})
+    void publishedAuthorityVersionQuarantineInvalidatesEachExactConsumedBundleReference(String reference) throws Exception {
+        UUID command=command();
+        // Canonical Owner-reviewed quarantine publication is synthetic input through the migration role.
+        // This proves the real consumer/trigger/gate, not an unimplemented human publication route.
+        UUID unrelated=publishAuthorityQuarantine(UUID.randomUUID());
+        assertThat(active(digest())).isEmpty();
+        assertThat(invalidationCount(command)).isZero();
+        UUID quarantine=publishAuthorityQuarantine(graph.id(reference));
+        assertThat(quarantine).isNotEqualTo(unrelated);
+        assertThat(active(digest())).containsExactly("AUTHORITY_VERSION_QUARANTINE");
+        assertThat(invalidationCount(command)).isEqualTo(1);
+        assertThat(appRead.sql("SELECT ops.evaluate_ad_bid_write_gate(:id)").param("id",command)
+                .query((row,index)->(String[])row.getArray(1).getArray()).single())
+                .contains("QUARANTINE_ACTIVE","AUTHORITY_PERMANENTLY_INVALIDATED");
+        assertThat(seed.sql("SELECT cause_reference,cause_code FROM ops.ad_authority_invalidation WHERE authorization_id=(SELECT a.id FROM ops.ad_action_authorization a JOIN ops.ad_bid_command c ON c.recommendation_id=a.recommendation_id WHERE c.id=:id)")
+                .param("id",command).query().singleRow()).containsEntry("cause_reference",quarantine)
+                .containsEntry("cause_code","CONTAINMENT_ACTIVATED");
+        seed.sql("UPDATE ops.ad_containment SET state='REENABLEMENT_REVIEW' WHERE id=:id").param("id",quarantine).update();
+        assertThat(invalidationCount(command)).isEqualTo(1);
+        assertThatThrownBy(()->appRead.sql("SELECT ops.create_ad_bid_command(:id,(SELECT version FROM ops.recommendation WHERE id=:id),:reservation,'quarantine-replay')")
+                .param("id",graph.id("recommendation")).param("reservation",graph.id("reservation")).query(UUID.class).single())
+                .hasMessageContaining("current immutable approval authority required");
+        var foreign=AdvertisingR1Fixture.seed(migration);
+        assertThat(appRead.sql("SELECT ops.ad_active_containment(:org,:object,:store,:platform,'ad-bid-change',NULL)")
+                .param("org",foreign.id("organization")).param("object",foreign.id("object"))
+                .param("store",foreign.id("store")).param("platform",foreign.platform())
+                .query((row,index)->(String[])row.getArray(1).getArray()).single()).isEmpty();
+    }
+    private int invalidationCount(UUID command) {
+        return appRead.sql("SELECT count(*) FROM ops.ad_authority_invalidation WHERE authorization_id=(SELECT a.id FROM ops.ad_action_authorization a JOIN ops.ad_bid_command c ON c.recommendation_id=a.recommendation_id WHERE c.id=:id)")
+                .param("id",command).query(Integer.class).single();
+    }
+    private UUID publishAuthorityQuarantine(UUID reference) {
+        UUID id=UUID.randomUUID();
+        seed.sql("""
+            INSERT INTO ops.ad_containment(id,organization_id,containment_kind,scope_kind,authority_version_reference,
+              cause_class,reason,evidence_reference,activated_by_user_id,activated_at,state,correlation_id,created_at,updated_at,review_owner_user_id)
+            VALUES(:id,:org,'AUTHORITY_VERSION_QUARANTINE','AUTHORITY_VERSION',:reference,'AUTHORITY_VERSION_INVALID',
+              'fictional published Owner authority finding','fixture://published-authority-quarantine',:owner,clock_timestamp(),
+              'ACTIVE','synthetic-published-authority',clock_timestamp(),clock_timestamp(),:reviewer)
+            """).param("id",id).param("org",graph.id("organization")).param("reference",reference.toString())
+                .param("owner",graph.id("ownerUser")).param("reviewer",graph.id("verifierUser")).update();
+        return id;
+    }
+
     @Test void stopperCannotEndorseTheirOwnReenablement() throws Exception {
         UUID stop=stop("verifierUser","ENTITY","EMERGENCY_ENTITY_HOLD","BUSINESS_HARM");
         try(var app=transaction()) {
@@ -215,12 +308,138 @@ class AdvertisingReservationIT {
         assertThat(seed.sql("SELECT count(*) FROM ops.ad_authority_invalidation WHERE organization_id=:org")
                 .param("org",graph.id("organization")).query(Integer.class).single()).isPositive();
     }
+
+    /** Recovery attestation records are created only through app-role, transaction-bound proofs. */
+    private void attest(UUID stop,UUID actor,String condition) throws Exception {
+        try(var app=transaction()) {
+            String purpose=condition.equals("OPERATIONS_ENDORSEMENT")?"CONTAINMENT_ENDORSE":"CONTAINMENT_ATTEST";
+            String proof=AdvertisingR1Fixture.proof(admin,app,graph,actor,purpose,stop,stop);
+            try(var call=app.prepareStatement("SELECT ops.attest_ad_containment(?,?,?,?)")) {
+                call.setObject(1,stop);call.setString(2,condition);
+                call.setString(3,"fixture://independent-recovery/"+condition);call.setString(4,proof);call.execute();
+            }
+            app.commit();
+        }
+    }
+    private void businessRecoveryAttestations(UUID stop) throws Exception {
+        for(String condition:List.of("ROOT_CAUSE_CLASSIFIED","UNKNOWNS_RESOLVED","AUTHORITIES_REPLACED",
+                "RESULTS_RECONCILED","CAPABILITY_EVIDENCE_CURRENT","OPERATIONS_ENDORSEMENT")) {
+            attest(stop,graph.id("verifierUser"),condition);
+        }
+    }
+    private Bundle replacementBundle() throws Exception {
+        Bundle next=draftBundle();
+        controlBundle(next,"verifierUser","BUNDLE_ENDORSE","endorse_ad_bundle");
+        controlBundle(next,"ownerUser","BUNDLE_APPROVE","activate_ad_bundle");
+        return next;
+    }
+    private boolean reenable(UUID stop,Bundle next) throws Exception {
+        try(var app=transaction()) {
+            String proof=AdvertisingR1Fixture.proof(admin,app,graph,graph.id("ownerUser"),
+                    "CONTAINMENT_REENABLE",stop,next.id());
+            try(var call=app.prepareStatement("SELECT ops.reenable_ad_containment(?,?,?)")) {
+                call.setObject(1,stop);call.setObject(2,next.id());call.setString(3,proof);
+                try(var result=call.executeQuery()) {
+                    result.next();boolean reenabled=result.getBoolean(1);app.commit();return reenabled;
+                }
+            }
+        }
+    }
+    /** Synthetic identity provisioning supplies no attestation or containment state. */
+    private UUID independentTechnicalReviewer() {
+        UUID actor=UUID.randomUUID();
+        seed.sql("""
+            INSERT INTO iam.user_account(id,organization_id,identity_provider_id,external_subject,
+              display_name,status,credentials_valid_from,created_at,updated_at)
+            VALUES(:actor,:org,:provider,:subject,'Independent fictional security reviewer','ACTIVE',
+              clock_timestamp(),clock_timestamp(),clock_timestamp())
+            """).param("actor",actor).param("org",graph.id("organization")).param("provider",graph.id("provider"))
+                .param("subject","fictional-security-"+actor).update();
+        seed.sql("""
+            INSERT INTO iam.user_role_assignment(id,organization_id,user_id,role_code,effective_from,status,reason,created_at,updated_at)
+            VALUES(gen_random_uuid(),:org,:actor,'TECH_DATA',now()-interval '1 day','ACTIVE',
+              'fictional independent security reviewer',now(),now())
+            """).param("org",graph.id("organization")).param("actor",actor).update();
+        seed.sql("""
+            INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,store_ref_id,effective_from,status,reason,created_at,updated_at)
+            VALUES(gen_random_uuid(),:org,:actor,'ADVERTISING_TECHNICAL_ATTEST',:store,now()-interval '1 day','ACTIVE',
+              'fictional exact store security scope',now(),now())
+            """).param("org",graph.id("organization")).param("actor",actor).param("store",graph.id("store")).update();
+        return actor;
+    }
+    @Test void independentRecoveryAuthoritiesReenableOnlyNewScopeWithoutRevivingPriorApproval() throws Exception {
+        UUID command=command();
+        UUID stop=stop("executorUser","ENTITY","EMERGENCY_ENTITY_HOLD","BUSINESS_HARM");
+        Bundle next=replacementBundle();
+        businessRecoveryAttestations(stop);
+        assertThat(reenable(stop,next)).isTrue();
+        assertThat(active(digest())).isEmpty();
+        var state=appRead.sql("""
+            SELECT state,activated_by_user_id,endorsed_by_user_id,approved_by_user_id,
+              root_cause_classified,unknowns_resolved,authorities_replaced,results_reconciled,
+              capability_evidence_current,security_attestation_present,reenabled_scope->>'newBundleId' AS replacement
+            FROM ops.ad_containment WHERE id=:id
+            """).param("id",stop).query().singleRow();
+        assertThat(state).containsEntry("state","REENABLED")
+                .containsEntry("activated_by_user_id",graph.id("executorUser"))
+                .containsEntry("endorsed_by_user_id",graph.id("verifierUser"))
+                .containsEntry("approved_by_user_id",graph.id("ownerUser"))
+                .containsEntry("replacement",next.id().toString())
+                .containsEntry("root_cause_classified",true).containsEntry("unknowns_resolved",true)
+                .containsEntry("authorities_replaced",true).containsEntry("results_reconciled",true)
+                .containsEntry("capability_evidence_current",true).containsEntry("security_attestation_present",false);
+        assertThat(appRead.sql("SELECT count(*) FROM ops.ad_containment_attestation WHERE containment_id=:id AND actor_user_id=:actor")
+                .param("id",stop).param("actor",graph.id("verifierUser")).query(Integer.class).single()).isEqualTo(6);
+        assertThat(appRead.sql("SELECT ops.evaluate_ad_bid_write_gate(:id)").param("id",command)
+                .query((row,index)->(String[])row.getArray(1).getArray()).single())
+                .contains("AUTHORITY_PERMANENTLY_INVALIDATED").doesNotContain("EMERGENCY_ENTITY_HOLD");
+        assertThat(appRead.sql("SELECT status FROM ops.ad_decision_policy_bundle WHERE id=:id")
+                .param("id",graph.id("bundle")).query(String.class).single()).isEqualTo("SUPERSEDED");
+        assertThat(appRead.sql("SELECT production_write_enabled FROM ops.ad_gate_authority WHERE id=:id")
+                .param("id",next.gate()).query(Boolean.class).single()).isFalse();
+    }
+    @Test void technicalRecoveryCannotReenableUntilIndependentScopedSecurityAttestationExists() throws Exception {
+        command();
+        UUID stop=stop("executorUser","ENTITY","EMERGENCY_ENTITY_HOLD","EXECUTION_INTEGRITY");
+        Bundle next=replacementBundle();
+        businessRecoveryAttestations(stop);
+        assertThatThrownBy(()->reenable(stop,next))
+                .hasMessageContaining("new scope, resolved facts and independent recovery authorities required");
+        assertThat(active(digest())).containsExactly("EMERGENCY_ENTITY_HOLD");
+        assertThat(appRead.sql("SELECT state FROM ops.ad_containment WHERE id=:id")
+                .param("id",stop).query(String.class).single()).isEqualTo("REENABLEMENT_REVIEW");
+        assertThat(appRead.sql("SELECT count(*) FROM ops.ad_containment_attestation WHERE containment_id=:id AND condition='SECURITY_ATTESTATION_PRESENT'")
+                .param("id",stop).query(Integer.class).single()).isZero();
+        UUID technician=independentTechnicalReviewer();
+        assertThat(technician).isNotIn(graph.id("executorUser"),graph.id("verifierUser"),graph.id("ownerUser"));
+        attest(stop,technician,"SECURITY_ATTESTATION_PRESENT");
+        assertThat(reenable(stop,next)).isTrue();
+        assertThat(active(digest())).isEmpty();
+        assertThat(appRead.sql("SELECT security_attestation_present FROM ops.ad_containment WHERE id=:id AND state='REENABLED'")
+                .param("id",stop).query(Boolean.class).single()).isTrue();
+        assertThat(appRead.sql("SELECT actor_user_id FROM ops.ad_containment_attestation WHERE containment_id=:id AND condition='SECURITY_ATTESTATION_PRESENT'")
+                .param("id",stop).query(UUID.class).single()).isEqualTo(technician);
+    }
+
     @Test void bundleGateChangedAfterEndorsementCannotBecomeApprovedAuthority() throws Exception {
         Bundle next=draftBundle();controlBundle(next,"verifierUser","BUNDLE_ENDORSE","endorse_ad_bundle");
         seed.sql("UPDATE ops.ad_gate_authority SET max_commands=max_commands+1 WHERE id=:id")
                 .param("id",next.gate()).update();
         assertThatThrownBy(()->controlBundle(next,"ownerUser","BUNDLE_APPROVE","activate_ad_bundle"))
                 .hasMessageContaining("complete endorsed Bundle and exact scoped Owner Gate authority required");
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.EnumSource(AdvertisingGateScopeMutation.Axis.class)
+    void eachWholeBundleScopeAxisMustStillMatchItsIndependentEndorsement(AdvertisingGateScopeMutation.Axis axis) throws Exception {
+        Bundle next=draftBundle();controlBundle(next,"verifierUser","BUNDLE_ENDORSE","endorse_ad_bundle");
+        AdvertisingGateScopeMutation.mutate(seed,graph,next.gate(),axis);
+        assertThatThrownBy(()->controlBundle(next,"ownerUser","BUNDLE_APPROVE","activate_ad_bundle"))
+                .hasMessageContaining("complete endorsed Bundle and exact scoped Owner Gate authority required");
+        assertThat(seed.sql("SELECT status FROM ops.ad_decision_policy_bundle WHERE id=:id").param("id",next.id())
+                .query(String.class).single()).isEqualTo("DRAFT");
+        assertThat(seed.sql("SELECT status FROM ops.ad_decision_policy_bundle WHERE id=:id").param("id",graph.id("bundle"))
+                .query(String.class).single()).isEqualTo("ACTIVE");
     }
 
     /** A prior completed write/readback is historical input, never a live Provider call. */

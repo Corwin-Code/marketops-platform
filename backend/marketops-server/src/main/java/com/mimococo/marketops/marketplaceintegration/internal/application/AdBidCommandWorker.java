@@ -26,11 +26,11 @@ import org.springframework.transaction.annotation.Transactional;
  * that held a transaction across the network would, on a crash, roll back the
  * only record that a bid change may have left the building.
  *
- * <p>The outcome routing has one asymmetry worth stating plainly. A retriable
- * condition goes to {@code RETRY_WAIT}; a timeout or an unclassifiable answer
- * goes to {@code UNKNOWN_REQUIRES_READBACK} and never comes back to
- * {@code EXECUTING}. The distinction is not about how likely the call was to
- * have landed. It is that only one of them is evidence.
+ * <p>An unclassified APPLY or its timeout enters {@code UNKNOWN_REQUIRES_READBACK};
+ * it cannot authorize another submission. A status-query timeout for an already
+ * identified native task keeps only its {@code PLATFORM_PENDING} observation path.
+ * A later retry still requires the independent current Readback, verified
+ * idempotency proof and live authority checked by the repository.
  */
 @Service
 @Transactional(propagation = Propagation.NEVER)
@@ -87,7 +87,7 @@ class AdBidCommandWorker {
                 case "PLATFORM_PENDING" -> pollStatus(commandId, owner);
                 case "COMPENSATION_PENDING" -> compensate(commandId, owner);
                 case "UNKNOWN_REQUIRES_READBACK" -> observeAfterUnknown(commandId, owner);
-                default -> apply(commandId, owner);
+                default -> apply(commandId, owner, "RETRY_WAIT".equals(command.state()));
             };
         } catch (RuntimeException refused) {
             // A failed completion may follow dispatch. Preserve the durable
@@ -104,11 +104,19 @@ class AdBidCommandWorker {
      * <p>The gate runs inside the lease and again inside the attempt open, so
      * two independent refusals stand between a claimable command and a socket.
      */
-    private boolean apply(UUID commandId, String owner) {
+    private boolean apply(UUID commandId, String owner, boolean retry) {
         long fence = commands.lease(commandId, owner, properties.getLeaseSeconds());
-        commands.transition(commandId, fence, owner, "EXECUTING", null, null, null);
-
         AdBidCommandRepository.CommandRow command = commands.row(commandId).orElseThrow();
+        if (retry) {
+            // The retry lease advances the fence. Re-observe at that fence;
+            // neither a previous lease's proof nor a pending retry is a send.
+            commands.transition(commandId, fence, owner, "READBACK_PENDING", null, null, null);
+            if (!observe(command, fence, owner, true)) {
+                return true;
+            }
+        } else {
+            commands.transition(commandId, fence, owner, "EXECUTING", null, null, null);
+        }
         AdBidWriteResult result = call(command, fence, owner,
                 AdBidWriteRequest.Operation.APPLY,
                 Money.of(command.targetBidAmount(), command.currencyCode()), null);
@@ -169,8 +177,12 @@ class AdBidCommandWorker {
             }
             case REJECTED -> commands.transition(commandId, fence, owner, "FAILED_FINAL",
                     "native_task_rejected", null, null);
-            case TIMEOUT, UNKNOWN_STATE -> commands.transition(commandId, fence, owner,
-                    "UNKNOWN_REQUIRES_READBACK", null, null, null);
+            case TIMEOUT, UNKNOWN_STATE -> {
+                // The accepted APPLY already supplied a frozen native task identity.
+                // An inconclusive status read cannot erase that addressable work or
+                // authorize another APPLY. Keep polling this same task, read-only.
+                commands.deferObservation(commandId, fence, owner, properties.getRetryDelaySeconds());
+            }
         }
         return true;
     }
@@ -191,13 +203,19 @@ class AdBidCommandWorker {
      * something outside this lineage owns that bid now.
      */
     private void observe(AdBidCommandRepository.CommandRow command, long fence, String owner) {
+        observe(command, fence, owner, false);
+    }
+
+    /** True only when a fresh retry-lease readback authorizes the next APPLY. */
+    private boolean observe(AdBidCommandRepository.CommandRow command, long fence, String owner,
+            boolean retryPreflight) {
         AdBidWriteResult result = call(command, fence, owner,
                 AdBidWriteRequest.Operation.READBACK,
                 Money.of(command.targetBidAmount(), command.currencyCode()), null);
         if (result.response() == null) {
             commands.transition(command.id(), fence, owner, "UNKNOWN_REQUIRES_READBACK",
                     null, null, null);
-            return;
+            return false;
         }
         UUID readbackId = ids.newId();
         String match = commands.transitionReadback(readbackId, command.id(), fence, owner);
@@ -206,6 +224,10 @@ class AdBidCommandWorker {
                     "READBACK_MATCHED", null, null, readbackId);
             case "MATCHES_PRIOR" -> {
                 if (commands.retryIsProven(command.id())) {
+                    if (retryPreflight) {
+                        commands.transition(command.id(), fence, owner, "EXECUTING", null, null, null);
+                        return true;
+                    }
                     commands.transition(command.id(), fence, owner, "RETRY_WAIT", null,
                             properties.getRetryDelaySeconds(), null);
                 } else {
@@ -218,6 +240,7 @@ class AdBidCommandWorker {
             default -> commands.transition(command.id(), fence, owner,
                     "UNKNOWN_REQUIRES_READBACK", null, null, null);
         }
+        return false;
     }
 
     /** Compensation observations never use original-action success transitions. */

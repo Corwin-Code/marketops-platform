@@ -558,4 +558,17 @@ class AdvertisingCaseCalculationServiceTest {
         var result=service.calculateFrom(withCritical(true,true,true));
         assertThat(result.cases().getFirst().decision().protectionTier()).isEqualTo(com.mimococo.marketops.advertisingefficiency.ProtectionTier.P0);
     }
+    @Test void absentPriorityPolicyPreservesP0AndExposesUnknownAuthority() {
+        var result=service.calculateFrom(withCritical(true,true,true));
+        assertThat(result.policies().priorityPolicyId()).isNull();
+        assertThat(result.policies().priorityPolicyVersion()).isNull();
+        var first=result.cases().getFirst();
+        assertThat(first.decision().protectionTier()).isEqualTo(com.mimococo.marketops.advertisingefficiency.ProtectionTier.P0);
+        assertThat(first.ranking().factors()).singleElement().satisfies(factor -> {
+            assertThat(factor.value()).isNull();
+            assertThat(factor.displayNote()).isEqualTo("PRIORITY_POLICY_UNRESOLVED:PROFILE");
+        });
+        assertThat(first.decision().blockerCodes()).doesNotContain("PRIORITY_POLICY_UNRESOLVED");
+    }
+
 }

@@ -1,0 +1,58 @@
+{
+  "kind": "RAW_TARGETED_ARCHIVE",
+  "sourceDirectory": "/tmp/slice3-r1-f014-r5",
+  "files": [
+    {
+      "original": "/tmp/slice3-r1-f014-r5/maven.log",
+      "archive": "maven.log.gz",
+      "originalSha256": "dda2eacfdcf200d07fae0e5cc08f355f21f570becb5eba12b387656e52545d71",
+      "archiveSha256": "4352146b0d7af325a20e523f2c0e04cc75998d38ba40bf83ef83fc9c33add7bc",
+      "originalBytes": 16854
+    },
+    {
+      "original": "/tmp/slice3-r1-f014-r5/receipt.json",
+      "archive": "receipt.json",
+      "originalSha256": "0b06404557779cd67890c5f608dda655506373f4b35fc585f54d19ea1a7bac40",
+      "archiveSha256": "0b06404557779cd67890c5f608dda655506373f4b35fc585f54d19ea1a7bac40",
+      "originalBytes": 5421
+    },
+    {
+      "original": "/tmp/slice3-r1-f014-r5/runtime-resources.json",
+      "archive": "runtime-resources.json",
+      "originalSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+      "archiveSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+      "originalBytes": 591
+    },
+    {
+      "original": "/tmp/slice3-r1-f014-r5/source-after.json",
+      "archive": "source-after.json",
+      "originalSha256": "9a04ddb0d8033dd21c278a0c19f9c7fd6b501bd8de1ff4033b174fd0be2723a0",
+      "archiveSha256": "9a04ddb0d8033dd21c278a0c19f9c7fd6b501bd8de1ff4033b174fd0be2723a0",
+      "originalBytes": 196141
+    },
+    {
+      "original": "/tmp/slice3-r1-f014-r5/source-before.json",
+      "archive": "source-before.json",
+      "originalSha256": "9a04ddb0d8033dd21c278a0c19f9c7fd6b501bd8de1ff4033b174fd0be2723a0",
+      "archiveSha256": "9a04ddb0d8033dd21c278a0c19f9c7fd6b501bd8de1ff4033b174fd0be2723a0",
+      "originalBytes": 196141
+    }
+  ],
+  "reports": [
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingAggregateExposureIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r5/reports/TEST-com.mimococo.marketops.AdvertisingAggregateExposureIT.xml",
+      "sha256": "d398d5a7e82858fe39d0eec45449f5da313109f0ba0abeb3d4885d1f326c32a0",
+      "bytes": 44276
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingManualWorkflowIT.xml",
+      "originalPath": "/tmp/slice3-r1-f014-r5/reports/TEST-com.mimococo.marketops.AdvertisingManualWorkflowIT.xml",
+      "sha256": "e7c89a95eaaefcbc6c15ef93d1e60eece1252811957b9bbe31b41d4af71cbd15",
+      "bytes": 45763
+    }
+  ],
+  "reportsTarGzSha256": "42b2a618fc5741d61e5679c86ef81539d25ae82c6f240b064391bd2f5426b8b6",
+  "transport": "Lossless compression; original receipt and all failure/success bytes are unmodified.",
+  "limits": "A targeted run on recorded uncommitted source is not a complete clean run, exact CI or Controller verdict."
+}

@@ -451,7 +451,7 @@ CREATE TABLE mart.ad_case_rank_factor (
             'EVIDENCE_MATURITY', 'CASE_AGE', 'CONFIDENCE_PENALTY', 'HUMAN_SLO_URGENCY',
             'BLOCKED_PROTECTION', 'BLAST_RADIUS', 'BLOCKED_WORK', 'DUAL_AXIS_GAP', 'DUAL_AXIS_PER_RUB_GAP', 'CRITICAL_SALES_HEADROOM')),
     CONSTRAINT ad_case_rank_factor_absent_ck
-        CHECK (factor_value IS NOT NULL OR display_note LIKE 'UNRESOLVED:%'),
+        CHECK (factor_value IS NOT NULL OR coalesce(display_note LIKE 'PRIORITY_POLICY_UNRESOLVED:%',false)),
     CONSTRAINT ad_case_rank_factor_note_ck
         CHECK (display_note IS NULL OR length(btrim(display_note)) BETWEEN 1 AND 256)
 );

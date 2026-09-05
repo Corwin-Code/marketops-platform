@@ -27,6 +27,13 @@ public class AdContainmentControlService {
         controls.attest(id,condition,MetadataFieldPolicy.requireText("evidenceReference",evidence),
                 proof("OPERATIONS_ENDORSEMENT".equals(condition)?"CONTAINMENT_ENDORSE":"CONTAINMENT_ATTEST",id,id));
     }
+    public UUID stopAuthorityVersion(UUID authority, UUID reviewOwner, String reason, String evidence) {
+        UUID id=UUID.randomUUID();
+        return controls.activateAuthorityVersion(id,authority,reviewOwner,
+                MetadataFieldPolicy.requireText("reason",reason),
+                MetadataFieldPolicy.requireText("evidenceReference",evidence),
+                proof("AUTHORITY_VERSION_STOP",authority,id));
+    }
     public boolean reenable(UUID id,UUID newBundle) {
         return controls.reenable(id,newBundle,proof("CONTAINMENT_REENABLE",id,newBundle));
     }

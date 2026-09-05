@@ -1,0 +1,70 @@
+{
+  "kind": "SECRET_PATTERN_AND_JWT_SHAPE_SCAN",
+  "generatedAt": "2026-09-05T09:45:20.058071+00:00",
+  "validatorSha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97",
+  "ruleCount": 8,
+  "files": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r9/README.md",
+      "sha256": "51275a78f51741eb88d1de3290d65294b435f9b072a9663d447841cf671bf9f9",
+      "bytes": 315,
+      "matchedRules": []
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r9/archive-index.json",
+      "sha256": "56cdba087f34d52016120ee25697091dae8b0fe407898adee5c12b4da14466d3",
+      "bytes": 3124,
+      "matchedRules": []
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r9/maven.log.gz!decompressed",
+      "sha256": "1c15bedb0285e16a069a3d293beeb04e675441a02003df25cd8fa36b251a7f9f",
+      "bytes": 42860,
+      "matchedRules": []
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r9/raw-reports.tar.gz!reports/TEST-com.mimococo.marketops.AdBidWriteGateAdversarialIT.xml",
+      "sha256": "cd2b5539ae7635ed0312c7b04e769a8aafd107f853b3519aa72383211d017621",
+      "bytes": 51793,
+      "matchedRules": []
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r9/raw-reports.tar.gz!reports/TEST-com.mimococo.marketops.AdvertisingReservationIT.xml",
+      "sha256": "4c3f9f6620aba0f145dbf7b4c8eab945494579288c8b87e504ad70565293cf88",
+      "bytes": 55343,
+      "matchedRules": []
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r9/raw-reports.tar.gz!reports/TEST-com.mimococo.marketops.AdvertisingTransmissionBoundaryIT.xml",
+      "sha256": "6889ec0d82e83fde4621086541793e8e2dd3ed5dfe362678973729091fbf6f80",
+      "bytes": 43474,
+      "matchedRules": []
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r9/receipt.json",
+      "sha256": "532ac4c20c586dccfb3d706ac91e6361ad5342a292489f46d3bef1a484410532",
+      "bytes": 6200,
+      "matchedRules": []
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r9/runtime-resources.json",
+      "sha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+      "bytes": 591,
+      "matchedRules": []
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r9/source-after.json",
+      "sha256": "6239c30b52d70c28af27d041ceb191e29a0eff49dc9a9eb74f5d65e5ac1a9a37",
+      "bytes": 196141,
+      "matchedRules": []
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r9/source-before.json",
+      "sha256": "6239c30b52d70c28af27d041ceb191e29a0eff49dc9a9eb74f5d65e5ac1a9a37",
+      "bytes": 196141,
+      "matchedRules": []
+    }
+  ],
+  "matches": 0,
+  "originalBytesModified": false
+}

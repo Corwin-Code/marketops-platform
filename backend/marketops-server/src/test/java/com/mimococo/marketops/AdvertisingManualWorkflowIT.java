@@ -92,6 +92,125 @@ class AdvertisingManualWorkflowIT {
         assertThat(seed.sql("SELECT count(*) FROM ops.ad_candidate_selection WHERE organization_id=:org").param("org",graph.id("organization")).query(Long.class).single()).isZero();
     }
 
+    @Test void manualStartCannotBorrowMissingUnresolvedWriteCapacity() throws Exception {
+        seed.sql("UPDATE core.ad_exposure_envelope SET max_unresolved_transmitted_writes=0 WHERE id=:id")
+                .param("id",graph.id("exposure")).update();
+        UUID packet=selected();decide(packet,"verifierUser",false);decide(packet,"ownerUser",true);
+        assertThatThrownBy(()->start(packet)).isInstanceOf(SQLException.class)
+                .hasMessageContaining("UNRESOLVED_TRANSMITTED_WRITES");
+        assertThat(packets.packet(packet).orElseThrow().executionStartedAt()).isNull();
+        assertThat(packets.packet(packet).orElseThrow().reservationId()).isNull();
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_action_reservation WHERE organization_id=:id AND state='ACTIVE'")
+                .param("id",graph.id("organization")).query(Integer.class).single()).isZero();
+    }
+
+    @Test void manualConfigurationUnknownConsumesTheSameUnresolvedAxisUntilIndependentProof() throws Exception {
+        UUID packet=selected();decide(packet,"verifierUser",false);decide(packet,"ownerUser",true);start(packet);
+        assertThat(manualUnresolvedExposure()).isEqualTo(1);
+        observation(packet,"executorUser","REPORT",null,null);
+        assertThat(manualUnresolvedExposure()).isEqualTo(1);
+        observation(packet,"verifierUser","INDEPENDENT","20",null);
+        assertThat(manualUnresolvedExposure()).isZero();
+        UUID reservation=packets.packet(packet).orElseThrow().reservationId();
+        assertThat(seed.sql("SELECT state FROM ops.ad_action_reservation WHERE id=:id").param("id",reservation)
+                .query(String.class).single()).isEqualTo("ACTIVE");
+        configuration("19",rawProvenance);
+        assertThat(manualUnresolvedExposure()).isEqualTo(1);
+    }
+
+    @Test void scopedStopRevokesIssuedManualPacketBeforeAnyExternalStart() throws Exception {
+        UUID packet=selected();decide(packet,"verifierUser",false);decide(packet,"ownerUser",true);
+        assertThat(packets.packet(packet).orElseThrow().state()).isEqualTo("MANUAL_PACKET_ISSUED");
+        UUID stop=stopManualStore();
+        var stopped=packets.packet(packet).orElseThrow();
+        assertThat(stopped.state()).isEqualTo("MANUAL_PACKET_REVOKED");
+        assertThat(stopped.executionStartedAt()).isNull();assertThat(stopped.reservationId()).isNull();
+        assertThat(seed.sql("SELECT revoked_reason FROM ops.ad_manual_execution_packet WHERE id=:id")
+                .param("id",packet).query(String.class).single()).isEqualTo("CONTAINMENT_ACTIVATED");
+        assertThatThrownBy(()->start(packet)).isInstanceOf(SQLException.class);
+        assertThatThrownBy(()->observation(packet,"executorUser","REPORT",null,null)).isInstanceOf(SQLException.class);
+        assertThat(seed.sql("SELECT state FROM ops.ad_containment WHERE id=:id").param("id",stop)
+                .query(String.class).single()).isEqualTo("ACTIVE");
+        assertNoApiCommand();
+    }
+
+    @Test void scopedStopMakesStartedManualWorkUncertainAndOnlyFactualVerificationCanContinue() throws Exception {
+        UUID packet=selected();decide(packet,"verifierUser",false);decide(packet,"ownerUser",true);start(packet);
+        observation(packet,"executorUser","REPORT",null,null);
+        UUID oldProof=observation(packet,"verifierUser","INDEPENDENT","20",null);
+        var before=packets.packet(packet).orElseThrow();
+        assertThat(before.configurationProven()).isTrue();UUID held=before.reservationId();
+        UUID stop=stopManualStore();
+        var stopped=packets.packet(packet).orElseThrow();
+        assertThat(stopped.state()).isEqualTo("MANUAL_EXECUTION_UNCERTAIN");
+        assertThat(stopped.currentProofId()).isNull();assertThat(stopped.configurationProven()).isFalse();
+        assertThat(stopped.executionStartedAt()).isEqualTo(before.executionStartedAt());
+        assertThat(stopped.reservationId()).isEqualTo(held);assertThat(stopped.verifications()).hasSize(2);
+        assertThat(seed.sql("SELECT state,configuration_resolved,unknown_or_mismatch_open,early_observation_complete FROM ops.ad_action_reservation WHERE id=:id")
+                .param("id",held).query().singleRow()).containsEntry("state","ACTIVE")
+                .containsEntry("configuration_resolved",false).containsEntry("unknown_or_mismatch_open",true)
+                .containsEntry("early_observation_complete",false);
+        assertThatThrownBy(()->start(packet)).isInstanceOf(SQLException.class);
+        observation(packet,"executorUser","REPORT",null,null);
+        UUID newProof=observation(packet,"verifierUser","INDEPENDENT","20",null);
+        var verified=packets.packet(packet).orElseThrow();
+        assertThat(newProof).isNotEqualTo(oldProof);assertThat(verified.currentProofId()).isEqualTo(newProof);
+        assertThat(verified.configurationProven()).isTrue();assertThat(verified.verifications()).hasSize(4);
+        assertThat(verified.reservationId()).isEqualTo(held);
+        assertThat(seed.sql("SELECT state,configuration_resolved,unknown_or_mismatch_open,early_observation_complete FROM ops.ad_action_reservation WHERE id=:id")
+                .param("id",held).query().singleRow()).containsEntry("state","ACTIVE")
+                .containsEntry("configuration_resolved",true).containsEntry("unknown_or_mismatch_open",false)
+                .containsEntry("early_observation_complete",false);
+        assertThat(seed.sql("SELECT state FROM ops.ad_containment WHERE id=:id").param("id",stop)
+                .query(String.class).single()).isEqualTo("ACTIVE");
+        assertThatThrownBy(()->start(packet)).isInstanceOf(SQLException.class);
+        assertNoApiCommand();
+    }
+
+    @Test void knownSharedPriceCommandBlocksManualEndorsementAfterSelection() throws Exception {
+        UUID packet=selected();
+        AdvertisingCrossDomainPriceSeed.seed(seed,graph,null);
+        assertThatThrownBy(()->decide(packet,"verifierUser",false)).isInstanceOf(SQLException.class)
+                .hasMessageContaining("manual approval scope, independence or authority denied");
+        assertThat(packets.packet(packet).orElseThrow().state()).isEqualTo("MANUAL_PACKET_DRAFT");
+        assertThat(packets.packet(packet).orElseThrow().reservationId()).isNull();
+        assertNoApiCommand();
+    }
+
+    @Test void knownSharedPriceCommandCommittedAfterManualApprovalBlocksActualStart() throws Exception {
+        UUID packet=selected();decide(packet,"verifierUser",false);decide(packet,"ownerUser",true);
+        AdvertisingCrossDomainPriceSeed.seed(seed,graph,null);
+        assertThatThrownBy(()->start(packet)).isInstanceOf(SQLException.class)
+                .hasMessageContaining("manual execution authority or live scope denied");
+        assertThat(packets.packet(packet).orElseThrow().executionStartedAt()).isNull();
+        assertThat(packets.packet(packet).orElseThrow().reservationId()).isNull();
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_action_reservation WHERE organization_id=:org AND state='ACTIVE'")
+                .param("org",graph.id("organization")).query(Integer.class).single()).isZero();
+        assertNoApiCommand();
+    }
+
+    private UUID stopManualStore() throws Exception {
+        role("verifierUser","OPS_LEAD");scope("verifierUser","ADVERTISING_POLICY_MANAGE");
+        UUID stop=UUID.randomUUID();
+        try(var connection=application.getConnection()) {
+            connection.setAutoCommit(false);
+            String proof=AdvertisingR1Fixture.proof(admin,connection,graph,graph.id("verifierUser"),
+                    "CONTAINMENT_STOP",graph.id("object"),stop);
+            query(connection,"SELECT ops.activate_ad_human_containment(?,?,'PLATFORM_STORE_CAPABILITY','KILL_SWITCH_ACTIVE','BUSINESS_HARM',?,'fictional safety stop','fixture://manual-stop',?)",
+                    stop,graph.id("object"),graph.id("verifierUser"),proof);connection.commit();
+        }
+        return stop;
+    }
+    private void assertNoApiCommand() {
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_bid_command WHERE organization_id=:org")
+                .param("org",graph.id("organization")).query(Integer.class).single()).isZero();
+    }
+
+    private int manualUnresolvedExposure() {
+        return seed.sql("SELECT (ops.ad_exposure_snapshot(:org,:store,'PROTECTION_DECREASE')#>>'{envelopes,0,axes,unresolvedTransmittedWrites,usage}')::integer")
+                .param("org",graph.id("organization")).param("store",graph.id("store")).query(Integer.class).single();
+    }
+
     @Test void officialProofMustBeCurrentSuccessfulRawFromTheExactAccountAndField() throws Exception {
         UUID packet=selected(); decide(packet,"verifierUser",false); decide(packet,"ownerUser",true); start(packet);
         UUID forged=configuration("20",graph.id("provenance"));

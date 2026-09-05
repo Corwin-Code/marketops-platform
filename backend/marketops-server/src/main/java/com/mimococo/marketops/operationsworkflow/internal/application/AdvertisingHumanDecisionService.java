@@ -158,6 +158,9 @@ public class AdvertisingHumanDecisionService {
         }
         var projection = advertising.bidProjection(proposal.id())
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.GUARDRAIL_BLOCKED));
+        if (!projection.actionBlockerCodes().isEmpty()) {
+            throw OperationRejectedException.of(ErrorCode.GUARDRAIL_BLOCKED);
+        }
         if ("ORDINARY_IMPACT".equals(projection.materialityRoute())) {
             requireRole(actor, BusinessRoleCode.OPS_LEAD);
             if (!actor.userId().equals(selected.endorser())) throw OperationRejectedException.of(ErrorCode.ACTION_NOT_PERMITTED);

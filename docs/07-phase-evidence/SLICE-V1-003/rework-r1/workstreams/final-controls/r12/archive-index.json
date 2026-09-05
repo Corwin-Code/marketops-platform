@@ -1,0 +1,85 @@
+{
+  "kind": "FINAL_CONTROL_PROOF_ATTEMPT_HISTORY",
+  "sourceDirectory": "/tmp/slice3-r1-final-controls-r12",
+  "files": [
+    {
+      "originalPath": "/tmp/slice3-r1-final-controls-r12/maven.log",
+      "archive": "maven.log.gz",
+      "originalBytes": 144727,
+      "originalSha256": "d2394003612fc3296d9abeb940f81a18a287e2da8b28a7d29521cac8966bec37",
+      "archiveSha256": "de8d88834ab223cf1a0ee6bf44fce6212302e46eba05f16e851e88da6cd71a13"
+    },
+    {
+      "originalPath": "/tmp/slice3-r1-final-controls-r12/receipt.json",
+      "archive": "receipt.json",
+      "originalBytes": 10200,
+      "originalSha256": "30cc235a64555e4b696c346c9bcbdf7d8ac26043507568fbd7d1ce18fb871484",
+      "archiveSha256": "30cc235a64555e4b696c346c9bcbdf7d8ac26043507568fbd7d1ce18fb871484"
+    },
+    {
+      "originalPath": "/tmp/slice3-r1-final-controls-r12/runtime-resources.json",
+      "archive": "runtime-resources.json",
+      "originalBytes": 591,
+      "originalSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+      "archiveSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a"
+    },
+    {
+      "originalPath": "/tmp/slice3-r1-final-controls-r12/source-after.json",
+      "archive": "source-after.json",
+      "originalBytes": 197148,
+      "originalSha256": "0a8265270f7e6d1192e89d6860eb8048f4574ae83d75a759698b01cebc259f21",
+      "archiveSha256": "0a8265270f7e6d1192e89d6860eb8048f4574ae83d75a759698b01cebc259f21"
+    },
+    {
+      "originalPath": "/tmp/slice3-r1-final-controls-r12/source-before.json",
+      "archive": "source-before.json",
+      "originalBytes": 197148,
+      "originalSha256": "0a8265270f7e6d1192e89d6860eb8048f4574ae83d75a759698b01cebc259f21",
+      "archiveSha256": "0a8265270f7e6d1192e89d6860eb8048f4574ae83d75a759698b01cebc259f21"
+    }
+  ],
+  "reports": [
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdBidWriteGateAdversarialIT.xml",
+      "sha256": "5f1f82dabbcbf067f60f83e0045120cb85594999d55bc50767577d17bd8da763",
+      "bytes": 40021
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingCommandSubstitutionIT.xml",
+      "sha256": "f040eb6ddbd87acd5af4e26f362066df4c91e0093b4ad31e9e7516df5236f37c",
+      "bytes": 51645
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingGateScopeIT.xml",
+      "sha256": "08ee86222971f95d8585a1d1f88ed33ef4d438e1ebc675f3dec66e39eef93f64",
+      "bytes": 59152
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingManualWorkflowIT.xml",
+      "sha256": "5e8ad09660abe40a59d0e81791052027307974a3a76adfb2048d053519733a49",
+      "bytes": 44043
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingMinimumExpiryIT.xml",
+      "sha256": "3eea0bbca89e6e9a2416c03aa3d92b00d98fea79caf54da30723685ac6a6c308",
+      "bytes": 53793
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingReservationIT.xml",
+      "sha256": "618dafd8f74103c62fb21a17a28bd709c6b695fefa0317abac820b5252cb585c",
+      "bytes": 57291
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingRetryProofIT.xml",
+      "sha256": "e64aacb149f5d9a33e613f4c622d9882a0f32743d56bc3706f220a48438d42f5",
+      "bytes": 107029
+    },
+    {
+      "entry": "reports/TEST-com.mimococo.marketops.AdvertisingTransmissionBoundaryIT.xml",
+      "sha256": "8b11ac8dc068b38d8f9c252b2f2c396608bdb303e93dffe3cd80ee0a72887da2",
+      "bytes": 41574
+    }
+  ],
+  "reportsTarGzSha256": "4912ed0baf2b8863d88ff6f85680ebd6242bec9c1d3e5c47ff6d715e1ef8c38b",
+  "limits": "Original failures remain failures. Current uncommitted-source targeted runs do not establish exact final full verify, CI or Controller closure."
+}

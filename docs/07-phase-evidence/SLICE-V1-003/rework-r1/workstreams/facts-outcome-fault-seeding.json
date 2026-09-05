@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "SYSTEMATIC_FAULT_SEEDING_MATRIX",
   "owner": "source_audit",
-  "generatedAt": "2026-09-05T05:14:12.708485+00:00",
+  "generatedAt": "2026-09-05T06:33:17.278965+00:00",
   "scope": [
     "S3-DR-002",
     "S3-DR-003",
@@ -10,7 +10,7 @@
     "S3-DR-005",
     "S3-DR-015"
   ],
-  "verificationStatus": "TARGETED_NAMED_ASSERTIONS_PASSED_FINAL_CLEAN_AND_CI_PENDING",
+  "verificationStatus": "NAMED_TARGETED_BOUNDARIES_OBSERVED_FINAL_CLEAN_SOURCE_CI_PENDING",
   "methodology": "Each row names an intentionally altered input/authority, the reached boundary and asserted response. Successful DB constraint/privilege refusal is labeled separately from actual calculator/Planner/Outcome execution. Failed development iterations are preserved in the traceability runs and are not counted as passing fault seeds. No coverage percentage substitutes for these assertions.",
   "baselineAndProviderLimit": "FrozenOutcome fault fixtures explicitly use synthetic pre-action golden baselines for isolation; separate source-r29 VerticalPathIT proves actual fact/Metric/Planner-derived baseline, real application worker and in-process fake Provider Raw/readback. All actual Provider connections remain absent and production_write_enabled=false.",
   "rows": [
@@ -1038,6 +1038,78 @@
       "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w3-targeted-r38/maven.log",
       "logSha256": "e236bd47dfc849d19963b54fef0687052ca578e859e9d844dc4aaab648ab192a",
       "proofLimit": "Named targeted assertions; new clean full verification and exact CI remain pending."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-053",
+      "seedCode": "SECOND_VARIANT_CPA_MISSING",
+      "findingIds": [
+        "S3-DR-003"
+      ],
+      "criterionIds": [
+        "S3-AC-032",
+        "S3-AC-033",
+        "S3-AC-040",
+        "S3-AC-041",
+        "S3-AC-090"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+        "method": "missingSecondVariantCpaCannotBorrowFirstVariantAuthorityThroughTheRealGatherer"
+      },
+      "seededFaultOrAdverseBoundary": "Expire only the second Variant CPA while all canonical facts/Metrics remain available.",
+      "expectedRefusalOrState": "Profit stays known; complete-object Allowable Spend/MaxCPC is unavailable; first Variant authority cannot substitute.",
+      "boundaryActuallyReached": "REAL_PG_ACTUAL_GATHER_AND_CPA_REPOSITORY",
+      "observed": "ACTUAL_TARGETED_R8_PASS: exact named assertions reached the declared boundary",
+      "run": "norm-f014-source-r8",
+      "proofLimit": "Complete r8 targeted238/238PASS on stable working source. Final clean committed-source/CI remains pending."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-054",
+      "seedCode": "SECOND_VARIANT_COST_MISSING",
+      "findingIds": [
+        "S3-DR-003"
+      ],
+      "criterionIds": [
+        "S3-AC-032",
+        "S3-AC-033",
+        "S3-AC-040",
+        "S3-AC-041",
+        "S3-AC-090"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingVerticalPathIT.java",
+        "method": "missingSecondVariantCostRemainsUnknownThroughTheActualMetricReader"
+      },
+      "seededFaultOrAdverseBoundary": "Omit only the second Variant cost authority before actual MetricEngine calculation.",
+      "expectedRefusalOrState": "Actual unit-cost Metric is unavailable and full-object economics cannot silently omit that line.",
+      "boundaryActuallyReached": "REAL_PG_CANONICAL_FACT_TO_METRIC_TO_GATHER",
+      "observed": "ACTUAL_TARGETED_R8_PASS: exact named assertions reached the declared boundary",
+      "run": "norm-f014-source-r8",
+      "proofLimit": "Complete r8 targeted238/238PASS on stable working source. Final clean committed-source/CI remains pending."
+    },
+    {
+      "id": "FACTS-OUTCOME-FAULT-055",
+      "seedCode": "MISSING_RANK_REASON_NULL_CHECK",
+      "findingIds": [
+        "S3-DR-005"
+      ],
+      "criterionIds": [
+        "S3-AC-056",
+        "S3-AC-057",
+        "S3-AC-058",
+        "S3-AC-059",
+        "S3-AC-060"
+      ],
+      "test": {
+        "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+        "method": "futureAffectedSetRemainsUnknownWithAGovernedRepairTask"
+      },
+      "seededFaultOrAdverseBoundary": "Through the application role INSERT a null numerical factor with a null reason.",
+      "expectedRefusalOrState": "SQLSTATE23514/ad_case_rank_factor_absent_ck refuses the row; actual unknown rank read model preserves explicit reason.",
+      "boundaryActuallyReached": "REAL_PG_APP_ROLE_SCHEMA_AND_READ_MODEL",
+      "observed": "ACTUAL_TARGETED_R8_PASS: exact named assertions reached the declared boundary",
+      "run": "norm-f014-source-r8",
+      "proofLimit": "Complete r8 targeted238/238PASS on stable working source. Final clean committed-source/CI remains pending."
     }
   ]
 }

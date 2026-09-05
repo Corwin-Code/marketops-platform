@@ -444,6 +444,8 @@ public class AdvertisingPolicyRepository {
                   JOIN platform.ad_semantic_profile profile
                     ON profile.id = object.semantic_profile_id
                  WHERE object.id = :objectId AND object.status = 'ACTIVE'
+                   AND profile.status = 'ACTIVE'
+                   AND (profile.effective_to IS NULL OR profile.effective_to > statement_timestamp())
                 """)
                 .param("objectId", adNativeObjectId)
                 .query((ResultSet rs, int index) -> new ObjectBidContext(

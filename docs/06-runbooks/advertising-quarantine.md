@@ -14,6 +14,8 @@ Use an available console Stop action and provide evidence plus an eligible revie
 
 Affected-set quarantine tests intersecting canonical Product variants, including a later generation with a different digest. Authority-version quarantine follows the referenced Bundle components. A late correction retains the old observation and task age; it appends review responsibility and blocks overlapping execution even if another current reservation prevents reacquisition.
 
+A shared authority defect uses `POST /api/v1/console/advertising/containments/authority-versions/{authorityId}/stop`, with the review owner, reason and evidence reference. The caller must have an active Owner or Operations Lead role and an exact organization-wide `ADVERTISING_POLICY_MANAGE` grant; the named review owner needs the organization-wide Operations Lead grant. A Store-only grant cannot stop all consumers across the organization. The reference must actually be consumed inside the caller's organization. Scope follows the exact object/Bundle or Manual authority references, including current and frozen purpose-freshness versions; another Profile/Bundle in the same Store is not automatically a consumer.
+
 Stops are checked before leasing and at transmission. They cannot retract a request already sent, so pending/unknown/native readback work must still converge. Cached booleans, passage of time and reverting a policy row cannot revive invalidated actions.
 
 `CREDENTIAL_OR_SECURITY`, `PROVIDER_OR_READBACK_DEFECT` and `EXECUTION_INTEGRITY` require the corresponding technical/security attestation before reenablement. Choose the actual cause; use [reenablement](advertising-reenablement.md) for the independent review and fresh Bundle.

@@ -39,6 +39,14 @@ The reviewed starting Head is `a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb`.
 | [Unknown-set boundary review](workstreams/unknown-affected-set-review.json) | Bounded independent source review verifies explicit unknown state, advertising Task scope, historical disclosure and strict controlled-write eligibility; review is distinct from runtime evidence. |
 | [Shared Task read regression](workstreams/post-w3-root-repairs.md) | Independent diagnostic read grants, revocation reason and no journal append on refusal are exercised by all seven passing journal tests in R37. |
 | [Unknown-set UI and disclosure](workstreams/post-w3-ui/receipt.json) | All 19 relevant frontend tests pass; unknown impact is explicit. The actual historical unknown Case HTTP disclosure test joins the seven prior passing disclosure tests in R37. |
+| [Post-W4 final control runs](workstreams/final-controls/index.json) | R21 executes 289 actual cases: all nine actual worker, twelve authority-version, twenty-five Gate E and twenty-one cross-domain cases pass; the containing run has one missing-Bundle diagnostic failure. Its one-line correction passes all 83 related cases in R22. R15 separately proves 17 real minimum-expiry boundaries. Original failures, exact source deltas, manifests and raw reports remain preserved. |
+| [Post-W4 control repairs](workstreams/post-w4-control-rework.md) | Causal changes, exact R15–R22 measured boundaries and remaining full-source requirements; selected tests do not substitute for final clean regression or CI. |
+| [Six-axis frontend quality](workstreams/post-w4-ui/exposure-quality-r3/receipt.json) | All 308 frontend tests and complete format/lint/type/build/coverage/bundle/SBOM checks pass at an exact stable source fingerprint. The legacy fixture now matches the six-axis contract; its four real HTTP refusal tests remain byte-identical. Browser runtime verification is still pending. |
+| [W4 complete clean verification](workstreams/full-clean-w4/run-receipt.json) | Clean commit 4e101ca4: all 2,264 actual cases pass (1,546 unit, 718 integration), zero failures/errors/skips, JaCoCo passes, representative capacity 810 seconds and all three advertising capacity cases 356.931 seconds. Full run 1,724.270 seconds; 175 original XML reports, resources, actual PostgreSQL image identities and embedded JAR identity are preserved. |
+| [W4 committed identity](workstreams/slice3-r1-w4-identity.json) | Exact measured clean Head/tree, unchanged authorities/history and all 65 migration identities. Later F014/F005 runtime and F003/F021 test supplements require a new complete source measurement. |
+| [W4 named backend results](workstreams/slice3-r1-named-junit-w4.json) | 236 Java test references match actual passing cases in the archived W4 reports. Python and frontend/browser references remain separately measured; this index does not automatically close criteria or findings. |
+| [W4 evidence scan](workstreams/full-clean-w4-publishability-scan.json) | All 2,078 text files/archive members, 43,902,245 bytes, scanned against repository secret patterns and JWT shapes; zero matches. |
+| [Pre-W5 named governance](workstreams/pre-w5-governance/receipt.json) | Complete governance passes all 410 actual methods, zero failures/errors/skips, on the frozen post-repair worktree; source boundary remains stable. This is preparatory verification for the next clean checkpoint. |
 | [Pre-W4 named governance](workstreams/pre-w4-governance/receipt.json) | Complete governance passes 410 methods with no failures, errors or skips, on the explicitly frozen pre-W4 worktree. Named Python references are indexed to actual results. |
 | [Named governance proof review](workstreams/f001-f022-governance-proof-review.json) | F001/F022 map to actual named positive and negative assertions with their limits; static tests cannot substitute for real Git, PR or CI observations. |
 | [W1 committed identity](workstreams/slice3-r1-w1-identity.json) | Clean implementation checkpoint `60638b1fc1a227b50f4b3ede1ba0bb983407bfdc`, protected authorities/history and all 65 migration identities. |
@@ -51,8 +59,11 @@ The identity collector in `scripts/validation/collect_slice3_rework_identity.py`
 recorded the clean W1 measured commit/tree, protected history, migration hashes
 and runtime/build/test/CI input digest. Subsequent test-fixture repairs and
 evidence additions require their own checkpoint and final verification binding.
-Full clean verification, isolated browser/capacity/migration artifacts, final
-append-only publication, one Draft PR and exact current-Head CI remain pending.
+W4 full clean verification passes. Subsequent bounded facts, priority, expiry,
+retry, actor-revocation, exposure, isolation and Gate scope repairs and their
+proof supplements require a new clean full run. Final isolated browser,
+packaged migration, append-only publication, one Draft PR and exact latest-Head
+CI remain pending.
 
 `scripts/validation/assemble_slice3_rework_evidence.py` derives the central 200-AC
 index from the six named workstream shards. It checks exact accepted text and

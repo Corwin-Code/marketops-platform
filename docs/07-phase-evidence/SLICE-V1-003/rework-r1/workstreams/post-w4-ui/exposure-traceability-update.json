@@ -1,0 +1,11 @@
+{
+  "draft": "/tmp/slice3-ui-ac-adjudication-final-draft.json",
+  "draftSha256": "4123a79247826df83f93d48c01ab98344df52fd20c2f69fbe6d02a6a0f274b63",
+  "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
+  "shardSha256": "ac4e694f05b4072832dfdca2759f56af2625f6c0ed675814c6c1595db98d1938",
+  "criterionCount": 81,
+  "acceptedExactPreserved": true,
+  "missingFrontendNamedExecutionReferences": [],
+  "supportingRun": "post-w4-exposure-frontend-quality-r2",
+  "finalStatuses": "PENDING_FINAL_COMMITTED_FULL_BROWSER_EXACT_CI"
+}

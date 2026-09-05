@@ -52,7 +52,7 @@ public record AdRankFactor(
 
     public AdRankFactor {
         Objects.requireNonNull(code, "code");
-        if (value == null && (displayNote == null || !displayNote.startsWith("UNRESOLVED:"))) {
+        if (value == null && (displayNote == null || !displayNote.startsWith("PRIORITY_POLICY_UNRESOLVED:"))) {
             throw new IllegalArgumentException("an absent rank input must explain its unresolved state");
         }
         Objects.requireNonNull(weight, "weight");

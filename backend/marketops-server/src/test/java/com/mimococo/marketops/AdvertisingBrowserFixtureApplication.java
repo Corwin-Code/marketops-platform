@@ -119,6 +119,15 @@ public final class AdvertisingBrowserFixtureApplication {
                         history.id("caseId"),history.id("calculationRun"),"MARKETPLACE_OPERATOR");
                 scenarios.put(historyName,new Scenario(history,historyTask,null));
             }
+            var paginationOriginal=AdvertisingR1Fixture.seedBrowser(migration,UUID.randomUUID());
+            var paginationIds=new java.util.HashMap<>(paginationOriginal.ids());paginationIds.put("provider",graph.id("provider"));
+            var pagination=new AdvertisingR1Fixture.Graph(Map.copyOf(paginationIds),paginationOriginal.platform());
+            configurePaginationUsers(jdbc,users,pagination);
+            configureManualCoverage(jdbc,pagination);
+            UUID paginationTask=context.getBean(AdvertisingResponsibilityIntake.class).ensureResponsibility(
+                    pagination.id("caseId"),pagination.id("calculationRun"),"MARKETPLACE_OPERATOR");
+            var paginationCases=AdvertisingBrowserPaginationSeed.seed(context,jdbc,pagination);
+            scenarios.put("PAGINATION",new Scenario(pagination,paginationTask,null));
             users.grantScope("synthetic-ad-browser",graph.id("verifierUser"),ActionScopeCode.ADVERTISING_POLICY_MANAGE,
                     ResourceScopeType.ORGANIZATION,graph.id("organization"),null);
             var mapper=context.getBean(ObjectMapper.class);
@@ -141,6 +150,9 @@ public final class AdvertisingBrowserFixtureApplication {
                     data.put("commandId",selected.ids().get("historyCommand"));
                     data.put("platform",selected.platform());data.put("productionWriteEnabled",false);
                     data.put("queueCases",scenario.graph().id("organization").equals(graph.id("organization"))?queueCases:Map.of());
+                    if(selected.id("organization").equals(pagination.id("organization"))) {
+                        data.put("pagination",paginationCases);data.put("foreignCaseId",graph.id("caseId"));
+                    }
                     data.put("manualPolicyId",scenario.manualPolicy());data.put("scenario",query.getOrDefault("scenario","API"));
                     data.put("semanticVerificationState",jdbc.sql("SELECT verification_state FROM platform.ad_semantic_profile WHERE id=:id")
                             .param("id",selected.id("profile")).query(String.class).single());
@@ -178,6 +190,20 @@ public final class AdvertisingBrowserFixtureApplication {
                     :name.equals("verifierUser")?List.of(ActionScopeCode.ADVERTISING_MANUAL_ENDORSE,ActionScopeCode.ADVERTISING_MANUAL_VERIFY,ActionScopeCode.ADVERTISING_DECISION_EVIDENCE_VIEW)
                     :List.of(ActionScopeCode.ADVERTISING_MANUAL_APPROVE,ActionScopeCode.ADVERTISING_POLICY_MANAGE,ActionScopeCode.ADVERTISING_DECISION_EVIDENCE_VIEW);
             for(var action:manualActions) users.grantScope("synthetic-manual-browser",user,action,ResourceScopeType.ORGANIZATION,graph.id("organization"),null);
+        }
+    }
+
+    private static void configurePaginationUsers(JdbcClient jdbc,UserAdministrationService users,AdvertisingR1Fixture.Graph graph) {
+        for(String name:List.of("executorUser","verifierUser","ownerUser")) {
+            UUID user=graph.id(name);
+            jdbc.sql("UPDATE iam.user_account SET identity_provider_id=:provider,external_subject=:subject,credentials_valid_from=now()-interval '1 day' WHERE id=:id")
+                    .param("provider",graph.id("provider")).param("subject","synthetic-pagination-"+graph.id("organization")+"-"+name).param("id",user).update();
+            if(name.equals("executorUser")) users.assignRole("synthetic-pagination-browser",user,BusinessRoleCode.MARKETPLACE_OPERATOR,null);
+            // Deliberately no organization/account grant: SQL must filter the hidden Store before LIMIT/OFFSET.
+            for(var action:List.of(ActionScopeCode.ADVERTISING_VIEW,ActionScopeCode.ADVERTISING_TASK_ACT)) {
+                users.grantScope("synthetic-pagination-browser",user,action,ResourceScopeType.STORE,graph.id("store"),null);
+                users.grantScope("synthetic-pagination-browser",user,action,ResourceScopeType.PRODUCT_VARIANT,graph.id("productVariant"),null);
+            }
         }
     }
 

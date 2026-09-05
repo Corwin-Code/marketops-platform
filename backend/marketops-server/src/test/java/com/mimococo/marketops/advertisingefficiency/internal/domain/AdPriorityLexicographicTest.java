@@ -37,7 +37,7 @@ class AdPriorityLexicographicTest {
         var missing = protection(null, "1", "1", "-10");
         var zero = protection("0", "1", "1", "-10");
         assertThat(missing.factors().get(1).value()).isNull();
-        assertThat(missing.factors().get(1).displayNote()).startsWith("UNRESOLVED:");
+        assertThat(missing.factors().get(1).displayNote()).startsWith("PRIORITY_POLICY_UNRESOLVED:");
         assertThat(AdPriorityPolicy.compare(zero, "z", missing, "a")).isNegative();
     }
     @Test void stableIdentityBreaksExactTies() {
@@ -69,6 +69,50 @@ class AdPriorityLexicographicTest {
         }
         assertThat(ranked.get("absolute").factors()).extracting(AdRankFactor::code)
                 .containsSubsequence(AdRankFactor.Code.RECOVERABLE_CONTRIBUTION_PROFIT,AdRankFactor.Code.DUAL_AXIS_GAP,AdRankFactor.Code.DUAL_AXIS_PER_RUB_GAP,AdRankFactor.Code.OFFICIAL_SPEND_EXPOSURE);
+    }
+
+    private static AdPriorityPolicy.Ranking repair(BigDecimal... tuple) {
+        return AdPriorityPolicy.rank(new AdPriorityPolicy.Inputs(AdvertisingLane.DATA_REPAIR,null,
+                amount(null),tuple[2]==null?amount(null):amount(tuple[2].toPlainString()),amount(null),amount(null),
+                null,tuple[5],AdConfidence.HIGH,tuple[4],tuple[0],tuple[1],tuple[3],null,null),WEIGHTS);
+    }
+    @Test void dataRepairEveryEarlierFactorVetoesAllLaterFactors() {
+        var codes=java.util.List.of(AdRankFactor.Code.BLOCKED_PROTECTION,AdRankFactor.Code.BLAST_RADIUS,
+                AdRankFactor.Code.OFFICIAL_SPEND_EXPOSURE,AdRankFactor.Code.BLOCKED_WORK,
+                AdRankFactor.Code.HUMAN_SLO_URGENCY,AdRankFactor.Code.CASE_AGE);
+        for(int decisive=0;decisive<codes.size();decisive++) {
+            BigDecimal[] preferred=new BigDecimal[codes.size()],other=new BigDecimal[codes.size()];
+            for(int index=0;index<codes.size();index++) {
+                preferred[index]=index<decisive?BigDecimal.TEN:index==decisive?BigDecimal.ONE:BigDecimal.ZERO;
+                other[index]=index<decisive?BigDecimal.TEN:index==decisive?BigDecimal.ZERO:new BigDecimal("999999999999");
+            }
+            var first=repair(preferred);var second=repair(other);
+            assertThat(first.factors()).extracting(AdRankFactor::code).containsExactlyElementsOf(codes);
+            assertThat(AdPriorityPolicy.compare(first,"z",second,"a")).as("decisive factor %s",codes.get(decisive)).isNegative();
+            assertThat(AdPriorityPolicy.compare(second,"a",first,"z")).isPositive();
+        }
+    }
+    @Test void dataRepairUnknownFactorsRemainUnknownAndNeverBecomeConfirmedZero() {
+        for(int missingIndex=0;missingIndex<6;missingIndex++) {
+            BigDecimal[] known=new BigDecimal[6],unknown=new BigDecimal[6];
+            java.util.Arrays.fill(known,BigDecimal.ZERO);java.util.Arrays.fill(unknown,BigDecimal.ZERO);
+            unknown[missingIndex]=null;
+            var rank=repair(unknown);
+            assertThat(rank.factors().get(missingIndex).value()).isNull();
+            assertThat(rank.factors().get(missingIndex).displayNote()).startsWith("PRIORITY_POLICY_UNRESOLVED:");
+            assertThat(AdPriorityPolicy.compare(repair(known),"z",rank,"a")).isNegative();
+        }
+    }
+    @Test void watchUsesStableIdentityWithoutInventingCommercialFactors() {
+        var high=AdPriorityPolicy.rank(new AdPriorityPolicy.Inputs(AdvertisingLane.WATCH,null,
+                amount("999999999999"),amount("999999999999"),amount("999999999999"),amount("999999999999"),
+                BigDecimal.ONE,new BigDecimal("999999999999"),AdConfidence.HIGH),WEIGHTS);
+        var unknown=AdPriorityPolicy.rank(new AdPriorityPolicy.Inputs(AdvertisingLane.WATCH,null,
+                amount(null),amount(null),amount(null),amount(null),null,null,AdConfidence.UNUSABLE),WEIGHTS);
+        assertThat(high.factors()).isEmpty();assertThat(unknown.factors()).isEmpty();
+        assertThat(AdPriorityPolicy.compare(unknown,"a",high,"z")).isNegative();
+        assertThat(AdPriorityPolicy.compare(high,"z",unknown,"a")).isPositive();
+        assertThat(AdPriorityPolicy.compare(high,"same",unknown,"same")).isZero();
     }
 
 }

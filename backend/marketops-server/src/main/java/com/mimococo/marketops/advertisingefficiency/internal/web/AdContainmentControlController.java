@@ -29,6 +29,12 @@ class AdContainmentControlController {
         controls.attest(containmentId,request.condition(),request.evidenceReference());
         return Map.of("state","REENABLEMENT_REVIEW");
     }
+    @PostMapping("/authority-versions/{authorityId}/stop")
+    Map<String,UUID> stopAuthority(AuthenticatedActor actor,@PathVariable UUID authorityId,
+            @Valid @RequestBody AuthorityVersionStop request) {
+        return Map.of("containmentId",controls.stopAuthorityVersion(authorityId,request.reviewOwnerUserId(),
+                request.reason(),request.evidenceReference()));
+    }
     @PostMapping("/{containmentId}/reenablement")
     Map<String,Boolean> reenable(AuthenticatedActor actor,@PathVariable UUID containmentId,@Valid @RequestBody Recovery request) {
         return Map.of("reenabled",controls.reenable(containmentId,request.newBundleId()));
@@ -37,4 +43,6 @@ class AdContainmentControlController {
                 @NotNull UUID reviewOwnerUserId,@NotBlank String reason,@NotBlank String evidenceReference) { }
     record Attestation(@NotBlank String condition,@NotBlank String evidenceReference) { }
     record Recovery(@NotNull UUID newBundleId) { }
+    record AuthorityVersionStop(@NotNull UUID reviewOwnerUserId,@NotBlank String reason,
+                                @NotBlank String evidenceReference) { }
 }

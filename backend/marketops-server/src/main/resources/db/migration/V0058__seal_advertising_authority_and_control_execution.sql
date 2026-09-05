@@ -1,5 +1,11 @@
 -- R1: immutable authorization, one-use authenticated invocation, exact gate scope,
 -- append-only invalidation and six-axis reservation admission. No Gate is activated.
+-- A profile may have an explicitly published finite authority period. Null
+-- retains the existing status-governed period; it is never a fabricated expiry.
+ALTER TABLE platform.ad_semantic_profile ADD COLUMN effective_to timestamptz,
+ ADD CONSTRAINT ad_semantic_profile_effective_period_ck
+ CHECK(effective_to IS NULL OR effective_to>created_at);
+
 CREATE TABLE iam.ad_invocation_grant (
     proof_hash text PRIMARY KEY CHECK (proof_hash ~ '^[0-9a-f]{64}$'),
     actor_user_id uuid NOT NULL REFERENCES iam.user_account(id),
@@ -310,6 +316,8 @@ BEGIN
  AND frozen.prepared_at<=a.decided_at AND frozen.valid_until>a.decided_at;
  IF NOT FOUND OR ops.ad_outcome_baseline_is_canonical(p_baseline,a.decided_at) IS NOT TRUE THEN
   RAISE EXCEPTION 'exact canonical approved frozen Outcome baseline required' USING ERRCODE='MO099'; END IF;
+ IF cardinality(ops.ad_action_isolation_failures(baseline.affected_set_id,baseline.id,clock_timestamp()))>0 THEN
+  RAISE EXCEPTION 'known cross-domain intervention prevents isolated final approval' USING ERRCODE='MO099'; END IF;
  materiality:=ops.ad_materiality_assessment(b.id,candidate.id)->>'route';
  IF materiality IS NULL OR materiality NOT IN('ORDINARY_IMPACT','MATERIAL_IMPACT') THEN
   RAISE EXCEPTION 'all current materiality axes must resolve before final approval' USING ERRCODE='MO092'; END IF;
@@ -345,14 +353,17 @@ BEGIN
  FROM jsonb_each(snapshot) WHERE jsonb_typeof(value)='object';
  required_kinds:=ops.ad_required_action_evidence_kinds(candidate.candidate_basis,candidate.cause_code);
  IF required_kinds IS NULL THEN RAISE EXCEPTION 'unresolved cause-specific action evidence policy' USING ERRCODE='MO092'; END IF;
- SELECT min(evidence.expires_at) INTO evidence_end
+ SELECT min(least(evidence.expires_at,freshness.effective_to)) INTO evidence_end
  FROM mart.ad_case_purpose_evidence evidence
+ JOIN core.ad_freshness_profile freshness ON freshness.id=evidence.freshness_profile_id
  WHERE evidence.case_id=candidate.case_id AND evidence.calculation_id=kase.calculation_id
  AND evidence.evidence_kind=ANY(required_kinds)
  AND evidence.decision_purpose=CASE WHEN candidate.direction='OPTIMIZATION_INCREASE'
      THEN 'OPTIMIZATION_BID_WRITE' ELSE 'PROTECTION_BID_WRITE' END
  HAVING count(DISTINCT evidence.evidence_kind)=cardinality(required_kinds) AND bool_and(evidence.eligible)
-    AND count(evidence.expires_at)=count(*);
+    AND count(evidence.expires_at)=count(*)
+    AND bool_and(freshness.status='ACTIVE' AND freshness.effective_from<=a.decided_at
+      AND (freshness.effective_to IS NULL OR freshness.effective_to>clock_timestamp()));
  snapshot:=snapshot || jsonb_build_object('decisionEvidence',
    (SELECT jsonb_agg(to_jsonb(evidence) ORDER BY evidence.evidence_kind)
     FROM mart.ad_case_purpose_evidence evidence WHERE evidence.case_id=candidate.case_id
@@ -369,10 +380,10 @@ BEGIN
     AND cm.purpose_code='ADS_WRITE' AND cm.status='ACTIVE'
     AND cm.effective_from<=a.decided_at AND (cm.scope_mode='ACCOUNT' OR EXISTS(
       SELECT 1 FROM platform.credential_store_scope cs WHERE cs.credential_id=cm.id AND cs.store_id=r.store_id))),
-   (SELECT min(sg.effective_to) FROM iam.user_scope_grant sg WHERE sg.user_id IN(g.actor_user_id,e.endorser_user_id)
-     AND sg.action_code IN('AD_BID_CHANGE_APPROVE','AD_BID_CHANGE_ENDORSE') AND sg.status='ACTIVE'),
-   (SELECT min(role.effective_to) FROM iam.user_role_assignment role WHERE role.user_id IN(g.actor_user_id,e.endorser_user_id)
-     AND role.role_code IN('OWNER','OPS_LEAD') AND role.status='ACTIVE'));
+   (SELECT min(sg.effective_to) FROM iam.user_scope_grant sg WHERE sg.user_id IN(g.actor_user_id,e.endorser_user_id,s.maker_user_id)
+     AND sg.action_code IN('AD_BID_CHANGE_APPROVE','AD_BID_CHANGE_ENDORSE','ADVERTISING_TASK_ACT') AND sg.status='ACTIVE'),
+   (SELECT min(role.effective_to) FROM iam.user_role_assignment role WHERE role.user_id IN(g.actor_user_id,e.endorser_user_id,s.maker_user_id)
+     AND role.role_code IN('OWNER','OPS_LEAD','MARKETPLACE_OPERATOR') AND role.status='ACTIVE'));
  bounds:=jsonb_build_object('finalApprovedAt',a.decided_at,'leaseSeconds',least(lease.lease_seconds,lease.material_lease_seconds),
    'recommendation',r.valid_until,'ownerSelected',a.scope_expires_at,'policyPeriod',policy_end,
    'outcomeBaseline',baseline.valid_until,'requiredEvidenceKinds',to_jsonb(required_kinds),'requiredEvidence',evidence_end,'credentialValidity',credential_end,'gateWindow',snapshot#>'{gate,valid_until}');
@@ -402,6 +413,9 @@ BEGIN
   RAISE EXCEPTION 'current immutable approval authority required' USING ERRCODE='MO092'; END IF;
  IF ops.ad_outcome_baseline_is_canonical(a.outcome_baseline_id,clock_timestamp()) IS NOT TRUE THEN
   RAISE EXCEPTION 'canonical frozen Outcome authority required at command creation' USING ERRCODE='MO099'; END IF;
+ IF cardinality(ops.ad_action_isolation_failures(
+  (SELECT affected_set_id FROM ops.ad_outcome_baseline WHERE id=a.outcome_baseline_id),a.outcome_baseline_id,clock_timestamp()))>0 THEN
+  RAISE EXCEPTION 'known cross-domain intervention prevents isolated command creation' USING ERRCODE='MO099'; END IF;
  IF ops.ad_materiality_assessment(a.bundle_id,a.candidate_id)->>'route' IS DISTINCT FROM a.materiality_route THEN
   RAISE EXCEPTION 'sealed materiality route no longer matches current independent axes' USING ERRCODE='MO092'; END IF;
  IF EXISTS(SELECT 1 FROM ops.ad_accepted_exception exception
@@ -443,8 +457,8 @@ RETURNS jsonb LANGUAGE plpgsql STABLE
 SET search_path=pg_catalog,ops,core,ledger,pg_temp AS $$
 DECLARE e core.ad_exposure_envelope%ROWTYPE; reasons text[]:='{}'; all_reasons text[]:='{}'; found_envelope boolean:=false;
  envelopes jsonb:='[]';
- active_count integer; unresolved integer; cumulative numeric; associated numeric;
- sales_total numeric; affected_sales numeric; variants uuid[]; stores uuid[]; objects uuid[];
+ active_count integer; unresolved integer; cumulative numeric; associated numeric; associated_boundary_reports integer;
+ sales_total numeric; affected_sales numeric; sales_known boolean; variants uuid[]; stores uuid[]; objects uuid[];
 BEGIN
  FOR e IN SELECT env.* FROM core.ad_exposure_envelope env
  JOIN core.store subject_store ON subject_store.id=p_store
@@ -454,7 +468,7 @@ BEGIN
  AND (env.scope_kind='ORGANIZATION' OR env.scope_kind='PLATFORM' AND env.platform_code=acc.platform_code
       OR env.scope_kind='STORE' AND env.store_ref_id=p_store)
  LOOP
-  found_envelope:=true; reasons:='{}'; associated:=NULL; sales_total:=NULL; affected_sales:=NULL;
+  found_envelope:=true; reasons:='{}'; associated:=NULL; associated_boundary_reports:=NULL; sales_total:=NULL; affected_sales:=NULL;
   SELECT array_agg(st.id) INTO stores FROM core.store st
    JOIN core.marketplace_account account ON account.id=st.marketplace_account_id
    WHERE st.organization_id=p_org AND (e.scope_kind='ORGANIZATION'
@@ -472,7 +486,10 @@ BEGIN
    WHERE r.organization_id=p_org AND r.store_id=ANY(stores) AND r.state='ACTIVE'
    AND (r.unknown_or_mismatch_open OR EXISTS(SELECT 1 FROM ops.ad_bid_command c
      WHERE c.reservation_id=r.id AND c.state IN ('EXECUTING','PLATFORM_PENDING','READBACK_PENDING',
-       'UNKNOWN_REQUIRES_READBACK','READBACK_MISMATCH','LATER_CHANGE_OR_MISMATCH_INVESTIGATION','MANUAL_RESOLUTION','COMPENSATION_PENDING')));
+       'UNKNOWN_REQUIRES_READBACK','READBACK_MISMATCH','LATER_CHANGE_OR_MISMATCH_INVESTIGATION','MANUAL_RESOLUTION','COMPENSATION_PENDING'))
+    OR EXISTS(SELECT 1 FROM ops.ad_manual_execution_packet packet WHERE packet.id=r.intervention_reference_id
+     AND r.intervention_kind='CONFIRMED_MANUAL_PACKET' AND packet.state IN('MANUAL_PACKET_ISSUED',
+      'MANUAL_EXECUTION_IN_PROGRESS','ACTION_REPORTED_CONFIGURATION_UNVERIFIED','MANUAL_EXECUTION_UNCERTAIN')));
   IF unresolved>e.max_unresolved_transmitted_writes THEN reasons:=array_append(reasons,'UNRESOLVED_TRANSMITTED_WRITES'); END IF;
   IF EXISTS(SELECT 1 FROM ops.ad_action_reservation r JOIN ops.ad_bid_candidate c ON c.id=r.intervention_reference_id
     WHERE r.organization_id=p_org AND r.store_id=ANY(stores)
@@ -503,56 +520,157 @@ BEGIN
   IF cumulative>e.max_cumulative_bid_change_amount THEN reasons:=array_append(reasons,'CUMULATIVE_BID_CHANGE'); END IF;
   IF e.retained_window_days IS NULL OR e.measurement_window_hours IS NULL THEN
    reasons:=array_append(reasons,'EXPOSURE_MEASUREMENT_POLICY_ABSENT'); END IF;
-  -- Official object facts and retained sales are counted from the current
-  -- supersession leaves, once per native row, never from duplicated case rows.
+  -- Official spend uses complete intersecting accepted reports once per native
+  -- row. A report crossing the left measurement boundary contributes its whole
+  -- amount conservatively: no prorating or subtraction invents a smaller spend.
+  -- A period reaching into the future cannot prove a current official amount.
   IF EXISTS(SELECT 1 FROM ledger.ad_object_fact f WHERE f.ad_native_object_id=ANY(objects)
+     AND f.recorded_at<=statement_timestamp() AND f.source_time<=statement_timestamp()
+     AND f.period_start<statement_timestamp()
      AND f.period_end>statement_timestamp()-make_interval(hours=>e.measurement_window_hours)
-     AND NOT EXISTS(SELECT 1 FROM ledger.ad_object_fact n WHERE n.supersedes_fact_id=f.id)
-     AND (f.spend_amount IS NULL OR f.currency_code<>e.currency_code OR NOT f.report_window_complete OR f.correction_window_open))
+     AND NOT EXISTS(SELECT 1 FROM ledger.ad_object_fact n WHERE n.supersedes_fact_id=f.id AND n.recorded_at<=statement_timestamp())
+     AND (f.spend_amount IS NULL OR f.currency_code<>e.currency_code OR NOT f.report_window_complete OR f.correction_window_open
+      OR f.period_end>statement_timestamp()))
    OR EXISTS(SELECT 1 FROM ledger.ad_object_fact first JOIN ledger.ad_object_fact second
      ON second.ad_native_object_id=first.ad_native_object_id AND second.id>first.id
      AND tstzrange(first.period_start,first.period_end,'[)') && tstzrange(second.period_start,second.period_end,'[)')
      WHERE first.ad_native_object_id=ANY(objects)
+     AND first.recorded_at<=statement_timestamp() AND first.source_time<=statement_timestamp()
+     AND second.recorded_at<=statement_timestamp() AND second.source_time<=statement_timestamp()
+     AND first.period_start<statement_timestamp() AND second.period_start<statement_timestamp()
      AND first.period_end>statement_timestamp()-make_interval(hours=>e.measurement_window_hours)
      AND second.period_end>statement_timestamp()-make_interval(hours=>e.measurement_window_hours)
-     AND NOT EXISTS(SELECT 1 FROM ledger.ad_object_fact n WHERE n.supersedes_fact_id IN(first.id,second.id)))
+     AND NOT EXISTS(SELECT 1 FROM ledger.ad_object_fact n WHERE n.supersedes_fact_id IN(first.id,second.id) AND n.recorded_at<=statement_timestamp()))
    OR EXISTS(SELECT 1 FROM unnest(objects) object_id WHERE NOT EXISTS(
     SELECT 1 FROM ledger.ad_object_fact f WHERE f.ad_native_object_id=object_id
-    AND f.period_end>statement_timestamp()-make_interval(hours=>e.measurement_window_hours))) THEN
+    AND f.recorded_at<=statement_timestamp() AND f.source_time<=statement_timestamp()
+    AND f.period_start<statement_timestamp()
+     AND f.period_end>statement_timestamp()-make_interval(hours=>e.measurement_window_hours))) THEN
     reasons:=array_append(reasons,'ASSOCIATED_SPEND_UNRESOLVED');
   ELSE
-   SELECT coalesce(sum(f.spend_amount),0) INTO associated FROM ledger.ad_object_fact f
+   SELECT coalesce(sum(f.spend_amount),0),count(*) FILTER(WHERE
+      f.period_start<statement_timestamp()-make_interval(hours=>e.measurement_window_hours))
+     INTO associated,associated_boundary_reports FROM ledger.ad_object_fact f
     WHERE f.organization_id=p_org AND f.ad_native_object_id=ANY(objects)
-    AND f.period_end>statement_timestamp()-make_interval(hours=>e.measurement_window_hours)
-    AND NOT EXISTS(SELECT 1 FROM ledger.ad_object_fact n WHERE n.supersedes_fact_id=f.id);
+    AND f.recorded_at<=statement_timestamp() AND f.source_time<=statement_timestamp()
+    AND f.period_start<statement_timestamp()
+     AND f.period_end>statement_timestamp()-make_interval(hours=>e.measurement_window_hours)
+    AND NOT EXISTS(SELECT 1 FROM ledger.ad_object_fact n WHERE n.supersedes_fact_id=f.id AND n.recorded_at<=statement_timestamp());
    IF associated>e.max_associated_spend_amount THEN reasons:=array_append(reasons,'ASSOCIATED_SPEND'); END IF;
   END IF;
-  SELECT sum(f.net_amount),sum(f.net_amount) FILTER(WHERE EXISTS(SELECT 1 FROM core.listing_mapping m
-    WHERE m.platform_listing_variant_id=f.platform_listing_variant_id AND m.product_variant_id=ANY(variants)
-    AND m.status='ACTIVE' AND m.effective_from<=f.occurred_at AND (m.effective_to IS NULL OR m.effective_to>f.occurred_at)))
-   INTO sales_total,affected_sales FROM ledger.sales_fact f WHERE f.organization_id=p_org
-   AND f.store_id=ANY(stores) AND f.sale_stage='RETAINED' AND f.retention_window_days=e.retained_window_days
-   AND f.currency_code=e.currency_code AND f.occurred_at>statement_timestamp()-make_interval(hours=>e.measurement_window_hours)
-   AND NOT EXISTS(SELECT 1 FROM ledger.sales_fact n WHERE n.supersedes_fact_id=f.id);
-  IF EXISTS(SELECT 1 FROM ledger.sales_fact f WHERE f.organization_id=p_org AND f.store_id=ANY(stores)
-   AND f.sale_stage='RETAINED' AND f.retention_window_days=e.retained_window_days
-   AND f.occurred_at>statement_timestamp()-make_interval(hours=>e.measurement_window_hours)
-   AND NOT EXISTS(SELECT 1 FROM ledger.sales_fact n WHERE n.supersedes_fact_id=f.id)
-   AND (f.currency_code<>e.currency_code OR f.net_amount IS NULL OR f.net_amount<0))
+  -- The envelope's company denominator and affected numerator use the same
+  -- accepted Retained cohort and one exact measurement window. Coverage is
+  -- required for every known company listing, including units without facts.
+  WITH scope_units AS (
+   SELECT variant.id listing_id,listing.store_id,listing.platform_code
+   FROM core.platform_listing_variant variant
+   JOIN core.platform_listing listing ON listing.id=variant.platform_listing_id
+   WHERE variant.organization_id=p_org AND listing.store_id=ANY(stores)
+    AND variant.first_seen_at<=statement_timestamp()
+    AND (variant.status='OBSERVED' OR EXISTS(SELECT 1 FROM ledger.sales_fact fact
+     WHERE fact.platform_listing_variant_id=variant.id AND fact.sale_stage='RETAINED'
+      AND fact.occurred_at>=statement_timestamp()-make_interval(hours=>e.measurement_window_hours)
+      AND fact.occurred_at<statement_timestamp()))
+  ), current_facts AS (
+   SELECT fact.* FROM ledger.sales_fact fact
+   JOIN core.fact_provenance accepted ON accepted.id=fact.provenance_id
+   WHERE fact.organization_id=p_org AND fact.store_id=ANY(stores)
+    AND fact.sale_stage='RETAINED' AND fact.retention_window_days=e.retained_window_days
+    AND fact.occurred_at>=statement_timestamp()-make_interval(hours=>e.measurement_window_hours)
+    AND fact.occurred_at<statement_timestamp() AND accepted.ingestion_time<=statement_timestamp()
+    AND (accepted.source_time IS NULL OR accepted.source_time<=statement_timestamp())
+    AND NOT EXISTS(SELECT 1 FROM ledger.sales_fact successor
+     JOIN core.fact_provenance accepted_successor ON accepted_successor.id=successor.provenance_id
+     WHERE successor.supersedes_fact_id=fact.id AND accepted_successor.ingestion_time<=statement_timestamp()
+      AND (accepted_successor.source_time IS NULL OR accepted_successor.source_time<=statement_timestamp()))
+  ), per_unit AS (
+   SELECT unit.listing_id,profile.id profile_id,coverage.id coverage_id,
+    profile.source_max_age_minutes,profile.accepted_fact_max_age_minutes,
+    coverage.completed_coverage,coverage.retained_coverage,coverage.return_coverage,coverage.qc_coverage,
+    coverage.completed_source_updated_at,coverage.retained_source_updated_at,
+    coverage.return_source_updated_at,coverage.qc_source_updated_at,coverage.accepted_at,
+    fact.count,fact.amount,fact.affected_amount,fact.valid,
+    profile.provider_incident_blocks AND EXISTS(SELECT 1 FROM platform.ad_provider_incident incident
+      WHERE incident.organization_id=p_org AND incident.platform_code=unit.platform_code
+       AND (incident.store_id IS NULL OR incident.store_id=unit.store_id)
+       AND incident.incident_open AND incident.observed_at<=statement_timestamp()
+       AND (incident.valid_until IS NULL OR incident.valid_until>statement_timestamp())) incident_blocks
+   FROM scope_units unit
+   LEFT JOIN LATERAL (
+    SELECT eligible.* FROM core.ad_freshness_profile eligible
+    WHERE eligible.organization_id=p_org AND eligible.evidence_kind='COMPANY_RETAINED_SALE'
+     AND eligible.decision_purpose='FINAL_RETAINED_SALES_OUTCOME' AND eligible.status='ACTIVE'
+     AND eligible.effective_from<=statement_timestamp()
+     AND (eligible.effective_to IS NULL OR eligible.effective_to>statement_timestamp())
+     AND (eligible.scope_kind='ORGANIZATION' OR eligible.scope_kind='PLATFORM' AND eligible.platform_code=unit.platform_code
+       OR eligible.scope_kind='STORE' AND eligible.store_ref_id=unit.store_id)
+     AND NOT EXISTS(SELECT 1 FROM core.ad_freshness_profile other WHERE other.id<>eligible.id
+      AND other.organization_id=p_org AND other.evidence_kind=eligible.evidence_kind AND other.decision_purpose=eligible.decision_purpose
+      AND other.status='ACTIVE' AND other.effective_from<=statement_timestamp()
+      AND (other.effective_to IS NULL OR other.effective_to>statement_timestamp())
+      AND (other.scope_kind='ORGANIZATION' OR other.scope_kind='PLATFORM' AND other.platform_code=unit.platform_code
+        OR other.scope_kind='STORE' AND other.store_ref_id=unit.store_id)
+      AND CASE other.scope_kind WHEN 'STORE' THEN 0 WHEN 'PLATFORM' THEN 1 ELSE 2 END
+       <=CASE eligible.scope_kind WHEN 'STORE' THEN 0 WHEN 'PLATFORM' THEN 1 ELSE 2 END)
+   ) profile ON true
+   LEFT JOIN LATERAL (
+    SELECT report.* FROM ledger.return_quality_evidence_snapshot report
+    WHERE report.organization_id=p_org AND report.platform_listing_variant_id=unit.listing_id
+     AND report.report_window_start<=statement_timestamp()-make_interval(hours=>e.measurement_window_hours)
+     AND report.report_window_end>=statement_timestamp() AND report.accepted_at<=statement_timestamp()
+     AND NOT EXISTS(SELECT 1 FROM ledger.return_quality_evidence_snapshot successor
+      WHERE successor.supersedes_snapshot_id=report.id AND successor.accepted_at<=statement_timestamp())
+    ORDER BY report.accepted_at DESC,report.id DESC LIMIT 1
+   ) coverage ON true
+   LEFT JOIN LATERAL (
+    SELECT count(*) count,sum(f.net_amount) amount,
+     sum(f.net_amount) FILTER(WHERE EXISTS(SELECT 1 FROM core.listing_mapping mapping
+      WHERE mapping.platform_listing_variant_id=f.platform_listing_variant_id AND mapping.product_variant_id=ANY(variants)
+       AND mapping.status IN('ACTIVE','ENDED') AND mapping.effective_from<=f.occurred_at
+       AND (mapping.effective_to IS NULL OR mapping.effective_to>f.occurred_at))) affected_amount,
+     bool_and(f.net_amount IS NOT NULL AND f.net_amount>=0 AND f.currency_code=e.currency_code
+      AND (SELECT count(*) FROM current_facts duplicate WHERE duplicate.platform_listing_variant_id=f.platform_listing_variant_id
+       AND duplicate.native_order_key=f.native_order_key AND duplicate.native_line_key IS NOT DISTINCT FROM f.native_line_key)=1
+      AND (SELECT count(*) FROM core.listing_mapping mapping WHERE mapping.platform_listing_variant_id=f.platform_listing_variant_id
+       AND mapping.status IN('ACTIVE','ENDED') AND mapping.effective_from<=f.occurred_at
+       AND (mapping.effective_to IS NULL OR mapping.effective_to>f.occurred_at))=1) valid
+    FROM current_facts f WHERE f.platform_listing_variant_id=unit.listing_id
+   ) fact ON true
+  ), complete_units AS (
+   SELECT *, profile_id IS NOT NULL AND coverage_id IS NOT NULL AND NOT incident_blocks
+    AND completed_coverage='COMPLETE' AND retained_coverage='COMPLETE' AND qc_coverage='COMPLETE'
+    AND return_coverage IN('COMPLETE_ZERO','COMPLETE_OBSERVED')
+    AND accepted_at<=statement_timestamp()
+    AND (accepted_fact_max_age_minutes IS NULL OR accepted_at>=statement_timestamp()-make_interval(mins=>accepted_fact_max_age_minutes))
+    AND NOT EXISTS(SELECT 1 FROM unnest(ARRAY[completed_source_updated_at,retained_source_updated_at,
+     return_source_updated_at,qc_source_updated_at]) updated WHERE updated IS NULL OR updated>statement_timestamp()
+      OR source_max_age_minutes IS NOT NULL AND updated<statement_timestamp()-make_interval(mins=>source_max_age_minutes))
+    AND (count=0 OR valid) complete
+   FROM per_unit
+  )
+  SELECT count(*)>0 AND bool_and(complete)
+    AND NOT EXISTS(SELECT 1 FROM unnest(stores) scope_store WHERE NOT EXISTS(SELECT 1 FROM scope_units unit WHERE unit.store_id=scope_store)),
+   CASE WHEN count(*)>0 AND bool_and(complete) THEN sum(coalesce(amount,0)) END,
+   CASE WHEN count(*)>0 AND bool_and(complete) THEN sum(coalesce(affected_amount,0)) END
+  INTO sales_known,sales_total,affected_sales FROM complete_units;
+  IF sales_known IS NOT TRUE THEN sales_total:=NULL; affected_sales:=NULL; END IF;
+  IF sales_known IS NOT TRUE OR sales_total IS NULL OR sales_total<=0
    OR EXISTS(SELECT 1 FROM unnest(variants) member WHERE NOT EXISTS(SELECT 1 FROM core.listing_mapping mapping
-     WHERE mapping.product_variant_id=member AND mapping.status='ACTIVE'
-     AND mapping.effective_from<=statement_timestamp() AND (mapping.effective_to IS NULL OR mapping.effective_to>statement_timestamp()))) THEN
+     JOIN core.platform_listing_variant variant ON variant.id=mapping.platform_listing_variant_id
+     JOIN core.platform_listing listing ON listing.id=variant.platform_listing_id
+     WHERE mapping.product_variant_id=member AND mapping.organization_id=p_org AND listing.store_id=ANY(stores)
+      AND mapping.status='ACTIVE' AND mapping.effective_from<=statement_timestamp()
+      AND (mapping.effective_to IS NULL OR mapping.effective_to>statement_timestamp()))) THEN
    reasons:=array_append(reasons,'RETAINED_SALES_SHARE_UNRESOLVED');
-  ELSIF sales_total IS NULL OR sales_total<=0 THEN reasons:=array_append(reasons,'RETAINED_SALES_SHARE_UNRESOLVED');
-  ELSIF coalesce(affected_sales,0)/sales_total>e.max_affected_retained_sales_share THEN
+  ELSIF affected_sales/sales_total>e.max_affected_retained_sales_share THEN
    reasons:=array_append(reasons,'AFFECTED_RETAINED_SALES_SHARE'); END IF;
   envelopes:=envelopes || jsonb_build_array(jsonb_build_object('envelopeId',e.id,'policyVersion',e.policy_version,
    'scopeKind',e.scope_kind,'platformCode',e.platform_code,'storeId',e.store_ref_id,'currencyCode',e.currency_code,
    'measurementWindowHours',e.measurement_window_hours,'retainedWindowDays',e.retained_window_days,
    'axes',jsonb_build_object(
     'activeInterventions',jsonb_build_object('usage',active_count,'limit',e.max_active_interventions,'state',CASE WHEN 'ACTIVE_INTERVENTIONS'=ANY(reasons) THEN 'EXCEEDED' ELSE 'AVAILABLE' END),
-    'associatedOfficialSpend',jsonb_build_object('usage',CASE WHEN 'ASSOCIATED_SPEND_UNRESOLVED'=ANY(reasons) THEN NULL ELSE associated END,'limit',e.max_associated_spend_amount,'unit',e.currency_code||'_MAJOR','state',CASE WHEN 'ASSOCIATED_SPEND_UNRESOLVED'=ANY(reasons) THEN 'UNKNOWN' WHEN 'ASSOCIATED_SPEND'=ANY(reasons) THEN 'EXCEEDED' ELSE 'AVAILABLE' END),
-    'affectedRetainedSalesShare',jsonb_build_object('usage',CASE WHEN sales_total>0 AND NOT 'RETAINED_SALES_SHARE_UNRESOLVED'=ANY(reasons) THEN coalesce(affected_sales,0)/sales_total END,'companySales',sales_total,'affectedSales',affected_sales,'limit',e.max_affected_retained_sales_share,'state',CASE WHEN 'RETAINED_SALES_SHARE_UNRESOLVED'=ANY(reasons) THEN 'UNKNOWN' WHEN 'AFFECTED_RETAINED_SALES_SHARE'=ANY(reasons) THEN 'EXCEEDED' ELSE 'AVAILABLE' END),
+    'associatedOfficialSpend',jsonb_build_object('usage',CASE WHEN 'ASSOCIATED_SPEND_UNRESOLVED'=ANY(reasons) THEN NULL ELSE associated END,'limit',e.max_associated_spend_amount,'aggregationBasis','COMPLETE_INTERSECTING_OFFICIAL_REPORT_AMOUNTS','conservativeBoundaryReportCount',associated_boundary_reports,'unit',e.currency_code||'_MAJOR','state',CASE WHEN 'ASSOCIATED_SPEND_UNRESOLVED'=ANY(reasons) THEN 'UNKNOWN' WHEN 'ASSOCIATED_SPEND'=ANY(reasons) THEN 'EXCEEDED' ELSE 'AVAILABLE' END),
+    'affectedRetainedSalesShare',jsonb_build_object('usage',CASE WHEN sales_total>0 AND NOT 'RETAINED_SALES_SHARE_UNRESOLVED'=ANY(reasons) THEN affected_sales/sales_total END,'companySales',sales_total,'affectedSales',affected_sales,'limit',e.max_affected_retained_sales_share,'state',CASE WHEN 'RETAINED_SALES_SHARE_UNRESOLVED'=ANY(reasons) THEN 'UNKNOWN' WHEN 'AFFECTED_RETAINED_SALES_SHARE'=ANY(reasons) THEN 'EXCEEDED' ELSE 'AVAILABLE' END),
     'cumulativeBidChangeMajor',jsonb_build_object('usage',CASE WHEN 'CUMULATIVE_BID_CHANGE_UNRESOLVED'=ANY(reasons) THEN NULL ELSE cumulative END,'limit',e.max_cumulative_bid_change_amount,'windowHours',e.cumulative_window_hours,'unit',e.currency_code||'_MAJOR','state',CASE WHEN 'CUMULATIVE_BID_CHANGE_UNRESOLVED'=ANY(reasons) THEN 'UNKNOWN' WHEN 'CUMULATIVE_BID_CHANGE'=ANY(reasons) THEN 'EXCEEDED' ELSE 'AVAILABLE' END),
     'unresolvedTransmittedWrites',jsonb_build_object('usage',unresolved,'limit',e.max_unresolved_transmitted_writes,'state',CASE WHEN 'UNRESOLVED_TRANSMITTED_WRITES'=ANY(reasons) THEN 'EXCEEDED' ELSE 'AVAILABLE' END),
     'reservedRecoveryHeadroom',jsonb_build_object('available',e.max_active_interventions-active_count,'reserved',e.reserved_recovery_headroom_count,'state',CASE WHEN 'RECOVERY_HEADROOM'=ANY(reasons) THEN 'EXCEEDED' ELSE 'AVAILABLE' END)),
@@ -581,7 +699,7 @@ REVOKE ALL ON FUNCTION ops.take_ad_action_reservation_serialized(uuid,uuid,uuid,
 CREATE FUNCTION ops.take_ad_action_reservation(p_id uuid,p_org uuid,p_object uuid,p_store uuid,p_set uuid,
  p_digest text,p_variants uuid[],p_kind text,p_reference uuid,p_direction text,p_lane text,p_correlation text)
 RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,ops,core,pg_temp AS $$
-DECLARE result uuid; failures text[];
+DECLARE result uuid; failures text[]; baseline_id uuid;
 BEGIN
  PERFORM pg_advisory_xact_lock(hashtext('ad_action_reservation'),hashtext(p_org::text));
  IF NOT EXISTS(SELECT 1 FROM core.ad_affected_set a JOIN core.ad_native_object o ON o.id=a.ad_native_object_id
@@ -603,6 +721,15 @@ BEGIN
  AND packet.affected_set_id=p_set AND packet.affected_set_digest=p_digest AND packet.state='MANUAL_PACKET_ISSUED')
  OR p_kind='EXACT_PRIOR_BID_COMPENSATION' THEN
   RAISE EXCEPTION 'reservation requires exact intervention; compensation retains the original reservation' USING ERRCODE='MO097'; END IF;
+ IF p_kind='CONTROLLED_AD_BID_CHANGE' THEN
+  SELECT authorized.outcome_baseline_id INTO baseline_id FROM ops.ad_action_authorization authorized
+   WHERE authorized.candidate_id=p_reference;
+ ELSIF p_kind='CONFIRMED_MANUAL_PACKET' THEN
+  SELECT packet.outcome_baseline_id INTO baseline_id FROM ops.ad_manual_execution_packet packet WHERE packet.id=p_reference;
+ END IF;
+ failures:=ops.ad_action_isolation_failures(p_set,baseline_id,clock_timestamp());
+ IF cardinality(failures)>0 THEN
+  RAISE EXCEPTION 'cross-domain isolation admission refused: %',array_to_string(failures,',') USING ERRCODE='MO097'; END IF;
  result:=ops.take_ad_action_reservation_serialized(p_id,p_org,p_object,p_store,p_set,p_digest,p_variants,
    p_kind,p_reference,p_direction,p_lane,p_correlation);
  failures:=ops.ad_exposure_failures(p_org,p_store,p_direction);
@@ -638,9 +765,23 @@ BEGIN
  OR a.bundle_id<>c.bundle_id OR a.candidate_id<>c.candidate_id
  OR a.approval_decision_id<>c.approval_decision_id THEN
   reasons:=array_append(reasons,'SEALED_AUTHORIZATION_MISSING_OR_EXPIRED'); END IF;
+ IF a.id IS NOT NULL AND (
+  NOT ops.ad_actor_has_role_scope(a.final_approver_user_id,c.organization_id,c.store_id,
+    CASE WHEN a.materiality_route='ORDINARY_IMPACT' THEN 'OPS_LEAD' ELSE 'OWNER' END,'AD_BID_CHANGE_APPROVE')
+  OR NOT ops.ad_actor_has_role_scope(a.endorser_user_id,c.organization_id,c.store_id,'OPS_LEAD','AD_BID_CHANGE_ENDORSE')
+  OR NOT ops.ad_actor_has_role_scope(a.maker_user_id,c.organization_id,c.store_id,'MARKETPLACE_OPERATOR','ADVERTISING_TASK_ACT')
+  OR NOT ops.ad_actor_covers_affected_set(a.final_approver_user_id,c.organization_id,
+    (SELECT affected_set_id FROM ops.ad_outcome_baseline WHERE id=a.outcome_baseline_id),'AD_BID_CHANGE_APPROVE')
+  OR NOT ops.ad_actor_covers_affected_set(a.endorser_user_id,c.organization_id,
+    (SELECT affected_set_id FROM ops.ad_outcome_baseline WHERE id=a.outcome_baseline_id),'AD_BID_CHANGE_ENDORSE')
+  OR NOT ops.ad_actor_covers_affected_set(a.maker_user_id,c.organization_id,
+    (SELECT affected_set_id FROM ops.ad_outcome_baseline WHERE id=a.outcome_baseline_id),'ADVERTISING_TASK_ACT')) THEN
+  reasons:=array_append(reasons,'CURRENT_HUMAN_AUTHORITY_REVOKED'); END IF;
  IF c.outcome_baseline_id IS DISTINCT FROM a.outcome_baseline_id
  OR ops.ad_outcome_baseline_is_canonical(a.outcome_baseline_id,statement_timestamp()) IS NOT TRUE THEN
   reasons:=array_append(reasons,'CANONICAL_OUTCOME_BASELINE_AUTHORITY_INVALID'); END IF;
+ reasons:=reasons||ops.ad_action_isolation_failures(
+  (SELECT affected_set_id FROM ops.ad_outcome_baseline WHERE id=a.outcome_baseline_id),a.outcome_baseline_id,statement_timestamp());
  IF ops.ad_materiality_assessment(c.bundle_id,c.candidate_id)->>'route' IS DISTINCT FROM a.materiality_route THEN
   reasons:=array_append(reasons,'SEALED_MATERIALITY_ROUTE_CHANGED_OR_UNRESOLVED'); END IF;
  IF EXISTS(SELECT 1 FROM ops.ad_authority_invalidation i WHERE i.authorization_id=a.id) THEN
@@ -683,6 +824,21 @@ END $$;
 REVOKE ALL ON FUNCTION ops.evaluate_ad_bid_write_gate(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION ops.evaluate_ad_bid_write_gate(uuid) TO marketops_app;
 
+CREATE FUNCTION ops.ad_bundle_consumes_authority_version(p_bundle uuid,p_authority uuid)
+RETURNS boolean LANGUAGE sql STABLE SET search_path=pg_catalog,ops,core,pg_temp AS $$
+ SELECT EXISTS(SELECT 1 FROM ops.ad_decision_policy_bundle b WHERE b.id=p_bundle AND (
+  p_authority=ANY(ARRAY[b.id,b.semantic_profile_id,b.conversion_definition_id,b.allowable_cpa_definition_id,
+   b.qualification_policy_id,b.target_policy_id,b.outcome_policy_id,b.priority_policy_id,b.human_slo_profile_id,
+   b.approval_lease_policy_id,b.exposure_envelope_id,b.materiality_policy_id,b.ordinary_promotion_id])
+  OR EXISTS(SELECT 1 FROM jsonb_array_elements(ops.ad_bundle_authority_snapshot(b.id)->'freshness') profile
+    WHERE profile->>'id'=p_authority::text)
+  OR EXISTS(SELECT 1 FROM ops.ad_action_authorization sealed
+    CROSS JOIN LATERAL jsonb_array_elements(coalesce(sealed.authority_snapshot->'freshness','[]'::jsonb)) profile
+    WHERE sealed.bundle_id=b.id AND profile->>'id'=p_authority::text)))
+$$;
+REVOKE ALL ON FUNCTION ops.ad_bundle_consumes_authority_version(uuid,uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION ops.ad_bundle_consumes_authority_version(uuid,uuid) TO marketops_app;
+
 -- Containment scopes are intersections over canonical variants, not equality
 -- of two arbitrary set digests. Authority-version quarantine names the exact
 -- immutable reference of a Bundle component.
@@ -691,7 +847,8 @@ CREATE OR REPLACE FUNCTION ops.ad_active_containment(p_organization_id uuid,p_ob
 RETURNS text[] LANGUAGE sql STABLE SET search_path=pg_catalog,ops,core,pg_temp AS $$
  SELECT coalesce(array_agg(DISTINCT CASE WHEN q.containment_kind='KILL_SWITCH_ACTIVE'
        THEN 'KILL_SWITCH_ACTIVE' ELSE q.containment_kind END),'{}'::text[])
- FROM ops.ad_containment q WHERE q.organization_id=p_organization_id AND q.state<>'REENABLED'
+ FROM ops.ad_containment q WHERE q.organization_id=p_organization_id
+ AND (q.state<>'REENABLED' OR q.scope_kind='AUTHORITY_VERSION')
  AND (q.scope_kind='ENTITY' AND q.ad_native_object_id=p_object_id
  OR q.scope_kind='AFFECTED_SET' AND EXISTS(SELECT 1 FROM core.ad_affected_set held
    JOIN core.ad_affected_set subject ON subject.organization_id=held.organization_id
@@ -704,10 +861,24 @@ RETURNS text[] LANGUAGE sql STABLE SET search_path=pg_catalog,ops,core,pg_temp A
    AND q.marketplace_account_id=(SELECT marketplace_account_id FROM core.store WHERE id=p_store_id)
  OR q.scope_kind='AUTHORITY_VERSION' AND EXISTS(SELECT 1 FROM ops.ad_decision_policy_bundle b
    WHERE b.organization_id=p_organization_id AND b.store_id=p_store_id
-   AND q.authority_version_reference=ANY(ARRAY[b.id::text,b.semantic_profile_id::text,
-     b.conversion_definition_id::text,b.allowable_cpa_definition_id::text,b.qualification_policy_id::text,
-     b.target_policy_id::text,b.outcome_policy_id::text,b.priority_policy_id::text,b.human_slo_profile_id::text,
-     b.approval_lease_policy_id::text,b.exposure_envelope_id::text,b.materiality_policy_id::text])))
+   AND (q.state<>'REENABLED' OR b.status='ACTIVE')
+   AND (EXISTS(SELECT 1 FROM ops.ad_gate_authority gate WHERE gate.id=b.gate_authority_id
+       AND p_object_id=ANY(gate.native_object_ids))
+     OR EXISTS(SELECT 1 FROM ops.ad_action_authorization sealed JOIN ops.ad_bid_candidate candidate
+       ON candidate.id=sealed.candidate_id WHERE sealed.bundle_id=b.id AND candidate.ad_native_object_id=p_object_id)
+     OR EXISTS(SELECT 1 FROM ops.ad_manual_execution_packet packet
+       WHERE packet.bundle_id=b.id AND packet.ad_native_object_id=p_object_id))
+   AND ops.ad_bundle_consumes_authority_version(b.id,
+     CASE WHEN q.authority_version_reference ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+       THEN q.authority_version_reference::uuid ELSE NULL END))
+ OR q.scope_kind='AUTHORITY_VERSION' AND EXISTS(SELECT 1 FROM ops.ad_manual_execution_packet packet
+   WHERE packet.organization_id=p_organization_id AND packet.store_id=p_store_id
+   AND packet.ad_native_object_id=p_object_id
+   AND (q.state<>'REENABLED' OR packet.state IN ('MANUAL_PACKET_DRAFT','MANUAL_PACKET_ENDORSED',
+    'MANUAL_PACKET_ISSUED','MANUAL_EXECUTION_IN_PROGRESS','ACTION_REPORTED_CONFIGURATION_UNVERIFIED','MANUAL_EXECUTION_UNCERTAIN'))
+   AND q.authority_version_reference=ANY(ARRAY[
+     packet.semantic_profile_id::text,to_jsonb(packet)#>>'{authority_snapshot,policy,id}',
+     to_jsonb(packet)#>>'{authority_snapshot,outcomePolicy,id}'])))
 $$;
 
 CREATE FUNCTION ops.invalidate_ad_authority_on_containment() RETURNS trigger
@@ -719,13 +890,42 @@ BEGIN
  SELECT a.organization_id,a.id,NEW.id,'CONTAINMENT_ACTIVATED' FROM ops.ad_action_authorization a
  JOIN ops.recommendation r ON r.id=a.recommendation_id JOIN core.ad_native_object obj ON obj.id=r.subject_id
  JOIN ops.ad_bid_candidate candidate ON candidate.id=a.candidate_id
- WHERE a.organization_id=NEW.organization_id AND cardinality(ops.ad_active_containment(a.organization_id,
+ WHERE a.organization_id=NEW.organization_id
+ AND (NEW.scope_kind<>'AUTHORITY_VERSION' OR ops.ad_bundle_consumes_authority_version(a.bundle_id,
+  CASE WHEN NEW.authority_version_reference ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$' THEN NEW.authority_version_reference::uuid ELSE NULL END))
+ AND cardinality(ops.ad_active_containment(a.organization_id,
   obj.id,r.store_id,obj.platform_code,'ad-bid-change',candidate.affected_set_digest))>0 ON CONFLICT DO NOTHING;
  UPDATE ops.ad_manual_execution_packet packet SET state='MANUAL_PACKET_REVOKED',revoked_at=clock_timestamp(),
   revoked_reason='CONTAINMENT_ACTIVATED',updated_at=clock_timestamp(),version=version+1
  WHERE packet.organization_id=NEW.organization_id AND packet.state IN ('MANUAL_PACKET_DRAFT','MANUAL_PACKET_ENDORSED','MANUAL_PACKET_ISSUED')
+ AND (NEW.scope_kind<>'AUTHORITY_VERSION' OR ops.ad_bundle_consumes_authority_version(packet.bundle_id,
+  CASE WHEN NEW.authority_version_reference ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$' THEN NEW.authority_version_reference::uuid ELSE NULL END) OR NEW.authority_version_reference=ANY(ARRAY[packet.semantic_profile_id::text,
+   to_jsonb(packet)#>>'{authority_snapshot,policy,id}',to_jsonb(packet)#>>'{authority_snapshot,outcomePolicy,id}']))
  AND cardinality(ops.ad_active_containment(packet.organization_id,packet.ad_native_object_id,packet.store_id,
  packet.platform_code,'ad-bid-change',packet.affected_set_digest))>0;
+ -- Once execution has begun, a stop cannot assert what actually landed. Keep
+ -- every observation and the hold, invalidate the current proof, and permit
+ -- only the existing factual report / independent verification path.
+ UPDATE ops.ad_manual_execution_packet packet SET state='MANUAL_EXECUTION_UNCERTAIN',
+  current_proof_id=NULL,updated_at=clock_timestamp(),version=version+1
+ WHERE packet.organization_id=NEW.organization_id AND packet.execution_started_at IS NOT NULL
+ AND packet.state IN ('MANUAL_EXECUTION_IN_PROGRESS','ACTION_REPORTED_CONFIGURATION_UNVERIFIED',
+  'MANUAL_CONFIGURATION_VERIFIED','MANUAL_EXECUTION_UNCERTAIN')
+ AND (NEW.scope_kind<>'AUTHORITY_VERSION' OR ops.ad_bundle_consumes_authority_version(packet.bundle_id,
+  CASE WHEN NEW.authority_version_reference ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$' THEN NEW.authority_version_reference::uuid ELSE NULL END) OR NEW.authority_version_reference=ANY(ARRAY[packet.semantic_profile_id::text,
+   to_jsonb(packet)#>>'{authority_snapshot,policy,id}',to_jsonb(packet)#>>'{authority_snapshot,outcomePolicy,id}']))
+ AND cardinality(ops.ad_active_containment(packet.organization_id,packet.ad_native_object_id,packet.store_id,
+  packet.platform_code,'ad-bid-change',packet.affected_set_digest))>0;
+ UPDATE ops.ad_action_reservation held SET configuration_resolved=false,
+  unknown_or_mismatch_open=true,version=held.version+1
+ FROM ops.ad_manual_execution_packet packet WHERE packet.reservation_id=held.id
+ AND held.state='ACTIVE' AND packet.organization_id=NEW.organization_id
+ AND packet.execution_started_at IS NOT NULL AND packet.state='MANUAL_EXECUTION_UNCERTAIN'
+ AND (NEW.scope_kind<>'AUTHORITY_VERSION' OR ops.ad_bundle_consumes_authority_version(packet.bundle_id,
+  CASE WHEN NEW.authority_version_reference ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$' THEN NEW.authority_version_reference::uuid ELSE NULL END) OR NEW.authority_version_reference=ANY(ARRAY[packet.semantic_profile_id::text,
+   to_jsonb(packet)#>>'{authority_snapshot,policy,id}',to_jsonb(packet)#>>'{authority_snapshot,outcomePolicy,id}']))
+ AND cardinality(ops.ad_active_containment(packet.organization_id,packet.ad_native_object_id,packet.store_id,
+  packet.platform_code,'ad-bid-change',packet.affected_set_digest))>0;
  RETURN NEW;
 END $$;
 REVOKE ALL ON FUNCTION ops.invalidate_ad_authority_on_containment() FROM PUBLIC;
@@ -786,7 +986,10 @@ RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,ops,pg
  UPDATE ops.ad_bid_command SET lease_owner=NULL,lease_expires_at=NULL,
  next_attempt_at=clock_timestamp()+make_interval(secs=>greatest(1,least(p_seconds,900))),updated_at=clock_timestamp()
  WHERE id=p_command AND fence_token=p_fence AND lease_owner=p_owner
- AND lease_expires_at>clock_timestamp() AND state IN ('PLATFORM_PENDING','COMPENSATION_PENDING');
+ AND lease_expires_at>clock_timestamp() AND state IN ('PLATFORM_PENDING','COMPENSATION_PENDING')
+ AND NOT EXISTS(SELECT 1 FROM ops.ad_bid_command_attempt pending_attempt
+  WHERE pending_attempt.command_id=p_command AND pending_attempt.fence_token=p_fence
+   AND pending_attempt.outcome_class='IN_FLIGHT');
  IF NOT FOUND THEN RAISE EXCEPTION 'current observation lease required' USING ERRCODE='MO090'; END IF;
 END $$;
 REVOKE ALL ON FUNCTION ops.lease_ad_bid_status(uuid,text,integer),
@@ -823,7 +1026,7 @@ CREATE FUNCTION iam.issue_ad_control_invocation_grant(p_purpose text,p_proof_has
  p_target uuid,p_version uuid,p_backend integer,p_transaction bigint)
 RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,iam,pg_temp AS $$ BEGIN
  IF p_purpose NOT IN ('COMPENSATION_PREVIEW','COMPENSATION_ENDORSE','COMPENSATION_APPROVE',
- 'BUNDLE_DRAFT','BUNDLE_ENDORSE','BUNDLE_APPROVE','CONTAINMENT_STOP','CONTAINMENT_REENABLE',
+ 'BUNDLE_DRAFT','BUNDLE_ENDORSE','BUNDLE_APPROVE','CONTAINMENT_STOP','AUTHORITY_VERSION_STOP','CONTAINMENT_REENABLE',
  'CONTAINMENT_ATTEST','CONTAINMENT_ENDORSE','MANUAL_POLICY_PUBLISH','MANUAL_PACKET_SELECT',
  'MANUAL_PACKET_ENDORSE','MANUAL_PACKET_APPROVE','MANUAL_EXECUTION_REPORT','MANUAL_EXECUTION_START','MANUAL_INDEPENDENT_VERIFY') THEN
   RAISE EXCEPTION 'unknown control invocation purpose' USING ERRCODE='MO092'; END IF;
@@ -860,7 +1063,8 @@ RETURNS boolean LANGUAGE sql STABLE SET search_path=pg_catalog,iam,core,pg_temp 
  JOIN iam.user_scope_grant s ON s.user_id=r.user_id AND s.action_code=m.action_code
  JOIN core.store st ON st.id=p_store JOIN core.marketplace_account account ON account.id=st.marketplace_account_id
  WHERE r.user_id=p_actor AND r.organization_id=p_org AND s.organization_id=p_org AND st.organization_id=p_org
- AND EXISTS(SELECT 1 FROM iam.user_account actor WHERE actor.id=p_actor AND actor.organization_id=p_org AND actor.status='ACTIVE')
+ AND EXISTS(SELECT 1 FROM iam.user_account actor JOIN iam.identity_provider provider ON provider.id=actor.identity_provider_id
+   WHERE actor.id=p_actor AND actor.organization_id=p_org AND actor.status='ACTIVE' AND provider.status='ACTIVE')
  AND r.role_code=p_role AND r.status='ACTIVE' AND m.action_code=p_action
  AND r.effective_from<=statement_timestamp() AND (r.effective_to IS NULL OR r.effective_to>statement_timestamp())
  AND s.status='ACTIVE' AND s.effective_from<=statement_timestamp() AND (s.effective_to IS NULL OR s.effective_to>statement_timestamp())
@@ -1095,6 +1299,7 @@ DECLARE failures text[]; snapshot jsonb; component record; b ops.ad_decision_pol
 BEGIN
  failures:=ops.ad_bundle_validation_failures_base(p_bundle_id);
  SELECT * INTO b FROM ops.ad_decision_policy_bundle WHERE id=p_bundle_id;
+ IF NOT FOUND THEN RETURN failures; END IF;
  snapshot:=ops.ad_bundle_authority_snapshot(p_bundle_id);
  FOR component IN SELECT key,value FROM jsonb_each(snapshot)
  WHERE key IN ('conversion','allowableCpa','qualification','target','outcome','priority','humanSlo','lease','exposure','materiality') LOOP
@@ -1107,7 +1312,17 @@ BEGIN
    OR component.value->>'scope_kind'='PLATFORM' AND component.value->>'platform_code'<>b.platform_code THEN
    failures:=array_append(failures,upper(component.key)||'_AUTHORITY_NOT_CURRENT'); END IF;
  END LOOP;
+ IF snapshot#>>'{semantic,status}' IS DISTINCT FROM 'ACTIVE'
+ OR (snapshot#>>'{semantic,effective_to}')::timestamptz<=statement_timestamp() THEN
+  failures:=array_append(failures,'SEMANTIC_AUTHORITY_NOT_CURRENT'); END IF;
  IF jsonb_array_length(snapshot->'freshness')=0 THEN failures:=array_append(failures,'FRESHNESS_AUTHORITY_MISSING'); END IF;
+ -- Recovery authorizes replacement versions; the rejected immutable reference
+ -- never becomes valid again, including after the review itself is closed.
+ IF EXISTS(SELECT 1 FROM ops.ad_containment q WHERE q.organization_id=b.organization_id
+   AND q.scope_kind='AUTHORITY_VERSION' AND ops.ad_bundle_consumes_authority_version(b.id,
+   CASE WHEN q.authority_version_reference ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+    THEN q.authority_version_reference::uuid ELSE NULL END)) THEN
+  failures:=array_append(failures,'AUTHORITY_VERSION_QUARANTINED'); END IF;
  RETURN ARRAY(SELECT DISTINCT failure FROM unnest(failures) failure ORDER BY failure);
 END $$;
 REVOKE ALL ON FUNCTION ops.ad_bundle_validation_failures_base(uuid) FROM PUBLIC,marketops_app;
@@ -1252,6 +1467,24 @@ BEGIN
   ORDER BY c.created_at DESC,c.id DESC LIMIT 1));
  RETURN p_id;
 END $$;
+-- Null Store is never a wildcard: organization-wide recovery has its own
+-- exact grant predicate, used only by the privileged control functions.
+CREATE FUNCTION ops.ad_actor_has_organization_role_scope(p_actor uuid,p_org uuid,p_role text,p_action text)
+RETURNS boolean LANGUAGE sql STABLE SET search_path=pg_catalog,iam,pg_temp AS $$
+ SELECT EXISTS(SELECT 1 FROM iam.user_account actor JOIN iam.identity_provider provider ON provider.id=actor.identity_provider_id
+ JOIN iam.user_role_assignment role ON role.user_id=actor.id AND role.organization_id=actor.organization_id
+ JOIN iam.business_role_action_scope capability ON capability.role_code=role.role_code
+ JOIN iam.user_scope_grant scope ON scope.user_id=actor.id AND scope.organization_id=actor.organization_id
+   AND scope.action_code=capability.action_code
+ WHERE actor.id=p_actor AND actor.organization_id=p_org AND actor.status='ACTIVE'
+ AND provider.status='ACTIVE' AND provider.verification_state='VERIFIED'
+ AND role.role_code=p_role AND capability.action_code=p_action
+ AND role.status='ACTIVE' AND role.effective_from<=clock_timestamp() AND (role.effective_to IS NULL OR role.effective_to>clock_timestamp())
+ AND scope.organization_ref_id=p_org AND scope.status='ACTIVE' AND scope.effective_from<=clock_timestamp()
+ AND (scope.effective_to IS NULL OR scope.effective_to>clock_timestamp()))
+$$;
+REVOKE ALL ON FUNCTION ops.ad_actor_has_organization_role_scope(uuid,uuid,text,text) FROM PUBLIC,marketops_app;
+
 CREATE FUNCTION ops.attest_ad_containment(p_id uuid,p_condition text,p_evidence text,p_proof text) RETURNS void
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,ops,iam,pg_temp AS $$
 DECLARE q ops.ad_containment%ROWTYPE; g iam.ad_invocation_grant%ROWTYPE; permitted boolean;
@@ -1259,10 +1492,14 @@ BEGIN
  SELECT * INTO q FROM ops.ad_containment WHERE id=p_id FOR UPDATE;
  g:=ops.consume_ad_control_invocation(p_proof,
  CASE WHEN p_condition='OPERATIONS_ENDORSEMENT' THEN 'CONTAINMENT_ENDORSE' ELSE 'CONTAINMENT_ATTEST' END,p_id,p_id);
- permitted:=CASE WHEN p_condition='SECURITY_ATTESTATION_PRESENT' THEN
+ permitted:=CASE WHEN q.scope_kind='AUTHORITY_VERSION' THEN
+ ops.ad_actor_has_organization_role_scope(g.actor_user_id,q.organization_id,
+   CASE WHEN p_condition='SECURITY_ATTESTATION_PRESENT' THEN 'TECH_DATA' ELSE 'OPS_LEAD' END,
+   CASE WHEN p_condition='SECURITY_ATTESTATION_PRESENT' THEN 'ADVERTISING_TECHNICAL_ATTEST' ELSE 'ADVERTISING_POLICY_MANAGE' END)
+ WHEN p_condition='SECURITY_ATTESTATION_PRESENT' THEN
  ops.ad_actor_has_role_scope(g.actor_user_id,q.organization_id,q.store_id,'TECH_DATA','ADVERTISING_TECHNICAL_ATTEST')
  ELSE ops.ad_actor_has_role_scope(g.actor_user_id,q.organization_id,q.store_id,'OPS_LEAD','ADVERTISING_POLICY_MANAGE') END;
- IF q.state='REENABLED' OR NOT permitted OR p_evidence IS NULL OR length(btrim(p_evidence))<1
+ IF q.id IS NULL OR g.organization_id<>q.organization_id OR q.state='REENABLED' OR NOT permitted OR p_evidence IS NULL OR length(btrim(p_evidence))<1
  OR p_condition='OPERATIONS_ENDORSEMENT' AND g.actor_user_id=q.activated_by_user_id THEN
   RAISE EXCEPTION 'independent scoped evidence attestation required' USING ERRCODE='MO097'; END IF;
  INSERT INTO ops.ad_containment_attestation(containment_id,condition,actor_user_id,evidence_reference)
@@ -1275,9 +1512,26 @@ DECLARE q ops.ad_containment%ROWTYPE; g iam.ad_invocation_grant%ROWTYPE; e uuid;
 BEGIN
  SELECT * INTO q FROM ops.ad_containment WHERE id=p_id FOR UPDATE;
  g:=ops.consume_ad_control_invocation(p_proof,'CONTAINMENT_REENABLE',p_id,p_new_bundle);
+ PERFORM pg_advisory_xact_lock(hashtext('ad_action_reservation'),hashtext(q.organization_id::text));
  SELECT actor_user_id INTO e FROM ops.ad_containment_attestation WHERE containment_id=p_id AND condition='OPERATIONS_ENDORSEMENT';
- IF q.state='REENABLED' OR e IS NULL OR g.actor_user_id=e OR g.actor_user_id=q.activated_by_user_id
- OR NOT ops.ad_actor_has_role_scope(g.actor_user_id,q.organization_id,q.store_id,'OWNER','ADVERTISING_POLICY_MANAGE')
+ IF q.id IS NULL OR g.organization_id<>q.organization_id OR q.state='REENABLED' OR e IS NULL
+ OR g.actor_user_id=e OR g.actor_user_id=q.activated_by_user_id
+ OR NOT (CASE WHEN q.scope_kind='AUTHORITY_VERSION' THEN
+  ops.ad_actor_has_organization_role_scope(g.actor_user_id,q.organization_id,'OWNER','ADVERTISING_POLICY_MANAGE')
+ ELSE ops.ad_actor_has_role_scope(g.actor_user_id,q.organization_id,q.store_id,'OWNER','ADVERTISING_POLICY_MANAGE') END)
+ OR q.scope_kind='AUTHORITY_VERSION' AND EXISTS(SELECT 1 FROM ops.ad_containment_attestation a WHERE a.containment_id=p_id
+  AND NOT ops.ad_actor_has_organization_role_scope(a.actor_user_id,q.organization_id,
+   CASE WHEN a.condition='SECURITY_ATTESTATION_PRESENT' THEN 'TECH_DATA' ELSE 'OPS_LEAD' END,
+   CASE WHEN a.condition='SECURITY_ATTESTATION_PRESENT' THEN 'ADVERTISING_TECHNICAL_ATTEST' ELSE 'ADVERTISING_POLICY_MANAGE' END))
+ OR q.scope_kind='AUTHORITY_VERSION' AND EXISTS(SELECT 1 FROM ops.ad_decision_policy_bundle remaining
+  WHERE remaining.organization_id=q.organization_id AND remaining.status='ACTIVE'
+  AND ops.ad_bundle_consumes_authority_version(remaining.id,q.authority_version_reference::uuid))
+ OR q.scope_kind='AUTHORITY_VERSION' AND EXISTS(SELECT 1 FROM ops.ad_manual_execution_packet packet
+  WHERE packet.organization_id=q.organization_id AND packet.execution_started_at IS NOT NULL
+  AND packet.state IN ('MANUAL_EXECUTION_IN_PROGRESS','ACTION_REPORTED_CONFIGURATION_UNVERIFIED','MANUAL_EXECUTION_UNCERTAIN')
+  AND (ops.ad_bundle_consumes_authority_version(packet.bundle_id,q.authority_version_reference::uuid)
+   OR q.authority_version_reference=ANY(ARRAY[packet.semantic_profile_id::text,
+    to_jsonb(packet)#>>'{authority_snapshot,policy,id}',to_jsonb(packet)#>>'{authority_snapshot,outcomePolicy,id}'])))
  OR EXISTS(SELECT 1 FROM unnest(ARRAY['ROOT_CAUSE_CLASSIFIED','UNKNOWNS_RESOLVED','AUTHORITIES_REPLACED',
  'RESULTS_RECONCILED','CAPABILITY_EVIDENCE_CURRENT']) required(condition)
  WHERE NOT EXISTS(SELECT 1 FROM ops.ad_containment_attestation a WHERE a.containment_id=p_id AND a.condition=required.condition))
@@ -1288,15 +1542,19 @@ BEGIN
  AND c.state IN ('EXECUTING','PLATFORM_PENDING','UNKNOWN_REQUIRES_READBACK','READBACK_PENDING','READBACK_MISMATCH',
  'LATER_CHANGE_OR_MISMATCH_INVESTIGATION','MANUAL_RESOLUTION','COMPENSATION_PENDING'))
  OR NOT EXISTS(SELECT 1 FROM ops.ad_decision_policy_bundle b JOIN ops.ad_gate_authority gate ON gate.id=b.gate_authority_id
- WHERE b.id=p_new_bundle AND b.status='ACTIVE' AND b.store_id=q.store_id AND b.organization_id=q.organization_id
- AND gate.status='ACTIVE' AND gate.valid_until>clock_timestamp()
+ WHERE b.id=p_new_bundle AND b.status='ACTIVE' AND (q.scope_kind='AUTHORITY_VERSION' OR b.store_id=q.store_id)
+ AND b.organization_id=q.organization_id AND cardinality(ops.ad_bundle_validation_failures(b.id))=0
+ AND gate.organization_id=b.organization_id AND gate.store_id=b.store_id AND gate.bundle_id=b.id
+ AND gate.status='ACTIVE' AND gate.valid_from<=clock_timestamp() AND gate.valid_until>clock_timestamp()
  AND NOT EXISTS(SELECT 1 FROM ops.ad_authority_invalidation i JOIN ops.ad_action_authorization a ON a.id=i.authorization_id
   WHERE i.cause_reference=p_id AND a.bundle_id=b.id)) THEN
  RAISE EXCEPTION 'new scope, resolved facts and independent recovery authorities required' USING ERRCODE='MO097'; END IF;
  UPDATE ops.ad_containment SET state='REENABLED',root_cause_classified=true,unknowns_resolved=true,authorities_replaced=true,
  results_reconciled=true,capability_evidence_current=true,security_attestation_present=EXISTS(SELECT 1 FROM ops.ad_containment_attestation a
  WHERE a.containment_id=p_id AND a.condition='SECURITY_ATTESTATION_PRESENT'),endorsed_by_user_id=e,approved_by_user_id=g.actor_user_id,
- reenabled_scope=jsonb_build_object('newBundleId',p_new_bundle),reenabled_at=clock_timestamp(),updated_at=clock_timestamp(),version=version+1
+ reenabled_scope=jsonb_build_object('newBundleId',p_new_bundle)||CASE WHEN q.scope_kind='AUTHORITY_VERSION' THEN
+  jsonb_build_object('organizationId',q.organization_id,'invalidAuthorityVersion',q.authority_version_reference,
+   'allActiveConsumersReplaced',true,'invalidVersionRemainsForbidden',true) ELSE '{}'::jsonb END,reenabled_at=clock_timestamp(),updated_at=clock_timestamp(),version=version+1
  WHERE id=p_id;
  RETURN true;
 END $$;
@@ -1308,9 +1566,46 @@ GRANT EXECUTE ON FUNCTION ops.activate_ad_regression_containment(uuid),ops.activ
 INSERT INTO platform.control_route_inventory(schema_name,table_name,route_kind,scope_kind,routing_note)
  VALUES('ops','ad_containment_attestation','NO_ROUTE',NULL,'immutable independent recovery attestations; no old asset resurrection');
 
+-- Organization-wide authority quarantine is a human narrowing operation. It
+-- does not edit the referenced version or claim a new production permission.
+CREATE FUNCTION ops.activate_ad_authority_version_containment(p_id uuid,p_authority uuid,
+ p_review_owner uuid,p_reason text,p_evidence text,p_proof text) RETURNS uuid
+LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,ops,core,iam,pg_temp AS $$
+DECLARE g iam.ad_invocation_grant%ROWTYPE; required_actor uuid; allowed_roles text[]; authority_index integer;
+BEGIN
+ g:=ops.consume_ad_control_invocation(p_proof,'AUTHORITY_VERSION_STOP',p_authority,p_id);
+ PERFORM pg_advisory_xact_lock(hashtext('ad_action_reservation'),hashtext(g.organization_id::text));
+ IF p_authority IS NULL OR p_review_owner IS NULL OR nullif(btrim(p_reason),'') IS NULL
+ OR nullif(btrim(p_evidence),'') IS NULL THEN
+  RAISE EXCEPTION 'exact authority version and closure review metadata required' USING ERRCODE='MO036'; END IF;
+ FOR authority_index IN 1..2 LOOP
+  required_actor:=CASE authority_index WHEN 1 THEN g.actor_user_id ELSE p_review_owner END;
+  allowed_roles:=CASE authority_index WHEN 1 THEN ARRAY['OWNER','OPS_LEAD'] ELSE ARRAY['OPS_LEAD'] END;
+  IF NOT EXISTS(SELECT 1 FROM unnest(allowed_roles) required_role
+    WHERE ops.ad_actor_has_organization_role_scope(required_actor,g.organization_id,required_role,'ADVERTISING_POLICY_MANAGE')) THEN
+   RAISE EXCEPTION 'organization-wide policy control and review-owner scope required' USING ERRCODE='MO064'; END IF;
+ END LOOP;
+ IF NOT EXISTS(SELECT 1 FROM ops.ad_decision_policy_bundle b WHERE b.organization_id=g.organization_id
+   AND ops.ad_bundle_consumes_authority_version(b.id,p_authority))
+ AND NOT EXISTS(SELECT 1 FROM ops.ad_manual_execution_packet packet WHERE packet.organization_id=g.organization_id
+   AND p_authority::text=ANY(ARRAY[packet.semantic_profile_id::text,to_jsonb(packet)#>>'{authority_snapshot,policy,id}',
+     to_jsonb(packet)#>>'{authority_snapshot,outcomePolicy,id}'])) THEN
+  RAISE EXCEPTION 'authority version is not consumed by this organization' USING ERRCODE='MO064'; END IF;
+ INSERT INTO ops.ad_containment(id,organization_id,containment_kind,scope_kind,authority_version_reference,
+  cause_class,reason,evidence_reference,activated_by_user_id,activated_at,state,correlation_id,
+  created_at,updated_at,review_owner_user_id)
+ VALUES(p_id,g.organization_id,'AUTHORITY_VERSION_QUARANTINE','AUTHORITY_VERSION',p_authority::text,
+  'AUTHORITY_VERSION_INVALID',p_reason,p_evidence,g.actor_user_id,clock_timestamp(),'ACTIVE',
+  'ad-authority-version-stop',clock_timestamp(),clock_timestamp(),p_review_owner);
+ RETURN p_id;
+END $$;
+REVOKE ALL ON FUNCTION ops.activate_ad_authority_version_containment(uuid,uuid,uuid,text,text,text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION ops.activate_ad_authority_version_containment(uuid,uuid,uuid,text,text,text) TO marketops_app;
+
 CREATE FUNCTION ops.ad_gate_scope_is_monotonic() RETURNS trigger LANGUAGE plpgsql
 SET search_path=pg_catalog,ops,pg_temp AS $$
 DECLARE prior ops.ad_gate_authority%ROWTYPE; object_id uuid; value jsonb;
+ prior_exposure core.ad_exposure_envelope%ROWTYPE; current_exposure core.ad_exposure_envelope%ROWTYPE;
 BEGIN
  IF NEW.status<>'ACTIVE' THEN RETURN NEW; END IF;
  FOREACH object_id IN ARRAY NEW.native_object_ids LOOP
@@ -1328,8 +1623,41 @@ BEGIN
   OR prior.organization_id<>NEW.organization_id OR prior.platform_code<>NEW.platform_code
   OR prior.marketplace_account_id<>NEW.marketplace_account_id OR prior.store_id<>NEW.store_id
   OR prior.direction<>NEW.direction OR prior.candidate_basis<>NEW.candidate_basis
+  OR prior.currency_code<>NEW.currency_code OR NEW.max_bid_change_amount>prior.max_bid_change_amount
   OR NOT NEW.native_object_ids <@ prior.demonstrated_object_ids THEN
    RAISE EXCEPTION 'Gate E cannot exceed demonstrated Gate EV scope' USING ERRCODE='MO092'; END IF;
+  -- This authority model represents demonstrated exact native value pairs, not
+  -- an inferred numerical range. A different pair requires new accepted evidence.
+  FOREACH object_id IN ARRAY NEW.native_object_ids LOOP
+   IF NEW.exact_object_values->object_id::text IS DISTINCT FROM prior.exact_object_values->object_id::text THEN
+    RAISE EXCEPTION 'Gate E native values must be demonstrated by its exact predecessor' USING ERRCODE='MO092'; END IF;
+  END LOOP;
+  SELECT e.* INTO prior_exposure FROM core.ad_exposure_envelope e
+   JOIN ops.ad_decision_policy_bundle b ON b.exposure_envelope_id=e.id WHERE b.id=prior.bundle_id;
+  SELECT e.* INTO current_exposure FROM core.ad_exposure_envelope e
+   JOIN ops.ad_decision_policy_bundle b ON b.exposure_envelope_id=e.id WHERE b.id=NEW.bundle_id;
+  IF prior_exposure.id IS NULL OR current_exposure.id IS NULL
+   OR current_exposure.status<>'ACTIVE'
+   OR current_exposure.organization_id<>NEW.organization_id OR prior_exposure.organization_id<>NEW.organization_id
+   OR current_exposure.currency_code<>prior_exposure.currency_code
+   OR current_exposure.scope_kind<>prior_exposure.scope_kind
+   OR current_exposure.platform_code IS DISTINCT FROM prior_exposure.platform_code
+   OR current_exposure.store_ref_id IS DISTINCT FROM prior_exposure.store_ref_id
+   OR current_exposure.retained_window_days IS DISTINCT FROM prior_exposure.retained_window_days
+   OR current_exposure.measurement_window_hours IS DISTINCT FROM prior_exposure.measurement_window_hours
+   OR current_exposure.cumulative_window_hours IS DISTINCT FROM prior_exposure.cumulative_window_hours
+   OR current_exposure.max_active_interventions>prior_exposure.max_active_interventions
+   OR current_exposure.max_affected_retained_sales_share>prior_exposure.max_affected_retained_sales_share
+   OR current_exposure.max_associated_spend_amount>prior_exposure.max_associated_spend_amount
+   OR current_exposure.max_cumulative_bid_change_amount>prior_exposure.max_cumulative_bid_change_amount
+   OR current_exposure.max_unresolved_transmitted_writes>prior_exposure.max_unresolved_transmitted_writes
+   OR current_exposure.reserved_recovery_headroom_count<prior_exposure.reserved_recovery_headroom_count THEN
+    RAISE EXCEPTION 'Gate E cannot broaden the demonstrated aggregate exposure authority' USING ERRCODE='MO092'; END IF;
+  -- Gate EV's historical evidence window is not the new Pilot window. The new
+  -- Owner Gate has its own bounded window; actual sealing and admission still
+  -- intersect it with every current Profile, Bundle, Envelope and actor expiry.
+  -- Likewise EV's one-time command count is not an ongoing aggregate limit:
+  -- the exact current Gate count and all six Envelope axes remain independent.
  END IF;
  RETURN NEW;
 END $$;
@@ -1545,3 +1873,171 @@ FOR EACH ROW EXECUTE FUNCTION ops.invalidate_ad_compensation_on_authority_change
 -- A caller-selected role or containment identity cannot create another route.
 REVOKE ALL ON FUNCTION ops.reopen_ad_lineage_after_regression(uuid,uuid,text,text)
  FROM PUBLIC,marketops_app;
+
+-- Human revocation is an epoch, not a temporary false result that revives on restore.
+CREATE FUNCTION ops.invalidate_ad_assets_on_human_authority_change() RETURNS trigger
+LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,ops,iam,pg_temp AS $$
+DECLARE actors uuid[];
+BEGIN
+ IF TG_TABLE_NAME='user_account' THEN
+  IF TG_OP='UPDATE' AND ROW(OLD.status,OLD.identity_provider_id,OLD.external_subject,OLD.credentials_valid_from)
+    IS NOT DISTINCT FROM ROW(NEW.status,NEW.identity_provider_id,NEW.external_subject,NEW.credentials_valid_from) THEN RETURN NEW; END IF;
+  actors:=ARRAY[OLD.id];
+ ELSIF TG_TABLE_NAME='identity_provider' THEN
+  IF TG_OP='UPDATE' AND to_jsonb(OLD)-ARRAY['display_name','updated_at','version']
+    IS NOT DISTINCT FROM to_jsonb(NEW)-ARRAY['display_name','updated_at','version'] THEN RETURN NEW; END IF;
+  SELECT array_agg(id) INTO actors FROM iam.user_account WHERE identity_provider_id=OLD.id;
+ ELSE
+  IF TG_OP='UPDATE' AND to_jsonb(OLD)-ARRAY['reason','updated_at','version']
+    IS NOT DISTINCT FROM to_jsonb(NEW)-ARRAY['reason','updated_at','version'] THEN RETURN NEW; END IF;
+  actors:=ARRAY[OLD.user_id];
+ END IF;
+ INSERT INTO ops.ad_authority_invalidation(organization_id,authorization_id,cause_reference,cause_code)
+ SELECT a.organization_id,a.id,OLD.id,'HUMAN_AUTHORITY_CHANGED' FROM ops.ad_action_authorization a
+ WHERE a.maker_user_id=ANY(actors) OR a.endorser_user_id=ANY(actors) OR a.final_approver_user_id=ANY(actors)
+ ON CONFLICT DO NOTHING;
+ UPDATE ops.ad_manual_execution_packet packet SET state='MANUAL_PACKET_REVOKED',revoked_at=clock_timestamp(),
+   revoked_reason='HUMAN_AUTHORITY_CHANGED',updated_at=clock_timestamp(),version=version+1
+ WHERE packet.state IN('MANUAL_PACKET_DRAFT','MANUAL_PACKET_ENDORSED','MANUAL_PACKET_ISSUED')
+ AND (packet.maker_user_id=ANY(actors) OR packet.endorser_user_id=ANY(actors) OR packet.approver_user_id=ANY(actors));
+ UPDATE ops.ad_manual_execution_packet packet SET state='MANUAL_EXECUTION_UNCERTAIN',current_proof_id=NULL,
+   updated_at=clock_timestamp(),version=version+1
+ WHERE packet.execution_started_at IS NOT NULL AND packet.state IN('MANUAL_EXECUTION_IN_PROGRESS',
+  'ACTION_REPORTED_CONFIGURATION_UNVERIFIED','MANUAL_CONFIGURATION_VERIFIED','MANUAL_EXECUTION_UNCERTAIN')
+ AND (packet.maker_user_id=ANY(actors) OR packet.endorser_user_id=ANY(actors)
+   OR packet.approver_user_id=ANY(actors) OR packet.executor_user_id=ANY(actors));
+ UPDATE ops.ad_action_reservation held SET configuration_resolved=false,unknown_or_mismatch_open=true,version=held.version+1
+ FROM ops.ad_manual_execution_packet packet WHERE packet.reservation_id=held.id AND held.state='ACTIVE'
+ AND packet.execution_started_at IS NOT NULL AND packet.state='MANUAL_EXECUTION_UNCERTAIN'
+ AND (packet.maker_user_id=ANY(actors) OR packet.endorser_user_id=ANY(actors)
+   OR packet.approver_user_id=ANY(actors) OR packet.executor_user_id=ANY(actors));
+ RETURN CASE WHEN TG_OP='DELETE' THEN OLD ELSE NEW END;
+END $$;
+REVOKE ALL ON FUNCTION ops.invalidate_ad_assets_on_human_authority_change() FROM PUBLIC,marketops_app;
+DO $$ DECLARE relation text; BEGIN
+ FOREACH relation IN ARRAY ARRAY['iam.user_account','iam.user_role_assignment','iam.user_scope_grant','iam.identity_provider'] LOOP
+  EXECUTE format('CREATE TRIGGER ad_human_authority_invalidates AFTER UPDATE OR DELETE ON %s FOR EACH ROW EXECUTE FUNCTION ops.invalidate_ad_assets_on_human_authority_change()',relation);
+ END LOOP;
+END $$;
+
+-- AC131: read existing Shared authority. No new fact, policy or PriceCommand writer.
+-- Nonterminal actual commands are known interventions; Tasks/recommendations are not.
+CREATE FUNCTION ops.ad_listing_isolation_context(p_listing uuid,p_at timestamptz)
+RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER
+SET search_path=pg_catalog,core,ops,pg_temp AS $$
+ WITH price AS (
+  SELECT p.*,v.ingestion_time,v.source_time FROM core.listing_price_observation p
+  JOIN core.fact_provenance v ON v.id=p.provenance_id
+  WHERE p.platform_listing_variant_id=p_listing AND p.observed_at<p_at
+   AND coalesce(v.ingestion_time,v.source_time)<=p_at AND (v.source_time IS NULL OR v.source_time<=p_at)
+   AND NOT EXISTS(SELECT 1 FROM core.listing_price_observation n JOIN core.fact_provenance nv ON nv.id=n.provenance_id
+     WHERE n.supersedes_fact_id=p.id AND n.observed_at<p_at
+      AND coalesce(nv.ingestion_time,nv.source_time)<=p_at AND (nv.source_time IS NULL OR nv.source_time<=p_at))
+  ORDER BY p.observed_at DESC,p.id DESC LIMIT 1
+ ), health AS (
+  SELECT h.* FROM core.listing_health_observation h JOIN core.fact_provenance v ON v.id=h.provenance_id
+  WHERE h.platform_listing_variant_id=p_listing AND h.observed_at<p_at
+   AND coalesce(v.ingestion_time,v.source_time)<=p_at AND (v.source_time IS NULL OR v.source_time<=p_at)
+   AND NOT EXISTS(SELECT 1 FROM core.listing_health_observation n JOIN core.fact_provenance nv ON nv.id=n.provenance_id
+     WHERE n.supersedes_fact_id=h.id AND n.observed_at<p_at
+      AND coalesce(nv.ingestion_time,nv.source_time)<=p_at AND (nv.source_time IS NULL OR nv.source_time<=p_at))
+  ORDER BY h.observed_at DESC,h.id DESC LIMIT 1
+ ), stock AS (
+  SELECT DISTINCT ON(s.fulfillment_mode_code) s.* FROM core.listing_stock_observation s
+  JOIN core.fact_provenance v ON v.id=s.provenance_id
+  WHERE s.platform_listing_variant_id=p_listing AND s.observed_at<p_at
+   AND coalesce(v.ingestion_time,v.source_time)<=p_at AND (v.source_time IS NULL OR v.source_time<=p_at)
+   AND NOT EXISTS(SELECT 1 FROM core.listing_stock_observation n JOIN core.fact_provenance nv ON nv.id=n.provenance_id
+     WHERE n.supersedes_fact_id=s.id AND n.observed_at<p_at
+      AND coalesce(nv.ingestion_time,nv.source_time)<=p_at AND (nv.source_time IS NULL OR nv.source_time<=p_at))
+  ORDER BY s.fulfillment_mode_code,s.observed_at DESC,s.id DESC
+ )
+ SELECT jsonb_build_object(
+  'listingVariantId',p_listing,'price',(SELECT coalesce(discount_price,selling_price,list_price) FROM price),
+  'currency',(SELECT currency_code FROM price),'promotion',(SELECT promotion_active FROM price),
+  'sellable',(SELECT sellable FROM health),'nativeStatus',(SELECT native_status FROM health),
+  'contentCompleteness',(SELECT content_completeness FROM health),
+  'availability',(SELECT CASE WHEN count(*)=0 OR bool_or(available_quantity IS NULL) THEN NULL
+                     WHEN sum(available_quantity)>0 THEN 'POSITIVE' ELSE 'ZERO' END FROM stock),
+  'evidence',jsonb_build_object('price',(SELECT id FROM price),'health',(SELECT id FROM health),
+                     'stock',(SELECT coalesce(jsonb_agg(id ORDER BY id),'[]'::jsonb) FROM stock)))
+$$;
+REVOKE ALL ON FUNCTION ops.ad_listing_isolation_context(uuid,timestamptz) FROM PUBLIC,marketops_app;
+
+CREATE FUNCTION ops.ad_action_isolation_snapshot(p_set uuid,p_baseline uuid,p_at timestamptz)
+RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER
+SET search_path=pg_catalog,ops,core,mart,pg_temp AS $$
+DECLARE a record; b record; item record; before_context jsonb; after_context jsonb; factor text;
+ failures text[]:=ARRAY[]::text[]; uncertainties text[]:=ARRAY[]::text[];
+ commands jsonb:='[]'::jsonb; contexts jsonb:='[]'::jsonb; listings uuid[];
+BEGIN
+ SELECT * INTO a FROM core.ad_affected_set WHERE id=p_set;
+ IF p_at IS NULL OR a.id IS NULL OR a.resolution_state<>'COMPLETE' OR a.resolved_at>p_at OR cardinality(a.product_variant_ids)=0 THEN
+  RETURN jsonb_build_object('state','UNRESOLVED','failures','[]'::jsonb,
+   'uncertainties',jsonb_build_array('CROSS_DOMAIN_CONTEXT_UNRESOLVED'),
+   'knownPriceCommands','[]'::jsonb,'contexts','[]'::jsonb,'affectedSetId',p_set,'asOf',p_at);
+ END IF;
+ -- Internal Variant overlap includes listings in other stores/platforms, while retaining
+ -- the exact frozen listing scope even if its current mapping has since ended.
+ SELECT array_agg(DISTINCT id ORDER BY id) INTO listings FROM (
+   SELECT unnest(a.platform_listing_variant_ids) id
+   UNION SELECT m.platform_listing_variant_id FROM core.listing_mapping m
+    WHERE m.organization_id=a.organization_id AND m.product_variant_id=ANY(a.product_variant_ids)
+      AND m.status IN('ACTIVE','ENDED') AND m.effective_from<=p_at
+      AND (m.effective_to IS NULL OR m.effective_to>p_at)) scoped;
+ IF cardinality(listings)=0 OR listings IS NULL THEN
+  uncertainties:=array_append(uncertainties,'CROSS_DOMAIN_CONTEXT_UNRESOLVED');
+ END IF;
+ -- A real command is already bound to the Shared approval/authority snapshot. An
+ -- unexecuted recommendation or Task is deliberately absent from this predicate.
+ SELECT coalesce(jsonb_agg(jsonb_build_object('commandId',c.id,'listingVariantId',c.platform_listing_variant_id,
+    'state',c.state,'priorPrice',c.prior_price,'targetPrice',c.target_price,'currency',c.currency_code)
+    ORDER BY c.id),'[]'::jsonb) INTO commands FROM ops.price_command c
+ WHERE c.organization_id=a.organization_id AND c.platform_listing_variant_id=ANY(listings)
+  AND c.created_at<=p_at AND c.state NOT IN('SUCCEEDED','FAILED_FINAL','COMPENSATED','COMPENSATION_FAILED')
+  AND c.target_price<>c.prior_price;
+ IF jsonb_array_length(commands)>0 THEN failures:=array_append(failures,'KNOWN_CROSS_DOMAIN_INTERVENTION'); END IF;
+ IF p_baseline IS NULL THEN
+  uncertainties:=array_append(uncertainties,'CROSS_DOMAIN_CONTEXT_UNRESOLVED');
+ ELSE
+  SELECT * INTO b FROM ops.ad_outcome_baseline WHERE id=p_baseline;
+  IF b.id IS NULL OR b.organization_id<>a.organization_id OR b.affected_set_id<>a.id
+   OR b.ad_native_object_id<>a.ad_native_object_id OR b.affected_set_digest<>a.affected_set_digest
+   OR b.prepared_at>p_at THEN failures:=array_append(failures,'CROSS_DOMAIN_BASELINE_IDENTITY_MISMATCH');
+  ELSE
+   IF cardinality(b.listing_variant_ids)=0 THEN uncertainties:=array_append(uncertainties,'CROSS_DOMAIN_CONTEXT_UNRESOLVED'); END IF;
+   FOR item IN SELECT unnest(b.listing_variant_ids) id LOOP
+    before_context:=ops.ad_listing_isolation_context(item.id,b.prepared_at);
+    after_context:=ops.ad_listing_isolation_context(item.id,p_at);
+    contexts:=contexts||jsonb_build_array(jsonb_build_object('listingVariantId',item.id,
+          'frozenAt',b.prepared_at,'before',before_context,'current',after_context));
+    -- Known-to-known change is non-comparable. One unknown factor does not hide a
+    -- different known factor, and unknown itself is not invented material change.
+    FOREACH factor IN ARRAY ARRAY['price','currency','promotion','sellable','availability'] LOOP
+     IF before_context->>factor IS NULL OR after_context->>factor IS NULL
+       OR before_context->>factor='UNKNOWN' OR after_context->>factor='UNKNOWN' THEN
+      uncertainties:=array_append(uncertainties,'CROSS_DOMAIN_CONTEXT_UNRESOLVED');
+     ELSIF before_context->factor IS DISTINCT FROM after_context->factor THEN
+      failures:=array_append(failures,'CROSS_DOMAIN_BASELINE_NOT_COMPARABLE');
+     END IF;
+    END LOOP;
+   END LOOP;
+  END IF;
+ END IF;
+ SELECT coalesce(array_agg(DISTINCT reason ORDER BY reason),ARRAY[]::text[]) INTO failures FROM unnest(failures) reason;
+ SELECT coalesce(array_agg(DISTINCT reason ORDER BY reason),ARRAY[]::text[]) INTO uncertainties FROM unnest(uncertainties) reason;
+ RETURN jsonb_build_object('state',CASE WHEN cardinality(failures)>0 THEN 'UNAVAILABLE'
+    WHEN cardinality(uncertainties)>0 THEN 'UNRESOLVED' ELSE 'ISOLATED' END,
+    'failures',to_jsonb(failures),'uncertainties',to_jsonb(uncertainties),
+    'knownPriceCommands',commands,'contexts',contexts,
+    'comparisonBasis','EXACT_ACCEPTED_PRE_ACTION_CONTEXT','affectedSetId',a.id,'asOf',p_at,
+    'concurrencyBoundary','Committed known changes rechecked before transmission; no shared PriceCommand serialization claimed');
+END $$;
+REVOKE ALL ON FUNCTION ops.ad_action_isolation_snapshot(uuid,uuid,timestamptz) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION ops.ad_action_isolation_snapshot(uuid,uuid,timestamptz) TO marketops_app;
+CREATE FUNCTION ops.ad_action_isolation_failures(p_set uuid,p_baseline uuid,p_at timestamptz)
+RETURNS text[] LANGUAGE plpgsql STABLE SECURITY DEFINER
+SET search_path=pg_catalog,ops,core,pg_temp AS $$
+BEGIN RETURN ARRAY(SELECT jsonb_array_elements_text(ops.ad_action_isolation_snapshot(p_set,p_baseline,p_at)->'failures')); END $$;
+REVOKE ALL ON FUNCTION ops.ad_action_isolation_failures(uuid,uuid,timestamptz) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION ops.ad_action_isolation_failures(uuid,uuid,timestamptz) TO marketops_app;

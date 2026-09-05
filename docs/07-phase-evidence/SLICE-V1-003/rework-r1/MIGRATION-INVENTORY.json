@@ -1,6 +1,6 @@
 {
   "kind": "SLICE_V1_003_R1_WORKING_TREE_MIGRATION_INVENTORY",
-  "generated_at": "2026-09-05T05:09:44.979543+00:00",
+  "generated_at": "2026-09-05T10:10:13.708695+00:00",
   "protected_base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
   "reviewed_head": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
   "binding": "Current inspected bytes; exact committed migration identity is separately recorded by collect_slice3_rework_identity.py after checkpoint. This inventory alone asserts no successful migration.",
@@ -484,10 +484,10 @@
     {
       "version": "0038",
       "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
-      "bytes": 44941,
+      "bytes": 44973,
       "lines": 824,
-      "sha256": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd",
-      "git_blob_sha1": "21bf22a1cf382013d164a687c5e68c1c661be38d",
+      "sha256": "aa9a8b939d5301d42f13c4eb07b933dfeb052aec21d25c0fc0ebe6e2df3e1f27",
+      "git_blob_sha1": "cbd095f98faeab440aa1334d78810b0f91fe29ea",
       "scope": "AUTHORIZED_CANDIDATE_REWORK"
     },
     {
@@ -520,19 +520,19 @@
     {
       "version": "0042",
       "path": "backend/marketops-server/src/main/resources/db/migration/V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
-      "bytes": 62816,
-      "lines": 1251,
-      "sha256": "a4df9505dd45b053e1f00b82e8ac87ec3d2c1c622eb722aace16015a1e385565",
-      "git_blob_sha1": "05d0e7f05643a0b3e50bf78c4654506c58b68260",
+      "bytes": 65619,
+      "lines": 1294,
+      "sha256": "5b0acaf803755c6e20ee407e539090ae1528d468224274b3e15c42473d73eb37",
+      "git_blob_sha1": "26a59e1823f9b2e57ab1ded345ff1fd4096714ce",
       "scope": "AUTHORIZED_CANDIDATE_REWORK"
     },
     {
       "version": "0043",
       "path": "backend/marketops-server/src/main/resources/db/migration/V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
-      "bytes": 29249,
-      "lines": 580,
-      "sha256": "cf162db4a2da6ae9790fdcfcfb8c0e1ade5c18fd329e8a2ee232595a361dfb2a",
-      "git_blob_sha1": "b066255fed59c84ab7fbf29f6a31ae542d94c43f",
+      "bytes": 29526,
+      "lines": 582,
+      "sha256": "128374ef80ab98ae8f2b803624814c1f019489deb5b69b4892b4dd7b935fc3c4",
+      "git_blob_sha1": "fb59def02b0e3490dd4fc29ae8e5b40fe2fae5b0",
       "scope": "AUTHORIZED_CANDIDATE_REWORK"
     },
     {
@@ -664,10 +664,10 @@
     {
       "version": "0058",
       "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
-      "bytes": 123671,
-      "lines": 1547,
-      "sha256": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523",
-      "git_blob_sha1": "6e99030565662dae39bf1905394714dd4c617c41",
+      "bytes": 163855,
+      "lines": 2043,
+      "sha256": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5",
+      "git_blob_sha1": "04bde829bb3ec2b9c0e6d0e5d071e9641eaa3a18",
       "scope": "R1_ADDITIVE"
     },
     {
@@ -682,10 +682,10 @@
     {
       "version": "0060",
       "path": "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
-      "bytes": 36184,
-      "lines": 415,
-      "sha256": "8a73b4c7f4bf6fcbbeb9d6ab40ae26687e9f0a3505676e701472adb8f65a725d",
-      "git_blob_sha1": "9a932c2885871db712bfbdac9151192e36d47cf1",
+      "bytes": 36670,
+      "lines": 420,
+      "sha256": "ccf8498c7a68a3aac2e1960d341095cea03fddcfe618d83dc5745d8f2b78cd0c",
+      "git_blob_sha1": "7095ea2e3a2d3dbc034d4b6de7a35410e73d3e62",
       "scope": "R1_ADDITIVE"
     },
     {
