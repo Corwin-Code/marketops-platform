@@ -1,0 +1,29 @@
+{
+  "attempt": "r2",
+  "startedAt": "2026-09-05T02:43:10.741064+00:00",
+  "finishedAt": "2026-09-05T02:43:48.927198+00:00",
+  "durationSeconds": 38.186,
+  "command": "bash scripts/validation/advertising_browser_isolated.sh",
+  "workingDirectory": "/Users/chzhengx/Code/personal/marketops-platform",
+  "exitCode": 1,
+  "result": "FAILED",
+  "sourceInputSha256": "2bafd4634b5dc89f1234ad86f3bfbb483ffc9877886244e112f18e0438d267df",
+  "sourceUnchanged": true,
+  "resources": {
+    "os": "macOS-26.6.2-arm64-arm-64bit",
+    "architecture": "arm64",
+    "cpuCount": 8,
+    "physicalMemoryBytes": 17179869184,
+    "postgresImage": "postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3",
+    "network": "A fresh dedicated Docker bridge network with inter-container communication disabled and one loopback-only non-5432 PostgreSQL endpoint; dedicated namespace cleaned by the script",
+    "realProviderAccess": false,
+    "productionWriteEnabled": false
+  },
+  "dataIdentityCaptured": true,
+  "log": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-r2/runtime.log",
+    "sha256": "4224474b0674544c512981f59943b11756c38104c83834d7c8c85ec5ac393224"
+  },
+  "artifacts": [],
+  "evidenceLimit": "Browser HTTP/JWT/IAM/SQL/rendering evidence. Explicit synthetic lane and history rows do not establish Provider or canonical outcome computation truth; those have independent PostgreSQL tests. No final remote CI claim."
+}

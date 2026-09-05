@@ -1,0 +1,29 @@
+{
+  "files": [
+    {
+      "path": "/tmp/slice3-final-22-clause-review/README.md",
+      "sha256": "ca05956e75981867850595032a2f141defb669daf7944f27c0f076ba4ba21291",
+      "bytes": 1568
+    },
+    {
+      "path": "/tmp/slice3-final-22-clause-review/browser-evidence.json",
+      "sha256": "a4fa219c8db38499c3bb157abed5dd4f244aa59262fedc19c0c28bc9301706a9",
+      "bytes": 54133
+    },
+    {
+      "path": "/tmp/slice3-final-22-clause-review/named-proof-catalog.json",
+      "sha256": "299c6507f2a1d334d1732e25397183f2d16f44bc246fb50cd0e0b11375225b9a",
+      "bytes": 308476
+    },
+    {
+      "path": "/tmp/slice3-final-22-clause-review/review.json",
+      "sha256": "dac7e4d844add31fe3a8f620d986af41e68c42345ad2ef4df69221a4e4876c1d",
+      "bytes": 711094
+    }
+  ],
+  "generatorSha256": "0ac949ac31a0fd98d4f34a71de7e5e1b03b316186bf7c5f094c76965a0cc1d25",
+  "rowCount": 22,
+  "clauseCount": 115,
+  "proofCount": 120,
+  "unmatchedExplicitMethods": []
+}

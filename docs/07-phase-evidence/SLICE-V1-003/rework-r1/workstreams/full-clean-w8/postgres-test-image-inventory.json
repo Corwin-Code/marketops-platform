@@ -1,0 +1,53 @@
+{
+  "recordedAtUTC": "2026-09-05T13:03:10.879156+00:00",
+  "scope": "Exact requested PostgreSQL images from the full-suite fixture source, with local image IDs and repository digests; all containers are isolated test fixtures.",
+  "sourceReferences": {
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java": "5cb311838dc236a5dc076348446817daa9cd2742d115bde6ff6347c454af27ba",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/database/PostgresContainerSupport.java": "51f3149c0580457f668162a1701aa6acd07500a53277764a5c0186e33bc83a9b",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/internal/migration/ManagedProfileMigrationIT.java": "9b78cd0097c146dbc8148d9af42e425b723b3de49a09bfcd49da6b2aec0590ec"
+  },
+  "images": [
+    {
+      "requestedImage": "postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3",
+      "argv": [
+        "docker",
+        "image",
+        "inspect",
+        "postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3",
+        "--format",
+        "{{json .Id}} {{json .RepoDigests}}"
+      ],
+      "exitCode": 0,
+      "stdout": "\"sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3\" [\"postgres@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3\"]",
+      "stderr": ""
+    },
+    {
+      "requestedImage": "postgres:18.4",
+      "argv": [
+        "docker",
+        "image",
+        "inspect",
+        "postgres:18.4",
+        "--format",
+        "{{json .Id}} {{json .RepoDigests}}"
+      ],
+      "exitCode": 0,
+      "stdout": "\"sha256:a02db8cac496f15b094798a38254f14d6e00741f709360e5e00bb6668ea31636\" [\"postgres@sha256:a02db8cac496f15b094798a38254f14d6e00741f709360e5e00bb6668ea31636\"]",
+      "stderr": ""
+    },
+    {
+      "requestedImage": "postgres:18.4-bookworm@sha256:882236b897e39051d2368c5ccc6cda944904723506b2dfc97f2a8f5bc9afa382",
+      "argv": [
+        "docker",
+        "image",
+        "inspect",
+        "postgres:18.4-bookworm@sha256:882236b897e39051d2368c5ccc6cda944904723506b2dfc97f2a8f5bc9afa382",
+        "--format",
+        "{{json .Id}} {{json .RepoDigests}}"
+      ],
+      "exitCode": 0,
+      "stdout": "\"sha256:882236b897e39051d2368c5ccc6cda944904723506b2dfc97f2a8f5bc9afa382\" [\"postgres@sha256:882236b897e39051d2368c5ccc6cda944904723506b2dfc97f2a8f5bc9afa382\"]",
+      "stderr": ""
+    }
+  ]
+}

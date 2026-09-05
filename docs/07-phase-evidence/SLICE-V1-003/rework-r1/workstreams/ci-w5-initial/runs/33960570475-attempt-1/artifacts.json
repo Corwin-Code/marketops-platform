@@ -1,0 +1,22 @@
+[
+  {
+    "id": 9967796699,
+    "node_id": "MDg6QXJ0aWZhY3Q5OTY3Nzk2Njk5",
+    "name": "frontend-distribution",
+    "size_in_bytes": 156696,
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9967796699",
+    "archive_download_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/artifacts/9967796699/zip",
+    "expired": false,
+    "digest": "sha256:289e4bb0c142910eff9931b006ac7f8e71be7d126df7e5b265952f842e3574d8",
+    "created_at": "2026-09-05T10:24:50Z",
+    "updated_at": "2026-09-05T10:24:50Z",
+    "expires_at": "2026-10-05T10:24:49Z",
+    "workflow_run": {
+      "id": 33960570475,
+      "repository_id": 1326128060,
+      "head_repository_id": 1326128060,
+      "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+      "head_sha": "247ea5ced6cd0ac110314db9fa606d8995c85cac"
+    }
+  }
+]

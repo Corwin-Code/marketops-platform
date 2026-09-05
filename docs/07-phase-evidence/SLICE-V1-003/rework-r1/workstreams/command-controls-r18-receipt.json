@@ -1,0 +1,35 @@
+{
+  "id": "source-r18-control-suite-pass-whole-run-failed",
+  "command": "mvn -f backend/marketops-server/pom.xml -Dmarketops.build.gitCommit=60638b1fc1a227b50f4b3ede1ba0bb983407bfdc -Dtest=AdvertisingVerticalPathIT,AdBidWriteGateAdversarialIT,AdvertisingPrivilegeBoundaryIT,AdvertisingTransmissionBoundaryIT test > /tmp/slice3-vertical-control-r18.log 2>&1",
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+  "codeHead": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+  "recordedResult": "PARTIAL_FAILURE",
+  "tests": 27,
+  "passed": 26,
+  "failures": 0,
+  "errors": 1,
+  "skips": 0,
+  "sourceSuitesPassed": {
+    "AdBidWriteGateAdversarialIT": 8,
+    "AdvertisingPrivilegeBoundaryIT": 10,
+    "AdvertisingTransmissionBoundaryIT": 7
+  },
+  "otherSuiteResult": {
+    "AdvertisingVerticalPathIT": {
+      "tests": 2,
+      "passed": 1,
+      "errors": 1
+    }
+  },
+  "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-vertical-control-r18.log",
+  "logSha256": "7daf4fff0f738e727f74dbdc81044351032e13db68b6c63ca601d224c0501b6c",
+  "originalLocalLog": "/tmp/slice3-vertical-control-r18.log",
+  "executionConcurrency": "EXCLUSIVE_MAVEN_NO_CLEAN",
+  "environment": "No extra variables passed; execution owner confirms inherited safe local Testcontainers/JDK environment. Independent PostgreSQL and synthetic issuer credentials; productionWrites=false, no real Provider. Not a full environment inventory.",
+  "identityLimit": "Execution owner confirms clean W1 at start. Local targeted suite, not full clean verify and not GitHub CI.",
+  "finishedAt": "2026-09-05T11:14:29+08:00",
+  "elapsedSeconds": 43.125,
+  "errorsPreserved": [
+    "AdvertisingVerticalPathIT.acceptedFactsDriveRealHumanCommandFixtureReadbackAndMatureOutcomeHistory:147 NoSuchElementException: no proven-loss case produced. Source workstream diagnosis and rerun remain separate."
+  ]
+}

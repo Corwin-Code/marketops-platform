@@ -5,7 +5,7 @@ document_type: active_delivery_plan
 product_version: V1
 delivery_model: PRODUCTION_VERTICAL_SLICES
 source_contract: docs/01-requirements/V1_PRODUCT_CONTRACT.md
-active_slice: SLICE-V1-002
+active_slice: SLICE-V1-003
 old_phase_zero_backlog: SUPERSEDED_AS_ACTIVE_EXECUTION_PLAN
 effective_condition: PROTECTED_MAIN_MERGE_AFTER_INDEPENDENT_CONTROLLER_REVIEW_AND_OWNER_AUTHORIZATION
 ```
@@ -49,11 +49,38 @@ See `docs/02-architecture/V1_SHARED_SPINE.md`.
 | ---: | --- | --- | --- | --- |
 | 1 | `SLICE-V1-001 — SKU Growth & Profit Diagnostic Loop` | Cross-domain SKU diagnosis, evidence-linked AI recommendation, task/approval and dual-platform guarded price execution | `PRICE_CHANGE` on Ozon and WB | CONTRACT_APPROVED_EFFECTIVE_ON_PROTECTED_MAIN |
 | 2 | `SLICE-V1-002 — Stockout & Availability Risk with Accountable Response` | Trusted channel and company availability risk, grouped queue, deterministic priority, cause-routed accountable Case with two-stage action and outcome verification, governed Accepted Exception and targeted plus hourly recalculation | none; this Slice has no controlled-write target | ENGINEERING_MERGED_FORMAL_CLOSURE_ACCEPTED_RELEASE_DEFERRED |
-| 3 | `SLICE-V1-003 — Advertising & Traffic Efficiency` | Campaign/target efficiency tied to inventory, conversion and Contribution Profit | selected budget/bid/campaign command | PLANNED |
+| 3 | `SLICE-V1-003 — Advertising & Traffic Efficiency` | Campaign/target efficiency tied to inventory, deterministic ad-linked conversion and dual-axis Advertising Contribution Profit, with deterministic lanes, non-compensating priority, accountable Task, governed Manual Shadow on both platforms, and one bounded per-command approved bid change | `AD_BID_CHANGE` on Ozon and WB | CONTRACT_ACCEPTED_FULL_SCOPE_IMPLEMENTATION |
 | 4 | `SLICE-V1-004 — Promotion & Listing Conversion` | Listing Health, content/promotion diagnosis, experiments and governed content/promotion workflow | selected promotion/listing command | PLANNED |
 | 5 | `SLICE-V1-005 — Order, Fulfillment & Return Control` | Ozon/WB FBO/FBS order state, SLA, return/QC and exception control | selected low-risk order action | PLANNED |
 | 6 | `SLICE-V1-006 — Finance & Contribution Profit Reconciliation` | Operational/Settled Contribution Profit, late adjustments, reconciliation and close workflow | none required by default | PLANNED |
 | 7 | `SLICE-V1-007 — Cross-domain Command Center & V1 Gate` | Integrated daily command center, policy management, cross-domain prioritization and V1 readiness | expand only capabilities that independently pass | PLANNED |
+
+### SLICE-V1-003 controlled-write narrowing, with its original provenance
+
+The row above records the accepted Contract, which names one exact controlled
+write where this roadmap originally left the choice open. The original text is
+preserved here so the change is visible rather than silent:
+
+```text
+SLICE-V1-003 — Advertising & Traffic Efficiency
+Campaign/target efficiency tied to inventory, conversion and Contribution Profit
+new controlled-write target: selected budget/bid/campaign command
+```
+
+The accepted Contract selects `AD_BID_CHANGE` and only `AD_BID_CHANGE`. Budget
+change, campaign pause/resume, bidding-strategy or mode switch, campaign, ad
+group, target or keyword creation, deletion or restructuring, negative keywords,
+search terms, creative and content writes, portfolio reallocation and standing
+policy automation are explicitly out of scope. They remain future product
+Capabilities for a later Slice or an accepted additive Amendment; they are not
+deferred evidence and they are not implied by this one. Both platforms still
+receive the complete governed Manual Shadow path, so a human may lawfully perform
+those actions in the official console under an exact Manual Execution Packet — a
+Packet never creates a hidden Provider API path.
+
+The Slice's Provider write paths remain structurally unreachable. Engineering
+closure for it is `CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS`, and
+`S3-REL-001` through `S3-REL-024` stay production-blocking.
 
 ### SLICE-V1-002 scope narrowing, with its original provenance
 

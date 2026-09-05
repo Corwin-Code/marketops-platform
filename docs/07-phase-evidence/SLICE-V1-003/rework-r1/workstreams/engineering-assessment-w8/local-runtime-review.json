@@ -1,0 +1,244 @@
+{
+  "kind": "W8_COMPLETE_LOCAL_RUNTIME_AND_REPAIRED_BOUNDARY_REVIEW",
+  "reviewedAtUTC": "2026-09-05T13:43:08.501250+00:00",
+  "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "fullRunReceiptSha256": "eca4c0db03e73e68c4c5e7c3737fd8f1068f6d2d71940128da1dbaf4e9c5f1a0",
+  "actualCounts": {
+    "rawTestcaseNodes": 2484,
+    "declaredTests": 2483,
+    "actualFailures": 0,
+    "actualErrors": 0,
+    "actualSkipped": 0
+  },
+  "actualConsole": [
+    {
+      "phase": "surefire",
+      "line": 863,
+      "counts": {
+        "tests": 1560,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "phase": "failsafe",
+      "line": 8021,
+      "counts": {
+        "tests": 924,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    }
+  ],
+  "sourceStable": true,
+  "cleanAfter": true,
+  "completePass": true,
+  "elapsedSeconds": 2149.333,
+  "resourceProof": {
+    "file": "/tmp/slice3-r1-full-clean-w8-9b6e6195/runtime-resources.json",
+    "sha256": "4dd8c67ec12f882167fa01a67d041cd3ac85f127b337d001b67a084c4f85d0a7",
+    "exactOuterAndInnerHashEqual": true,
+    "originalResourceReceipt": {
+      "schemaVersion": "1.0",
+      "recordedAt": "2026-09-05T13:02:07.261072+00:00",
+      "host": {
+        "os": "Darwin",
+        "architecture": "arm64",
+        "logicalProcessors": 8,
+        "physicalMemoryBytes": 17179869184,
+        "processAffinityProcessors": null
+      },
+      "docker": {
+        "logicalProcessors": 4,
+        "memoryBytes": 6210576384,
+        "serverVersion": "29.7.2"
+      },
+      "github": {
+        "runId": null,
+        "runAttempt": null,
+        "job": null,
+        "testedCheckout": null
+      },
+      "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+    },
+    "boundary": "Fresh explicit outer resource collector is authoritative. Original direct sysctl probe error remains in full receipt, not converted to an observed capacity value. Docker limits and JVM host resources are separate."
+  },
+  "capacity": {
+    "file": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/capacity/advertising-capacity-receipt.json",
+    "sha256": "1243a6d86dea5cf7acb418c73506fbba21715faa3275e707eaf08aecb0debeea",
+    "dataset": {
+      "sharedListings": 1,
+      "regressionObjects": 200,
+      "completeAffectedSetMembersPerObject": 1,
+      "nativeObjects": 1000,
+      "stores": 1,
+      "sharedProducts": 1,
+      "organizations": 1
+    },
+    "datasetSha256": "b5bb962f4ece17bff3e0be2b3a2ee9155af19c7eb14fa2c4219f1238b367f7bc",
+    "sourceInputsSha256": "5b4898fccafe074f317a5bd61ddde25551b9cec46ebe722f03160ad9110d4247",
+    "targeted": {
+      "sampleCount": 1000,
+      "criticalSampleCount": 200,
+      "criticalP95Millis": 30789,
+      "maximumMillis": 239115,
+      "hardBreachCount": 0,
+      "clockDefectCount": 0,
+      "pendingRequests": 0,
+      "failedRequests": 0,
+      "oldestFactAcceptedAt": null,
+      "lastSweepState": "NOT_ESTABLISHED",
+      "lastSweepCompletedAt": null,
+      "observedAt": "2026-09-05T13:34:28.432030Z",
+      "windowHours": 24,
+      "incidents": [
+        "HOURLY_RECONCILIATION_NOT_CURRENT"
+      ],
+      "state": "INCIDENT",
+      "distributionState": "MEASURED"
+    },
+    "targetedWallMillis": 237495,
+    "sweepWallMillis": 109169,
+    "hourlyMarginMillis": 3490831,
+    "workerPasses": 5,
+    "responsibilityTasks": 1200,
+    "droppedLateCorrectionRecovered": 1,
+    "scope": "1000 explicitly UNVERIFIED native objects, one organization/Store/shared Variant/listing;200 synthetic containment oracles. Actual gather/calculate/project/Task/brief, Outcome due scanning and blocked write-gate reads; zero admitted commands and no population of mature Outcome evaluations. No multi-store/member or APPLY/mature-Outcome throughput claim.",
+    "intermediateStatePreserved": "Original snapshot before first sweep remains INCIDENT/HOURLY_RECONCILIATION_NOT_CURRENT; it is not relabeled healthy.",
+    "localVsRemote": "Local Git/source/resource proof; no GitHub CI or publication stamps were supplied. Remote jobs require their separate exact artifact provenance."
+  },
+  "selectedRelevantCompleteSuites": [
+    {
+      "phase": "surefire",
+      "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest",
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": "0.03",
+      "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest.xml",
+      "originalTargetPath": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest.xml",
+      "sha256": "50599eb51c18b426535ffbd88c43f2d3584b442e3f56d6bca828f2c74a516fde"
+    },
+    {
+      "phase": "surefire",
+      "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": "0.283",
+      "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest.xml",
+      "originalTargetPath": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest.xml",
+      "sha256": "63ace7a775af1656aaa5268c212d90ad5568a4f3188a450cdd52c155ba0acc70"
+    },
+    {
+      "phase": "failsafe",
+      "name": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": "19.404",
+      "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/failsafe-reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+      "originalTargetPath": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+      "sha256": "055d3c76e436dce9e2774a30819e140e1edbe061d77d5fb4f02467c386a4acec"
+    },
+    {
+      "phase": "failsafe",
+      "name": "com.mimococo.marketops.AdvertisingMinimumExpiryIT",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": "264.528",
+      "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/failsafe-reports/TEST-com.mimococo.marketops.AdvertisingMinimumExpiryIT.xml",
+      "originalTargetPath": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.AdvertisingMinimumExpiryIT.xml",
+      "sha256": "dfdda192b1d40741b672077b0eb04e089bb2a85e0ca6cac95655c8e6cc443a81"
+    },
+    {
+      "phase": "failsafe",
+      "name": "com.mimococo.marketops.AdvertisingReservationIT",
+      "tests": 41,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": "25.794",
+      "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/failsafe-reports/TEST-com.mimococo.marketops.AdvertisingReservationIT.xml",
+      "originalTargetPath": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.AdvertisingReservationIT.xml",
+      "sha256": "582107059c2bb15758f29acf719d6be3c627867fe5219d793ddfe54d8898d9a9"
+    },
+    {
+      "phase": "failsafe",
+      "name": "com.mimococo.marketops.PriceCommandWorkerIT",
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": "13.837",
+      "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/failsafe-reports/TEST-com.mimococo.marketops.PriceCommandWorkerIT.xml",
+      "originalTargetPath": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.PriceCommandWorkerIT.xml",
+      "sha256": "dd99934b3f230216591a494f4d9f9f5241384112a47223ea53009997678de001"
+    },
+    {
+      "phase": "failsafe",
+      "name": "com.mimococo.marketops.RepresentativePerformanceIT",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": "808.041",
+      "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/failsafe-reports/TEST-com.mimococo.marketops.RepresentativePerformanceIT.xml",
+      "originalTargetPath": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.RepresentativePerformanceIT.xml",
+      "sha256": "b0ae6e7def77c2e302ac73d08bcd230d0338f2fc3ad5856c823699217d75ff5c"
+    },
+    {
+      "phase": "failsafe",
+      "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": "354.396",
+      "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+      "originalTargetPath": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+      "sha256": "350dff4052d9fe068321bfaf26afa3f924f49fc8d0ef82aa561f8363d39f7d43"
+    }
+  ],
+  "verifiedJar": {
+    "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+    "tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+    "backendSourceManifestSha256": "939c6792e56c95d7189ad407077e597ac069036cd2374c95c8d4ce632408a6bf",
+    "jars": [
+      {
+        "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar",
+        "preservedJar": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/jars/marketops-server-0.1.0-SNAPSHOT.jar",
+        "sha256": "5d4adebaafed55176832fedac8a1fd1cf950c8a9d5b2f422a1dbe46ad2a12f35",
+        "bytes": 42361851,
+        "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+        "tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+        "embeddedBuildInfo": [
+          {
+            "path": "META-INF/build-info.properties",
+            "sha256": "c281542ac57c40b494b1cbd88e813f31e76f24165252811c17c18269c2c1b342",
+            "properties": {
+              "build.artifact": "marketops-server",
+              "build.gitCommit": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+              "build.group": "com.mimococo.marketops",
+              "build.name": "MarketOps Server",
+              "build.time": "2026-01-01T00\\:00\\:00Z",
+              "build.version": "0.1.0-SNAPSHOT"
+            }
+          }
+        ],
+        "embeddedSourceStampMatchesHead": true
+      }
+    ],
+    "sourceStable": true
+  },
+  "scopeLimit": "This is full backend execution plus specifically inspected capacity/source facts, not automatic 22-finding or200-criterion/Controller closure. A separately found SLO UI unknown-display defect remains under repair.",
+  "productionWriteEnabled": false
+}

@@ -1,0 +1,1122 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------< com.mimococo.marketops:marketops-server >---------------
+[INFO] Building MarketOps Server 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ marketops-server ---
+[INFO] Deleting /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target
+[INFO] 
+[INFO] --- enforcer:3.6.3:enforce (enforce-toolchain-and-dependencies) @ marketops-server ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[INFO] Rule 2: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[INFO] 
+[INFO] --- jacoco:0.8.15:prepare-agent (prepare-coverage) @ marketops-server ---
+[INFO] argLine set to -javaagent:/Users/chzhengx/.m2/repository/org/jacoco/org.jacoco.agent/0.8.15/org.jacoco.agent-0.8.15-runtime.jar=destfile=/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/jacoco.exec
+[INFO] 
+[INFO] --- spring-boot:4.1.0:build-info (build-info) @ marketops-server ---
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ marketops-server ---
+[INFO] Copying 5 resources from src/main/resources to target/classes
+[INFO] Copying 66 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ marketops-server ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 666 source files with javac [debug deprecation parameters release 21] to target/classes
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingRecalculationRepository.java:[118,25] trailing white space will be removed
+[INFO] Extracting Javadoc into /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/./target/generated-spring-modulith/javadoc.json.
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[46,42] isTextual() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[47,78] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[51,82] isTextual() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[52,82] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[52,123] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskSloService.java:[58,90] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/errors/ConsoleProblemAdvice.java:[56,61] PAYLOAD_TOO_LARGE in org.springframework.http.HttpStatus has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/errors/ConsoleProblemAdvice.java:[77,66] UNPROCESSABLE_ENTITY in org.springframework.http.HttpStatus has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationEvidence.java:[22,7] auto-closeable resource com.mimococo.marketops.shared.internal.migration.ManagedMigrationEvidence has a member method close() that could throw InterruptedException
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunner.java:[84,18] auto-closeable resource com.mimococo.marketops.shared.internal.migration.ManagedMigrationEvidence has a member method close() that could throw InterruptedException
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/migration/ManagedMigrationRunner.java:[260,22] auto-closeable resource com.mimococo.marketops.shared.internal.migration.ManagedMigrationEvidence has a member method close() that could throw InterruptedException
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ marketops-server ---
+[INFO] Copying 4 resources from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ marketops-server ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 271 source files with javac [debug deprecation parameters release 21] to target/test-classes
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[83,65] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[86,74] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[90,83] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[113,49] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[162,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[207,52] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[283,75] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[284,79] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[287,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[289,53] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[351,57] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java:[353,90] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java:[136,74] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java:[141,85] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java:[181,60] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java:[263,69] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[31,46] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[72,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[77,46] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingMaterialityIT.java:[83,40] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java:[172,64] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java:[176,72] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java:[177,49] asText() in tools.jackson.databind.JsonNode has been deprecated
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/aicopilot/internal/application/OutputValidatorTest.java:[161,56] redundant cast to java.lang.String
+[WARNING] /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdaptersTest.java:[103,70] unchecked generic array creation for varargs parameter of type java.util.Optional<java.lang.String>[]
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ marketops-server ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.mimococo.marketops.analyticsdecision.internal.application.DiagnosisEngineTest
+[INFO] Running TC-RULE-005 the same values produce the same answer
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.118 s -- in TC-RULE-005 the same values produce the same answer
+[INFO] Running TC-RULE-004 a rule declines rather than guessing
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in TC-RULE-004 a rule declines rather than guessing
+[INFO] Running TC-RULE-003 the rules find what they are for
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in TC-RULE-003 the rules find what they are for
+[INFO] Running TC-RULE-002 a blocked subject is not assessed, and says so
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in TC-RULE-002 a blocked subject is not assessed, and says so
+[INFO] Running TC-RULE-001 every rule answers, in the same order, every time
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in TC-RULE-001 every rule answers, in the same order, every time
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.169 s -- in com.mimococo.marketops.analyticsdecision.internal.application.DiagnosisEngineTest
+[INFO] Running com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationServiceWindowTest
+12:11:32.202 [main] INFO com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationService -event="analytics_run_completed" storeId="bb5182ca-7470-4a46-8d67-ba479dd8062f" window="D30" subjectCount="1" valueCount="0" findingCount="0" correlationId="63bea769-ae6d-4ed0-8099-71a46a416096"- An analytics run completed
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.725 s -- in com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationServiceWindowTest
+[INFO] Running com.mimococo.marketops.analyticsdecision.internal.application.MetricEngineTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.135 s -- in com.mimococo.marketops.analyticsdecision.internal.application.MetricEngineTest
+[INFO] Running com.mimococo.marketops.analyticsdecision.internal.domain.ComputedMetricIdentityTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.mimococo.marketops.analyticsdecision.internal.domain.ComputedMetricIdentityTest
+[INFO] Running com.mimococo.marketops.analyticsdecision.PriceEconomicsCalculatorTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in com.mimococo.marketops.analyticsdecision.PriceEconomicsCalculatorTest
+[INFO] Running com.mimococo.marketops.organizationaccount.internal.application.CoreApplicationServiceTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.325 s -- in com.mimococo.marketops.organizationaccount.internal.application.CoreApplicationServiceTest
+[INFO] Running com.mimococo.marketops.organizationaccount.internal.infrastructure.jdbc.CoreRepositoryTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.243 s -- in com.mimococo.marketops.organizationaccount.internal.infrastructure.jdbc.CoreRepositoryTest
+[INFO] Running com.mimococo.marketops.organizationaccount.internal.domain.CoreLifecycleTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.mimococo.marketops.organizationaccount.internal.domain.CoreLifecycleTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.PriceCommandStateTest
+[INFO] Running TC-CMD-003 a claim and a wait are different things
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.068 s -- in TC-CMD-003 a claim and a wait are different things
+[INFO] Running TC-CMD-001 not knowing is its own outcome
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in TC-CMD-001 not knowing is its own outcome
+[INFO] Running TC-CMD-002 a finished command is finished
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in TC-CMD-002 a finished command is finished
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.080 s -- in com.mimococo.marketops.marketplaceintegration.PriceCommandStateTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.internal.web.RegistryAdminControllerTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.302 s -- in com.mimococo.marketops.marketplaceintegration.internal.web.RegistryAdminControllerTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.internal.application.AdBidCommandWorkerTest
+[INFO] Running TC-AD-WORKER-002 evidence that names no call is not evidence about it
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in TC-AD-WORKER-002 evidence that names no call is not evidence about it
+[INFO] Running TC-AD-WORKER-003 no credential means no attempt and no call
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-AD-WORKER-003 no credential means no attempt and no call
+[INFO] Running TC-AD-WORKER-001 each answer moves the command somewhere different
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in TC-AD-WORKER-001 each answer moves the command somewhere different
+[INFO] Running TC-AD-WORKER-004 an unknown result is observed, never repeated
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in TC-AD-WORKER-004 an unknown result is observed, never repeated
+[INFO] Running TC-AD-WORKER-005 a refusal from the database is not a failure of the pass
+12:11:33.626 [main] WARN com.mimococo.marketops.marketplaceintegration.internal.application.AdBidCommandWorker -- event=ad_bid_command_not_advanced commandId=3f2504e0-4f89-41d3-9a0c-0305e82c3301 state=PENDING failureType=DataIntegrityViolationException
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in TC-AD-WORKER-005 a refusal from the database is not a failure of the pass
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.292 s -- in com.mimococo.marketops.marketplaceintegration.internal.application.AdBidCommandWorkerTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.internal.application.RegistryServiceTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.247 s -- in com.mimococo.marketops.marketplaceintegration.internal.application.RegistryServiceTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryServiceTest
+12:11:33.900 [main] WARN com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryService -event="capability_denied" capabilityId="e2c86847-5230-4c54-99e2-b92fdca9a1b5" verificationState="VERIFIED" verdict="SUBJECT_NOT_AVAILABLE" correlationId="59241977-38e4-46eb-b1c7-b6165eb8010c"- Capability evaluation refused
+12:11:33.910 [main] WARN com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryService -event="capability_denied" capabilityId="e2c86847-5230-4c54-99e2-b92fdca9a1b5" verificationState="VERIFIED" verdict="SUBJECT_NOT_AVAILABLE" correlationId="8bc3cc30-bb91-4eca-80ba-a3bb356c47bb"- Capability evaluation refused
+12:11:33.910 [main] WARN com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryService -event="capability_denied" capabilityId="e2c86847-5230-4c54-99e2-b92fdca9a1b5" verificationState="VERIFIED" verdict="NOT_VERIFIED" correlationId="09d2fc78-8f29-4a33-b9fa-6811ee710de0"- Capability evaluation refused
+12:11:33.911 [main] WARN com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryService -event="capability_denied" capabilityId="e2c86847-5230-4c54-99e2-b92fdca9a1b5" verificationState="VERIFIED" verdict="NOT_VERIFIED" correlationId="b7dbf483-17c3-4e94-88c7-02033e7139a0"- Capability evaluation refused
+12:11:33.912 [main] WARN com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryService -event="capability_denied" capabilityId="null" verificationState="ABSENT" verdict="UNKNOWN_CAPABILITY" correlationId="cdeb1db7-0d14-419c-a5c5-3e73f91dff85"- Capability evaluation refused
+12:11:33.912 [main] WARN com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryService -event="capability_denied" capabilityId="eee741c2-da28-4278-bf48-208689dfe65c" verificationState="ABSENT" verdict="UNKNOWN_CAPABILITY" correlationId="2f7aa73b-f03e-48e5-9916-4c61e827d787"- Capability evaluation refused
+12:11:33.913 [main] WARN com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryService -event="capability_denied" capabilityId="eee741c2-da28-4278-bf48-208689dfe65c" verificationState="UNKNOWN" verdict="RETIRED" correlationId="c6c526a7-be30-469a-9970-b5a525f00c70"- Capability evaluation refused
+12:11:33.913 [main] WARN com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryService -event="capability_denied" capabilityId="eee741c2-da28-4278-bf48-208689dfe65c" verificationState="UNKNOWN" verdict="DEPRECATED" correlationId="f2fe39df-e126-47ad-96b3-1889f85fee9a"- Capability evaluation refused
+12:11:33.913 [main] WARN com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryService -event="capability_denied" capabilityId="eee741c2-da28-4278-bf48-208689dfe65c" verificationState="UNVERIFIED" verdict="NOT_VERIFIED" correlationId="621bbb60-ad7b-4eb6-9b73-7b7f59fc45cf"- Capability evaluation refused
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.033 s -- in com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryServiceTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.internal.application.FeatureFlagServiceTest
+12:11:33.954 [main] WARN com.mimococo.marketops.marketplaceintegration.internal.application.FeatureFlagService -event="production_write_denied" flagCode="flag" scopeKey="GLOBAL::::" actorId="operator" correlationId="d56756f3-1edf-4c45-bb78-7587be247f94"- Write-capability flag enable refused
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.049 s -- in com.mimococo.marketops.marketplaceintegration.internal.application.FeatureFlagServiceTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.internal.application.CredentialServiceTest
+12:11:34.012 [main] WARN com.mimococo.marketops.marketplaceintegration.internal.application.CredentialService -event="credential_scope_unusable" credentialId="00000000-0000-0000-0000-000000000004" correlationId="2f74651c-1d00-46d7-a903-25b4698897da"- Store-set credential has no active scope rows
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s -- in com.mimococo.marketops.marketplaceintegration.internal.application.CredentialServiceTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionRunnerTest
+12:11:34.111 [main] WARN com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionRunner -event="acquisition_page_failed" jobCode="synthetic-job" exceptionClass="java.lang.IllegalStateException" correlationId="9a20503b-39e9-4870-8cd6-9af1847b24da"- An acquisition page could not be completed
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.093 s -- in com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionRunnerTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyLocatorTest
+12:11:34.178 [main] ERROR com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyService -event="raw_custody_write_failed" correlationId="0990c423-dd2d-46be-b07d-1a7088adf432"- Custody write or verification failed
+12:11:34.180 [main] ERROR com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyService -event="raw_custody_write_failed" correlationId="b5316423-9d22-45d6-be6d-13a48d764762"- Custody write or verification failed
+12:11:34.181 [main] ERROR com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyService -event="raw_custody_verification_failed" namespace="internal-intake" correlationId="d5629353-b107-4c7a-93ea-c4a29b52c681"- Stored content did not read back with its written digest
+12:11:34.181 [main] ERROR com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyService -event="raw_custody_write_failed" correlationId="f0c11419-8643-47e8-a6e8-c45efe0061f9"- Custody write or verification failed
+12:11:34.182 [main] ERROR com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyService -event="raw_custody_object_missing" correlationId="67f5434b-bba6-483c-9119-6e5ec077f203"- A custody record no longer resolves to matching content
+12:11:34.182 [main] ERROR com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyService -event="raw_custody_write_failed" correlationId="f7513c45-7f99-4006-a047-bf806e4559c6"- Custody write or verification failed
+12:11:34.183 [main] ERROR com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyService -event="raw_custody_write_failed" correlationId="167d05cf-1c6a-427d-984e-8cf4372a1f11"- Custody write or verification failed
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.074 s -- in com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyLocatorTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionPageWorkerTest
+[INFO] Tests run: 33, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.376 s -- in com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionPageWorkerTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.IntegrationRepositoryTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.095 s -- in com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.IntegrationRepositoryTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.CallAuthoritySingleUseTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.CallAuthoritySingleUseTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.JdbcAuthorizedAcquisitionGatewayTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.456 s -- in com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.JdbcAuthorizedAcquisitionGatewayTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.internal.domain.IntegrationLifecycleTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in com.mimococo.marketops.marketplaceintegration.internal.domain.IntegrationLifecycleTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorageTest
+12:11:35.232 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_destination_refused" statusClass="none" correlationId="eb7b2349-3c50-44b2-bf87-afea0f28053c"- Object storage operation refused
+12:11:35.274 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_put_failed" statusClass="3xx" correlationId="4727edff-7466-42f6-9d4b-2ac8d8853df8"- Object storage operation refused
+12:11:35.275 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_get_failed" statusClass="3xx" correlationId="2afbc638-5093-413f-8b36-9fac5be2a46e"- Object storage operation refused
+12:11:35.277 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_put_failed" statusClass="4xx" correlationId="550ca139-4a25-47ff-a1a9-86569406d942"- Object storage operation refused
+12:11:35.278 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_get_failed" statusClass="4xx" correlationId="0e09c926-d03d-4588-b6d4-85fb52fbba88"- Object storage operation refused
+12:11:35.279 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_put_failed" statusClass="4xx" correlationId="ca102d29-1a6b-48bc-98b2-daeb3d95fcfe"- Object storage operation refused
+12:11:35.280 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_get_failed" statusClass="4xx" correlationId="c07b278e-4ce7-4d62-8bb4-c35d12638ac7"- Object storage operation refused
+12:11:35.281 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_put_failed" statusClass="4xx" correlationId="70ec0523-5e02-4d9f-9c11-7771201a9652"- Object storage operation refused
+12:11:35.281 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_get_failed" statusClass="4xx" correlationId="d0ab7e1e-1509-4ef2-bf00-6c578251b78b"- Object storage operation refused
+12:11:35.283 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_put_failed" statusClass="5xx" correlationId="dcd3d13a-f24a-49f0-8669-8573ee746b9b"- Object storage operation refused
+12:11:35.283 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_get_failed" statusClass="5xx" correlationId="cf864363-b08b-49d8-9059-3862058631bc"- Object storage operation refused
+12:11:35.290 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_response_incomplete" statusClass="2xx" correlationId="2fe13219-d4f1-4beb-9956-2fd0c21f6d11"- Object storage operation refused
+12:11:35.291 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_response_incomplete" statusClass="2xx" correlationId="21f1184c-17a5-4f15-bce1-4aab8656b9d6"- Object storage operation refused
+12:11:35.292 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_secret_unresolvable" statusClass="none" correlationId="7594b6f6-581d-46fe-9a9c-6d7bb1993166"- Object storage operation refused
+12:11:35.293 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_transport_failed" statusClass="none" correlationId="0545e923-9789-4a03-bd9f-8021827dac87"- Object storage operation refused
+12:11:35.294 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_interrupted" statusClass="none" correlationId="7f326d10-50d0-412d-a0ac-1c91ae360584"- Object storage operation refused
+12:11:35.295 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_not_configured" statusClass="none" correlationId="0266ca71-f7e0-47c1-a7f8-95d9fad742c9"- Object storage operation refused
+12:11:35.295 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_not_configured" statusClass="none" correlationId="238274b3-cb33-4b21-aec5-21c15f223245"- Object storage operation refused
+12:11:35.304 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_not_configured" statusClass="none" correlationId="9873b3fc-8c81-4cb8-a6eb-ea31ebb3c2b7"- Object storage operation refused
+12:11:35.305 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_not_configured" statusClass="none" correlationId="7bef9c7d-c1f9-4a4d-bdb8-cef3bd1b1783"- Object storage operation refused
+12:11:35.306 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_not_configured" statusClass="none" correlationId="1d388a1b-4898-480d-8064-4d3ae3c07888"- Object storage operation refused
+12:11:35.307 [main] ERROR com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorage -event="raw_custody_not_configured" statusClass="none" correlationId="ec0a47ee-7973-48f3-bc1f-479a6a55690c"- Object storage operation refused
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.145 s -- in com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorageTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.FilesystemObjectStorageTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.096 s -- in com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.FilesystemObjectStorageTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteRefusalTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.059 s -- in com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteRefusalTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAdaptersTest
+12:11:35.503 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_completed" platformCode="FIXTURE" endpointCode="read" outcome="SUCCESS_BYTES" statusClass="2xx" elapsedMillis="0" correlationId="d6881460-8d18-450f-8b52-0b2876d7f013"- Acquisition call completed
+12:11:35.506 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_completed" platformCode="FIXTURE" endpointCode="read" outcome="BUSINESS_FAILURE_BYTES" statusClass="4xx" elapsedMillis="0" correlationId="d1c66a56-d155-4dc9-b5d1-4faeca02d858"- Acquisition call completed
+12:11:35.508 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_completed" platformCode="FIXTURE" endpointCode="read" outcome="BUSINESS_FAILURE_BYTES" statusClass="4xx" elapsedMillis="0" correlationId="af1d1c4b-48b2-4a49-8da8-27a27ae6d69e"- Acquisition call completed
+12:11:35.511 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_completed" platformCode="FIXTURE" endpointCode="read" outcome="UNKNOWN_STATE" statusClass="4xx" elapsedMillis="0" correlationId="b232adb8-90f9-4a71-81f5-1ebc84921681"- Acquisition call completed
+12:11:35.513 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_completed" platformCode="FIXTURE" endpointCode="read" outcome="UNKNOWN_STATE" statusClass="4xx" elapsedMillis="0" correlationId="bce301ae-cf72-405e-be93-eefc1e5f2751"- Acquisition call completed
+12:11:35.515 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_completed" platformCode="FIXTURE" endpointCode="read" outcome="UNKNOWN_STATE" statusClass="5xx" elapsedMillis="0" correlationId="6976eb68-f5aa-4b81-a9f3-a3317fc284dd"- Acquisition call completed
+12:11:35.518 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_completed" platformCode="FIXTURE" endpointCode="read" outcome="UNKNOWN_STATE" statusClass="5xx" elapsedMillis="0" correlationId="fecd10f7-794d-4129-9847-de7e39bbcbb8"- Acquisition call completed
+12:11:35.521 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_refused" reason="request_could_not_be_built" elapsedMillis="0" correlationId="bdac9d63-a722-4392-9dab-25dc13d463ad"- Acquisition call refused before or during transport
+12:11:35.522 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpPriceWriteAdapter -event="price_write_call_refused" errorCode="request_could_not_be_built" correlationId="50122a9b-0150-42f0-8d9c-b8e815a1af7c"- A price write was refused before any call was made
+12:11:35.525 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_refused" reason="account_evidence_changed" elapsedMillis="0" correlationId="28eeff59-7b7a-4bdb-8deb-b19a9001c1cd"- Acquisition call refused before or during transport
+12:11:35.526 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpPriceWriteAdapter -event="price_write_call_refused" errorCode="attempt_authority_not_current" correlationId="63cbbf31-0770-4731-be29-7f5de5ae5f18"- A price write was refused before any call was made
+12:11:35.529 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpPriceWriteAdapter -event="price_write_call_completed" platformCode="FIXTURE" operation="READBACK" statusClass="2xx" correlationId="6c805596-0974-4fdd-a9ac-c2d58b8a8ace"- Price write call completed
+12:11:35.530 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="response_not_readable" correlationId="ac4e6431-6852-48b0-adec-c8aeaa6c4c71"- A price write left an outcome that cannot be classified
+12:11:35.533 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpPriceWriteAdapter -event="price_write_call_completed" platformCode="FIXTURE" operation="READBACK" statusClass="2xx" correlationId="7dcbc87a-a54c-4130-bf01-ae3dad128caf"- Price write call completed
+12:11:35.533 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="observed_price_not_at_recorded_pointer" correlationId="c57548d6-4565-4578-975b-7fe2005fa5c1"- A price write left an outcome that cannot be classified
+12:11:35.536 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpPriceWriteAdapter -event="price_write_call_completed" platformCode="FIXTURE" operation="READBACK" statusClass="2xx" correlationId="1c690f53-5ec5-414c-8094-5f1b9377c85b"- Price write call completed
+12:11:35.536 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="observed_price_not_at_recorded_pointer" correlationId="5cb92d32-5ec1-4097-a846-23acff3f659f"- A price write left an outcome that cannot be classified
+12:11:35.543 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpPriceWriteAdapter -event="price_write_call_completed" platformCode="FIXTURE" operation="READBACK" statusClass="2xx" correlationId="51e7b617-cf4a-4c31-94db-0a58984cffab"- Price write call completed
+12:11:35.543 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="observed_price_not_a_number" correlationId="89514b5d-9531-4f34-93ab-626cab5199f9"- A price write left an outcome that cannot be classified
+12:11:35.548 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpPriceWriteAdapter -event="price_write_call_completed" platformCode="FIXTURE" operation="READBACK" statusClass="2xx" correlationId="52f129d5-eb94-4f6f-a2da-49562fc129dc"- Price write call completed
+12:11:35.548 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="response_not_readable" correlationId="6f156b31-8d9c-42f2-a156-e8f49dc69bfc"- A price write left an outcome that cannot be classified
+12:11:35.551 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_refused" reason="call_authority_expired" elapsedMillis="0" correlationId="42c81fdf-21c8-4a75-a0aa-460cb3901610"- Acquisition call refused before or during transport
+12:11:35.551 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_refused" reason="rate_limit_window_exhausted" elapsedMillis="0" correlationId="8b6a594d-6f94-44c1-9988-d1eb7dac69f2"- Acquisition call refused before or during transport
+12:11:35.554 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_completed" platformCode="FIXTURE" endpointCode="read" outcome="UNKNOWN_STATE" statusClass="2xx" elapsedMillis="0" correlationId="f8cfa4f6-2dd1-4944-9102-a22fb220a086"- Acquisition call completed
+12:11:35.554 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_completed" platformCode="FIXTURE" endpointCode="read" outcome="UNKNOWN_STATE" statusClass="2xx" elapsedMillis="0" correlationId="e238dd9b-1a1b-4020-a4f7-346d6017d621"- Acquisition call completed
+12:11:35.555 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="RESPONSE_LIMIT" correlationId="bbf9f5e9-503d-4a56-a063-587e5e40eff5"- A price write left an outcome that cannot be classified
+12:11:35.556 [main] INFO com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpPriceWriteAdapter -event="price_write_call_completed" platformCode="FIXTURE" operation="READBACK" statusClass="2xx" correlationId="10331c8b-ffd5-4eab-88f3-2f7a3c1d479a"- Price write call completed
+12:11:35.559 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_refused" reason="request_could_not_be_built" elapsedMillis="0" correlationId="2f8cb971-4f74-429b-bbcb-7d14dfe6b1b0"- Acquisition call refused before or during transport
+12:11:35.560 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpPriceWriteAdapter -event="price_write_call_refused" errorCode="request_could_not_be_built" correlationId="07b7b3f7-e212-4d66-8d93-8450e033b74c"- A price write was refused before any call was made
+12:11:35.561 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_refused" reason="account_evidence_not_current" elapsedMillis="0" correlationId="0d0b271c-90b9-4859-bf49-8d104ac8f186"- Acquisition call refused before or during transport
+12:11:35.561 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpPriceWriteAdapter -event="price_write_call_refused" errorCode="attempt_authority_not_current" correlationId="40c1a834-686d-44b0-a242-c57294efd090"- A price write was refused before any call was made
+12:11:35.563 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_refused" reason="request_could_not_be_built" elapsedMillis="0" correlationId="2e819598-2b03-4609-bb82-3c424b760b3e"- Acquisition call refused before or during transport
+12:11:35.563 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpPriceWriteAdapter -event="price_write_call_refused" errorCode="request_could_not_be_built" correlationId="a9a58c21-9850-444d-b3e7-91b6bee58392"- A price write was refused before any call was made
+12:11:35.563 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_refused" reason="endpoint_not_verified" elapsedMillis="0" correlationId="4cef2ed9-1877-4e9c-8b64-4487e42ef30e"- Acquisition call refused before or during transport
+12:11:35.563 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpPriceWriteAdapter -event="price_write_call_refused" errorCode="write_operation_not_verified" correlationId="939714ea-d960-4b1e-8653-684c33db23cb"- A price write was refused before any call was made
+12:11:35.565 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="transport_failed" correlationId="6163c0fe-76d1-4cc9-b01d-a6ef7837d8ed"- A price write left an outcome that cannot be classified
+12:11:35.565 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_refused" reason="transport_failed" elapsedMillis="0" correlationId="4b5f945c-6e97-4a79-9849-732d9d3db623"- Acquisition call refused before or during transport
+12:11:35.566 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="outbound_plan_rejected" correlationId="971a4f28-771a-45fb-ac15-a8c0ee268c19"- A price write left an outcome that cannot be classified
+12:11:35.566 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAcquisitionAdapter -event="acquisition_call_refused" reason="outbound_plan_rejected" elapsedMillis="0" correlationId="ed77a68d-4008-4e48-9d06-9f509fca0c98"- Acquisition call refused before or during transport
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.101 s -- in com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAdaptersTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteClassificationTest
+12:11:35.569 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="acceptance_not_at_recorded_pointer" correlationId="ade016b1-4e48-4b83-a449-08912816b793"- A price write left an outcome that cannot be classified
+12:11:35.570 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="acceptance_not_at_recorded_pointer" correlationId="7257fe11-32f2-4000-b8dd-5c9590a4508b"- A price write left an outcome that cannot be classified
+12:11:35.570 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="acceptance_not_at_recorded_pointer" correlationId="8215b3d7-8b0f-4628-9e04-fb1e03f1462c"- A price write left an outcome that cannot be classified
+12:11:35.571 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="acceptance_not_at_recorded_pointer" correlationId="9a75dc40-e75e-441d-ad63-aef53f3b1b9e"- A price write left an outcome that cannot be classified
+12:11:35.572 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="acceptance_not_at_recorded_pointer" correlationId="8472c663-c887-4cc0-9389-a5ebe6160853"- A price write left an outcome that cannot be classified
+12:11:35.572 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="acceptance_not_at_recorded_pointer" correlationId="11795e6b-862f-4dc5-a6c7-54a5b0a0d047"- A price write left an outcome that cannot be classified
+12:11:35.608 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="observed_price_out_of_bounds" correlationId="88938de9-fe1a-4848-ba22-3bd043f73151"- A price write left an outcome that cannot be classified
+12:11:35.611 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="observed_price_out_of_bounds" correlationId="2c5a9e0c-4b33-41f4-b9ad-11a66b62e262"- A price write left an outcome that cannot be classified
+12:11:35.612 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="observed_price_out_of_bounds" correlationId="8c3a9480-cb46-4310-9e10-d9e043a2391b"- A price write left an outcome that cannot be classified
+12:11:35.613 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="observed_price_out_of_bounds" correlationId="2bb682a4-8f0d-4677-af4d-adb43412a96f"- A price write left an outcome that cannot be classified
+12:11:35.614 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="observed_price_not_a_number" correlationId="aee3d573-8492-4f1d-ae87-d6e4cfa7ee7b"- A price write left an outcome that cannot be classified
+12:11:35.615 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="observed_price_not_a_number" correlationId="7f04880b-b4a3-46e5-a2a5-0e93599e4c41"- A price write left an outcome that cannot be classified
+12:11:35.617 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="task_status_not_recognized" correlationId="bf9a9052-b7eb-4275-9a0e-0c50890baf4e"- A price write left an outcome that cannot be classified
+12:11:35.617 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="task_status_not_recognized" correlationId="85dc8d69-9a2f-4f4b-81a7-b99105e6640b"- A price write left an outcome that cannot be classified
+12:11:35.618 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="task_status_not_recognized" correlationId="eb75cf63-b0b3-47ed-8091-13d00ff5b5d1"- A price write left an outcome that cannot be classified
+12:11:35.619 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="task_status_not_recognized" correlationId="f085a6ff-3525-4d12-ba78-3928e7019886"- A price write left an outcome that cannot be classified
+12:11:35.619 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="task_status_not_recognized" correlationId="8e986b6f-bfb4-4bf9-99c2-0c964e6b3f23"- A price write left an outcome that cannot be classified
+[INFO] Running TC-CLASSIFY-005 a pointer reads only what it names
+[INFO] Tests run: 22, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-CLASSIFY-005 a pointer reads only what it names
+[INFO] Running TC-CLASSIFY-002 an apply is read through the recorded task pointer
+12:11:35.626 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="task_key_not_at_recorded_pointer" correlationId="b3522066-bd56-438a-824b-deed74b27686"- A price write left an outcome that cannot be classified
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in TC-CLASSIFY-002 an apply is read through the recorded task pointer
+[INFO] Running TC-CLASSIFY-001 an unanswered write is not the same as an unanswered read
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-CLASSIFY-001 an unanswered write is not the same as an unanswered read
+[INFO] Running TC-CLASSIFY-003 a task's fate is read in the platform's own words
+12:11:35.632 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="task_status_not_at_recorded_pointer" correlationId="d7d0e1b0-3a44-4f0d-bb21-2b00b8312826"- A price write left an outcome that cannot be classified
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-CLASSIFY-003 a task's fate is read in the platform's own words
+[INFO] Running TC-CLASSIFY-004 an observed price is read from where it was recorded
+12:11:35.635 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="observed_price_not_at_recorded_pointer" correlationId="545bec18-7920-4d63-b1dc-01a0d116e313"- A price write left an outcome that cannot be classified
+12:11:35.636 [main] WARN com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteAnswers -event="price_write_outcome_unknown" errorCode="observed_price_not_a_number" correlationId="ad4e992f-2507-4c7b-ab60-d44c9b787dff"- A price write left an outcome that cannot be classified
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in TC-CLASSIFY-004 an observed price is read from where it was recorded
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.076 s -- in com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteClassificationTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteDispatchTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteDispatchTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.adapter.http.RequestTemplateTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.mimococo.marketops.marketplaceintegration.adapter.http.RequestTemplateTest
+[INFO] Running com.mimococo.marketops.marketplaceintegration.port.AdBidWritePortContractTest
+[INFO] Running a response is evidence or it is not recorded
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in a response is evidence or it is not recorded
+[INFO] Running a request names exactly one call
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in a request names exactly one call
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in com.mimococo.marketops.marketplaceintegration.port.AdBidWritePortContractTest
+[INFO] Running com.mimococo.marketops.shared.SecretMaterialGuardTest
+12:11:35.685 [main] WARN com.mimococo.marketops.shared.SecretMaterialGuard -event="secret_material_rejected" fieldName="field" ruleName="credential-assignment" correlationId="e7b79291-583f-4e12-b40e-0a3ee097ecd9"- Writable text refused by the secret-material guard
+12:11:35.686 [main] WARN com.mimococo.marketops.shared.SecretMaterialGuard -event="secret_material_rejected" fieldName="field" ruleName="credential-assignment" correlationId="38ce6648-c1ae-4a60-92ab-449d68f522d0"- Writable text refused by the secret-material guard
+12:11:35.686 [main] WARN com.mimococo.marketops.shared.SecretMaterialGuard -event="secret_material_rejected" fieldName="field" ruleName="credential-assignment" correlationId="019d9712-3b0c-4549-82e4-9d773614002f"- Writable text refused by the secret-material guard
+12:11:35.686 [main] WARN com.mimococo.marketops.shared.SecretMaterialGuard -event="secret_material_rejected" fieldName="field" ruleName="credential-assignment" correlationId="44be592f-5308-492a-88eb-7d46e0708514"- Writable text refused by the secret-material guard
+12:11:35.686 [main] WARN com.mimococo.marketops.shared.SecretMaterialGuard -event="secret_material_rejected" fieldName="field" ruleName="credential-assignment" correlationId="2d7ddf95-b7ce-4ff5-a245-bf5d7dc1564a"- Writable text refused by the secret-material guard
+12:11:35.686 [main] WARN com.mimococo.marketops.shared.SecretMaterialGuard -event="secret_material_rejected" fieldName="field" ruleName="credential-assignment" correlationId="b71ca2ca-3720-41da-aaa1-1fc513875d8c"- Writable text refused by the secret-material guard
+12:11:35.687 [main] WARN com.mimococo.marketops.shared.SecretMaterialGuard -event="secret_material_rejected" fieldName="field" ruleName="encoded-run" correlationId="07979e19-c3e3-4278-9c7b-6f9703adb1fb"- Writable text refused by the secret-material guard
+12:11:35.688 [main] WARN com.mimococo.marketops.shared.SecretMaterialGuard -event="secret_material_rejected" fieldName="field" ruleName="armor-header" correlationId="0b2fa693-5e44-483e-b4a2-5a9b6ccb0ce1"- Writable text refused by the secret-material guard
+12:11:35.688 [main] WARN com.mimococo.marketops.shared.SecretMaterialGuard -event="secret_material_rejected" fieldName="field" ruleName="bearer-shape" correlationId="8c14df29-3679-466a-bc8f-f2845deb4c0c"- Writable text refused by the secret-material guard
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.mimococo.marketops.shared.SecretMaterialGuardTest
+[INFO] Running com.mimococo.marketops.shared.CorrelationIdTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.mimococo.marketops.shared.CorrelationIdTest
+[INFO] Running com.mimococo.marketops.shared.MetadataFieldPolicyTest
+[INFO] Running TC-SEC-202 bounded free text
+12:11:35.708 [main] WARN com.mimococo.marketops.shared.SecretMaterialGuard -event="secret_material_rejected" fieldName="displayName" ruleName="credential-assignment" correlationId="81691c80-35f8-4832-8af7-83654aa192e1"- Writable text refused by the secret-material guard
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-SEC-202 bounded free text
+[INFO] Running TC-SEC-204 opaque secret references
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-SEC-204 opaque secret references
+[INFO] Running TC-SEC-203 reference-data formats
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-SEC-203 reference-data formats
+[INFO] Running TC-SEC-201 business and registry codes
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in TC-SEC-201 business and registry codes
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.mimococo.marketops.shared.MetadataFieldPolicyTest
+[INFO] Running com.mimococo.marketops.shared.internal.config.CorsContractTest
+12:11:35.905 [main] INFO org.hibernate.validator.internal.util.Version -- HV000001: Hibernate Validator 9.1.0.Final
+12:11:36.196 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+12:11:36.196 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+12:11:36.199 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 3 ms
+12:11:36.278 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+12:11:36.278 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+12:11:36.278 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+12:11:36.288 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+12:11:36.288 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+12:11:36.288 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+12:11:36.292 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+12:11:36.292 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+12:11:36.292 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+12:11:36.650 [main] WARN org.springframework.context.annotation.AnnotationConfigApplicationContext -- Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'corsConfigurationSource' defined in com.mimococo.marketops.shared.internal.config.WebConfig: Unsatisfied dependency expressed through method 'corsConfigurationSource' parameter 0: Error creating bean with name 'marketops.web.cors-com.mimococo.marketops.shared.internal.config.CorsProperties': Could not bind properties to 'CorsProperties' : prefix=marketops.web.cors, ignoreInvalidFields=false, ignoreUnknownFields=true
+12:11:36.678 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+12:11:36.679 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+12:11:36.679 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.959 s -- in com.mimococo.marketops.shared.internal.config.CorsContractTest
+[INFO] Running com.mimococo.marketops.shared.internal.config.WriteGateBindingTest
+12:11:36.700 [main] WARN org.springframework.context.annotation.AnnotationConfigApplicationContext -- Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'com.mimococo.marketops.shared.MaintenanceWriteGate': Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'marketops.metadata-maintenance-com.mimococo.marketops.shared.internal.config.MetadataMaintenanceProperties': Could not bind properties to 'MetadataMaintenanceProperties' : prefix=marketops.metadata-maintenance, ignoreInvalidFields=false, ignoreUnknownFields=true
+12:11:36.709 [main] WARN org.springframework.context.annotation.AnnotationConfigApplicationContext -- Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'com.mimococo.marketops.shared.ProductionWritePolicy': Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'marketops.production-writes-com.mimococo.marketops.shared.internal.config.ProductionWriteProperties': Could not bind properties to 'ProductionWriteProperties' : prefix=marketops.production-writes, ignoreInvalidFields=false, ignoreUnknownFields=true
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.062 s -- in com.mimococo.marketops.shared.internal.config.WriteGateBindingTest
+[INFO] Running com.mimococo.marketops.shared.internal.http.BoundedOutboundHttpTest
+[INFO] Tests run: 46, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.239 s -- in com.mimococo.marketops.shared.internal.http.BoundedOutboundHttpTest
+[INFO] Running com.mimococo.marketops.shared.internal.secret.MountedSecretResolverTest
+12:11:36.987 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_mount_unsupported" correlationId="0220721a-29c8-412c-b3da-497f57165d83"- A secret reference could not be resolved
+12:11:36.990 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_mount_unsupported" correlationId="6ee6309a-2660-47aa-8c46-6387f44ee1bc"- A secret reference could not be resolved
+12:11:36.994 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="b40b6355-a6f6-45ab-91a7-700ea1d36f7c"- A secret reference could not be resolved
+12:11:36.996 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="9ea73868-e313-4c39-a891-01a2997d6bea"- A secret reference could not be resolved
+12:11:36.998 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="132733b5-ddf2-4aa3-b511-e431e5c61db4"- A secret reference could not be resolved
+12:11:37.000 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="300ac601-684a-4e54-97fc-69f99f1e3527"- A secret reference could not be resolved
+12:11:37.001 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="e09df368-5d53-4e4a-b2f7-32911ce94f02"- A secret reference could not be resolved
+12:11:37.002 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="82e01cbc-3496-4eba-8ebb-1a0d11e193a9"- A secret reference could not be resolved
+12:11:37.004 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="78540cee-0e76-4874-8125-f5e8902b68d5"- A secret reference could not be resolved
+12:11:37.006 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="40e3de97-2dde-4d81-bb57-6149371d3c85"- A secret reference could not be resolved
+12:11:37.007 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="e536aaee-905c-4f4e-9a63-582e263bc3ea"- A secret reference could not be resolved
+12:11:37.009 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="e34d910d-498e-4eb7-9be4-f8c608466c08"- A secret reference could not be resolved
+12:11:37.010 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="40ff19ce-632b-4992-8867-020ad9bf2024"- A secret reference could not be resolved
+12:11:37.011 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="1378202a-f348-41bc-bdc1-c44498f9257f"- A secret reference could not be resolved
+12:11:37.013 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="9f26a758-b7ea-4f1e-baff-f8e7cdccf4e3"- A secret reference could not be resolved
+12:11:37.014 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="701b0c75-fa20-4056-a908-692a30831277"- A secret reference could not be resolved
+12:11:37.016 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="6a8e6f81-51f4-43ba-b08b-3d053a022035"- A secret reference could not be resolved
+12:11:37.017 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="51964f25-3edf-4664-bc82-3d431c946092"- A secret reference could not be resolved
+12:11:37.019 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="3e116098-65fa-4605-8730-5561465f7fcc"- A secret reference could not be resolved
+12:11:37.021 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_value_empty" correlationId="fe541ca8-9032-4ca0-b9f2-6ddc5db3984f"- A secret reference could not be resolved
+12:11:37.024 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_value_empty" correlationId="37d3d623-d3f7-49f8-a61c-f115cc9e781c"- A secret reference could not be resolved
+12:11:37.026 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_value_empty" correlationId="c79eeca2-2ee4-4039-9fea-6acea37c318f"- A secret reference could not be resolved
+12:11:37.028 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_mount_unsupported" correlationId="3ea17e67-11ca-489a-bb2b-3941af1b87bd"- A secret reference could not be resolved
+12:11:37.050 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_value_oversized" correlationId="8c18f832-e9cc-4de5-aafc-025656620ae6"- A secret reference could not be resolved
+12:11:37.052 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_mount_unsupported" correlationId="0415644f-4d57-4d62-964e-5f1f16231e6e"- A secret reference could not be resolved
+12:11:37.053 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_mount_unsupported" correlationId="47dff5a0-ec47-4773-8d51-e504c2f10d0c"- A secret reference could not be resolved
+12:11:37.056 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_mount_unsupported" correlationId="3cc7366a-6126-4210-8c63-1216e1108a68"- A secret reference could not be resolved
+12:11:37.093 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_value_oversized" correlationId="4eedcfa0-89c0-45d2-a087-81c24cc35c40"- A secret reference could not be resolved
+12:11:37.108 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_mount_unsupported" correlationId="a8542d7d-ecb0-4edf-a2fe-7b6d99f5dcf8"- A secret reference could not be resolved
+12:11:37.108 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_mount_unsupported" correlationId="b6658021-052e-483c-83bb-eda8cb3c9600"- A secret reference could not be resolved
+12:11:37.111 [main] WARN com.mimococo.marketops.shared.internal.secret.MountedSecretResolver -event="secret_reference_malformed" correlationId="80e18c82-889e-4b69-a330-a8c3e6d83a84"- A secret reference could not be resolved
+[INFO] Tests run: 36, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.140 s -- in com.mimococo.marketops.shared.internal.secret.MountedSecretResolverTest
+[INFO] Running com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandlerTest
+12:11:37.123 [main] ERROR com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandler -event="request_unhandled_failure" errorCode="INTERNAL_ERROR" correlationId="03bfbd9d-9e96-448a-a69b-a295c84568b3" exceptionClass="java.lang.IllegalStateException"- Request processing failed
+12:11:37.124 [main] WARN com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandler -event="request_validation_failed" errorCode="VALIDATION_FAILED" correlationId="5bd56ea8-f0e5-4830-a3cf-b7b28eee4a3f" exceptionClass="org.springframework.web.bind.MethodArgumentNotValidException"- Request processing failed
+12:11:37.125 [main] INFO com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandler -event="request_resource_not_found" errorCode="RESOURCE_NOT_FOUND" correlationId="dfdc1a58-66dd-4675-aed8-875af761a742" exceptionClass="org.springframework.web.servlet.resource.NoResourceFoundException"- Request processing failed
+12:11:37.125 [main] ERROR com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandler -event="request_unhandled_failure" errorCode="INTERNAL_ERROR" correlationId="f5e2b1f6-6569-40d2-ade0-5f3bcf464cd9" exceptionClass="java.lang.IllegalStateException"- Request processing failed
+12:11:37.126 [main] WARN com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandler -event="request_validation_failed" errorCode="VALIDATION_FAILED" correlationId="424525ab-89f1-4ef2-8695-4053951204b7" exceptionClass="org.springframework.web.bind.MethodArgumentNotValidException"- Request processing failed
+12:11:37.126 [main] INFO com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandler -event="request_resource_not_found" errorCode="RESOURCE_NOT_FOUND" correlationId="47144273-f769-4b89-9099-4479cac26297" exceptionClass="org.springframework.web.servlet.resource.NoResourceFoundException"- Request processing failed
+12:11:37.126 [main] ERROR com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandler -event="request_unhandled_failure" errorCode="INTERNAL_ERROR" correlationId="46d3b12d-7e2b-46cf-9045-0c9a4cc632d6" exceptionClass="java.lang.IllegalStateException"- Request processing failed
+12:11:37.127 [main] ERROR com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandler -event="request_unhandled_failure" errorCode="INTERNAL_ERROR" correlationId="established-value" exceptionClass="java.lang.IllegalStateException"- Request processing failed
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandlerTest
+[INFO] Running com.mimococo.marketops.shared.internal.migration.ManagedMigrationRunnerTest
+[INFO] Tests run: 23, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.164 s -- in com.mimococo.marketops.shared.internal.migration.ManagedMigrationRunnerTest
+[INFO] Running com.mimococo.marketops.shared.ErrorCodeTest
+[ERROR] Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.017 s <<< FAILURE! -- in com.mimococo.marketops.shared.ErrorCodeTest
+[ERROR] com.mimococo.marketops.shared.ErrorCodeTest.codeSetIsStable -- Time elapsed: 0.010 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+Expecting actual:
+  ["VALIDATION_FAILED",
+    "RESOURCE_NOT_FOUND",
+    "INTERNAL_ERROR",
+    "DUPLICATE_IDENTITY",
+    "VERSION_CONFLICT",
+    "INVALID_STATE_TRANSITION",
+    "EFFECTIVE_RANGE_OVERLAP",
+    "CROSS_ORGANIZATION_REJECTED",
+    "REFERENCED_ENTITY_ACTIVE",
+    "INVALID_TIMEZONE",
+    "INVALID_CURRENCY",
+    "INVALID_COUNTRY",
+    "SECRET_REFERENCE_INVALID",
+    "SECRET_MATERIAL_SUSPECTED",
+    "SERVICE_ACCOUNT_INACTIVE",
+    "UNKNOWN_SCOPE",
+    "CAPABILITY_VERIFICATION_NOT_SUPPORTED",
+    "PRODUCTION_WRITE_DISABLED",
+    "MAINTENANCE_WRITE_DISABLED",
+    "MAINTENANCE_LOOPBACK_REQUIRED",
+    "OPERATOR_ATTRIBUTION_MISSING",
+    "CURRENCY_MISMATCH",
+    "AUTHENTICATION_REQUIRED",
+    "MULTI_FACTOR_REQUIRED",
+    "STEP_UP_REQUIRED",
+    "USER_NOT_PROVISIONED",
+    "USER_INACTIVE",
+    "ACTION_NOT_PERMITTED",
+    "RESOURCE_SCOPE_DENIED",
+    "APPROVAL_EVIDENCE_SCOPE_BLOCKED",
+    "IDENTITY_PROVIDER_NOT_ACCEPTED",
+    "MAPPING_UNRESOLVED",
+    "MAPPING_CONFLICT_OPEN",
+    "IMPORT_SCHEMA_PROFILE_MISSING",
+    "IMPORT_DUPLICATE_CONTENT",
+    "IMPORT_VALIDATION_FAILED",
+    "IMPORT_TOO_LARGE",
+    "EXPORT_QUEUE_FULL",
+    "EXPORT_UNAVAILABLE",
+    "EXPORT_INTEGRITY_FAILED",
+    "METRIC_INPUT_UNAVAILABLE",
+    "AI_PROVIDER_UNAVAILABLE",
+    "AI_OUTPUT_REJECTED",
+    "AI_PROJECTION_FIELD_NOT_ALLOWED",
+    "POLICY_NOT_CONFIGURED",
+    "GUARDRAIL_BLOCKED",
+    "RECOMMENDATION_STALE",
+    "APPROVAL_REQUIRED",
+    "COMMAND_STATE_INVALID",
+    "WRITE_GATE_CLOSED",
+    "READBACK_REQUIRED",
+    "COMPENSATION_UNSAFE",
+    "POLICY_AUTHORIZATION_UNUSABLE",
+    "CAPABILITY_NOT_USABLE",
+    "CONCURRENT_INTERVENTION",
+    "OBJECT_STORAGE_VERIFICATION_FAILED",
+    "RAW_EVIDENCE_MISSING"]
+to contain exactly (and in same order):
+  ["VALIDATION_FAILED",
+    "RESOURCE_NOT_FOUND",
+    "INTERNAL_ERROR",
+    "DUPLICATE_IDENTITY",
+    "VERSION_CONFLICT",
+    "INVALID_STATE_TRANSITION",
+    "EFFECTIVE_RANGE_OVERLAP",
+    "CROSS_ORGANIZATION_REJECTED",
+    "REFERENCED_ENTITY_ACTIVE",
+    "INVALID_TIMEZONE",
+    "INVALID_CURRENCY",
+    "INVALID_COUNTRY",
+    "SECRET_REFERENCE_INVALID",
+    "SECRET_MATERIAL_SUSPECTED",
+    "SERVICE_ACCOUNT_INACTIVE",
+    "UNKNOWN_SCOPE",
+    "CAPABILITY_VERIFICATION_NOT_SUPPORTED",
+    "PRODUCTION_WRITE_DISABLED",
+    "MAINTENANCE_WRITE_DISABLED",
+    "MAINTENANCE_LOOPBACK_REQUIRED",
+    "OPERATOR_ATTRIBUTION_MISSING",
+    "CURRENCY_MISMATCH",
+    "AUTHENTICATION_REQUIRED",
+    "MULTI_FACTOR_REQUIRED",
+    "STEP_UP_REQUIRED",
+    "USER_NOT_PROVISIONED",
+    "USER_INACTIVE",
+    "ACTION_NOT_PERMITTED",
+    "RESOURCE_SCOPE_DENIED",
+    "IDENTITY_PROVIDER_NOT_ACCEPTED",
+    "MAPPING_UNRESOLVED",
+    "MAPPING_CONFLICT_OPEN",
+    "IMPORT_SCHEMA_PROFILE_MISSING",
+    "IMPORT_DUPLICATE_CONTENT",
+    "IMPORT_VALIDATION_FAILED",
+    "IMPORT_TOO_LARGE",
+    "EXPORT_QUEUE_FULL",
+    "EXPORT_UNAVAILABLE",
+    "EXPORT_INTEGRITY_FAILED",
+    "METRIC_INPUT_UNAVAILABLE",
+    "AI_PROVIDER_UNAVAILABLE",
+    "AI_OUTPUT_REJECTED",
+    "AI_PROJECTION_FIELD_NOT_ALLOWED",
+    "POLICY_NOT_CONFIGURED",
+    "GUARDRAIL_BLOCKED",
+    "RECOMMENDATION_STALE",
+    "APPROVAL_REQUIRED",
+    "COMMAND_STATE_INVALID",
+    "WRITE_GATE_CLOSED",
+    "READBACK_REQUIRED",
+    "COMPENSATION_UNSAFE",
+    "POLICY_AUTHORIZATION_UNUSABLE",
+    "CAPABILITY_NOT_USABLE",
+    "CONCURRENT_INTERVENTION",
+    "OBJECT_STORAGE_VERIFICATION_FAILED",
+    "RAW_EVIDENCE_MISSING"]
+but some elements were not expected:
+  ["APPROVAL_EVIDENCE_SCOPE_BLOCKED"]
+
+	at com.mimococo.marketops.shared.ErrorCodeTest.codeSetIsStable(ErrorCodeTest.java:40)
+
+[INFO] Running com.mimococo.marketops.identityaccess.internal.config.IdentityConfigurationContractTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.mimococo.marketops.identityaccess.internal.config.IdentityConfigurationContractTest
+[INFO] Running com.mimococo.marketops.identityaccess.internal.web.MarketOpsJwtAuthenticationConverterTest
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.050 s -- in com.mimococo.marketops.identityaccess.internal.web.MarketOpsJwtAuthenticationConverterTest
+[INFO] Running com.mimococo.marketops.identityaccess.internal.application.AccessApplicationServiceTest
+12:11:37.445 [main] WARN com.mimococo.marketops.identityaccess.internal.application.ScopeGrantService -event="service_account_rejected" serviceAccountId="00000000-0000-0000-0000-000000000003" evaluation="DISABLED" correlationId="3ebf8f58-a2b8-47f8-ad10-19968af54cec"- Grant refused for an inactive service account
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.131 s -- in com.mimococo.marketops.identityaccess.internal.application.AccessApplicationServiceTest
+[INFO] Running com.mimococo.marketops.identityaccess.internal.application.TokenIdentityResolverTest
+[INFO] Tests run: 42, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.178 s -- in com.mimococo.marketops.identityaccess.internal.application.TokenIdentityResolverTest
+[INFO] Running com.mimococo.marketops.identityaccess.internal.infrastructure.jdbc.AccessRepositoryTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.093 s -- in com.mimococo.marketops.identityaccess.internal.infrastructure.jdbc.AccessRepositoryTest
+[INFO] Running com.mimococo.marketops.identityaccess.internal.domain.AccessLifecycleTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in com.mimococo.marketops.identityaccess.internal.domain.AccessLifecycleTest
+[INFO] Running com.mimococo.marketops.operatingfacts.internal.application.PayloadReaderTest
+[INFO] Tests run: 39, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.057 s -- in com.mimococo.marketops.operatingfacts.internal.application.PayloadReaderTest
+[INFO] Running com.mimococo.marketops.operatingfacts.internal.application.FactRecorderTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.104 s -- in com.mimococo.marketops.operatingfacts.internal.application.FactRecorderTest
+[INFO] Running com.mimococo.marketops.operatingfacts.internal.application.SpreadsheetReaderTest
+[INFO] Running TC-SHEET-002 a file that is not a file is refused
+[INFO] Tests run: 50, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-SHEET-002 a file that is not a file is refused
+[INFO] Running TC-SHEET-001 a separated-values file is read the way tools write them
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-SHEET-001 a separated-values file is read the way tools write them
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.706 s -- in com.mimococo.marketops.operatingfacts.internal.application.SpreadsheetReaderTest
+[INFO] Running com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunnerTest
+12:11:38.743 [main] WARN com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunner -event="normalization_payload_unreadable" observationId="53be03d8-5163-45a0-ba32-e2afb2c05c0c"- Normalization stopped without advancing its cursor
+12:11:38.745 [main] WARN com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunner -event="normalization_payload_unreadable" observationId="5c8c12b9-0960-4647-a0eb-90b25eeae92b"- Normalization stopped without advancing its cursor
+12:11:38.746 [main] WARN com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunner -event="normalization_payload_unreadable" observationId="4b970235-2108-48e2-a181-8b4697a76f4d"- Normalization stopped without advancing its cursor
+12:11:38.747 [main] WARN com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunner -event="normalization_payload_unreadable" observationId="b1af7f01-409f-4570-a44b-c166b3c80069"- Normalization stopped without advancing its cursor
+12:11:38.749 [main] WARN com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunner -event="normalization_payload_unreadable" observationId="a00ed724-ed14-4b17-94db-4b3e97245a1b"- Normalization stopped without advancing its cursor
+12:11:38.753 [main] WARN com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunner -event="normalization_record_out_of_range" observationId="3d7ab785-1d0c-407d-b7ab-abe854a66b87"- Normalization refused an unrepresentable source value
+12:11:38.755 [main] ERROR com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunner -event="normalization_evidence_unverifiable" observationId="1c674ea9-1385-405d-9aac-b027708929ae" correlationId="9fe89b4e-5e77-4594-9e27-151f36ccf9ba"- Stored evidence could not be verified for normalization
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.123 s -- in com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunnerTest
+[INFO] Running com.mimococo.marketops.operatingfacts.internal.application.ImportRowValidatorTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.050 s -- in com.mimococo.marketops.operatingfacts.internal.application.ImportRowValidatorTest
+[INFO] Running com.mimococo.marketops.aicopilot.internal.application.OutputValidatorTest
+[INFO] Running TC-AI-004 marketplace content may not come back out as a directive
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in TC-AI-004 marketplace content may not come back out as a directive
+[INFO] Running TC-AI-001 the answer must match the output contract
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-AI-001 the answer must match the output contract
+[INFO] Running TC-AI-003 a recommendation may only name an action there is a gate for
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in TC-AI-003 a recommendation may only name an action there is a gate for
+[INFO] Running TC-AI-002 a factual claim must be grounded in what was shown
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in TC-AI-002 a factual claim must be grounded in what was shown
+[INFO] Running TC-AI-005 the digest identifies what was sent without keeping it
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in TC-AI-005 the digest identifies what was sent without keeping it
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.108 s -- in com.mimococo.marketops.aicopilot.internal.application.OutputValidatorTest
+[INFO] Running com.mimococo.marketops.aicopilot.adapter.http.HttpModelGatewayTest
+12:11:38.957 [main] WARN com.mimococo.marketops.aicopilot.adapter.http.HttpModelGateway -event="ai_gateway_call_refused" failureCode="DESTINATION_POLICY_REFUSED" correlationId="80801ab5-7c90-4fb1-86cc-1b6fe1d1cf42"- A model call was refused before or during transport
+12:11:38.959 [main] WARN com.mimococo.marketops.aicopilot.adapter.http.HttpModelGateway -event="ai_gateway_call_refused" failureCode="PROVIDER_NOT_ELIGIBLE" correlationId="f60d05da-8e46-4529-b5e8-e649ad711c23"- A model call was refused before or during transport
+12:11:38.961 [main] WARN com.mimococo.marketops.aicopilot.adapter.http.HttpModelGateway -event="ai_gateway_call_refused" failureCode="PROVIDER_REFUSED" statusClass="4xx" correlationId="f637bcc3-6626-487f-8977-fd0b90fae88b"- A model provider refused the call
+12:11:38.975 [main] WARN com.mimococo.marketops.aicopilot.adapter.http.HttpModelGateway -event="ai_gateway_call_refused" failureCode="DESTINATION_POLICY_REFUSED" correlationId="f4721cd1-b0fd-4458-a487-7dec33323951"- A model call was refused before or during transport
+12:11:38.977 [main] WARN com.mimococo.marketops.aicopilot.adapter.http.HttpModelGateway -event="ai_gateway_call_refused" failureCode="DESTINATION_POLICY_REFUSED" correlationId="9b1f460d-1e3e-423f-9b57-0bc2ccfd3a2b"- A model call was refused before or during transport
+12:11:38.979 [main] WARN com.mimococo.marketops.aicopilot.adapter.http.HttpModelGateway -event="ai_gateway_call_refused" failureCode="DESTINATION_POLICY_REFUSED" correlationId="1e742811-4d19-4b71-8c04-69887b66c432"- A model call was refused before or during transport
+12:11:38.980 [main] WARN com.mimococo.marketops.aicopilot.adapter.http.HttpModelGateway -event="ai_gateway_call_refused" failureCode="DESTINATION_POLICY_REFUSED" correlationId="506d207d-fc34-4903-ae67-c3b9945427d7"- A model call was refused before or during transport
+12:11:38.981 [main] WARN com.mimococo.marketops.aicopilot.adapter.http.HttpModelGateway -event="ai_gateway_call_refused" failureCode="CREDENTIAL_UNRESOLVABLE" correlationId="3b70a828-58b8-4538-b48b-9fa71a3476c4"- A model call was refused before or during transport
+12:11:38.982 [main] WARN com.mimococo.marketops.aicopilot.adapter.http.HttpModelGateway -event="ai_gateway_call_refused" failureCode="TRANSPORT_FAILED" correlationId="4dfe8c86-af4c-4e89-ae06-4cb8e2f970fd"- A model call was refused before or during transport
+12:11:38.982 [main] WARN com.mimococo.marketops.aicopilot.adapter.http.HttpModelGateway -event="ai_gateway_call_refused" failureCode="INTERRUPTED" correlationId="d61e8ae9-6e8a-47a3-a65c-6c5b673bc98f"- A model call was refused before or during transport
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.061 s -- in com.mimococo.marketops.aicopilot.adapter.http.HttpModelGatewayTest
+[INFO] Running com.mimococo.marketops.ApplicationEnvironmentFailClosedTest
+12:11:38.997 [main] WARN org.springframework.context.annotation.AnnotationConfigApplicationContext -- Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'com.mimococo.marketops.adminobservability.internal.MetaStatusAssembler': Failed to instantiate [com.mimococo.marketops.adminobservability.internal.MetaStatusAssembler]: Constructor threw exception
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in com.mimococo.marketops.ApplicationEnvironmentFailClosedTest
+[INFO] Running com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest
+12:11:39.043 [main] INFO com.tngtech.archunit.core.PluginLoader -- Detected Java version 21.0.10
+[INFO] Running Additional code-quality architecture safeguards
+[ERROR] Tests run: 12, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.423 s <<< FAILURE! -- in Additional code-quality architecture safeguards
+[ERROR] com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest.timeComesFromAnInjectedClock -- Time elapsed: 0.237 s <<< FAILURE!
+java.lang.AssertionError: 
+Architecture Violation [Priority: MEDIUM] - Rule 'time is read from an injected clock' was violated (2 times):
+Method <com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDisclosureService.manualActions(com.mimococo.marketops.identityaccess.AuthenticatedActor, com.mimococo.marketops.advertisingefficiency.ManualExecutionPacketView)> calls method <java.time.Instant.now()> in (AdvertisingDisclosureService.java:290)
+Method <com.mimococo.marketops.advertisingefficiency.internal.web.AdvertisingOperationsConsoleController.orchestration(com.mimococo.marketops.identityaccess.AuthenticatedActor)> calls method <java.time.Instant.now()> in (AdvertisingOperationsConsoleController.java:76)
+	at com.tngtech.archunit.lang.ArchRule$Assertions.assertNoViolation(ArchRule.java:94)
+	at com.tngtech.archunit.lang.ArchRule$Assertions.check(ArchRule.java:86)
+	at com.tngtech.archunit.lang.ArchRule$Factory$SimpleArchRule.check(ArchRule.java:165)
+	at com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest$CodeQualitySafeguards.timeComesFromAnInjectedClock(ModuleBoundaryArchitectureTest.java:110)
+
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.907 s -- in com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest
+[INFO] Running com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest
+[INFO] Running rule sensitivity
+[INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.534 s -- in rule sensitivity
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.446 s -- in com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest
+[INFO] Running com.mimococo.marketops.architecture.ModulithArchitectureTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.141 s -- in com.mimococo.marketops.architecture.ModulithArchitectureTest
+[INFO] Running com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest
+[INFO] Running Additional code-quality rule sensitivity
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.141 s -- in Additional code-quality rule sensitivity
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.456 s -- in com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest
+[INFO] Running com.mimococo.marketops.architecture.SchemaVocabularyAgreementTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.334 s -- in com.mimococo.marketops.architecture.SchemaVocabularyAgreementTest
+[INFO] Running com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest
+[INFO] Running TC-AUTHORITY-003 owner-published policy has no writer in this product
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.151 s -- in TC-AUTHORITY-003 owner-published policy has no writer in this product
+[INFO] Running TC-AUTHORITY-002 command creation has exactly one route
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.114 s -- in TC-AUTHORITY-002 command creation has exactly one route
+[INFO] Running TC-AUTHORITY-001 advertisingefficiency writes nothing another module owns
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in TC-AUTHORITY-001 advertisingefficiency writes nothing another module owns
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.290 s -- in com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest
+[INFO] Running com.mimococo.marketops.adminobservability.MetaStatusControllerTest
+12:11:51.632 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+12:11:51.632 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+12:11:51.632 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+12:11:51.647 [main] INFO com.mimococo.marketops.shared.internal.correlation.CorrelationIdFilter -event="request_completed" correlationId="cd0057c0-ac47-458a-a16d-96a0fb6599bf" status="200"- Request completed
+12:11:51.677 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+12:11:51.677 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+12:11:51.678 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
+12:11:51.680 [main] INFO com.mimococo.marketops.shared.internal.correlation.CorrelationIdFilter -event="request_completed" correlationId="534eb750-49d8-4a11-91e4-150e50bd84b9" status="200"- Request completed
+12:11:51.683 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+12:11:51.683 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+12:11:51.683 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+12:11:51.685 [main] INFO com.mimococo.marketops.shared.internal.correlation.CorrelationIdFilter -event="request_completed" correlationId="bf23ef6f-e6f2-4095-a512-470e455d7b79" status="200"- Request completed
+12:11:51.689 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+12:11:51.689 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+12:11:51.689 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+12:11:51.691 [main] INFO com.mimococo.marketops.shared.internal.correlation.CorrelationIdFilter -event="request_completed" correlationId="req-0001" status="200"- Request completed
+12:11:51.693 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+12:11:51.693 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+12:11:51.694 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
+12:11:51.697 [main] ERROR com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandler -event="request_unhandled_failure" errorCode="INTERNAL_ERROR" correlationId="313bfc14-48d7-4a53-a191-a19b104aa8fb" exceptionClass="java.lang.IllegalStateException"- Request processing failed
+12:11:51.704 [main] INFO com.mimococo.marketops.shared.internal.correlation.CorrelationIdFilter -event="request_completed" correlationId="313bfc14-48d7-4a53-a191-a19b104aa8fb" status="500"- Request completed
+12:11:51.708 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+12:11:51.708 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+12:11:51.708 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+12:11:51.709 [main] ERROR com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandler -event="request_unhandled_failure" errorCode="INTERNAL_ERROR" correlationId="req-0003" exceptionClass="java.lang.IllegalStateException"- Request processing failed
+12:11:51.710 [main] INFO com.mimococo.marketops.shared.internal.correlation.CorrelationIdFilter -event="request_completed" correlationId="req-0003" status="500"- Request completed
+12:11:51.714 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+12:11:51.714 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+12:11:51.714 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+12:11:51.716 [main] INFO com.mimococo.marketops.shared.internal.correlation.CorrelationIdFilter -event="request_completed" correlationId="5be5ef1a-0a91-4a8a-8a0b-eccd929f285f" status="200"- Request completed
+12:11:51.723 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+12:11:51.723 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+12:11:51.723 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+12:11:51.725 [main] INFO com.mimococo.marketops.shared.internal.correlation.CorrelationIdFilter -event="request_completed" correlationId="req-0002" status="200"- Request completed
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.150 s -- in com.mimococo.marketops.adminobservability.MetaStatusControllerTest
+[INFO] Running com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdviceTest
+12:11:51.726 [main] WARN com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdvice -event="maintenance_write_disabled_denied" pathTemplate="/api/v1/admin/metadata/organizations/{id}" actorId="metadata-maintenance-boundary" correlationId="4fed5d2c-8e6a-4cc5-a1f6-e699809f3cb7"- Maintenance write refused by the environment gate
+12:11:51.726 [main] WARN com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdvice -event="maintenance_write_disabled_denied" pathTemplate="unmatched" actorId="metadata-maintenance-boundary" correlationId="7abd53f5-4d1d-40da-a01f-328041f08435"- Maintenance write refused by the environment gate
+12:11:51.812 [main] WARN com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdvice -event="maintenance_request_denied" errorCode="VALIDATION_FAILED" correlationId="cd1cac99-f5d2-4ce9-a12b-34b624bb3a5a" exceptionClass="org.springframework.web.bind.MethodArgumentNotValidException"- Maintenance request denied
+12:11:51.813 [main] WARN com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdvice -event="maintenance_request_denied" errorCode="VALIDATION_FAILED" correlationId="5ccd25d3-3fd7-49ce-aa96-6bc87f3340d7" exceptionClass="org.springframework.http.converter.HttpMessageNotReadableException"- Maintenance request denied
+12:11:51.813 [main] WARN com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdvice -event="maintenance_request_denied" errorCode="VALIDATION_FAILED" correlationId="c46e7d81-3fbf-423b-9f33-dd9cb11b8b9a" exceptionClass="org.springframework.validation.BindException"- Maintenance request denied
+12:11:51.813 [main] WARN com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdvice -event="maintenance_request_denied" errorCode="VALIDATION_FAILED" correlationId="854e3ab9-c9ff-4896-827b-1e028ba19479" exceptionClass="org.springframework.validation.BindException"- Maintenance request denied
+12:11:51.813 [main] WARN com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdvice -event="maintenance_request_denied" errorCode="UNKNOWN_SCOPE" correlationId="cfcc08bf-d6e4-42b0-b50b-bb8346fde78a" exceptionClass="com.mimococo.marketops.shared.OperationRejectedException"- Maintenance request denied
+12:11:51.814 [main] ERROR com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdvice -event="maintenance_persistence_failure" errorCode="INTERNAL_ERROR" correlationId="92ddcf13-f093-46b1-bebf-7a519b292ea0" exceptionClass="org.springframework.dao.DataIntegrityViolationException"- Metadata persistence failed
+12:11:51.814 [main] ERROR com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdvice -event="maintenance_persistence_failure" errorCode="INTERNAL_ERROR" correlationId="cad7744c-777f-4c9f-8117-8ab4c98f2cd3" exceptionClass="org.springframework.dao.DataIntegrityViolationException"- Metadata persistence failed
+12:11:51.814 [main] ERROR com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdvice -event="maintenance_persistence_failure" errorCode="INTERNAL_ERROR" correlationId="26a1b215-65d3-4832-bf79-b8411423d19d" exceptionClass="org.springframework.dao.DataIntegrityViolationException"- Metadata persistence failed
+12:11:51.814 [main] WARN com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdvice -event="maintenance_request_denied" errorCode="DUPLICATE_IDENTITY" correlationId="130852c5-c4d8-4513-bcdc-977040013eb5" exceptionClass="org.springframework.dao.DataIntegrityViolationException"- Maintenance request denied
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.090 s -- in com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdviceTest
+[INFO] Running com.mimococo.marketops.adminobservability.internal.MetaStatusAssemblerTest
+12:11:51.858 [main] WARN com.mimococo.marketops.adminobservability.internal.MetaStatusAssembler -event="database_probe_failed" correlationId="53ea8dd6-fe36-4825-bfbd-4bd68dae6866" exceptionClass="java.sql.SQLException"- Metadata dependency probe degraded
+12:11:51.859 [main] WARN com.mimococo.marketops.adminobservability.internal.MetaStatusAssembler -event="database_probe_failed" correlationId="54f26e9f-79ef-4e73-a673-161869354857" exceptionClass="java.sql.SQLException"- Metadata dependency probe degraded
+12:11:51.862 [main] WARN com.mimococo.marketops.adminobservability.internal.MetaStatusAssembler -event="database_probe_failed" correlationId="bb5956ad-c542-44e5-95e7-ca6f9fbbbd96"- Metadata dependency probe degraded
+12:11:51.863 [main] WARN com.mimococo.marketops.adminobservability.internal.MetaStatusAssembler -event="database_probe_failed" correlationId="7c12b812-3942-48bb-adf1-9b1e19b1d14b" exceptionClass="java.sql.SQLException"- Metadata dependency probe degraded
+12:11:51.995 [main] WARN com.mimococo.marketops.adminobservability.internal.MetaStatusAssembler -event="database_probe_failed" correlationId="0c7763cb-0f96-4dcd-8058-c7afe4dc9aea" exceptionClass="java.sql.SQLException"- Metadata dependency probe degraded
+12:11:51.995 [main] WARN com.mimococo.marketops.adminobservability.internal.MetaStatusAssembler -event="migration_version_probe_failed" correlationId="530f3147-eb22-4fd6-b942-41b29b2f9f2f" exceptionClass="java.lang.IllegalStateException"- Metadata dependency probe degraded
+12:11:51.998 [main] WARN com.mimococo.marketops.adminobservability.internal.MetaStatusAssembler -event="migration_version_probe_failed" correlationId="bcb86787-5762-4820-9953-a6436f43695b" exceptionClass="java.lang.IllegalStateException"- Metadata dependency probe degraded
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.183 s -- in com.mimococo.marketops.adminobservability.internal.MetaStatusAssemblerTest
+[INFO] Running com.mimococo.marketops.LoggingContractTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.115 s -- in com.mimococo.marketops.LoggingContractTest
+[INFO] Running com.mimococo.marketops.ApplicationConfigurationTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.057 s -- in com.mimococo.marketops.ApplicationConfigurationTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDecisionServiceTest
+[INFO] Running TC-AD-DECIDE-003 the reservation is taken only at the action stage
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.105 s -- in TC-AD-DECIDE-003 the reservation is taken only at the action stage
+[INFO] Running TC-AD-DECIDE-002 every refusal names itself
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in TC-AD-DECIDE-002 every refusal names itself
+[INFO] Running TC-AD-DECIDE-001 a complete decision resolves to a usable scope
+[ERROR] Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.017 s <<< FAILURE! -- in TC-AD-DECIDE-001 a complete decision resolves to a usable scope
+[ERROR] com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDecisionServiceTest.completeRowResolves -- Time elapsed: 0.012 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+expected: 2026-09-04T12:30:00Z
+ but was: 2026-09-04T14:00:00Z
+	at com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDecisionServiceTest$Complete.lambda$completeRowResolves$0(AdvertisingDecisionServiceTest.java:82)
+	at com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDecisionServiceTest$Complete.completeRowResolves(AdvertisingDecisionServiceTest.java:76)
+
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.150 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDecisionServiceTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseMeasureCalculationTest
+[INFO] Tests run: 25, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.077 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseMeasureCalculationTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingQualificationBoundaryTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.226 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingQualificationBoundaryTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest
+[INFO] Running TC-AD-CALC-005 the result describes the object it was computed for
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-AD-CALC-005 the result describes the object it was computed for
+[INFO] Running TC-AD-CALC-003 a data defect owns its own case
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in TC-AD-CALC-003 a data defect owns its own case
+[INFO] Running TC-AD-CALC-004 every measure is absent rather than zero
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in TC-AD-CALC-004 every measure is absent rather than zero
+[INFO] Running TC-AD-CALC-002 execution integrity outranks everything
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in TC-AD-CALC-002 execution integrity outranks everything
+[INFO] Running TC-AD-CALC-001 an object nobody may write to says so above everything else
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in TC-AD-CALC-001 an object nobody may write to says so above everything else
+[INFO] Running TC-AD-CALC-006 the deep measures are computed, or refused for a stated reason
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in TC-AD-CALC-006 the deep measures are computed, or refused for a stated reason
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.032 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingAttributedEconomicsTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingAttributedEconomicsTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProjectionWriterTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.054 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProjectionWriterTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProposalServiceTest
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.149 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProposalServiceTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.215 s -- in com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateTest
+[INFO] Running the platform's grid decides where a value may land
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in the platform's grid decides where a value may land
+[INFO] Running a limit that permits nothing coherent is unrepresentable
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in a limit that permits nothing coherent is unrepresentable
+[INFO] Running a cause may bound a decrease when no ceiling exists
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in a cause may bound a decrease when no ceiling exists
+[INFO] Running a candidate that changes nothing is not a candidate
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in a candidate that changes nothing is not a candidate
+[INFO] Running an increase approaches what a click is worth and stops
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in an increase approaches what a click is worth and stops
+[INFO] Running a decrease protects and never overshoots
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in a decrease protects and never overshoots
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingContributionProfitTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingContributionProfitTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.AdCaseIdentityAndPolicySetTest
+[INFO] Running a calculation is a pure value the two schedules both produce
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in a calculation is a pure value the two schedules both produce
+[INFO] Running a case is identified by its cause and its object generation
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in a case is identified by its cause and its object generation
+[INFO] Running the policy set says what was in force, including what was not
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in the policy set says what was in force, including what was not
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.AdCaseIdentityAndPolicySetTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityPolicyTest
+[INFO] Running the workflow scale keeps the ordering the band score guarantees
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in the workflow scale keeps the ordering the band score guarantees
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityPolicyTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.DualAxisVerdictTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.DualAxisVerdictTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.BidDirectionForCauseTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.BidDirectionForCauseTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.AdLinkedConversionTest
+[INFO] Running no insufficient evidence state can produce a write-grade conversion
+[INFO] Tests run: 22, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in no insufficient evidence state can produce a write-grade conversion
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.AdLinkedConversionTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.MaxCpcTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.MaxCpcTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityLexicographicTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityLexicographicTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.AdMeasureAndAffectedSetTest
+[INFO] Running a measure carries a value exactly when it is available
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in a measure carries a value exactly when it is available
+[INFO] Running the affected set is an identity, not a list
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in the affected set is an identity, not a list
+[INFO] Running a one-sided danger proof is a proof
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in a one-sided danger proof is a proof
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.AdMeasureAndAffectedSetTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.SalesPreservationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.SalesPreservationTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateSetTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateSetTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingDomainPropertyTest
+[INFO] Running only a cause that justifies a bid move produces one
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in only a cause that justifies a bid move produces one
+[INFO] Running the same inputs always produce the same answer
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.061 s -- in the same inputs always produce the same answer
+[INFO] Running a critical sales unit cannot be paid for out of another one's growth
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in a critical sales unit cannot be paid for out of another one's growth
+[INFO] Running a ceiling prices one sale event or it prices nothing
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in a ceiling prices one sale event or it prices nothing
+[INFO] Running every candidate that exists is one the platform would accept unchanged
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.029 s -- in every candidate that exists is one the platform would accept unchanged
+[INFO] Running no amount of money moves a case across a band
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.030 s -- in no amount of money moves a case across a band
+[INFO] Running an absent number is never quietly a zero
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in an absent number is never quietly a zero
+[INFO] Running a profit is whole or it is not a profit
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in a profit is whole or it is not a profit
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.184 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingDomainPropertyTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.OutcomeEvaluationTest
+[INFO] Running evidence is checked before arithmetic
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in evidence is checked before arithmetic
+[INFO] Running a settled claim cannot outrun the completed-sales guard
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in a settled claim cannot outrun the completed-sales guard
+[INFO] Running the thresholds a plan fixed beforehand decide the verdict
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in the thresholds a plan fixed beforehand decide the verdict
+[INFO] Running an incoherent outcome is unrepresentable
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in an incoherent outcome is unrepresentable
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.OutcomeEvaluationTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.internal.domain.AdLaneResolverTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.mimococo.marketops.advertisingefficiency.internal.domain.AdLaneResolverTest
+[INFO] Running com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.431 s -- in com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest
+[INFO] Running com.mimococo.marketops.operationsworkflow.AvailabilityCaseStateTest
+[INFO] Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.mimococo.marketops.operationsworkflow.AvailabilityCaseStateTest
+[INFO] Running com.mimococo.marketops.operationsworkflow.internal.application.PriceChangeParameterContractTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.mimococo.marketops.operationsworkflow.internal.application.PriceChangeParameterContractTest
+[INFO] Running com.mimococo.marketops.operationsworkflow.internal.application.GuardrailEngineTest
+[INFO] Running TC-GUARD-004 a listing is not disrupted by accumulation
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.046 s -- in TC-GUARD-004 a listing is not disrupted by accumulation
+[INFO] Running TC-GUARD-002 absence never becomes an acceptable default
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.066 s -- in TC-GUARD-002 absence never becomes an acceptable default
+[INFO] Running TC-GUARD-005 the case must still be about this listing, now
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 s -- in TC-GUARD-005 the case must still be about this listing, now
+[INFO] Running TC-GUARD-001 a proposal is only decided under rules that exist
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in TC-GUARD-001 a proposal is only decided under rules that exist
+[INFO] Running TC-GUARD-003 a price may not be taken below what it costs
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.035 s -- in TC-GUARD-003 a price may not be taken below what it costs
+[INFO] Running TC-GUARD-006 a standing authorization bounds what it can be spent on
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in TC-GUARD-006 a standing authorization bounds what it can be spent on
+[INFO] Running TC-GUARD-007 every blocking condition is reported at once
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 s -- in TC-GUARD-007 every blocking condition is reported at once
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.252 s -- in com.mimococo.marketops.operationsworkflow.internal.application.GuardrailEngineTest
+[INFO] Running com.mimococo.marketops.operationsworkflow.internal.application.AvailabilityExceptionRevalidationTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.246 s -- in com.mimococo.marketops.operationsworkflow.internal.application.AvailabilityExceptionRevalidationTest
+[INFO] Running com.mimococo.marketops.operationsworkflow.internal.application.AdBidChangeParameterContractTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 s -- in com.mimococo.marketops.operationsworkflow.internal.application.AdBidChangeParameterContractTest
+[INFO] Running com.mimococo.marketops.operationsworkflow.internal.application.AdBidGuardrailTest
+[INFO] Running TC-AD-GUARD-002 each refusal appears on its own
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in TC-AD-GUARD-002 each refusal appears on its own
+[INFO] Running TC-AD-GUARD-001 a clean decision passes and names its authority
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in TC-AD-GUARD-001 a clean decision passes and names its authority
+[INFO] Running TC-AD-GUARD-004 evaluate dispatches on the action
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in TC-AD-GUARD-004 evaluate dispatches on the action
+[INFO] Running TC-AD-GUARD-003 the module's reasons are translated, not echoed
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in TC-AD-GUARD-003 the module's reasons are translated, not echoed
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.266 s -- in com.mimococo.marketops.operationsworkflow.internal.application.AdBidGuardrailTest
+[INFO] Running com.mimococo.marketops.operationsworkflow.internal.domain.StaffedResponseClockTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in com.mimococo.marketops.operationsworkflow.internal.domain.StaffedResponseClockTest
+[INFO] Running com.mimococo.marketops.operationsworkflow.internal.domain.ExceptionMaterialityPolicyTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in com.mimococo.marketops.operationsworkflow.internal.domain.ExceptionMaterialityPolicyTest
+[INFO] Running com.mimococo.marketops.operationsworkflow.RecommendationStateTest
+[INFO] Running TC-WF-004 exactly two actions have a platform write behind them
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in TC-WF-004 exactly two actions have a platform write behind them
+[INFO] Running TC-WF-002 a finished proposal stays finished
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in TC-WF-002 a finished proposal stays finished
+[INFO] Running TC-WF-003 every state is reachable and self-consistent
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in TC-WF-003 every state is reachable and self-consistent
+[INFO] Running TC-WF-001 a write is only ever authorized deliberately
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in TC-WF-001 a write is only ever authorized deliberately
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.mimococo.marketops.operationsworkflow.RecommendationStateTest
+[INFO] Running com.mimococo.marketops.operationsworkflow.WorkTaskEventPropertyTest
+[INFO] Running an event is one kind of thing, never two
+[INFO] Tests run: 47, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in an event is one kind of thing, never two
+[INFO] Running a verdict names every reason it was built from
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.024 s -- in a verdict names every reason it was built from
+[INFO] Running an action stage needs its action, its evidence and its actor
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in an action stage needs its action, its evidence and its actor
+[INFO] Running the internal response bounds are ordered and strict at the edge
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in the internal response bounds are ordered and strict at the edge
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.051 s -- in com.mimococo.marketops.operationsworkflow.WorkTaskEventPropertyTest
+[INFO] Running com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest
+[INFO] Running a scope is complete or it does not exist
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in a scope is complete or it does not exist
+[INFO] Running a preview tells an operator everything that stands in the way
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in a preview tells an operator everything that stands in the way
+[INFO] Running a proposal carries its own service level
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in a proposal carries its own service level
+[INFO] Running a projection says what a bid change would reach
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in a projection says what a bid change would reach
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.AvailabilityNonGoalsTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.087 s -- in com.mimococo.marketops.availabilityrisk.AvailabilityNonGoalsTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorkerTest
+12:11:54.992 [main] ERROR com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorker -- reconciliation sweep b622c331-e8ae-46fc-abea-b6300438fed5 could not refresh variant 00000000-0000-0000-0000-000000000001
+java.lang.IllegalStateException: synthetic item failure
+	at com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityRiskRefreshService.refresh(AvailabilityRiskRefreshService.java:78)
+	at com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorker.visit(AvailabilityReconciliationWorker.java:164)
+	at com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorker.sweep(AvailabilityReconciliationWorker.java:118)
+	at com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorkerTest.perVariantFailureIsIsolatedAndReported(AvailabilityReconciliationWorkerTest.java:81)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:701)
+	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:502)
+	at org.junit.jupiter.engine.support.MethodReflectionUtils.invoke(MethodReflectionUtils.java:45)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:61)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:124)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:163)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:148)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:123)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:99)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:66)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:47)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:39)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invokeVoid(InterceptingExecutableInvoker.java:71)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$0(TestMethodTestDescriptor.java:219)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:215)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:157)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:70)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:176)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:36)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:52)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:58)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.executeEngine(EngineExecutionOrchestrator.java:246)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.failOrExecuteEngine(EngineExecutionOrchestrator.java:218)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:179)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:108)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:66)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:157)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:65)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:125)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:58)
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$2(InterceptingLauncher.java:57)
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:56)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:58)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.apache.maven.surefire.api.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:125)
+	at org.apache.maven.surefire.junitplatform.LauncherAdapter.executeWithCancellationToken(LauncherAdapter.java:68)
+	at org.apache.maven.surefire.junitplatform.LauncherAdapter.execute(LauncherAdapter.java:54)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:203)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:168)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:136)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.336 s -- in com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorkerTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityCoverageTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityCoverageTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityTargetedWorkerCapacityTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.256 s -- in com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityTargetedWorkerCapacityTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.application.ProfitLaneResolverTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.mimococo.marketops.availabilityrisk.internal.application.ProfitLaneResolverTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.application.ReturnQualityAssessmentTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.047 s -- in com.mimococo.marketops.availabilityrisk.internal.application.ReturnQualityAssessmentTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicyEngineTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicyEngineTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.domain.OutcomeConditionTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.OutcomeConditionTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.domain.PriorityPolicyTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.PriorityPolicyTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilityRunbookConformanceTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilityRunbookConformanceTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.domain.NoFalseSafetyAdversarialTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.NoFalseSafetyAdversarialTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.domain.WorkActivationPolicyTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.WorkActivationPolicyTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.domain.CompanyRiskCalculatorTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.CompanyRiskCalculatorTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.domain.ChannelRiskCalculatorTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.ChannelRiskCalculatorTest
+[INFO] Running com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilitySloTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilitySloTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   AdvertisingDecisionServiceTest.completeRowResolves 
+expected: 2026-09-04T12:30:00Z
+ but was: 2026-09-04T14:00:00Z
+[ERROR]   ModuleBoundaryArchitectureTest.timeComesFromAnInjectedClock Architecture Violation [Priority: MEDIUM] - Rule 'time is read from an injected clock' was violated (2 times):
+Method <com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDisclosureService.manualActions(com.mimococo.marketops.identityaccess.AuthenticatedActor, com.mimococo.marketops.advertisingefficiency.ManualExecutionPacketView)> calls method <java.time.Instant.now()> in (AdvertisingDisclosureService.java:290)
+Method <com.mimococo.marketops.advertisingefficiency.internal.web.AdvertisingOperationsConsoleController.orchestration(com.mimococo.marketops.identityaccess.AuthenticatedActor)> calls method <java.time.Instant.now()> in (AdvertisingOperationsConsoleController.java:76)
+[ERROR]   ErrorCodeTest.codeSetIsStable:40 
+Expecting actual:
+  ["VALIDATION_FAILED",
+    "RESOURCE_NOT_FOUND",
+    "INTERNAL_ERROR",
+    "DUPLICATE_IDENTITY",
+    "VERSION_CONFLICT",
+    "INVALID_STATE_TRANSITION",
+    "EFFECTIVE_RANGE_OVERLAP",
+    "CROSS_ORGANIZATION_REJECTED",
+    "REFERENCED_ENTITY_ACTIVE",
+    "INVALID_TIMEZONE",
+    "INVALID_CURRENCY",
+    "INVALID_COUNTRY",
+    "SECRET_REFERENCE_INVALID",
+    "SECRET_MATERIAL_SUSPECTED",
+    "SERVICE_ACCOUNT_INACTIVE",
+    "UNKNOWN_SCOPE",
+    "CAPABILITY_VERIFICATION_NOT_SUPPORTED",
+    "PRODUCTION_WRITE_DISABLED",
+    "MAINTENANCE_WRITE_DISABLED",
+    "MAINTENANCE_LOOPBACK_REQUIRED",
+    "OPERATOR_ATTRIBUTION_MISSING",
+    "CURRENCY_MISMATCH",
+    "AUTHENTICATION_REQUIRED",
+    "MULTI_FACTOR_REQUIRED",
+    "STEP_UP_REQUIRED",
+    "USER_NOT_PROVISIONED",
+    "USER_INACTIVE",
+    "ACTION_NOT_PERMITTED",
+    "RESOURCE_SCOPE_DENIED",
+    "APPROVAL_EVIDENCE_SCOPE_BLOCKED",
+    "IDENTITY_PROVIDER_NOT_ACCEPTED",
+    "MAPPING_UNRESOLVED",
+    "MAPPING_CONFLICT_OPEN",
+    "IMPORT_SCHEMA_PROFILE_MISSING",
+    "IMPORT_DUPLICATE_CONTENT",
+    "IMPORT_VALIDATION_FAILED",
+    "IMPORT_TOO_LARGE",
+    "EXPORT_QUEUE_FULL",
+    "EXPORT_UNAVAILABLE",
+    "EXPORT_INTEGRITY_FAILED",
+    "METRIC_INPUT_UNAVAILABLE",
+    "AI_PROVIDER_UNAVAILABLE",
+    "AI_OUTPUT_REJECTED",
+    "AI_PROJECTION_FIELD_NOT_ALLOWED",
+    "POLICY_NOT_CONFIGURED",
+    "GUARDRAIL_BLOCKED",
+    "RECOMMENDATION_STALE",
+    "APPROVAL_REQUIRED",
+    "COMMAND_STATE_INVALID",
+    "WRITE_GATE_CLOSED",
+    "READBACK_REQUIRED",
+    "COMPENSATION_UNSAFE",
+    "POLICY_AUTHORIZATION_UNUSABLE",
+    "CAPABILITY_NOT_USABLE",
+    "CONCURRENT_INTERVENTION",
+    "OBJECT_STORAGE_VERIFICATION_FAILED",
+    "RAW_EVIDENCE_MISSING"]
+to contain exactly (and in same order):
+  ["VALIDATION_FAILED",
+    "RESOURCE_NOT_FOUND",
+    "INTERNAL_ERROR",
+    "DUPLICATE_IDENTITY",
+    "VERSION_CONFLICT",
+    "INVALID_STATE_TRANSITION",
+    "EFFECTIVE_RANGE_OVERLAP",
+    "CROSS_ORGANIZATION_REJECTED",
+    "REFERENCED_ENTITY_ACTIVE",
+    "INVALID_TIMEZONE",
+    "INVALID_CURRENCY",
+    "INVALID_COUNTRY",
+    "SECRET_REFERENCE_INVALID",
+    "SECRET_MATERIAL_SUSPECTED",
+    "SERVICE_ACCOUNT_INACTIVE",
+    "UNKNOWN_SCOPE",
+    "CAPABILITY_VERIFICATION_NOT_SUPPORTED",
+    "PRODUCTION_WRITE_DISABLED",
+    "MAINTENANCE_WRITE_DISABLED",
+    "MAINTENANCE_LOOPBACK_REQUIRED",
+    "OPERATOR_ATTRIBUTION_MISSING",
+    "CURRENCY_MISMATCH",
+    "AUTHENTICATION_REQUIRED",
+    "MULTI_FACTOR_REQUIRED",
+    "STEP_UP_REQUIRED",
+    "USER_NOT_PROVISIONED",
+    "USER_INACTIVE",
+    "ACTION_NOT_PERMITTED",
+    "RESOURCE_SCOPE_DENIED",
+    "IDENTITY_PROVIDER_NOT_ACCEPTED",
+    "MAPPING_UNRESOLVED",
+    "MAPPING_CONFLICT_OPEN",
+    "IMPORT_SCHEMA_PROFILE_MISSING",
+    "IMPORT_DUPLICATE_CONTENT",
+    "IMPORT_VALIDATION_FAILED",
+    "IMPORT_TOO_LARGE",
+    "EXPORT_QUEUE_FULL",
+    "EXPORT_UNAVAILABLE",
+    "EXPORT_INTEGRITY_FAILED",
+    "METRIC_INPUT_UNAVAILABLE",
+    "AI_PROVIDER_UNAVAILABLE",
+    "AI_OUTPUT_REJECTED",
+    "AI_PROJECTION_FIELD_NOT_ALLOWED",
+    "POLICY_NOT_CONFIGURED",
+    "GUARDRAIL_BLOCKED",
+    "RECOMMENDATION_STALE",
+    "APPROVAL_REQUIRED",
+    "COMMAND_STATE_INVALID",
+    "WRITE_GATE_CLOSED",
+    "READBACK_REQUIRED",
+    "COMPENSATION_UNSAFE",
+    "POLICY_AUTHORIZATION_UNUSABLE",
+    "CAPABILITY_NOT_USABLE",
+    "CONCURRENT_INTERVENTION",
+    "OBJECT_STORAGE_VERIFICATION_FAILED",
+    "RAW_EVIDENCE_MISSING"]
+but some elements were not expected:
+  ["APPROVAL_EVIDENCE_SCOPE_BLOCKED"]
+
+[INFO] 
+[ERROR] Tests run: 1545, Failures: 3, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  36.884 s
+[INFO] Finished at: 2026-09-05T12:11:55+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project marketops-server: There are test failures.
+[ERROR] 
+[ERROR] See /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

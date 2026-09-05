@@ -1,0 +1,8 @@
+{
+  "file": "/tmp/slice3-final-assessment-preparation/per-criterion-reviewed-contributions.json",
+  "sha256": "ad8457cd9d7b9f1ca44d80721c9481d133dddc5c262e102dfe3972d5a53e6892",
+  "count": 200,
+  "contributions": 260,
+  "overlap": 54,
+  "status": "PREPARED_FINAL_SOURCE_AND_CI_PENDING"
+}

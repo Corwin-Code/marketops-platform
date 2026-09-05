@@ -55,6 +55,10 @@ import org.springframework.test.context.DynamicPropertySource;
 @Import(PriceCommandWorkerIT.ScriptedPlatform.class)
 class PriceCommandWorkerIT {
 
+    // runOnce claims every eligible command in its database. Its scripted
+    // platform must therefore share no work queue with other test classes.
+    private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE =
+            TestDatabase.isolatedContainer();
     private static final String WORKER_NAMESPACE = "price-command-worker-it";
 
     @Autowired
@@ -81,7 +85,7 @@ class PriceCommandWorkerIT {
 
     @DynamicPropertySource
     static void databaseProperties(DynamicPropertyRegistry registry) {
-        var container = TestDatabase.container();
+        var container = DATABASE;
         registry.add("spring.datasource.url", container::getJdbcUrl);
         registry.add("spring.datasource.username", TestDatabase::applicationRole);
         registry.add("spring.datasource.password", TestDatabase::applicationPassword);
@@ -92,7 +96,7 @@ class PriceCommandWorkerIT {
     @BeforeEach
     void seedOneExecutableCommand() {
         arranger = JdbcClient.create(new org.springframework.jdbc.datasource.DriverManagerDataSource(
-                TestDatabase.container().getJdbcUrl(), TestDatabase.migrationRole(), TestDatabase.migrationPassword()));
+                DATABASE.getJdbcUrl(), TestDatabase.migrationRole(), TestDatabase.migrationPassword()));
         platform.reset();
         PriceCommandFixture.resetSharedState(arranger);
         commandId = PriceCommandFixture.seed(arranger, WORKER_NAMESPACE + "-" + UUID.randomUUID());

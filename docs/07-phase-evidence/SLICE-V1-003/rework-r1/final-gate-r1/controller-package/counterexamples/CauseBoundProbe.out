@@ -1,0 +1,3 @@
+PROMOTED_VARIANT_UNAVAILABLE: lane=PROTECTION, maxCpcWriteGrade=false, ordinaryDirection=Optional[PROTECTION_DECREASE], causeBoundProtectionQualified=true
+PROMOTED_VARIANT_NOT_SELLABLE: lane=PROTECTION, maxCpcWriteGrade=false, ordinaryDirection=Optional[PROTECTION_DECREASE], causeBoundProtectionQualified=true
+PROVEN_ADVERTISING_LOSS: lane=PROTECTION, maxCpcWriteGrade=false, ordinaryDirection=Optional[PROTECTION_DECREASE], causeBoundProtectionQualified=false

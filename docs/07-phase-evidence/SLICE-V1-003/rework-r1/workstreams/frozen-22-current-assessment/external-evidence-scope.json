@@ -1,0 +1,39 @@
+{
+  "W8LocalBackend": {
+    "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/run-receipt.json",
+    "sha256": "eca4c0db03e73e68c4c5e7c3737fd8f1068f6d2d71940128da1dbaf4e9c5f1a0"
+  },
+  "W8NamedBackendJoin": {
+    "path": "/tmp/slice3-w8-individual-backend-join-r2.json",
+    "sha256": "d0e75ce7fb885663943afad15b08a92cf068860fa33e040b3fc583118e2d76c7"
+  },
+  "W8ActualGovernance": {
+    "path": "/tmp/slice3-r1-named-python-w8.json",
+    "sha256": "99fa9543952b8d8e4f0e4e94ab622255dbc64e27a79477712f6250feff778be6"
+  },
+  "W8AllCIRunJobIndex": {
+    "path": "/tmp/slice3-pr30-w8-complete-ci/run-job-artifact-index.json",
+    "sha256": "a9bee56788ed7c3979a0af62a83cf4eff797744fedf6adb28cc78a7e07f8c519"
+  },
+  "W8BackendCIExactArtifactProvenance": {
+    "path": "/tmp/slice3-w8-backend-ci-provenance-r3/review.json",
+    "sha256": "75cec4b5421bea4d761a0a7509fadea46391a87e94810ad707b88b82cdcd217c"
+  },
+  "W8BackendCIMeasuredResults": {
+    "path": "/tmp/slice3-w8-backend-ci-measured-results-r2/review.json",
+    "sha256": "692495ba191919e3e19aba5941770f7a888510564c283a40ee2fc95013939295"
+  },
+  "W8GovernanceInfrastructureIndependentProvenance": {
+    "path": "/tmp/slice3-w8-gov-infra-provenance/review.json",
+    "sha256": "da7ac5f33c6fe3c9eb4a3067ba63779a767b5ccf0bd1dfe56568ac4bc9f84f9b"
+  },
+  "W8SecuritySummary": {
+    "path": "/tmp/slice3-security-w8/summary.json",
+    "sha256": "e8fdd8ed13d906e03a32e601692a08f44cb9018419f8f22d2c3b01188dbc4c6b"
+  },
+  "W9FrontendQualityAndBrowser": {
+    "file": "w9-actual-frontend-browser-evidence.json"
+  },
+  "finalLatestTipCIGovernance": "PENDING_FINAL_AUTHORED_HEAD_ACTUAL_CHECKS_AND_CANONICAL_SYNC",
+  "controllerVerdict": null
+}

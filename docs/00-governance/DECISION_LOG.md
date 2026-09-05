@@ -27,6 +27,7 @@
 | D-23 | 2026-08-26 | ACCEPTED | Yandex Cloud `ru-central1` is the V1 primary infrastructure; human auth uses external OIDC/MFA with Yandex Identity Hub as default; provider boundaries remain replaceable; Buyer PII stays out of AI/general Mart. | OD-V1-011/014/015/016 and CD-V1-007; ADR-0007. |
 | D-24 | 2026-08-26 | ACCEPTED | A production-grade Slice may enter bounded production before V1 is complete; write Capability enablement uses a Pilot Cohort and its own Gate; V1 completion is capability-based, not uplift-proof-based. | OD-V1-010/023 and CD-V1-004/006. |
 | D-25 | 2026-08-26 | ACCEPTED | DR-0004 plus exact Owner-accepted DR-0004-AMENDMENT-001 is the engineering execution and closure protocol; frozen proposal-status fields are provenance only and repository effect requires the accepted result on protected main. No V1 Product scope change and no SLICE-V1-001 scope change. | DR-0004; DR-0004-AMENDMENT-001; durable Human Owner acceptance evidence. |
+| D-26 | 2026-09-04 | ACCEPTED | SLICE-V1-003 Advertising & Traffic Efficiency is the active Slice. Its single controlled-write Capability is `AD_BID_CHANGE`; Budget, Campaign pause/resume, bidding strategy/mode, structure, creative and portfolio actions stay manual-Shadow or future scope. The initial Ordinary nonzero envelope is zero, so every nonzero bid Command is Material and needs Human Owner final per-command approval, and Standing Policy automation is disabled. Both platforms receive the full governed Manual Shadow; every unverified Provider write path stays structurally unreachable. | Exact accepted SLICE-V1-003 Contract SHA-256 `1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c`; OD-S3-001..047; durable Human Owner acceptance evidence. |
 
 ## Change rule
 
@@ -35,3 +36,15 @@ reason, affected contracts/modules, migration and compatibility impact, security
 tests, rollback and authority. Normal engineering choices inside an approved
 Slice Contract do not require an Owner Decision or ADR unless they trigger the
 Conditional Design Gate.
+
+## Execution evidence — 2026-09-05 Codex R1
+
+This records execution authority without changing any product decision: Human
+Owner's `OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1` authorizes one continuous
+root-cause cycle for the immutable accepted SLICE-V1-003 Contract and the 22-item
+Frozen Finding Set. [Exact authorization evidence](../08-handoffs/OWNER-SLICE-V1-003-CODEX-REWORK-AUTHORIZATION-EVIDENCE.md)
+and [takeover receipt](../07-phase-evidence/SLICE-V1-003/rework-r1/TAKEOVER_RECEIPT.md)
+retain the original Base, Head, tree and SHA identities. Append-only transport on
+the named branch, one Draft PR and CI are authorized. Ready, merge, force-push,
+real Provider or shared/production access and enablement remain unauthorized.
+This entry makes no engineering-closure or release claim.

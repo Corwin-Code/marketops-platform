@@ -1,0 +1,13 @@
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+AttributeError: module 'sys' has no attribute 'orig_argv'
+Governance validation passed.
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+AttributeError: module 'sys' has no attribute 'orig_argv'
+TC-GLOBAL-002 Functional JavaDoc Rewrite Check: 1 violation(s)
+  backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/WorkTaskJournalIT.java:149: history narration: // previously recorded view is preserved, without another append.
+Production readiness validation failed.
+Production readiness validation over 3209 files.
+TC-GLOBAL-001 Compromise Retirement Check: PASS
+TC-GLOBAL-003 Production Naming Check: PASS
+TC-GLOBAL-004 Deferred Evidence Boundary Check: PASS
+make: *** [governance] Error 1

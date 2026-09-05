@@ -1,0 +1,564 @@
+{
+  "sourceCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "namedReport": {
+    "path": "/tmp/slice3-w6-browser-evidence/legacy-browser-r2/frontend-tests.json",
+    "sha256": "42177abf643d91082873c895cc5aee970a7a11becc678c8956696a80293bac7f"
+  },
+  "mappedCriterionReferences": [
+    {
+      "criterion": "S3-AC-013",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "keeps the exact native minor denomination visible when financial currency is masked",
+      "fullName": "advertising disclosure and real wire vocabulary keeps the exact native minor denomination visible when financial currency is masked"
+    },
+    {
+      "criterion": "S3-AC-014",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "TC-UI-ADV-001 describes every state the backend can send",
+      "fullName": "the advertising evidence vocabulary TC-UI-ADV-001 describes every state the backend can send"
+    },
+    {
+      "criterion": "S3-AC-014",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "consumes factorCode and displayNote from the Java record and refuses malformed factors",
+      "fullName": "advertising disclosure and real wire vocabulary consumes factorCode and displayNote from the Java record and refuses malformed factors"
+    },
+    {
+      "criterion": "S3-AC-017",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "keeps the exact native minor denomination visible when financial currency is masked",
+      "fullName": "advertising disclosure and real wire vocabulary keeps the exact native minor denomination visible when financial currency is masked"
+    },
+    {
+      "criterion": "S3-AC-019",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "keeps permission masking distinct from a missing value and unknown state",
+      "fullName": "advertising disclosure and real wire vocabulary keeps permission masking distinct from a missing value and unknown state"
+    },
+    {
+      "criterion": "S3-AC-019",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body"
+    },
+    {
+      "criterion": "S3-AC-020",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body"
+    },
+    {
+      "criterion": "S3-AC-022",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "TC-UI-ADV-006 an absent measure is never shown as a zero",
+      "fullName": "the advertising queue TC-UI-ADV-006 an absent measure is never shown as a zero"
+    },
+    {
+      "criterion": "S3-AC-022",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "TC-UI-ADV-001 describes every state the backend can send",
+      "fullName": "the advertising evidence vocabulary TC-UI-ADV-001 describes every state the backend can send"
+    },
+    {
+      "criterion": "S3-AC-024",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-025 never collapses the operational and settled readings into one",
+      "fullName": "the outcome history TC-UI-ADV-025 never collapses the operational and settled readings into one"
+    },
+    {
+      "criterion": "S3-AC-026",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "TC-UI-ADV-001 describes every state the backend can send",
+      "fullName": "the advertising evidence vocabulary TC-UI-ADV-001 describes every state the backend can send"
+    },
+    {
+      "criterion": "S3-AC-026",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "keeps permission masking distinct from a missing value and unknown state",
+      "fullName": "advertising disclosure and real wire vocabulary keeps permission masking distinct from a missing value and unknown state"
+    },
+    {
+      "criterion": "S3-AC-026",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-025 never collapses the operational and settled readings into one",
+      "fullName": "the outcome history TC-UI-ADV-025 never collapses the operational and settled readings into one"
+    },
+    {
+      "criterion": "S3-AC-056",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "consumes factorCode and displayNote from the Java record and refuses malformed factors",
+      "fullName": "advertising disclosure and real wire vocabulary consumes factorCode and displayNote from the Java record and refuses malformed factors"
+    },
+    {
+      "criterion": "S3-AC-059",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "consumes factorCode and displayNote from the Java record and refuses malformed factors",
+      "fullName": "advertising disclosure and real wire vocabulary consumes factorCode and displayNote from the Java record and refuses malformed factors"
+    },
+    {
+      "criterion": "S3-AC-060",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "title": "selects only an exact server candidate with reason and observed version",
+      "fullName": "advertising workflow through service contracts selects only an exact server candidate with reason and observed version"
+    },
+    {
+      "criterion": "S3-AC-060",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+      "title": "live staffed SLO replaces static due dates and a 204 acknowledgement is a successful round trip",
+      "fullName": "governed human controls use exact server authority live staffed SLO replaces static due dates and a 204 acknowledgement is a successful round trip"
+    },
+    {
+      "criterion": "S3-AC-061",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingRecoveryWorkflow.test.tsx",
+      "title": "assignment, start and journal use the task revision and retain attributed actor evidence",
+      "fullName": "scope-bound recovery and accountability assignment, start and journal use the task revision and retain attributed actor evidence"
+    },
+    {
+      "criterion": "S3-AC-061",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "title": "selects only an exact server candidate with reason and observed version",
+      "fullName": "advertising workflow through service contracts selects only an exact server candidate with reason and observed version"
+    },
+    {
+      "criterion": "S3-AC-064",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+      "title": "live staffed SLO replaces static due dates and a 204 acknowledgement is a successful round trip",
+      "fullName": "governed human controls use exact server authority live staffed SLO replaces static due dates and a 204 acknowledgement is a successful round trip"
+    },
+    {
+      "criterion": "S3-AC-065",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+      "title": "live staffed SLO replaces static due dates and a 204 acknowledgement is a successful round trip",
+      "fullName": "governed human controls use exact server authority live staffed SLO replaces static due dates and a 204 acknowledgement is a successful round trip"
+    },
+    {
+      "criterion": "S3-AC-067",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingRecoveryWorkflow.test.tsx",
+      "title": "assignment, start and journal use the task revision and retain attributed actor evidence",
+      "fullName": "scope-bound recovery and accountability assignment, start and journal use the task revision and retain attributed actor evidence"
+    },
+    {
+      "criterion": "S3-AC-068",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+      "title": "live staffed SLO replaces static due dates and a 204 acknowledgement is a successful round trip",
+      "fullName": "governed human controls use exact server authority live staffed SLO replaces static due dates and a 204 acknowledgement is a successful round trip"
+    },
+    {
+      "criterion": "S3-AC-068",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "title": "shows UTC and the declared Store timezone without using the browser timezone",
+      "fullName": "advertising workflow through service contracts shows UTC and the declared Store timezone without using the browser timezone"
+    },
+    {
+      "criterion": "S3-AC-069",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+      "title": "live staffed SLO replaces static due dates and a 204 acknowledgement is a successful round trip",
+      "fullName": "governed human controls use exact server authority live staffed SLO replaces static due dates and a 204 acknowledgement is a successful round trip"
+    },
+    {
+      "criterion": "S3-AC-074",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "title": "selects only an exact server candidate with reason and observed version",
+      "fullName": "advertising workflow through service contracts selects only an exact server candidate with reason and observed version"
+    },
+    {
+      "criterion": "S3-AC-074",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+      "title": "live staffed SLO replaces static due dates and a 204 acknowledgement is a successful round trip",
+      "fullName": "governed human controls use exact server authority live staffed SLO replaces static due dates and a 204 acknowledgement is a successful round trip"
+    },
+    {
+      "criterion": "S3-AC-077",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+      "title": "an executor report has no evidence grade, actor override or verifier input",
+      "fullName": "governed human controls use exact server authority an executor report has no evidence grade, actor override or verifier input"
+    },
+    {
+      "criterion": "S3-AC-081",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+      "title": "an executor report has no evidence grade, actor override or verifier input",
+      "fullName": "governed human controls use exact server authority an executor report has no evidence grade, actor override or verifier input"
+    },
+    {
+      "criterion": "S3-AC-082",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+      "title": "an executor report has no evidence grade, actor override or verifier input",
+      "fullName": "governed human controls use exact server authority an executor report has no evidence grade, actor override or verifier input"
+    },
+    {
+      "criterion": "S3-AC-083",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-025 never collapses the operational and settled readings into one",
+      "fullName": "the outcome history TC-UI-ADV-025 never collapses the operational and settled readings into one"
+    },
+    {
+      "criterion": "S3-AC-084",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-044 preserves explicit zero and exceeded negative headroom independently",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-044 preserves explicit zero and exceeded negative headroom independently"
+    },
+    {
+      "criterion": "S3-AC-084",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-047 exposes the exact Retained denominator and conservative official-report window",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-047 exposes the exact Retained denominator and conservative official-report window"
+    },
+    {
+      "criterion": "S3-AC-084",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-048 missing limits and recovery reserves keep explicit UNKNOWN states",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-048 missing limits and recovery reserves keep explicit UNKNOWN states"
+    },
+    {
+      "criterion": "S3-AC-087",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "keeps the exact native minor denomination visible when financial currency is masked",
+      "fullName": "advertising disclosure and real wire vocabulary keeps the exact native minor denomination visible when financial currency is masked"
+    },
+    {
+      "criterion": "S3-AC-095",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "title": "selects only an exact server candidate with reason and observed version",
+      "fullName": "advertising workflow through service contracts selects only an exact server candidate with reason and observed version"
+    },
+    {
+      "criterion": "S3-AC-095",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "title": "does not turn a stale-version rejection into a local successful selection",
+      "fullName": "advertising workflow through service contracts does not turn a stale-version rejection into a local successful selection"
+    },
+    {
+      "criterion": "S3-AC-154",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-025 never collapses the operational and settled readings into one",
+      "fullName": "the outcome history TC-UI-ADV-025 never collapses the operational and settled readings into one"
+    },
+    {
+      "criterion": "S3-AC-160",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-025 never collapses the operational and settled readings into one",
+      "fullName": "the outcome history TC-UI-ADV-025 never collapses the operational and settled readings into one"
+    },
+    {
+      "criterion": "S3-AC-161",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-025 never collapses the operational and settled readings into one",
+      "fullName": "the outcome history TC-UI-ADV-025 never collapses the operational and settled readings into one"
+    },
+    {
+      "criterion": "S3-AC-162",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-025 never collapses the operational and settled readings into one",
+      "fullName": "the outcome history TC-UI-ADV-025 never collapses the operational and settled readings into one"
+    },
+    {
+      "criterion": "S3-AC-163",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-025 never collapses the operational and settled readings into one",
+      "fullName": "the outcome history TC-UI-ADV-025 never collapses the operational and settled readings into one"
+    },
+    {
+      "criterion": "S3-AC-165",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-026 shows a restatement beside what it restates, never in place of it",
+      "fullName": "the outcome history TC-UI-ADV-026 shows a restatement beside what it restates, never in place of it"
+    },
+    {
+      "criterion": "S3-AC-166",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-026 shows a restatement beside what it restates, never in place of it",
+      "fullName": "the outcome history TC-UI-ADV-026 shows a restatement beside what it restates, never in place of it"
+    },
+    {
+      "criterion": "S3-AC-167",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-025 never collapses the operational and settled readings into one",
+      "fullName": "the outcome history TC-UI-ADV-025 never collapses the operational and settled readings into one"
+    },
+    {
+      "criterion": "S3-AC-168",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-026 shows a restatement beside what it restates, never in place of it",
+      "fullName": "the outcome history TC-UI-ADV-026 shows a restatement beside what it restates, never in place of it"
+    },
+    {
+      "criterion": "S3-AC-181",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "title": "recovers an existing native command and preserves unresolved readback, exact units and absent outcome",
+      "fullName": "advertising workflow through service contracts recovers an existing native command and preserves unresolved readback, exact units and absent outcome"
+    },
+    {
+      "criterion": "S3-AC-181",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "title": "selects only an exact server candidate with reason and observed version",
+      "fullName": "advertising workflow through service contracts selects only an exact server candidate with reason and observed version"
+    },
+    {
+      "criterion": "S3-AC-182",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx",
+      "title": "TC-UI-BRIEF-001 shows every section, including the ones that found nothing",
+      "fullName": "the published brief TC-UI-BRIEF-001 shows every section, including the ones that found nothing"
+    },
+    {
+      "criterion": "S3-AC-182",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx",
+      "title": "an empty publication is never complete",
+      "fullName": "brief completeness cannot erase gaps an empty publication is never complete"
+    },
+    {
+      "criterion": "S3-AC-183",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx",
+      "title": "TC-UI-BRIEF-001 shows every section, including the ones that found nothing",
+      "fullName": "the published brief TC-UI-BRIEF-001 shows every section, including the ones that found nothing"
+    },
+    {
+      "criterion": "S3-AC-183",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx",
+      "title": "an empty publication is never complete",
+      "fullName": "brief completeness cannot erase gaps an empty publication is never complete"
+    },
+    {
+      "criterion": "S3-AC-184",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx",
+      "title": "TC-UI-BRIEF-001 shows every section, including the ones that found nothing",
+      "fullName": "the published brief TC-UI-BRIEF-001 shows every section, including the ones that found nothing"
+    },
+    {
+      "criterion": "S3-AC-185",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx",
+      "title": "TC-UI-BRIEF-003 keeps the reading that was published on the day",
+      "fullName": "the published brief TC-UI-BRIEF-003 keeps the reading that was published on the day"
+    },
+    {
+      "criterion": "S3-AC-185",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-026 shows a restatement beside what it restates, never in place of it",
+      "fullName": "the outcome history TC-UI-ADV-026 shows a restatement beside what it restates, never in place of it"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "TC-UI-ADV-001 describes every state the backend can send",
+      "fullName": "the advertising evidence vocabulary TC-UI-ADV-001 describes every state the backend can send"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "consumes factorCode and displayNote from the Java record and refuses malformed factors",
+      "fullName": "advertising disclosure and real wire vocabulary consumes factorCode and displayNote from the Java record and refuses malformed factors"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-025 never collapses the operational and settled readings into one",
+      "fullName": "the outcome history TC-UI-ADV-025 never collapses the operational and settled readings into one"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "keeps permission masking distinct from a missing value and unknown state",
+      "fullName": "advertising disclosure and real wire vocabulary keeps permission masking distinct from a missing value and unknown state"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "title": "shows unresolved impact as unknown when the known member list is empty",
+      "fullName": "the advertising case view shows unresolved impact as unknown when the known member list is empty"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 absent usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 absent usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 null usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 null usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 empty usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 empty usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 whitespace usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 whitespace usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 not a number usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 not a number usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 nonfinite usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 nonfinite usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 boolean usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 boolean usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-044 preserves explicit zero and exceeded negative headroom independently",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-044 preserves explicit zero and exceeded negative headroom independently"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-045 partial Store coverage stays unresolved despite a claimed resolved flag",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-045 partial Store coverage stays unresolved despite a claimed resolved flag"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-046 rejects malformed scope lists, missing axes and invalid policy versions",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-046 rejects malformed scope lists, missing axes and invalid policy versions"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-047 exposes the exact Retained denominator and conservative official-report window",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-047 exposes the exact Retained denominator and conservative official-report window"
+    },
+    {
+      "criterion": "S3-AC-187",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-048 missing limits and recovery reserves keep explicit UNKNOWN states",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-048 missing limits and recovery reserves keep explicit UNKNOWN states"
+    },
+    {
+      "criterion": "S3-AC-188",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body"
+    },
+    {
+      "criterion": "S3-AC-188",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-045 partial Store coverage stays unresolved despite a claimed resolved flag",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-045 partial Store coverage stays unresolved despite a claimed resolved flag"
+    },
+    {
+      "criterion": "S3-AC-189",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "title": "shows UTC and the declared Store timezone without using the browser timezone",
+      "fullName": "advertising workflow through service contracts shows UTC and the declared Store timezone without using the browser timezone"
+    },
+    {
+      "criterion": "S3-AC-190",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body"
+    },
+    {
+      "criterion": "S3-AC-190",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-045 partial Store coverage stays unresolved despite a claimed resolved flag",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-045 partial Store coverage stays unresolved despite a claimed resolved flag"
+    },
+    {
+      "criterion": "S3-AC-190",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-046 rejects malformed scope lists, missing axes and invalid policy versions",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-046 rejects malformed scope lists, missing axes and invalid policy versions"
+    },
+    {
+      "criterion": "S3-AC-191",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingGovernedActions.test.tsx",
+      "title": "an executor report has no evidence grade, actor override or verifier input",
+      "fullName": "governed human controls use exact server authority an executor report has no evidence grade, actor override or verifier input"
+    },
+    {
+      "criterion": "S3-AC-196",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx",
+      "title": "does not turn a stale-version rejection into a local successful selection",
+      "fullName": "advertising workflow through service contracts does not turn a stale-version rejection into a local successful selection"
+    },
+    {
+      "criterion": "S3-AC-198",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body"
+    },
+    {
+      "criterion": "S3-AC-198",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 absent usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 absent usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-198",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 null usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 null usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-198",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 empty usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 empty usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-198",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 whitespace usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 whitespace usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-198",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 not a number usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 not a number usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-198",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 nonfinite usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 nonfinite usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-198",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-043 boolean usage cannot become a measured zero or available capacity",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-043 boolean usage cannot become a measured zero or available capacity"
+    },
+    {
+      "criterion": "S3-AC-198",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-046 rejects malformed scope lists, missing axes and invalid policy versions",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-046 rejects malformed scope lists, missing axes and invalid policy versions"
+    },
+    {
+      "criterion": "S3-AC-199",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-042 discards all measurements and scope identities from a MASKED body"
+    },
+    {
+      "criterion": "S3-AC-199",
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx",
+      "title": "TC-UI-ADV-047 exposes the exact Retained denominator and conservative official-report window",
+      "fullName": "six-axis exposure disclosure and partial-input boundaries TC-UI-ADV-047 exposes the exact Retained denominator and conservative official-report window"
+    }
+  ],
+  "unmatchedReferences": [],
+  "totalFrontendTests": 308,
+  "uniqueMappedExpandedTests": 31
+}

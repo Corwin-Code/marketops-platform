@@ -1,0 +1,27 @@
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java
+index 99e68f2..dd3f457 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java
+@@ -195,5 +195,4 @@ class AdvertisingDisclosureIT {
+                 ResourceScopeType.ORGANIZATION, candidateGraph.id("organization"), null);
+         UUID candidateMaker=candidateGraph.id("executorUser");
+-        users.assignRole("disclosure-fixture",candidateMaker,BusinessRoleCode.MARKETPLACE_OPERATOR,null);
+         users.grantScope("disclosure-fixture",candidateMaker,ActionScopeCode.ADVERTISING_VIEW,
+                 ResourceScopeType.ORGANIZATION,candidateGraph.id("organization"),null);
+@@ -225,5 +224,5 @@ class AdvertisingDisclosureIT {
+             AdvertisingR1Fixture.seal(connection,actual,proof);command=AdvertisingR1Fixture.createCommand(connection,actual);connection.commit();
+         }
+-        UUID user=actual.id("executorUser");users.assignRole("disclosure-fixture",user,BusinessRoleCode.MARKETPLACE_OPERATOR,null);
++        UUID user=actual.id("executorUser");
+         users.grantScope("disclosure-fixture",user,ActionScopeCode.ADVERTISING_VIEW,ResourceScopeType.STORE,actual.id("store"),null);
+         var actor=new AuthenticatedActor(user,actual.id("organization"),actual.id("provider"),"https://fixture.invalid/issuer",
+@@ -319,9 +318,6 @@ class AdvertisingDisclosureIT {
+         var manual=AdvertisingR1Fixture.seedManual(migration);
+         UUID user=manual.id("executorUser");
+-        users.assignRole("manual-disclosure-fixture",user,BusinessRoleCode.MARKETPLACE_OPERATOR,null);
+         users.grantScope("manual-disclosure-fixture",user,ActionScopeCode.ADVERTISING_VIEW,
+                 ResourceScopeType.STORE,manual.id("store"),null);
+-        users.grantScope("manual-disclosure-fixture",user,ActionScopeCode.ADVERTISING_TASK_ACT,
+-                ResourceScopeType.ORGANIZATION,manual.id("organization"),null);
+         String jwt=browserToken(manual.id("provider"),user);
+         // Native option read oracles only: no proposal, packet, approval, command or action authority.

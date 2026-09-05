@@ -1,0 +1,66 @@
+{
+  "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/ui-slo-repair-w9/quality-r3/original-evidence.tar.gz",
+  "sha256": "3b1f1669f18a21ba206b3cd6e54af23592c02bb298c28da9a87cdc373b633b86",
+  "originals": [
+    {
+      "sourcePath": "/tmp/slice3-ui-slo-repair-quality-r3/frontend-sbom.json",
+      "archiveMember": "frontend-sbom.json",
+      "sha256": "0b04d09a9ff034df3d7d202b4ec9aa7fcdb3626e6a233a296e7502c736087273",
+      "bytes": 619664
+    },
+    {
+      "sourcePath": "/tmp/slice3-ui-slo-repair-quality-r3/installed-dependencies.log",
+      "archiveMember": "installed-dependencies.log",
+      "sha256": "1dd59f2816d9e3bf9dea9020fe4f0ca3c4665284f879eb056a0069f1223fa45e",
+      "bytes": 29348
+    },
+    {
+      "sourcePath": "/tmp/slice3-ui-slo-repair-quality-r3/lint.log",
+      "archiveMember": "lint.log",
+      "sha256": "51f837b85e7a0031ed42a2d35eb83979338b33033343b3b02ead44647a78d77c",
+      "bytes": 2039
+    },
+    {
+      "sourcePath": "/tmp/slice3-ui-slo-repair-quality-r3/node-version.log",
+      "archiveMember": "node-version.log",
+      "sha256": "b7677d3ec37ee1897ba07dc2cfe8292fe421c9ac93396cca5bbece486d1a2a41",
+      "bytes": 9
+    },
+    {
+      "sourcePath": "/tmp/slice3-ui-slo-repair-quality-r3/npm-version.log",
+      "archiveMember": "npm-version.log",
+      "sha256": "a38e383f1e9080b0dd9001481f6e56b341000de90a05061b66734350ad3adc41",
+      "bytes": 8
+    },
+    {
+      "sourcePath": "/tmp/slice3-ui-slo-repair-quality-r3/receipt.json",
+      "archiveMember": "receipt.json",
+      "sha256": "b9dd84bf7256ea3a55f2b1fc188e24a95b77c32fa00c1cc4bd402cd771eb83c2",
+      "bytes": 3580
+    },
+    {
+      "sourcePath": "/tmp/slice3-ui-slo-repair-quality-r3/run-slice3-ui-quality.py",
+      "archiveMember": "run-slice3-ui-quality.py",
+      "sha256": "627ef0b67b00a6ead86051ad3466efeb004136f757d928c00b15207be7324854",
+      "bytes": 4079
+    },
+    {
+      "sourcePath": "/tmp/slice3-ui-slo-repair-quality-r3/source-after.json",
+      "archiveMember": "source-after.json",
+      "sha256": "f115a45870a98e948b3ce9149172097a834db03a7ce4d62d8c3add7dda59f5c5",
+      "bytes": 12796
+    },
+    {
+      "sourcePath": "/tmp/slice3-ui-slo-repair-quality-r3/source-before.json",
+      "archiveMember": "source-before.json",
+      "sha256": "f115a45870a98e948b3ce9149172097a834db03a7ce4d62d8c3add7dda59f5c5",
+      "bytes": 12796
+    },
+    {
+      "sourcePath": "/tmp/slice3-ui-slo-repair-quality-r3/source.diff",
+      "archiveMember": "source.diff",
+      "sha256": "e16c78d471e5a1816434c72a9c06285f1ca440ddb12bafc3eae821a5d3c8c543",
+      "bytes": 24606
+    }
+  ]
+}

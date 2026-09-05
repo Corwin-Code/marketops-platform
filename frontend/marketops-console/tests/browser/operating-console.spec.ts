@@ -281,7 +281,14 @@ test.describe('TC-BROWSER-012 asynchronous export presentation and browser downl
             downloads++;
           });
           await button.click();
-          await expect(page.getByRole('alert')).toContainText('No file was saved');
+          // Scoped to the export panel. Every panel on this page reports its own
+          // failure, and the console is configured here with a bearer the backend
+          // refuses, so the advertising panels legitimately show a refusal of
+          // their own. A page-wide alert query would resolve to whichever
+          // arrived first and say nothing about the export.
+          await expect(page.getByLabel('Diagnostic export').getByRole('alert')).toContainText(
+            'No file was saved',
+          );
           expect(downloads).toBe(0);
         } else {
           const ready = page.waitForEvent('download');

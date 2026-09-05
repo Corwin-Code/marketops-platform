@@ -1,0 +1,11 @@
+{
+  "artifactId": 9970996125,
+  "artifactSha256": "b59186df1567ba3af9e9c514fa5051415b276ff6e0859958dc6c6d331e102458",
+  "containsExpectedHead": false,
+  "containsUnknownBuildCommit": true,
+  "publishedEnvironmentTokens": [
+    "published-b616ded9-f249-485c-ada4-7c191c88cb71"
+  ],
+  "result": "W9_ARTIFACT_PROVENANCE_DEFECT_CONFIRMED_REPAIRED_BY_LATER_WORKFLOW_ORDER_CHANGE",
+  "boundary": "This preserves the W9 failure. Final-head CI must prove the corrected uploaded artifact independently."
+}

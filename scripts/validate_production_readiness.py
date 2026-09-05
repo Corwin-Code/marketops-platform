@@ -34,6 +34,11 @@ import xml.etree.ElementTree as ElementTree
 from dataclasses import dataclass, field
 from pathlib import Path
 
+if __package__:
+    from .validation.finalize_slice3_rework_assessment import validated_current_phase
+else:
+    from validation.finalize_slice3_rework_assessment import validated_current_phase
+
 ROOT = Path(__file__).resolve().parents[1]
 
 BACKEND = "backend/marketops-server"
@@ -92,6 +97,12 @@ SKIP_DIR_NAMES = {
 # reviewers to ignore the result.
 UNRESOLVED_MARKERS = re.compile(r"""(?<![`'"\w])(?:TODO|FIXME|HACK|XXX)(?![`'"\w])""")
 
+# Tolerant schema creation, and only that. PostgreSQL's tolerant DDL writes
+# `IF NOT EXISTS` after an object name; PL/pgSQL's conditional writes
+# `IF NOT EXISTS (SELECT ...)`, which is a boolean expression and creates
+# nothing. Matching the bare string treated every PL/pgSQL guard as tolerant DDL.
+TOLERANT_SCHEMA_CREATION = re.compile(r"IF\s+NOT\s+EXISTS(?!\s*\()")
+
 # The approved migration set. A migration appears here in the same change that
 # adds the file; an unlisted migration file fails the check in both directions.
 APPROVED_MIGRATIONS = (
@@ -130,6 +141,41 @@ APPROVED_MIGRATIONS = (
     "V0033__track_case_improvement_observation.sql",
     "V0034__close_availability_deep_review_findings.sql",
     "V0035__close_availability_targeted_findings.sql",
+    "V0036__create_advertising_identity_and_official_facts.sql",
+    "V0037__create_advertising_conversion_freshness_and_qualification.sql",
+    "V0038__create_advertising_case_projection_and_orchestration.sql",
+    "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
+    "V0040__widen_write_registry_for_ad_bid_capability.sql",
+    "V0041__create_advertising_containment_and_decision_bundle.sql",
+    "V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+    "V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
+    "V0044__supersede_advertising_cases_whose_cause_no_longer_holds.sql",
+    "V0045__create_ad_bid_command_from_approval.sql",
+    "V0046__capture_ad_bid_authority_for_guardrail_evaluation.sql",
+    "V0047__refuse_a_zero_target_bid_in_the_parameter_contract.sql",
+    "V0048__serialize_advertising_reservations_against_overlap.sql",
+    "V0049__create_advertising_outcome_plan_and_lineage.sql",
+    "V0050__cause_specific_outcomes_and_same_lineage_reopen.sql",
+    "V0051__bind_each_decision_to_its_own_authority.sql",
+    "V0052__a_guardrail_verdict_names_the_policy_that_authorised_it.sql",
+    "V0053__the_write_gate_must_refuse_rather_than_raise.sql",
+    "V0054__index_the_demand_carry_forward_lookup.sql",
+    "V0055__record_what_happened_to_a_task_and_who_did_it.sql",
+    "V0056__publish_the_daily_brief_and_weekly_review_as_projections.sql",
+    "V0057__bind_advertising_responsibility_and_human_decisions.sql",
+    "V0058__seal_advertising_authority_and_control_execution.sql",
+    "V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+    "V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+    "V0061__bind_advertising_exception_risk_and_preview_evidence.sql",
+    "V0062__share_frozen_outcome_authority_with_governed_manual.sql",
+    "V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+    "V0064__reconcile_expired_advertising_authority.sql",
+    "V0065__route_settled_advertising_contradictions_to_finance_review.sql",
+    "V0066__qualify_economic_cause_bound_protection.sql",
+    "V0067__validate_frozen_outcome_input_profiles.sql",
+    "V0068__preserve_critical_sales_guard_case_evidence.sql",
+    "V0069__reopen_invalidated_protection_outcomes.sql",
+    "V0070__record_canonical_metric_reevaluation_proofs.sql",
 )
 
 DEFERRED_EVIDENCE_REGISTER = (
@@ -173,14 +219,35 @@ DESTRUCTIVE_MIGRATION_STATEMENT = re.compile(
 
 
 def approved_index_replacement(path: Path, text: str, line: str) -> bool:
-    """Allow one exact non-data index replacement whose old shape is unsafe.
+    """Allow exact non-data index replacements with fully bounded new keys.
 
     The old active-grant uniqueness key predates Product scope. Keeping it would
     collapse every Product grant for one user/action into one row. This narrow
     exception requires the exact V0034 file, exact old index, and the complete
     replacement key; it does not permit a table/row/schema drop or arbitrary
-    index retirement.
+    index retirement. R1 also distinguishes an accountable Advertising Case
+    from its finite inert choices while preserving every non-advertising key.
     """
+    if path.name == "V0064__reconcile_expired_advertising_authority.sql":
+        expected = """
+        DROP INDEX ops.recommendation_live_uq;
+        CREATE UNIQUE INDEX recommendation_live_uq ON ops.recommendation(subject_kind,subject_id,action_kind)
+         WHERE action_kind NOT IN('ADVERTISING_REVIEW','AD_BID_CHANGE')
+          AND state IN('DRAFT','VALIDATED','READY_FOR_REVIEW','TASK_ONLY','APPROVED','POLICY_AUTHORIZED',
+                      'COMMAND_CREATED','EXECUTION_TRACKING','OUTCOME_OBSERVATION');
+        CREATE UNIQUE INDEX ad_responsibility_recommendation_case_uq
+         ON ops.recommendation(organization_id,(proposed_parameters->>'caseId'))
+         WHERE action_kind='ADVERTISING_REVIEW';
+        CREATE UNIQUE INDEX ad_bid_recommendation_live_candidate_uq
+         ON ops.recommendation(organization_id,(proposed_parameters->>'candidateId'))
+         WHERE action_kind='AD_BID_CHANGE'
+          AND state IN('DRAFT','VALIDATED','READY_FOR_REVIEW','TASK_ONLY','APPROVED','POLICY_AUTHORIZED',
+                      'COMMAND_CREATED','EXECUTION_TRACKING','OUTCOME_OBSERVATION');
+        """
+        # Check the complete consecutive DDL, including all live states. The
+        # exception cannot admit an omitted replacement or a broader predicate.
+        return (line.strip().upper() == "DROP INDEX OPS.RECOMMENDATION_LIVE_UQ;"
+                and re.sub(r"\s+", "", expected) in re.sub(r"\s+", "", text))
     return (
         path.name == "V0034__close_availability_deep_review_findings.sql"
         and line.strip().upper() == "DROP INDEX IAM.USER_SCOPE_GRANT_ACTIVE_UQ;"
@@ -384,18 +451,26 @@ LOCAL_LOGGING_TOKENS = (
 
 COMPLETION_STATE_TOKENS = (
     "lifecycle_state: EXECUTING_V1",
-    "active_delivery_slice: SLICE-V1-002",
+    "active_delivery_slice: SLICE-V1-003",
     "active_slice_contract: docs/03-work-items/"
-    "SLICE-V1-002-stockout-availability-risk-and-accountable-response.md",
+    "SLICE-V1-003-advertising-traffic-efficiency.md",
     "active_slice_contract_sha256: "
-    "d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e",
-    "active_slice_contract_git_blob_sha1: 1caa50f1b33011f7d226c83654835401c00bde1e",
+    "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c",
+    "active_slice_contract_git_blob_sha1: 669c38dc4d9429249e663da0e684dabf570c4a4a",
     "active_slice_acceptance_evidence_sha256: "
-    "4e243c85412c549975ef70ee46bb09502a3157c0d4bb6a1b2679b7745b96538e",
+    "d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d",
     "active_slice_amendment: NONE_ACCEPTED",
     "active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN",
-    "active_gate: SLICE_V1_002_OWNER_ACCEPTED_SNAPSHOT_PROTECTED_SQUASH_PR_27",
-    "authorization: PROTECTED_SQUASH_MERGE_ONLY",
+    "authorization: FULL_SCOPE_IMPLEMENTATION",
+    "slice_v1_002_contract_sha256: "
+    "d89ea296d0ff854c7d57895b448f9467a22106881d26de4c62a0e8629600556e",
+    "slice_v1_002_contract_git_blob_sha1: 1caa50f1b33011f7d226c83654835401c00bde1e",
+    "slice_v1_002_state: CLOSED_ENGINEERING_WITH_DEFERRED_RELEASE_OBLIGATIONS",
+    "slice_v1_003_controlled_write_target: AD_BID_CHANGE",
+    "slice_v1_003_real_provider_calls: NONE",
+    "slice_v1_003_ordinary_impact_envelope: ZERO_EVERY_NONZERO_AD_BID_CHANGE_IS_MATERIAL",
+    "slice_v1_003_standing_policy_automation: NOT_AUTHORIZED",
+    "slice_v1_003_deferred_release_obligations: S3_REL_001_THROUGH_024_PRODUCTION_BLOCKING",
     "slice_v1_002_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED",
     "slice_v1_002_branch: fix/SLICE-V1-002-root-cause-rework-r1",
     "slice_v1_002_reviewed_source_head: c5d896a4ca01ecdc6d4add85fb4fd2e33ba8e4c6",
@@ -488,15 +563,43 @@ COMPLETION_STATE_TOKENS = (
     "slice_v1_001_owner_acceptance_comment: 5469935477",
     "slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33",
     "closure_snapshot_before_next_slice: SATISFIED_EXACT_OWNER_ACCEPTED",
-    "merge_authorization: HUMAN_OWNER_AUTHORIZED_PROTECTED_SQUASH_PR_27_IF_ALL_GATES_PASS",
-    "next_authorized_actor: CODEX_POST_CLOSURE_GIT_EXECUTOR",
-    "next_action: PROTECTED_SQUASH_MERGE_PR27_AND_FINAL_READBACK",
+    "merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED",
+    "slice_v1_003_rework_authorization: OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1",
+    "slice_v1_003_rework_authorization_evidence_sha256: 23a2954d68abeebf87d7710f3ab749af5246cdfcbe4a3029dde73dbb34647a11",
+    "slice_v1_003_historical_controller_verdict: NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED",
+    "slice_v1_003_historical_controller_reviewed_head: 3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+    "slice_v1_003_historical_controller_report_sha256: 6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127",
+    "slice_v1_003_historical_controller_report: docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/controller-package/VERIFICATION-RESULT.json",
+    "gate_ev: NOT_AUTHORIZED",
     "production_write_enabled: false",
     "bounded_real_write_verification_authorization: NONE",
     "bounded_real_write_verification_gate: REQUIRED_BEFORE_FIRST_REAL_WRITE",
     "ozon_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
     "wildberries_price_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+    "ozon_ad_bid_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+    "wildberries_ad_bid_write: DISABLED_PENDING_VERIFIED_CAPABILITY_AND_RELEASE_GATE",
+    "pilot: NOT_AUTHORIZED",
+    "release_v1_001: RESERVED_NOT_ACTIVATED",
 )
+
+
+def completion_state_violations(text: str) -> list[str]:
+    """Keep fixed authority and the evidence-admitted phase exact and unique."""
+    expected = dict(token.split(": ", 1) for token in COMPLETION_STATE_TOKENS)
+    violations = []
+    try:
+        expected.update(validated_current_phase())
+    except (OSError, ValueError, KeyError, TypeError, AttributeError, SyntaxError) as error:
+        violations.append(f"SLICE-V1-003 current phase evidence is invalid: {error}")
+    metadata = re.search(r"(?ms)^```yaml\s*\n(.*?)^```", text)
+    if metadata is None:
+        return violations + ["CURRENT_STATE requires its fenced YAML metadata"]
+    for field, value in expected.items():
+        actual = re.findall(rf"(?m)^{re.escape(field)}: ([^\n]*)$", metadata.group(1))
+        if actual != [value]:
+            violations.append(f"CURRENT_STATE {field} must be exactly: {value}")
+    return violations
+
 
 COMPLETED_WORK_PACKAGE_TOKENS = (
     "| Status | COMPLETED |",
@@ -1101,11 +1204,27 @@ def check_repository_contracts(report: Report) -> None:
         frontend_manifest,
         (
             '"@cyclonedx/cyclonedx-npm"',
+            '"ajv": "8.20.0"',
+            '"ajv-formats": "3.0.1"',
+            '"ajv-formats-draft2019": "1.6.1"',
             '"@playwright/test"',
             '"fsevents": false',
             '"libxmljs2": false',
             '"test:browser"',
             '"sbom"',
+            '"sbom": "node scripts/generate-validated-sbom.mjs"',
+        ),
+    )
+    require_tokens(
+        report,
+        rule,
+        ROOT / FRONTEND / "scripts/generate-validated-sbom.mjs",
+        (
+            "'--validate'",
+            "skipped validating BOM|No JsonValidator available",
+            "CycloneDX JSON schema validation PASS",
+            "bom.bomFormat !== 'CycloneDX'",
+            "bom.specVersion !== '1.6'",
         ),
     )
     require_tokens(
@@ -1159,12 +1278,9 @@ def check_repository_contracts(report: Report) -> None:
         ("MARKETOPS_BUILD_VERSION", "github.ref_name"),
     )
 
-    require_tokens(
-        report,
-        rule,
-        ROOT / "docs/00-governance/CURRENT_STATE.md",
-        COMPLETION_STATE_TOKENS,
-    )
+    current_state_path = ROOT / "docs/00-governance/CURRENT_STATE.md"
+    for detail in completion_state_violations(read_text(current_state_path) or ""):
+        report.add(rule, current_state_path, 0, detail)
     require_tokens(
         report,
         rule,
@@ -1401,7 +1517,7 @@ def check_compromise_retirement(report: Report, files: list[Path]) -> None:
         for path in migrations.glob("*.sql"):
             text = read_text(path) or ""
             upper = text.upper()
-            if "IF NOT EXISTS" in upper:
+            if TOLERANT_SCHEMA_CREATION.search(upper):
                 report.add(
                     rule, path, 0,
                     "schema creation is strict and must not tolerate an existing object",

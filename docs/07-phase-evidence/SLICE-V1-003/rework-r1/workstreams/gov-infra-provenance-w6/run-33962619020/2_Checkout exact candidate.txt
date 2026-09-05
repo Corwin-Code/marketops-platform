@@ -1,0 +1,126 @@
+﻿2026-09-05T11:10:40.0465857Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-09-05T11:10:40.0467020Z with:
+2026-09-05T11:10:40.0467491Z   persist-credentials: false
+2026-09-05T11:10:40.0468076Z   repository: Corwin-Code/marketops-platform
+2026-09-05T11:10:40.0471866Z   token: ***
+2026-09-05T11:10:40.0472515Z   ssh-strict: true
+2026-09-05T11:10:40.0472975Z   ssh-user: git
+2026-09-05T11:10:40.0473416Z   clean: true
+2026-09-05T11:10:40.0473874Z   sparse-checkout-cone-mode: true
+2026-09-05T11:10:40.0474407Z   fetch-depth: 1
+2026-09-05T11:10:40.0474846Z   fetch-tags: false
+2026-09-05T11:10:40.0475299Z   show-progress: true
+2026-09-05T11:10:40.0475755Z   lfs: false
+2026-09-05T11:10:40.0476183Z   submodules: false
+2026-09-05T11:10:40.0476653Z   set-safe-directory: true
+2026-09-05T11:10:40.0477168Z   allow-unsafe-pr-checkout: false
+2026-09-05T11:10:40.0477947Z ##[endgroup]
+2026-09-05T11:10:40.1473164Z Syncing repository: Corwin-Code/marketops-platform
+2026-09-05T11:10:40.1476094Z ##[group]Getting Git version info
+2026-09-05T11:10:40.1477116Z Working directory is '/home/runner/work/marketops-platform/marketops-platform'
+2026-09-05T11:10:40.1478866Z [command]/usr/bin/git version
+2026-09-05T11:10:40.1551266Z git version 2.55.0
+2026-09-05T11:10:40.1595469Z ##[endgroup]
+2026-09-05T11:10:40.1601040Z Temporarily overriding HOME='/home/runner/work/_temp/acd2dd12-efba-49d7-9e99-7ddbbf91913f' before making global git config changes
+2026-09-05T11:10:40.1602991Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-05T11:10:40.1605483Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/marketops-platform/marketops-platform
+2026-09-05T11:10:40.1654069Z Deleting the contents of '/home/runner/work/marketops-platform/marketops-platform'
+2026-09-05T11:10:40.1657846Z ##[group]Determining repository object format
+2026-09-05T11:10:40.1659441Z ##[endgroup]
+2026-09-05T11:10:40.1660205Z ##[group]Initializing the repository
+2026-09-05T11:10:40.1664892Z [command]/usr/bin/git init /home/runner/work/marketops-platform/marketops-platform
+2026-09-05T11:10:40.1772540Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-09-05T11:10:40.1774471Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-09-05T11:10:40.1775523Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-09-05T11:10:40.1776322Z hint: call:
+2026-09-05T11:10:40.1776748Z hint:
+2026-09-05T11:10:40.1777298Z hint: 	git config --global init.defaultBranch <name>
+2026-09-05T11:10:40.1777966Z hint:
+2026-09-05T11:10:40.1778579Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-09-05T11:10:40.1779579Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-09-05T11:10:40.1780376Z hint:
+2026-09-05T11:10:40.1780811Z hint: 	git branch -m <name>
+2026-09-05T11:10:40.1781324Z hint:
+2026-09-05T11:10:40.1781999Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-09-05T11:10:40.1788079Z Initialized empty Git repository in /home/runner/work/marketops-platform/marketops-platform/.git/
+2026-09-05T11:10:40.1804517Z [command]/usr/bin/git remote add origin https://github.com/Corwin-Code/marketops-platform
+2026-09-05T11:10:40.1848676Z ##[endgroup]
+2026-09-05T11:10:40.1849778Z ##[group]Disabling automatic garbage collection
+2026-09-05T11:10:40.1852260Z [command]/usr/bin/git config --local gc.auto 0
+2026-09-05T11:10:40.1885850Z ##[endgroup]
+2026-09-05T11:10:40.1887287Z ##[group]Setting up auth
+2026-09-05T11:10:40.1887978Z Removing SSH command configuration
+2026-09-05T11:10:40.1891881Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-05T11:10:40.1933441Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-05T11:10:40.2308150Z Removing HTTP extra header
+2026-09-05T11:10:40.2314185Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-05T11:10:40.2361482Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-05T11:10:40.2604035Z Removing includeIf entries pointing to credentials config files
+2026-09-05T11:10:40.2610391Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-05T11:10:40.2648787Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-05T11:10:40.2881129Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-65b56db7-3724-46fa-a298-a8d7ac5160d2.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-05T11:10:40.2925690Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/marketops-platform/marketops-platform/.git.path /home/runner/work/_temp/git-credentials-65b56db7-3724-46fa-a298-a8d7ac5160d2.config
+2026-09-05T11:10:40.2960302Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/marketops-platform/marketops-platform/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-65b56db7-3724-46fa-a298-a8d7ac5160d2.config
+2026-09-05T11:10:40.2997232Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-65b56db7-3724-46fa-a298-a8d7ac5160d2.config
+2026-09-05T11:10:40.3033556Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-65b56db7-3724-46fa-a298-a8d7ac5160d2.config
+2026-09-05T11:10:40.3064455Z ##[endgroup]
+2026-09-05T11:10:40.3065238Z ##[group]Fetching the repository
+2026-09-05T11:10:40.3071843Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +34fae1e0985865874f9ec44a3be93cd67d3c61a6:refs/remotes/pull/30/merge
+2026-09-05T11:10:42.4281978Z From https://github.com/Corwin-Code/marketops-platform
+2026-09-05T11:10:42.4284846Z  * [new ref]         34fae1e0985865874f9ec44a3be93cd67d3c61a6 -> pull/30/merge
+2026-09-05T11:10:42.4290114Z ##[endgroup]
+2026-09-05T11:10:42.4292476Z ##[group]Determining the checkout info
+2026-09-05T11:10:42.4294780Z ##[endgroup]
+2026-09-05T11:10:42.4298351Z [command]/usr/bin/git sparse-checkout disable
+2026-09-05T11:10:42.4353765Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-09-05T11:10:42.4387476Z ##[group]Checking out the ref
+2026-09-05T11:10:42.4390262Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/30/merge
+2026-09-05T11:10:42.9983266Z Note: switching to 'refs/remotes/pull/30/merge'.
+2026-09-05T11:10:42.9984426Z 
+2026-09-05T11:10:42.9985222Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-09-05T11:10:42.9986291Z changes and commit them, and you can discard any commits you make in this
+2026-09-05T11:10:42.9987314Z state without impacting any branches by switching back to a branch.
+2026-09-05T11:10:42.9987872Z 
+2026-09-05T11:10:42.9988285Z If you want to create a new branch to retain commits you create, you may
+2026-09-05T11:10:42.9989119Z do so (now or later) by using -c with the switch command. Example:
+2026-09-05T11:10:42.9989498Z 
+2026-09-05T11:10:42.9989648Z   git switch -c <new-branch-name>
+2026-09-05T11:10:42.9989860Z 
+2026-09-05T11:10:42.9990016Z Or undo this operation with:
+2026-09-05T11:10:42.9990245Z 
+2026-09-05T11:10:42.9990363Z   git switch -
+2026-09-05T11:10:42.9990547Z 
+2026-09-05T11:10:42.9990819Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-09-05T11:10:42.9991168Z 
+2026-09-05T11:10:42.9991565Z HEAD is now at 34fae1e Merge 3ed3f4c87c336cb07188e470528f328358fb279f into 08ad7da7d9e75b4ddd1c387a22ac0affba9e1430
+2026-09-05T11:10:43.0029819Z ##[endgroup]
+2026-09-05T11:10:43.0080399Z [command]/usr/bin/git log -1 --format=%H
+2026-09-05T11:10:43.0109731Z 34fae1e0985865874f9ec44a3be93cd67d3c61a6
+2026-09-05T11:10:43.0119917Z ##[group]Removing auth
+2026-09-05T11:10:43.0120541Z Removing SSH command configuration
+2026-09-05T11:10:43.0124498Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-05T11:10:43.0160563Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-05T11:10:43.0389993Z Removing HTTP extra header
+2026-09-05T11:10:43.0393753Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-05T11:10:43.0430271Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-05T11:10:43.0657544Z Removing includeIf entries pointing to credentials config files
+2026-09-05T11:10:43.0660838Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-05T11:10:43.0691677Z includeif.gitdir:/home/runner/work/marketops-platform/marketops-platform/.git.path
+2026-09-05T11:10:43.0693186Z includeif.gitdir:/home/runner/work/marketops-platform/marketops-platform/.git/worktrees/*.path
+2026-09-05T11:10:43.0693797Z includeif.gitdir:/github/workspace/.git.path
+2026-09-05T11:10:43.0694226Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-05T11:10:43.0700546Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/marketops-platform/marketops-platform/.git.path
+2026-09-05T11:10:43.0726613Z /home/runner/work/_temp/git-credentials-65b56db7-3724-46fa-a298-a8d7ac5160d2.config
+2026-09-05T11:10:43.0736407Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/marketops-platform/marketops-platform/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-65b56db7\-3724\-46fa\-a298\-a8d7ac5160d2\.config
+2026-09-05T11:10:43.0794267Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/marketops-platform/marketops-platform/.git/worktrees/*.path
+2026-09-05T11:10:43.0819915Z /home/runner/work/_temp/git-credentials-65b56db7-3724-46fa-a298-a8d7ac5160d2.config
+2026-09-05T11:10:43.0828167Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/marketops-platform/marketops-platform/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-65b56db7\-3724\-46fa\-a298\-a8d7ac5160d2\.config
+2026-09-05T11:10:43.0862331Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-09-05T11:10:43.0887714Z /github/runner_temp/git-credentials-65b56db7-3724-46fa-a298-a8d7ac5160d2.config
+2026-09-05T11:10:43.0896100Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-65b56db7\-3724\-46fa\-a298\-a8d7ac5160d2\.config
+2026-09-05T11:10:43.0936548Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-05T11:10:43.0963307Z /github/runner_temp/git-credentials-65b56db7-3724-46fa-a298-a8d7ac5160d2.config
+2026-09-05T11:10:43.1013239Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-65b56db7\-3724\-46fa\-a298\-a8d7ac5160d2\.config
+2026-09-05T11:10:43.1049889Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-05T11:10:43.1275571Z Removing credentials config '/home/runner/work/_temp/git-credentials-65b56db7-3724-46fa-a298-a8d7ac5160d2.config'
+2026-09-05T11:10:43.1284035Z ##[endgroup]

@@ -1,0 +1,19 @@
+{
+  "kind": "PUBLICATION_ARCHIVE_PRIVATE_OUTPUT_EXCLUSION",
+  "atUTC": "2026-09-05T14:06:59.916344+00:00",
+  "oldFrontendArchiveSha256": "e21d97483fa335e28380c99042c831a2187f037521b22bfbd03721511422798b",
+  "oldArchiveRetainedPrivateAt": "/tmp/slice3-w8-publication-private-history/frontend-ci-w8-original-evidence-r1-private.tar.gz",
+  "newFrontendArchiveSha256": "affa066f038118bcb7034e74925921ec23b2c1ffeb608ee1adfcbe8a53753692",
+  "excludedSource": "/tmp/slice3-w8-frontend-ci/logs.zip.attempt-1.stderr.txt",
+  "excludedSourceSha256": "05a147efc88927d7141be5685fd72ac2fabb8538cf65aca1277d7ce740982476",
+  "derivative": {
+    "path": "/tmp/slice3-w8-frontend-ci-publication-derivative/failed-log-read-sanitized.json",
+    "sha256": "98d6bae14e05272ee3ab438e7a1ab50d18ebecee8e71820d9df8914f641c0429"
+  },
+  "originalScanPreserved": {
+    "path": "publication-recursive-raw-scan.json",
+    "sha256": "693b65748b41d0f2293ae4894c33a4dca7db31ccef78fcaccb8914fc6c40e546"
+  },
+  "originalSourceModified": false,
+  "scope": "Only removal from publishable container; no prior receipt/scan/source rewritten."
+}

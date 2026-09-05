@@ -1,0 +1,183 @@
+{
+  "kind": "TARGETED_POST_W3_ROOT_CAUSE_REPAIR",
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+  "command": [
+    "./mvnw",
+    "-B",
+    "-ntp",
+    "-Dmarketops.build.gitCommit=fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+    "-Dtest=WorkTaskJournalIT,ControlEpochTriggerIT,AdvertisingDisclosureIT,AdvertisingEfficiencyFlowIT,AdvertisingCanonicalFactsIT,AdvertisingHumanWorkflowIT,AdvertisingResponsibilityBoundaryIT,ModuleBoundaryArchitectureTest",
+    "test"
+  ],
+  "baseHead": "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+  "baseTree": "dbab770cd974aa5a90d0dc63468ab7f8a48e4002",
+  "workingTreeStatusBefore": "M .github/workflows/backend.yml\n M backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java\n M backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java\n M backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java\n M backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingExceptionService.java\n M backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java\n M backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java\n M backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql\n M backend/marketops-server/src/main/resources/db/migration/V0063__wire_advertising_changes_expiries_and_slo_recovery.sql\n M backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java\n M backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/WorkTaskJournalIT.java\n M docs/07-phase-evidence/SLICE-V1-003/rework-r1/README.md\n M docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/ci-job-budget-w3/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w2/testcase-count-reconciliation.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3-publishability-scan.json\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/full-clean-w3/\n?? docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/slice3-r1-w3-identity.json",
+  "sourceBinding": "W3 plus current uncommitted repairs; exact source bytes bound in source-before/after, not exact W3 commit source.",
+  "sourceBeforeSha256": "f58f1ee856ef40cf434cfa01844968d283a68f5fb7c753c2a0b623d8629f26c9",
+  "resourcesSha256": "a0a3bb5052d55986142d1f143992045ebfcb82bed30abbc4335e18f732d755f8",
+  "boundary": "Synthetic isolated PostgreSQL only; no real Provider/shared/production. production_write_enabled=false.",
+  "startedAtUTC": "2026-09-05T05:00:26.966403+00:00",
+  "finishedAtUTC": "2026-09-05T05:01:58.580831+00:00",
+  "elapsedSeconds": 91.61,
+  "exitCode": 1,
+  "logSha256": "219ca38313aea300f4080cfe1e593aeb2e539c23ffc9a28cdc48783d7e5662d6",
+  "sourceAfterSha256": "f58f1ee856ef40cf434cfa01844968d283a68f5fb7c753c2a0b623d8629f26c9",
+  "sourceStable": true,
+  "reports": [
+    {
+      "class": "com.mimococo.marketops.AdvertisingDisclosureIT",
+      "declared": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 1,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 1,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-post-w3-targeted-r36/reports/TEST-com.mimococo.marketops.AdvertisingDisclosureIT.xml",
+      "sha256": "792117ff4d7a9c60d15b3c07d150fdc2bae6b7cbf43f4f96828ba2f608aca80d"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+      "declared": {
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-post-w3-targeted-r36/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+      "sha256": "55c8b2a79d54acee4e39ccff40e0f8e4fbfd72e63f101ffec8a6c81284937332"
+    },
+    {
+      "class": "com.mimococo.marketops.AdvertisingResponsibilityBoundaryIT",
+      "declared": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-post-w3-targeted-r36/reports/TEST-com.mimococo.marketops.AdvertisingResponsibilityBoundaryIT.xml",
+      "sha256": "44238484ca80c199fe5f8fd8647fcd07668c03099ebd91c6658a38a8651467dd"
+    },
+    {
+      "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCanonicalFactsIT",
+      "declared": {
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-post-w3-targeted-r36/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCanonicalFactsIT.xml",
+      "sha256": "fee9f051f6316a7c312c13c2d89b96d1f9b5b6ef269dec78c10c7df297d44d0f"
+    },
+    {
+      "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT",
+      "declared": {
+        "tests": 24,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 24,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-post-w3-targeted-r36/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT.xml",
+      "sha256": "df9f5f540be9d1edf16b00f710d39108f7171f729a88864c991d1cee69f9b5cb"
+    },
+    {
+      "class": "com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest",
+      "declared": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-post-w3-targeted-r36/reports/TEST-com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest.xml",
+      "sha256": "37be19c557dea76971d67f6d9c648748d5a2f9c44f3c7e6073d056d229840bd0"
+    },
+    {
+      "class": "com.mimococo.marketops.database.ControlEpochTriggerIT",
+      "declared": {
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-post-w3-targeted-r36/reports/TEST-com.mimococo.marketops.database.ControlEpochTriggerIT.xml",
+      "sha256": "1e65d48a79f6f4b74ffedcffad6b755d944d54a7b0453c7920e1636db1e74209"
+    },
+    {
+      "class": "com.mimococo.marketops.operationsworkflow.internal.application.WorkTaskJournalIT",
+      "declared": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 1,
+        "skipped": 0
+      },
+      "actual": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 1,
+        "skipped": 0
+      },
+      "path": "/tmp/slice3-r1-post-w3-targeted-r36/reports/TEST-com.mimococo.marketops.operationsworkflow.internal.application.WorkTaskJournalIT.xml",
+      "sha256": "ac812f3ad52eb1bd06985c36e3b0c8c07ea8e3377131c025a4d6c2a237f8026e"
+    }
+  ],
+  "counts": {
+    "tests": 98,
+    "failures": 1,
+    "errors": 2,
+    "skipped": 0
+  },
+  "expectedClasses": [
+    "WorkTaskJournalIT",
+    "ControlEpochTriggerIT",
+    "AdvertisingDisclosureIT",
+    "AdvertisingEfficiencyFlowIT",
+    "AdvertisingCanonicalFactsIT",
+    "AdvertisingHumanWorkflowIT",
+    "AdvertisingResponsibilityBoundaryIT",
+    "ModuleBoundaryArchitectureTest"
+  ],
+  "missingClasses": [],
+  "completeSelectedClassesPass": false,
+  "limit": "Complete clean unselected full verify on a new exact checkpoint remains required."
+}

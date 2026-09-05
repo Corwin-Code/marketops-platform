@@ -1,0 +1,136 @@
+{
+  "classification" : "SYNTHETIC_LOCAL_PERFORMANCE_EVIDENCE",
+  "datasetVersion" : "SYNTHETIC_PERFORMANCE_DATASET_V1",
+  "declaredCapacityConfiguration" : {
+    "version" : "S2_DECLARED_CAPACITY_V1",
+    "resource" : "classpath:application-availability-declared-capacity-v1.yaml",
+    "sha256" : "01523457ab9aa19ffbd7f363a5e0f2946c0f6c483954818984f4b0ce42751215",
+    "workerEnabled" : true,
+    "factsPerScan" : 5000,
+    "variantsPerPass" : 5000,
+    "scanCadenceAssumptionMillis" : 30000,
+    "sweepCadenceMillis" : 3600000,
+    "backgroundInitialDelayMillis" : 86400000,
+    "capacityInvocation" : "EXPLICIT_SCHEDULED_ENTRY_POINT"
+  },
+  "executionIdentity" : {
+    "sourceHead" : "LOCAL_WORKTREE_NOT_REMOTE_BOUND",
+    "testedMerge" : "LOCAL_WORKTREE_NOT_REMOTE_BOUND",
+    "workflowRunId" : "LOCAL_NOT_A_WORKFLOW_RUN",
+    "workflowRunAttempt" : "LOCAL_NOT_A_WORKFLOW_RUN",
+    "workflowJob" : "LOCAL_ISOLATED_RUNTIME",
+    "artifactName" : "LOCAL_TARGET_DIRECTORY",
+    "artifactFile" : "performance/representative-v1.json"
+  },
+  "actualOwnerCohortVerified" : false,
+  "profileAssumption" : {
+    "hypotheticalBaselineSkus" : 500,
+    "hypotheticalBaselineDailyOrders" : 100,
+    "testedDailyOrders" : 2000,
+    "testedSkus" : 5000,
+    "historyDays" : 180
+  },
+  "scope" : "MockMvc authorization, actual SQL and JSON serialization; excludes network, browser, real provider and production",
+  "warmups" : 3,
+  "samplesPerCase" : 25,
+  "readTransactionTimeoutSeconds" : 5,
+  "readTransactionTimeoutSource" : "Production AnalyticsQueryService and EvidenceService; no test connection override",
+  "datasetSha256" : "4b6f6f52d258d8e42e19ada997dcc15ab394e8c97c39c149ea3db7531389e0a2",
+  "startedAt" : "2026-09-04T16:27:58.564458Z",
+  "measurements" : [ ],
+  "generationSeconds" : 232.045956792,
+  "postgresVersion" : "PostgreSQL 17.6 (Debian 17.6-2.pgdg12+1) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit",
+  "runtime" : {
+    "availableProcessors" : 8,
+    "jvmMaxHeapBytes" : 4294967296,
+    "postgresSettings" : [ {
+      "name" : "max_connections",
+      "setting" : "100",
+      "unit" : null
+    }, {
+      "name" : "max_parallel_workers_per_gather",
+      "setting" : "2",
+      "unit" : null
+    }, {
+      "name" : "shared_buffers",
+      "setting" : "16384",
+      "unit" : "8kB"
+    }, {
+      "name" : "work_mem",
+      "setting" : "4096",
+      "unit" : "kB"
+    } ],
+    "javaVersion" : "21.0.10"
+  },
+  "rowCounts" : {
+    "core.store" : 3,
+    "core.product_variant" : 5000,
+    "core.platform_listing_variant" : 5000,
+    "core.fact_provenance" : 360000,
+    "ledger.sales_fact" : 720000,
+    "mart.metric_value" : 983940,
+    "mart.metric_input_reference" : 2951820,
+    "mart.diagnosis_finding" : 285660,
+    "mart.diagnosis_finding_input" : 285660,
+    "ops.recommendation" : 30000
+  },
+  "activeMetricDefinitions" : 31,
+  "availabilityPortfolioEnumeration" : {
+    "elapsedMillis" : 61,
+    "enumerationBudgetMillis" : 30000,
+    "databasePages" : 5,
+    "variants" : 5000,
+    "sweepCadenceMillis" : 3600000,
+    "status" : "PASS"
+  },
+  "availabilityLaneDiagnostic" : {
+    "children" : [ {
+      "child_kind" : "CHANNEL",
+      "lane" : "CRITICAL",
+      "children" : 1000
+    }, {
+      "child_kind" : "CHANNEL",
+      "lane" : "HEALTHY",
+      "children" : 1000
+    }, {
+      "child_kind" : "CHANNEL",
+      "lane" : "HIGH",
+      "children" : 1000
+    }, {
+      "child_kind" : "CHANNEL",
+      "lane" : "UNRESOLVED",
+      "children" : 1000
+    }, {
+      "child_kind" : "CHANNEL",
+      "lane" : "WATCH",
+      "children" : 1000
+    }, {
+      "child_kind" : "COMPANY",
+      "lane" : "HEALTHY",
+      "children" : 3000
+    }, {
+      "child_kind" : "COMPANY",
+      "lane" : "UNRESOLVED",
+      "children" : 2000
+    } ],
+    "cards" : [ {
+      "lane" : "CRITICAL",
+      "variants" : 1000
+    }, {
+      "lane" : "HEALTHY",
+      "variants" : 1000
+    }, {
+      "lane" : "HIGH",
+      "variants" : 1000
+    }, {
+      "lane" : "UNRESOLVED",
+      "variants" : 1000
+    }, {
+      "lane" : "WATCH",
+      "variants" : 1000
+    } ]
+  },
+  "status" : "FAIL",
+  "failureType" : "java.lang.AssertionError",
+  "completedAt" : "2026-09-04T16:38:39.745477Z"
+}

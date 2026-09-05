@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "gh",
+    "api",
+    "--include",
+    "repos/Corwin-Code/marketops-platform/actions/runs/33963350093"
+  ],
+  "startedAtUTC": "2026-09-05T12:08:49.550894+00:00",
+  "finishedAtUTC": "2026-09-05T12:08:50.732470+00:00",
+  "exitCode": 0,
+  "httpStatus": "HTTP/2.0 200 OK",
+  "stdoutBytes": 15080,
+  "stderrBytes": 0
+}

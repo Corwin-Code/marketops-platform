@@ -1,0 +1,1255 @@
+{
+  "kind": "FINDING_AND_AC_EVIDENCE_SHARD",
+  "owner": "governance-and-final-evidence",
+  "generatedAt": "2026-09-05T04:05:05.720758+00:00",
+  "status": "STATIC_AND_TARGETED_EVIDENCE_REVIEWED_FULL_EXACT_HEAD_PENDING",
+  "acceptanceCriteria": [
+    {
+      "implementedBehavior": "Accepted Slice003 Contract and original acceptance evidence retain their pinned exact bytes.",
+      "sourceReferences": [
+        {
+          "path": "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md",
+          "sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c"
+        },
+        {
+          "path": "docs/08-handoffs/OWNER-SLICE-V1-003-CONTRACT-ACCEPTANCE-EVIDENCE.md",
+          "sha256": "d0532ff25806c5cbc96411aad81db8524671fba8b987a57a41843bff78bcce7d"
+        },
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "scripts/validation/collect_slice3_rework_identity.py",
+          "sha256": "fd85b4c1997fc1c1d32e9baea6f9845c0b5aa70c7cd3a91b7b2b2d93a0dd6f4e"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_exact_v1_state_is_valid",
+          "line": 2929,
+          "assertions": "Explicit current Slice003 bytes are passed to the current-state validator and accepted.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_contract_byte_change_with_old_hash_is_rejected",
+          "line": 3119,
+          "assertions": "A real equal-length one-byte mutation differs from original bytes and is refused for immutable hash mismatch.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_hash_change_with_original_contract_is_rejected",
+          "line": 3131,
+          "assertions": "Changing the declared hash with unchanged original bytes is refused.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_coordinated_contract_and_hash_change_is_not_an_amendment",
+          "line": 3140,
+          "assertions": "Changing both original bytes and their declared hash cannot become an accepted additive amendment.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        }
+      ],
+      "evidenceReview": [
+        {
+          "kind": "EXACT_COMMIT_IDENTITY_RECEIPT",
+          "reference": "workstreams/slice3-r1-w1-identity.json",
+          "assertion": "W1 receipt names exact current Contract and original Owner acceptance SHA/blob identities; acceptance provenance is not inferred from the R1 Codex authorization test."
+        }
+      ],
+      "evidenceLimits": "Final source commit, complete architecture/backend/browser/security and remote CI binding remain pending; no independent Controller verdict is issued.",
+      "id": "S3-AC-001",
+      "criterion": "repository contains the exact Human Owner-accepted Contract bytes and attributable acceptance evidence.",
+      "status": "STATIC_AND_TARGETED_EVIDENCE_REVIEWED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r12.log",
+        "workstreams/slice3-r1-w1-identity.json",
+        "workstreams/fresh-clone-w1.json",
+        "workstreams/facts-outcome-traceability.json",
+        "workstreams/human-governance-mapping-review-supplement.md"
+      ]
+    },
+    {
+      "implementedBehavior": "Protected Base, reviewed Head and predecessor Snapshot remain explicit; all accepted history and protected migration identities are preserved.",
+      "sourceReferences": [
+        {
+          "path": "docs/00-governance/CURRENT_STATE.md",
+          "sha256": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf"
+        },
+        {
+          "path": "scripts/validation/collect_slice3_rework_identity.py",
+          "sha256": "fd85b4c1997fc1c1d32e9baea6f9845c0b5aa70c7cd3a91b7b2b2d93a0dd6f4e"
+        },
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_slice_v1_002_owner_evidence_byte_change_is_rejected",
+          "line": 3017,
+          "assertions": "Changed predecessor Owner evidence bytes fail their pinned identity.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_slice_v1_002_original_owner_statement_byte_change_is_rejected",
+          "line": 3028,
+          "assertions": "Changed predecessor original Owner statement fails pinned provenance.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        }
+      ],
+      "evidenceReview": [
+        {
+          "kind": "EXACT_COMMIT_IDENTITY_RECEIPT",
+          "reference": "workstreams/slice3-r1-w1-identity.json",
+          "assertion": "Actual W1 collector records Base 08ad7da7, reviewed a0711f1a, current W1 commit/tree, protected Base authorities and preserved accepted history; these checks provide the identities not covered by the two narrow Python fault tests."
+        }
+      ],
+      "evidenceLimits": "Final source commit, complete architecture/backend/browser/security and remote CI binding remain pending; no independent Controller verdict is issued.",
+      "id": "S3-AC-002",
+      "criterion": "canonical path, Contract SHA-256, source protected-main commit/tree and predecessor Snapshot identities are synchronized without mutation.",
+      "status": "STATIC_AND_TARGETED_EVIDENCE_REVIEWED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r12.log",
+        "workstreams/slice3-r1-w1-identity.json",
+        "workstreams/fresh-clone-w1.json",
+        "workstreams/facts-outcome-traceability.json",
+        "workstreams/human-governance-mapping-review-supplement.md"
+      ]
+    },
+    {
+      "implementedBehavior": "The active Slice points to exact accepted scope and R1 actor/transport derives from separately pinned Owner evidence.",
+      "sourceReferences": [
+        {
+          "path": "docs/00-governance/CURRENT_STATE.md",
+          "sha256": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf"
+        },
+        {
+          "path": "docs/08-handoffs/OWNER-SLICE-V1-003-CODEX-REWORK-AUTHORIZATION-EVIDENCE.md",
+          "sha256": "23a2954d68abeebf87d7710f3ab749af5246cdfcbe4a3029dde73dbb34647a11"
+        },
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_exact_v1_state_is_valid",
+          "line": 2929,
+          "assertions": "Exact current Slice/gates/authority fields and original Contract bytes pass.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_wrong_contract_gate_and_authorization_are_rejected",
+          "line": 2959,
+          "assertions": "Wrong active Contract path, gate or authorization marker is rejected.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "Slice3R1AuthorityTests",
+          "method": "test_exact_owner_authorization_and_both_frozen_representations_pass",
+          "line": 2880,
+          "assertions": "Exact Codex Owner authorization and both pinned Frozen Finding representations pass.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "Slice3R1AuthorityTests",
+          "method": "test_each_missing_or_changed_authority_is_refused",
+          "line": 2885,
+          "assertions": "Each absent/changed R1 authority representation is refused.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        }
+      ],
+      "evidenceReview": [],
+      "evidenceLimits": "Final source commit, complete architecture/backend/browser/security and remote CI binding remain pending; no independent Controller verdict is issued.",
+      "id": "S3-AC-003",
+      "criterion": "canonical state advances to SLICE-V1-003 Full-Scope Implementation only after exact acceptance and preserves every SLICE-V1-002 accepted identity.",
+      "status": "STATIC_AND_TARGETED_EVIDENCE_REVIEWED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r12.log",
+        "workstreams/slice3-r1-w1-identity.json",
+        "workstreams/fresh-clone-w1.json",
+        "workstreams/facts-outcome-traceability.json",
+        "workstreams/human-governance-mapping-review-supplement.md"
+      ]
+    },
+    {
+      "implementedBehavior": "The existing roadmap retains Advertising & Traffic Efficiency and the selected AD_BID_CHANGE controlled scope.",
+      "sourceReferences": [
+        {
+          "path": "docs/03-work-items/V1_DELIVERY_SLICES.md",
+          "sha256": "d2d3da9987fa1c57ffbae4b06cb73c178daf4fe08ba52011f1ceec93d96313f3"
+        },
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "V1SliceContractTests",
+          "method": "test_exact_backlog_delivery_plan_and_slice_are_valid",
+          "line": 3443,
+          "assertions": "Validator reads the actual backlog, delivery plan and Slice normative text rather than only CURRENT_STATE tokens.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        }
+      ],
+      "evidenceReview": [
+        {
+          "kind": "READ_ONLY_DIFF_AND_PROTECTED_AUTHORITY_REVIEW",
+          "reference": "TAKEOVER_RECEIPT.md",
+          "assertion": "The delivery roadmap was read as exact protected Base authority and has not been reinterpreted to open another delivery Slice."
+        }
+      ],
+      "evidenceLimits": "Final source commit, complete architecture/backend/browser/security and remote CI binding remain pending; no independent Controller verdict is issued.",
+      "id": "S3-AC-004",
+      "criterion": "roadmap preserves the Advertising & Traffic Efficiency outcome and records `AD_BID_CHANGE` as the selected controlled-write family.",
+      "status": "STATIC_AND_TARGETED_EVIDENCE_REVIEWED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r12.log",
+        "workstreams/slice3-r1-w1-identity.json",
+        "workstreams/fresh-clone-w1.json",
+        "workstreams/facts-outcome-traceability.json",
+        "workstreams/human-governance-mapping-review-supplement.md"
+      ]
+    },
+    {
+      "implementedBehavior": "The R1 changes do not open predecessor-deferred stock/replenishment/allocation action families.",
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a"
+        },
+        {
+          "path": "docs/03-work-items/V1_DELIVERY_SLICES.md",
+          "sha256": "d2d3da9987fa1c57ffbae4b06cb73c178daf4fe08ba52011f1ceec93d96313f3"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+          "class": "AdvertisingNonGoalsTest",
+          "method": "adjacentInventoryCapabilitiesStayClosed",
+          "line": 151,
+          "assertions": "Searches advertisingefficiency Java and every migration for the explicit adjacent inventory action markers.",
+          "evidenceKind": "SOURCE_SCOPE_AND_ENUM_SCAN",
+          "run": "source-r29",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        }
+      ],
+      "evidenceReview": [
+        {
+          "kind": "READ_ONLY_SCOPE_REVIEW",
+          "reference": "workstreams/command-controls.md",
+          "assertion": "The implementation diff adds the accepted advertising Case, manual, controlled bid and outcome authorities; protected predecessor behavior is retained."
+        }
+      ],
+      "evidenceLimits": "The named test is a bounded advertising-module plus migration marker scan, not a proof about every possible string or every repository file. Final source commit, complete architecture/backend/browser/security and remote CI binding remain pending; no independent Controller verdict is issued.",
+      "id": "S3-AC-005",
+      "criterion": "SLICE-V1-002 `STOCK_CHANGE`, replenishment quantity, Overstock, Allocation and Transfer remain unopened.",
+      "status": "STATIC_AND_TARGETED_EVIDENCE_REVIEWED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r12.log",
+        "workstreams/slice3-r1-w1-identity.json",
+        "workstreams/fresh-clone-w1.json",
+        "workstreams/facts-outcome-traceability.json",
+        "workstreams/human-governance-mapping-review-supplement.md"
+      ]
+    },
+    {
+      "implementedBehavior": "The repair implements the accepted Contract policies through existing module/Shared Spine responsibilities; it does not change product outcome, external Provider or fixed Owner invariant.",
+      "sourceReferences": [
+        {
+          "path": "docs/02-architecture/designs/SLICE-V1-003-design.md",
+          "sha256": "de74042474e5d6e93d05511a01ccd262dfbf7ed655e7ca6cc677e2f452d443ec"
+        },
+        {
+          "path": "docs/00-governance/CURRENT_STATE.md",
+          "sha256": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf"
+        },
+        {
+          "path": "docs/01-requirements/V1_PRODUCT_CONTRACT.md",
+          "sha256": "99a02f2b21efa5f265199ed81d3d9826604fbb066b48c35ab00d81cb23dbc5c2"
+        },
+        {
+          "path": "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md",
+          "sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "V1CapabilityAiAndWriteContractTests",
+          "method": "test_exact_capability_ai_product_and_design_gate_contracts_are_valid",
+          "line": 3505,
+          "assertions": "Capability, AI boundary, Product and operating-model normative tokens remain valid; this test does not classify the implementation diff.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        }
+      ],
+      "evidenceReview": [
+        {
+          "kind": "ENGINEERING_REVIEW_INFERENCE",
+          "reference": "workstreams/human-governance-mapping-review-supplement.md",
+          "assertion": "After full protected authority and relevant actual source/diff reading, engineering review infers no new conditional Design Gate trigger: public Shared Task/IAM/outcome ports implement already accepted policy. Root confirmed this bounded interpretation. This is not an independent Controller verdict."
+        }
+      ],
+      "evidenceLimits": "The conditional Design Gate determination is an explicit source/diff review inference, not a consequence of passing token tests. Full ArchitectureTest and exact final diff remain pending. Final source commit, complete architecture/backend/browser/security and remote CI binding remain pending; no independent Controller verdict is issued.",
+      "id": "S3-AC-007",
+      "criterion": "conditional Design Gate remains untriggered or any later trigger follows the exact governance path.",
+      "status": "STATIC_AND_TARGETED_EVIDENCE_REVIEWED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r12.log",
+        "workstreams/slice3-r1-w1-identity.json",
+        "workstreams/fresh-clone-w1.json",
+        "workstreams/facts-outcome-traceability.json",
+        "workstreams/human-governance-mapping-review-supplement.md"
+      ]
+    },
+    {
+      "implementedBehavior": "R1 repair/publication does not grant production activation or change release-blocking obligations.",
+      "sourceReferences": [
+        {
+          "path": "docs/08-handoffs/OWNER-SLICE-V1-003-CODEX-REWORK-AUTHORIZATION-EVIDENCE.md",
+          "sha256": "23a2954d68abeebf87d7710f3ab749af5246cdfcbe4a3029dde73dbb34647a11"
+        },
+        {
+          "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-REL-DEFERRED-REGISTER.json",
+          "sha256": "d7491609b66047296ec7fd2a5e1097d71cda3f9b275300b57de77e5c1889392e"
+        },
+        {
+          "path": "docs/00-governance/CURRENT_STATE.md",
+          "sha256": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf"
+        },
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_enabled_global_or_platform_write_is_rejected",
+          "line": 2983,
+          "assertions": "Governance metadata cannot claim enabled global/platform production writes.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "sha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_rework_identity_phase_and_actor_cannot_drift",
+          "line": 3163,
+          "assertions": "R1 reviewed identity, phase and authorized actor cannot drift.",
+          "evidenceKind": "PYTHON_VALIDATOR_POSITIVE_AND_FAULT",
+          "run": "governance-r12",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        }
+      ],
+      "evidenceReview": [
+        {
+          "kind": "EXACT_COMMIT_IDENTITY_RECEIPT",
+          "reference": "workstreams/slice3-r1-w1-identity.json",
+          "assertion": "production_write_enabled=false and no Codex Controller verdict recorded at W1; deferred release obligations remain separately blocking."
+        }
+      ],
+      "evidenceLimits": "The metadata tests do not establish that the literal configuration flag is checked on every worker instruction. FeatureFlagService and actual capability/credential/transmission gates are separate boundaries; synthetic fake-port runs never call real Providers. Final source commit, complete architecture/backend/browser/security and remote CI binding remain pending; no independent Controller verdict is issued.",
+      "id": "S3-AC-008",
+      "criterion": "no Release, Gate EV, Gate E, Pilot, deployment or production-write authority is claimed by source completion, tests, merge or this Contract.",
+      "status": "STATIC_AND_TARGETED_EVIDENCE_REVIEWED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r12.log",
+        "workstreams/slice3-r1-w1-identity.json",
+        "workstreams/fresh-clone-w1.json",
+        "workstreams/facts-outcome-traceability.json",
+        "workstreams/human-governance-mapping-review-supplement.md"
+      ]
+    },
+    {
+      "implementedBehavior": "AD_BID_CHANGE is the sole advertising executable action; governed Manual does not add a command/outbox family.",
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/ActionKind.java",
+          "sha256": "1aebab12ce5bd0525a299d6801b90cce2f2536fbdae26f62df3e7896f7dddc26"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0040__widen_write_registry_for_ad_bid_capability.sql",
+          "sha256": "be93a31c395c68c5e2f520b5141cb72d1fa03b1fa467f200a87973041342b4e1"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+          "sha256": "8a73b4c7f4bf6fcbbeb9d6ab40ae26687e9f0a3505676e701472adb8f65a725d"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+          "class": "AdvertisingNonGoalsTest",
+          "method": "onlyBidChangeExists",
+          "line": 143,
+          "assertions": "Explicit nonselected Provider-write markers are absent from advertising Java and migrations.",
+          "evidenceKind": "SOURCE_SCOPE_AND_ENUM_SCAN",
+          "run": "source-r29",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+          "class": "AdvertisingNonGoalsTest",
+          "method": "writeRegistryDescribesExactlyTwoCapabilities",
+          "line": 226,
+          "assertions": "Registry names exactly price-change and ad-bid-change with a refusing default.",
+          "evidenceKind": "SOURCE_SCOPE_AND_ENUM_SCAN",
+          "run": "source-r29",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+          "class": "AdvertisingNonGoalsTest",
+          "method": "governedManualActionsCannotEnterCommandOrOutbox",
+          "line": 206,
+          "assertions": "ActionKind.writeCapable yields PRICE_CHANGE/AD_BID_CHANGE only; manual migration contains governed functions and no command/outbox INSERT pattern.",
+          "evidenceKind": "SOURCE_SCOPE_AND_ENUM_SCAN",
+          "run": "source-r29",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        }
+      ],
+      "evidenceReview": [],
+      "evidenceLimits": "This combines enum/registry and scoped source scans; real write-boundary tests are documented in command-controls, not inferred solely from enum size. Final source commit, complete architecture/backend/browser/security and remote CI binding remain pending; no independent Controller verdict is issued.",
+      "id": "S3-AC-085",
+      "criterion": "`AD_BID_CHANGE` is the only new controlled-write family in this Slice.",
+      "status": "STATIC_AND_TARGETED_EVIDENCE_REVIEWED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r12.log",
+        "workstreams/slice3-r1-w1-identity.json",
+        "workstreams/fresh-clone-w1.json",
+        "workstreams/facts-outcome-traceability.json",
+        "workstreams/human-governance-mapping-review-supplement.md"
+      ]
+    },
+    {
+      "implementedBehavior": "Budget/status/mode/structure remain outside the typed advertising Provider bid port; permitted budget/status instructions stay governed Manual.",
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWriteRequest.java",
+          "sha256": "1e381dee54141898ee6ba324c2b4ac627f7c20b49b4affac7315787b3e865d69"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePort.java",
+          "sha256": "3d94a629fc0b52a476fb5e4246ebed697a0e123fe135d594b842dede6783a04d"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+          "sha256": "1987ba56522abf19c08525c46674add23a099714d8c79c178ab8c2f6bb0294c7"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+          "sha256": "8a73b4c7f4bf6fcbbeb9d6ab40ae26687e9f0a3505676e701472adb8f65a725d"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+          "class": "AdvertisingNonGoalsTest",
+          "method": "budgetAndStatusExistOnlyAsManualInstructions",
+          "line": 187,
+          "assertions": "AD_BUDGET_CHANGE and AD_STATUS_CHANGE appear only in the two named governed Manual migrations within the tested scan scope.",
+          "evidenceKind": "SOURCE_SCOPE_AND_ENUM_SCAN",
+          "run": "source-r29",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+          "class": "AdvertisingNonGoalsTest",
+          "method": "onlyBidChangeExists",
+          "line": 143,
+          "assertions": "Nonselected Provider action markers are absent in the explicit scan scope.",
+          "evidenceKind": "SOURCE_SCOPE_AND_ENUM_SCAN",
+          "run": "source-r29",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+          "class": "AdvertisingNonGoalsTest",
+          "method": "governedManualActionsCannotEnterCommandOrOutbox",
+          "line": 206,
+          "assertions": "Manual instructions cannot add an executable action enum or command/outbox insertion.",
+          "evidenceKind": "SOURCE_SCOPE_AND_ENUM_SCAN",
+          "run": "source-r29",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+          "sha256": "1987ba56522abf19c08525c46674add23a099714d8c79c178ab8c2f6bb0294c7",
+          "class": "AdBidWritePortContractTest",
+          "method": "mutatingCallNeedsATargetAndAUnit",
+          "line": 72,
+          "assertions": "Typed mutating bid request requires exact target and unit; this is a request-shape check, not an HTTP dispatch execution.",
+          "evidenceKind": "DOMAIN_UNIT",
+          "run": null,
+          "executionStatus": "CURRENT_ASSERTIONS_INSPECTED_EXECUTION_PENDING"
+        }
+      ],
+      "evidenceReview": [],
+      "evidenceLimits": "Scoped source scans and the typed port are the evidence for omitted action fields; no claim that string occurrence alone proves arbitrary runtime payload refusal. Final source commit, complete architecture/backend/browser/security and remote CI binding remain pending; no independent Controller verdict is issued.",
+      "id": "S3-AC-086",
+      "criterion": "Budget, Campaign status, strategy/mode and Campaign/Target structure cannot be written through it.",
+      "status": "STATIC_AND_TARGETED_EVIDENCE_REVIEWED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r12.log",
+        "workstreams/slice3-r1-w1-identity.json",
+        "workstreams/fresh-clone-w1.json",
+        "workstreams/facts-outcome-traceability.json",
+        "workstreams/human-governance-mapping-review-supplement.md"
+      ]
+    },
+    {
+      "implementedBehavior": "Increase, Protection Decrease and exact-prior-bid Compensation have distinct direction/basis and approval gates.",
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/BidDirection.java",
+          "sha256": "fb15e4d31644deb8766a0073ac855f1da588ab455d448e214cc4589bec7c993b"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0045__create_ad_bid_command_from_approval.sql",
+          "sha256": "89cdd51222a110ae8aa4e844a8654268fa3ecc1a7d1ba3ff170d24ce05364398"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCompensationService.java",
+          "sha256": "1a635fe87e563ebbf1a2e1a5dfbf4452f35584a06ca61c5c4f7ac99552be8811"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a",
+          "class": "AdvertisingNonGoalsTest",
+          "method": "exactlyThreeBidDirectionsExist",
+          "line": 167,
+          "assertions": "Three explicit direction enum values are preserved; enum shape alone does not prove separate gates.",
+          "evidenceKind": "SOURCE_SCOPE_AND_ENUM_SCAN",
+          "run": "source-r29",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "sha256": "494192d29beb207da8f43d3f04932b84f7682bfe168eef800cc611ecd854e999",
+          "class": "AdvertisingReservationIT",
+          "method": "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore",
+          "line": 309,
+          "assertions": "Actual independent Maker/Ops/Owner compensation chain creates exact captured prior-bid restore under new authority; independent restore gate admits only the correct direction/prior amount.",
+          "evidenceKind": "REAL_POSTGRESQL_BOUNDARY",
+          "run": "source-r17",
+          "executionStatus": "TARGETED_ASSERTION_PASSED"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "sha256": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed",
+          "class": "AdvertisingSealedAuthorityIT",
+          "method": "causeBoundStepCannotExceedExactOwnerPolicyRatio",
+          "line": 188,
+          "assertions": "Actual cause-bound Protection is rejected outside its exact Owner ratio.",
+          "evidenceKind": "REAL_POSTGRESQL_BOUNDARY",
+          "run": "root-final-targeted-r34",
+          "executionStatus": "TARGETED_ASSERTION_PASSED",
+          "priorObservedRun": "source-r17"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/BidCandidateTest.java",
+          "sha256": "81d86f7263b452ba29d376529798d750faabd12ed9cabb74c19791e2e42a8a3b",
+          "class": "BidCandidateTest",
+          "method": "increaseNeverPassesTheCeiling",
+          "line": 183,
+          "assertions": "Increase cannot exceed its Max CPC ceiling.",
+          "evidenceKind": "DOMAIN_UNIT",
+          "run": null,
+          "executionStatus": "CURRENT_ASSERTIONS_INSPECTED_EXECUTION_PENDING"
+        }
+      ],
+      "evidenceReview": [],
+      "evidenceLimits": "Actual Compensation and Protection DB boundaries are separately cited; the Increase mathematical test is inspected and awaits an explicitly identified run containing that domain suite. Final source commit, complete architecture/backend/browser/security and remote CI binding remain pending; no independent Controller verdict is issued.",
+      "id": "S3-AC-089",
+      "criterion": "Protection Decrease and Optimization Increase are separately gated; exact Compensation uses its own authority.",
+      "status": "STATIC_AND_TARGETED_EVIDENCE_REVIEWED_FULL_EXACT_HEAD_PENDING",
+      "evidence": [
+        "workstreams/logs/slice3-r1-governance-preflight-r12.log",
+        "workstreams/slice3-r1-w1-identity.json",
+        "workstreams/fresh-clone-w1.json",
+        "workstreams/facts-outcome-traceability.json",
+        "workstreams/human-governance-mapping-review-supplement.md"
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "command": "make governance",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "exitCode": 0,
+      "tests": 410,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-r1-governance-preflight-r11.log",
+      "sha256": "4eedc761a41c14c925f0f1d26a105fc48a375df0112b161208b14962956a515a",
+      "sourceBinding": "CURRENT_WORKING_TREE_AT_EXECUTION_NOT_FINAL_COMMIT"
+    },
+    {
+      "id": "governance-r12",
+      "command": "make governance",
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+      "recordedResult": "PASS",
+      "exitCode": 0,
+      "tests": 410,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "startedAt": "NOT_RECORDED",
+      "finishedAt": "NOT_RECORDED",
+      "originalLocalLog": "/tmp/slice3-r1-governance-preflight-r12.log",
+      "log": "workstreams/logs/slice3-r1-governance-preflight-r12.log",
+      "logSha256": "92f821757dcf28b2052dc6521f811112c573cc552f024d94c9dd6a44bea35084",
+      "sourceBinding": "Root confirms this execution follows the Slice003 explicit-byte helper and actual equal-length one-byte mutation fix; local working tree, not final commit."
+    }
+  ],
+  "productionWriteEnabled": false,
+  "controllerVerdict": "NOT_ISSUED_BY_CODEX",
+  "findings": [
+    {
+      "id": "S3-DR-001",
+      "rootCause": "The published identity and mutable evidence indexes were maintained independently, allowing a stale local checkpoint and false remote-state claims to survive publication.",
+      "implementedBehavior": "Exact read-only takeover and current authority pins distinguish the reviewed starting commit from the eventual measured source and remote Head. A clean-tree identity collector derives migration and build input identities from Git.",
+      "sameClassScan": [
+        "Scanned active CURRENT_STATE, original historical handoffs, migration inventories, PR workflows and source/test identity bindings. Historical claims remain preserved with explicit scope."
+      ],
+      "transitiveImpact": [
+        "Active acceptance index, protected migration comparison, Draft PR identity and tested merge/CI artifact records must agree; final remote transport and CI are still pending."
+      ],
+      "sourceEvidence": [
+        {
+          "path": "scripts/validation/collect_slice3_rework_identity.py",
+          "sha256_at_receipt": "fd85b4c1997fc1c1d32e9baea6f9845c0b5aa70c7cd3a91b7b2b2d93a0dd6f4e"
+        },
+        {
+          "path": "scripts/validation/assemble_slice3_rework_evidence.py",
+          "sha256_at_receipt": "0ee8f073ac3f4ac642e9d09ace889bed055de7be479b9dfdc81660f278f1c8a6"
+        },
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256_at_receipt": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "docs/00-governance/CURRENT_STATE.md",
+          "sha256_at_receipt": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf"
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "Slice3R1AuthorityTests",
+          "method": "test_exact_owner_authorization_and_both_frozen_representations_pass",
+          "unittestId": "test_validate_governance.Slice3R1AuthorityTests.test_exact_owner_authorization_and_both_frozen_representations_pass",
+          "line": 2880,
+          "endLine": 2883,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "6c02dd865778883e4684fd5c8675275db14f0cd195cbeea9a722f43d503819c5",
+          "assertion": "Reads actual repository files for every SLICE3_R1_AUTHORITY_HASHES entry and asserts validator errors == [].",
+          "proofBoundary": "Exact current Owner authorization and Frozen byte-identity validator; does not inspect GitHub or claim publication.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual(errors, [])"
+          ]
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_exact_v1_state_is_valid",
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_exact_v1_state_is_valid",
+          "line": 2929,
+          "endLine": 2931,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "4a4fe87f98c50215ffd0948902f59a405c11daaca398cae7a5c5f93fb866e81a",
+          "assertion": "Asserts current governance state is valid both normally and with explicit accepted Slice 3 Contract bytes.",
+          "proofBoundary": "Static actual governance/accepted bytes; no arbitrary current Head/PR state is obtained by this method.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual([], self.validate())",
+            "self.assertEqual([], self.validate(slice_contract_bytes=self.slice_contract_bytes()))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_production_readiness.py",
+          "class": "RepositoryContractPatternTests",
+          "method": "test_frontend_test_requires_authored_source_expression",
+          "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_frontend_test_requires_authored_source_expression",
+          "line": 447,
+          "endLine": 464,
+          "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+          "methodSourceSha256": "51df078755b8478fdea57114ba055aaa6722c9d8cfffd3c04b7defa11482af41",
+          "assertion": "Known synthetic workflow/resolver contract yields no violations; removing source Head or replacing PR source expression with merge github.sha yields violations.",
+          "proofBoundary": "Synthetic source-pattern fixture only; actual CI checkout, runtime package and browser identities remain separate executable evidence.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual([], browser_source_identity_contract_violations(workflow, config, scenario, resolver))",
+            "self.assertTrue(browser_source_identity_contract_violations(mutated, config, scenario, resolver))"
+          ]
+        },
+        {
+          "path": "tests/test_required_status_checks.py",
+          "class": "RequiredStatusChecksTests",
+          "method": "test_inventory_requires_infrastructure_validation",
+          "unittestId": "test_required_status_checks.RequiredStatusChecksTests.test_inventory_requires_infrastructure_validation",
+          "line": 8,
+          "endLine": 21,
+          "sourceSha256": "bf938e4f904934bf32e2d67cc912ab444d91a29f1b355351c23b005427f00d6a",
+          "methodSourceSha256": "9b2ba46af258622d7d9166fdca0031edfd3f10663f3ad8d23cbc04d4bced182b",
+          "assertion": "Exact sorted REQUIRED_STATUS_CONTEXTS and strict policy pass; removal of infrastructure-validation causes a named diagnostic.",
+          "proofBoundary": "Required-context inventory validator. Does not query branch protection or run/check conclusions.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual([], errors)",
+            "self.assertTrue(any(('infrastructure-validation' in error for error in errors)))"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "Slice3R1AuthorityTests",
+          "method": "test_each_missing_or_changed_authority_is_refused",
+          "unittestId": "test_validate_governance.Slice3R1AuthorityTests.test_each_missing_or_changed_authority_is_refused",
+          "line": 2885,
+          "endLine": 2897,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "cfee56f0a2d726bc256c40c412350adc21c46f50a64a4d37f98a3ac2589aa1e4",
+          "assertion": "For every actual authority file, remove it or append one byte; each subtest requires exactly one error naming the altered path.",
+          "proofBoundary": "Actual document-byte fault in memory; no authority file is modified and no remote action is verified.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual(len(errors), 1)",
+            "self.assertIn(name, errors[0])"
+          ]
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_contract_byte_change_with_old_hash_is_rejected",
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_contract_byte_change_with_old_hash_is_rejected",
+          "line": 3119,
+          "endLine": 3129,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "a32b1fa2756c1de1bb97b75d83eab37adc1eeb6ae9be04715152c8abb2353dc7",
+          "assertion": "Changes the final y in Advertising & Traffic Efficiency to x; proves bytes differ and length remains equal, then requires immutable and hash-mismatch diagnostics.",
+          "proofBoundary": "A real equal-length mutation of accepted bytes; not merely a fabricated hash.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertNotEqual(mutated, self.slice_contract_bytes())",
+            "self.assertEqual(len(mutated), len(self.slice_contract_bytes()))",
+            "self.assertTrue(any(('immutable' in error for error in errors)))",
+            "self.assertTrue(any(('does not match' in error for error in errors)))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_hash_change_with_original_contract_is_rejected",
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_hash_change_with_original_contract_is_rejected",
+          "line": 3131,
+          "endLine": 3138,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "71a8010883af2586d5d8bd743a4860c34644280cd24b497e0b03a4c22c1bb02c",
+          "assertion": "Replaces accepted hash in actual current state with zeros and requires active_slice_contract_sha256 diagnostic.",
+          "proofBoundary": "Current static metadata refusal, not remote Git identity proof.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertTrue(any(('active_slice_contract_sha256' in error for error in errors)))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_coordinated_contract_and_hash_change_is_not_an_amendment",
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_coordinated_contract_and_hash_change_is_not_an_amendment",
+          "line": 3140,
+          "endLine": 3152,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "6326069d97c3169a129467876a1dffa5f032a22909b06b84d3088f165565591b",
+          "assertion": "Changes Contract and its declared SHA together and requires an additive Amendment diagnostic.",
+          "proofBoundary": "Prevents re-hashing an edited original from creating authority.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertTrue(any(('additive Amendment' in error for error in errors)))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "V1CurrentStateContractTests",
+          "method": "test_rework_identity_phase_and_actor_cannot_drift",
+          "unittestId": "test_validate_governance.V1CurrentStateContractTests.test_rework_identity_phase_and_actor_cannot_drift",
+          "line": 3163,
+          "endLine": 3215,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "6a10cf5f28cb9513eac7ea6eda3f0b1dfd2e42015b58cb5f78accfc02618b94e",
+          "assertion": "Each mutation first assertIn checks the exact source token, then rejects active actor, current candidate production claim, Gate EV, and protected historical identity/closure changes.",
+          "proofBoundary": "Mixed active-Slice3 and historical-Slice1/2 static assertions. It does not validate arbitrary final current Head against GitHub.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertIn(old, self.current())",
+            "self.assertTrue(self.validate(current=self.current().replace(old, new, 1)))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_production_readiness.py",
+          "class": "RepositoryContractPatternTests",
+          "method": "test_frontend_test_requires_authored_source_expression",
+          "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_frontend_test_requires_authored_source_expression",
+          "line": 447,
+          "endLine": 464,
+          "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+          "methodSourceSha256": "51df078755b8478fdea57114ba055aaa6722c9d8cfffd3c04b7defa11482af41",
+          "assertion": "Known synthetic workflow/resolver contract yields no violations; removing source Head or replacing PR source expression with merge github.sha yields violations.",
+          "proofBoundary": "Synthetic source-pattern fixture only; actual CI checkout, runtime package and browser identities remain separate executable evidence.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual([], browser_source_identity_contract_violations(workflow, config, scenario, resolver))",
+            "self.assertTrue(browser_source_identity_contract_violations(mutated, config, scenario, resolver))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_production_readiness.py",
+          "class": "RepositoryContractPatternTests",
+          "method": "test_checkout_head_and_identity_divergence_are_rejected",
+          "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_checkout_head_and_identity_divergence_are_rejected",
+          "line": 466,
+          "endLine": 482,
+          "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+          "methodSourceSha256": "588baf1552d80d12b6227ae1ab3d145290c05319cdd4eb4db5c209d98e22178f",
+          "assertion": "Rejects fixture code that reads checkout HEAD in place of authored source resolver and rejects a divergent asserted checkoutHead.",
+          "proofBoundary": "Source-pattern negative, not execution of a browser/checkout.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertTrue(browser_source_identity_contract_violations(workflow, config, checkout_head, resolver))",
+            "self.assertTrue(browser_source_identity_contract_violations(workflow, config, divergent, resolver))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_production_readiness.py",
+          "class": "RepositoryContractPatternTests",
+          "method": "test_ci_source_resolver_cannot_fall_back_to_repository_head",
+          "unittestId": "test_validate_production_readiness.RepositoryContractPatternTests.test_ci_source_resolver_cannot_fall_back_to_repository_head",
+          "line": 484,
+          "endLine": 491,
+          "sourceSha256": "5cd18e47ab728546724ca21f7ec7b2d6d44c247aa889b3e89081071287ed80ca",
+          "methodSourceSha256": "001896575de462f948fae0a3ea43632f05c61fe25ed99c47246eed74f5f1e9f2",
+          "assertion": "Disables fixture CI branch with if(false) and requires refusal.",
+          "proofBoundary": "Source-pattern negative, not a real GitHub run.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertTrue(browser_source_identity_contract_violations(workflow, config, scenario, mutated))"
+          ]
+        },
+        {
+          "path": "tests/test_validate_governance.py",
+          "class": "Dr0004GovernanceContractTests",
+          "method": "test_remote_publication_cannot_reconstruct_checkpoint",
+          "unittestId": "test_validate_governance.Dr0004GovernanceContractTests.test_remote_publication_cannot_reconstruct_checkpoint",
+          "line": 4054,
+          "endLine": 4062,
+          "sourceSha256": "b34f9e20f7ca4e9d6e5e72d260e1caa7bd282d87a7d8f60d8e36bf2d284132e8",
+          "methodSourceSha256": "effb54e3738f9bc9ef78a93891ebae20bbb85e955e169fc7b7f2c89abf73357e",
+          "assertion": "Mutates governance handoff prohibition to permit reconstruction during publication and requires DR-0004 handoff diagnostic.",
+          "proofBoundary": "Text-protocol enforcement only; cannot prove actual append-only transport bytes.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertTrue(any(('DR-0004 handoff' in error for error in errors)))"
+          ]
+        }
+      ],
+      "testClassification": "Reviewed named methods preserve exact assertions and limits; no static check substitutes for actual identity/clone/remote CI receipts.",
+      "status": "REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING",
+      "evidenceLimits": [
+        "Current governance run passes 410 tests; this is not full local verification or remote CI.",
+        "Exact clean measured commit, one Draft PR, final Head CI and Controller verdict remain pending."
+      ]
+    },
+    {
+      "id": "S3-DR-022",
+      "rootCause": "Acceptance, runtime evidence and Git publication did not share a measured input identity; aggregate tests were used despite incomplete named behaviors and verification classes.",
+      "implementedBehavior": "All 200 exact criteria are mapped to actual current source and named tests; mapping cannot assert PASS. Complete per-finding fault, integration, capacity, browser, migration and remote CI results remain separate evidence obligations.",
+      "sameClassScan": [
+        "Scanned every AC against all six current source/test shards and all 22 Frozen findings. The prior vertical bypass has been replaced with an actual accepted Canonical-to-Metric-to-calculation-to-human-to-command/readback-to-Outcome path; complete targeted execution passes in r34, while full immutable verification is pending.",
+        "Reviewed all 99 exact analyzed CodeQL alerts with individual locations/source hashes and all five synthetic issuer SQL concatenations. Explicitly scanned specialized R1 fixtures for duplicated Maker role/grant setup and broad scope that would invalidate scoped browser assertions; the exact review is separately retained."
+      ],
+      "transitiveImpact": [
+        "The full clean regression and runtime artifact receipts must bind a measured commit; final evidence-only changes require runtime input comparison and final remote CI."
+      ],
+      "sourceEvidence": [
+        {
+          "path": "scripts/validation/collect_slice3_rework_identity.py",
+          "sha256_at_receipt": "fd85b4c1997fc1c1d32e9baea6f9845c0b5aa70c7cd3a91b7b2b2d93a0dd6f4e"
+        },
+        {
+          "path": "scripts/validation/assemble_slice3_rework_evidence.py",
+          "sha256_at_receipt": "0ee8f073ac3f4ac642e9d09ace889bed055de7be479b9dfdc81660f278f1c8a6"
+        },
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256_at_receipt": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        },
+        {
+          "path": "docs/00-governance/CURRENT_STATE.md",
+          "sha256_at_receipt": "688255df195e81f60a80b098402c08702370227288161cc38503a9bd5397daaf"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/web/AdvertisingOperationsConsoleController.java",
+          "sha256_at_receipt": "b3ba3341fa2920a16e6341af1f1caf082675ec9e4afdc0f381d55e95c5b52b13"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabase.java",
+          "sha256_at_receipt": "5cb311838dc236a5dc076348446817daa9cd2742d115bde6ff6347c454af27ba"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCapacityEvidence.java",
+          "sha256_at_receipt": "a371d61e88d2c5c2754237b2c1a6d8b4cd3dfaf5c463793cdb3e756e395d540c"
+        },
+        {
+          "path": "frontend/marketops-console/package-lock.json",
+          "sha256_at_receipt": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4"
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_complete_mapping_preserves_authority_and_never_inherits_pass",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_complete_mapping_preserves_authority_and_never_inherits_pass",
+          "line": 47,
+          "endLine": 58,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "10ed90143be2607453ca793e0bef3ca3b656f596c42515e3fc3210663e00baaf",
+          "assertion": "Copies actual accepted Contract/Frozen/current matrices into TemporaryDirectory; supplies all 200 rows falsely claiming VERIFIED; assembly writes 200 pending rows, closure false, production false, with Contract/Frozen hashes unchanged.",
+          "proofBoundary": "Tests matrix assembly behavior against artificial references, not completeness of the real 200-AC implementation or actual test execution. ROOT is patched only to a temporary directory.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual(200, len(result['entries']))",
+            "self.assertFalse(result['closure_claim_made'])",
+            "self.assertFalse(result['production_write_enabled'])",
+            "self.assertTrue(all((row['status'] == 'REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING' for row in result['entries'])))",
+            "self.assertEqual(contract_before, assembly.digest(self.root / assembly.CONTRACT))",
+            "self.assertEqual(frozen_before, assembly.digest(self.root / assembly.FROZEN))"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_javascript_test_titles_require_the_actual_literal_title",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_javascript_test_titles_require_the_actual_literal_title",
+          "line": 91,
+          "endLine": 97,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "ff559b1b3e95653c21988ac8db221d803d3a0e07e953a9ca0d2b0260bb36a246",
+          "assertion": "Exact TS literal test title resolves; replacement with another title raises Missing test method.",
+          "proofBoundary": "Existence/title identity validator only; neither frontend execution nor assertion semantics is proved.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual(1, len(assembly.references(actual, ('tests',))))",
+            "self.assertRaisesRegex(ValueError, 'Missing test method')"
+          ]
+        },
+        {
+          "path": "tests/test_required_status_checks.py",
+          "class": "RequiredStatusChecksTests",
+          "method": "test_inventory_requires_infrastructure_validation",
+          "unittestId": "test_required_status_checks.RequiredStatusChecksTests.test_inventory_requires_infrastructure_validation",
+          "line": 8,
+          "endLine": 21,
+          "sourceSha256": "bf938e4f904934bf32e2d67cc912ab444d91a29f1b355351c23b005427f00d6a",
+          "methodSourceSha256": "9b2ba46af258622d7d9166fdca0031edfd3f10663f3ad8d23cbc04d4bced182b",
+          "assertion": "Exact sorted REQUIRED_STATUS_CONTEXTS and strict policy pass; removal of infrastructure-validation causes a named diagnostic.",
+          "proofBoundary": "Required-context inventory validator. Does not query branch protection or run/check conclusions.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual([], errors)",
+            "self.assertTrue(any(('infrastructure-validation' in error for error in errors)))"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+          "method": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+          "method": "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents"
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_changed_contract_is_rejected_before_writing_matrices",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_changed_contract_is_rejected_before_writing_matrices",
+          "line": 60,
+          "endLine": 64,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "0b0b91a97cf6b98bf8b830d55a528b4a86b1d828c9ad2dead1a0a773285e14ab",
+          "assertion": "Appending a byte to the temp accepted Contract raises Accepted Contract identity changed.",
+          "proofBoundary": "Actual byte fault in isolated temp copy; name does not itself assert matrix postfailure bytes, but rejection occurs before assembly output writes in implementation.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertRaisesRegex(ValueError, 'Accepted Contract identity changed')"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_changed_frozen_findings_are_rejected_before_writing_matrices",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_changed_frozen_findings_are_rejected_before_writing_matrices",
+          "line": 66,
+          "endLine": 70,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "0d54bc2425e3131decc1620daeef2de1d6887d5fe2129f7dde2bacb2d2d7cc50",
+          "assertion": "Appending a byte to temp Frozen raises Frozen Finding Set identity changed.",
+          "proofBoundary": "Exact frozen-input identity refusal in isolated temp copy.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertRaisesRegex(ValueError, 'Frozen Finding Set identity changed')"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_modified_criterion_is_not_treated_as_the_accepted_criterion",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_modified_criterion_is_not_treated_as_the_accepted_criterion",
+          "line": 72,
+          "endLine": 76,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "1df71c11aba8e156004ed7b3824faabc27443619dcc76b0c319930c9cb23474b",
+          "assertion": "Changes first criterion text in a shard and requires Altered accepted criterion.",
+          "proofBoundary": "Prevents criterion text drift; does not judge implementation adequacy.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertRaisesRegex(ValueError, 'Altered accepted criterion')"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_a_missing_criterion_prevents_a_complete_matrix",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_a_missing_criterion_prevents_a_complete_matrix",
+          "line": 78,
+          "endLine": 81,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "9076d73d5a0516fd84e96a6330a7605b238de40b6728f8618d64a736f608d87b",
+          "assertion": "Drops the first criterion and requires Unmapped accepted criteria.",
+          "proofBoundary": "ID completeness, not semantic completion.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertRaisesRegex(ValueError, 'Unmapped accepted criteria')"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_a_nonexistent_test_method_is_not_accepted_as_evidence",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_a_nonexistent_test_method_is_not_accepted_as_evidence",
+          "line": 83,
+          "endLine": 85,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "2a01c853a4835d928dcab547df4071ff9e8e835880a148a47401ec45d2f5c985",
+          "assertion": "References missing method and requires Missing test method.",
+          "proofBoundary": "Source declaration existence, not actual execution or assertion semantics.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertRaisesRegex(ValueError, 'Missing test method')"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_references_cannot_escape_the_repository",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_references_cannot_escape_the_repository",
+          "line": 87,
+          "endLine": 89,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "bf50084551fb4b90669a36253553b72852b0383c87789ef838fa81eb3685a374",
+          "assertion": "References ../unrelated.py and requires Invalid evidence path.",
+          "proofBoundary": "Repository scope boundary, not remote artifact identity.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertRaisesRegex(ValueError, 'Invalid evidence path')"
+          ]
+        },
+        {
+          "path": "tests/test_assemble_slice3_rework_evidence.py",
+          "class": "EvidenceAssemblyTest",
+          "method": "test_javascript_test_titles_require_the_actual_literal_title",
+          "unittestId": "test_assemble_slice3_rework_evidence.EvidenceAssemblyTest.test_javascript_test_titles_require_the_actual_literal_title",
+          "line": 91,
+          "endLine": 97,
+          "sourceSha256": "ff6045b9c547281d4b3eca19a8c59d6505509385703c08689bc6a75ee5a80630",
+          "methodSourceSha256": "ff559b1b3e95653c21988ac8db221d803d3a0e07e953a9ca0d2b0260bb36a246",
+          "assertion": "Exact TS literal test title resolves; replacement with another title raises Missing test method.",
+          "proofBoundary": "Existence/title identity validator only; neither frontend execution nor assertion semantics is proved.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual(1, len(assembly.references(actual, ('tests',))))",
+            "self.assertRaisesRegex(ValueError, 'Missing test method')"
+          ]
+        },
+        {
+          "path": "tests/test_required_status_checks.py",
+          "class": "RequiredStatusChecksTests",
+          "method": "test_inventory_requires_infrastructure_validation",
+          "unittestId": "test_required_status_checks.RequiredStatusChecksTests.test_inventory_requires_infrastructure_validation",
+          "line": 8,
+          "endLine": 21,
+          "sourceSha256": "bf938e4f904934bf32e2d67cc912ab444d91a29f1b355351c23b005427f00d6a",
+          "methodSourceSha256": "9b2ba46af258622d7d9166fdca0031edfd3f10663f3ad8d23cbc04d4bced182b",
+          "assertion": "Exact sorted REQUIRED_STATUS_CONTEXTS and strict policy pass; removal of infrastructure-validation causes a named diagnostic.",
+          "proofBoundary": "Required-context inventory validator. Does not query branch protection or run/check conclusions.",
+          "actualNamedExecutionStatus": "PENDING_FINAL_FROZEN_SOURCE_GOVERNANCE_RUN",
+          "assertionCalls": [
+            "self.assertEqual([], errors)",
+            "self.assertTrue(any(('infrastructure-validation' in error for error in errors)))"
+          ]
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+          "method": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+          "method": "requestIdentityAndRoleFieldsCannotBorrowTheOwnersReadGrant"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+          "method": "theSameSignedPrincipalCannotReuseAnAdvertisingGrantAfterRevocation"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+          "method": "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+          "method": "applicationRoleCannotChangeTheIssuerPasswordOrItsPrivileges"
+        }
+      ],
+      "testClassification": "Reviewed named methods preserve exact assertions and limits; no static check substitutes for actual identity/clone/remote CI receipts.",
+      "status": "REWORK_EVIDENCE_ASSEMBLED_VERIFICATION_PENDING",
+      "evidenceLimits": [
+        "Current governance run passes 410 tests; this is not full local verification or remote CI.",
+        "Exact clean measured commit, one Draft PR, final Head CI and Controller verdict remain pending."
+      ],
+      "postW5SecurityEvidence": {
+        "scannedHead": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+        "findingScope": "Existing F022 complete regression and security proof; neither frozen authority nor finding text changed.",
+        "originalResult": "Security workflow jobs succeeded; aggregate CodeQL failed with 99 alerts including 11 HIGH. Existing Base/Head fast-uri lock was affected by four HIGH advisories. No aggregate green claim is inferred.",
+        "repairs": "Fixed compatible transitive package; explicit standard principal handling with unchanged live SQL authorization; bound and safely quoted synthetic issuer DDL; fixed absolute Git executable in capacity evidence.",
+        "evidenceReferences": [
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-pr30-247e/artifact-index.json",
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-pr30-247e/codeql-99-triage.json",
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/security-pr30-247e/capacity-git-path-repair.json",
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-principal/review.json",
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-issuer/repair.json",
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/receipt.json",
+          "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/receipt.json"
+        ],
+        "measuredResults": "R23 passes 175 actual cases in 15 complete classes, including five new signed-HTTP/PG security methods; current frontend r5 passes 308 with actual optional schema validator and SBOM validation; current-lock npm audit has zero vulnerabilities. The subsequent one-line capacity Git-path change is not covered by R23.",
+        "remaining": "New exact-Head CodeQL/alert and complete CI readback, browser, clean full regression and actual capacity remain required. Independent Controller decides final closure; default-main alerts were not dismissed."
+      }
+    }
+  ],
+  "schemaVersion": "1.1",
+  "externalRuns": [
+    {
+      "id": "source-r29",
+      "reference": "workstreams/facts-outcome-traceability.json",
+      "assertion": "r29 all 34 passed including the seven named non-goal tests."
+    },
+    {
+      "id": "source-r17",
+      "reference": "workstreams/facts-outcome-traceability.json",
+      "assertion": "Containing run partly failed; referenced Reservation14 and Sealed15 suites passed."
+    },
+    {
+      "id": "root-final-targeted-r34",
+      "reference": "workstreams/final-targeted-r34.json",
+      "assertion": "All 97 tests passed; referenced SealedAuthority15 current assertions included."
+    }
+  ],
+  "identityNotice": "Source hashes identify inspected current bytes. Earlier targeted runs and exact W1 identity do not bind subsequent changes to final remote CI."
+}

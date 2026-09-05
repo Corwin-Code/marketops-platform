@@ -1,0 +1,25 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------< com.mimococo.marketops:marketops-server >---------------
+[INFO] Building MarketOps Server 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- jacoco:0.8.15:check (verify-coverage) @ marketops-server ---
+[INFO] Loading execution data file /Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/jacoco.exec
+[INFO] Analyzed bundle 'marketops-server' with 1104 classes
+[WARNING] Rule violated for bundle marketops-server: lines covered ratio is 0.85, but expected minimum is 1.00
+[WARNING] Rule violated for bundle marketops-server: branches covered ratio is 0.71, but expected minimum is 1.00
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.902 s
+[INFO] Finished at: 2026-09-05T19:53:53+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.jacoco:jacoco-maven-plugin:0.8.15:check (verify-coverage) on project marketops-server: Coverage checks have not been met. See log for details. -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

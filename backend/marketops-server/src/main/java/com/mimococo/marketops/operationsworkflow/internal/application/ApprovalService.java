@@ -9,6 +9,7 @@ import com.mimococo.marketops.identityaccess.ActionScopeCode;
 import com.mimococo.marketops.identityaccess.AuthenticatedActor;
 import com.mimococo.marketops.identityaccess.BusinessAuthorization;
 import com.mimococo.marketops.identityaccess.ResourceScope;
+import com.mimococo.marketops.operationsworkflow.ActionKind;
 import com.mimococo.marketops.operationsworkflow.GuardrailPurpose;
 import com.mimococo.marketops.operationsworkflow.GuardrailVerdict;
 import com.mimococo.marketops.operationsworkflow.RecommendationState;
@@ -73,6 +74,8 @@ public class ApprovalService {
     private final MetadataAuditRecorder auditRecorder;
     private final IdGenerator idGenerator;
     private final Clock clock;
+    private final AdvertisingHumanDecisionService advertisingHumans;
+    private final com.mimococo.marketops.marketplaceintegration.AdBidApprovalAuthority advertisingApproval;
 
     ApprovalService(RecommendationService recommendations,
                     GuardrailService guardrails,
@@ -82,7 +85,8 @@ public class ApprovalService {
                     BusinessAuthorization authorization,
                     MetadataAuditRecorder auditRecorder,
                     IdGenerator idGenerator,
-                    Clock clock) {
+                    Clock clock, AdvertisingHumanDecisionService advertisingHumans,
+                    com.mimococo.marketops.marketplaceintegration.AdBidApprovalAuthority advertisingApproval) {
         this.recommendations = recommendations;
         this.guardrails = guardrails;
         this.approvals = approvals;
@@ -92,6 +96,8 @@ public class ApprovalService {
         this.auditRecorder = auditRecorder;
         this.idGenerator = idGenerator;
         this.clock = clock;
+        this.advertisingHumans = advertisingHumans;
+        this.advertisingApproval = advertisingApproval;
     }
 
     /**
@@ -111,6 +117,8 @@ public class ApprovalService {
             throw OperationRejectedException.of(ErrorCode.STEP_UP_REQUIRED);
         }
 
+        UUID advertisingBaseline = proposal.actionKind() == ActionKind.AD_BID_CHANGE
+                ? advertisingHumans.requireFinalApproval(actor, proposal) : null;
         GuardrailVerdict verdict = guardrails.evaluate(proposal, null,
                 GuardrailPurpose.APPROVAL);
         if (!verdict.passed()) {
@@ -121,6 +129,10 @@ public class ApprovalService {
                 actor.authenticatedAt(), true, reason, now);
         recommendations.transition(actor.userId().toString(), recommendationId,
                 RecommendationState.APPROVED, null, expectedVersion);
+        if (proposal.actionKind() == ActionKind.AD_BID_CHANGE) {
+            advertisingApproval.seal(recommendationId, decisionId, advertisingBaseline);
+            advertisingHumans.recordAction(actor,recommendationId,"DECISION_APPROVED",decisionId,reason);
+        }
         return new Decision(decisionId, RecommendationState.APPROVED, verdict, null);
     }
 
@@ -130,11 +142,14 @@ public class ApprovalService {
                            long expectedVersion) {
         RecommendationView proposal = requireDecidable(actor, recommendationId,
                 expectedVersion);
+        if(proposal.actionKind()==ActionKind.AD_BID_CHANGE) advertisingHumans.requireFinalApproval(actor,proposal);
         Instant now = clock.instant();
         UUID decisionId = record(proposal, "REJECTED", actor.userId(), null,
                 actor.authenticatedAt(), actor.stepUpSatisfiedAt(now), reason, now);
         recommendations.transition(actor.userId().toString(), recommendationId,
                 RecommendationState.REJECTED, "REJECTED_BY_REVIEWER", expectedVersion);
+        if(proposal.actionKind()==ActionKind.AD_BID_CHANGE)
+            advertisingHumans.recordAction(actor,recommendationId,"DECISION_REJECTED",decisionId,reason);
         return new Decision(decisionId, RecommendationState.REJECTED, null, null);
     }
 
@@ -151,6 +166,13 @@ public class ApprovalService {
                                       String reason, long expectedVersion) {
         RecommendationView proposal = requireDecidable(actor, recommendationId,
                 expectedVersion);
+        if (proposal.actionKind() == ActionKind.AD_BID_CHANGE) {
+            // Standing policy automation is not part of this product's
+            // advertising capability. A bid change is decided by a person, every
+            // time, and refusing here rather than failing later on a missing
+            // change rate is the difference between a rule and an accident.
+            throw OperationRejectedException.of(ErrorCode.POLICY_AUTHORIZATION_UNUSABLE);
+        }
         Instant now = clock.instant();
 
         Optional<ListingVariantContext> context =
@@ -200,11 +222,15 @@ public class ApprovalService {
      * <p>Scope is checked against the store the subject sits on rather than
      * against the organization, so an operator with one store's grant cannot
      * approve a price change on another's.
+     *
+     * <p>The grant required depends on the action. Somebody who may approve a
+     * price change has not thereby been given authority over advertising spend,
+     * and a single grant covering both would make that distinction unsayable.
      */
     private RecommendationView requireDecidable(AuthenticatedActor actor,
                                                 UUID recommendationId, long expectedVersion) {
         RecommendationView proposal = recommendations.require(recommendationId);
-        authorization.require(actor, ActionScopeCode.PRICE_CHANGE_APPROVE,
+        authorization.require(actor, approvalScopeOf(proposal),
                 ResourceScope.store(proposal.storeId()));
         if (proposal.version() != expectedVersion) {
             throw OperationRejectedException.of(ErrorCode.VERSION_CONFLICT);
@@ -219,6 +245,26 @@ public class ApprovalService {
             throw OperationRejectedException.of(ErrorCode.RECOMMENDATION_STALE);
         }
         return proposal;
+    }
+
+    /**
+     * The grant this action's approval requires.
+     *
+     * <p>Two write-capable actions, two grants, and no default. A new
+     * write-capable action added without a grant of its own would not silently
+     * inherit one — the switch would not compile.
+     */
+    private static ActionScopeCode approvalScopeOf(RecommendationView proposal) {
+        return switch (proposal.actionKind()) {
+            case PRICE_CHANGE -> ActionScopeCode.PRICE_CHANGE_APPROVE;
+            case AD_BID_CHANGE -> ActionScopeCode.AD_BID_CHANGE_APPROVE;
+            case RESOLVE_MAPPING, RESTOCK_REVIEW, LISTING_CONTENT_REVIEW,
+                 ADVERTISING_REVIEW, COST_DATA_REVIEW ->
+                    // Not decidable at all. requireDecidable refuses these on
+                    // write-capability grounds; naming a grant here would be
+                    // describing an authority nobody can hold.
+                    throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
+        };
     }
 
     private UUID record(RecommendationView proposal, String decision, UUID decidedByUserId,

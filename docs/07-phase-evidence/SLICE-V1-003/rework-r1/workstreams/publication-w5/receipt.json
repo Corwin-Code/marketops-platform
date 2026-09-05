@@ -1,0 +1,34 @@
+{
+  "kind": "FIRST_APPEND_ONLY_DRAFT_PUBLICATION_RECEIPT",
+  "utc": "2026-09-05T10:28:57.065701+00:00",
+  "head": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+  "tree": "e43d50161faf5b861ee768fa49b66c8b7a407429",
+  "remoteBefore": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+  "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+  "pr": 30,
+  "url": "https://github.com/Corwin-Code/marketops-platform/pull/30",
+  "draft": true,
+  "open": true,
+  "unmerged": true,
+  "autoMerge": false,
+  "ordinaryPushCommand": [
+    "git",
+    "push",
+    "origin",
+    "HEAD:refs/heads/feat/SLICE-V1-003-advertising-traffic-efficiency"
+  ],
+  "verificationState": "FINAL_FULL_BROWSER_AND_EXACT_LATEST_CI_PENDING",
+  "authority": "OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1",
+  "productionWriteEnabled": false,
+  "readbackNote": "git ls-remote immediately after successful push hit transient LibreSSL SSL_ERROR_SYSCALL; independent GitHub Git ref API and commit tree readback verified the exact published identity. No push retry or second PR creation was made.",
+  "files": [
+    {
+      "path": "pr.json",
+      "sha256": "b719901d1a84b67a41d47e8a0e15eed107402c04b58856e46b5a7f8c655cf5fc"
+    },
+    {
+      "path": "remote-commit.json",
+      "sha256": "340e43255552bdfc81b42ee85f8de2c4b2cfbacdb0ea118f35d361e066d76832"
+    }
+  ]
+}

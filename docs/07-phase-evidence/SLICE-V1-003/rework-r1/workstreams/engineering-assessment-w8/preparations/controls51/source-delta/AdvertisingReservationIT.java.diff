@@ -1,0 +1,93 @@
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java
+index 3c05580..54aa46f 100644
+--- a/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java
+@@ -444,7 +444,7 @@ class AdvertisingReservationIT {
+ 
+     /** A prior completed write/readback is historical input, never a live Provider call. */
+     private void fictionalReadback(UUID command,int bid) {
+-        UUID attempt=UUID.randomUUID(),raw=UUID.randomUUID(),content=UUID.randomUUID();
++        UUID attempt=UUID.randomUUID(),raw=UUID.randomUUID(),proposedContent=UUID.randomUUID();
+         String bytes="{\"bid\":"+bid+",\"currency\":\"RUB\",\"unit\":\"CURRENCY_MAJOR\"}";
+         seed.sql("""
+             INSERT INTO ops.ad_bid_command_attempt(id,command_id,attempt_no,purpose,fence_token,lease_owner,started_at,completed_at,
+@@ -452,10 +452,15 @@ class AdvertisingReservationIT {
+             SELECT :id,:command,coalesce(max(attempt_no),0)+1,'READBACK',1,'fictional-compensation',clock_timestamp(),clock_timestamp(),
+               'ACCEPTED','fictional-compensation',repeat('a',64),'{}' FROM ops.ad_bid_command_attempt WHERE command_id=:command
+             """).param("id",attempt).param("command",command).update();
+-        seed.sql("INSERT INTO raw.raw_content(id,hash_algorithm,hash_value,byte_length,object_ref) VALUES(:id,'SHA256',:hash,:length,:ref)")
+-                .param("id",content).param("hash",com.mimococo.marketops.shared.Digest.ofText(bytes))
++        String contentHash=com.mimococo.marketops.shared.Digest.ofText(bytes);
++        seed.sql("INSERT INTO raw.raw_content(id,hash_algorithm,hash_value,byte_length,object_ref) VALUES(:id,'SHA256',:hash,:length,:ref) ON CONFLICT(hash_algorithm,hash_value) DO NOTHING")
++                .param("id",proposedContent).param("hash",contentHash)
+                 .param("length",bytes.getBytes(java.nio.charset.StandardCharsets.UTF_8).length)
+-                .param("ref","object-ref://fictional/"+content).update();
++                .param("ref","object-ref://fictional/"+proposedContent).update();
++        // Equal immutable response bytes share one Raw content identity; observations remain distinct.
++        UUID content=seed.sql("SELECT id FROM raw.raw_content WHERE hash_algorithm='SHA256' AND hash_value=:hash AND byte_length=:length")
++                .param("hash",contentHash).param("length",bytes.getBytes(java.nio.charset.StandardCharsets.UTF_8).length)
++                .query(UUID.class).single();
+         seed.sql("""
+             INSERT INTO raw.ad_bid_response_observation(id,command_id,attempt_id,raw_content_id,request_digest,http_status,
+               response_headers,evidence_class,response_complete,observed_bid,observed_currency,observed_unit,observed_at,correlation_id)
+@@ -555,4 +560,60 @@ class AdvertisingReservationIT {
+                 .query((row,index)->(String[])row.getArray(1).getArray()).single())
+                 .contains("EXACT_COMPENSATION_APPROVAL_ABSENT_OR_STALE");
+     }
++
++    @org.junit.jupiter.params.ParameterizedTest
++    @org.junit.jupiter.params.provider.ValueSource(booleans={false,true})
++    void missingExactCompensationScopeRefusesAnAlreadyLeasedRestoreWithoutRewritingApproval(boolean removeObject) throws Exception {
++        UUID command=command();fictionalReadback(command,20);
++        seed.sql("UPDATE ops.ad_bid_command SET state='READBACK_MATCHED',terminal_at=clock_timestamp() WHERE id=:id")
++                .param("id",command).update();
++        stop("executorUser","ENTITY","EMERGENCY_ENTITY_HOLD","BUSINESS_HARM");
++        Bundle compensation=draftBundle(true);
++        controlBundle(compensation,"verifierUser","BUNDLE_ENDORSE","endorse_ad_bundle");
++        controlBundle(compensation,"ownerUser","BUNDLE_APPROVE","activate_ad_bundle");
++        fictionalDispatchControls(command);
++        UUID preview=compensationPreview(command,compensation);
++        compensationDecision(command,preview,"verifierUser",false);
++        compensationDecision(command,preview,"ownerUser",true);
++        assertThat(appRead.sql("SELECT ops.evaluate_ad_bid_compensation_gate(:id)").param("id",command)
++                .query((row,index)->(String[])row.getArray(1).getArray()).single()).isEmpty();
++        String candidateBefore=appRead.sql("SELECT to_jsonb(candidate)::text FROM ops.ad_bid_candidate candidate WHERE id=:id")
++                .param("id",graph.id("candidate")).query(String.class).single();
++        String approvalBefore=appRead.sql("SELECT to_jsonb(approval)::text FROM ops.ad_compensation_authorization approval WHERE id=:id")
++                .param("id",preview).query(String.class).single();
++        long fence=appRead.sql("SELECT ops.lease_ad_bid_compensation(:id,'fictional-scope-refusal',60)")
++                .param("id",command).query(Long.class).single();
++        // Fault only the published synthetic Gate; the approved command, target and proof stay frozen.
++        if(removeObject) {
++            UUID adjacentObject=UUID.randomUUID();
++            seed.sql("""
++                UPDATE ops.ad_gate_authority SET native_object_ids=ARRAY[:other]::uuid[],
++                  demonstrated_object_ids=ARRAY[:other]::uuid[],
++                  exact_object_values=jsonb_build_object(:other::text,exact_object_values->(:object::text))
++                WHERE id=:gate
++                """).param("other",adjacentObject).param("object",graph.id("object")).param("gate",compensation.gate()).update();
++        } else {
++            seed.sql("UPDATE ops.ad_gate_authority SET status='REVOKED' WHERE id=:id").param("id",compensation.gate()).update();
++        }
++        assertThat(appRead.sql("SELECT ops.evaluate_ad_bid_compensation_gate(:id)").param("id",command)
++                .query((row,index)->(String[])row.getArray(1).getArray()).single())
++                .contains("COMPENSATION_GATE_SCOPE_ABSENT");
++        try(var app=transaction();var open=app.prepareStatement(
++                "SELECT ops.open_ad_bid_command_attempt(gen_random_uuid(),?,'RESTORE',?,'fictional-scope-refusal',repeat('a',64),'fictional-scope-refusal')")) {
++            open.setObject(1,command);open.setLong(2,fence);
++            assertThatThrownBy(open::execute).isInstanceOfSatisfying(SQLException.class,failure->{
++                assertThat(failure.getSQLState()).isEqualTo("MO092");
++                assertThat(failure.getMessage()).contains("COMPENSATION_GATE_SCOPE_ABSENT");
++            });
++            app.rollback();
++        }
++        assertThat(appRead.sql("SELECT count(*) FROM ops.ad_bid_command_attempt WHERE command_id=:id AND purpose='RESTORE'")
++                .param("id",command).query(Integer.class).single()).isZero();
++        assertThat(appRead.sql("SELECT to_jsonb(candidate)::text FROM ops.ad_bid_candidate candidate WHERE id=:id")
++                .param("id",graph.id("candidate")).query(String.class).single()).isEqualTo(candidateBefore);
++        assertThat(appRead.sql("SELECT to_jsonb(approval)::text FROM ops.ad_compensation_authorization approval WHERE id=:id")
++                .param("id",preview).query(String.class).single()).isEqualTo(approvalBefore);
++        assertThat(appRead.sql("SELECT production_write_enabled FROM ops.ad_gate_authority WHERE id=:id")
++                .param("id",compensation.gate()).query(Boolean.class).single()).isFalse();
++    }
+ }

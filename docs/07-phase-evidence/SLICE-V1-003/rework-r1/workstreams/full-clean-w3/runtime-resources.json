@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0",
+  "recordedAt": "2026-09-05T04:17:12.015694+00:00",
+  "host": {
+    "os": "Darwin",
+    "architecture": "arm64",
+    "logicalProcessors": 8,
+    "physicalMemoryBytes": 17179869184,
+    "processAffinityProcessors": null
+  },
+  "docker": {
+    "logicalProcessors": 4,
+    "memoryBytes": 6210576384,
+    "serverVersion": "29.7.2"
+  },
+  "github": {
+    "runId": null,
+    "runAttempt": null,
+    "job": null,
+    "testedCheckout": null
+  },
+  "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+}

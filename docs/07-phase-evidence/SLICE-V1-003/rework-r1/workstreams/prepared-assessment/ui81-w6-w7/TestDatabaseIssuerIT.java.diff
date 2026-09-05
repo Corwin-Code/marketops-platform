@@ -1,0 +1,75 @@
+diff --git a/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java b/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java
+new file mode 100644
+index 0000000..e3df0d2
+--- /dev/null
++++ b/backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java
+@@ -0,0 +1,69 @@
++package com.mimococo.marketops;
++
++import static org.assertj.core.api.Assertions.assertThat;
++import static org.assertj.core.api.Assertions.assertThatThrownBy;
++
++import java.sql.DriverManager;
++import java.sql.SQLException;
++import java.util.UUID;
++import org.junit.jupiter.api.Test;
++
++/** Actual isolated PostgreSQL controls for the shared test-only issuer setup. */
++class TestDatabaseIssuerIT {
++
++    private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE =
++            TestDatabase.isolatedContainer();
++
++    @Test
++    void quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents() throws Exception {
++        String syntheticPassword = UUID.randomUUID()
++                + "'; ALTER ROLE marketops_identity_issuer SUPERUSER; --";
++        try (var administrator = DATABASE.createConnection("")) {
++            TestDatabase.enableSyntheticIdentityIssuer(administrator, syntheticPassword);
++        }
++
++        try (var issuer = DriverManager.getConnection(DATABASE.getJdbcUrl(),
++                "marketops_identity_issuer", syntheticPassword);
++                var statement = issuer.createStatement();
++                var rows = statement.executeQuery("""
++                        SELECT current_user, rolsuper, rolcreaterole, rolcreatedb,
++                               rolreplication, rolbypassrls, rolinherit
++                        FROM pg_roles WHERE rolname = current_user
++                        """)) {
++            assertThat(rows.next()).isTrue();
++            assertThat(rows.getString(1)).isEqualTo("marketops_identity_issuer");
++            for (int column = 2; column <= 7; column++) {
++                assertThat(rows.getBoolean(column)).isFalse();
++            }
++            assertThat(rows.next()).isFalse();
++        }
++    }
++
++    @Test
++    void applicationRoleCannotChangeTheIssuerPasswordOrItsPrivileges() throws Exception {
++        String originalPassword = UUID.randomUUID().toString();
++        try (var administrator = DATABASE.createConnection("")) {
++            TestDatabase.enableSyntheticIdentityIssuer(administrator, originalPassword);
++        }
++        try (var application = DriverManager.getConnection(DATABASE.getJdbcUrl(),
++                TestDatabase.applicationRole(), TestDatabase.applicationPassword())) {
++            assertThatThrownBy(() -> TestDatabase.enableSyntheticIdentityIssuer(
++                    application, UUID.randomUUID().toString()))
++                    .isInstanceOfSatisfying(SQLException.class,
++                            failure -> assertThat(failure.getSQLState()).isEqualTo("42501"));
++        }
++
++        // A refused change neither rotates the legitimate value nor grants privileges.
++        try (var issuer = DriverManager.getConnection(DATABASE.getJdbcUrl(),
++                "marketops_identity_issuer", originalPassword);
++                var statement = issuer.createStatement();
++                var rows = statement.executeQuery("""
++                        SELECT rolsuper OR rolcreaterole OR rolcreatedb OR rolreplication
++                               OR rolbypassrls OR rolinherit
++                        FROM pg_roles WHERE rolname = current_user
++                        """)) {
++            assertThat(rows.next()).isTrue();
++            assertThat(rows.getBoolean(1)).isFalse();
++        }
++    }
++}

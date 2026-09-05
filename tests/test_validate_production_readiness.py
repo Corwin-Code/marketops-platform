@@ -6,6 +6,7 @@ from pathlib import Path
 
 from scripts.validate_production_readiness import (
     APPROVED_MIGRATIONS,
+    TOLERANT_SCHEMA_CREATION,
     approved_index_replacement,
     DEFERRED_ACCEPTANCE_IDS,
     DEFERRED_EVIDENCE_REGISTER,
@@ -28,6 +29,7 @@ from scripts.validate_production_readiness import (
     BASE_HIKARI_AUTOCOMMIT_TOKENS,
     COMPLETED_WORK_PACKAGE_TOKENS,
     COMPLETION_STATE_TOKENS,
+    completion_state_violations,
     ECS_CORRELATION_CUSTOMIZER_TOKENS,
     LOCAL_LOGGING_TOKENS,
     PATH_RESTRICTION,
@@ -349,6 +351,32 @@ class RepositoryContractPatternTests(unittest.TestCase):
                 )
                 self.assertTrue(violations)
 
+    def test_slice3_engineering_result_keeps_controller_and_production_boundaries(self) -> None:
+        current = (ROOT / "docs/00-governance/CURRENT_STATE.md").read_text()
+        self.assertEqual([], completion_state_violations(current))
+        current_line = lambda field: next(line for line in current.splitlines() if line.startswith(field + ": "))
+        for before, after in (
+            (current_line("slice_v1_003_rework_status"),
+             "slice_v1_003_rework_status: FORMALLY_CLOSED"),
+            (current_line("slice_v1_003_controller_verdict"),
+             "slice_v1_003_controller_verdict: APPROVE_FOR_HUMAN_MERGE"),
+            ("slice_v1_003_historical_controller_verdict: NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED",
+             "slice_v1_003_historical_controller_verdict: PASS"),
+            ("slice_v1_003_historical_controller_reviewed_head: 3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+             "slice_v1_003_historical_controller_reviewed_head: 0000000000000000000000000000000000000000"),
+            ("slice_v1_003_historical_controller_report_sha256: 6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127",
+             "slice_v1_003_historical_controller_report_sha256: altered"),
+            (current_line("next_authorized_actor"), "next_authorized_actor: IMPLEMENTER_SELF_APPROVAL"),
+            ("production_write_enabled: false", "production_write_enabled: true"),
+            ("gate_ev: NOT_AUTHORIZED", "gate_ev: AUTHORIZED"),
+        ):
+            with self.subTest(field=before.split(":", 1)[0]):
+                self.assertIn(before, current)
+                mutated = current.replace(before, after, 1)
+                self.assertNotEqual(current, mutated)
+                violations = completion_state_violations(mutated)
+                self.assertTrue(any(before.split(":", 1)[0] in item for item in violations))
+
     def test_enabled_production_write_is_rejected(self) -> None:
         source = "\n".join(COMPLETION_STATE_TOKENS)
         mutated = source.replace(
@@ -565,9 +593,65 @@ class MigrationContractTests(unittest.TestCase):
                 "V0033__track_case_improvement_observation.sql",
                 "V0034__close_availability_deep_review_findings.sql",
                 "V0035__close_availability_targeted_findings.sql",
+                "V0036__create_advertising_identity_and_official_facts.sql",
+                "V0037__create_advertising_conversion_freshness_and_qualification.sql",
+                "V0038__create_advertising_case_projection_and_orchestration.sql",
+                "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
+                "V0040__widen_write_registry_for_ad_bid_capability.sql",
+                "V0041__create_advertising_containment_and_decision_bundle.sql",
+                "V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+                "V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
+                "V0044__supersede_advertising_cases_whose_cause_no_longer_holds.sql",
+                "V0045__create_ad_bid_command_from_approval.sql",
+                "V0046__capture_ad_bid_authority_for_guardrail_evaluation.sql",
+                "V0047__refuse_a_zero_target_bid_in_the_parameter_contract.sql",
+                "V0048__serialize_advertising_reservations_against_overlap.sql",
+                "V0049__create_advertising_outcome_plan_and_lineage.sql",
+                "V0050__cause_specific_outcomes_and_same_lineage_reopen.sql",
+                "V0051__bind_each_decision_to_its_own_authority.sql",
+                "V0052__a_guardrail_verdict_names_the_policy_that_authorised_it.sql",
+                "V0053__the_write_gate_must_refuse_rather_than_raise.sql",
+                "V0054__index_the_demand_carry_forward_lookup.sql",
+                "V0055__record_what_happened_to_a_task_and_who_did_it.sql",
+                "V0056__publish_the_daily_brief_and_weekly_review_as_projections.sql",
+                "V0057__bind_advertising_responsibility_and_human_decisions.sql",
+                "V0058__seal_advertising_authority_and_control_execution.sql",
+                "V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+                "V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+                "V0061__bind_advertising_exception_risk_and_preview_evidence.sql",
+                "V0062__share_frozen_outcome_authority_with_governed_manual.sql",
+                "V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+                "V0064__reconcile_expired_advertising_authority.sql",
+                "V0065__route_settled_advertising_contradictions_to_finance_review.sql",
+                "V0066__qualify_economic_cause_bound_protection.sql",
+                "V0067__validate_frozen_outcome_input_profiles.sql",
+                "V0068__preserve_critical_sales_guard_case_evidence.sql",
+                "V0069__reopen_invalidated_protection_outcomes.sql",
+                "V0070__record_canonical_metric_reevaluation_proofs.sql",
             ),
             APPROVED_MIGRATIONS,
         )
+
+    def test_tolerant_schema_creation_is_ddl_and_not_a_plpgsql_guard(self) -> None:
+        # The rule refuses schema creation that tolerates an existing object.
+        # PL/pgSQL's `IF NOT EXISTS (SELECT ...)` is a boolean expression and
+        # creates nothing, so reading the bare string as tolerant DDL refused
+        # every migration that used a conditional at all.
+        for tolerant in (
+            "CREATE TABLE IF NOT EXISTS core.store (id uuid)",
+            "CREATE INDEX IF NOT EXISTS store_ix ON core.store (id)",
+            "CREATE SCHEMA IF NOT EXISTS ops",
+            "ALTER TABLE core.store ADD COLUMN IF NOT EXISTS code text",
+        ):
+            with self.subTest(statement=tolerant):
+                self.assertTrue(TOLERANT_SCHEMA_CREATION.search(tolerant.upper()))
+        for guard in (
+            "IF NOT EXISTS (SELECT 1 FROM core.store) THEN",
+            "    IF NOT EXISTS (",
+            "IF NOT EXISTS(SELECT 1) THEN",
+        ):
+            with self.subTest(statement=guard):
+                self.assertIsNone(TOLERANT_SCHEMA_CREATION.search(guard.upper()))
 
     def test_the_foundation_pin_is_a_sha256_digest(self) -> None:
         self.assertRegex(FOUNDATION_MIGRATION_SHA256, r"^[0-9a-f]{64}$")
@@ -603,6 +687,19 @@ class MigrationContractTests(unittest.TestCase):
         self.assertTrue(approved_index_replacement(path, text, line))
         self.assertFalse(approved_index_replacement(path.with_name("V9999__unsafe.sql"), text, line))
         self.assertFalse(approved_index_replacement(path, text.replace("product_variant_ref_id", "omitted"), line))
+
+
+    def test_advertising_identity_index_replacement_preserves_all_three_authorities(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        path = root / "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql"
+        text = path.read_text(encoding="utf-8")
+        line = "DROP INDEX ops.recommendation_live_uq;"
+        self.assertTrue(approved_index_replacement(path, text, line))
+        self.assertFalse(approved_index_replacement(path.with_name("V9999__unsafe.sql"), text, line))
+        self.assertFalse(approved_index_replacement(path, text, "DROP INDEX ops.ad_case_responsibility;"))
+        for removed in ("'caseId'", "'candidateId'", "'APPROVED',", "'ADVERTISING_REVIEW','AD_BID_CHANGE'"):
+            with self.subTest(removed=removed):
+                self.assertFalse(approved_index_replacement(path, text.replace(removed, ""), line))
 
 
 class CommentExtractionTests(unittest.TestCase):

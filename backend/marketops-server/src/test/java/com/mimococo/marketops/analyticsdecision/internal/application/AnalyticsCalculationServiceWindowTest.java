@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.mimococo.marketops.analyticsdecision.MetricWindow;
 import com.mimococo.marketops.analyticsdecision.internal.infrastructure.jdbc.DiagnosisRepository;
@@ -22,8 +24,52 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class AnalyticsCalculationServiceWindowTest {
+
+    @Test void historicalWindowKeepsItsBusinessIntervalAndUsesCurrentEvaluationTime() {
+        Instant now=Instant.parse("2026-09-06T05:37:42Z");
+        FactWindow historical=FactWindow.endingAt(Instant.parse("2026-07-01T05:00:00Z"),Duration.ofDays(30));
+        UUID store=UUID.randomUUID(),organization=UUID.randomUUID(),run=UUID.randomUUID();
+        MetricEngine engine=mock(MetricEngine.class);
+        DiagnosisEngine diagnosis=mock(DiagnosisEngine.class);
+        MetricRepository metrics=mock(MetricRepository.class);
+        DiagnosisRepository diagnoses=mock(DiagnosisRepository.class);
+        OperatingFactQuery facts=mock(OperatingFactQuery.class);
+        OrganizationDirectory directory=mock(OrganizationDirectory.class);
+        IdGenerator ids=mock(IdGenerator.class);
+        when(directory.store(store)).thenReturn(java.util.Optional.of(new StoreRef(store,organization,UUID.randomUUID(),"historical","ACTIVE")));
+        when(ids.newId()).thenReturn(run);
+        when(facts.listingVariantsWithActivity(store,historical,2_000)).thenReturn(List.of());
+        var service=new AnalyticsCalculationService(engine,diagnosis,metrics,diagnoses,facts,directory,ids,Clock.fixed(now,ZoneOffset.UTC));
+        service.runForWindow(store,MetricWindow.D30,historical,"BACKFILL",null);
+        verify(facts).listingVariantsWithActivity(store,historical,2_000);
+        verify(metrics).openRun(eq(run),eq(organization),eq("BACKFILL"),eq("STORE"),eq(store),eq("D30"),
+                eq(historical.periodStart()),eq(historical.periodEnd()),any(String.class),eq(null),eq(now),any(String.class));
+    }
+
+    @ParameterizedTest @ValueSource(strings={"FUTURE","WRONG_DURATION","UNALIGNED"})
+    void historicalWindowRejectsInvalidBusinessBoundsBeforeWriting(String mutation) {
+        Instant now=Instant.parse("2026-09-06T05:37:42Z");
+        FactWindow window=switch(mutation) {
+            case "FUTURE" -> FactWindow.endingAt(Instant.parse("2026-09-06T06:00:00Z"),Duration.ofDays(30));
+            case "WRONG_DURATION" -> FactWindow.endingAt(Instant.parse("2026-09-06T05:00:00Z"),Duration.ofDays(7));
+            default -> FactWindow.endingAt(Instant.parse("2026-09-06T05:01:00Z"),Duration.ofDays(30));
+        };
+        MetricEngine engine=mock(MetricEngine.class);
+        DiagnosisEngine diagnosis=mock(DiagnosisEngine.class);
+        MetricRepository metrics=mock(MetricRepository.class);
+        DiagnosisRepository diagnoses=mock(DiagnosisRepository.class);
+        OperatingFactQuery facts=mock(OperatingFactQuery.class);
+        OrganizationDirectory directory=mock(OrganizationDirectory.class);
+        IdGenerator ids=mock(IdGenerator.class);
+        var service=new AnalyticsCalculationService(engine,diagnosis,metrics,diagnoses,facts,directory,ids,Clock.fixed(now,ZoneOffset.UTC));
+        assertThatThrownBy(()->service.runForWindow(UUID.randomUUID(),MetricWindow.D30,window,"BACKFILL",null))
+                .isInstanceOf(com.mimococo.marketops.shared.OperationRejectedException.class);
+        verifyNoInteractions(metrics,diagnoses,facts,engine,directory,ids);
+    }
 
     @Test
     void nonHourClockProducesOneExactQueriedAndStoredWindow() {

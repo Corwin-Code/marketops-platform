@@ -1,0 +1,710 @@
+[
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.ApplicationConfigurationTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.ApplicationConfigurationTest.xml",
+    "sha256": "d70180a76a9c780de1a43bc7d68594ad3b61fd870f851b075dc7d9e8ea52670b",
+    "bytes": 40419
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.ApplicationEnvironmentFailClosedTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.ApplicationEnvironmentFailClosedTest.xml",
+    "sha256": "d9487ea1bc8c32a01ba18af996718103bbcf8c64340ba0351a78ab80e2f0a02d",
+    "bytes": 38724
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.LoggingContractTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.LoggingContractTest.xml",
+    "sha256": "b0d1703ba6ced21ad304278b07c35e13e7e7bf9551403a8832472711a974967a",
+    "bytes": 38441
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.adminobservability.MetaStatusControllerTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.adminobservability.MetaStatusControllerTest.xml",
+    "sha256": "c6016f9d6475e4d9614d43abfa1313e23185da0eddc6125f36f537152bb18ec5",
+    "bytes": 44618
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.adminobservability.internal.MetaStatusAssemblerTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.adminobservability.internal.MetaStatusAssemblerTest.xml",
+    "sha256": "9e606e90148c86766984d842e9da5473c5f5d6798fa41bba2f468bc95f243f68",
+    "bytes": 42688
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdviceTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.adminobservability.internal.web.AdminMetadataProblemAdviceTest.xml",
+    "sha256": "5c1b6dc5aa7174c0c05c485fc686ea58a8989bdd3a9d3b09fb1b4848ffbc7278",
+    "bytes": 42369
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.AdvertisingNonGoalsTest.xml",
+    "sha256": "78f13cff85fba802bd6c7f488593f19cb6551069dd3d3636623c0e36ae4093e5",
+    "bytes": 39138
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingAttributedEconomicsTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingAttributedEconomicsTest.xml",
+    "sha256": "8b637913c4221b7b236c4a6b7bec56932f0fcc76005b2c4231aa82094d872907",
+    "bytes": 39629
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseCalculationServiceTest.xml",
+    "sha256": "48a15d4cfb244e5660f263006d38a01624e52cf5265141267654a047c0bf71f0",
+    "bytes": 42501
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseMeasureCalculationTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingCaseMeasureCalculationTest.xml",
+    "sha256": "5503a8e508d001adf3d7add41da4b22ac6dcfbf5ad6aca7dd9817ae0e156c3af",
+    "bytes": 42705
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDecisionServiceTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDecisionServiceTest.xml",
+    "sha256": "aa9d4df657d42dfe6380de110e3f7dac6bab180ea83f49abb6a1a1ba7909877e",
+    "bytes": 40771
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest.xml",
+    "sha256": "1617038de85819079f94677fce62881eb8a478c3c886bfe5dd72a481bda64a06",
+    "bytes": 41640
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProjectionWriterTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProjectionWriterTest.xml",
+    "sha256": "f0d1e57382c674303c3a7d9d0453b40462f596434a2ba34ede4e361ce2c184c7",
+    "bytes": 41135
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProposalServiceTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingProposalServiceTest.xml",
+    "sha256": "176dee0b5db26237b49d78e94aa4785aca0ff78b72ff872bc9c046c254cd8e04",
+    "bytes": 43953
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest.xml",
+    "sha256": "9e0343b4211743f210b2cd4966aed9b853db7861ecdc073fa20642b2107be5a3",
+    "bytes": 39275
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingQualificationBoundaryTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingQualificationBoundaryTest.xml",
+    "sha256": "a151d217db0f760327d8600545bbfee15447769a1bec44f3ece2f37d4ba08d87",
+    "bytes": 38757
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdCaseIdentityAndPolicySetTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdCaseIdentityAndPolicySetTest.xml",
+    "sha256": "61f569d1a4a24d5ba36535fda0f7dc834e0332e5941fe36689413fc8aa3612a3",
+    "bytes": 39979
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdLaneResolverTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdLaneResolverTest.xml",
+    "sha256": "498cc06e5c65c228fd14c1a98217c8d4214a889e9a4d303c1561a25e0c2ee331",
+    "bytes": 39681
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdLinkedConversionTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdLinkedConversionTest.xml",
+    "sha256": "40be1c534ab3ccbb6d5dfcc5d6a31a41c821652d2aa1b3fdfe0664b6089b9eb6",
+    "bytes": 41820
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdMeasureAndAffectedSetTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdMeasureAndAffectedSetTest.xml",
+    "sha256": "5fd464c70e0001bc40a77e414fecc758ed0e0d2619c6b75b63192f063c44622e",
+    "bytes": 41848
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityLexicographicTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityLexicographicTest.xml",
+    "sha256": "b9fab508fe9a13ded0924620f0ac1f8cef4e527cc8709b4694993c9f2d9eb430",
+    "bytes": 39344
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityPolicyTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdPriorityPolicyTest.xml",
+    "sha256": "71e97df7a5d596058784db2c6c8ab54e67f84974ec87136a7cafb0ea35d13307",
+    "bytes": 40092
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingContributionProfitTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingContributionProfitTest.xml",
+    "sha256": "2707cc8a909cb378e20ec0daef14ff2d369e7019e6f6e4e8babf9bdeea40ce97",
+    "bytes": 40465
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingDomainPropertyTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.AdvertisingDomainPropertyTest.xml",
+    "sha256": "e7ebd8df8c5108a09ade5618b8b10b23fb4889ace45153fb8a9bda58b54440e4",
+    "bytes": 40796
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateSetTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateSetTest.xml",
+    "sha256": "fa2ac67f7bf78cf9b0b1400893d0643fa83a239a6bf972ea4316927b044a301d",
+    "bytes": 39005
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.BidCandidateTest.xml",
+    "sha256": "e51b4cb73863c4c0057236adcb14f1ebd7552543aa3056a09000bf653c8f17d1",
+    "bytes": 41087
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.BidDirectionForCauseTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.BidDirectionForCauseTest.xml",
+    "sha256": "6982a4cc2c5bdddf53727084c7feb3df4bbe4286a1af8a281b117c446de2c3fe",
+    "bytes": 38908
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.DualAxisVerdictTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.DualAxisVerdictTest.xml",
+    "sha256": "b881269c462ebb390f326c6a63ce5614952aa6932bb832c6b637be30eb7e554e",
+    "bytes": 39506
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.MaxCpcTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.MaxCpcTest.xml",
+    "sha256": "de297ada64eb3ac2043ffd720fdcc7dd254db1fb455bb56feae00a75cbef166e",
+    "bytes": 39570
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.OutcomeEvaluationTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.OutcomeEvaluationTest.xml",
+    "sha256": "8939ea1641f947e1f641e16adaeed947cac7d9f02e0c9a04c115965bed574d2b",
+    "bytes": 39933
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.SalesPreservationTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.domain.SalesPreservationTest.xml",
+    "sha256": "b26911d4a115c74264d589785f4b352e235b6dd59006c213b000ab89cf0e7393",
+    "bytes": 39053
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.aicopilot.adapter.http.HttpModelGatewayTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.aicopilot.adapter.http.HttpModelGatewayTest.xml",
+    "sha256": "d866c2cd6ffe7d13005a0aa1256214726e5540bd4384a1f317e641f125077b85",
+    "bytes": 43385
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.aicopilot.internal.application.OutputValidatorTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.aicopilot.internal.application.OutputValidatorTest.xml",
+    "sha256": "35051ba39a6c24dec5ca364abdfd49e19936a0c4b82e7fe60a888d1081f718dc",
+    "bytes": 44725
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.analyticsdecision.PriceEconomicsCalculatorTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.analyticsdecision.PriceEconomicsCalculatorTest.xml",
+    "sha256": "dcefaec95fd1e37e24bea84c8273f256ccbfd6ffba0bc0877107a8ca3ed387f4",
+    "bytes": 40285
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationServiceWindowTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationServiceWindowTest.xml",
+    "sha256": "a0105c57b307c8d12901ad0387e2c6bc715a74227f96fc1477c603c7dbe3703f",
+    "bytes": 38697
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.analyticsdecision.internal.application.DiagnosisEngineTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.analyticsdecision.internal.application.DiagnosisEngineTest.xml",
+    "sha256": "6db1d24c1b9dffec0ea01afe559c02cb6d42252405ba7fa828ec928c2e5bb19c",
+    "bytes": 40526
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.analyticsdecision.internal.application.MetricEngineTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.analyticsdecision.internal.application.MetricEngineTest.xml",
+    "sha256": "99b533f2e2938c5e01e7cf24d069772d405e308a65264f63eaa1ea4eaddebe92",
+    "bytes": 38943
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.analyticsdecision.internal.domain.ComputedMetricIdentityTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.analyticsdecision.internal.domain.ComputedMetricIdentityTest.xml",
+    "sha256": "d472c7eee4a298022635a250233bc5119b59c8550fa5b979bf4c9c4b4cf80b09",
+    "bytes": 38285
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.architecture.IngestionAuthorityArchitectureTest.xml",
+    "sha256": "701a19f1020fb696d5aa2f70315fdff66c27e3bb83b691da202d324b12880abc",
+    "bytes": 42242
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.architecture.ModuleBoundaryArchitectureTest.xml",
+    "sha256": "4963209a4aa5a4c1caa88e7ca8ae298254f9e658a8705050c163f52d14f8754d",
+    "bytes": 41862
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.architecture.ModulithArchitectureTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.architecture.ModulithArchitectureTest.xml",
+    "sha256": "3ef52e39bde3e33881660d08388bfdc948836d3eea88a2dd5400cb30d60fa113",
+    "bytes": 38340
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.architecture.RuleSensitivityArchitectureTest.xml",
+    "sha256": "cfad964c010e489694251e4e2dee7c8f02c7247970452c30e51719660b05a80b",
+    "bytes": 40387
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.architecture.SchemaVocabularyAgreementTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.architecture.SchemaVocabularyAgreementTest.xml",
+    "sha256": "f4c7b0d76154e5caac6c01f5cc530d90847c19d06007e1b95e8f9e94b4828f1a",
+    "bytes": 38752
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest.xml",
+    "sha256": "a6aec5cff8ddcdbe5ac1ad8fb6af909d73efbf5092346ef63a7ec58be36cc9c2",
+    "bytes": 38948
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.AvailabilityNonGoalsTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.AvailabilityNonGoalsTest.xml",
+    "sha256": "e620d1b51f35a9d4a5d82cbf5ebc7d1575dbe128c7e871a76177e3b87636a359",
+    "bytes": 38645
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityCoverageTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityCoverageTest.xml",
+    "sha256": "bbf0e60c6ed2abb9aa551208fdde69bb628db3e4260ef3392b80f946bd9dc4eb",
+    "bytes": 39605
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorkerTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityReconciliationWorkerTest.xml",
+    "sha256": "abcaed790d793979cfd320e32c9fa983aa5cfc2c1d0bdb8dd1a01f88d02f4d3d",
+    "bytes": 48235
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityTargetedWorkerCapacityTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.application.AvailabilityTargetedWorkerCapacityTest.xml",
+    "sha256": "b34ae0723226c52c19d80299ef019530021721fa4220e06f41bf6c21998f7d61",
+    "bytes": 38294
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.application.ProfitLaneResolverTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.application.ProfitLaneResolverTest.xml",
+    "sha256": "02352117b71ceb38f7095c3f0218459d1f9182a7c5a5029df0908fd3bf40ee1c",
+    "bytes": 38908
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.application.ReturnQualityAssessmentTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.application.ReturnQualityAssessmentTest.xml",
+    "sha256": "65afd0e0566271249dfa25e5136be0b58e91f2fe239f146a5f83b75e21b833a7",
+    "bytes": 39432
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilityRunbookConformanceTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilityRunbookConformanceTest.xml",
+    "sha256": "c361d6a9df9f00d9a626c212bab0112459fc40d5be505474a153b3d89f033a31",
+    "bytes": 38887
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilitySloTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.AvailabilitySloTest.xml",
+    "sha256": "2cf324464c9761439c21118738a6968f9d4d47fba34ba538731682c135246bd1",
+    "bytes": 38538
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.ChannelRiskCalculatorTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.ChannelRiskCalculatorTest.xml",
+    "sha256": "f0640f5dd5154b05ba8c3c20fac175827a3e21fc9c7644f649d5593c24211957",
+    "bytes": 39321
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.CompanyRiskCalculatorTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.CompanyRiskCalculatorTest.xml",
+    "sha256": "c9b2dc532ea8791c8115f8ebe14fc967f475738d49bc8938960cef0384252087",
+    "bytes": 41316
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicyEngineTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.DemandPolicyEngineTest.xml",
+    "sha256": "7ac226a362e2699793ab46c6135b92af0801d7cb45630a66f15b585abcee63f9",
+    "bytes": 39882
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.NoFalseSafetyAdversarialTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.NoFalseSafetyAdversarialTest.xml",
+    "sha256": "4765d2c9f23ab733a336c0144e44d359665ab50814d6fe2caed1867bb715b19d",
+    "bytes": 40545
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.OutcomeConditionTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.OutcomeConditionTest.xml",
+    "sha256": "9dfed41f5555b474816e44c482737ac55948fb3d57a6fa77bbcbb369ff14f418",
+    "bytes": 38853
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.PriorityPolicyTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.PriorityPolicyTest.xml",
+    "sha256": "c5312462104dcd147e1cf64dbf0a733308748861cfc3ed6de4f3313348896326",
+    "bytes": 38840
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.WorkActivationPolicyTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.availabilityrisk.internal.domain.WorkActivationPolicyTest.xml",
+    "sha256": "4c51031cd44117dc44107fe638fe510a5ba27fdf86df56b4c886db2c7ee024cc",
+    "bytes": 39350
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.identityaccess.internal.application.AccessApplicationServiceTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.identityaccess.internal.application.AccessApplicationServiceTest.xml",
+    "sha256": "3c31d80307602c22773872e1ea2c097270b1a329b3fae4f1129f85c77e5bc8b1",
+    "bytes": 39482
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.identityaccess.internal.application.TokenIdentityResolverTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.identityaccess.internal.application.TokenIdentityResolverTest.xml",
+    "sha256": "d735d130ecc398584c5c1b81e198fcbdec966bc60d46e83ddcd0fc7ba286ed0a",
+    "bytes": 46617
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.identityaccess.internal.config.IdentityConfigurationContractTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.identityaccess.internal.config.IdentityConfigurationContractTest.xml",
+    "sha256": "ea11c3bc1e1161d5b65fbf1dca42f7f64014e718613b1948792f0b1336cd673e",
+    "bytes": 38612
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.identityaccess.internal.domain.AccessLifecycleTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.identityaccess.internal.domain.AccessLifecycleTest.xml",
+    "sha256": "26f52fb9888c7d68421f684a683401eac25073ad5968f64d9f199eb40184ee3d",
+    "bytes": 38512
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.identityaccess.internal.infrastructure.jdbc.AccessRepositoryTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.identityaccess.internal.infrastructure.jdbc.AccessRepositoryTest.xml",
+    "sha256": "8c65a56eea5b4bf35843a4f58da971bfb33b55bb9874f7be3bf1570ae10478dc",
+    "bytes": 38283
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.identityaccess.internal.web.MarketOpsJwtAuthenticationConverterTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.identityaccess.internal.web.MarketOpsJwtAuthenticationConverterTest.xml",
+    "sha256": "17f6d664aa3da14890b8f7be30fa1f7e6dd409d9550ff0ba1d0dbc6392a5d7ad",
+    "bytes": 43303
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.PriceCommandStateTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.PriceCommandStateTest.xml",
+    "sha256": "cf804729d052d63aa3d47fef6d1de49cce89f77475e2a2228fb48e3a04ba7083",
+    "bytes": 40245
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteDispatchTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteDispatchTest.xml",
+    "sha256": "31f917e6baa591d61bf8e82ff9378144ed87001b6079f0a2564c1e66bc5ea108",
+    "bytes": 40580
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteRefusalTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.http.AdBidWriteRefusalTest.xml",
+    "sha256": "41ff0d4d62c059a6291738d15f2cac2a4e204b38d9f70ac8518b29fd7120526a",
+    "bytes": 39254
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAdaptersTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.http.PlatformHttpAdaptersTest.xml",
+    "sha256": "44c275b541eeb13ca532db813ea96d963f7548bd4c68877d1b7c8625fa85af2d",
+    "bytes": 55307
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteClassificationTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.http.PriceWriteClassificationTest.xml",
+    "sha256": "a0f33aa0c3a2f1d792d2f479c9c17079ac2f3a66eee30723daeac60d70b45481",
+    "bytes": 51792
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.http.RequestTemplateTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.http.RequestTemplateTest.xml",
+    "sha256": "3b8e6d0c32fd206522b24f26671afb9d6597fb89beac0a8e757f831b921d6860",
+    "bytes": 38835
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.FilesystemObjectStorageTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.FilesystemObjectStorageTest.xml",
+    "sha256": "f6db4e3c79ddb5468f366b77c1ce5ed4b2e593940765dcd635e78ed25def87e4",
+    "bytes": 38708
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorageTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorageTest.xml",
+    "sha256": "7b8848b6431ca9cb538e90f8c2c1cb428ea1f30fabe2e77cc3d5208b44a707aa",
+    "bytes": 48558
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionPageWorkerTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionPageWorkerTest.xml",
+    "sha256": "81634ddaf5acb3967bd7634730bf3b202eca6fac9356dadee4a7430dde0ff743",
+    "bytes": 45459
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionRunnerTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.AcquisitionRunnerTest.xml",
+    "sha256": "18ce8a36d4835b5536657153214d68ce15886b226d4583ee748294feae5cb25e",
+    "bytes": 41961
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.AdBidCommandWorkerTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.AdBidCommandWorkerTest.xml",
+    "sha256": "48c7533dbd19dadac13fcaf8b02240919fb2406e6868f9c684b6c5b466c38e9d",
+    "bytes": 41314
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryServiceTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.CapabilityDirectoryServiceTest.xml",
+    "sha256": "693cd9f5737aa7bc9a1ca0b204022733834b4e7ff3487ee40a318218b906eddc",
+    "bytes": 41609
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.CredentialServiceTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.CredentialServiceTest.xml",
+    "sha256": "e560cb49b3f3c52a6717f5bfcddda87da2ffaa409be6232bdc9aa0517d557c43",
+    "bytes": 39414
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.FeatureFlagServiceTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.FeatureFlagServiceTest.xml",
+    "sha256": "79fcfba5eb9d8dc094b39a9c1485de07965dde0db6617eb50b386d497ef9876a",
+    "bytes": 39208
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyLocatorTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.RawCustodyLocatorTest.xml",
+    "sha256": "ff3fbc2a4f5ab950de9f24b5f4ef374c6c487f4a1cba23e951eacd17e6113e32",
+    "bytes": 41801
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.RegistryServiceTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.RegistryServiceTest.xml",
+    "sha256": "7928cdcf49e55bff5acb663077c391e3c0d98c55f639aaa8ee38bbc4f5622e2f",
+    "bytes": 39291
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.domain.IntegrationLifecycleTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.domain.IntegrationLifecycleTest.xml",
+    "sha256": "d8e3e72d225f9be1783581024fd33b661c228277c4a6665cf8bcd601b1462f80",
+    "bytes": 38740
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.CallAuthoritySingleUseTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.CallAuthoritySingleUseTest.xml",
+    "sha256": "2ed855085af96da0ca37a2c6909a21779d09a8bae554b13b59e905423fa7e6c8",
+    "bytes": 39179
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.IntegrationRepositoryTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.IntegrationRepositoryTest.xml",
+    "sha256": "66bcf10dafd40223a3e7110ecc9920625567e8f5ce6f3d28adf60795620ad0c6",
+    "bytes": 38535
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.JdbcAuthorizedAcquisitionGatewayTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.infrastructure.jdbc.JdbcAuthorizedAcquisitionGatewayTest.xml",
+    "sha256": "30c875bab80b965649a5409344bfbeef27cf11b21109d585ed24dca7aaf70d87",
+    "bytes": 38719
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.web.RegistryAdminControllerTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.web.RegistryAdminControllerTest.xml",
+    "sha256": "1d880d0157caf421c1e2e513486f677ad587db4265ae94829c2f2904e152dc17",
+    "bytes": 38265
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.port.AdBidWritePortContractTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.marketplaceintegration.port.AdBidWritePortContractTest.xml",
+    "sha256": "e0b860185c08b3ab8d704cbd72beac470f0e6e8e4b218041e24abaa30cf72ebb",
+    "bytes": 39445
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operatingfacts.internal.application.FactRecorderTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operatingfacts.internal.application.FactRecorderTest.xml",
+    "sha256": "ff5bd5887c8b431166f1ea58b4ebc1a4c80f347fa33c49f2ad2469bd1ef84e8f",
+    "bytes": 41290
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operatingfacts.internal.application.ImportRowValidatorTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operatingfacts.internal.application.ImportRowValidatorTest.xml",
+    "sha256": "2ed3f663b20cbae438a868fd838b385d7fd26f59ce2bc2fce673efd251e99cc5",
+    "bytes": 41790
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunnerTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operatingfacts.internal.application.NormalizationRunnerTest.xml",
+    "sha256": "436ebb16bc645b93d9d17cd40018fed88220d339720427e837d8c77b226cf913",
+    "bytes": 42929
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operatingfacts.internal.application.PayloadReaderTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operatingfacts.internal.application.PayloadReaderTest.xml",
+    "sha256": "c714e2f186a00957f0c27beaa81e533937e6a34a3a253e30f085d4b2e43b8933",
+    "bytes": 45029
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operatingfacts.internal.application.SpreadsheetReaderTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operatingfacts.internal.application.SpreadsheetReaderTest.xml",
+    "sha256": "68db7bae8f8fc78df78fce276f893dcee1e56bbc7f78d024863ed2418cf65da4",
+    "bytes": 47926
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest.xml",
+    "sha256": "2502a194214e2f1a415c12386958af4bc78db1d021b2296b56dbba27b1e90827",
+    "bytes": 39597
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.AvailabilityCaseStateTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.AvailabilityCaseStateTest.xml",
+    "sha256": "38b4027a22b77666048916afee8fc046170c4333143331226827acbb64bcbaad",
+    "bytes": 41978
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.RecommendationStateTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.RecommendationStateTest.xml",
+    "sha256": "2ce0e1dcf613c21102ed77c3d1073c1ebe4cf3a56c6ed67e613be5ed5b939051",
+    "bytes": 44418
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.WorkTaskEventPropertyTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.WorkTaskEventPropertyTest.xml",
+    "sha256": "fe2c718898bf6069b578a8ae7dde5d36e9cd1230843aca7541c1ae09e1daa7fa",
+    "bytes": 45960
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.application.AdBidChangeParameterContractTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.application.AdBidChangeParameterContractTest.xml",
+    "sha256": "293c45c6e7384e0114b280956ddd5d4466169d48f06b454197bbd206ab767d4e",
+    "bytes": 38776
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.application.AdBidGuardrailTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.application.AdBidGuardrailTest.xml",
+    "sha256": "97ec33d061625d7eeaa4e677fafacd5c45235e64a822eb8ab7f89631ef4faabb",
+    "bytes": 40249
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.application.AvailabilityExceptionRevalidationTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.application.AvailabilityExceptionRevalidationTest.xml",
+    "sha256": "579b78c230dd54c67f113d246ab303e6449d88a1008cc400c795311334c9c085",
+    "bytes": 39848
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.application.GuardrailEngineTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.application.GuardrailEngineTest.xml",
+    "sha256": "caefb6057651c2de2325cf190e7d65de97c98252a426b3637a659c80688666d0",
+    "bytes": 42859
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.application.PriceChangeParameterContractTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.application.PriceChangeParameterContractTest.xml",
+    "sha256": "f14b1253de8cebfc7854aa3d233557733cf99d66233ee95c29ae6eccc258ea61",
+    "bytes": 38489
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.domain.ExceptionMaterialityPolicyTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.domain.ExceptionMaterialityPolicyTest.xml",
+    "sha256": "0ca7dac41504cd6237bdf472d2fa4d26f37e6b682636d8e426dd31943290f977",
+    "bytes": 39269
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.domain.StaffedResponseClockTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.internal.domain.StaffedResponseClockTest.xml",
+    "sha256": "4f16f158b44225c426273fe36dfe6042d586c8a17d90532a6f2f58c8f01850a7",
+    "bytes": 39181
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.organizationaccount.internal.application.CoreApplicationServiceTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.organizationaccount.internal.application.CoreApplicationServiceTest.xml",
+    "sha256": "769c3bb0d428d1def7a05084625fa8f26e1be6a19995f29637cbef188bc580ec",
+    "bytes": 39659
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.organizationaccount.internal.domain.CoreLifecycleTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.organizationaccount.internal.domain.CoreLifecycleTest.xml",
+    "sha256": "de2655cd13b95e3b267035345ab35a785c99702f59a9aa0661b49cada3aa0b32",
+    "bytes": 38514
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.organizationaccount.internal.infrastructure.jdbc.CoreRepositoryTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.organizationaccount.internal.infrastructure.jdbc.CoreRepositoryTest.xml",
+    "sha256": "16932f66a3b698b55a7c5a5d1a8cbb7cc3205fea3266c29798f265c525055bf7",
+    "bytes": 38487
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.shared.CorrelationIdTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.shared.CorrelationIdTest.xml",
+    "sha256": "4ce16fd4bd1e234f2a6ced6697fcb067be4091111ed04e2df63c2a9be6204e93",
+    "bytes": 40550
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.shared.ErrorCodeTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.shared.ErrorCodeTest.xml",
+    "sha256": "0b30ac557fba6906ad722fd5e7af53d75ea294778b4739dce41455c48bf4ce8e",
+    "bytes": 47060
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.shared.MetadataFieldPolicyTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.shared.MetadataFieldPolicyTest.xml",
+    "sha256": "8ddd18ec4c244bfa18ac063bd14e3abe92999cffca2e3e822031196022d7cb39",
+    "bytes": 39736
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.shared.SecretMaterialGuardTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.shared.SecretMaterialGuardTest.xml",
+    "sha256": "7daed0a465b2df7134f448754390480237abd3b37d27541097e8ba3f21d8a9e3",
+    "bytes": 41244
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.shared.internal.config.CorsContractTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.shared.internal.config.CorsContractTest.xml",
+    "sha256": "1151804d4c853fb3c13399b3bf51ebabc725fdeb33e59c64b0deee21d56c36d8",
+    "bytes": 41858
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.shared.internal.config.WriteGateBindingTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.shared.internal.config.WriteGateBindingTest.xml",
+    "sha256": "92c9de0ff95c788560c43f81af5b170fa5779e8917cceafeee3aa1db31c41bf7",
+    "bytes": 40156
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandlerTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.shared.internal.errors.GlobalExceptionHandlerTest.xml",
+    "sha256": "ef8c049c712b4539e8c2a57dda72e8442e64ff58d4f2cd622cd0b6ec730ffd3d",
+    "bytes": 41733
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.shared.internal.http.BoundedOutboundHttpTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.shared.internal.http.BoundedOutboundHttpTest.xml",
+    "sha256": "2bf1ea734937528f2f182ddce0687cbed5472c8ad399ce9935f07298d166a8a0",
+    "bytes": 45671
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.shared.internal.migration.ManagedMigrationRunnerTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.shared.internal.migration.ManagedMigrationRunnerTest.xml",
+    "sha256": "710214dc7c56750ac85421add3af08d42f5aa25877e023ff95fdba01c227c766",
+    "bytes": 42497
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.shared.internal.secret.MountedSecretResolverTest.xml",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/surefire-reports/TEST-com.mimococo.marketops.shared.internal.secret.MountedSecretResolverTest.xml",
+    "sha256": "21170abe44a78d0f8399c819c65e006a7735582ccd76120cba5a6bd94c318c0a",
+    "bytes": 52397
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/jacoco.exec",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/jacoco.exec",
+    "sha256": "d7402831a82ffba01aed2ac175fb69f66c58b6808b3f02160eca39554b5b6360",
+    "bytes": 484597
+  },
+  {
+    "source": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server/target/classes/META-INF/build-info.properties",
+    "artifact": "/tmp/slice3-r1-full-clean-w2-b871d637/artifacts/build-info.properties",
+    "sha256": "b1029b660084ca8c6c9e284bd829f4741eab9e308556a7cd85449006e6d26f0a",
+    "bytes": 215
+  }
+]

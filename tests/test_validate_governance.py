@@ -24,6 +24,8 @@ from scripts.validate_governance import (
     HISTORIC_CONTRACT_END,
     REQUIRED_FILES,
     SLICE_POST_MERGE_DOCUMENT_REQUIREMENTS,
+    SLICE3_R1_AUTHORITY_HASHES,
+    validate_slice3_r1_authority,
     V1_ACTIVE_SLICE_CONTRACT_SHA256,
     SLICE_REWORK_ARTIFACT_HASHES,
     WP_P0_002_ID,
@@ -2870,9 +2872,37 @@ class Dr0003R1WhitespaceAttributeTests(unittest.TestCase):
         self.assertEqual([], errors)
 
 
+class Slice3R1AuthorityTests(unittest.TestCase):
+    def documents(self) -> dict[str, bytes]:
+        root = Path(__file__).resolve().parents[1]
+        return {name: (root / name).read_bytes() for name in SLICE3_R1_AUTHORITY_HASHES}
+
+    def test_exact_owner_authorization_and_both_frozen_representations_pass(self) -> None:
+        errors = []
+        validate_slice3_r1_authority(errors, self.documents())
+        self.assertEqual(errors, [])
+
+    def test_each_missing_or_changed_authority_is_refused(self) -> None:
+        for name in SLICE3_R1_AUTHORITY_HASHES:
+            for change in ("missing", "one_byte"):
+                with self.subTest(name=name, change=change):
+                    documents = self.documents()
+                    if change == "missing":
+                        documents.pop(name)
+                    else:
+                        documents[name] += b"\n"
+                    errors = []
+                    validate_slice3_r1_authority(errors, documents)
+                    self.assertEqual(len(errors), 1)
+                    self.assertIn(name, errors[0])
+
+
 class V1CurrentStateContractTests(unittest.TestCase):
     def current(self) -> str:
         return repository_governance_text("docs/00-governance/CURRENT_STATE.md")
+
+    def current_line(self, field: str) -> str:
+        return next(line for line in self.current().splitlines() if line.startswith(field + ": "))
 
     def charter(self) -> str:
         return repository_governance_text("docs/00-governance/PROJECT_CHARTER.md")
@@ -2881,7 +2911,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
         return (
             Path(__file__).resolve().parents[1]
             / "docs/03-work-items"
-            / "SLICE-V1-002-stockout-availability-risk-and-accountable-response.md"
+            / "SLICE-V1-003-advertising-traffic-efficiency.md"
         ).read_bytes()
 
     def validate(
@@ -2901,6 +2931,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
 
     def test_exact_v1_state_is_valid(self) -> None:
         self.assertEqual([], self.validate())
+        self.assertEqual([], self.validate(slice_contract_bytes=self.slice_contract_bytes()))
 
     def test_old_phase_wp_design_state_is_rejected(self) -> None:
         current = self.current().replace(
@@ -2922,8 +2953,8 @@ class V1CurrentStateContractTests(unittest.TestCase):
 
     def test_duplicate_active_slice_is_rejected(self) -> None:
         current = self.current().replace(
-            "active_delivery_slice: SLICE-V1-002",
-            "active_delivery_slice: SLICE-V1-002\nactive_delivery_slice: SLICE-V1-002",
+            "active_delivery_slice: SLICE-V1-003",
+            "active_delivery_slice: SLICE-V1-003\nactive_delivery_slice: SLICE-V1-003",
             1,
         )
         self.assertTrue(any("active_delivery_slice" in error for error in self.validate(current=current)))
@@ -2932,17 +2963,17 @@ class V1CurrentStateContractTests(unittest.TestCase):
         mutations = (
             (
                 "active_slice_contract: docs/03-work-items/"
-                "SLICE-V1-002-stockout-availability-risk-and-accountable-response.md",
+                "SLICE-V1-003-advertising-traffic-efficiency.md",
                 "active_slice_contract: docs/03-work-items/other.md",
                 "active_slice_contract",
             ),
             (
-                "active_gate: SLICE_V1_002_OWNER_ACCEPTED_SNAPSHOT_PROTECTED_SQUASH_PR_27",
+                self.current_line("active_gate"),
                 "active_gate: READY_FOR_DESIGN",
                 "active_gate",
             ),
             (
-                "authorization: PROTECTED_SQUASH_MERGE_ONLY",
+                "authorization: FULL_SCOPE_IMPLEMENTATION",
                 "authorization: DESIGN_ONLY",
                 "authorization",
             ),
@@ -3090,10 +3121,12 @@ class V1CurrentStateContractTests(unittest.TestCase):
 
     def test_contract_byte_change_with_old_hash_is_rejected(self) -> None:
         mutated = self.slice_contract_bytes().replace(
-            b"Stockout & Availability Risk",
-            b"Stockout & Availability R1sk",
+            b"Advertising & Traffic Efficiency",
+            b"Advertising & Traffic Efficiencx",
             1,
         )
+        self.assertNotEqual(mutated, self.slice_contract_bytes())
+        self.assertEqual(len(mutated), len(self.slice_contract_bytes()))
         errors = self.validate(slice_contract_bytes=mutated)
         self.assertTrue(any("immutable" in error for error in errors))
         self.assertTrue(any("does not match" in error for error in errors))
@@ -3133,7 +3166,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
     def test_rework_identity_phase_and_actor_cannot_drift(self) -> None:
         mutations = (
             (
-                "next_authorized_actor: CODEX_POST_CLOSURE_GIT_EXECUTOR",
+                "next_authorized_actor: CODEX",
                 "next_authorized_actor: SOMEBODY_ELSE",
             ),
             (
@@ -3154,7 +3187,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "slice_v1_001_closure_claim: OWNER_FORMALLY_CLOSED",
             ),
             (
-                "candidate_state_scope: PROTECTED_MAIN_SLICE_V1_002_ENGINEERING_MERGED_FORMAL_CLOSURE_AND_SNAPSHOT_ACCEPTED",
+                "candidate_state_scope: SLICE_V1_003_RESIDUAL_REWORK_NOT_CONTROLLER_APPROVED",
                 "candidate_state_scope: PRODUCTION_READY",
             ),
             (
@@ -3170,7 +3203,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "closure_snapshot_before_next_slice: PENDING",
             ),
             (
-                "merge_authorization: HUMAN_OWNER_AUTHORIZED_PROTECTED_SQUASH_PR_27_IF_ALL_GATES_PASS",
+                "merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED",
                 "merge_authorization: NOT_GRANTED",
             ),
             (
@@ -3183,6 +3216,37 @@ class V1CurrentStateContractTests(unittest.TestCase):
             with self.subTest(field=old):
                 self.assertIn(old, self.current())
                 self.assertTrue(self.validate(current=self.current().replace(old, new, 1)))
+
+    def test_slice3_engineering_completion_cannot_claim_controller_or_merge_authority(self) -> None:
+        current = self.current()
+        self.assertEqual([], self.validate(current=current, slice_contract_bytes=self.slice_contract_bytes()))
+        mutations = (
+            (self.current_line("slice_v1_003_rework_status"),
+             "slice_v1_003_rework_status: CONTROLLER_VERIFIED"),
+            (self.current_line("slice_v1_003_engineering_closure_claim"),
+             "slice_v1_003_engineering_closure_claim: OWNER_FORMALLY_CLOSED"),
+            (self.current_line("slice_v1_003_controller_verdict"),
+             "slice_v1_003_controller_verdict: APPROVE_FOR_HUMAN_MERGE"),
+            ("slice_v1_003_historical_controller_verdict: NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED",
+             "slice_v1_003_historical_controller_verdict: PASS"),
+            ("slice_v1_003_historical_controller_reviewed_head: 3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+             "slice_v1_003_historical_controller_reviewed_head: 0000000000000000000000000000000000000000"),
+            ("slice_v1_003_historical_controller_report_sha256: 6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127",
+             "slice_v1_003_historical_controller_report_sha256: altered"),
+            (self.current_line("active_gate"),
+             "active_gate: READY_FOR_MERGE"),
+            (self.current_line("next_action"),
+             "next_action: MARK_READY_AND_MERGE"),
+            ("merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED",
+             "merge_authorization: AUTHORIZED"),
+        )
+        for before, after in mutations:
+            with self.subTest(field=before.split(":", 1)[0]):
+                self.assertIn(before, current)
+                mutated = current.replace(before, after, 1)
+                self.assertNotEqual(current, mutated)
+                errors = self.validate(current=mutated)
+                self.assertTrue(any(before.split(":", 1)[0] in error for error in errors))
 
     def test_codeql_authority_and_persisted_dispositions_cannot_drift(self) -> None:
         root = Path(__file__).resolve().parents[1] / "docs/07-phase-evidence/SLICE-V1-001/rework-r1/codeql-v1.1"

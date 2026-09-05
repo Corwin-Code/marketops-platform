@@ -141,7 +141,10 @@ public class MetricEngine {
                                 List.of("ECONOMICS_PROFILE_"
                                         + economicsResolution.status()));
         Optional<CostSnapshot> unitCost = mappedVariant
-                .flatMap(variantId -> facts.unitCost(variantId, periodEnd));
+                .flatMap(variantId -> facts.unitCost(variantId, periodEnd))
+                .filter(cost -> cost.costVersionId() != null && cost.provenanceId() != null
+                        && cost.unitCost() != null && cost.unitCost().amount().signum() >= 0
+                        && cost.effectiveFrom() != null && cost.effectiveFrom().isBefore(periodEnd));
         InternalStockSnapshot internalStock = mappedVariant
                 .map(variantId -> facts.internalStock(variantId, periodEnd))
                 .orElseGet(InternalStockSnapshot::absent);
@@ -203,12 +206,19 @@ public class MetricEngine {
                         completed.netAmount(),
                         merge(advertising.evidence(), completed.evidence())));
 
+        // The owning fact authority resolves ACTIVE cost versions inside their
+        // effective interval. effectiveFrom is validity, not an observation's
+        // source update time; ageing it would expire an unchanged valid version.
+        // Preserve its exact identity, while run evidence records when this
+        // canonical calculation actually revalidated it. CostSnapshot supplies
+        // no observation timestamp, so no source update time is fabricated.
         metrics.put(MetricCode.UNIT_COST, unitCost
                 .map(cost -> new ComputedMetric(MetricCode.UNIT_COST, ValueState.AVAILABLE,
                         cost.unitCost().amount(), cost.unitCost().currencyCode(),
-                        ConfidenceState.CANONICAL_CONFIRMED, cost.effectiveFrom(),
+                        ConfidenceState.CANONICAL_CONFIRMED, null,
                         List.of(MetricInput.costVersion(cost.costVersionId()),
-                                MetricInput.provenance(cost.provenanceId()))))
+                                MetricInput.provenance(cost.provenanceId())),
+                        List.of("costEffectiveFrom=" + cost.effectiveFrom())))
                 .orElseGet(() -> absent(MetricCode.UNIT_COST, ConfidenceState.INCOMPLETE)));
 
         putMoney(metrics, MetricCode.PLATFORM_FEES,
@@ -405,7 +415,7 @@ public class MetricEngine {
                         sales.evidence().oldestSourceTime(), fees.evidence().oldestSourceTime(),
                         returns.evidence().oldestSourceTime(),
                         advertising.evidence().oldestSourceTime(),
-                        unitCost.orElseThrow().effectiveFrom(), variableTax.oldestSourceTime()),
+                        variableTax.oldestSourceTime()),
                 distinct(metricInputs), append(states, "currencyCompatible=true"));
     }
 

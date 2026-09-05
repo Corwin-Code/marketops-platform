@@ -1,0 +1,535 @@
+{
+  "kind": "EXACT_W8_BACKEND_CI_PROVENANCE_AND_MEASURED_RESULTS",
+  "observedAtUTC": "2026-09-05T13:46:14.409789+00:00",
+  "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+  "testedMerge": {
+    "sha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+    "tree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+    "parents": [
+      "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+      "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af"
+    ]
+  },
+  "latestRunId": 33967874662,
+  "latestAttempt": 1,
+  "collector": {
+    "path": "/tmp/slice3-pr30-w8-complete-ci/receipt.json",
+    "sha256": "1798d0edbec302ac1be233f8996582c3caa3d5c6cb122d4f7e35d1f10364bbba",
+    "bytes": 5649
+  },
+  "provenance": {
+    "path": "/tmp/slice3-w8-backend-ci-provenance-r3/review.json",
+    "sha256": "75cec4b5421bea4d761a0a7509fadea46391a87e94810ad707b88b82cdcd217c",
+    "bytes": 1900410
+  },
+  "provenancePredicates": 7514,
+  "actualResults": {
+    "path": "/tmp/slice3-w8-backend-ci-measured-results-r2/review.json",
+    "sha256": "692495ba191919e3e19aba5941770f7a888510564c283a40ee2fc95013939295",
+    "bytes": 10143180
+  },
+  "jobs": [
+    {
+      "name": "backend-build",
+      "jobId": 101311078532,
+      "startedAt": "2026-09-05T13:05:19Z",
+      "completedAt": "2026-09-05T13:36:57Z",
+      "artifactId": 9970453954,
+      "artifactZipSha256": "99e7c165411ab643fa513567adedf1cee1053565e3613d78d0d39f355a2d2a48",
+      "artifactBytes": 6083758,
+      "sourceInputs": 1031,
+      "publicationIdentity": {
+        "sourceHeadSha": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+        "workflowRunAttempt": "1",
+        "workflowJob": "backend-build",
+        "testedMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+        "artifactName": "backend-test-reports",
+        "workflowRunId": "33967874662"
+      },
+      "capacityReceipt": {
+        "member": "backend/marketops-server/target/advertising-capacity-receipt.json",
+        "bytes": 2851,
+        "sha256": "d7228eeff5542038c60429f5c37ba633fb010414fc19d28a7dff4d32a8e697fb"
+      },
+      "dataset": {
+        "member": "backend/marketops-server/target/advertising-capacity-dataset.json",
+        "bytes": 4076976,
+        "sha256": "d672a429307abf47aa4baec091a13d9bbe318217138f70c3fd77feb2044b8254"
+      },
+      "sourceManifest": {
+        "member": "backend/marketops-server/target/advertising-capacity-source-inputs.json",
+        "bytes": 199860,
+        "sha256": "23160b8a95d53d248dd0f6fb8cc6f20d10c35d49f63e3b2d712ee6a71267a2ec"
+      },
+      "resourceReceipt": {
+        "member": "build/slice3-runtime-resources.json",
+        "bytes": 646,
+        "sha256": "a009c137dcb4332ec2e42422f1b2153a72c71c9559d0a6092baeb3ff4d780508"
+      },
+      "testGroups": {
+        "surefire": {
+          "uploaded": true,
+          "xmlCount": 118,
+          "suiteDeclared": {
+            "tests": 1559,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "actualTestcases": {
+            "tests": 1560,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "declaredVsActualDiscrepancies": [
+            {
+              "job": "backend-build",
+              "group": "surefire",
+              "member": "backend/marketops-server/target/surefire-reports/TEST-com.mimococo.marketops.operationsworkflow.AdvertisingBidDecisionShapeTest.xml",
+              "sha256": "a7a6d676e536ecce09de2878a577b93c1483eaa6ea84ac083aafd46581809b41",
+              "bytes": 37910,
+              "suiteDeclared": {
+                "tests": 12,
+                "failures": 0,
+                "errors": 0,
+                "skipped": 0
+              },
+              "actualTestcases": {
+                "tests": 13,
+                "failures": 0,
+                "errors": 0,
+                "skipped": 0
+              }
+            }
+          ],
+          "mavenConsoleCounts": {
+            "tests": 1560,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        "failsafe": {
+          "uploaded": true,
+          "xmlCount": 71,
+          "suiteDeclared": {
+            "tests": 924,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "actualTestcases": {
+            "tests": 924,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "declaredVsActualDiscrepancies": [],
+          "mavenConsoleCounts": {
+            "tests": 924,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        }
+      },
+      "jacoco": {
+        "uploaded": true,
+        "boundary": "Build artifact uploads combined XML; integration artifact does not upload coverage XML, so that job coverage is substantiated by exact Maven verify output only.",
+        "member": "backend/marketops-server/target/site/jacoco/jacoco.xml",
+        "sha256": "da30a94a7237d7191e5d54cb06181e42238c13286d1605b2d3dd97561de9dd49",
+        "counters": [
+          {
+            "type": "INSTRUCTION",
+            "missed": 22207,
+            "covered": 129396,
+            "ratio": 0.8535187298404385
+          },
+          {
+            "type": "BRANCH",
+            "missed": 3019,
+            "covered": 7440,
+            "ratio": 0.711349077349651
+          },
+          {
+            "type": "LINE",
+            "missed": 3861,
+            "covered": 23805,
+            "ratio": 0.8604424202992843
+          },
+          {
+            "type": "COMPLEXITY",
+            "missed": 3464,
+            "covered": 7016,
+            "ratio": 0.6694656488549618
+          },
+          {
+            "type": "METHOD",
+            "missed": 886,
+            "covered": 4240,
+            "ratio": 0.8271556769410847
+          },
+          {
+            "type": "CLASS",
+            "missed": 109,
+            "covered": 995,
+            "ratio": 0.9012681159420289
+          }
+        ],
+        "requiredThresholds": {
+          "LINE": 0.8,
+          "BRANCH": 0.7
+        }
+      },
+      "capacityMeasurements": {
+        "targeted": {
+          "sampleCount": 1000,
+          "criticalSampleCount": 200,
+          "criticalP95Millis": 20445,
+          "maximumMillis": 194006,
+          "hardBreachCount": 0,
+          "clockDefectCount": 0,
+          "pendingRequests": 0,
+          "failedRequests": 0,
+          "oldestFactAcceptedAt": null,
+          "lastSweepState": "NOT_ESTABLISHED",
+          "lastSweepCompletedAt": null,
+          "observedAt": "2026-09-05T13:16:52.107824675Z",
+          "windowHours": 24,
+          "incidents": [
+            "HOURLY_RECONCILIATION_NOT_CURRENT"
+          ],
+          "state": "INCIDENT",
+          "distributionState": "MEASURED"
+        },
+        "targetedWallMillis": 192008,
+        "workerPasses": 5,
+        "sweepWallMillis": 68019,
+        "hourlyMarginMillis": 3531981,
+        "responsibilityTasks": 1200,
+        "droppedLateCorrectionRecovered": 1,
+        "productionWriteEnabled": false,
+        "realProviderAccess": false
+      },
+      "capacityCases": [
+        {
+          "job": "backend-build",
+          "group": "failsafe",
+          "member": "backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+          "xmlSha256": "c7143326ff6ac84f212107954fa749fbc2c1afd4e5cdccf5a9dde33d03843728",
+          "ordinal": 1,
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+          "name": "replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach",
+          "time": "0.414",
+          "failure": false,
+          "error": false,
+          "skipped": false
+        },
+        {
+          "job": "backend-build",
+          "group": "failsafe",
+          "member": "backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+          "xmlSha256": "c7143326ff6ac84f212107954fa749fbc2c1afd4e5cdccf5a9dde33d03843728",
+          "ordinal": 2,
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+          "name": "sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization",
+          "time": "0.43",
+          "failure": false,
+          "error": false,
+          "skipped": false
+        },
+        {
+          "job": "backend-build",
+          "group": "failsafe",
+          "member": "backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+          "xmlSha256": "c7143326ff6ac84f212107954fa749fbc2c1afd4e5cdccf5a9dde33d03843728",
+          "ordinal": 3,
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+          "name": "declaredThousandObjectPortfolioMeetsAdvertisingSloAndRepairsDroppedCorrections",
+          "time": "262.803",
+          "failure": false,
+          "error": false,
+          "skipped": false
+        }
+      ],
+      "resources": {
+        "schemaVersion": "1.0",
+        "recordedAt": "2026-09-05T13:05:33.255719+00:00",
+        "host": {
+          "os": "Linux",
+          "architecture": "x86_64",
+          "logicalProcessors": 4,
+          "physicalMemoryBytes": 16766414848,
+          "processAffinityProcessors": 4
+        },
+        "docker": {
+          "logicalProcessors": 4,
+          "memoryBytes": 16766414848,
+          "serverVersion": "28.0.4"
+        },
+        "github": {
+          "runId": "33967874662",
+          "runAttempt": "1",
+          "job": "backend-build",
+          "testedCheckout": "954ff3617402c3ff22fa8eb86d9aa8abaea76941"
+        },
+        "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+      },
+      "runtime": {
+        "java": "21.0.12.1",
+        "maxJvmMemoryBytes": 4192206848,
+        "os": "Linux",
+        "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+        "arch": "amd64",
+        "availableProcessors": 4
+      },
+      "semanticChecks": {
+        "threeCapacityCasesActualPass": true,
+        "exact1000Samples": true,
+        "criticalSamples200": true,
+        "criticalP95Within300000ms": true,
+        "maximumWithin900000ms": true,
+        "zeroHardBreaches": true,
+        "zeroClockDefects": true,
+        "zeroPendingAndFailed": true,
+        "sweepLessThanOneHourAndMarginPositive": true,
+        "actualDroppedCorrectionRecovered": true,
+        "nonProductionFixture": true
+      }
+    },
+    {
+      "name": "backend-integration",
+      "jobId": 101311078650,
+      "startedAt": "2026-09-05T13:05:19Z",
+      "completedAt": "2026-09-05T13:31:43Z",
+      "artifactId": 9970377802,
+      "artifactZipSha256": "02a376829616713b34ad5113a905a090e1b60b05d665086d43e44f9608c58c6e",
+      "artifactBytes": 1003640,
+      "sourceInputs": 1031,
+      "publicationIdentity": {
+        "workflowRunId": "33967874662",
+        "artifactName": "backend-integration-reports",
+        "testedMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+        "workflowJob": "backend-integration",
+        "workflowRunAttempt": "1",
+        "sourceHeadSha": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af"
+      },
+      "capacityReceipt": {
+        "member": "backend/marketops-server/target/advertising-capacity-receipt.json",
+        "bytes": 2864,
+        "sha256": "a22eb811b98f048126699919fba8b357f8326e764d17fb19bab22c9c92011521"
+      },
+      "dataset": {
+        "member": "backend/marketops-server/target/advertising-capacity-dataset.json",
+        "bytes": 4077576,
+        "sha256": "dbbf7bd65f6f0a5d3b26c434fb3a995a58cf13e95548860433c1fbeaa5a4ccbf"
+      },
+      "sourceManifest": {
+        "member": "backend/marketops-server/target/advertising-capacity-source-inputs.json",
+        "bytes": 199860,
+        "sha256": "5b4898fccafe074f317a5bd61ddde25551b9cec46ebe722f03160ad9110d4247"
+      },
+      "resourceReceipt": {
+        "member": "build/slice3-runtime-resources.json",
+        "bytes": 652,
+        "sha256": "ab11bbf4235438bf1f077116dad2eac9c1f11d176324b6000085028445b43a9d"
+      },
+      "testGroups": {
+        "surefire": {
+          "uploaded": false,
+          "xmlCount": 0,
+          "suiteDeclared": {
+            "tests": 0,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "actualTestcases": {
+            "tests": 0,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "declaredVsActualDiscrepancies": [],
+          "mavenConsoleCounts": {
+            "tests": 1560,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "rawXmlBoundary": "Not uploaded by this exact workflow job. No independent per-node claim; count from main full verify console."
+        },
+        "failsafe": {
+          "uploaded": true,
+          "xmlCount": 71,
+          "suiteDeclared": {
+            "tests": 924,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "actualTestcases": {
+            "tests": 924,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "declaredVsActualDiscrepancies": [],
+          "mavenConsoleCounts": {
+            "tests": 924,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        }
+      },
+      "jacoco": {
+        "uploaded": false,
+        "boundary": "Build artifact uploads combined XML; integration artifact does not upload coverage XML, so that job coverage is substantiated by exact Maven verify output only."
+      },
+      "capacityMeasurements": {
+        "targeted": {
+          "sampleCount": 1000,
+          "criticalSampleCount": 200,
+          "criticalP95Millis": 13068,
+          "maximumMillis": 167174,
+          "hardBreachCount": 0,
+          "clockDefectCount": 0,
+          "pendingRequests": 0,
+          "failedRequests": 0,
+          "oldestFactAcceptedAt": null,
+          "lastSweepState": "NOT_ESTABLISHED",
+          "lastSweepCompletedAt": null,
+          "observedAt": "2026-09-05T13:15:46.965652167Z",
+          "windowHours": 24,
+          "incidents": [
+            "HOURLY_RECONCILIATION_NOT_CURRENT"
+          ],
+          "state": "INCIDENT",
+          "distributionState": "MEASURED"
+        },
+        "targetedWallMillis": 165957,
+        "workerPasses": 5,
+        "sweepWallMillis": 42577,
+        "hourlyMarginMillis": 3557423,
+        "responsibilityTasks": 1200,
+        "droppedLateCorrectionRecovered": 1,
+        "productionWriteEnabled": false,
+        "realProviderAccess": false
+      },
+      "capacityCases": [
+        {
+          "job": "backend-integration",
+          "group": "failsafe",
+          "member": "backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+          "xmlSha256": "a6f7e767d35c76aa7d5820d5cf30aa77abbf6d9efacc15d781ddd7004e6c8821",
+          "ordinal": 1,
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+          "name": "replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach",
+          "time": "0.271",
+          "failure": false,
+          "error": false,
+          "skipped": false
+        },
+        {
+          "job": "backend-integration",
+          "group": "failsafe",
+          "member": "backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+          "xmlSha256": "a6f7e767d35c76aa7d5820d5cf30aa77abbf6d9efacc15d781ddd7004e6c8821",
+          "ordinal": 2,
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+          "name": "sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization",
+          "time": "0.32",
+          "failure": false,
+          "error": false,
+          "skipped": false
+        },
+        {
+          "job": "backend-integration",
+          "group": "failsafe",
+          "member": "backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+          "xmlSha256": "a6f7e767d35c76aa7d5820d5cf30aa77abbf6d9efacc15d781ddd7004e6c8821",
+          "ordinal": 3,
+          "classname": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+          "name": "declaredThousandObjectPortfolioMeetsAdvertisingSloAndRepairsDroppedCorrections",
+          "time": "210.25",
+          "failure": false,
+          "error": false,
+          "skipped": false
+        }
+      ],
+      "resources": {
+        "schemaVersion": "1.0",
+        "recordedAt": "2026-09-05T13:05:35.113382+00:00",
+        "host": {
+          "os": "Linux",
+          "architecture": "x86_64",
+          "logicalProcessors": 4,
+          "physicalMemoryBytes": 16765378560,
+          "processAffinityProcessors": 4
+        },
+        "docker": {
+          "logicalProcessors": 4,
+          "memoryBytes": 16765378560,
+          "serverVersion": "28.0.4"
+        },
+        "github": {
+          "runId": "33967874662",
+          "runAttempt": "1",
+          "job": "backend-integration",
+          "testedCheckout": "954ff3617402c3ff22fa8eb86d9aa8abaea76941"
+        },
+        "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+      },
+      "runtime": {
+        "availableProcessors": 4,
+        "arch": "amd64",
+        "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+        "os": "Linux",
+        "maxJvmMemoryBytes": 4192206848,
+        "java": "21.0.12.1"
+      },
+      "semanticChecks": {
+        "threeCapacityCasesActualPass": true,
+        "exact1000Samples": true,
+        "criticalSamples200": true,
+        "criticalP95Within300000ms": true,
+        "maximumWithin900000ms": true,
+        "zeroHardBreaches": true,
+        "zeroClockDefects": true,
+        "zeroPendingAndFailed": true,
+        "sweepLessThanOneHourAndMarginPositive": true,
+        "actualDroppedCorrectionRecovered": true,
+        "nonProductionFixture": true
+      }
+    }
+  ],
+  "parserFailuresPreserved": [
+    {
+      "path": "/tmp/slice3-w8-backend-ci-provenance/review.json",
+      "sha256": "8c2afba8aa3726af8d70013bc456e868373243f12673e4a2e44d9e70a204817b",
+      "bytes": 39551
+    },
+    {
+      "path": "/tmp/slice3-w8-backend-ci-provenance-r2/review.json",
+      "sha256": "9d9dfc63e86ca3aed205cac208ff132a16395929231abeeb95b2eb9a7181720b",
+      "bytes": 666883
+    },
+    {
+      "path": "/tmp/slice3-w8-backend-ci-measured-results/parser-failure.json",
+      "sha256": "cd2aba7ef4cd1f0ad1eeb2220fa4b8d7e31465122b732593f976578d5762a1f3",
+      "bytes": 513
+    }
+  ],
+  "finalWholeGateStatus": "PENDING: W8 backend evidence passed; subsequent W9 UI unknown-profile text repair remains open and requires exact future CI. No Controller verdict or 22/200 closure is issued.",
+  "limitations": [
+    "Each measured portfolio is 1000 UNVERIFIED objects, 1 organization, 1 store, 1 shared ProductVariant/listing; no high-cardinality or multi-store capacity claim.",
+    "API commands remain zero by real integration assertion; this is not Provider or command throughput. Mature Outcome throughput is not measured in this portfolio.",
+    "A prior targeted snapshot legitimately states HOURLY_RECONCILIATION_NOT_CURRENT; subsequent measured sweep supplies completion/margin. Snapshot incident bytes remain intact.",
+    "Integration workflow uploads only Failsafe XML. Surefire counts and JaCoCo check for that job are evidenced by exact full verify console, not nonexistent XML."
+  ],
+  "mutations": "None to repository, CI, providers, databases or local runtime; only read-only GitHub downloads, Git object reads and /tmp evidence/tool parsing.",
+  "result": "PASS_WITH_DECLARED_SCOPE_AND_PENDING_WHOLE_GATE"
+}

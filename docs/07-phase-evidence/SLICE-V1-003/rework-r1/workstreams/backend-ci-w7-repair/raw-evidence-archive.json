@@ -1,0 +1,32 @@
+{
+  "kind": "ORIGINAL_RAW_RESPONSE_BYTE_PRESERVATION",
+  "rawEvidenceArchive": "raw-evidence.tar.gz",
+  "sha256": "6cb76fbfcbbfcf0871dc7763cdf1259567f713392ed697845991c306798b62b9",
+  "bytes": 1241168,
+  "gitNormalizationDetected": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/artifacts-index.response.txt",
+      "rawSha256": "17fef5252e6d09f6bb9f68be90251a3e4cefc61ff7ca4c55ce81227b9506afd5",
+      "stagedViewSha256": "3c12dd9861d57e35f354f8256c4ccbf963a804f1231873babd325987c6a88ade"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/job-build101299023501.response.txt",
+      "rawSha256": "3c8bad2628369af6b08ceb6138cdb31ec94d5653300ddf51dfc9c499e7c1606d",
+      "stagedViewSha256": "176f83d29c058d6da6f21c803e541d137d9b1ec89018b67aac4b5acc97760ce2"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/job-integration101299023481.response.txt",
+      "rawSha256": "5c83940f9b68a1333dd291b4b1e10e8fcae6c9ebb2579156f4f9d74b413d0d0d",
+      "stagedViewSha256": "f732ceffc0a1ee64bc7db449b42e2ffbbbcf5bdffe5e705601bc8a5e8243c20d"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/backend-ci-w7-repair/run33963350093.response.txt",
+      "rawSha256": "115fa744aa416535ff6f712f610a834863747b7a824b49386ddf19291b827832",
+      "stagedViewSha256": "84c3df3024b989078d53f296b84854746110591121a8ba8c9c24676d4a203a26"
+    }
+  ],
+  "canonicalRawSource": "Every original captured file (including the four CRLF response transcripts) is byte-preserved inside raw-evidence.tar.gz with its original name. The original manifest refers to those archive members. Four lossy plain-text Git views were removed before commit; parsed JSON companions remain available.",
+  "archiveMemberCount": 50,
+  "gitAttributesChanged": false,
+  "rawOriginalsModified": false
+}

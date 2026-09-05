@@ -1,0 +1,92 @@
+{
+  "kind": "W9_PUBLIC_EVIDENCE_TEXT_SCAN_WITH_PRIVATE_RAW_LIST",
+  "recordedAtUTC": "2026-09-05T14:19:53.212292+00:00",
+  "policy": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/scripts/validate_governance.py",
+    "sha256": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+  },
+  "patternNames": [
+    "repo-1",
+    "repo-2",
+    "repo-3",
+    "repo-4",
+    "repo-5",
+    "repo-6",
+    "repo-7",
+    "jwt-shape",
+    "bearer-value",
+    "signed-query"
+  ],
+  "textFiles": [
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/isolation-after.json",
+      "sha256": "360674da63ada23a5c6a324509695611d198cb73c18f2aed7c56717e2da08e6e"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/isolation-before.json",
+      "sha256": "901d9da2dbdac09ea3936856ff4c002f05c849babeb0a0572ebbd3427ed65607"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/isolation-cleanup.json",
+      "sha256": "54c9afed61139150ab5feeb7263261d48c03d16cf8e2949e6d6b9417a204d793"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/named-browser-results.json",
+      "sha256": "4cf6d60a4bd91c0d8d562eb2b8069193628516c247c6b7f473bb0c875f9c9e77"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/receipt.json",
+      "sha256": "35f41246a0d54cd08b3cb971d7eac7769548697b29c7594a2384e275850be282"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/resource-collector-command.json",
+      "sha256": "95a514e63cf1f132262e62d331d1d807697a283504dea06b1559aaf55115634e"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/resource-collector.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/resource-collector.stdout.log",
+      "sha256": "b283a52c99b9a1ecb983349bafda785ba1d69506133ce061a407468a3ad611d4"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/runtime-resources.json",
+      "sha256": "fdbda371d9507b7a4b110d2e03678f5fffbb9f251bebe068a9a8e631da5c27d5"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/runtime.log",
+      "sha256": "c15215d10bb1912b61827f5d93b55a56f78ecabdc753f34b70ac4418fff5eac3"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/source-inputs-after.json",
+      "sha256": "7fded6243d0f67a692698c1d3e4ae9b08619f43fa815f4a6b748a9c9afe81dfc"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/source-inputs.json",
+      "sha256": "422b88fdc637b19ed7641f62f43df7948f74bdc22e9eaced29b239fd8a4d130d"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/synthetic-data-identities.json",
+      "sha256": "2ac163f7eea49aab6a5c3f615c61e31e2ee82ebaee886d95f771c30333baf9fc"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/visual-review/inputs.json",
+      "sha256": "b9c948eeb114c8a7ebfc2af651ba85a3d20d407b4429e325bbd6b61ee9bffc31"
+    },
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/visual-review/report.json",
+      "sha256": "ae6f62857efeec4713a21c9fc993cd9724d42dfa40e8ff9420d8f7e99fbdec30"
+    }
+  ],
+  "privateOriginalsExcluded": [
+    {
+      "path": "/tmp/slice3-w9-browser-evidence/w9-r1/private/raw-playwright-results.json",
+      "sha256": "6c573785bade385712d5b6a725148c6e514b90a0ddc833c36b769c5f1b1e674f",
+      "reason": "Original Playwright JSON may contain reporter environment, failure attachments or auth data; private source hash only, never automatic publication."
+    }
+  ],
+  "matchesWithoutValues": [],
+  "matchCount": 0,
+  "scope": "Repo7 patterns, JWT/Bearer and explicit Azure/AWS/Google/general signed query parameters. No matched values printed. PNG bytes are image evidence, not text scanned. Original private reporters are not publication candidates. This scan is not CodeQL/Controller clearance."
+}

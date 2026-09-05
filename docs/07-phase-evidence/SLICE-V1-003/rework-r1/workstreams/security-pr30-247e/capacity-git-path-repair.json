@@ -1,0 +1,25 @@
+{
+  "kind": "POST_R23_TEST_EVIDENCE_GIT_PATH_REPAIR",
+  "recordedAtUTC": "2026-09-05T10:57:40.207196+00:00",
+  "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCapacityEvidence.java",
+  "sourceSha256": "a371d61e88d2c5c2754237b2c1a6d8b4cd3dfaf5c463793cdb3e756e395d540c",
+  "changedBy": "Root after R23 completion",
+  "patchSha256": "2e609314ff14c259ff1cba49051750af584a0e16789ce985560a237bddda1a37",
+  "diffScope": "Exactly one executable string changed from git to /usr/bin/git; five-second deadline, arguments, exit handling and HEAD validation unchanged.",
+  "probe": {
+    "argv": [
+      "/usr/bin/git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+    "startedAtUTC": "2026-09-05T10:57:40.193491+00:00",
+    "finishedAtUTC": "2026-09-05T10:57:40.207196+00:00",
+    "exitCode": 0,
+    "stdout": "247ea5ced6cd0ac110314db9fa606d8995c85cac\n",
+    "stderr": ""
+  },
+  "diffCheckExitCode": 0,
+  "supportedSurfaceEvidence": "git-executable-path-evidence.json",
+  "validationBoundary": "R23 did not execute this post-run correction. Final clean verify including full capacity and fresh exact-Head CodeQL remain required; no alert has been dismissed."
+}

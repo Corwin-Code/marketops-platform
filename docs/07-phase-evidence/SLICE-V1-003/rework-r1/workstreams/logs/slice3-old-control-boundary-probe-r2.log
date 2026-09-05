@@ -1,0 +1,32 @@
+PASS: ops.observe_ad_reservation_condition(uuid,text,boolean) remains uncallable
+PASS: ops.reopen_ad_lineage_after_regression(uuid,uuid,text,text) remains uncallable
+PASS: exact 73 sanctioned non-trigger callable signatures
+PASS: ops.ad_bid_command app has no DML
+PASS: ops.ad_bid_command_transition app has no DML
+PASS: ops.ad_bid_command_attempt app has no DML
+PASS: ops.ad_bid_command_readback app has no DML
+PASS: ops.ad_action_reservation app has no DML
+PASS: iam.ad_invocation_grant app has no DML
+PASS: ops.ad_outcome_plan_grant app has no DML
+PASS: platform.ad_write_credential_attestation app has no DML
+PASS: ops.ad_gate_authority app has no DML
+PASS: ops.ad_ordinary_promotion app has no DML
+PASS: ops.ad_action_authorization app has no DML
+PASS: ops.ad_authority_invalidation app has no DML
+PASS: ops.ad_compensation_authorization app has no DML
+PASS: ops.ad_compensation_invalidation app has no DML
+PASS: ops.ad_bundle_endorsement app has no DML
+PASS: ops.ad_containment_attestation app has no DML
+PASS: ops.ad_reservation_state_history app has no DML
+PASS: ops.ad_outcome_baseline app has no DML
+PASS: ops.ad_outcome_stage_baseline app has no DML
+PASS: ops.ad_outcome_critical_unit app has no DML
+PASS: ops.ad_outcome_baseline_attestation app has no DML
+Traceback (most recent call last):
+  File "/tmp/r1-old-control-tests/probe.py", line 23, in <module>
+    sql(f"INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,organization_ref_id,effective_from,status,reason,created_at,updated_at) VALUES(gen_random_uuid(),'{ids['organization']}','{ids['verifierUser']}','ADVERTISING_POLICY_MANAGE','{ids['organization']}',now()-interval '1 day','ACTIVE','synthetic gate probe',now(),now());")
+  File "/tmp/r1-old-control-tests/probe.py", line 6, in sql
+    if r.returncode:raise RuntimeError(r.stderr)
+RuntimeError: ERROR:  duplicate key value violates unique constraint "user_scope_grant_active_uq"
+DETAIL:  Key (user_id, action_code, organization_ref_id, legal_entity_ref_id, marketplace_account_ref_id, store_ref_id, warehouse_ref_id, product_variant_ref_id)=(8ec704dd-3aa5-529c-93db-def4bbf39260, ADVERTISING_POLICY_MANAGE, 8689c119-8fa0-50b7-8ba2-f9bf3039d336, null, null, null, null, null) already exists.
+

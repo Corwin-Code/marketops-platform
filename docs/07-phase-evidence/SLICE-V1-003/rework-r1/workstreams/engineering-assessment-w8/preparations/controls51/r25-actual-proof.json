@@ -1,0 +1,62 @@
+{
+  "receipt": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/receipt.json",
+    "sha256": "8fda5d35960e94fb640f478c45fe907732fd5a86b8ed7cb4148da5e87186ac5c"
+  },
+  "actualCommand": [
+    "./mvnw",
+    "-B",
+    "-ntp",
+    "-Dmarketops.build.gitCommit=3e4039259c0a56d0f10319cdcae79cab66f81983",
+    "-Dtest=AdvertisingReservationIT,AdvertisingHumanWorkflowIT,AdvertisingOrchestrationCapacityIT,AdvertisingReconciliationWorkerTest,StaffedResponseClockTest",
+    "test"
+  ],
+  "baseHeadMetadata": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+  "baseTreeMetadata": "3fbe57fc39f0d4d969e571ea895354e81c4fe1b8",
+  "sourceBefore": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-before.json",
+    "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+  },
+  "sourceAfter": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/source-after.json",
+    "sha256": "4b12f5824750012801f9f1cb4f9fc587210fb3051a919d3ba0222cc89bc4427a"
+  },
+  "sourceStable": true,
+  "log": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/maven.log",
+    "sha256": "ad22dd8a992c14b45fb930a8fb75887a18c9f2a5a6d156d6ef6bc536bd27351c"
+  },
+  "actualCounts": {
+    "tests": 72,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "startedAtUTC": "2026-09-05T12:42:37.294063+00:00",
+  "finishedAtUTC": "2026-09-05T12:50:12.037347+00:00",
+  "elapsedSeconds": 454.739,
+  "actualCompleteClassReports": [
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+      "sha256": "ae4f583b680aa69929fb93eba86fc95375f807478097ce0b75cf39ec3c4463b3"
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.AdvertisingReservationIT.xml",
+      "sha256": "6f1bf6bcd207caffd965f093b6e70c65d92c36d3baa97d94dab2df240af1a714"
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+      "sha256": "b9844fdb3f8b095bbae468ab530694560d251cf7ada43d6d70db082dd6ea7f49"
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingReconciliationWorkerTest.xml",
+      "sha256": "7196ad541e0f9ada0394b6939aa283dbcd669e97c01ade46db798b52f260e6ac"
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r25/reports/TEST-com.mimococo.marketops.operationsworkflow.internal.domain.StaffedResponseClockTest.xml",
+      "sha256": "97105c53f0a26cf1d4b87f9230472e573065fb36888350318e1b59006306b7d8"
+    }
+  ],
+  "newCompensationScopeProofId": "70dbe4e4634ba186058b",
+  "sourceBindingLimit": "Precommit actual selected-class run; verified W8 source equivalence is recorded per path. It is not a clean W8 commit execution."
+}

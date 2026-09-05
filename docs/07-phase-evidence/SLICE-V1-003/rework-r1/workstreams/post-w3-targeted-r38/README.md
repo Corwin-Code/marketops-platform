@@ -1,0 +1,1 @@
+R37 is a failed 98-case run. Its other seven classes (74 cases) passed. Only the EfficiencyFlowIT source changed, and its complete 24 cases pass separately in R38. These are separate targeted observations; a new clean unselected full verify remains required.

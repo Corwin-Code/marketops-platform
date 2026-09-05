@@ -1,0 +1,1 @@
+W3 plus uncommitted repairs. Full selected classes: 98 actual cases, 1 failure, 2 errors, no skips. This failed attempt is preserved unchanged; it is not complete clean verification. Original source before/after hashes and all eight XML reports are preserved.

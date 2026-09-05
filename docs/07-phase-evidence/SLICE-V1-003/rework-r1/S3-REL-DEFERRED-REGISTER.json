@@ -1,0 +1,521 @@
+{
+  "document_type": "R1_EXACT_DEFERRED_RELEASE_OBLIGATION_REGISTER",
+  "contract_sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c",
+  "warning": "All 24 accepted obligations are production-blocking. No engineering defect is deferred by this register. No real-world evidence was obtained.",
+  "entries": [
+    {
+      "id": "S3-REL-001",
+      "obligation": "real Ozon advertising read capability, native object hierarchy, Spend/traffic/attribution semantics, source maturity and account/store evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real Ozon platform/account/store/read-purpose cohort.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-001",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-002",
+      "obligation": "equivalent real Wildberries advertising read evidence without assuming Ozon symmetry.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real Wildberries platform/account/store/read-purpose cohort; assessed independently of Ozon.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-002",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-003",
+      "obligation": "real Product Mapping, native-object lineage and complete affected-set coverage for the intended operating cohort.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real native object, mapping version and complete affected Product/Store set.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-003",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-004",
+      "obligation": "real company Order/Completed/Retained sales and deterministic ad-linked sale-event evidence, including Provider-to-canonical attribution-gap profile.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real company and ad-linked Order/Completed/Retained sale-event scope.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-004",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-005",
+      "obligation": "real official advertising Spend reconciliation and correction-window evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real platform/account/store official Spend period and correction window.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-005",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-006",
+      "obligation": "real COGS, fee, fulfillment, return-loss, Settlement and Adjustment inputs sufficient for Operational and Settled advertising profit.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real Product/Store financial inputs and Operational/Settled stage.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-006",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-007",
+      "obligation": "real stage-consistent Conversion, Allowable CPA and Max CPC definitions and approved evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real stage, attribution, currency/unit and compatible conversion/target policy scope.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-007",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-008",
+      "obligation": "real source/platform/purpose Freshness Profiles for Queue, Task, Recommendation, Write, Compensation and Outcomes.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real source/platform/purpose freshness profile for each consuming action.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-008",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-009",
+      "obligation": "real Optimization qualification, Target, Outcome, Priority, human-SLO, Approval-Lease and aggregate-Exposure Policies with owners and evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real versioned policy type and Owner-approved operating scope.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-009",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-010",
+      "obligation": "one complete, compatible, scope-bound Advertising Decision Policy Bundle accepted for each intended real operating scope.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real compatible Advertising Decision Policy Bundle and all its consumers.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-010",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-011",
+      "obligation": "real OIDC/MFA, user disable/revoke, Role/Scope and role-minimal disclosure evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real organization, identity provider, user, role and Store/Product/field scope.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-011",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-012",
+      "obligation": "real Operating Calendar, staffed Coverage, escalation, Daily Brief and Weekly Review ownership.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real staffed calendar, ownership, timezone, escalation and operating cadence.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-012",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/human-decisions-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-013",
+      "obligation": "real governed Shadow evidence under preaccepted sample, duration, discrepancy, manual-verification and operating-SLO thresholds.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real Shadow cohort and its preaccepted sample/duration/discrepancy/SLO thresholds.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-013",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-014",
+      "obligation": "real Ozon `AD_BID_CHANGE` endpoint, permission, unit, step, quota, idempotency/NOT_APPLIED, error, propagation and Readback evidence for each consumed scope.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real Ozon account/store/direction/candidate basis and AD_BID_CHANGE capability.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-014",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-015",
+      "obligation": "real Wildberries `AD_BID_CHANGE` capability evidence if that Provider path is to become reachable; otherwise verified Shadow-only fail-closed state.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real Wildberries account/store/direction/candidate basis; otherwise Shadow-only.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-015",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-016",
+      "obligation": "exact Gate EV envelope and Human Owner authorization before the first real write for each Platform/Store/Direction/Candidate Basis.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real Platform/Store/Direction/Candidate Basis under a separately Human Owner-approved Gate EV.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-016",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-017",
+      "obligation": "exact Gate EV Write/Readback evidence and, when API Compensation is claimed, exact prior-value Compensation round-trip evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact prior authorized Gate EV write/readback and any claimed exact-prior-value compensation.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-017",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-018",
+      "obligation": "layered scope-monotonic Gate E Pilot Evidence Bundle, exact allowlist, aggregate Exposure, recovery headroom and operating ownership.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact scope-monotonic Gate E Pilot allowlist, aggregate exposure and operating ownership.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-018",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-019",
+      "obligation": "real Provider-transmission Kill/Quarantine drill and cause-specific multi-party reenablement evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real Provider transmission capability and cause-proportional Kill/Quarantine/recovery scope.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-019",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-020",
+      "obligation": "real early Completed-Sales Guard evidence for the Gate E entry scope and continuing 30-day/Settled Outcome obligations.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real Gate E entry cohort and its continuing early/30-day/Settled Outcome obligations.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-020",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-021",
+      "obligation": "real Operational/Settled baseline, critical-sales-unit and settlement-attribution evidence for mature Outcome reporting.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real mature Outcome action, stage, preaccepted baseline, critical units and financial attribution.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-021",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/facts-outcome-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-022",
+      "obligation": "real Ordinary-route promotion evidence before any Owner per-command delegation is activated; absent evidence keeps every nonzero action Material.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real Ordinary-route promotion and its frozen delegated scope.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-022",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-023",
+      "obligation": "Yandex runtime, managed PostgreSQL, immutable object custody, backup/PITR/restore, monitoring, security and legal/data-localization release evidence.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact separately accepted RELEASE-V1-001 runtime/data/security/legal release scope.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-023",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    },
+    {
+      "id": "S3-REL-024",
+      "obligation": "Key User training/adoption, runbooks, release traceability and no unresolved release-blocking defect for the exact real scope.",
+      "state": "DEFERRED_PRODUCTION_BLOCKING",
+      "real_evidence_obtained": false,
+      "consuming_scope": "Exact real release cohort, Key Users, operational runbooks and release defect/traceability review.",
+      "evidence_reference": null,
+      "blocking_production": true,
+      "active_real_consuming_scope": "NONE_AUTHORIZED",
+      "historical_register_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/deferred-release-register.json",
+        "sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+        "row_id": "S3-REL-024",
+        "boundary": "Historical reported state is preserved; prior engineering/evidence claims are not inherited."
+      },
+      "engineering_control_reference": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/governance-traceability.json",
+        "boundary": "Current synthetic engineering controls and tests are assessed separately; this reference supplies no real-world evidence and grants no engineering exemption."
+      },
+      "release_authority_required": "Separate accepted Release/Capability, exact Gate EV/Gate E or Ordinary promotion authority as applicable; R1 implementation authority is insufficient."
+    }
+  ],
+  "closure_claim_made": false,
+  "production_write_enabled": false,
+  "source_contract": "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md",
+  "historical_register_sha256": "97d8b01a0eab29c42bc3449db586337d98c48ffe1da62ab923b292abc50efefa",
+  "gates": {
+    "gate_ev": "NOT_AUTHORIZED_BY_R1",
+    "gate_e": "NOT_AUTHORIZED_BY_R1",
+    "pilot": "NOT_AUTHORIZED_BY_R1",
+    "ordinary_route": "NO_REAL_PROMOTION_AUTHORIZED"
+  }
+}

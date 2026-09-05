@@ -1,0 +1,189 @@
+{
+  "kind": "POST_W5_SECURITY_LOCK_FRONTEND_QUALITY",
+  "baseHead": "247ea5ced6cd0ac110314db9fa606d8995c85cac",
+  "baseTree": "e43d50161faf5b861ee768fa49b66c8b7a407429",
+  "binding": "Current post-W5 frontend bytes with the precise security lock repair; not a future committed Head or remote CI claim",
+  "wrapperSha256": "798d3036277ebae63c492df689b60104fc9ee89a670cbb1b227e77b2307fb9f3",
+  "sourceBeforeSha256": "596a83c12ff7ce62888eacb63a3e3d31343a7f943920f33da9f5ba3edb6f01f1",
+  "startedAtUTC": "2026-09-05T10:43:35.594908+00:00",
+  "boundary": "Frontend-only npm checks with local env discovery disabled; no browser server, Maven, Docker, Provider or shared/production access",
+  "commands": [
+    {
+      "argv": [
+        "npm",
+        "ci"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T10:43:36.126514+00:00",
+      "finishedAtUTC": "2026-09-05T10:43:41.195395+00:00",
+      "elapsedSeconds": 5.069,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r4/00-command.log",
+      "logSha256": "b91a375ac4120b6559934011fd64331dfa8c61a795dc7d42acae138fa3456089"
+    },
+    {
+      "argv": [
+        "npm",
+        "ls",
+        "--all"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T10:43:41.196497+00:00",
+      "finishedAtUTC": "2026-09-05T10:43:41.754736+00:00",
+      "elapsedSeconds": 0.558,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r4/01-command.log",
+      "logSha256": "9eef5ae2f2d79f77a56a8d6c887120c4901e00c76cae5cf608b4a58a67d5d6d2"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "format:check"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T10:43:41.755499+00:00",
+      "finishedAtUTC": "2026-09-05T10:43:44.077547+00:00",
+      "elapsedSeconds": 2.322,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r4/02-command.log",
+      "logSha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T10:43:44.078545+00:00",
+      "finishedAtUTC": "2026-09-05T10:43:52.964544+00:00",
+      "elapsedSeconds": 8.886,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r4/03-command.log",
+      "logSha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T10:43:52.968612+00:00",
+      "finishedAtUTC": "2026-09-05T10:44:03.640577+00:00",
+      "elapsedSeconds": 10.672,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r4/04-command.log",
+      "logSha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "test:ci",
+        "--",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r4/vitest.json"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T10:44:03.642774+00:00",
+      "finishedAtUTC": "2026-09-05T10:44:21.333500+00:00",
+      "elapsedSeconds": 17.691,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r4/05-command.log",
+      "logSha256": "3da911825168becebcd1660e24c65b64001eb5067da85625d53bddaa0ca97f89"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T10:44:21.334646+00:00",
+      "finishedAtUTC": "2026-09-05T10:44:27.573037+00:00",
+      "elapsedSeconds": 6.238,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r4/06-command.log",
+      "logSha256": "019abc0c44978ffbe9aaa8c4b503cc89fb809ae09dd7315c2e18d3f5fb7e42a1"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "verify:bundle"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T10:44:27.574099+00:00",
+      "finishedAtUTC": "2026-09-05T10:44:31.208249+00:00",
+      "elapsedSeconds": 3.634,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r4/07-command.log",
+      "logSha256": "3e8a3d429c9586ed7b292b6c52f72c82e05b1d234a3af1b3375be6b955e6053d"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "sbom"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console",
+      "startedAtUTC": "2026-09-05T10:44:31.209340+00:00",
+      "finishedAtUTC": "2026-09-05T10:44:33.265921+00:00",
+      "elapsedSeconds": 2.057,
+      "exitCode": 0,
+      "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r4/08-command.log",
+      "logSha256": "0a037a0fcb4cb616958534a0b748409520f608188ea7c78e785b3d44a853e917"
+    }
+  ],
+  "lockSha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4",
+  "resourceReference": {
+    "source": "/tmp/slice3-r1-final-controls-r16/runtime-resources.json",
+    "copiedSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+    "scope": "Read-only reference to separately captured host/Docker allocation; this frontend run starts no Docker workload"
+  },
+  "runtime": {
+    "node": "v24.19.0",
+    "npm": "11.17.0",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "logicalHostCpu": 8
+  },
+  "tests": {
+    "total": 308,
+    "passed": 308,
+    "failed": 0,
+    "pending": 0,
+    "rawReporterSha256": "bb58d22911830c18aea98af1dcae35d6beacf8b86cc7beb3a03618898d70785d",
+    "namesBoundToSourceBefore": true
+  },
+  "lcov.info": {
+    "sha256": "0168efb8bcfd421fb6c31eda8e67897df9f64c6ddfcd86ee9a80e2751562abaa"
+  },
+  "frontend-sbom.json": {
+    "sha256": "ba53693fe897537900d4c3173cc05ec3e2559432a33d6903500aedc9740ec2bb"
+  },
+  "sourceAfterSha256": "596a83c12ff7ce62888eacb63a3e3d31343a7f943920f33da9f5ba3edb6f01f1",
+  "sourceStable": true,
+  "finishedAtUTC": "2026-09-05T10:44:33.331721+00:00",
+  "passed": false,
+  "limits": [
+    "Pending final exact checkpoint frontend, 12 real advertising browser journeys, all 25 legacy journeys with the recorded authorized six-axis Exposure fixture upgrade, full backend and exact CI",
+    "No criterion or Controller verdict is inferred solely from green tests"
+  ],
+  "allCommandExitCodesZero": true,
+  "result": "INCOMPLETE_SBOM_SCHEMA_VALIDATION",
+  "postRunSemanticInspection": {
+    "finding": "SBOM command returned zero while its raw output explicitly skipped JSON schema validation because optional validators were absent.",
+    "log": "08-command.log",
+    "actualLogMessage": "WARN  | skipped validating BOM: No JsonValidator available.",
+    "npmLsState": "ajv8/ajv-formats/ajv-formats-draft2019 UNMET OPTIONAL; fast-uri not installed although exact lock pins3.1.6.",
+    "configValuesReadOnly": {
+      "omit": "",
+      "include": "",
+      "optional": "null"
+    },
+    "scope": "All 308 tests and static/compile/build checks remain actual PASS, but complete quality is not PASS; no source/test/lock was altered."
+  }
+}

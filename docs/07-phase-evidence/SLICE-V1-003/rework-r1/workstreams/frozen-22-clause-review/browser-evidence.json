@@ -1,0 +1,998 @@
+[
+  {
+    "id": "role_chain",
+    "title": "real Maker, Ops Lead and Owner decisions preserve minimum disclosure and exact versions",
+    "source": {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "line": 97
+    },
+    "assertionScope": "Real JWT/IAM HTTP decision actions, Maker masking, stale selection rejection, Ops endorsement, Owner exact preview/approval/command and unresolved Outcome.",
+    "w6Execution": {
+      "testedCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "testedTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "criterionVerdict": null,
+      "limit": "Supporting evidence for the named assertions only. A passing named test is not an accepted-criterion or independent Controller verdict.",
+      "layer": "ACTUAL_ADVERTISING_BROWSER",
+      "title": "real Maker, Ops Lead and Owner decisions preserve minimum disclosure and exact versions",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "status": "expected",
+      "testId": "3ec2ad7859e4b3ac0be0-9443041678ce26b8dcca",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:10.902Z",
+          "durationMs": 8868
+        }
+      ],
+      "source": {
+        "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+        "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+        "line": 97
+      },
+      "namedReport": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+        "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b"
+      },
+      "sourceManifest": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+        "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453"
+      },
+      "runtimeResources": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+        "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f"
+      },
+      "receipt": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+        "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8"
+      },
+      "boundary": "Actual signed local HTTP/IAM/SQL/Chromium. Synthetic lane and history rows are explicit read oracles, not canonical classification, Provider or economic-outcome computation evidence. All Ozon/Wildberries profile fixtures remain UNVERIFIED.",
+      "assertionScope": "Real JWT/IAM HTTP decision actions, Maker masking, stale selection rejection, Ops endorsement, Owner exact preview/approval/command and unresolved Outcome."
+    },
+    "w7Execution": {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "real Maker, Ops Lead and Owner decisions preserve minimum disclosure and exact versions",
+      "suiteTitles": [],
+      "fullDisplayTitle": "real Maker, Ops Lead and Owner decisions preserve minimum disclosure and exact versions",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 97,
+      "sourceColumn": 1,
+      "ordinal": 1,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:16.4987904Z",
+      "durationDisplay": "8.1s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 429,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    "boundary": "Browser display/action evidence with explicitly synthetic profile/history fixtures; no canonical economic or real Provider claim."
+  },
+  {
+    "id": "credentials",
+    "title": "real backend denies absent and forged credentials before advertising data is disclosed",
+    "source": {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "line": 175
+    },
+    "assertionScope": "Missing/forged JWT denied before disclosure.",
+    "w6Execution": {
+      "testedCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "testedTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "criterionVerdict": null,
+      "limit": "Supporting evidence for the named assertions only. A passing named test is not an accepted-criterion or independent Controller verdict.",
+      "layer": "ACTUAL_ADVERTISING_BROWSER",
+      "title": "real backend denies absent and forged credentials before advertising data is disclosed",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "status": "expected",
+      "testId": "3ec2ad7859e4b3ac0be0-61a0f95ad10ec5c7332c",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:20.183Z",
+          "durationMs": 15
+        }
+      ],
+      "source": {
+        "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+        "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+        "line": 175
+      },
+      "namedReport": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+        "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b"
+      },
+      "sourceManifest": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+        "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453"
+      },
+      "runtimeResources": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+        "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f"
+      },
+      "receipt": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+        "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8"
+      },
+      "boundary": "Actual signed local HTTP/IAM/SQL/Chromium. Synthetic lane and history rows are explicit read oracles, not canonical classification, Provider or economic-outcome computation evidence. All Ozon/Wildberries profile fixtures remain UNVERIFIED.",
+      "assertionScope": "Missing/forged JWT denied before disclosure."
+    },
+    "w7Execution": {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "real backend denies absent and forged credentials before advertising data is disclosed",
+      "suiteTitles": [],
+      "fullDisplayTitle": "real backend denies absent and forged credentials before advertising data is disclosed",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 175,
+      "sourceColumn": 1,
+      "ordinal": 2,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:16.5295921Z",
+      "durationDisplay": "19ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 434,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    "boundary": "Browser display/action evidence with explicitly synthetic profile/history fixtures; no canonical economic or real Provider claim."
+  },
+  {
+    "id": "manual_ozon",
+    "title": "OZON actual governed manual path stays UNVERIFIED and requires an independent observer",
+    "source": {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "line": 185
+    },
+    "assertionScope": "Distinct Ozon KEYWORD/major native profile; three-person Manual, executor cannot verify, independent proof, early NOT_YET and no API command.",
+    "w6Execution": {
+      "testedCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "testedTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "criterionVerdict": null,
+      "limit": "Supporting evidence for the named assertions only. A passing named test is not an accepted-criterion or independent Controller verdict.",
+      "layer": "ACTUAL_ADVERTISING_BROWSER",
+      "title": "OZON actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "status": "expected",
+      "testId": "3ec2ad7859e4b3ac0be0-87fb1433deeb78155e88",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:20.205Z",
+          "durationMs": 6628
+        }
+      ],
+      "source": {
+        "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+        "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+        "line": 185
+      },
+      "namedReport": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+        "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b"
+      },
+      "sourceManifest": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+        "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453"
+      },
+      "runtimeResources": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+        "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f"
+      },
+      "receipt": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+        "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8"
+      },
+      "boundary": "Actual signed local HTTP/IAM/SQL/Chromium. Synthetic lane and history rows are explicit read oracles, not canonical classification, Provider or economic-outcome computation evidence. All Ozon/Wildberries profile fixtures remain UNVERIFIED.",
+      "assertionScope": "Distinct Ozon KEYWORD/major native profile; three-person Manual, executor cannot verify, independent proof, early NOT_YET and no API command."
+    },
+    "w7Execution": {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "OZON actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "suiteTitles": [],
+      "fullDisplayTitle": "OZON actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 185,
+      "sourceColumn": 3,
+      "ordinal": 3,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:23.8586552Z",
+      "durationDisplay": "7.3s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 596,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    "boundary": "Browser display/action evidence with explicitly synthetic profile/history fixtures; no canonical economic or real Provider claim."
+  },
+  {
+    "id": "manual_wb",
+    "title": "WILDBERRIES actual governed manual path stays UNVERIFIED and requires an independent observer",
+    "source": {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "line": 185
+    },
+    "assertionScope": "Distinct WB PLACEMENT/minor native profile; three-person Manual, executor cannot verify, independent proof, early NOT_YET and no API command.",
+    "w6Execution": {
+      "testedCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "testedTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "criterionVerdict": null,
+      "limit": "Supporting evidence for the named assertions only. A passing named test is not an accepted-criterion or independent Controller verdict.",
+      "layer": "ACTUAL_ADVERTISING_BROWSER",
+      "title": "WILDBERRIES actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "status": "expected",
+      "testId": "3ec2ad7859e4b3ac0be0-ebb96133c16052ef10f5",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:26.838Z",
+          "durationMs": 6054
+        }
+      ],
+      "source": {
+        "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+        "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+        "line": 185
+      },
+      "namedReport": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+        "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b"
+      },
+      "sourceManifest": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+        "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453"
+      },
+      "runtimeResources": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+        "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f"
+      },
+      "receipt": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+        "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8"
+      },
+      "boundary": "Actual signed local HTTP/IAM/SQL/Chromium. Synthetic lane and history rows are explicit read oracles, not canonical classification, Provider or economic-outcome computation evidence. All Ozon/Wildberries profile fixtures remain UNVERIFIED.",
+      "assertionScope": "Distinct WB PLACEMENT/minor native profile; three-person Manual, executor cannot verify, independent proof, early NOT_YET and no API command."
+    },
+    "w7Execution": {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "WILDBERRIES actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "suiteTitles": [],
+      "fullDisplayTitle": "WILDBERRIES actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 185,
+      "sourceColumn": 3,
+      "ordinal": 4,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:30.7739725Z",
+      "durationDisplay": "6.9s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 758,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    "boundary": "Browser display/action evidence with explicitly synthetic profile/history fixtures; no canonical economic or real Provider claim."
+  },
+  {
+    "id": "lanes",
+    "title": "all four real HTTP lane projections preserve unknown values and expose no invented action",
+    "source": {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "line": 278
+    },
+    "assertionScope": "Four lane navigation and unknown values use explicit synthetic read-oracle Cases; this does not prove canonical classification or optimization eligibility.",
+    "w6Execution": {
+      "testedCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "testedTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "criterionVerdict": null,
+      "limit": "Supporting evidence for the named assertions only. A passing named test is not an accepted-criterion or independent Controller verdict.",
+      "layer": "ACTUAL_ADVERTISING_BROWSER",
+      "title": "all four real HTTP lane projections preserve unknown values and expose no invented action",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "status": "expected",
+      "testId": "3ec2ad7859e4b3ac0be0-66cbfdce33bdb82fbdbe",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:32.901Z",
+          "durationMs": 2006
+        }
+      ],
+      "source": {
+        "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+        "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+        "line": 278
+      },
+      "namedReport": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+        "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b"
+      },
+      "sourceManifest": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+        "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453"
+      },
+      "runtimeResources": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+        "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f"
+      },
+      "receipt": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+        "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8"
+      },
+      "boundary": "Actual signed local HTTP/IAM/SQL/Chromium. Synthetic lane and history rows are explicit read oracles, not canonical classification, Provider or economic-outcome computation evidence. All Ozon/Wildberries profile fixtures remain UNVERIFIED.",
+      "assertionScope": "Four lane navigation and unknown values use explicit synthetic read-oracle Cases; this does not prove canonical classification or optimization eligibility."
+    },
+    "w7Execution": {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "all four real HTTP lane projections preserve unknown values and expose no invented action",
+      "suiteTitles": [],
+      "fullDisplayTitle": "all four real HTTP lane projections preserve unknown values and expose no invented action",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 278,
+      "sourceColumn": 1,
+      "ordinal": 5,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:33.3339649Z",
+      "durationDisplay": "2.5s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 915,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    "boundary": "Browser display/action evidence with explicitly synthetic profile/history fixtures; no canonical economic or real Provider claim."
+  },
+  {
+    "id": "exception",
+    "title": "three distinct people accept an exact temporary exception, block actions, and end it",
+    "source": {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "line": 311
+    },
+    "assertionScope": "Actual three-person temporary exception, frozen role-scoped risk, active-action suppression and ending/rebuild.",
+    "w6Execution": {
+      "testedCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "testedTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "criterionVerdict": null,
+      "limit": "Supporting evidence for the named assertions only. A passing named test is not an accepted-criterion or independent Controller verdict.",
+      "layer": "ACTUAL_ADVERTISING_BROWSER",
+      "title": "three distinct people accept an exact temporary exception, block actions, and end it",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "status": "expected",
+      "testId": "3ec2ad7859e4b3ac0be0-72c7d2eb2022f0f46ac5",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:34.915Z",
+          "durationMs": 3648
+        }
+      ],
+      "source": {
+        "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+        "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+        "line": 311
+      },
+      "namedReport": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+        "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b"
+      },
+      "sourceManifest": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+        "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453"
+      },
+      "runtimeResources": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+        "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f"
+      },
+      "receipt": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+        "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8"
+      },
+      "boundary": "Actual signed local HTTP/IAM/SQL/Chromium. Synthetic lane and history rows are explicit read oracles, not canonical classification, Provider or economic-outcome computation evidence. All Ozon/Wildberries profile fixtures remain UNVERIFIED.",
+      "assertionScope": "Actual three-person temporary exception, frozen role-scoped risk, active-action suppression and ending/rebuild."
+    },
+    "w7Execution": {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "three distinct people accept an exact temporary exception, block actions, and end it",
+      "suiteTitles": [],
+      "fullDisplayTitle": "three distinct people accept an exact temporary exception, block actions, and end it",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 311,
+      "sourceColumn": 1,
+      "ordinal": 6,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:37.1678279Z",
+      "durationDisplay": "3.8s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1011,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    "boundary": "Browser display/action evidence with explicitly synthetic profile/history fixtures; no canonical economic or real Provider claim."
+  },
+  {
+    "id": "containment",
+    "title": "scoped emergency hold remains active until independent recovery conditions are established",
+    "source": {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "line": 370
+    },
+    "assertionScope": "Actual emergency object hold; incomplete attestations remain held and do not permit reenablement.",
+    "w6Execution": {
+      "testedCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "testedTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "criterionVerdict": null,
+      "limit": "Supporting evidence for the named assertions only. A passing named test is not an accepted-criterion or independent Controller verdict.",
+      "layer": "ACTUAL_ADVERTISING_BROWSER",
+      "title": "scoped emergency hold remains active until independent recovery conditions are established",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "status": "expected",
+      "testId": "3ec2ad7859e4b3ac0be0-af288b87bf5c722c6ffe",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:38.568Z",
+          "durationMs": 2189
+        }
+      ],
+      "source": {
+        "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+        "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+        "line": 370
+      },
+      "namedReport": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+        "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b"
+      },
+      "sourceManifest": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+        "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453"
+      },
+      "runtimeResources": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+        "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f"
+      },
+      "receipt": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+        "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8"
+      },
+      "boundary": "Actual signed local HTTP/IAM/SQL/Chromium. Synthetic lane and history rows are explicit read oracles, not canonical classification, Provider or economic-outcome computation evidence. All Ozon/Wildberries profile fixtures remain UNVERIFIED.",
+      "assertionScope": "Actual emergency object hold; incomplete attestations remain held and do not permit reenablement."
+    },
+    "w7Execution": {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "scoped emergency hold remains active until independent recovery conditions are established",
+      "suiteTitles": [],
+      "fullDisplayTitle": "scoped emergency hold remains active until independent recovery conditions are established",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 370,
+      "sourceColumn": 1,
+      "ordinal": 7,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:39.8301486Z",
+      "durationDisplay": "2.6s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1120,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    "boundary": "Browser display/action evidence with explicitly synthetic profile/history fixtures; no canonical economic or real Provider claim."
+  },
+  {
+    "id": "history_unknown",
+    "title": "HISTORY_UNKNOWN preserves actual HTTP command history, unresolved state and separate outcomes",
+    "source": {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "line": 420
+    },
+    "assertionScope": "Real issuer/seal/creator lineage with explicit history read oracles; UNKNOWN/MISMATCH holds, separate Outcome/revision states, or naturally expired Owner scope. Not Provider truth or Outcome-calculation evidence.",
+    "w6Execution": {
+      "testedCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "testedTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "criterionVerdict": null,
+      "limit": "Supporting evidence for the named assertions only. A passing named test is not an accepted-criterion or independent Controller verdict.",
+      "layer": "ACTUAL_ADVERTISING_BROWSER",
+      "title": "HISTORY_UNKNOWN preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "status": "expected",
+      "testId": "3ec2ad7859e4b3ac0be0-18f9a9535ca3b987c8e7",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:40.767Z",
+          "durationMs": 1436
+        }
+      ],
+      "source": {
+        "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+        "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+        "line": 420
+      },
+      "namedReport": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+        "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b"
+      },
+      "sourceManifest": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+        "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453"
+      },
+      "runtimeResources": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+        "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f"
+      },
+      "receipt": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+        "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8"
+      },
+      "boundary": "Actual signed local HTTP/IAM/SQL/Chromium. Synthetic lane and history rows are explicit read oracles, not canonical classification, Provider or economic-outcome computation evidence. All Ozon/Wildberries profile fixtures remain UNVERIFIED.",
+      "assertionScope": "Real issuer/seal/creator lineage with explicit history read oracles; UNKNOWN/MISMATCH holds, separate Outcome/revision states, or naturally expired Owner scope. Not Provider truth or Outcome-calculation evidence."
+    },
+    "w7Execution": {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "HISTORY_UNKNOWN preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [],
+      "fullDisplayTitle": "HISTORY_UNKNOWN preserves actual HTTP command history, unresolved state and separate outcomes",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 420,
+      "sourceColumn": 3,
+      "ordinal": 8,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:41.7055776Z",
+      "durationDisplay": "1.9s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1188,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    "boundary": "Browser display/action evidence with explicitly synthetic profile/history fixtures; no canonical economic or real Provider claim."
+  },
+  {
+    "id": "history_mismatch",
+    "title": "HISTORY_MISMATCH preserves actual HTTP command history, unresolved state and separate outcomes",
+    "source": {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "line": 420
+    },
+    "assertionScope": "Real issuer/seal/creator lineage with explicit history read oracles; UNKNOWN/MISMATCH holds, separate Outcome/revision states, or naturally expired Owner scope. Not Provider truth or Outcome-calculation evidence.",
+    "w6Execution": {
+      "testedCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "testedTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "criterionVerdict": null,
+      "limit": "Supporting evidence for the named assertions only. A passing named test is not an accepted-criterion or independent Controller verdict.",
+      "layer": "ACTUAL_ADVERTISING_BROWSER",
+      "title": "HISTORY_MISMATCH preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "status": "expected",
+      "testId": "3ec2ad7859e4b3ac0be0-8053fc9ea853c749b00c",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:42.211Z",
+          "durationMs": 661
+        }
+      ],
+      "source": {
+        "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+        "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+        "line": 420
+      },
+      "namedReport": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+        "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b"
+      },
+      "sourceManifest": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+        "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453"
+      },
+      "runtimeResources": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+        "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f"
+      },
+      "receipt": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+        "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8"
+      },
+      "boundary": "Actual signed local HTTP/IAM/SQL/Chromium. Synthetic lane and history rows are explicit read oracles, not canonical classification, Provider or economic-outcome computation evidence. All Ozon/Wildberries profile fixtures remain UNVERIFIED.",
+      "assertionScope": "Real issuer/seal/creator lineage with explicit history read oracles; UNKNOWN/MISMATCH holds, separate Outcome/revision states, or naturally expired Owner scope. Not Provider truth or Outcome-calculation evidence."
+    },
+    "w7Execution": {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "HISTORY_MISMATCH preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [],
+      "fullDisplayTitle": "HISTORY_MISMATCH preserves actual HTTP command history, unresolved state and separate outcomes",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 420,
+      "sourceColumn": 3,
+      "ordinal": 9,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:42.7012908Z",
+      "durationDisplay": "985ms",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1221,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    "boundary": "Browser display/action evidence with explicitly synthetic profile/history fixtures; no canonical economic or real Provider claim."
+  },
+  {
+    "id": "history_regression",
+    "title": "HISTORY_REGRESSION preserves actual HTTP command history, unresolved state and separate outcomes",
+    "source": {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "line": 420
+    },
+    "assertionScope": "Real issuer/seal/creator lineage with explicit history read oracles; UNKNOWN/MISMATCH holds, separate Outcome/revision states, or naturally expired Owner scope. Not Provider truth or Outcome-calculation evidence.",
+    "w6Execution": {
+      "testedCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "testedTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "criterionVerdict": null,
+      "limit": "Supporting evidence for the named assertions only. A passing named test is not an accepted-criterion or independent Controller verdict.",
+      "layer": "ACTUAL_ADVERTISING_BROWSER",
+      "title": "HISTORY_REGRESSION preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "status": "expected",
+      "testId": "3ec2ad7859e4b3ac0be0-5ccbf40f996f61d6054c",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:42.877Z",
+          "durationMs": 969
+        }
+      ],
+      "source": {
+        "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+        "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+        "line": 420
+      },
+      "namedReport": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+        "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b"
+      },
+      "sourceManifest": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+        "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453"
+      },
+      "runtimeResources": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+        "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f"
+      },
+      "receipt": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+        "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8"
+      },
+      "boundary": "Actual signed local HTTP/IAM/SQL/Chromium. Synthetic lane and history rows are explicit read oracles, not canonical classification, Provider or economic-outcome computation evidence. All Ozon/Wildberries profile fixtures remain UNVERIFIED.",
+      "assertionScope": "Real issuer/seal/creator lineage with explicit history read oracles; UNKNOWN/MISMATCH holds, separate Outcome/revision states, or naturally expired Owner scope. Not Provider truth or Outcome-calculation evidence."
+    },
+    "w7Execution": {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "HISTORY_REGRESSION preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [],
+      "fullDisplayTitle": "HISTORY_REGRESSION preserves actual HTTP command history, unresolved state and separate outcomes",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 420,
+      "sourceColumn": 3,
+      "ordinal": 10,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:43.9021539Z",
+      "durationDisplay": "1.2s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1254,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    "boundary": "Browser display/action evidence with explicitly synthetic profile/history fixtures; no canonical economic or real Provider claim."
+  },
+  {
+    "id": "history_expired",
+    "title": "HISTORY_EXPIRED preserves actual HTTP command history, unresolved state and separate outcomes",
+    "source": {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "line": 420
+    },
+    "assertionScope": "Real issuer/seal/creator lineage with explicit history read oracles; UNKNOWN/MISMATCH holds, separate Outcome/revision states, or naturally expired Owner scope. Not Provider truth or Outcome-calculation evidence.",
+    "w6Execution": {
+      "testedCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "testedTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "criterionVerdict": null,
+      "limit": "Supporting evidence for the named assertions only. A passing named test is not an accepted-criterion or independent Controller verdict.",
+      "layer": "ACTUAL_ADVERTISING_BROWSER",
+      "title": "HISTORY_EXPIRED preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "status": "expected",
+      "testId": "3ec2ad7859e4b3ac0be0-6492854d67c8bd0dd8c1",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:43.862Z",
+          "durationMs": 720
+        }
+      ],
+      "source": {
+        "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+        "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+        "line": 420
+      },
+      "namedReport": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+        "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b"
+      },
+      "sourceManifest": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+        "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453"
+      },
+      "runtimeResources": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+        "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f"
+      },
+      "receipt": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+        "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8"
+      },
+      "boundary": "Actual signed local HTTP/IAM/SQL/Chromium. Synthetic lane and history rows are explicit read oracles, not canonical classification, Provider or economic-outcome computation evidence. All Ozon/Wildberries profile fixtures remain UNVERIFIED.",
+      "assertionScope": "Real issuer/seal/creator lineage with explicit history read oracles; UNKNOWN/MISMATCH holds, separate Outcome/revision states, or naturally expired Owner scope. Not Provider truth or Outcome-calculation evidence."
+    },
+    "w7Execution": {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "HISTORY_EXPIRED preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [],
+      "fullDisplayTitle": "HISTORY_EXPIRED preserves actual HTTP command history, unresolved state and separate outcomes",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 420,
+      "sourceColumn": 3,
+      "ordinal": 11,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:44.9198641Z",
+      "durationDisplay": "1.0s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1292,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    "boundary": "Browser display/action evidence with explicitly synthetic profile/history fixtures; no canonical economic or real Provider claim."
+  },
+  {
+    "id": null,
+    "title": null,
+    "source": {
+      "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "line": 493
+    },
+    "assertionScope": null,
+    "w6Execution": {
+      "testedCommit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "testedTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+      "criterionVerdict": null,
+      "limit": "Supporting evidence for the named assertions only. A passing named test is not an accepted-criterion or independent Controller verdict.",
+      "layer": "ACTUAL_ADVERTISING_BROWSER",
+      "title": "real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "status": "expected",
+      "testId": "3ec2ad7859e4b3ac0be0-5649881f60c39e36dbad",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAt": "2026-09-05T11:10:44.588Z",
+          "durationMs": 7239
+        }
+      ],
+      "source": {
+        "path": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+        "sha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+        "commit": "3ed3f4c87c336cb07188e470528f328358fb279f",
+        "tree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+        "line": 493
+      },
+      "namedReport": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/named-browser-results.json",
+        "sha256": "c7940b92f86b748045fc59bcf56f5b1cfdc042aa3e04482f8dbd9466b1cead2b"
+      },
+      "sourceManifest": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/source-inputs.json",
+        "sha256": "94f039f5c64428234d9760a42a68534c639e626a88f731ef284ed967654e9453"
+      },
+      "runtimeResources": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/runtime-resources.json",
+        "sha256": "5040c1a2997476d0eb3bd91f74a1bb2a092b01ef768a7c5f93660a6be74e4b3f"
+      },
+      "receipt": {
+        "path": "/tmp/slice3-w6-browser-evidence/browser-r6/receipt.json",
+        "sha256": "4fc3c68c75a6902360b7c9de0d7cd068600100d38051e7e51902935b665459c8"
+      },
+      "boundary": "Actual signed local HTTP/IAM/SQL/Chromium. Synthetic lane and history rows are explicit read oracles, not canonical classification, Provider or economic-outcome computation evidence. All Ozon/Wildberries profile fixtures remain UNVERIFIED.",
+      "assertionScope": "Real Tab/activeElement/Enter navigation and ACK≠Action; exact50+6 and WATCH50+3/lane-reset responses, no duplicate/missing/unauthorized IDs; same-org ungranted Store and foreign-org denial. This is not already proven by the original eleven click-based journeys."
+    },
+    "w7Execution": {
+      "layer": "ADVERTISING_BROWSER",
+      "title": "real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets",
+      "suiteTitles": [],
+      "fullDisplayTitle": "real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets",
+      "sourcePath": "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts",
+      "sourceSha256": "7e587e79413094e680c1ba2d001e11b8b55ca785c3ce60b28dc1911209431814",
+      "sourceLine": 493,
+      "sourceColumn": 1,
+      "ordinal": 12,
+      "observedCompletionTimeUTC": "2026-09-05T11:30:54.0664344Z",
+      "durationDisplay": "9.1s",
+      "status": "passed",
+      "testedPrHead": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+      "testedCheckoutMergeSha": "1d48739f4fe71d394e12e0623cf533e89770bece",
+      "logArchive": {
+        "path": "/tmp/slice3-w7-frontend-ci/logs.zip",
+        "sha256": "24fbac6cc0d5bacf41578613436544e77278a6cc87f4143104b919d1fed83fb3"
+      },
+      "logMember": "frontend-test/13_Exercise governed advertising roles in a fresh isolated database.txt",
+      "logMemberSha256": "351446f51a8f0bb1cdd45b2d9e5376faa90e8e08080c09c1b60cb39116f00c2a",
+      "logLine": 1376,
+      "jobId": 101298991243,
+      "step": 13
+    },
+    "boundary": "Browser display/action evidence with explicitly synthetic profile/history fixtures; no canonical economic or real Provider claim."
+  }
+]

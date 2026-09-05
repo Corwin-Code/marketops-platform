@@ -1,0 +1,201 @@
+id,text
+S3-AC-001,repository contains the exact Human Owner-accepted Contract bytes and attributable acceptance evidence.
+S3-AC-002,"canonical path, Contract SHA-256, source protected-main commit/tree and predecessor Snapshot identities are synchronized without mutation."
+S3-AC-003,canonical state advances to SLICE-V1-003 Full-Scope Implementation only after exact acceptance and preserves every SLICE-V1-002 accepted identity.
+S3-AC-004,roadmap preserves the Advertising & Traffic Efficiency outcome and records `AD_BID_CHANGE` as the selected controlled-write family.
+S3-AC-005,"SLICE-V1-002 `STOCK_CHANGE`, replenishment quantity, Overstock, Allocation and Transfer remain unopened."
+S3-AC-006,"Shared Spine architecture tests prevent a parallel ingestion, Metric, Policy, workflow, Command, Readback, Bundle or audit authority."
+S3-AC-007,conditional Design Gate remains untriggered or any later trigger follows the exact governance path.
+S3-AC-008,"no Release, Gate EV, Gate E, Pilot, deployment or production-write authority is claimed by source completion, tests, merge or this Contract."
+S3-AC-009,"every atomic Case binds Organization, Platform, Account/Store, minimum verified controllable native object, lineage, bidding mode and Semantic Profile."
+S3-AC-010,every atomic Case binds the exact complete affected Internal Variant set and a stable digest/version.
+S3-AC-011,a native object controlling multiple Variants cannot be split into separately executable estimated-SKU Cases.
+S3-AC-012,"Campaign, ad-group, Target, Keyword and SKU relationships remain queryable without inventing unsupported Provider control granularity."
+S3-AC-013,"Ozon and Wildberries Profiles preserve their different object, status, attribution, unit, precision, step, quota and Readback semantics."
+S3-AC-014,unknown native states/fields/modes fail closed for every dependent decision.
+S3-AC-015,"a native object, lineage or bidding-mode change invalidates stale executable assets unless exact versioned continuity is proven."
+S3-AC-016,backend scope enforcement prevents horizontal and vertical Organization/Platform/Store/Product/Data/Action escalation.
+S3-AC-017,the Maker can identify the exact controlled object and complete affected-set without automatically receiving unauthorized cross-Store or finance detail.
+S3-AC-018,Operations Lead and final approver cannot endorse/approve without the evidence scope required by their responsibility.
+S3-AC-019,"permission masking is distinguishable from an actual data gap, and Task/Approval participation grants no implicit access."
+S3-AC-020,"API, export, notification, attachment, error and AI views enforce the same role/scope disclosure contract."
+S3-AC-021,"official advertising configuration, Spend and traffic facts retain Raw provenance, source times, correction history and Profile identity."
+S3-AC-022,"missing platform metrics remain `NOT_AVAILABLE`, never zero."
+S3-AC-023,late/corrected official Spend triggers attributable recalculation without overwriting history.
+S3-AC-024,Provider-native attributed Orders/Revenue/Conversion remain separately visible Provider observations.
+S3-AC-025,"Provider attribution cannot by itself populate company sales, canonical ad-linked conversion or final profit."
+S3-AC-026,"estimated SKU Spend remains visibly estimated and cannot independently support high-risk Recommendation, write or Settled result."
+S3-AC-027,"company Order, Completed, Retained and Settled sale stages remain distinct."
+S3-AC-028,Completed Sales drive the early safety Guard; 30-day Retained Sales drive final sales protection.
+S3-AC-029,complete affected-set company total sales must pass the frozen preservation rule.
+S3-AC-030,every frozen required critical sales unit must independently pass; growth elsewhere cannot offset failure.
+S3-AC-031,missing critical-unit evidence yields unresolved/inconclusive rather than pass or zero.
+S3-AC-032,"Advertising Contribution Profit is reconstructable from governed sales, COGS, fees, fulfillment, return loss, official Spend and applicable variable facts."
+S3-AC-033,absolute Advertising Contribution Profit and Contribution Profit per official advertising RUB are calculated under exact versions.
+S3-AC-034,primary efficiency success requires the sales rule plus one material profit-axis improvement and no material worsening on the other axis.
+S3-AC-035,a still-negative result remains `IMPROVED_NOT_HEALTHY` or Protection-in-progress rather than healthy success.
+S3-AC-036,"Operational and Settled profit facts remain stage-distinct and expose evidence, window, version, Freshness, Confidence and gaps."
+S3-AC-037,Provider-native conversion remains observation-only and company total sales divided by ad Clicks is rejected as canonical object conversion.
+S3-AC-038,canonical ad-linked conversion requires deterministic traffic-to-sale-event linkage for the exact object/scope and sale stage.
+S3-AC-039,material mapping/linkage/coverage gaps block write-grade Max CPC and expose a Provider-to-canonical attribution discrepancy.
+S3-AC-040,Allowable CPA economic unit exactly matches the conversion sale stage; tests reject stage mixing and duplicate loss counting.
+S3-AC-041,"Max CPC is recalculable from exact stage-consistent versions and is visibly an economic ceiling, not a target."
+S3-AC-042,low-sample or estimated conversion cannot produce write-grade Max CPC.
+S3-AC-043,"Freshness resolves by Evidence Kind, Platform/Account/Store/Semantic Profile and Decision Purpose."
+S3-AC-044,"source age, report completeness, accepted-fact age, publication/correction lag, version validity, coverage and Provider incident may affect Freshness."
+S3-AC-045,a newly ingested old fact is not automatically Fresh; a mature cohort/effective policy is not automatically stale.
+S3-AC-046,write-grade Freshness cannot be weaker than corresponding Recommendation-grade Freshness.
+S3-AC-047,missing/conflicted Freshness Profile blocks only affected purposes and cannot erase an independent Fresh danger.
+S3-AC-048,"Optimization Watch, Task, Recommendation and Bid Write qualifications are monotonically stronger."
+S3-AC-049,"verified Optimization requires complete scope, coverage, sample sufficiency, sustained signal, material value and canonical profit."
+S3-AC-050,"immature, unsustained or immaterial signals receive Watch reason codes and no automatic Task."
+S3-AC-051,a decision-determinative data defect becomes Data Repair rather than Watch.
+S3-AC-052,missing/conflicted real qualification Profile blocks Verified Optimization and Bid Increase while preserving observation.
+S3-AC-053,"each Case deterministically resolves to Protection, Data Repair, Optimization or Watch with evidence and Policy versions."
+S3-AC-054,Fresh one-sided danger activates Protection only when unknown facts cannot reverse the dangerous direction.
+S3-AC-055,"unknown alone cannot trigger increase, decrease, pause or success."
+S3-AC-056,lane-first Canonical Priority uses reason-coded hard sub-tiers and lexicographic non-compensating factors.
+S3-AC-057,"Action/Outcome Regression, Quarantine, Unknown/Mismatch and Compensation responsibility enter Protection P0."
+S3-AC-058,sellability/availability/critical-sales danger enters P1; proven continuing economic harm enters P2 unless stronger.
+S3-AC-059,Data Repair and Optimization use their accepted independent lexicographic factor order; Watch ranking has no action authority.
+S3-AC-060,"AI and user-personal sorting cannot change Canonical Rank, due time or escalation."
+S3-AC-061,Protection and material actionable Data Repair create/update one cause-routed Task; qualified Optimization does likewise; Watch does not.
+S3-AC-062,"concurrency, replay and repeated calculation cannot duplicate a Case or active cause Task."
+S3-AC-063,independent causes with different owners may create explicitly linked separate Tasks.
+S3-AC-064,human SLO distinguishes acknowledgement from action decision/first attributable action.
+S3-AC-065,page open or free-text acknowledgement cannot satisfy the action stage.
+S3-AC-066,Protection/Regression response is no weaker than Optimization; material Data Repair has a cause-owner Profile.
+S3-AC-067,reassignment preserves Case age and SLO history.
+S3-AC-068,"outside coverage, staffed-clock handling and `OUT_OF_COVERAGE_ACTIVE_HARM` exposure remain simultaneously visible."
+S3-AC-069,missing human SLO/Coverage Profile leaves Task active and blocks affected operating readiness rather than claiming on-time.
+S3-AC-070,Protection/Regression targeted update meets P95 <= 5 minutes and hard <= 15 minutes; other targeted state update meets hard <= 15 minutes.
+S3-AC-071,full reconciliation succeeds at least hourly and repairs a dropped targeted trigger while preserving any SLO violation.
+S3-AC-072,Accepted Exception preserves the calculated lane and exact known consequence.
+S3-AC-073,"Exception requires exact cause/scope, evidence, consequence, Operations endorsement, Owner approval, period, review and Bundle."
+S3-AC-074,"valid Exception pauses only matching ordinary Action SLO, suppresses duplicate work visibly, cannot coexist with action intent, and invalidation reopens the same Case without automatic renewal."
+S3-AC-075,both Ozon and Wildberries expose a complete governed Manual Shadow workflow.
+S3-AC-076,"Manual Packet binds exact object, affected-set, current/target configuration, evidence, Guardrails, approval route, expiry, Bundle and verification plan."
+S3-AC-077,"Budget, Pause/Resume or other non-selected manual actions do not create a hidden Provider API path."
+S3-AC-078,"Manual action cannot proceed when identity, scope, hard evidence, permission or required approval is unresolved."
+S3-AC-079,verified official API Readback is accepted as strongest configuration evidence.
+S3-AC-080,verified replayable official configuration export can prove exact configuration under a valid source Profile.
+S3-AC-081,independent manual verification requires a distinct authorized verifier and records exact object/field/value/observed-at/evidence.
+S3-AC-082,executor self-report or incomplete screenshot remains configuration-unverified.
+S3-AC-083,"manual verification cannot be represented as API Readback, Provider idempotency, exact application time or business success without evidence."
+S3-AC-084,manual and controlled real interventions consume the same affected-set reservation and applicable aggregate exposure.
+S3-AC-085,`AD_BID_CHANGE` is the only new controlled-write family in this Slice.
+S3-AC-086,"Budget, Campaign status, strategy/mode and Campaign/Target structure cannot be written through it."
+S3-AC-087,"a controlled action requires verified explicit native Bid semantics, current Bid, unit/precision/step/min/max, capability, credential, permission and Readback."
+S3-AC-088,Provider-unverified paths are structurally unreachable and expose Shadow-only state.
+S3-AC-089,Protection Decrease and Optimization Increase are separately gated; exact Compensation uses its own authority.
+S3-AC-090,"Optimization Increase requires complete write-grade Freshness, qualification, conversion/Max CPC, sales and inventory/sellability safety."
+S3-AC-091,Protection Decrease requires exact one-sided danger and a valid candidate basis.
+S3-AC-092,all ordinary targets come from one versioned `AD_BID_TARGET_POLICY`.
+S3-AC-093,Max CPC is never automatically selected as the target.
+S3-AC-094,the exact finite candidate set is deterministic for identical facts and Policy version.
+S3-AC-095,Marketplace Operator may select/reject candidates but cannot free-type outside the set.
+S3-AC-096,Provider valid-step normalization occurs before Preview/Approval; runtime rounding or target substitution fails acceptance.
+S3-AC-097,`MAX_CPC_BOUNDED` Increase never exceeds the conservative Provider-valid ceiling.
+S3-AC-098,a Protection intermediate target above the ceiling remains recovery-in-progress and not healthy.
+S3-AC-099,`CAUSE_BOUND_PROTECTION_STEP` requires an exact accepted danger cause whose missing conversion cannot reverse danger.
+S3-AC-100,cause-bound Preview states that Max CPC is unavailable and the target limits exposure only.
+S3-AC-101,"estimated conversion/Max CPC, Provider observation, similar-SKU inference and AI magnitude never generate a controlled candidate."
+S3-AC-102,Materiality uses visible multi-axis non-compensating hard triggers.
+S3-AC-103,initial ordinary nonzero envelope is zero and every initial nonzero action follows Maker → Operations endorsement → Owner final approval.
+S3-AC-104,Maker cannot self-endorse or self-approve; unresolved Materiality fails closed.
+S3-AC-105,"every Preview shows exact Before/After, affected-set, critical sales, Spend, profit, inventory/sellability, versions, Bundle, route and blockers."
+S3-AC-106,"every executable Approval binds exact current/target, evidence snapshot, affected-set, Policy/Profile/Bundle and actors."
+S3-AC-107,every executable Approval has explicit expiry at the earliest bound authority limit and is rechecked through pre-transmission/Retry.
+S3-AC-108,"expired, killed, quarantined, superseded or materially invalidated Approval cannot be extended/rebound/resurrected."
+S3-AC-109,later Ordinary promotion requires exact all-Material mature evidence for the same Platform/Direction/Basis/scope and remains per-command Operator/Operations Maker-Checker.
+S3-AC-110,fixed material triggers and Standing Policy automation cannot be downgraded or introduced by Ordinary promotion.
+S3-AC-111,one approved action creates one logical Command identity and duplicate submission cannot create a second logical effect.
+S3-AC-112,"every eligible attempt preserves exact object, affected-set, target, Approval, Bundle and Provider identity where applicable."
+S3-AC-113,"a Retry cannot change target, scope or Provider idempotency identity."
+S3-AC-114,verified Provider-native idempotency is used only under an evidence-backed Capability Profile and status/Readback precedes Retry.
+S3-AC-115,"without verified Provider idempotency, default is one Provider submission."
+S3-AC-116,Timeout plus prior-value Readback never independently authorizes Retry.
+S3-AC-117,"explicit verified `NOT_APPLIED`, unchanged prior Bid and current authority are required for no-idempotency same-command Retry."
+S3-AC-118,unresolved Command blocks replacement/parallel Command for the same native object.
+S3-AC-119,Provider acceptance/HTTP success cannot become configuration success.
+S3-AC-120,Readback match requires native convergence and exact approved target equality after accepted representation normalization only.
+S3-AC-121,"tolerance, nearest-value acceptance, runtime rounding and third-value overwrite are rejected."
+S3-AC-122,generic same-object reentry is initially disabled pending separately accepted calibration.
+S3-AC-123,exact Compensation remains inside original lineage/reservation and targets captured immutable prior Bid only.
+S3-AC-124,"Compensation requires prior matched Readback, Stop Condition/Regression, current-state ownership, current hard Gates, new Preview, Operations endorsement, Owner approval and exact Gate scope."
+S3-AC-125,automatic rollback/Compensation and overwrite of later legitimate/unresolved change are impossible.
+S3-AC-126,Compensation Readback is tracked separately from business Outcome.
+S3-AC-127,controlled or confirmed real manual intervention reserves the complete affected-set.
+S3-AC-128,"overlapping affected-set action is blocked until configuration resolution, required early observation and no unresolved Regression."
+S3-AC-129,non-overlapping action remains eligible only inside aggregate Exposure.
+S3-AC-130,Protection/Regression receives deterministic precedence over ordinary Optimization for overlapping scope.
+S3-AC-131,exact Compensation uses original reservation; known material cross-domain change blocks isolation and unexpected change confounds/rebaselines Outcome.
+S3-AC-132,"Gate E aggregate Envelope independently bounds active count, deduplicated Retained-Sales exposure, official Spend, cumulative absolute Bid change, unresolved writes and recovery headroom."
+S3-AC-133,all aggregate axes pass independently; no cross-axis/cross-direction netting exists.
+S3-AC-134,Unknown/Mismatch and governed manual interventions consume applicable aggregate capacity.
+S3-AC-135,reserved recovery headroom cannot be used by ordinary action.
+S3-AC-136,aggregate capacity is revalidated before transmission; Approval neither reserves capacity indefinitely nor extends while waiting.
+S3-AC-137,missing/conflicted aggregate Envelope blocks new controlled transmission.
+S3-AC-138,Early/Operational/Settled/late-evidence Regression creates object+affected-set+overlap quarantine and invalidates unexecuted overlap assets.
+S3-AC-139,invalid shared authority version quarantines all consumers; Provider integrity defect activates exact Platform+Account/Store+Capability scope.
+S3-AC-140,local business failure does not automatically stop unrelated valid non-overlapping scopes.
+S3-AC-141,quarantine activation prevents every new external side effect after the authoritative instant.
+S3-AC-142,PENDING and LEASED-but-unsent Commands terminate or fail transmission; already-transmitted requests continue status/Readback/reconciliation only.
+S3-AC-143,unexecuted Manual Packet is revoked; uncertain manual execution enters verification/reconciliation; applied action remains fact.
+S3-AC-144,"deterministic hard trigger, scoped Operator Hold, Operations business Kill and Platform/Security integrity Kill enforce maximum authorized scope."
+S3-AC-145,Emergency stop records reason/evidence/actor/scope/time/review owner and need not wait for Owner availability.
+S3-AC-146,no actor who can activate a Hold/Kill may unilaterally reenable.
+S3-AC-147,"reenablement requires Root Cause closure, Unknown/Mismatch resolution, current authority evidence, Operations endorsement and Owner approval."
+S3-AC-148,technical/security cause additionally requires Platform/Security closure attestation.
+S3-AC-149,reenablement never restores old decision assets.
+S3-AC-150,"Exact Compensation may remain separately eligible during quarantine, but no Regression or Kill creates automatic reverse write."
+S3-AC-151,every governed action freezes a complete Outcome Evaluation Plan before external execution.
+S3-AC-152,"the Plan binds Case, affected-set, lineage, action, versions, baseline, windows, critical units, coverage, sample and confounder policy."
+S3-AC-153,canonical baseline selection is deterministic and cannot be chosen by AI or after result observation.
+S3-AC-154,material confounder keeps early safety Guard active but blocks action-specific final verdict.
+S3-AC-155,"insufficient comparable history produces `OUTCOME_BASELINE_INSUFFICIENT`, not an invented benchmark."
+S3-AC-156,operational association and causal incrementality remain separate.
+S3-AC-157,Outcome Policy resolves by exact scoped effective version and has no hidden production default.
+S3-AC-158,Policy conflict/missing state blocks final success and dependent Optimization write while preserving observation/proven-harm Task.
+S3-AC-159,late data recalculation uses the action-frozen Outcome Policy.
+S3-AC-160,`VERIFIED_AD_RISK_CLEARED` proves only the original advertising danger cleared.
+S3-AC-161,`VERIFIED_AD_EXPOSURE_STOPPED` proves only no new dangerous exposure under complete evidence.
+S3-AC-162,Protection terminal state does not close inherited inventory/listing cause or imply primary success; continuing danger remains active.
+S3-AC-163,30-day mature evidence can create formal Operational success/no-improvement/regression with visible not-settled status.
+S3-AC-164,"Settled outcome uses the same lineage, frozen Policy and stage-consistent Settled baseline."
+S3-AC-165,Settled contradiction preserves Operational history and reopens/escalates the same lineage.
+S3-AC-166,favorable Settled evidence may upgrade earlier Operational no-improvement with history preserved.
+S3-AC-167,Settlement attribution unresolved cannot be converted to final result through estimated allocation.
+S3-AC-168,Outcome Regression removes settled-success reuse and creates the correct Finance/Advertising review responsibility.
+S3-AC-169,engineering can close without real Provider side effects only when deterministic interfaces and fail-closed states are complete.
+S3-AC-170,both platforms deliver full read/diagnosis/Task/Manual Shadow/Outcome business capability at engineering closure.
+S3-AC-171,Gate EV is exact Platform+Store+Capability+object+direction+basis+value+window+exposure+actor+abort authority and cannot authorize another scope.
+S3-AC-172,"Gate E consumes operating foundation, Shadow, direction-specific Gate EV, failure controls, early safety, ownership and aggregate Exposure."
+S3-AC-173,Gate E scope is a subset of demonstrated evidence; untested Platform/Direction/Basis/Compensation/Ordinary/reentry remains disabled.
+S3-AC-174,30-day and Settled outcomes remain continuing obligations rather than predetermined uplift prerequisites; future expansion requires exact evidence and Gate E Amendment.
+S3-AC-175,every production decision resolves to one complete active scope-bound Advertising Decision Policy Bundle.
+S3-AC-176,domain version publication alone cannot change production write eligibility.
+S3-AC-177,"Bundle whole-combination validation covers stage consistency, Provider semantics, monotonicity, materiality, Lease, Exposure and Gate scope."
+S3-AC-178,"write-expanding Bundle activation requires applicable attestations, Operations endorsement and Owner final approval."
+S3-AC-179,"Bundle activation is atomic, invalidates old unexecuted assets without rebinding, and preserves transmitted/historical lineages."
+S3-AC-180,"Bundle rollback creates a new audited version; missing/conflicted Bundle blocks candidate, Approval and transmission."
+S3-AC-181,Live Queue presents the current complete operating path with evidence drill-through and role scope.
+S3-AC-182,Daily Action Brief is produced each configured operating day as a versioned `as_of` action snapshot.
+S3-AC-183,"Weekly Evidence Review covers Shadow, actions, verification, SLO, outcomes, Regression, exposure, Bundle/Gate maturity and release obligations."
+S3-AC-184,Daily/Weekly artifacts link canonical Cases/Tasks/Metrics/Outcomes and cannot become parallel writers.
+S3-AC-185,late facts create explicit Daily/Weekly revision or Delta lineage without overwriting prior publication.
+S3-AC-186,"AI drafting uses authorized canonical references and cannot modify facts, state or authority."
+S3-AC-187,"structured UI distinguishes confirmed, estimated, stale, blocked, Operational and Settled states and supports safe drill-through."
+S3-AC-188,API filtering/pagination and frontend navigation inherit backend scope and do not leak Provider DTO/SDK types.
+S3-AC-189,"keyboard use, UTF-8/Russian text, UTC storage, Store-local display and safe errors are verified."
+S3-AC-190,"Secret, Buyer PII, real Credential and unsafe Raw are absent from Git, fixtures, logs, traces, reports, AI and client bundles."
+S3-AC-191,"no real Provider call, hidden Budget/Status/strategy write path or browser automation exists in engineering evidence."
+S3-AC-192,`production_write_enabled` remains false absent separate exact authority.
+S3-AC-193,applied migrations remain byte-identical; clean install and protected-main upgrade pass on real PostgreSQL.
+S3-AC-194,"restart, replay, concurrency and reconciliation cannot duplicate facts, Cases, Tasks, Approvals, Commands, reservations, exposure, Outcomes or audit."
+S3-AC-195,"unit/property/architecture/PostgreSQL/browser tests cover calculations, authority boundaries, state distinctions and full operating path."
+S3-AC-196,"mutation/adversarial/fault-injection tests prove hard Gates, expiry, scope, transmission boundary, no-write, missed trigger, late data and Kill race."
+S3-AC-197,performance evidence proves targeted SLOs and hourly reconciliation at declared capacity.
+S3-AC-198,security tests prove role-minimal disclosure and no API/export/notification/AI bypass.
+S3-AC-199,Requirement/Owner Decision → Design → Code → Test → Evidence traceability and canonical docs/runbooks/evidence/Git identity are synchronized.
+S3-AC-200,"full repository regression, governance/production-readiness validation and security scans pass with no threshold weakening and no unresolved BLOCKER/MAJOR finding."

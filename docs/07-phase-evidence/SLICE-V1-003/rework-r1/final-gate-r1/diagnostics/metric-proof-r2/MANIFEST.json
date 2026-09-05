@@ -1,0 +1,202 @@
+{
+  "kind": "UNCOMMITTED_DIAGNOSTIC_ONLY",
+  "sourceHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+  "worktreeModified": true,
+  "exactPreExecutionFullSourceInventoryCaptured": false,
+  "engineeringClosureClaimMade": false,
+  "controllerApprovalClaimMade": false,
+  "r1": {
+    "units": 41,
+    "integrationTests": 106,
+    "failures": 2,
+    "result": "FAIL"
+  },
+  "r2": {
+    "units": 48,
+    "integrationTests": 119,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "result": "PASS_DIAGNOSTIC_ONLY",
+    "subsequentEdits": "MetricRepository Javadoc and runbook documentation; final source checkpoint full verification remains required"
+  },
+  "python": {
+    "tests": 420,
+    "result": "PASS_DIAGNOSTIC_ONLY"
+  },
+  "r2Suites": [
+    {
+      "file": "TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AnalyticsMetricReevaluationIT.xml",
+      "suite": "com.mimococo.marketops.advertisingefficiency.internal.application.AnalyticsMetricReevaluationIT",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.mimococo.marketops.database.FlywayMigrationIT.xml",
+      "suite": "com.mimococo.marketops.database.FlywayMigrationIT",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeRevisionFreshnessIT.xml",
+      "suite": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeRevisionFreshnessIT",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT.xml",
+      "suite": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomePurposeFreshnessIT.xml",
+      "suite": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomePurposeFreshnessIT",
+      "tests": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT.xml",
+      "suite": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEconomicCauseBoundIT.xml",
+      "suite": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEconomicCauseBoundIT",
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest.xml",
+      "suite": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest",
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest.xml",
+      "suite": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest.xml",
+      "suite": "com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationServiceWindowTest.xml",
+      "suite": "com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationServiceWindowTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.mimococo.marketops.analyticsdecision.internal.application.MetricEngineTest.xml",
+      "suite": "com.mimococo.marketops.analyticsdecision.internal.application.MetricEngineTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEconomicCauseBoundIT.xml",
+      "bytes": 111612,
+      "sha256": "71526e59000b3809393b27cc0c1294082fd40dc4540a42d12b691e443172031f"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingFrozenOutcomeIT.xml",
+      "bytes": 42988,
+      "sha256": "649ba6cbe4b5ea45a088ce37f235384a8936d4f9a0b3f6223ce0c23794c6244d"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomePurposeFreshnessIT.xml",
+      "bytes": 49089,
+      "sha256": "5d3f4a3dcddbfb1c4bd576aa92bd60db76fb88d6c597666825d5aaa56fc4c35a"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeRevisionFreshnessIT.xml",
+      "bytes": 43783,
+      "sha256": "2d4800dadc417b14dc424667cd0056cff2f07f625369ac7d873bd1198cf920d5"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOutcomeServiceTest.xml",
+      "bytes": 42099,
+      "sha256": "14edc0173155467af3e21684a65b39c7dacf0af70ab7f324dcc3ff357fc71e5f"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingPurposeFreshnessTest.xml",
+      "bytes": 40137,
+      "sha256": "fadca01eea36f8c0f3a499a4c1a91b4e172ee53e4bb18af830fc28b72a48a132"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingVerticalPathIT.xml",
+      "bytes": 57445,
+      "sha256": "a6c6ad9aa9c5c55261c8812c9ace200951f49212263c653f5edb3205a69483e5"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AnalyticsMetricReevaluationIT.xml",
+      "bytes": 57574,
+      "sha256": "18e4369d76a9885dd9aa5243642d5c359f9315bd6b8cb65ea8c839c68af0e041"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/TEST-com.mimococo.marketops.analyticsdecision.internal.application.AnalyticsCalculationServiceWindowTest.xml",
+      "bytes": 40402,
+      "sha256": "83d349ab968c3992c9710561b587b5f1ac41996acb485d27d9e416502d3c984c"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/TEST-com.mimococo.marketops.analyticsdecision.internal.application.MetricEngineTest.xml",
+      "bytes": 40311,
+      "sha256": "d7f88c2dfce6609c4e79cb57528e9d076411d5072f3a502a419b7fbb9e5908cc"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/TEST-com.mimococo.marketops.architecture.SoleAuthorityArchitectureTest.xml",
+      "bytes": 39577,
+      "sha256": "33c4c0a1beca1cefbb62533fce8b542b817dad8c491d3fba65c712d2caaf11f7"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/TEST-com.mimococo.marketops.database.FlywayMigrationIT.xml",
+      "bytes": 71905,
+      "sha256": "d7d3feafc21ae49d1e582563685a8a2f7e646703148e5f04b19f02ad366147d6"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/slice3-finalgate-python-preflight-r1.log",
+      "bytes": 48390,
+      "sha256": "c747c31519aa43242043b0640cd55567f8f0c84cf77a0ac260b9d92516ddbe94"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/slice3-metric-proof-focused-r1.log",
+      "bytes": 237327,
+      "sha256": "1fee065b8308c1670c2c81a8c0cb1459a529e1b340373da9793ec7ff6cf6e6f3"
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostics/metric-proof-r2/slice3-metric-proof-focused-r2.log",
+      "bytes": 159884,
+      "sha256": "76142ca4c2786367ff931c17fa8f2040bfb4479affd54b99f050197747a2039e"
+    }
+  ]
+}

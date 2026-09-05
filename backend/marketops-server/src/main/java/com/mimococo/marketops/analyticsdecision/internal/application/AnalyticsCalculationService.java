@@ -96,15 +96,27 @@ public class AnalyticsCalculationService {
                           MetricWindow window,
                           String triggerKind,
                           UUID requestedByUserId) {
+        return runForWindow(storeId,window,FactWindow.alignedEndingAt(clock.instant(),window.length()),triggerKind,requestedByUserId);
+    }
+
+    /** Re-evaluate an exact historical business window through the same Metric writer. */
+    @Transactional
+    public RunSummary runForWindow(UUID storeId,
+                                   MetricWindow window,
+                                   FactWindow factWindow,
+                                   String triggerKind,
+                                   UUID requestedByUserId) {
+        Instant now = clock.instant();
+        if(window==null || factWindow==null
+                || !java.time.Duration.between(factWindow.periodStart(),factWindow.periodEnd()).equals(window.length())
+                || !factWindow.periodStart().equals(factWindow.periodStart().truncatedTo(java.time.temporal.ChronoUnit.HOURS))
+                || !factWindow.periodEnd().equals(factWindow.periodEnd().truncatedTo(java.time.temporal.ChronoUnit.HOURS))
+                || factWindow.periodEnd().isAfter(now)) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
         StoreRef store = organizationDirectory.store(storeId)
                 .orElseThrow(() -> OperationRejectedException.of(ErrorCode.RESOURCE_NOT_FOUND));
 
-        Instant now = clock.instant();
-        // Aligned rather than ending at this instant: the reproducibility
-        // digest covers the window, so an unaligned one would make every
-        // recomputation a different question and fill a figure's history with
-        // rows that differ only in when somebody asked.
-        FactWindow factWindow = FactWindow.alignedEndingAt(now, window.length());
         UUID runId = idGenerator.newId();
         metrics.openRun(runId, store.organizationId(), triggerKind, "STORE", storeId,
                 window.name(), factWindow.periodStart(), factWindow.periodEnd(),

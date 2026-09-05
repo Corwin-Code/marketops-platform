@@ -51,6 +51,7 @@ public class ConsoleProblemAdvice {
             Map.entry(ErrorCode.USER_INACTIVE, HttpStatus.FORBIDDEN),
             Map.entry(ErrorCode.ACTION_NOT_PERMITTED, HttpStatus.FORBIDDEN),
             Map.entry(ErrorCode.RESOURCE_SCOPE_DENIED, HttpStatus.FORBIDDEN),
+            Map.entry(ErrorCode.APPROVAL_EVIDENCE_SCOPE_BLOCKED, HttpStatus.FORBIDDEN),
             Map.entry(ErrorCode.IDENTITY_PROVIDER_NOT_ACCEPTED, HttpStatus.UNAUTHORIZED),
             Map.entry(ErrorCode.IMPORT_TOO_LARGE, HttpStatus.PAYLOAD_TOO_LARGE),
             Map.entry(ErrorCode.EXPORT_QUEUE_FULL, HttpStatus.TOO_MANY_REQUESTS),

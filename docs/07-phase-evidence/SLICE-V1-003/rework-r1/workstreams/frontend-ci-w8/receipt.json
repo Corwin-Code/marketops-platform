@@ -1,0 +1,668 @@
+{
+  "recordedAtUTC": "2026-09-05T13:12:23.642244+00:00",
+  "runId": 33967874665,
+  "runAttempt": 1,
+  "url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33967874665",
+  "runConclusion": "success",
+  "testedPrHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "reportedPrTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "testedCheckoutMergeSha": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+  "testedCheckoutTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "mergeParents": [
+    "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af"
+  ],
+  "mergeTreeEqualsPrHeadTree": true,
+  "jobs": [
+    {
+      "id": 101311078483,
+      "name": "frontend-lint",
+      "startedAt": "2026-09-05T13:05:19Z",
+      "completedAt": "2026-09-05T13:05:50Z",
+      "conclusion": "success"
+    },
+    {
+      "id": 101311078589,
+      "name": "frontend-typecheck",
+      "startedAt": "2026-09-05T13:05:19Z",
+      "completedAt": "2026-09-05T13:05:43Z",
+      "conclusion": "success"
+    },
+    {
+      "id": 101311078599,
+      "name": "frontend-build",
+      "startedAt": "2026-09-05T13:05:19Z",
+      "completedAt": "2026-09-05T13:05:53Z",
+      "conclusion": "success"
+    },
+    {
+      "id": 101311078665,
+      "name": "frontend-test",
+      "startedAt": "2026-09-05T13:05:19Z",
+      "completedAt": "2026-09-05T13:09:36Z",
+      "conclusion": "success"
+    }
+  ],
+  "rawLogs": {
+    "path": "/tmp/slice3-w8-frontend-ci/logs.zip",
+    "sha256": "c935dc0e275541b92948779cdcb4f3c88d09c1274adb96ddb4403bb792946279"
+  },
+  "namedBrowserResults": {
+    "path": "/tmp/slice3-w8-frontend-ci/named-browser-results.json",
+    "sha256": "e6600e46d0ec1ca45ea7b1e45cfb1985439384708860be7968de91c071dc3679"
+  },
+  "legacyBrowserNamedPassed": 25,
+  "advertisingBrowserNamedPassed": 12,
+  "originalRemoteScreenshotCount": 26,
+  "unitResult": {
+    "layer": "FRONTEND_UNIT_AGGREGATE_ONLY",
+    "testsPassed": 308,
+    "filesPassed": 22,
+    "logArchive": {
+      "path": "/tmp/slice3-w8-frontend-ci/logs.zip",
+      "sha256": "c935dc0e275541b92948779cdcb4f3c88d09c1274adb96ddb4403bb792946279"
+    },
+    "logMember": "frontend-test/6_Run the tests with coverage.txt",
+    "logMemberSha256": "e769326252b4266be0c7d8d84dbc6233f85da11a0e019d148f6528ff6fc5c6a9",
+    "limit": "Normal Vitest reporter records file-level and aggregate counts here. Individual test titles are bound to W6 local JSON separately, never represented as W8 per-title JSON."
+  },
+  "sbomResult": {
+    "command": "npm run sbom; npm ls --all --json",
+    "status": "SUCCESS_WITHOUT_VALIDATOR_SKIP",
+    "archiveMember": "frontend-build/7_Produce the CycloneDX and dependency inventories.txt",
+    "memberSha256": "4de0f2b2fb29ec8858d9be693ee7bb596e9eb56a188527bcc4be3290289e8345"
+  },
+  "artifacts": [
+    {
+      "artifactId": 9970062475,
+      "name": "frontend-coverage",
+      "download": {
+        "path": "/tmp/slice3-w8-frontend-ci/artifact-9970062475.zip",
+        "sha256": "4433edca13539c45e27afffab2515db01da28b8a69339b6c4ac238393d6c89a7"
+      },
+      "serverDigest": "sha256:4433edca13539c45e27afffab2515db01da28b8a69339b6c4ac238393d6c89a7",
+      "members": [
+        {
+          "path": "lcov-report/base.css",
+          "sha256": "3f876e51f0a46864ffa7665b4b7a1f5fb5f6f37fb6a28f014e2b12d82962c852",
+          "bytes": 5394
+        },
+        {
+          "path": "lcov-report/block-navigation.js",
+          "sha256": "cd8db34b1fbeb973354a93f8b4133c7c7eab34cdda9429a0434be91384783b7e",
+          "bytes": 2655
+        },
+        {
+          "path": "lcov-report/favicon.png",
+          "sha256": "5b0cfd52dc0bfbe544f4e1a9c77aa46b8629b0e0aad6c54f95eef457b86c2a89",
+          "bytes": 445
+        },
+        {
+          "path": "lcov-report/index.html",
+          "sha256": "a32f8851ec2108861bb38e669aba79321b1d5d016b8f18a9c5c75757d29cfee0",
+          "bytes": 11430
+        },
+        {
+          "path": "lcov-report/prettify.css",
+          "sha256": "ea3fe433f9450698ca8a230271688e7aeec12f99c8a7ef6c94379abb38f27823",
+          "bytes": 676
+        },
+        {
+          "path": "lcov-report/prettify.js",
+          "sha256": "fa1b1e1b906ddcfa08b46f161c0f924f506e1a31b4f3e09b8caaa2463ef52c18",
+          "bytes": 17590
+        },
+        {
+          "path": "lcov-report/sort-arrow-sprite.png",
+          "sha256": "42c895355f9838ede83fdfdca90127d8471aefed5ecf5342374f65ec7c3f10ab",
+          "bytes": 138
+        },
+        {
+          "path": "lcov-report/sorter.js",
+          "sha256": "f8cc5d157379d844fd695ad567b6c29b3c1f0812964ddf6f95c26327e434bab5",
+          "bytes": 6731
+        },
+        {
+          "path": "lcov-report/src/App.tsx.html",
+          "sha256": "fff56c1d20f372d1d0b30155b557a2601e4b9a010d395e4585ef5b7949f3906c",
+          "bytes": 31169
+        },
+        {
+          "path": "lcov-report/src/ConsoleShell.tsx.html",
+          "sha256": "f89167d07b0ea8141648c7c06a02d68d645c3ca839de403c9578998dd223a026",
+          "bytes": 31955
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingBriefView.tsx.html",
+          "sha256": "08c454a0a4cb5dae226ae4752fe69e7a489b13126b7baf6959b8ff35abacb130",
+          "bytes": 33457
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingCaseView.tsx.html",
+          "sha256": "785b35919d965c172127c69d8845bd21cd99b9db3c382481cd5c5bb37915a37d",
+          "bytes": 39310
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingCommandTimeline.tsx.html",
+          "sha256": "a00b1d29b5df39298782beb21f6d17dede322c57c2933fcd56a53d8439d6f964",
+          "bytes": 18563
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingCompensation.tsx.html",
+          "sha256": "9555ace0da51762669dc9f210e7e95c2b0a532274ac8f1f16f1e9f045ecf7ff5",
+          "bytes": 16733
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingEvidenceDetails.tsx.html",
+          "sha256": "b14ffd90a3eb593e204bbbeee4dccce4b04c4b27547268eab3791f3931ca07ff",
+          "bytes": 10030
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingManualControls.tsx.html",
+          "sha256": "62b541b47b10f576f795f963364288b80241e4a72dc4bc1e73ad15f397305ed5",
+          "bytes": 28354
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingManualShadow.tsx.html",
+          "sha256": "fcc7a6254dda7b418d67bf77e19514e10739c4f0b31fde4a6975f87d28ea7275",
+          "bytes": 27333
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingContainmentControls.tsx.html",
+          "sha256": "47bde905cf541063bb4f5553bbfdb58520049810f659b9ec3edcca0207489bf9",
+          "bytes": 26019
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingOperations.tsx.html",
+          "sha256": "e611d3ea3123156f8d3f31d38e090ab9a82079861be4760aca23708af81ba424",
+          "bytes": 51473
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingOrchestration.tsx.html",
+          "sha256": "a08fd742102b5614e9e7d0a730bedd32c3aed3518ba6b78d8972049511219787",
+          "bytes": 9668
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingOutcomeHistory.tsx.html",
+          "sha256": "13c56568867ce353e0429424e19a56d4c155a6303d8950f2022be89fd7767217",
+          "bytes": 22868
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingQueue.tsx.html",
+          "sha256": "c896f47b3ff35f3661d9692bf3b1baafee7d0d10ce4680095086037655d02c83",
+          "bytes": 33606
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingResponsibilityControls.tsx.html",
+          "sha256": "3bc236533a658a619496b298cc10f52b6f3b7b0124502d65e84fca41decec5e0",
+          "bytes": 47808
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingTimestamp.tsx.html",
+          "sha256": "145e05864628f1a61369e6eb518ef36be8f0b1cc988e6f69d71836c78cd665c4",
+          "bytes": 7054
+        },
+        {
+          "path": "lcov-report/src/advertising/AdvertisingWorkflow.tsx.html",
+          "sha256": "ac4cb858089656387ba48d044885b95bc7634984726e404a1059da4a2cb583e1",
+          "bytes": 44216
+        },
+        {
+          "path": "lcov-report/src/advertising/EvidenceChip.tsx.html",
+          "sha256": "6e88248750ade8963fc58cdac2125425805d26a0eb7f86eac02372de6f7033d0",
+          "bytes": 8109
+        },
+        {
+          "path": "lcov-report/src/advertising/evidencePresentation.ts.html",
+          "sha256": "2b426a751aea41f4ed57031e567a68b1cab43b4fb8c76b096e9593d709f0b7d8",
+          "bytes": 26520
+        },
+        {
+          "path": "lcov-report/src/advertising/index.html",
+          "sha256": "cef2ad51346d7f40b6016bf3e37d39c5c49163e586e529f3b5dca65d2f49dec6",
+          "bytes": 16293
+        },
+        {
+          "path": "lcov-report/src/api/advertising.ts.html",
+          "sha256": "7bb8f636b070858fb5385835d9caa6ae73576199d07cf83b16fcc16147285fee",
+          "bytes": 134399
+        },
+        {
+          "path": "lcov-report/src/api/console.ts.html",
+          "sha256": "40f0a5748054062f8673ce89ad4be48e875e60fed245578268a78a03b6fd7b1d",
+          "bytes": 309167
+        },
+        {
+          "path": "lcov-report/src/api/diagnosticExport.ts.html",
+          "sha256": "f0143c5196fae5b38b6d6d62e03d77c52ad6248003496af7f600733da75523a1",
+          "bytes": 45951
+        },
+        {
+          "path": "lcov-report/src/api/index.html",
+          "sha256": "fc2b37ada48cc891046d7aef63398a8e88b23c6c06f6b82a28a78cb10d9ae4a3",
+          "bytes": 6604
+        },
+        {
+          "path": "lcov-report/src/api/metaStatus.ts.html",
+          "sha256": "e4dee978a11bc268c799ffcee9fa471ce147cbdcafef090214c9b97b23d606ca",
+          "bytes": 27449
+        },
+        {
+          "path": "lcov-report/src/availability/AvailabilityAuthorityPanel.tsx.html",
+          "sha256": "3a78dcdd913a4d2233a6810ffdad4036e509887f5b8312f41944eabc4399e252",
+          "bytes": 64067
+        },
+        {
+          "path": "lcov-report/src/availability/AvailabilityCases.tsx.html",
+          "sha256": "601d3c9918f211f5ba9ef5dc09e05ec7b84c8f7e95225cb4ee93d973248847df",
+          "bytes": 41620
+        },
+        {
+          "path": "lcov-report/src/availability/AvailabilityQueue.tsx.html",
+          "sha256": "0efaef8e9a638eb98462c9bd519f0391e532cdc1f04363e470191d8aca60f829",
+          "bytes": 37488
+        },
+        {
+          "path": "lcov-report/src/availability/casePresentation.ts.html",
+          "sha256": "208a6ddc689d30299ff89bd3fa0847e26232c3c79a5cfd1d606db0909bc390f8",
+          "bytes": 24238
+        },
+        {
+          "path": "lcov-report/src/availability/index.html",
+          "sha256": "5e2069ee10d63843d9457467ac8bacd5d538e961bf3d6af4d3ab0c256af94b23",
+          "bytes": 7415
+        },
+        {
+          "path": "lcov-report/src/availability/riskPresentation.ts.html",
+          "sha256": "7131150d7506b201657bcd57d1695066141bf3f297b2725391a21c13fe6e7617",
+          "bytes": 31799
+        },
+        {
+          "path": "lcov-report/src/buildInfo.ts.html",
+          "sha256": "f892c465b5ad11705fb9855675191d6fdbb89d08805f3e140c4642432c67d71f",
+          "bytes": 7887
+        },
+        {
+          "path": "lcov-report/src/commands/CommandTimeline.tsx.html",
+          "sha256": "399efba216b05984112f957cb7c31fe6ef8dc9bc45902b5dcd7eea9311f267a0",
+          "bytes": 35386
+        },
+        {
+          "path": "lcov-report/src/commands/index.html",
+          "sha256": "54d101574f4d8f1baf543b68b0019babbb60bd6ea51871e9c84e70ff62908ebe",
+          "bytes": 4512
+        },
+        {
+          "path": "lcov-report/src/config.ts.html",
+          "sha256": "babe2d55e31a141d14d7323d6799c388baa8a461c0561182ca35c407e9275b64",
+          "bytes": 17364
+        },
+        {
+          "path": "lcov-report/src/diagnosis/AiExplanationPanel.tsx.html",
+          "sha256": "af7a7dd6b6421689fb5a9613225b5dad0e41628eca85ee4e5b124f8e9d5255c7",
+          "bytes": 19810
+        },
+        {
+          "path": "lcov-report/src/diagnosis/MetricEvidencePanel.tsx.html",
+          "sha256": "aea90ddca92df5d8fad65b9bbe7d12ba027110384e41bad7f39c969040587c2f",
+          "bytes": 16211
+        },
+        {
+          "path": "lcov-report/src/diagnosis/DiagnosticExportPanel.tsx.html",
+          "sha256": "2c511d55670bd8eb88353f3901a89bef801719218bdf00e9a96c01536767f24e",
+          "bytes": 29379
+        },
+        {
+          "path": "lcov-report/src/diagnosis/index.html",
+          "sha256": "5a3db01be895da77465adf0c1557ccf7ec89ee8c1a8d0920a022856e46fcd34b",
+          "bytes": 6715
+        },
+        {
+          "path": "lcov-report/src/health/healthState.ts.html",
+          "sha256": "8171d92eadcb9f9f4130641fb2ecd8c459919dd31b60e1cd648af5120de754a0",
+          "bytes": 18316
+        },
+        {
+          "path": "lcov-report/src/health/HealthShell.tsx.html",
+          "sha256": "5420b8f6f6622b79a24319b5f08eed995cec5967e25e5e1929d2fece72350709",
+          "bytes": 27271
+        },
+        {
+          "path": "lcov-report/src/diagnosis/SubjectDiagnosisView.tsx.html",
+          "sha256": "aafc402c22aebfe732455154eaff424567f3b0478fd3336fa87829068eb61657",
+          "bytes": 27318
+        },
+        {
+          "path": "lcov-report/src/health/index.html",
+          "sha256": "2f2f0be6ff447f6d7dff23849d3ba99771d76fb68e359be492f817f4e8787ad7",
+          "bytes": 5177
+        },
+        {
+          "path": "lcov-report/src/index.html",
+          "sha256": "dd8d32fadf581f70396ab6f38055cbd0e60f2e9714380b16db902d90cda028e6",
+          "bytes": 7147
+        },
+        {
+          "path": "lcov-report/src/queue/PriorityQueue.tsx.html",
+          "sha256": "cbd6779c8e5b3ba997bba8f1aaf989e2745798b4473e1452f78ed33c3bddc275",
+          "bytes": 23619
+        },
+        {
+          "path": "lcov-report/src/queue/index.html",
+          "sha256": "5545596ccc8e9e33a8e18e4685a8413679726a544f79675342626fbb5fe23ec3",
+          "bytes": 4487
+        },
+        {
+          "path": "lcov-report/src/session/SignIn.tsx.html",
+          "sha256": "ae08cd1d3d540cfde8d221b46c9bfbc63f818f5c74cc858be6772593f3954e73",
+          "bytes": 9338
+        },
+        {
+          "path": "lcov-report/src/session/index.html",
+          "sha256": "8c14143cfa05f16417075ec652f4adb81bef9d5312019147671c8a0c1930a80e",
+          "bytes": 6485
+        },
+        {
+          "path": "lcov-report/src/session/oidc.ts.html",
+          "sha256": "872f5cef8d4a44b7be820bcb10c91a36fc39b2f2e3bd10b149549cceb513bbc8",
+          "bytes": 28627
+        },
+        {
+          "path": "lcov-report/src/session/pkce.ts.html",
+          "sha256": "ea1a81ffcf1031d562d08cf534604f5e7dd5ad8ba264a1a95f81ce6b92da0e50",
+          "bytes": 9946
+        },
+        {
+          "path": "lcov-report/src/session/session.ts.html",
+          "sha256": "7bb66e4b5fa649e43c1cb4750fb21939408b9c5d452be0329c81e845ae20450e",
+          "bytes": 12764
+        },
+        {
+          "path": "lcov-report/src/state/ValueCell.tsx.html",
+          "sha256": "fcefe476523c64d6eaa7b4ca113c0951a099396ea877c189b53a4944dbbe0b21",
+          "bytes": 9348
+        },
+        {
+          "path": "lcov-report/src/state/confidence.ts.html",
+          "sha256": "308a302b90fd458c3fa0d420ceb9944d0ce3761ab941bab7a3f0304b4657e66e",
+          "bytes": 21163
+        },
+        {
+          "path": "lcov-report/src/state/index.html",
+          "sha256": "0cf6e112ddb5b18609cd5131ad98e0906771b7330a664b36b1222dfa0ade6441",
+          "bytes": 5141
+        },
+        {
+          "path": "lcov-report/src/vite-env.d.ts.html",
+          "sha256": "1f61795430ac331816d4290c6533a369d63f50193f96329b4570a2e7a834c3e1",
+          "bytes": 5309
+        },
+        {
+          "path": "lcov-report/src/workflow/RecommendationReview.tsx.html",
+          "sha256": "257b46cd7ed3becffe420cfb0f5720b17699de55fa34cc3687a392708bfcb54c",
+          "bytes": 36760
+        },
+        {
+          "path": "lcov-report/src/workflow/SubjectRecommendations.tsx.html",
+          "sha256": "a9d21b1151ebcd031c46af732094ae9da3146390f3ebf7760dab25cafdff6733",
+          "bytes": 10407
+        },
+        {
+          "path": "lcov-report/src/workflow/index.html",
+          "sha256": "a886df30f16f834f7dccdd0ee27046acc6fc556ecd7dcc17d6dd29dca0ebb9cf",
+          "bytes": 5263
+        },
+        {
+          "path": "lcov.info",
+          "sha256": "426003c955f0ca8d0824a8d60e06ff1902eeebcabc92ad2c1edd2c293987e014",
+          "bytes": 85780
+        }
+      ]
+    },
+    {
+      "artifactId": 9970062284,
+      "name": "advertising-browser-screenshots",
+      "download": {
+        "path": "/tmp/slice3-w8-frontend-ci/artifact-9970062284.zip",
+        "sha256": "4ffe734fc841d9b2f6e49f9808e7fcef2d82523ef24c33fa924fff4e3d933823"
+      },
+      "serverDigest": "sha256:4ffe734fc841d9b2f6e49f9808e7fcef2d82523ef24c33fa924fff4e3d933823",
+      "members": [
+        {
+          "path": "governed-advertising-HISTO-1effc-state-and-separate-outcomes/HISTORY_REGRESSION-actual-http-history.png",
+          "sha256": "b8fa8335ea3d2f1c598b5c1579394e556c92d42e7fd9a9c07e4b6fc4ef57593f",
+          "bytes": 535704
+        },
+        {
+          "path": "governed-advertising-HISTO-7a41c-state-and-separate-outcomes/HISTORY_MISMATCH-actual-http-history.png",
+          "sha256": "401eeffcec042039c02669796db334dabe575f19368ea8c193f9cd923139f113",
+          "bytes": 341666
+        },
+        {
+          "path": "governed-advertising-HISTO-cbd3f-state-and-separate-outcomes/HISTORY_EXPIRED-actual-http-history.png",
+          "sha256": "2d0242aafc1e6e41a726648edd7d0a4538e91a801bfef48dd0b17ba89b0d31bc",
+          "bytes": 296855
+        },
+        {
+          "path": "governed-advertising-HISTO-d95fb-state-and-separate-outcomes/HISTORY_UNKNOWN-actual-http-history.png",
+          "sha256": "db1fde7702557ba70ed76465b2c6e9cde57a6d642c077776717c60fcf2852d89",
+          "bytes": 322220
+        },
+        {
+          "path": "governed-advertising-HISTO-d95fb-state-and-separate-outcomes/maker-native-unknown-history-masked.png",
+          "sha256": "30aea697a9e1623df2a1936c60c1a6a7318b2bcb29bf17c824e9eee0f92fee26",
+          "bytes": 320359
+        },
+        {
+          "path": "governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-independent-proof-early-safety-pending.png",
+          "sha256": "68d005c757725d61632b2eccefe0ab18f069fcb7ac278d9ae712b6c566cfe8fc",
+          "bytes": 1387670
+        },
+        {
+          "path": "governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-maker-manual-draft.png",
+          "sha256": "80cb0fe483a46b36ae758c94625b8fae96d7b0b555be47511efc03ff00379de4",
+          "bytes": 401970
+        },
+        {
+          "path": "governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-owner-manual-issued.png",
+          "sha256": "91cbc96f2660e5633e2fd7ffff175c669747da2dd2be280404a0d02c80913c13",
+          "bytes": 884639
+        },
+        {
+          "path": "governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-independent-proof-early-safety-pending.png",
+          "sha256": "2d9128dbad78db807827519e3433d74e938a59054ff4488429ce9675c0c2f3e6",
+          "bytes": 1383866
+        },
+        {
+          "path": "governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-maker-manual-draft.png",
+          "sha256": "28cbbc36f624a0755a812b092543a2c556ab1eb7af17a9ca430b16c172b18b03",
+          "bytes": 401127
+        },
+        {
+          "path": "governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-owner-manual-issued.png",
+          "sha256": "468c215657a2d4024c3a0355abe891830e721b1600d4a67fe09b15071602158c",
+          "bytes": 882394
+        },
+        {
+          "path": "governed-advertising-all-f-e9164-d-expose-no-invented-action/DATA_REPAIR-actual-http-projection.png",
+          "sha256": "600fd69f9bc09fb2437c277ea00f5947aec0081d9e75cc733b48659ac39dcc99",
+          "bytes": 229661
+        },
+        {
+          "path": "governed-advertising-all-f-e9164-d-expose-no-invented-action/OPTIMIZATION-actual-http-projection.png",
+          "sha256": "630d6a67299ee8c9284c538a378478d16349f747a970dc8b67e499e90a889db3",
+          "bytes": 230575
+        },
+        {
+          "path": "governed-advertising-all-f-e9164-d-expose-no-invented-action/PROTECTION-actual-http-projection.png",
+          "sha256": "3aa9b38e3aef499743f2b0984c29ed2940666f50655ae10777a39f615d61968d",
+          "bytes": 150597
+        },
+        {
+          "path": "governed-advertising-all-f-e9164-d-expose-no-invented-action/WATCH-actual-http-projection.png",
+          "sha256": "3c39f36bb171c4663df0360f37c42dae2381cba4de6f5567677c456e420e03ed",
+          "bytes": 194168
+        },
+        {
+          "path": "governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-acknowledgement-not-action.png",
+          "sha256": "882300c37178659e793acc2620576a56ebb18cdd16f7ad02fb7817ad34b21501",
+          "bytes": 257044
+        },
+        {
+          "path": "governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-page-two-six-visible-cases.png",
+          "sha256": "b9f0398cdf27e5f20f1cb6dc81e5482b2b40b35267ffdc41fcbeb702fece9e5f",
+          "bytes": 284489
+        },
+        {
+          "path": "governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-watch-second-page-three-cases.png",
+          "sha256": "fa08a0d1bf4d7d9f89741594d6dc615d41c2c5958b5561bba446627d0962a9f0",
+          "bytes": 254179
+        },
+        {
+          "path": "governed-advertising-real--22caa-sclosure-and-exact-versions/operations-endorsement.png",
+          "sha256": "0b65dd7d1dc2149011c79b9d9ee317a6c31bb39e36b49ea3dc3c9e1ac8fc2501",
+          "bytes": 265822
+        },
+        {
+          "path": "governed-advertising-real--22caa-sclosure-and-exact-versions/maker-minimum-disclosure.png",
+          "sha256": "331759946e26ebe1b8db2c48559beb7d2bf7cf2e816af7e9824646302bbe1fce",
+          "bytes": 257922
+        },
+        {
+          "path": "governed-advertising-real--22caa-sclosure-and-exact-versions/owner-approved-command.png",
+          "sha256": "0a8290123cbbb1a8fda6ad2d5b0cbc8c61569192ecfb1a1f454a0cbcd2bee5d5",
+          "bytes": 294377
+        },
+        {
+          "path": "governed-advertising-real--22caa-sclosure-and-exact-versions/owner-exact-decision-evidence.png",
+          "sha256": "cb68ddbf998ddf5982e89e97304ae441cd3c4f7ac281af066393ca74d583b70d",
+          "bytes": 3397549
+        },
+        {
+          "path": "governed-advertising-scope-44936--conditions-are-established/operations-incomplete-recovery-remains-held.png",
+          "sha256": "e8955ae0db3e5644c15e5cf2b3c4b5d84a268784e1557d3548409b340142731a",
+          "bytes": 396484
+        },
+        {
+          "path": "governed-advertising-scope-44936--conditions-are-established/maker-scoped-emergency-hold.png",
+          "sha256": "1efab06ca6b18fd4cd614c5bdf492e416ab8cfc09091a4882f2cf2363280e1d8",
+          "bytes": 294098
+        },
+        {
+          "path": "governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-active-exact-exception.png",
+          "sha256": "866bdfb2961f41e9bb7d5a1a230c68dcab52ddb1bb1819bca9be36f4c689ef33",
+          "bytes": 253956
+        },
+        {
+          "path": "governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-ended-exception-rebuild.png",
+          "sha256": "95651d2e6a7202153452406aee2ab217da34d6f459587f40fb3ed40d5a64eab7",
+          "bytes": 264524
+        }
+      ]
+    },
+    {
+      "artifactId": 9970008923,
+      "name": "frontend-distribution",
+      "download": {
+        "path": "/tmp/slice3-w8-frontend-ci/artifact-9970008923.zip",
+        "sha256": "ae81ea59c881f18b209f172bf9785fd997125d6972ea168b452bf00aa270166d"
+      },
+      "serverDigest": "sha256:ae81ea59c881f18b209f172bf9785fd997125d6972ea168b452bf00aa270166d",
+      "members": [
+        {
+          "path": "frontend/marketops-console/dist/assets/index-BxrndL5i.js",
+          "sha256": "a63a85c51a0ec6bdc842af02ae589aba7228510a4f2f844535515e2f9fd906a7",
+          "bytes": 343224
+        },
+        {
+          "path": "frontend/marketops-console/dist/index.html",
+          "sha256": "be7d8b5e4799df896893976700a671a43691c8023fa70e3cdfa00f2d7eebdb84",
+          "bytes": 1321
+        },
+        {
+          "path": "frontend/marketops-console/npm-dependency-inventory.json",
+          "sha256": "f90734a6274f1a1b5d88d352c76d680980415a1b509f2d7b9ca78dafbbea0a15",
+          "bytes": 114924
+        },
+        {
+          "path": "build/supply-chain/frontend-sbom.json",
+          "sha256": "44135b2aa0a3b25db9f1bfaa93a93dc9b7694c17fb64bd355cb752677af283cb",
+          "bytes": 616517
+        }
+      ]
+    }
+  ],
+  "downloadLimit": "Every read-only download completed on its first attempt; every ZIP SHA matches its GitHub artifact digest. No signed download URL is persisted in this receipt.",
+  "localW6Evidence": {
+    "path": "/tmp/slice3-w6-browser-evidence/verification-summary.json",
+    "sha256": "85b9e05d6d769251ac6d39988cb6cb2ead82a4fa6dedb9d657ef55169cdf3fee"
+  },
+  "w7ToW8Boundary": {
+    "frontendSource": "Unchanged exact source bytes; actual W8 CI executions are recorded here instead of inheriting W7 results.",
+    "backendSource": "Changed W8 runtime; actual same-job checkout, Maven source compilation and both fixture starts are bound separately in backend-runtime-provenance.json."
+  },
+  "boundary": "This is exact Frontend workflow evidence only. Root complete backend, remaining required contexts, security result and engineering/Controller judgment remain separate.",
+  "backendRuntimeProvenance": {
+    "path": "/tmp/slice3-w8-frontend-ci/backend-runtime-provenance.json",
+    "sha256": "e99c87055c203bfbc04ecd125cbaccff7b0c7448906da19029f30bcd342bb1cf"
+  },
+  "mergeParentsExactlyExpected": true,
+  "visualReview": {
+    "path": "/tmp/slice3-w8-frontend-ci/visual-review.json",
+    "sha256": "79c37a51bff5fcd64c1df8705858a5ce634deaf62e81b1608ce151a203189c4b"
+  },
+  "runApi": {
+    "path": "/tmp/slice3-w8-frontend-ci/run-final.json",
+    "sha256": "8f05e7f9513f6ac39602f38f79cf3d39d957ef6cee45f921f018bfe7da530d3c"
+  },
+  "jobsApi": {
+    "path": "/tmp/slice3-w8-frontend-ci/jobs-latest.json",
+    "sha256": "9e2aade0631b62a6f3c67e38722ddd5ee8ca4abd8de530b790f9e622d3261dd9"
+  },
+  "artifactsApi": {
+    "path": "/tmp/slice3-w8-frontend-ci/artifacts.json",
+    "sha256": "18e656ff6431f6f3a615562c1ff4796c027820f63500b4c926923cfdd9ff1dc5"
+  },
+  "testedMergeApi": {
+    "path": "/tmp/slice3-w8-frontend-ci/tested-merge-commit.json",
+    "sha256": "3db461800640d97cff6bb197f70562fd42e464101261d97d59d65c7a2aefcf96"
+  },
+  "downloadAttemptRecords": [
+    {
+      "path": "/tmp/slice3-w8-frontend-ci/artifact-9970008923.zip.attempt-1.request.json",
+      "sha256": "8032742df3996ee80d9c8ef05b72466f1fa5838b03933aa48aff03dfa83713da"
+    },
+    {
+      "path": "/tmp/slice3-w8-frontend-ci/artifact-9970062284.zip.attempt-1.request.json",
+      "sha256": "490a7ff32dca00f010b4fbda4361a246d0a33c4d60d11d06925c6b6b96045a5e"
+    },
+    {
+      "path": "/tmp/slice3-w8-frontend-ci/artifact-9970062475.zip.attempt-1.request.json",
+      "sha256": "12bb1e8263f86a49148c6b423f331ce759af950b06d1055c70134ad5ec1f5d02"
+    },
+    {
+      "path": "/tmp/slice3-w8-frontend-ci/artifacts.json.attempt-1.request.json",
+      "sha256": "bb437c61472859f2c81b3fdc4736613abcee8b41e23a63741a6d77ea8b931f2b"
+    },
+    {
+      "path": "/tmp/slice3-w8-frontend-ci/jobs-latest.json.attempt-1.request.json",
+      "sha256": "d461af02ef099fd6a3c58d60ba321fe805e3dd8b3ed5be959172b81f4c1802d8"
+    },
+    {
+      "path": "/tmp/slice3-w8-frontend-ci/logs.zip.attempt-1.request.json",
+      "sha256": "ae3061c4c1a67f775f018508b94ef0010beb02509ea50bd488b6260d05f167f2"
+    },
+    {
+      "path": "/tmp/slice3-w8-frontend-ci/logs.zip.attempt-2.request.json",
+      "sha256": "72c04a415f0ea573f4c99c176a9c30f7714856e5d4275c5dc6de5281f6b80105"
+    },
+    {
+      "path": "/tmp/slice3-w8-frontend-ci/run-final.json.attempt-1.request.json",
+      "sha256": "e12a558794b8d74aef8f6e2d50c403c9b502cb7b3ae9ee6ed98de1f51a5101af"
+    },
+    {
+      "path": "/tmp/slice3-w8-frontend-ci/tested-merge-commit.json.attempt-1.request.json",
+      "sha256": "e793c19e03c66d240ba74dbdcc0057a97f8f36b840092fd07b952aa784695e84"
+    }
+  ]
+}

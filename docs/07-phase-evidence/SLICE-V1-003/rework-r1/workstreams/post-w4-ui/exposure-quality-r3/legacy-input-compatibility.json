@@ -1,0 +1,25 @@
+{
+  "kind": "AUTHORIZED_LEGACY_EXPOSURE_WIRE_COMPATIBILITY_UPDATE",
+  "recordedAtUTC": "2026-09-05T10:10:14.230749+00:00",
+  "baselineCommit": "4e101ca4386d1cab089a03edc5d461301d5d4559",
+  "frozenReviewedCommit": "a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb",
+  "currentState": "POST_W4_WORKING_TREE_PENDING_CLEAN_CHECKPOINT",
+  "changedFilesSinceBaseline": [
+    "frontend/marketops-console/tests/browser/advertising-execution.spec.ts"
+  ],
+  "frontendManifestDeltaSinceR2": [
+    "frontend/marketops-console/tests/browser/advertising-execution.spec.ts"
+  ],
+  "path": "frontend/marketops-console/tests/browser/advertising-execution.spec.ts",
+  "beforeSha256": "df6e3570e21bcc8c4a4cc9f56872a9705fd2d452b29f7f51022ec64e4fa14255",
+  "afterSha256": "5b2d0c7e6614f3ce40a9b44536abed2b68c432ce74f2703a32a94f17497aace9",
+  "realHttpRefusalBlockSha256": "c01bf6cc3009b16206f27b999fc80626293554d2083f66f3aa746f0652b59fba",
+  "realHttpRefusalBlockByteIdentical": true,
+  "realHttpRefusalExpandedTestCount": 4,
+  "otherLegacyFilesByteIdenticalToBaseline": true,
+  "reason": "Root explicitly authorized updating stale three-axis Exposure render fixtures to the implemented six-axis contract. Two complete envelope scopes/version/windows, all six independent measures, unknown official spend, exact Retained numerator/denominator, currency window and recovery headroom are asserted. Missing envelope remains UNRESOLVED/no-write. This changes one legacy input and is not an unchanged-original-bytes claim.",
+  "evidenceLayer": "Prepared Chromium render fixtures and unchanged real-HTTP credential negatives. Browser execution remains pending; npm checks do not execute Playwright journeys.",
+  "qualityReceipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r3/receipt.json",
+  "qualityReceiptSha256": "0bd00e02c4919c1e3766eeec43087cf95f87bb75fb3fdda5ff25b2da92422b7f",
+  "finalStatus": "PENDING_CLEAN_CHECKPOINT_ADVERTISING_12_LEGACY_25_FULL_BACKEND_EXACT_CI"
+}

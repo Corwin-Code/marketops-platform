@@ -32,6 +32,8 @@ import java.util.UUID;
  * @param inputDigest digest of the inputs, making the value reproducible
  * @param computedAt when the value was computed
  * @param evidenceRefs the provenance records behind the value
+ * @param verifiedAt latest successful evaluation of this exact value, preserving its original computation
+ * @param verificationRunId the corresponding canonical computation run
  */
 public record MetricValueView(
         UUID metricValueId,
@@ -51,10 +53,23 @@ public record MetricValueView(
         Long freshnessSeconds,
         String inputDigest,
         Instant computedAt,
-        List<UUID> evidenceRefs) {
+        List<UUID> evidenceRefs,
+        Instant verifiedAt,
+        UUID verificationRunId) {
 
     public MetricValueView {
         evidenceRefs = List.copyOf(Objects.requireNonNull(evidenceRefs, "evidenceRefs"));
+    }
+
+    /** Original values without an additional evaluation retain their original age. */
+    public MetricValueView(UUID metricValueId, MetricCode metricCode, int definitionVersion,
+            SubjectKind subjectKind, UUID subjectId, MetricWindow window, Instant periodStart,
+            Instant periodEnd, ValueState valueState, BigDecimal numericValue, String currencyCode,
+            ConfidenceState confidenceState, boolean estimated, Instant oldestSourceTime,
+            Long freshnessSeconds, String inputDigest, Instant computedAt, List<UUID> evidenceRefs) {
+        this(metricValueId,metricCode,definitionVersion,subjectKind,subjectId,window,periodStart,
+                periodEnd,valueState,numericValue,currencyCode,confidenceState,estimated,oldestSourceTime,
+                freshnessSeconds,inputDigest,computedAt,evidenceRefs,computedAt,null);
     }
 
     /** Whether the value carries a number a caller may use. */

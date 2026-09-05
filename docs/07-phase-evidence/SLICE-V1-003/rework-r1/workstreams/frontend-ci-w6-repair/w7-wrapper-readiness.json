@@ -1,0 +1,15 @@
+{
+  "wrapper": "/tmp/run-slice3-legacy-browser-w7.py",
+  "sha256": "9b272950f5935ff3bdbc1376317cfe8213c050cdac37717afd8eb2dc8039e343",
+  "originalExecutedR2Wrapper": {
+    "path": "/tmp/run-slice3-legacy-browser.py",
+    "sha256": "68e84803794cc701501e6a79f91aaec288cc29ec97043bb538be1556aa793c9b"
+  },
+  "staticPythonCompilation": "PASS",
+  "execution": "NOT_STARTED",
+  "expectedRootArgument": "SLICE3_SOURCE_REPOSITORY=<Root provided exact W7 clone>",
+  "expectedHeadArgument": "SLICE3_EXPECTED_SOURCE_HEAD=<Root provided exact W7 Head>",
+  "attempt": "SLICE3_LEGACY_BROWSER_ATTEMPT=r3",
+  "baseline": "SLICE3_LEGACY_BASELINE_HEAD=4e101ca4386d1cab089a03edc5d461301d5d4559",
+  "changes": "Independent source root; separate output directory; explicit exact two-file old-baseline delta verification. No source mutation, narrowed test selection or reduced quality checks."
+}

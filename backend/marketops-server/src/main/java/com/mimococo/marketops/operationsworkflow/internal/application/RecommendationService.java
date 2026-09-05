@@ -14,6 +14,7 @@ import com.mimococo.marketops.operationsworkflow.ActionKind;
 import com.mimococo.marketops.operationsworkflow.RecommendationState;
 import com.mimococo.marketops.operationsworkflow.RecommendationView;
 import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.RecommendationRepository;
+import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskEventRepository;
 import com.mimococo.marketops.operationsworkflow.internal.infrastructure.jdbc.WorkTaskRepository;
 import com.mimococo.marketops.shared.ErrorCode;
 import com.mimococo.marketops.shared.IdGenerator;
@@ -44,7 +45,8 @@ import org.springframework.transaction.annotation.Transactional;
  * is not that the write is refused later, it is that there is no path to one.
  */
 @Service
-public class RecommendationService {
+public class RecommendationService
+        implements com.mimococo.marketops.operationsworkflow.AdvertisingRecommendationIntake {
 
     static final String ENTITY_TYPE = "recommendation";
 
@@ -56,6 +58,7 @@ public class RecommendationService {
 
     private final RecommendationRepository recommendations;
     private final WorkTaskRepository tasks;
+    private final WorkTaskEventRepository taskJournal;
     private final MetricQuery metrics;
     private final MetadataAuditRecorder auditRecorder;
     private final IdGenerator idGenerator;
@@ -63,12 +66,14 @@ public class RecommendationService {
 
     RecommendationService(RecommendationRepository recommendations,
                           WorkTaskRepository tasks,
+                          WorkTaskEventRepository taskJournal,
                           MetricQuery metrics,
                           MetadataAuditRecorder auditRecorder,
                           IdGenerator idGenerator,
                           Clock clock) {
         this.recommendations = recommendations;
         this.tasks = tasks;
+        this.taskJournal = taskJournal;
         this.metrics = metrics;
         this.auditRecorder = auditRecorder;
         this.idGenerator = idGenerator;
@@ -115,7 +120,7 @@ public class RecommendationService {
                 link.metricValueId(), link.findingId(), link.aiClaimId(), link.role()));
 
         if (initial == RecommendationState.TASK_ONLY) {
-            tasks.insert(idGenerator.newId(), organizationId, id,
+            raiseTask(idGenerator.newId(), organizationId, id,
                     taskTitle(actionKind), now.plus(DEFAULT_TASK_DUE), now);
         }
 
@@ -208,9 +213,84 @@ public class RecommendationService {
                         ENTITY_TYPE, id, null));
     }
 
+    /**
+     * Propose one advertising bid change.
+     *
+     * <p>Its own method rather than a widened {@code propose}, because almost
+     * nothing is shared. The subject is an advertising object, the metrics that
+     * form the entity digest are the object's rather than a listing variant's,
+     * and the task is due when the advertising service level says rather than in
+     * the workflow's default two days.
+     *
+     * <p>A bid change is write-capable, so it starts as a draft that a person
+     * must review. It never starts as a task somebody merely performs.
+     */
+    @Override
+    @Transactional
+    public UUID proposeBidChange(
+            com.mimococo.marketops.operationsworkflow.AdvertisingBidProposal proposal) {
+        var live = recommendations.liveForAdvertisingCandidate(proposal.organizationId(), proposal.candidateId());
+        if (live.isPresent()) return live.get();
+        AdBidChangeParameterContract.requireValid(proposal.parameters());
+        String validRisk = MetadataFieldPolicy.requireText("riskLabel", proposal.riskLabel());
+
+        Instant now = clock.instant();
+        // Not EntityVersion.of(...) here, unlike the price path. Canonical
+        // metric values are keyed by product variant, listing variant or store,
+        // and an advertising object is none of those, so digesting metrics for
+        // one would produce the same constant for every object — a check that
+        // passes forever and means nothing. The advertising identity is defined
+        // by the database and read rather than recomputed, so the proposal, the
+        // approval and the write gate cannot end up with three definitions.
+        String entityVersionDigest = proposal.entityVersionDigest();
+
+        UUID id = idGenerator.newId();
+        recommendations.insert(id, proposal.organizationId(), proposal.storeId(),
+                SubjectKind.AD_NATIVE_OBJECT, proposal.adNativeObjectId(),
+                ActionKind.AD_BID_CHANGE, "DETERMINISTIC", null, proposal.calculationRunId(),
+                proposal.window(), RecommendationState.DRAFT, proposal.priorityScore(),
+                proposal.parameters(), proposal.expectedEffect(), validRisk,
+                proposal.validationHorizonDays(), entityVersionDigest,
+                now.plus(DEFAULT_VALIDITY), now);
+        proposal.metricValueEvidenceIds().forEach(metricValueId ->
+                recommendations.insertEvidence(idGenerator.newId(), id, metricValueId,
+                        null, null, "SUPPORTING"));
+
+        // Responsibility already exists independently for the Case. An inert
+        // candidate must not create a second task or consume an action SLO.
+        auditRecorder.recordChange(new MetadataAuditChange(
+                AuditSourceDomain.OPERATIONS_WORKFLOW, proposal.operator(), AuditAction.CREATE,
+                ENTITY_TYPE, id, null,
+                Map.of(
+                        "actionKind", new FieldChange(null, ActionKind.AD_BID_CHANGE.name()),
+                        "direction", new FieldChange(null, proposal.direction()),
+                        "state", new FieldChange(null, RecommendationState.DRAFT.name()),
+                        "entityVersionDigest", new FieldChange(null, entityVersionDigest)),
+                null, null));
+        return id;
+    }
+
+    /**
+     * Raise the task and open its journal in the same breath.
+     *
+     * <p>A journal that could start at the second event would leave the first
+     * question a service level asks — when did this work appear — answerable
+     * only from a row somebody can overwrite. The raise is the entry that makes
+     * every later one measurable from something.
+     */
+    private void raiseTask(UUID taskId, UUID organizationId, UUID recommendationId,
+                           String title, Instant dueAt, Instant now) {
+        tasks.insert(taskId, organizationId, recommendationId, title, dueAt, now);
+        taskJournal.append(new WorkTaskEventRepository.Event(
+                idGenerator.newId(), taskId, organizationId, "RAISED",
+                "recommendation:" + recommendationId, null, null, null, null, null,
+                null, null, null, null, title, now, "recommendation:" + recommendationId));
+    }
+
     private static String taskTitle(ActionKind actionKind) {
         return switch (actionKind) {
             case PRICE_CHANGE -> "Review the proposed price change";
+            case AD_BID_CHANGE -> "Review the proposed advertising bid change";
             case RESOLVE_MAPPING -> "Resolve the listing-to-SKU mapping";
             case RESTOCK_REVIEW -> "Review replenishment for this variant";
             case LISTING_CONTENT_REVIEW -> "Review the listing content";

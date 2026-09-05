@@ -68,7 +68,42 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             "V0032__create_availability_fact_feed_cursor.sql",
             "V0033__track_case_improvement_observation.sql",
             "V0034__close_availability_deep_review_findings.sql",
-            "V0035__close_availability_targeted_findings.sql");
+            "V0035__close_availability_targeted_findings.sql",
+            "V0036__create_advertising_identity_and_official_facts.sql",
+            "V0037__create_advertising_conversion_freshness_and_qualification.sql",
+            "V0038__create_advertising_case_projection_and_orchestration.sql",
+            "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
+            "V0040__widen_write_registry_for_ad_bid_capability.sql",
+            "V0041__create_advertising_containment_and_decision_bundle.sql",
+            "V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+            "V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
+            "V0044__supersede_advertising_cases_whose_cause_no_longer_holds.sql",
+            "V0045__create_ad_bid_command_from_approval.sql",
+            "V0046__capture_ad_bid_authority_for_guardrail_evaluation.sql",
+            "V0047__refuse_a_zero_target_bid_in_the_parameter_contract.sql",
+            "V0048__serialize_advertising_reservations_against_overlap.sql",
+            "V0049__create_advertising_outcome_plan_and_lineage.sql",
+            "V0050__cause_specific_outcomes_and_same_lineage_reopen.sql",
+            "V0051__bind_each_decision_to_its_own_authority.sql",
+            "V0052__a_guardrail_verdict_names_the_policy_that_authorised_it.sql",
+            "V0053__the_write_gate_must_refuse_rather_than_raise.sql",
+            "V0054__index_the_demand_carry_forward_lookup.sql",
+            "V0055__record_what_happened_to_a_task_and_who_did_it.sql",
+            "V0056__publish_the_daily_brief_and_weekly_review_as_projections.sql",
+            "V0057__bind_advertising_responsibility_and_human_decisions.sql",
+            "V0058__seal_advertising_authority_and_control_execution.sql",
+            "V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+            "V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+            "V0061__bind_advertising_exception_risk_and_preview_evidence.sql",
+            "V0062__share_frozen_outcome_authority_with_governed_manual.sql",
+            "V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+            "V0064__reconcile_expired_advertising_authority.sql",
+            "V0065__route_settled_advertising_contradictions_to_finance_review.sql",
+            "V0066__qualify_economic_cause_bound_protection.sql",
+            "V0067__validate_frozen_outcome_input_profiles.sql",
+            "V0068__preserve_critical_sales_guard_case_evidence.sql",
+            "V0069__reopen_invalidated_protection_outcomes.sql",
+            "V0070__record_canonical_metric_reevaluation_proofs.sql");
 
     private static PostgreSQLContainer container;
 
@@ -131,6 +166,24 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                             + " ORDER BY 1");
 
             assertThat(tables).containsExactly(
+                    "core.ad_affected_set",
+                    "core.ad_allowable_cpa_definition",
+                    "core.ad_approval_lease_policy",
+                    "core.ad_bid_target_policy",
+                    "core.ad_conversion_definition",
+                    "core.ad_exposure_envelope",
+                    "core.ad_freshness_profile",
+                    "core.ad_human_slo_profile",
+                    "core.ad_manual_policy",
+                    "core.ad_materiality_policy",
+                    "core.ad_native_object",
+                    "core.ad_object_configuration_observation",
+                    "core.ad_object_relationship",
+                    "core.ad_optimization_qualification_policy",
+                    "core.ad_outcome_critical_unit_rule",
+                    "core.ad_outcome_policy",
+                    "core.ad_priority_policy",
+                    "core.ad_reporting_calendar",
                     "core.availability_priority_policy",
                     "core.cost_version",
                     "core.demand_observation_policy",
@@ -170,6 +223,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "core.warehouse",
                     "core.work_activation_policy",
                     "iam.action_scope",
+                    "iam.ad_invocation_grant",
                     "iam.business_role",
                     "iam.business_role_action_scope",
                     "iam.identity_decision_event",
@@ -181,12 +235,25 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "iam.user_account",
                     "iam.user_role_assignment",
                     "iam.user_scope_grant",
+                    "ledger.ad_linked_sale_event",
+                    "ledger.ad_object_fact",
+                    "ledger.ad_object_listing_allocation",
+                    "ledger.ad_settlement_attribution",
                     "ledger.ad_spend_fact",
                     "ledger.finance_fee_fact",
                     "ledger.return_fact",
                     "ledger.return_inventory_transition",
                     "ledger.return_quality_evidence_snapshot",
                     "ledger.sales_fact",
+                    "mart.ad_brief_delta",
+                    "mart.ad_brief_item",
+                    "mart.ad_brief_section",
+                    "mart.ad_case",
+                    "mart.ad_case_evidence",
+                    "mart.ad_case_purpose_evidence",
+                    "mart.ad_case_rank_factor",
+                    "mart.ad_case_variant_diagnostic",
+                    "mart.ad_qualification_period",
                     "mart.availability_risk_card",
                     "mart.availability_risk_child",
                     "mart.availability_risk_evidence",
@@ -201,6 +268,51 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "mart.metric_definition",
                     "mart.metric_input_reference",
                     "mart.metric_value",
+                    "mart.metric_value_evaluation",
+                    "ops.ad_accepted_exception",
+                    "ops.ad_action_authorization",
+                    "ops.ad_action_reservation",
+                    "ops.ad_authority_invalidation",
+                    "ops.ad_bid_candidate",
+                    "ops.ad_bid_command",
+                    "ops.ad_bid_command_attempt",
+                    "ops.ad_bid_command_readback",
+                    "ops.ad_bid_command_transition",
+                    "ops.ad_brief_publication",
+                    "ops.ad_bundle_endorsement",
+                    "ops.ad_candidate_endorsement",
+                    "ops.ad_candidate_selection",
+                    "ops.ad_case_responsibility",
+                    "ops.ad_compensation_authorization",
+                    "ops.ad_compensation_invalidation",
+                    "ops.ad_containment",
+                    "ops.ad_containment_attestation",
+                    "ops.ad_decision_policy_bundle",
+                    "ops.ad_exception_authority_change",
+                    "ops.ad_exception_decision_event",
+                    "ops.ad_fact_cursor",
+                    "ops.ad_gate_authority",
+                    "ops.ad_impact_preview_evidence",
+                    "ops.ad_manual_configuration_verification",
+                    "ops.ad_manual_execution_packet",
+                    "ops.ad_manual_proposal",
+                    "ops.ad_ordinary_promotion",
+                    "ops.ad_outcome_axes",
+                    "ops.ad_outcome_baseline",
+                    "ops.ad_outcome_baseline_attestation",
+                    "ops.ad_outcome_critical_guard",
+                    "ops.ad_outcome_critical_unit",
+                    "ops.ad_outcome_observation",
+                    "ops.ad_outcome_plan_grant",
+                    "ops.ad_outcome_review_observation",
+                    "ops.ad_outcome_review_responsibility",
+                    "ops.ad_outcome_stage_baseline",
+                    "ops.ad_recalculation_due",
+                    "ops.ad_recalculation_request",
+                    "ops.ad_reconciliation_run",
+                    "ops.ad_reservation_state_history",
+                    "ops.ad_slo_observation",
+                    "ops.ad_trace_event",
                     "ops.ai_claim_evidence",
                     "ops.ai_invocation",
                     "ops.ai_model",
@@ -240,6 +352,10 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "ops.recommendation",
                     "ops.recommendation_evidence",
                     "ops.work_task",
+                    "ops.work_task_event",
+                    "platform.ad_provider_incident",
+                    "platform.ad_semantic_profile",
+                    "platform.ad_write_credential_attestation",
                     "platform.capability_operation",
                     "platform.capability_subject_status",
                     "platform.capability_verification_event",
@@ -258,6 +374,7 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "platform.platform_endpoint",
                     "platform.platform_permission_requirement",
                     "platform.registry_verification_case",
+                    "raw.ad_bid_response_observation",
                     "raw.price_response_observation",
                     "raw.raw_acquisition_observation",
                     "raw.raw_content",
@@ -269,7 +386,8 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                     "staging.normalization_checkpoint",
                     "staging.normalization_field",
                     "staging.normalization_mapping",
-                    "staging.schema_drift_observation");
+                    "staging.schema_drift_observation"
+            );
         }
     }
 
@@ -321,7 +439,14 @@ class FlywayMigrationIT extends PostgresContainerSupport {
                             "COMMAND_RESOLVE", "KILL_SWITCH_OPERATE",
                             "AVAILABILITY_VIEW", "INBOUND_ATTEST", "SUPPLY_POLICY_MANAGE",
                             "AVAILABILITY_TASK_ACT", "AVAILABILITY_EXCEPTION_REQUEST",
-                            "AVAILABILITY_EXCEPTION_APPROVE");
+                            "AVAILABILITY_EXCEPTION_APPROVE",
+                            "ADVERTISING_VIEW", "ADVERTISING_TASK_ACT",
+                            "ADVERTISING_EXCEPTION_REQUEST", "AD_BID_CHANGE_ENDORSE",
+                            "AD_BID_CHANGE_APPROVE", "ADVERTISING_POLICY_MANAGE",
+                            "ADVERTISING_DECISION_EVIDENCE_VIEW", "ADVERTISING_MANUAL_EXECUTE",
+                            "ADVERTISING_MANUAL_VERIFY", "ADVERTISING_MANUAL_ENDORSE",
+                            "ADVERTISING_MANUAL_APPROVE", "ADVERTISING_TECHNICAL_STOP",
+                            "ADVERTISING_TECHNICAL_ATTEST");
             // A role matrix that grew without review is the quiet way a
             // read-only profile acquires the ability to move a price.
             assertThat(strings(connection,
@@ -351,7 +476,48 @@ class FlywayMigrationIT extends PostgresContainerSupport {
             assertThat(strings(connection,
                     "SELECT action_code FROM iam.business_role_action_scope"
                             + " WHERE role_code = 'AUDITOR' ORDER BY action_code"))
-                    .containsExactly("AVAILABILITY_VIEW", "DIAGNOSTIC_VIEW", "EVIDENCE_VIEW");
+                    .containsExactly("ADVERTISING_DECISION_EVIDENCE_VIEW", "ADVERTISING_VIEW", "AVAILABILITY_VIEW",
+                            "DIAGNOSTIC_VIEW", "EVIDENCE_VIEW");
+            // Initial Material requires distinct Maker, Operations and Owner.
+            // The exact later Ordinary promotion may permit the same endorsing
+            // Operations Lead to finalize; SQL checks the live per-command route
+            // and still requires that person to differ from the Maker.
+            // Role membership alone does not authorize the promoted route.
+            assertThat(strings(connection,
+                    "SELECT role_code FROM iam.business_role_action_scope"
+                            + " WHERE action_code = 'AD_BID_CHANGE_ENDORSE' ORDER BY role_code"))
+                    .containsExactly("OPS_LEAD", "OWNER");
+            assertThat(strings(connection,
+                    "SELECT role_code FROM iam.business_role_action_scope"
+                            + " WHERE action_code = 'AD_BID_CHANGE_APPROVE' ORDER BY role_code"))
+                    .containsExactly("OPS_LEAD", "OWNER");
+            assertThat(strings(connection,
+                    "SELECT role_code FROM iam.business_role_action_scope"
+                            + " WHERE action_code = 'ADVERTISING_POLICY_MANAGE'"
+                            + " ORDER BY role_code"))
+                    .containsExactly("OPS_LEAD", "OWNER");
+            // No advertising Semantic Profile or active real Gate is seeded.
+            // Isolated test oracles do not publish a production Provider profile.
+            assertThat(count(connection,
+                    "SELECT count(*) FROM platform.ad_semantic_profile"))
+                    .isZero();
+            assertThat(strings(connection,
+                    "SELECT metric_code FROM mart.metric_definition"
+                            + " WHERE domain = 'ADVERTISING' AND status = 'ACTIVE'"
+                            + " ORDER BY metric_code"))
+                    .containsExactly(
+                            "AD_ATTRIBUTION_GAP_RATIO",
+                            "AD_COST_OF_SALE",
+                            "AD_ELIGIBLE_TRAFFIC",
+                            "AD_LINKED_COMPLETED_SALE_CONVERSION",
+                            "AD_LINKED_ORDER_CONVERSION",
+                            "AD_LINKED_RETAINED_SALE_CONVERSION",
+                            "AD_SPEND",
+                            "ADVERTISING_CONTRIBUTION_PROFIT",
+                            "ALLOWABLE_CPA",
+                            "CONTRIBUTION_PROFIT_PER_AD_RUB",
+                            "MAX_CPC",
+                            "PROVIDER_ATTRIBUTED_CONVERSION");
             assertThat(strings(connection,
                     "SELECT metric_code FROM mart.metric_definition"
                             + " WHERE domain = 'PROFIT' AND status = 'ACTIVE'"

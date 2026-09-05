@@ -1,0 +1,222 @@
+{
+  "criterionIds": [
+    "S3-AC-195",
+    "S3-AC-200"
+  ],
+  "criterionCountUnchanged": 81,
+  "acceptedTextPreserved": true,
+  "shard": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/console-orchestration-traceability.json",
+  "shardSha256": "efa0f6f09a897d895eb27309f566dab11fb8a9f93b9ef22077a1def4baeaddda",
+  "draft": "/tmp/slice3-ui-ac-adjudication-final-draft.json",
+  "draftSha256": "26b3d69ccfbee0f2bb5369d053b864b6416f67327c022d4c88f97c66dc4cf094",
+  "evidence": {
+    "description": "Post-W5 security repair keeps all operations reads on Spring Security Authentication/principal resolution. Three real HTTP methods prove Owner grant positives across seven reads, anonymous identity-field rejection, signed Maker spoofing refusal, and immediate same-token grant revocation. Two real PostgreSQL methods prove fixed-role bound password literal handling (including SQL-like characters) and application-role refusal with original credential/nonprivileged attributes retained. The frontend r5 full308 and actual SBOM validation pass independently of those HTTP/SQL controls.",
+    "r23Receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/receipt.json",
+    "r23ReceiptSha256": "b06cbafe39a91c77937e1ebb9fb2307ac94e69c2444e2ada7ff79f8c41b6d5f8",
+    "r23WholeRunCounts": {
+      "tests": 175,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "r23RelevantMethods": 5,
+    "issuerRepair": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w5-security-issuer/repair.json",
+    "issuerRepairSha256": "7b7e538d9aa307f13846ede909dac29451c97170f0dbfa11a4fd26ed058c0d40",
+    "frontendQuality": {
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/receipt.json",
+      "receiptSha256": "606c3d19d40c2e26ae186b9aca1472fc765747a5102c50fc7860b0df7ccc6c11",
+      "tests": {
+        "total": 308,
+        "passed": 308,
+        "failed": 0,
+        "pending": 0,
+        "rawReporterSha256": "14233b46b8835d22c6d32ddfa6bdd28cd03163347d390722132adcf035fded46",
+        "namesBoundToSourceBefore": true
+      },
+      "sourceManifestSha256": "596a83c12ff7ce62888eacb63a3e3d31343a7f943920f33da9f5ba3edb6f01f1",
+      "lockSha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4",
+      "sbom": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/post-w4-ui/exposure-quality-r5/frontend-sbom.json",
+      "sbomSha256": "0b04d09a9ff034df3d7d202b4ec9aa7fcdb3626e6a233a296e7502c736087273",
+      "schemaValidationSkipped": false,
+      "actualInstalledValidators": {
+        "fast-uri": {
+          "version": "3.1.6",
+          "packageJsonSha256": "d62cb9be0a111b42131b264efe1fee4638a5f643ff25fe0bc3627675a9b92a8b"
+        },
+        "ajv": {
+          "version": "8.20.0",
+          "packageJsonSha256": "1f9033ee5a6515e7d76938b7072941862d1ed228a6879cc7fe10cdeb75107989"
+        },
+        "ajv-formats": {
+          "version": "3.0.1",
+          "packageJsonSha256": "402fb4bcfa457f0226813f3976ac42839dd619907c075c108efba8600d7edb69"
+        },
+        "ajv-formats-draft2019": {
+          "version": "1.6.1",
+          "packageJsonSha256": "0cf7fe10913b1d592657d5b635541b07b8027c9026f54af4d94442f6e80ee169"
+        }
+      },
+      "limit": "Full frontend working-tree npm quality; twelve actual advertising and twenty-five legacy browser journeys remain separate. The preceding r4 SBOM skip remains an incomplete historical attempt."
+    },
+    "status": "PARTIAL_ENGINEERING_EVIDENCE_FINAL_CLEAN_LATEST_CODEQL_AND_CI_PENDING",
+    "boundary": "No new criterion, accepted-text change, threshold reduction, rule suppression or assertion that unresolved CodeQL alerts are closed."
+  },
+  "testReferences": [
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+      "sha256_at_receipt": "512200b6f5d4b959166bb6b560674d902cdab2465f2c33d3549be2407cd93b7c",
+      "anchors": [
+        {
+          "symbol": "theSameSignedPrincipalCannotReuseAnAdvertisingGrantAfterRevocation",
+          "line": 104
+        }
+      ],
+      "method": "theSameSignedPrincipalCannotReuseAnAdvertisingGrantAfterRevocation",
+      "run": "root-r23-security-principal-issuer",
+      "supportingExecutionEvidence": {
+        "run": "root-r23-security-principal-issuer",
+        "class": "com.mimococo.marketops.AdvertisingOperationsPrincipalIT",
+        "method": "theSameSignedPrincipalCannotReuseAnAdvertisingGrantAfterRevocation",
+        "result": "PASS",
+        "timeSeconds": "0.906",
+        "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz",
+        "archiveSha256": "de759ab6f31d2b66ef70c7e1a68421e512fa49e16d21d638fef18cf3b9700b55",
+        "member": "reports/TEST-com.mimococo.marketops.AdvertisingOperationsPrincipalIT.xml",
+        "memberSha256": "8594ea6d8428d8cc62ee5ecf29ce6eba3d0eecc92ff7ee172d9c3a3b96e7c100",
+        "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/receipt.json",
+        "receiptSha256": "b06cbafe39a91c77937e1ebb9fb2307ac94e69c2444e2ada7ff79f8c41b6d5f8",
+        "sourceManifestSha256": "b2891899a65f60fe655bf9fc155636021e1a9d13d57f26e7adcea289f4fb35bd",
+        "startedAtUTC": "2026-09-05T10:42:33.942996+00:00",
+        "finishedAtUTC": "2026-09-05T10:45:33.403956+00:00",
+        "resourceSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+        "layer": "Actual signed loopback HTTP and private PostgreSQL",
+        "binding": "Exact source manifests bind W5 published checkpoint 247ea5ced6cd0ac110314db9fa606d8995c85cac plus current explicit principal handling, bound synthetic issuer SQL and R1 fixture role/grant reuse repairs; no claim that these are unchanged W5 bytes."
+      }
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+      "sha256_at_receipt": "512200b6f5d4b959166bb6b560674d902cdab2465f2c33d3549be2407cd93b7c",
+      "anchors": [
+        {
+          "symbol": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields",
+          "line": 83
+        }
+      ],
+      "method": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields",
+      "run": "root-r23-security-principal-issuer",
+      "supportingExecutionEvidence": {
+        "run": "root-r23-security-principal-issuer",
+        "class": "com.mimococo.marketops.AdvertisingOperationsPrincipalIT",
+        "method": "eachOperationsReadUsesTheSignedPrincipalAndRefusesAnonymousIdentityFields",
+        "result": "PASS",
+        "timeSeconds": "0.772",
+        "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz",
+        "archiveSha256": "de759ab6f31d2b66ef70c7e1a68421e512fa49e16d21d638fef18cf3b9700b55",
+        "member": "reports/TEST-com.mimococo.marketops.AdvertisingOperationsPrincipalIT.xml",
+        "memberSha256": "8594ea6d8428d8cc62ee5ecf29ce6eba3d0eecc92ff7ee172d9c3a3b96e7c100",
+        "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/receipt.json",
+        "receiptSha256": "b06cbafe39a91c77937e1ebb9fb2307ac94e69c2444e2ada7ff79f8c41b6d5f8",
+        "sourceManifestSha256": "b2891899a65f60fe655bf9fc155636021e1a9d13d57f26e7adcea289f4fb35bd",
+        "startedAtUTC": "2026-09-05T10:42:33.942996+00:00",
+        "finishedAtUTC": "2026-09-05T10:45:33.403956+00:00",
+        "resourceSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+        "layer": "Actual signed loopback HTTP and private PostgreSQL",
+        "binding": "Exact source manifests bind W5 published checkpoint 247ea5ced6cd0ac110314db9fa606d8995c85cac plus current explicit principal handling, bound synthetic issuer SQL and R1 fixture role/grant reuse repairs; no claim that these are unchanged W5 bytes."
+      }
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOperationsPrincipalIT.java",
+      "sha256_at_receipt": "512200b6f5d4b959166bb6b560674d902cdab2465f2c33d3549be2407cd93b7c",
+      "anchors": [
+        {
+          "symbol": "requestIdentityAndRoleFieldsCannotBorrowTheOwnersReadGrant",
+          "line": 94
+        }
+      ],
+      "method": "requestIdentityAndRoleFieldsCannotBorrowTheOwnersReadGrant",
+      "run": "root-r23-security-principal-issuer",
+      "supportingExecutionEvidence": {
+        "run": "root-r23-security-principal-issuer",
+        "class": "com.mimococo.marketops.AdvertisingOperationsPrincipalIT",
+        "method": "requestIdentityAndRoleFieldsCannotBorrowTheOwnersReadGrant",
+        "result": "PASS",
+        "timeSeconds": "0.506",
+        "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz",
+        "archiveSha256": "de759ab6f31d2b66ef70c7e1a68421e512fa49e16d21d638fef18cf3b9700b55",
+        "member": "reports/TEST-com.mimococo.marketops.AdvertisingOperationsPrincipalIT.xml",
+        "memberSha256": "8594ea6d8428d8cc62ee5ecf29ce6eba3d0eecc92ff7ee172d9c3a3b96e7c100",
+        "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/receipt.json",
+        "receiptSha256": "b06cbafe39a91c77937e1ebb9fb2307ac94e69c2444e2ada7ff79f8c41b6d5f8",
+        "sourceManifestSha256": "b2891899a65f60fe655bf9fc155636021e1a9d13d57f26e7adcea289f4fb35bd",
+        "startedAtUTC": "2026-09-05T10:42:33.942996+00:00",
+        "finishedAtUTC": "2026-09-05T10:45:33.403956+00:00",
+        "resourceSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+        "layer": "Actual signed loopback HTTP and private PostgreSQL",
+        "binding": "Exact source manifests bind W5 published checkpoint 247ea5ced6cd0ac110314db9fa606d8995c85cac plus current explicit principal handling, bound synthetic issuer SQL and R1 fixture role/grant reuse repairs; no claim that these are unchanged W5 bytes."
+      }
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+      "sha256_at_receipt": "b043ba4febdb3b5b9b2e663f64f6a2526b0ef632dbfb25f18cc2b5f78b34fcd1",
+      "anchors": [
+        {
+          "symbol": "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents",
+          "line": 18
+        }
+      ],
+      "method": "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents",
+      "run": "root-r23-security-principal-issuer",
+      "supportingExecutionEvidence": {
+        "run": "root-r23-security-principal-issuer",
+        "class": "com.mimococo.marketops.TestDatabaseIssuerIT",
+        "method": "quotedSyntheticPasswordAuthenticatesWithoutExecutingItsSqlLikeContents",
+        "result": "PASS",
+        "timeSeconds": "0.049",
+        "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz",
+        "archiveSha256": "de759ab6f31d2b66ef70c7e1a68421e512fa49e16d21d638fef18cf3b9700b55",
+        "member": "reports/TEST-com.mimococo.marketops.TestDatabaseIssuerIT.xml",
+        "memberSha256": "1189ea2882f4a9eafbe96aebff9a1f0324a28ac6a144a16e8f053f4e6e81109c",
+        "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/receipt.json",
+        "receiptSha256": "b06cbafe39a91c77937e1ebb9fb2307ac94e69c2444e2ada7ff79f8c41b6d5f8",
+        "sourceManifestSha256": "b2891899a65f60fe655bf9fc155636021e1a9d13d57f26e7adcea289f4fb35bd",
+        "startedAtUTC": "2026-09-05T10:42:33.942996+00:00",
+        "finishedAtUTC": "2026-09-05T10:45:33.403956+00:00",
+        "resourceSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+        "layer": "Actual private PostgreSQL role DDL and password authentication",
+        "binding": "Exact source manifests bind W5 published checkpoint 247ea5ced6cd0ac110314db9fa606d8995c85cac plus current explicit principal handling, bound synthetic issuer SQL and R1 fixture role/grant reuse repairs; no claim that these are unchanged W5 bytes."
+      }
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/TestDatabaseIssuerIT.java",
+      "sha256_at_receipt": "b043ba4febdb3b5b9b2e663f64f6a2526b0ef632dbfb25f18cc2b5f78b34fcd1",
+      "anchors": [
+        {
+          "symbol": "applicationRoleCannotChangeTheIssuerPasswordOrItsPrivileges",
+          "line": 43
+        }
+      ],
+      "method": "applicationRoleCannotChangeTheIssuerPasswordOrItsPrivileges",
+      "run": "root-r23-security-principal-issuer",
+      "supportingExecutionEvidence": {
+        "run": "root-r23-security-principal-issuer",
+        "class": "com.mimococo.marketops.TestDatabaseIssuerIT",
+        "method": "applicationRoleCannotChangeTheIssuerPasswordOrItsPrivileges",
+        "result": "PASS",
+        "timeSeconds": "0.041",
+        "archive": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/raw-reports.tar.gz",
+        "archiveSha256": "de759ab6f31d2b66ef70c7e1a68421e512fa49e16d21d638fef18cf3b9700b55",
+        "member": "reports/TEST-com.mimococo.marketops.TestDatabaseIssuerIT.xml",
+        "memberSha256": "1189ea2882f4a9eafbe96aebff9a1f0324a28ac6a144a16e8f053f4e6e81109c",
+        "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r23/receipt.json",
+        "receiptSha256": "b06cbafe39a91c77937e1ebb9fb2307ac94e69c2444e2ada7ff79f8c41b6d5f8",
+        "sourceManifestSha256": "b2891899a65f60fe655bf9fc155636021e1a9d13d57f26e7adcea289f4fb35bd",
+        "startedAtUTC": "2026-09-05T10:42:33.942996+00:00",
+        "finishedAtUTC": "2026-09-05T10:45:33.403956+00:00",
+        "resourceSha256": "3969dde6e773e9282a4ab9cd67ad101c3e1faf172a3390dc82987e505979658a",
+        "layer": "Actual private PostgreSQL role DDL and password authentication",
+        "binding": "Exact source manifests bind W5 published checkpoint 247ea5ced6cd0ac110314db9fa606d8995c85cac plus current explicit principal handling, bound synthetic issuer SQL and R1 fixture role/grant reuse repairs; no claim that these are unchanged W5 bytes."
+      }
+    }
+  ],
+  "finalStatus": "PENDING_FINAL_CLEAN_LATEST_CODEQL_EXACT_CI"
+}

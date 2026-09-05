@@ -67,22 +67,69 @@ public class GuardrailRepository {
                 .single();
     }
 
+    /**
+     * The advertising authority and the instant it describes.
+     *
+     * <p>Returns the raw document rather than a parsed snapshot. The price
+     * authority is parsed because the engine reads price, economics and
+     * freshness out of it; the advertising verdict reads its inputs from the
+     * case projection instead, so the document here is evidence rather than
+     * input, and parsing it would invent a second reader of the same facts.
+     */
+    public AdvertisingAuthority captureAdBidAuthority(UUID recommendationId) {
+        return jdbc.sql("""
+                        SELECT evaluation_as_of, authority_snapshot::text AS authority_snapshot
+                          FROM ops.capture_ad_bid_authority_snapshot(:id)
+                        """)
+                .param("id", recommendationId)
+                .query((rows, rowNumber) -> new AdvertisingAuthority(
+                        rows.getTimestamp("evaluation_as_of").toInstant(),
+                        rows.getString("authority_snapshot")))
+                .single();
+    }
+
+    /** What the advertising authority was, and when. */
+    public record AdvertisingAuthority(Instant evaluationAsOf, String document) {
+    }
+
     /** Record one verdict. */
     public void insert(UUID id, UUID organizationId, UUID recommendationId, UUID policyId,
                        Integer policyVersion, GuardrailPurpose purpose, boolean passed,
                        List<GuardrailReason> reasons, Map<String, String> detail,
                        String inputDigest, String authoritySnapshot, Instant evaluatedAt, String correlationId) {
+        insert(id, organizationId, recommendationId, policyId, policyVersion, null, null,
+                purpose, passed, reasons, detail, inputDigest, authoritySnapshot, evaluatedAt,
+                correlationId);
+    }
+
+    /**
+     * Record one verdict, naming whichever policy authority let it pass.
+     *
+     * <p>A price verdict names a commercial policy and an advertising one names
+     * a decision policy bundle. The schema admits exactly one of the two on a
+     * PASS, because a verdict two authorities could each claim is a verdict
+     * neither owns.
+     */
+    public void insert(UUID id, UUID organizationId, UUID recommendationId, UUID policyId,
+                       Integer policyVersion, UUID adDecisionBundleId, Integer adBundleVersion,
+                       GuardrailPurpose purpose, boolean passed,
+                       List<GuardrailReason> reasons, Map<String, String> detail,
+                       String inputDigest, String authoritySnapshot, Instant evaluatedAt, String correlationId) {
         jdbc.sql("""
                         INSERT INTO ops.guardrail_evaluation (
                             id, organization_id, recommendation_id, policy_id, policy_version,
+                            ad_decision_bundle_id, ad_bundle_version,
                             purpose, outcome, reason_codes, detail, input_digest, evaluated_at,
                             correlation_id, authority_snapshot)
                         VALUES (:id, :organizationId, :recommendationId, :policyId,
-                            :policyVersion, :purpose, :outcome, :reasonCodes,
+                            :policyVersion, :adDecisionBundleId, :adBundleVersion,
+                            :purpose, :outcome, :reasonCodes,
                             CAST(:detail AS jsonb), :inputDigest, :evaluatedAt,
                             :correlationId, CAST(:authoritySnapshot AS jsonb))
                         """)
                 .param("id", id)
+                .param("adDecisionBundleId", adDecisionBundleId)
+                .param("adBundleVersion", adBundleVersion)
                 .param("organizationId", organizationId)
                 .param("recommendationId", recommendationId)
                 .param("policyId", policyId)

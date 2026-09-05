@@ -1,0 +1,23 @@
+{
+  "kind": "APPEND_ONLY_FIVE_FRONTEND_FILES_CHECKPOINT",
+  "startedAtUTC": "2026-09-05T14:04:31.747948+00:00",
+  "finishedAtUTC": "2026-09-05T14:04:31.914253+00:00",
+  "parent": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "head": "52a34f36673dbf7c9f8b7a393f28ea1e096de043",
+  "tree": "5eb85b0bf309d39fd9798c9b8b2186371710fecc",
+  "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+  "worktreeClean": true,
+  "files": {
+    "frontend/marketops-console/src/__tests__/AdvertisingBrief.test.tsx": "024023ffd37da2860b5eecbd211d1e928978e1539f79639cf1108e006289d609",
+    "frontend/marketops-console/src/__tests__/AdvertisingExecution.test.tsx": "c13556029e5d4bacb7ebccd18c0a4de396e771c90b2a2fb978c4478b755a6c08",
+    "frontend/marketops-console/src/__tests__/AdvertisingWorkflow.test.tsx": "c414ff4b23cad028b0dcdb01d0465c9e4b38f3dac752d9d44612dc49eb27f57c",
+    "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx": "efd840099b850831db7d01462e9c9121bbd3f356a882572df8280cfd10c98b86",
+    "frontend/marketops-console/tests/advertising-browser/governed-advertising.spec.ts": "d7775956248a3cd59e3c8b35a649a8f0ecfed43d5df7bb00ab857d11e79d80e0"
+  },
+  "qualityReceipt": "/tmp/slice3-ui-slo-repair-quality-r4/receipt.json",
+  "qualityReceiptSha256": "3eeed92f87c4e9672d7e6e3fc86049f411b741117bd372cff2457bd2dbbc8e47",
+  "qualitySourceBytesEqualCommit": true,
+  "backendMigrationsBuildWorkflowBytesChanged": false,
+  "productionWriteEnabled": false,
+  "boundary": "Codex-authored in-scope UI root-cause and asynchronous-test repair. No Ready, merge, force-push, real Provider or production action."
+}

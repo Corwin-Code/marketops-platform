@@ -1,0 +1,1355 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "SUPPLEMENTAL_AC_EVIDENCE_SHARD",
+  "generatedAt": "2026-09-05T10:14:50.649351+00:00",
+  "normativeContract": {
+    "path": "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md",
+    "sha256": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c"
+  },
+  "newAcCount": 20,
+  "reinforcedExistingAcCount": 1,
+  "acceptanceCriteria": [
+    {
+      "id": "S3-AC-006",
+      "acceptedText": "Shared Spine architecture tests prevent a parallel ingestion, Metric, Policy, workflow, Command, Readback, Bundle or audit authority.",
+      "contractLine": 2316,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/AdBidCommandRequest.java",
+          "sha256_at_receipt": "bf7ee62009c13d8c0cdbe76a4453e7e96941f427aed23c0c73ab44d0bbaa613b"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256_at_receipt": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+          "sha256_at_receipt": "a3ce59928d89130734c0e0ff61e6b12ff1330102d6e4043f55c3a6b377a6ef56"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/architecture/SoleAuthorityArchitectureTest.java",
+          "method": "moduleWritesNoTableOwnedElsewhere",
+          "line": 96,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "3fc4485807c670f5c612853ecd3e6bda98b580678ada3aeea5b2b251b43c9f8f"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/architecture/SoleAuthorityArchitectureTest.java",
+          "method": "exactlyOneFunctionCreatesCommands",
+          "line": 202,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "3fc4485807c670f5c612853ecd3e6bda98b580678ada3aeea5b2b251b43c9f8f"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/architecture/SoleAuthorityArchitectureTest.java",
+          "method": "noJavaInsertsCommandsDirectly",
+          "line": 181,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "3fc4485807c670f5c612853ecd3e6bda98b580678ada3aeea5b2b251b43c9f8f"
+        }
+      ],
+      "mappingRationale": "Only canonical module ports, exact controlled creators and the trusted canonical planner carry authority.",
+      "evidenceLimits": "Architecture tests have not been executed by this supplement; parent full architecture gate must bind exact result.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-009",
+      "acceptedText": "every atomic Case binds Organization, Platform, Account/Store, minimum verified controllable native object, lineage, bidding mode and Semantic Profile.",
+      "contractLine": 2322,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdCaseIdentity.java",
+          "sha256_at_receipt": "2337af15f0a739263a4d9d0cd1b59a30bbd04c711b5f74c44204898e1ac988d8"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0036__create_advertising_identity_and_official_facts.sql",
+          "sha256_at_receipt": "923baf8f50882125167d31bb4ea07253984f556846fb17243dbddfd93b4f5f6d"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
+          "sha256_at_receipt": "aa9a8b939d5301d42f13c4eb07b933dfeb052aec21d25c0fc0ebe6e2df3e1f27"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0051__bind_each_decision_to_its_own_authority.sql",
+          "sha256_at_receipt": "ded7af2e454aa07c7e6bd10a6ad496449a524249aee1d096d2a78c649231dab4"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+          "method": "resultCarriesItsIdentity",
+          "line": 497,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "602f3b01135f72be1df471ea3127872a334507d44d01d6fcb786adfd277111b4"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityBindingIT.java",
+          "method": "identityDistinguishesObjects",
+          "line": 153,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "311070af3c2ead79fa492fe8750aec79803427eff86d0ce59a427c29d612c373"
+        }
+      ],
+      "mappingRationale": "Case identity and decision identity retain exact native object, lineage and scoped Profile rather than an estimated variant subject.",
+      "evidenceLimits": "Profile eligibility is engineering metadata; real platform verification remains separately gated.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-010",
+      "acceptedText": "every atomic Case binds the exact complete affected Internal Variant set and a stable digest/version.",
+      "contractLine": 2323,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AffectedSet.java",
+          "sha256_at_receipt": "d391475972f35fd38faa182fee5d20cc88d60aa072ce8866cb64510fed63e443"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0036__create_advertising_identity_and_official_facts.sql",
+          "sha256_at_receipt": "923baf8f50882125167d31bb4ea07253984f556846fb17243dbddfd93b4f5f6d"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0051__bind_each_decision_to_its_own_authority.sql",
+          "sha256_at_receipt": "ded7af2e454aa07c7e6bd10a6ad496449a524249aee1d096d2a78c649231dab4"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256_at_receipt": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+          "method": "unresolvedAffectedSetIsADefect",
+          "line": 161,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "602f3b01135f72be1df471ea3127872a334507d44d01d6fcb786adfd277111b4"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "overlappingVariantsNameTheExistingHolderEvenForAnotherObjectKey",
+          "line": 99,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "4396883835cce326cdb98ff5648df86de1acc8119b20d0c48d581eeb48fc4675"
+        }
+      ],
+      "mappingRationale": "Affected identity is retained in the full canonical set and both decision digest and admission consume it.",
+      "evidenceLimits": "Full collection/projection tests are jointly owned by source and UI; use final integrated evidence.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-011",
+      "acceptedText": "a native object controlling multiple Variants cannot be split into separately executable estimated-SKU Cases.",
+      "contractLine": 2324,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdCaseIdentity.java",
+          "sha256_at_receipt": "2337af15f0a739263a4d9d0cd1b59a30bbd04c711b5f74c44204898e1ac988d8"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
+          "sha256_at_receipt": "aa9a8b939d5301d42f13c4eb07b933dfeb052aec21d25c0fc0ebe6e2df3e1f27"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0045__create_ad_bid_command_from_approval.sql",
+          "sha256_at_receipt": "89cdd51222a110ae8aa4e844a8654268fa3ecc1a7d1ba3ff170d24ce05364398"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256_at_receipt": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+          "method": "everyCaseIsQualified",
+          "line": 522,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "602f3b01135f72be1df471ea3127872a334507d44d01d6fcb786adfd277111b4"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "overlappingVariantsNameTheExistingHolderEvenForAnotherObjectKey",
+          "line": 99,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "4396883835cce326cdb98ff5648df86de1acc8119b20d0c48d581eeb48fc4675"
+        }
+      ],
+      "mappingRationale": "One candidate acts on one native object and reserves every affected variant; per-variant monetary diagnostics never become separate execution identity.",
+      "evidenceLimits": "These methods support object/set integrity; final same-object multi-variant fixture and full suite must supply complete acceptance proof.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-012",
+      "acceptedText": "Campaign, ad-group, Target, Keyword and SKU relationships remain queryable without inventing unsupported Provider control granularity.",
+      "contractLine": 2325,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0036__create_advertising_identity_and_official_facts.sql",
+          "sha256_at_receipt": "923baf8f50882125167d31bb4ea07253984f556846fb17243dbddfd93b4f5f6d"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingEvidenceRepository.java",
+          "sha256_at_receipt": "9dba610d2adc4b5a80ad1d052bff4ba90238bb6e0dffc6c08ceb769247ec584f"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseQueryService.java",
+          "sha256_at_receipt": "23572c7517329a2133f1f556ff64042812ce5a7359f00cc8c0c5c44443e6aca1"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationServiceTest.java",
+          "method": "unprovenObjectNamesItself",
+          "line": 99,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "602f3b01135f72be1df471ea3127872a334507d44d01d6fcb786adfd277111b4"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDecisionServiceTest.java",
+          "method": "controlGranularityUnproven",
+          "line": 207,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "9ba2b6d988101f933a490d8722c24fcb65082eaf844e16939c9ce4e85e69b0dd"
+        }
+      ],
+      "mappingRationale": "Native lineage and relations remain metadata, while an unproven independent control level cannot reach a dependent decision.",
+      "evidenceLimits": "Queryable hierarchy and both platform UI rendering also require read/browser evidence from the UI stream.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-013",
+      "acceptedText": "Ozon and Wildberries Profiles preserve their different object, status, attribution, unit, precision, step, quota and Readback semantics.",
+      "contractLine": 2326,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0036__create_advertising_identity_and_official_facts.sql",
+          "sha256_at_receipt": "923baf8f50882125167d31bb4ea07253984f556846fb17243dbddfd93b4f5f6d"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+          "sha256_at_receipt": "5b0acaf803755c6e20ee407e539090ae1528d468224274b3e15c42473d73eb37"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWriteRequest.java",
+          "sha256_at_receipt": "1e381dee54141898ee6ba324c2b4ac627f7c20b49b4affac7315787b3e865d69"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorker.java",
+          "sha256_at_receipt": "76c3f9f7eff29ea655669a29567464bc59cd3741cfb29a579f52869fd35109b0"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+          "method": "unitIsPartOfTheIdentity",
+          "line": 45,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "1987ba56522abf19c08525c46674add23a099714d8c79c178ab8c2f6bb0294c7"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+          "method": "impossibleStatusIsRefused",
+          "line": 120,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "1987ba56522abf19c08525c46674add23a099714d8c79c178ab8c2f6bb0294c7"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "method": "onlyOfficialInterfacesAppear",
+          "line": 159,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a"
+        }
+      ],
+      "mappingRationale": "Separate profiles retain native identity and amount unit. Status/readback semantics are explicit operation data and not assumed common between providers.",
+      "evidenceLimits": "No engineering test establishes real Ozon/Wildberries official write semantics. Real evidence remains unverified/deferred under the separate exact Gate process.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-014",
+      "acceptedText": "unknown native states/fields/modes fail closed for every dependent decision.",
+      "contractLine": 2327,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+          "sha256_at_receipt": "37373c73a881cc24604b60cfd5018041be4179e6cee4de5387186bc4cfb9bffe"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDecisionService.java",
+          "sha256_at_receipt": "e1a60be847df772012982cfd08a6c010963153b7676bcf141b846b82964488fc"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0045__create_ad_bid_command_from_approval.sql",
+          "sha256_at_receipt": "89cdd51222a110ae8aa4e844a8654268fa3ecc1a7d1ba3ff170d24ce05364398"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256_at_receipt": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseMeasureCalculationTest.java",
+          "method": "anUnknownGradeFallsToTheWeakestReading",
+          "line": 112,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "8d9b6addf0c9079b2cc85c971063daf5dcd6a5f9f00f4d2ad78957310cd206f9"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDecisionServiceTest.java",
+          "method": "controlGranularityUnproven",
+          "line": 207,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "9ba2b6d988101f933a490d8722c24fcb65082eaf844e16939c9ce4e85e69b0dd"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorkerTest.java",
+          "method": "unreadableObservationStaysUnknown",
+          "line": 290,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "0e93e3bba6c25b89a578ff646758febf987c639cd084dac2c40c2b8cab895a25"
+        }
+      ],
+      "mappingRationale": "Unknown grades and states stay unresolved through calculation, decision and observation.",
+      "evidenceLimits": "Final full regression result must include each dependent stage; this is a concrete method mapping.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-015",
+      "acceptedText": "a native object, lineage or bidding-mode change invalidates stale executable assets unless exact versioned continuity is proven.",
+      "contractLine": 2328,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0051__bind_each_decision_to_its_own_authority.sql",
+          "sha256_at_receipt": "ded7af2e454aa07c7e6bd10a6ad496449a524249aee1d096d2a78c649231dab4"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256_at_receipt": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProjectionWriter.java",
+          "sha256_at_receipt": "60a698f0a1c9da992305c635c85572fe20f67bf2831232db116c61d965114955"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/domain/AdCaseIdentityAndPolicySetTest.java",
+          "method": "rebuiltObjectDoesNotInheritHistory",
+          "line": 56,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "0ebbe1b4d3f079550655cea974bb220132e83e87098bf97b55e09cf809d6c826"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingAuthorityBindingIT.java",
+          "method": "identityMovesWithTheFacts",
+          "line": 123,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "311070af3c2ead79fa492fe8750aec79803427eff86d0ce59a427c29d612c373"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "changedPolicyAfterEndorsementCannotBeSilentlySealed",
+          "line": 142,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed"
+        }
+      ],
+      "mappingRationale": "Lineage/mode/current authority participates in the immutable decision digest and current gate comparison; superseded authority is never renewed.",
+      "evidenceLimits": "Independent mutations of every native continuity axis require the final fault matrix, not a claim from one policy-drift example.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-084",
+      "acceptedText": "manual and controlled real interventions consume the same affected-set reservation and applicable aggregate exposure.",
+      "contractLine": 2409,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256_at_receipt": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+          "sha256_at_receipt": "ccf8498c7a68a3aac2e1960d341095cea03fddcfe618d83dc5745d8f2b78cd0c"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0062__share_frozen_outcome_authority_with_governed_manual.sql",
+          "sha256_at_receipt": "72b3d30ac503a1e7768545703e55520f93197cf2bf3286bdc2d1b294022419c8"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualWorkflowIT.java",
+          "method": "realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety",
+          "line": 250,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "1cd249b3b85924a6c7bc85c8b4e8d99e20f17e89f7773d78db9843ae306820cd"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "overlappingVariantsNameTheExistingHolderEvenForAnotherObjectKey",
+          "line": 99,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "4396883835cce326cdb98ff5648df86de1acc8119b20d0c48d581eeb48fc4675"
+        }
+      ],
+      "mappingRationale": "Manual and API reserve the same canonical affected membership and evaluate the same exposure/release functions.",
+      "evidenceLimits": "Current Manual9 and Reservation14 are in source r12; full parallel/capacity workload and immutable final identity remain pending.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-085",
+      "acceptedText": "`AD_BID_CHANGE` is the only new controlled-write family in this Slice.",
+      "contractLine": 2413,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/AdBidCommandRequest.java",
+          "sha256_at_receipt": "bf7ee62009c13d8c0cdbe76a4453e7e96941f427aed23c0c73ab44d0bbaa613b"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePort.java",
+          "sha256_at_receipt": "3d94a629fc0b52a476fb5e4246ebed697a0e123fe135d594b842dede6783a04d"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+          "sha256_at_receipt": "5b0acaf803755c6e20ee407e539090ae1528d468224274b3e15c42473d73eb37"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "method": "onlyBidChangeExists",
+          "line": 143,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "method": "writeRegistryDescribesExactlyTwoCapabilities",
+          "line": 226,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a"
+        }
+      ],
+      "mappingRationale": "The new provider writer is only AD_BID_CHANGE, alongside the predecessor existing writer.",
+      "evidenceLimits": "Non-goals suite and static route registry must run on the final tree.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-086",
+      "acceptedText": "Budget, Campaign status, strategy/mode and Campaign/Target structure cannot be written through it.",
+      "contractLine": 2414,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidChangeParameterContract.java",
+          "sha256_at_receipt": "f4ee5bfe65316566dd91e0717be5a74ba82e90deb0d3788a2c900adc142a805d"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0042__create_ad_bid_command_outbox_readback_and_gate.sql",
+          "sha256_at_receipt": "5b0acaf803755c6e20ee407e539090ae1528d468224274b3e15c42473d73eb37"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0045__create_ad_bid_command_from_approval.sql",
+          "sha256_at_receipt": "89cdd51222a110ae8aa4e844a8654268fa3ecc1a7d1ba3ff170d24ce05364398"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/AdBidChangeParameterContractTest.java",
+          "method": "everySharedCaseIsJudgedTheSameWay",
+          "line": 19,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "b7a882f255947cbd588c30b75eb2d5581f919f77d9e4e08cc9df039f53f67f9c"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "method": "budgetAndStatusExistOnlyAsManualInstructions",
+          "line": 187,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingManualShadowIT.java",
+          "method": "manualActionsHaveNoCommandPath",
+          "line": 63,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "2bedf2fb4d0f1bb7fd8409ccbe1679945986d703b149e00cbe38f131a886bbda"
+        }
+      ],
+      "mappingRationale": "Closed parameter schemas reject adjacent controlled actions; Budget/Status remain governed human instructions.",
+      "evidenceLimits": "Manual browser automation exercises this application only; it never drives Provider consoles.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-087",
+      "acceptedText": "a controlled action requires verified explicit native Bid semantics, current Bid, unit/precision/step/min/max, capability, credential, permission and Readback.",
+      "contractLine": 2415,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0045__create_ad_bid_command_from_approval.sql",
+          "sha256_at_receipt": "89cdd51222a110ae8aa4e844a8654268fa3ecc1a7d1ba3ff170d24ce05364398"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256_at_receipt": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdBidWriteAdapter.java",
+          "sha256_at_receipt": "bc021ebcd3352e9251e397906936c852225a16ff5df5b978476dfd2dd7bf5cea"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "realApplicationCreatorUsesExactImmutableApprovalAndMinimumFrozenExpiry",
+          "line": 37,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/AdBidWriteRefusalTest.java",
+          "method": "unrecordedAuthenticationRefusesBeforeDispatch",
+          "line": 92,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "4a06438c5bc6b9ddaed43f33e9b3c10ea5cd60688ffc9d6f89b068fadd58d5e9"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/AdBidWriteRefusalTest.java",
+          "method": "unresolvableCredentialRefusesBeforeDispatch",
+          "line": 103,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "4a06438c5bc6b9ddaed43f33e9b3c10ea5cd60688ffc9d6f89b068fadd58d5e9"
+        }
+      ],
+      "mappingRationale": "Creator and transmission independently check native amounts and complete capability/credential/current scoped authority.",
+      "evidenceLimits": "A fictional positive protocol is not production/real provider credential verification.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-088",
+      "acceptedText": "Provider-unverified paths are structurally unreachable and expose Shadow-only state.",
+      "contractLine": 2416,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/config/AdBidWriteProperties.java",
+          "sha256_at_receipt": "6ab26b466709602b9c7219df11aa677d8f5f843a59f3a33634d396acdbed9f3e"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdBidWriteAdapter.java",
+          "sha256_at_receipt": "bc021ebcd3352e9251e397906936c852225a16ff5df5b978476dfd2dd7bf5cea"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256_at_receipt": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+          "method": "unverifiedCapabilityClosesTheGate",
+          "line": 66,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "b34ae1f31d2caba55618f5df2677173be0a229e6d45dc8bff0217f7472ada9c5"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/AdBidWriteRefusalTest.java",
+          "method": "unverifiedOperationRefusesBeforeDispatch",
+          "line": 79,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "4a06438c5bc6b9ddaed43f33e9b3c10ea5cd60688ffc9d6f89b068fadd58d5e9"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "method": "adjacentInventoryCapabilitiesStayClosed",
+          "line": 151,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a"
+        }
+      ],
+      "mappingRationale": "Unverified or unconfigured production authority fails before dispatch; shadow/manual remain explicitly distinct.",
+      "evidenceLimits": "Visible Shadow state is supplied by the UI/browser stream and must be integrated with these backend refusal assertions.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-089",
+      "acceptedText": "Protection Decrease and Optimization Increase are separately gated; exact Compensation uses its own authority.",
+      "contractLine": 2417,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0045__create_ad_bid_command_from_approval.sql",
+          "sha256_at_receipt": "89cdd51222a110ae8aa4e844a8654268fa3ecc1a7d1ba3ff170d24ce05364398"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256_at_receipt": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/application/AdBidCommandWorker.java",
+          "sha256_at_receipt": "76c3f9f7eff29ea655669a29567464bc59cd3741cfb29a579f52869fd35109b0"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "method": "exactlyThreeBidDirectionsExist",
+          "line": 167,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore",
+          "line": 528,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "4396883835cce326cdb98ff5648df86de1acc8119b20d0c48d581eeb48fc4675"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+          "method": "restoreUsesADifferentIdempotencyKey",
+          "line": 59,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "1987ba56522abf19c08525c46674add23a099714d8c79c178ab8c2f6bb0294c7"
+        }
+      ],
+      "mappingRationale": "Protection and optimization are policy directions; exact prior compensation has separate new authority and idempotency.",
+      "evidenceLimits": "No real decrease/increase/compensation is performed by engineering verification.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-190",
+      "acceptedText": "Secret, Buyer PII, real Credential and unsafe Raw are absent from Git, fixtures, logs, traces, reports, AI and client bundles.",
+      "contractLine": 2530,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/SecretMaterialGuard.java",
+          "sha256_at_receipt": "7d340239cd9cce71733a4d98fdd2b86aa34fdc508e52cc613d6ab1d3cf1b2a93"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/adapter/http/PlatformHttpAdBidWriteAdapter.java",
+          "sha256_at_receipt": "bc021ebcd3352e9251e397906936c852225a16ff5df5b978476dfd2dd7bf5cea"
+        },
+        {
+          "path": "scripts/validate_governance.py",
+          "sha256_at_receipt": "d2fb3badc3734f257486a0d962ea12016af46cd00e2d0fdfe50ca2ac37caad97"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/SecretMaterialGuardTest.java",
+          "method": "refusesCredentialAssignments",
+          "line": 39,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "58e41a842c86fa16ce1406bc377954a3384dbb29b821fca7fd8d09dc5b635754"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/shared/SecretMaterialGuardTest.java",
+          "method": "refusesBearerShapes",
+          "line": 27,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "58e41a842c86fa16ce1406bc377954a3384dbb29b821fca7fd8d09dc5b635754"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/port/AdBidWritePortContractTest.java",
+          "method": "unlistedHeaderIsRefused",
+          "line": 139,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "1987ba56522abf19c08525c46674add23a099714d8c79c178ab8c2f6bb0294c7"
+        }
+      ],
+      "mappingRationale": "Input and evidence guards exclude credential/header leakage; fixtures contain fictional graph IDs and non-resolvable references.",
+      "evidenceLimits": "These tests are not an exhaustive audit of Git history or built browser artifacts. Parent secret scan and final artifact inspection are required; no real credentials were read for this workstream.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-191",
+      "acceptedText": "no real Provider call, hidden Budget/Status/strategy write path or browser automation exists in engineering evidence.",
+      "contractLine": 2531,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "sha256_at_receipt": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/config/AdBidWriteProperties.java",
+          "sha256_at_receipt": "6ab26b466709602b9c7219df11aa677d8f5f843a59f3a33634d396acdbed9f3e"
+        },
+        {
+          "path": "scripts/validation/advertising_browser_isolated.sh",
+          "sha256_at_receipt": "1d881d56a841ddf36858f91d24183bbabd1ef9d19a9d676b01d33d42087f440f"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/AdvertisingNonGoalsTest.java",
+          "method": "budgetAndStatusExistOnlyAsManualInstructions",
+          "line": 187,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "5084583cec36a4bc2a16453987ab23257db1a68fd5c900a2b3c7ebbc4e4ac65a"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/marketplaceintegration/adapter/http/AdBidWriteRefusalTest.java",
+          "method": "staleAttemptAtTheSocketStopsTheCall",
+          "line": 138,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "4a06438c5bc6b9ddaed43f33e9b3c10ea5cd60688ffc9d6f89b068fadd58d5e9"
+        }
+      ],
+      "mappingRationale": "Controlled-write non-goals and disabled production adapters enforce the engineering boundary; the browser harness is an isolated local application.",
+      "evidenceLimits": "No actual Provider socket/console was used. Parent must preserve this distinction in browser and CI receipts.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-192",
+      "acceptedText": "`production_write_enabled` remains false absent separate exact authority.",
+      "contractLine": 2532,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256_at_receipt": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/marketplaceintegration/internal/config/AdBidWriteProperties.java",
+          "sha256_at_receipt": "6ab26b466709602b9c7219df11aa677d8f5f843a59f3a33634d396acdbed9f3e"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingOrdinaryApprovalIT.java",
+          "method": "promotedMakerAndSameEndorsingOpsLeadApproveThroughTrustedPlannerAndCreateOneCommand",
+          "line": 95,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "fcde4f453eeb9b3f7726696b8b1f6150fb26dba6e97e6d562a249ada67897405"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "exactCompensationUsesNewHumanChainAndCanOpenOnlyCapturedPriorBidRestore",
+          "line": 528,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "4396883835cce326cdb98ff5648df86de1acc8119b20d0c48d581eeb48fc4675"
+        }
+      ],
+      "mappingRationale": "Positive ordinary and compensation fixtures assert production_write_enabled=false even after real synthetic human authorization.",
+      "evidenceLimits": "Engineering Gate E/EV fixture references confer no actual production or Provider write permission.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-193",
+      "acceptedText": "applied migrations remain byte-identical; clean install and protected-main upgrade pass on real PostgreSQL.",
+      "contractLine": 2533,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256_at_receipt": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+          "sha256_at_receipt": "a3ce59928d89130734c0e0ff61e6b12ff1330102d6e4043f55c3a6b377a6ef56"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql",
+          "sha256_at_receipt": "42e91b569f88dbbeb16f85ffbf10f3b5fee56fbdf06f47fb0d3744472f856116"
+        },
+        {
+          "path": "scripts/verify_migration_artifact.py",
+          "sha256_at_receipt": "8d6ad9f0394012d5323996658d43b174d62174a89133149402d9f399271da191"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/FlywayMigrationIT.java",
+          "method": "historyHoldsTheApprovedSet",
+          "line": 557,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "be5fb9ec1917a81533055b7c176fe1e8870a9ee19a0a001ca8d2752773b4cd1f"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/FlywayMigrationIT.java",
+          "method": "repeatedMigrationAppliesNothing",
+          "line": 573,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "be5fb9ec1917a81533055b7c176fe1e8870a9ee19a0a001ca8d2752773b4cd1f"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/database/FlywayMigrationIT.java",
+          "method": "exactlyTheApprovedMigrationsAreDeclared",
+          "line": 591,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "be5fb9ec1917a81533055b7c176fe1e8870a9ee19a0a001ca8d2752773b4cd1f"
+        }
+      ],
+      "mappingRationale": "Applied foundation migrations are preserved and new source is exercised by real PostgreSQL clean installs; the artifact runner refuses unsafe delivery.",
+      "evidenceLimits": "Protected-main upgrade, final full Flyway inventory and immutable applied-migration byte comparison are parent full-validation obligations. V0065 is saved and passed isolated migration syntax; integrated tests and final migration/upgrade inventory remain pending.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-194",
+      "acceptedText": "restart, replay, concurrency and reconciliation cannot duplicate facts, Cases, Tasks, Approvals, Commands, reservations, exposure, Outcomes or audit.",
+      "contractLine": 2534,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0048__serialize_advertising_reservations_against_overlap.sql",
+          "sha256_at_receipt": "7d176e8c0415b21483cc498e3097669c3ea93a7a5ded4047ef1c90532e4502d1"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256_at_receipt": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+          "sha256_at_receipt": "bf95f43f036b7fbe61faf2e461c9da1f03b24055143ca5b2b42d8f8ce123b26f"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0064__reconcile_expired_advertising_authority.sql",
+          "sha256_at_receipt": "42e91b569f88dbbeb16f85ffbf10f3b5fee56fbdf06f47fb0d3744472f856116"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingReservationIT.java",
+          "method": "takingTwiceForOneSealedInterventionIsIdempotent",
+          "line": 93,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "4396883835cce326cdb98ff5648df86de1acc8119b20d0c48d581eeb48fc4675"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingHumanWorkflowIT.java",
+          "method": "reconciliationRecordsExpiryOnceWithoutRewritingApprovalOrReleasingExposure",
+          "line": 315,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "8391ac5898b462f08eaba0414688cf7ae1eca3acc346b3f4cea74cda69019fa5"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+          "method": "targetedObjectScopeEvaluatesActualDueOutcomeAndReplayDoesNotAppendAnotherRevision",
+          "line": 145,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "e6be6bd39f19195f1576f858e01e5338538835968592a3d6d8d25eda41ed83ea"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTargetedTriggerIT.java",
+          "method": "acceptedCanonicalChangesWakeOnlyTheirDependants",
+          "line": 30,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "0203a5fe6cf5091e3d4a918f1998daf186c99c797d29811ceca10b35d52b7373"
+        }
+      ],
+      "mappingRationale": "Stable lineage keys, serialized reservation admission, immutable revisions and per-observation replay IDs bound the shared authorities.",
+      "evidenceLimits": "Capacity/restart/reconciliation and every fact/task/audit family need the complete parent run; these named methods are supporting slices.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-196",
+      "acceptedText": "mutation/adversarial/fault-injection tests prove hard Gates, expiry, scope, transmission boundary, no-write, missed trigger, late data and Kill race.",
+      "contractLine": 2536,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0043__create_ad_bid_attempt_lifecycle_and_readback.sql",
+          "sha256_at_receipt": "128374ef80ab98ae8f2b803624814c1f019489deb5b69b4892b4dd7b935fc3c4"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+          "sha256_at_receipt": "e56eb93baa4d82e8c92d21dee1afa55f2cd00a47f922b78757955d62cf6f52e5"
+        },
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+          "sha256_at_receipt": "bf95f43f036b7fbe61faf2e461c9da1f03b24055143ca5b2b42d8f8ce123b26f"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTransmissionBoundaryIT.java",
+          "method": "aKillSwitchThrownMidFlightClosesTheGate",
+          "line": 94,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "b34ae1f31d2caba55618f5df2677173be0a229e6d45dc8bff0217f7472ada9c5"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingSealedAuthorityIT.java",
+          "method": "arbitraryApplicationGucCannotImpersonateFinalApprover",
+          "line": 80,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "4207e193e640d9b7a7cdf25efbee7f803069e366c8cf4964b983da3c739e3eed"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingTargetedTriggerIT.java",
+          "method": "acceptedCanonicalChangesWakeOnlyTheirDependants",
+          "line": 30,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "0203a5fe6cf5091e3d4a918f1998daf186c99c797d29811ceca10b35d52b7373"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+          "method": "lateCompletedSalesRegressionPreservesHistoryAndReacquiresQuarantine",
+          "line": 167,
+          "resultBinding": "MATCH_METHOD_IN_PARENT_FINAL_REPORT; source presence alone is not PASS",
+          "sha256_at_receipt": "e6be6bd39f19195f1576f858e01e5338538835968592a3d6d8d25eda41ed83ea"
+        }
+      ],
+      "mappingRationale": "The tests mutate real gates, scope/fences and canonical facts/queue triggers rather than only asserting helper return values.",
+      "evidenceLimits": "See the 50-row control fault receipt for specific run/boundary limits. Source-r15 Finance6/Frozen10 pass within a partially failed batch. Reworked old gate/privilege suites, final complete verification and CI/browser evidence remain pending; no independent Controller conclusion is supplied.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "faultSeedingReceipt": {
+        "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/command-controls-fault-seeding.json",
+        "faultCount": 50,
+        "positiveControlCount": 6,
+        "method": "Each row names its exact injected variable, expected refusal, real test method, executed boundary and evidence limit; schema/privilege refusal and already-closed gates are distinguished from open-gate fault proof."
+      },
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    },
+    {
+      "id": "S3-AC-168",
+      "acceptedText": "Outcome Regression removes settled-success reuse and creates the correct Finance/Advertising review responsibility.",
+      "contractLine": 2505,
+      "sourceReferences": [
+        {
+          "path": "backend/marketops-server/src/main/resources/db/migration/V0065__route_settled_advertising_contradictions_to_finance_review.sql",
+          "sha256_at_receipt": "58811f26e8215fb227655baf1fb006d16d5ff155dcce0751c94ef844c118a3cc"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/AdvertisingOutcomeReviewIntake.java",
+          "sha256_at_receipt": "a653b41f190f4b13ccd313d2f991e767972afb35b0d8488c372b02113689012b"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingOutcomeReviewService.java",
+          "sha256_at_receipt": "b9753e3ddd24bf05a55064b21895ccb48f758528e1c0b7ccd0d75d6c55719a2b"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+          "sha256_at_receipt": "914ad07848313cac3ffbd865ee80d6a1c31bcc2b5d8e4edbc256785b35a55f92"
+        },
+        {
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeService.java",
+          "sha256_at_receipt": "d33a5bdc7f82f03e8dd9e3978abc0dac1704bf01bf491a03ab23a6ec26cc96d1"
+        }
+      ],
+      "testReferences": [
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingFinanceReviewIT.java",
+          "method": "settledContradictionCreatesFinanceReviewWithoutInventingRegressionOrReplacingHistory",
+          "line": 82,
+          "resultBinding": "source-r15 relevant suite PASS; full batch PARTIAL_FAILURE",
+          "sha256_at_receipt": "a3a42a660bad1a12b5637bf3d7893edf8eadbbe54d9d23b76d621a5532f1de4d"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingFinanceReviewIT.java",
+          "method": "settledRevisionsReopenTheSameFinanceTaskAndKeepBothTaskAges",
+          "line": 100,
+          "resultBinding": "source-r15 relevant suite PASS; full batch PARTIAL_FAILURE",
+          "sha256_at_receipt": "a3a42a660bad1a12b5637bf3d7893edf8eadbbe54d9d23b76d621a5532f1de4d"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingFinanceReviewIT.java",
+          "method": "financeAssignmentRequiresItsRoleAndTheCompleteFrozenAffectedScope",
+          "line": 141,
+          "resultBinding": "source-r15 relevant suite PASS; full batch PARTIAL_FAILURE",
+          "sha256_at_receipt": "a3a42a660bad1a12b5637bf3d7893edf8eadbbe54d9d23b76d621a5532f1de4d"
+        },
+        {
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingFrozenOutcomeIT.java",
+          "method": "matureActualSettlementContradictionDoesNotOverwritePriorRetainedSuccess",
+          "line": 217,
+          "resultBinding": "source-r15 relevant suite PASS; full batch PARTIAL_FAILURE",
+          "sha256_at_receipt": "e6be6bd39f19195f1576f858e01e5338538835968592a3d6d8d25eda41ed83ea"
+        }
+      ],
+      "mappingRationale": "Current canonical Settled regression or a conclusive contradiction of primary retained success creates an actual linked Finance Shared Task, while preserving and reopening or escalating the original advertising responsibility. Exact frozen affected membership controls Finance assignment; per-observation history is immutable and replay is idempotent.",
+      "evidenceLimits": "Finance6 PASS and actual FrozenOutcome10 PASS in source-r15. Finance workflow cases use explicit migration-role synthetic Outcome oracles for Task/IAM boundaries; the companion financial contradiction case derives canonical facts through actual SQL/OutcomeService and the same intake. Whole source-r15 remains PARTIAL_FAILURE: 288 tests, 286 passed, 1 failure, 1 error, 0 skipped. No final Head/full CI result is claimed.",
+      "evidenceStatus": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+      "runReference": {
+        "shard": "facts-outcome-traceability.json",
+        "id": "source-r15",
+        "log": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/logs/slice3-frozen-outcome-pg-r15.log",
+        "logSha256": "d1602828ec7dab120c9f47b6a6da8c974ae327d672d8c00dba538b4deb5cf27e"
+      },
+      "controllerVerdict": null,
+      "finalVerificationState": "FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING"
+    }
+  ],
+  "status": "IMPLEMENTED_TARGETED_EVIDENCE_RECORDED_FINAL_UNSELECTED_FULL_AND_EXACT_CI_PENDING",
+  "controllerVerdict": "NOT_PROVIDED",
+  "authorityBoundary": {
+    "productionWriteEnabled": false,
+    "realProviderAccess": false,
+    "acceptedContractChanged": false,
+    "frozenFindingsChanged": false
+  },
+  "crossStreamContributionReceipts": [
+    {
+      "path": "/tmp/slice3-retry-worker-contribution.json",
+      "sha256": "639f177d67e99960d301b13305b2bad24b3cd84ea9a38b2728b7aa14c723d514",
+      "status": "CONTRIBUTION_WITH_HISTORICAL_R20_RESULTS_CURRENT_R21_AND_FINAL_FULL_CI_PENDING"
+    },
+    {
+      "path": "/tmp/slice3-cross-domain-isolation/contribution.json",
+      "sha256": "e0aa1c963fb7bf722a3fd27f6fd730bfb74f3ccce58181bc9bcef4571215372f",
+      "status": "CONTRIBUTION_WITH_HISTORICAL_R20_RESULTS_CURRENT_R21_AND_FINAL_FULL_CI_PENDING"
+    }
+  ],
+  "latestControlMeasurement": {
+    "r20": {
+      "counts": {
+        "tests": 262,
+        "failures": 7,
+        "errors": 14,
+        "skipped": 0
+      },
+      "wholeRun": "FAILED",
+      "causalLimits": "AuthorityStop8 passed/3 invalid DRAFT fixture errors; GateMatrix fixture errors; Cross20 passed/1 Shared compensated-state input error; Worker2 passed/2 actual state/fence failures. All original bytes preserved."
+    },
+    "r21": {
+      "counts": {
+        "tests": 289,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "wholeRun": "FAILED",
+      "namedControlSuites": "AuthorityStop12, GateMatrix25, GateScope8, RetryWorker9, CrossDomain21, Reservation39, Privilege10, Actor14, Retry18, OperationsRead10 passed. Sole batch failure: absentBundleReportsItself reported an extra semantic reason for absent Bundle."
+    },
+    "r22": {
+      "counts": {
+        "tests": 83,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "wholeRun": "PASS",
+      "namedControlSuites": "AdBidWritePath21, SealedAuthority15, AuthorityStop12, Privilege10, GateMatrix25 all passed after Root NOT FOUND early return.",
+      "sourceDeltaLimit": "R22 has its own exact manifest. R21 proof remains attached to R21 bytes; no unchanged-file inference is treated as a final full run."
+    },
+    "finalUnselectedFull": "PENDING",
+    "exactPrCi": "PENDING",
+    "controllerVerdict": null
+  },
+  "currentControlRunReceipts": [
+    {
+      "id": "controls-post-w4-r21",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=4e101ca4386d1cab089a03edc5d461301d5d4559",
+        "-Dtest=AdBidCommandWorkerTest,AdBidWritePathIT,AdvertisingCrossDomainIsolationIT,AdvertisingRetryWorkerIT,AdvertisingAuthorityVersionStopIT,AdvertisingManualWorkflowIT,AdvertisingDecisionServiceTest,AdvertisingDecisionQueryIT,AdvertisingHumanWorkflowIT,AdvertisingSealedAuthorityIT,AdvertisingGateScopeMatrixIT,AdvertisingGateScopeIT,AdvertisingOperationsReadIT,AdvertisingReservationIT,AdvertisingRetryProofIT,AdvertisingActorRevocationIT,AdvertisingPrivilegeBoundaryIT,AdBidWriteGateAdversarialIT,AdvertisingTransmissionBoundaryIT",
+        "test"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+      "recordedResult": "FAILED",
+      "counts": {
+        "tests": 289,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "receiptPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r21/receipt.json",
+      "receiptSha256": "3da1c8e3add28f576d69a30b31b99a6ccbc5bee9ba38043c75db916d8830438f",
+      "sourceManifestPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r21/source-before.json",
+      "sourceManifestSha256": "749f08b59aea5c8cc1d27bd99be025e2ba29f94d8a39c355af576fa667a1a112",
+      "sourceStable": true,
+      "baseHead": "4e101ca4386d1cab089a03edc5d461301d5d4559",
+      "baseTree": "3bf728be30c0a6a95d89f70336ca20506ec68edd",
+      "rawLogArchivePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r21/maven.log.gz",
+      "rawLogArchiveSha256": "d7e651f8ecf3c2b0b4f84095d35ae4b2b80810d362755b5b84f6bbacac1330fe",
+      "rawLogSha256": "e59b91e961e86d88bf638252aede411f282f99247eaca0708b83108b44817ed3",
+      "reportArchivePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r21/raw-reports.tar.gz",
+      "reportArchiveSha256": "e82f1fb6640816bc1e859041c7add390558682f669a752efe23cf8cda2ee4a74",
+      "suites": [
+        {
+          "name": "com.mimococo.marketops.AdBidWriteGateAdversarialIT",
+          "actualNodes": 8,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdBidWriteGateAdversarialIT.xml",
+          "xmlSha256": "97761024dfa6c0e9976b80271bd02158fe43993b1cc89600299e47cbce7bd71a"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingActorRevocationIT",
+          "actualNodes": 14,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingActorRevocationIT.xml",
+          "xmlSha256": "683a38afe9f942af7154a3fb21a462bea1bb571d174f85a2190314c92b0b9599"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+          "actualNodes": 12,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingAuthorityVersionStopIT.xml",
+          "xmlSha256": "0f5e4a4aa7f9f85f506844a9ad4466393d5a2ea1c05fc0ac87b1196b10dc6471"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingCrossDomainIsolationIT",
+          "actualNodes": 21,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingCrossDomainIsolationIT.xml",
+          "xmlSha256": "49dc05a4b4194d0039b6cef0fe300ebdc52873ce2f287ed3bdfb62bb8e2bd8aa"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingDecisionQueryIT",
+          "actualNodes": 4,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingDecisionQueryIT.xml",
+          "xmlSha256": "f60d752c0638eb5af5bf8cf963b7edf0bf4bb2e34cf8e270c099064b7f22f449"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingGateScopeIT",
+          "actualNodes": 8,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingGateScopeIT.xml",
+          "xmlSha256": "c0948ef1ead4b5bbad426459170cc43f1193c093ef1519979847a5ec896956c3"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingGateScopeMatrixIT",
+          "actualNodes": 25,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingGateScopeMatrixIT.xml",
+          "xmlSha256": "2961f40c432ce93f7323c824c10576d9a99a1c83d8d658d6446bffb991abbc1a"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingHumanWorkflowIT",
+          "actualNodes": 16,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingHumanWorkflowIT.xml",
+          "xmlSha256": "17e59deef78073225c58c6c96679060afcd5c475ecc978c240b93238e64fffb5"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingManualWorkflowIT",
+          "actualNodes": 15,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingManualWorkflowIT.xml",
+          "xmlSha256": "cef975a57f3c43338c3aff59ca21aaf9cdaaa28a7ef26cbda819c20a3a45fb12"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingOperationsReadIT",
+          "actualNodes": 10,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingOperationsReadIT.xml",
+          "xmlSha256": "4774cb6b31b1c031a3ecbc95a22125497d89cfb1e9ec5b1fb04e3fac34dfa4d4"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingReservationIT",
+          "actualNodes": 39,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingReservationIT.xml",
+          "xmlSha256": "5a7bb072d97f38d9a8568467d7a5e14a42ebdf8328185de8b4a00ab55ac6d834"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingRetryProofIT",
+          "actualNodes": 18,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingRetryProofIT.xml",
+          "xmlSha256": "37d19ed0e6bcb613b4208f9e3190624f3e8d2da133ac9a4a84aa4f70cf0040c1"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingRetryWorkerIT",
+          "actualNodes": 9,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingRetryWorkerIT.xml",
+          "xmlSha256": "406ed60200a7fc25df75c1bd036a723219a1dd297459937243953987bda06956"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingSealedAuthorityIT",
+          "actualNodes": 15,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingSealedAuthorityIT.xml",
+          "xmlSha256": "b9631418ad0e4ea2793f1ba1124d536e63e08f04691490a589d3e5cedf3e91d6"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingTransmissionBoundaryIT",
+          "actualNodes": 7,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingTransmissionBoundaryIT.xml",
+          "xmlSha256": "8ca208a8b8f9c2b8c62c1c82a54dbada1f3737222fc9dd2cf0f49b1d96984a7f"
+        },
+        {
+          "name": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDecisionServiceTest",
+          "actualNodes": 18,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingDecisionServiceTest.xml",
+          "xmlSha256": "055e2777203ceb09799a2b70e4d964c00f84f63ba6a55f8a65228757fdad693a"
+        },
+        {
+          "name": "com.mimococo.marketops.database.AdBidWritePathIT",
+          "actualNodes": 21,
+          "failures": 1,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.database.AdBidWritePathIT.xml",
+          "xmlSha256": "71ac74c10bcadf314d0e5e7197c279f87402d211a5ed825e0b4d901c390718a1"
+        },
+        {
+          "name": "com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT",
+          "actualNodes": 10,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT.xml",
+          "xmlSha256": "8bd05a45225bf8f7142941e209515c3bd574584400814ce589325f84897ab511"
+        },
+        {
+          "name": "com.mimococo.marketops.marketplaceintegration.internal.application.AdBidCommandWorkerTest",
+          "actualNodes": 19,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.marketplaceintegration.internal.application.AdBidCommandWorkerTest.xml",
+          "xmlSha256": "5c8a685a38c16147523bc77db1037d85ef3bf4a83966999620d3f07e5efc08cf"
+        }
+      ],
+      "startedAtUTC": "2026-09-05T10:04:26.040562+00:00",
+      "finishedAtUTC": "2026-09-05T10:08:33.814745+00:00",
+      "limit": "Exact working-tree measurement, not final unselected full/CI or Controller verdict."
+    },
+    {
+      "id": "controls-post-w4-r22",
+      "command": [
+        "./mvnw",
+        "-B",
+        "-ntp",
+        "-Dmarketops.build.gitCommit=4e101ca4386d1cab089a03edc5d461301d5d4559",
+        "-Dtest=AdBidWritePathIT,AdvertisingSealedAuthorityIT,AdvertisingAuthorityVersionStopIT,AdvertisingPrivilegeBoundaryIT,AdvertisingGateScopeMatrixIT",
+        "test"
+      ],
+      "cwd": "/Users/chzhengx/Code/personal/marketops-platform/backend/marketops-server",
+      "recordedResult": "PASS",
+      "counts": {
+        "tests": 83,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "receiptPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r22/receipt.json",
+      "receiptSha256": "0ab169c7fc5cc727cb8a7dd0b9cf176572cfc74f5e810d2be57036e3a082a5a4",
+      "sourceManifestPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r22/source-before.json",
+      "sourceManifestSha256": "0fd3b3f26870be6691fb4f1b4c5dafe3e058a09696e3a46a9f86aaf183de3bf3",
+      "sourceStable": true,
+      "baseHead": "4e101ca4386d1cab089a03edc5d461301d5d4559",
+      "baseTree": "3bf728be30c0a6a95d89f70336ca20506ec68edd",
+      "rawLogArchivePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r22/maven.log.gz",
+      "rawLogArchiveSha256": "c9e1ed4c3a1d2285e89b51ea3528ce7dcd59e551f5b1dc36aff144f3a511705a",
+      "rawLogSha256": "696b5e1c981060b0365751d066d6ec3d5e978eff69cd57fb1bd6abc677215053",
+      "reportArchivePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/final-controls/r22/raw-reports.tar.gz",
+      "reportArchiveSha256": "4c5a1da0441288dfd7d2db13b82020827f3618b7773b3a622cdb0aea55079575",
+      "suites": [
+        {
+          "name": "com.mimococo.marketops.AdvertisingAuthorityVersionStopIT",
+          "actualNodes": 12,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingAuthorityVersionStopIT.xml",
+          "xmlSha256": "d7f130090e063ebcf1d1142234cade82c379188c3891d41af62aa02d366251be"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingGateScopeMatrixIT",
+          "actualNodes": 25,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingGateScopeMatrixIT.xml",
+          "xmlSha256": "f4775fcbfc4e0158347465fac339d39ed33c64c4dfaa31ef1d1bf5194ba094fe"
+        },
+        {
+          "name": "com.mimococo.marketops.AdvertisingSealedAuthorityIT",
+          "actualNodes": 15,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.AdvertisingSealedAuthorityIT.xml",
+          "xmlSha256": "b17059d039cc47041faa9b8855323fef9271057999821d39a129b7a4fbc07f0a"
+        },
+        {
+          "name": "com.mimococo.marketops.database.AdBidWritePathIT",
+          "actualNodes": 21,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.database.AdBidWritePathIT.xml",
+          "xmlSha256": "f30cc781125872c215979282551d552c2faf9e48645692c2bf4f8579618bc89a"
+        },
+        {
+          "name": "com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT",
+          "actualNodes": 10,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "archiveMember": "reports/TEST-com.mimococo.marketops.database.AdvertisingPrivilegeBoundaryIT.xml",
+          "xmlSha256": "425462091880c55f5f392389f668e49fb1be831d2c4d01f2fb3ef8f5acc671f2"
+        }
+      ],
+      "startedAtUTC": "2026-09-05T10:09:16.992573+00:00",
+      "finishedAtUTC": "2026-09-05T10:10:23.646008+00:00",
+      "limit": "Exact working-tree measurement, not final unselected full/CI or Controller verdict."
+    }
+  ]
+}

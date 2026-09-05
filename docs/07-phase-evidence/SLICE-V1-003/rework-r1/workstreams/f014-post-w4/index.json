@@ -1,0 +1,132 @@
+{
+  "kind": "POST_W4_F014_AND_REENABLEMENT_HISTORY",
+  "status": "TARGETED_R8_238_PASS_R9_31_PASS; FINAL_FULL_AND_EXACT_CI_PENDING",
+  "runs": [
+    {
+      "run": "r1",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r1/receipt.json",
+      "receiptSha256": "4f1de4cc519e074b7a13541e1c1645d2d3f3f84e7efe43a6e1fdf64f84b53e8b",
+      "counts": {
+        "tests": 27,
+        "failures": 0,
+        "errors": 4,
+        "skipped": 0
+      },
+      "pass": false,
+      "sourceStable": true,
+      "logSha256": "6f2bcb3a3b6b4248c2c4706aa1db4ad2bf861d61afb8232e1962643cc6a54f21"
+    },
+    {
+      "run": "r2",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r2/receipt.json",
+      "receiptSha256": "29035c6d7c82f8f1dbbf696212a3b14d2c83dc147e2a2e04f4c88e1745762b9d",
+      "counts": {
+        "tests": 27,
+        "failures": 0,
+        "errors": 1,
+        "skipped": 0
+      },
+      "pass": false,
+      "sourceStable": true,
+      "logSha256": "db72af4e8f5399d4d601ad26a5b96b3fec55b2c834f1f09a0eb7f0490a963e9c"
+    },
+    {
+      "run": "r3",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r3/receipt.json",
+      "receiptSha256": "ee482ce06c2652b506cfeb718861ac469f1a19825612f7ea32bf23af38fbd082",
+      "counts": {
+        "tests": 27,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "pass": true,
+      "sourceStable": true,
+      "logSha256": "7d9dceed100a6ce74677aae4509a7ecd28bef5ea5525f99188524bceffd74291"
+    },
+    {
+      "run": "r4",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r4/receipt.json",
+      "receiptSha256": "06beaa817e5ef1587f3af269c4863052a3512ca52036ca6ebd009c6a54f5f92f",
+      "counts": {
+        "tests": 44,
+        "failures": 0,
+        "errors": 2,
+        "skipped": 0
+      },
+      "pass": false,
+      "sourceStable": true,
+      "logSha256": "55e870fe3daf2d88d3771056df60e4bdf18659377608d7d9f19ebd7ad60d20e0"
+    },
+    {
+      "run": "r5",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r5/receipt.json",
+      "receiptSha256": "0b06404557779cd67890c5f608dda655506373f4b35fc585f54d19ea1a7bac40",
+      "counts": {
+        "tests": 44,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "pass": true,
+      "sourceStable": true,
+      "logSha256": "dda2eacfdcf200d07fae0e5cc08f355f21f570becb5eba12b387656e52545d71"
+    },
+    {
+      "run": "r6",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r6/receipt.json",
+      "receiptSha256": "945b0953b6b3012550548d97ffb9eb4334554fbfbc669c37d0a1b2962e84b14f",
+      "counts": {
+        "tests": 238,
+        "failures": 1,
+        "errors": 1,
+        "skipped": 0
+      },
+      "pass": false,
+      "sourceStable": true,
+      "logSha256": "3f552fc32c32be47a580aa84f36f482adf2b1caa14549e32a6643c4e92015e17"
+    },
+    {
+      "run": "r7",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r7/receipt.json",
+      "receiptSha256": "9dab85a7a11ef100a3bd94db526e518a5b2164885dbd1b9beb007cf6f815eb40",
+      "counts": {
+        "tests": 31,
+        "failures": 0,
+        "errors": 1,
+        "skipped": 0
+      },
+      "pass": false,
+      "sourceStable": true,
+      "logSha256": "7100f5787cffc9942f1ae215916542bb91dc2551720dd6be3566362976cead2b"
+    },
+    {
+      "run": "r8",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r8/receipt.json",
+      "receiptSha256": "76c8262a15a18b98c6dcb4de9d97e3ef5b449cfd0b8becae90c4681f1ef58ed5",
+      "counts": {
+        "tests": 238,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "pass": true,
+      "sourceStable": true,
+      "logSha256": "0aa353b3543a7844e47058132168b28a6a2bf01e463420cd0452b2c6043fdb22"
+    },
+    {
+      "run": "r9",
+      "receipt": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/f014-post-w4/r9/receipt.json",
+      "receiptSha256": "532ac4c20c586dccfb3d706ac91e6361ad5342a292489f46d3bef1a484410532",
+      "counts": {
+        "tests": 31,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "pass": true,
+      "sourceStable": true,
+      "logSha256": "1c15bedb0285e16a069a3d293beeb04e675441a02003df25cd8fa36b251a7f9f"
+    }
+  ]
+}

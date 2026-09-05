@@ -1,0 +1,21 @@
+{
+  "classification": "MERGED_UNIT_AND_INTEGRATION_COVERAGE",
+  "head": "384e34e",
+  "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+  "source": "backend/marketops-server/target/site/jacoco/jacoco.csv",
+  "gate": {
+    "line": 0.8,
+    "branch": 0.7,
+    "scope": "BUNDLE"
+  },
+  "measured": {
+    "lineCovered": 20357,
+    "lineMissed": 3991,
+    "lineRatio": 0.8361,
+    "branchCovered": 5873,
+    "branchMissed": 2444,
+    "branchRatio": 0.7061,
+    "branchesAboveGate": 52
+  },
+  "thresholdChanged": false
+}

@@ -219,6 +219,83 @@ public class PlatformCallSpecRepository {
                 .query(Boolean.class).single());
     }
 
+    /**
+     * The advertising twin of {@link #priceAttemptCurrent}, and it exists for the
+     * same reason.
+     *
+     * <p>{@code ops.open_ad_bid_command_attempt} already evaluated the gate when
+     * the attempt row was written. This is the second evaluation, made after the
+     * destination is built and immediately before anything leaves, so a kill,
+     * quarantine, expired approval or revoked credential that arrived in the
+     * intervening milliseconds stops the call rather than following it.
+     *
+     * <p>It also re-derives every value the caller supplied from the command
+     * itself. The adapter is handed a request record; without this, a caller
+     * inside the module could hand it a well-formed request naming a different
+     * bid, a different object or a different idempotency key, and the digest
+     * would agree with itself the whole way down.
+     */
+    public boolean adBidAttemptCurrent(
+            com.mimococo.marketops.marketplaceintegration.port.AdBidWriteRequest request) {
+        return Boolean.TRUE.equals(jdbc.sql("""
+                SELECT EXISTS (
+                    SELECT 1 FROM ops.ad_bid_command_attempt a
+                    JOIN ops.ad_bid_command c ON c.id=a.command_id
+                    JOIN core.store store ON store.id=c.store_id
+                    JOIN core.ad_native_object object ON object.id=c.ad_native_object_id
+                        AND object.organization_id=c.organization_id
+                    JOIN platform.credential_metadata credential
+                        ON credential.marketplace_account_id=store.marketplace_account_id
+                    WHERE a.id=:attempt AND a.request_digest=:digest AND a.outcome_class='IN_FLIGHT'
+                      AND a.purpose=:purpose AND c.capability_id=:capability
+                      AND object.native_campaign_key=:campaign AND object.native_object_key=:object
+                      AND object.status='ACTIVE'
+                      AND object.control_granularity_state='PROVEN_INDEPENDENT'
+                      AND :idempotency=CASE WHEN a.purpose='RESTORE'
+                          THEN encode(sha256(convert_to(c.idempotency_key||chr(31)||'RESTORE'||chr(31),'UTF8')),'hex')
+                          ELSE c.idempotency_key END
+                      AND (a.purpose='STATUS_ENQUIRY' OR (c.currency_code=:currency
+                          AND c.bid_unit_code=:unit
+                          AND :bid=CASE WHEN a.purpose='RESTORE' THEN c.prior_bid_amount
+                                        ELSE c.target_bid_amount END))
+                      AND CASE WHEN a.purpose='STATUS_ENQUIRY'
+                          THEN CAST(:task AS text)=(SELECT prior.native_task_key
+                              FROM ops.ad_bid_command_attempt prior
+                              WHERE prior.command_id=c.id AND prior.native_task_key IS NOT NULL
+                              ORDER BY prior.started_at DESC,prior.attempt_no DESC LIMIT 1)
+                          ELSE CAST(:task AS text) IS NULL END
+                      AND c.fence_token=a.fence_token AND c.lease_owner=a.lease_owner
+                      AND c.lease_expires_at > clock_timestamp()
+                      AND (a.purpose<>'APPLY' OR c.approval_expires_at > clock_timestamp())
+                      AND a.expected_version_token IS NOT DISTINCT FROM CAST(:precondition AS text)
+                      AND a.operation_snapshot-'adSemanticProfile'=platform.ad_bid_operation_snapshot(c.capability_id,a.purpose)
+                      AND a.operation_snapshot->'adSemanticProfile'=(SELECT to_jsonb(profile)
+                          FROM platform.ad_semantic_profile profile WHERE profile.id=c.semantic_profile_id)
+                      AND platform.capability_evidence_current(store.marketplace_account_id,c.capability_id,
+                          (a.operation_snapshot #>> '{operation,endpoint_id}')::uuid)
+                      AND credential.id=:credential AND credential.organization_id=c.organization_id
+                      AND credential.purpose_code='ADS_WRITE' AND credential.status='ACTIVE'
+                      AND credential.effective_from<=clock_timestamp()
+                      AND credential.expires_at>clock_timestamp()
+                      AND (credential.scope_mode='ACCOUNT' OR EXISTS (
+                          SELECT 1 FROM platform.credential_store_scope scope
+                          WHERE scope.credential_id=credential.id AND scope.store_id=store.id
+                            AND scope.status='ACTIVE'))
+                      AND (a.purpose NOT IN ('APPLY','RESTORE')
+                          OR cardinality(CASE WHEN a.purpose='RESTORE' THEN ops.evaluate_ad_bid_compensation_gate(c.id)
+                              ELSE ops.evaluate_ad_bid_write_gate(c.id) END)=0))
+                """).param("attempt",request.attemptId()).param("digest",request.digest())
+                .param("purpose",request.operation().name()).param("capability",request.capabilityId())
+                .param("campaign",request.nativeCampaignKey()).param("object",request.nativeObjectKey())
+                .param("idempotency",request.idempotencyKey())
+                .param("currency",request.targetBid()==null?null:request.targetBid().currencyCode())
+                .param("unit",request.bidUnitCode())
+                .param("bid",request.targetBid()==null?null:request.targetBid().amount())
+                .param("task",request.nativeTaskKey())
+                .param("credential",request.credentialId()).param("precondition",request.expectedVersionToken())
+                .query(Boolean.class).single());
+    }
+
     private static EndpointCallSpec mapSpec(ResultSet rows, int rowNumber) throws SQLException {
         // wasNull reports on the column read immediately before it, so the
         // absence of a rate limit is captured here rather than inside the

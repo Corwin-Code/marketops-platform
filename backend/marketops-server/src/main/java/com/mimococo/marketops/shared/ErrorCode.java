@@ -102,6 +102,8 @@ public enum ErrorCode {
     /** No live grant covers the requested resource. */
     RESOURCE_SCOPE_DENIED("This resource is outside the profile's scope."),
 
+    APPROVAL_EVIDENCE_SCOPE_BLOCKED("The complete decision evidence is outside the profile's scope."),
+
     /** The token issuer is not a registered, active identity provider. */
     IDENTITY_PROVIDER_NOT_ACCEPTED("The identity provider is not accepted here."),
 
@@ -173,6 +175,10 @@ public enum ErrorCode {
 
     /** The capability is unverified, unavailable or switched off for this subject. */
     CAPABILITY_NOT_USABLE("The capability is not usable for this subject."),
+
+    /** Another intervention already holds the product variants this one affects. */
+    CONCURRENT_INTERVENTION(
+            "Another intervention already covers the products this action affects."),
 
     /** Stored bytes did not read back with the digest they were written under. */
     OBJECT_STORAGE_VERIFICATION_FAILED("Stored content failed read-back verification."),

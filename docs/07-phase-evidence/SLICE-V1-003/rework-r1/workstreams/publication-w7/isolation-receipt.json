@@ -1,0 +1,12 @@
+{
+  "kind": "ISOLATED_APPEND_ONLY_BROWSER_CI_REPAIR_CHECKOUT",
+  "createdAtUTC": "2026-09-05T11:23:15.745483+00:00",
+  "rootWorktree": "/Users/chzhengx/Code/personal/marketops-platform",
+  "isolatedWorktree": "/tmp/slice3-r1-w7-isolated-publication/repository",
+  "startingHead": "3ed3f4c87c336cb07188e470528f328358fb279f",
+  "startingTree": "4e73aa0e7c30fe470528ecd5287b55a9c55e5ff1",
+  "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+  "independentGitObjects": true,
+  "rootHeadAndSourceUnchanged": true,
+  "reason": "Keep the complete W6 backend measurement frozen while applying a narrowly scoped frontend browser locator repair and running latest remote CI on its own append-only commit. No runtime/backend source change is planned."
+}

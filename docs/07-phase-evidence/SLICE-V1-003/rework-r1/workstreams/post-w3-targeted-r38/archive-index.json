@@ -1,0 +1,10 @@
+{
+  "archiveSha256": "5421ced6c0f4ff34f5f32dd673d018c51c9edb0cdae5d2b12762037d39c1b327",
+  "reports": [
+    {
+      "member": "reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingEfficiencyFlowIT.xml",
+      "sha256": "abb728dcf87d2d4ac93468d88a1c254847826d2c6f0c32ec187631aef9af0b4e",
+      "bytes": 49039
+    }
+  ]
+}

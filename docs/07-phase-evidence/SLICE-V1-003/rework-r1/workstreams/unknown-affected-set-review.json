@@ -1,0 +1,347 @@
+{
+  "kind": "READ_ONLY_UNKNOWN_AFFECTED_SET_NARROW_DIFF_REVIEW",
+  "generatedAtUTC": "2026-09-05T05:08:24.387114+00:00",
+  "baseHead": "fd3e00e3ab033d823bf5577f8dbfca736f067d86",
+  "reviewScope": "Current uncommitted narrow source/test diff and its immediate authority consumers; not a full independent Controller review",
+  "inputs": [
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0038__create_advertising_case_projection_and_orchestration.sql",
+      "sha256": "7dba80cbda4af47086c964e1249ddc16033970c95b44d37b402c8379f10dbfcd"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingQueryRepository.java",
+      "sha256": "5dfe373493b6370130d800eae43f3e0c06d36c1012bee567248a604f8295d6b9"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java",
+      "sha256": "e4bc090e797b347a55f38be0c18961c26cc66231f3932fe0ecbb91e94a1ca8c9"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingDisclosureService.java",
+      "sha256": "5240dff30fa59893e3b517570029cb36d75b9fe187d0a10294a6c8d3ebf57408"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingTaskGovernance.java",
+      "sha256": "914ad07848313cac3ffbd865ee80d6a1c31bcc2b5d8e4edbc256785b35a55f92"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingWorkflowQueryService.java",
+      "sha256": "2a463e17c6acf58272c14431835013f97a0f1e21c7410338c5b0d42bf716804f"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingExceptionService.java",
+      "sha256": "000873256394f2c0e5d8456082f401574e30b20c1aef3048e9d06d3e7e7cfc95"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/WorkTaskService.java",
+      "sha256": "980130890e401a04d67dad3c41978aa6f27725c4e04c6bde13b853daf5903139"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCaseCalculationService.java",
+      "sha256": "37373c73a881cc24604b60cfd5018041be4179e6cee4de5387186bc4cfb9bffe"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingProposalService.java",
+      "sha256": "288ee84a9da99ae6356e6fe89488e14f9b5f249cc4c87d13c790a716a2fca824"
+    },
+    {
+      "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/operationsworkflow/internal/application/AdvertisingHumanDecisionService.java",
+      "sha256": "2a082d60d87530eaecddeed1390c92164d7d812279041eb2e51b990ee4ff078a"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0058__seal_advertising_authority_and_control_execution.sql",
+      "sha256": "42ef603b70238d5344724ad5f3bdf6608e1e9502ff9c351d8316c41164e1a523"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0059__freeze_advertising_outcome_baselines_and_critical_units.sql",
+      "sha256": "a3ce59928d89130734c0e0ff61e6b12ff1330102d6e4043f55c3a6b377a6ef56"
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0063__wire_advertising_changes_expiries_and_slo_recovery.sql",
+      "sha256": "bf95f43f036b7fbe61faf2e461c9da1f03b24055143ca5b2b42d8f8ce123b26f"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/AdvertisingDisclosureIT.java",
+      "sha256": "bd1559669ff1a2330ca9c21ff81e91282b7e4f954603ec9369166a0f57489e64"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingEfficiencyFlowIT.java",
+      "sha256": "96eeb818f810eb64aea9364abd16cc5e7fa5021aaa6fc50193e9d707fe520dfd"
+    },
+    {
+      "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/operationsworkflow/internal/application/WorkTaskJournalIT.java",
+      "sha256": "c4744e606b744ed962478d282bd8713d4be81dc828a03ae76671873ffa55d144"
+    },
+    {
+      "path": "frontend/marketops-console/src/advertising/AdvertisingCaseView.tsx",
+      "sha256": "090f94fe8dfef39af895629d1d6fa8c289a1a5594933e48409a9cabb6fe9717e"
+    },
+    {
+      "path": "frontend/marketops-console/src/__tests__/AdvertisingControl.test.tsx",
+      "sha256": "98ca03d95da591ffedafc691e7b61a9b91cb3ec00792cf70090250c8f33928e6"
+    }
+  ],
+  "reviewedDiffSha256": "856b49dc9ba1f508540bb4abb050a68955297820e69b0688f9e6c1bdad20c0dd",
+  "checks": [
+    {
+      "boundary": "NARROW_NULL_PERSISTENCE",
+      "evidence": "V0038:250–252 permits null only DATA_REPAIR + AFFECTED_SET_UNRESOLVED + AFFECTED_SET_NEVER_RESOLVED. lane/cause/blocker array are NOT NULL; existing ad_case_blockers_ck rejects NULL array elements, so the ANY condition cannot use SQL UNKNOWN to bypass the check. Other lane/cause and referenced foreign keys remain constrained.",
+      "result": "NO_GAP_IDENTIFIED_IN_REVIEW"
+    },
+    {
+      "boundary": "UNKNOWN_IS_NOT_ZERO_IMPACT",
+      "evidence": "The absent set remains null digest and UNRESOLVED. SQL returns an empty known-members list/count 0 for iteration, not a complete set or financial zero; financial value-state constraints are unchanged. Current frontend does not consume affectedVariantCount numerically, labels the section Affected set, explicitly says full impact is unknown and no complete membership is established.",
+      "result": "NO_GAP_IDENTIFIED_IN_REVIEW",
+      "limit": "The numeric 0 field is known structural member count only; it must not be reused as a known full-impact count. No code in this reviewed path treats it as a complete set."
+    },
+    {
+      "boundary": "NO_GENERIC_PERMISSION_FALLBACK",
+      "evidence": "TaskGovernance left join now retains the ad_case_responsibility context even when set is missing. require returns true after actual organization and ADVERTISING_VIEW/ADVERTISING_TASK_ACT Store checks, and scoped role check for mutation. WorkTaskService only uses generic DIAGNOSTIC_VIEW/TASK_ASSIGN when no advertising context exists. Workflow likewise explicitly requires ADVERTISING_VIEW Store access.",
+      "result": "NO_GAP_IDENTIFIED_IN_REVIEW"
+    },
+    {
+      "boundary": "EXACT_HISTORICAL_NULL_DOES_NOT_BORROW_FUTURE",
+      "evidence": "caseObjectScope calls resolveObjectScope with allowLatest=false. A null digest then matches no affected-set row, while the outer object remains available via LEFT JOIN. caseView full disclosure requires non-null exact digest and COMPLETE nonempty full evidence scope. Three-argument mayReadDecisionEvidence returns false for null; the two-argument method retains separate current-object semantics.",
+      "result": "NO_GAP_IDENTIFIED_IN_REVIEW"
+    },
+    {
+      "boundary": "MISSING_SET_CANNOT_OBTAIN_WRITE_AUTHORITY",
+      "evidence": "Proposal requires a resolved affected set and direction eligibility; HumanDecision uses exact digest overload. V0058 ad_actor_covers_affected_set uses EXISTS on the exact nonempty COMPLETE set, so null set returns false. Seal binds baseline affected_set_id exactly to Case and baseline V0059 affected_set_id/digest are NOT NULL. Existing manual packet/reservation/command exact-set constraints are unchanged.",
+      "result": "NO_GAP_IDENTIFIED_IN_REVIEW",
+      "limit": "Workflow allowedActions are affordances only; actual candidate/approval/command sinks retain their independent complete-scope checks. This review does not newly execute a crafted app-role direct seal attack."
+    },
+    {
+      "boundary": "EXCEPTION_INVALIDATION",
+      "evidence": "The invalidation query retains a Case with no set through LEFT JOIN, and IS DISTINCT FROM invalidates missing digest or missing COMPLETE state instead of SQL NULL silently skipping invalidation.",
+      "result": "NO_GAP_IDENTIFIED_IN_REVIEW"
+    },
+    {
+      "boundary": "REGRESSION_TEST_ASSERTIONS",
+      "evidence": "AdvertisingEfficiencyFlowIT.futureAffectedSetRemainsUnknownWithAGovernedRepairTask uses actual refresh of object with only future set, checks DATA_REPAIR/NEVER_RESOLVED/null/no candidate/exact Task context, advertising permission deny→grant→revoke without journal fabrication, workflow no candidate, wrong-cause CHECK 23514 and no Command. AdvertisingDisclosureIT.anUnknownHistoricalCaseIsReadableWithoutBorrowingFutureMembershipOrGenericPermission uses an explicit historical projection fixture, real HTTP/identity, null masked structure, generic current positive vs exact null negative and permission revocation 403. Frontend test requires UNRESOLVED/unknown text/no members/no Complete heading.",
+      "result": "ASSERTIONS_READ_NOT_EXECUTED_BY_REVIEW",
+      "limit": "Second PG method is a read projection oracle; classification persistence is proved by the first PG method. It must not be described as a second full calculation journey."
+    }
+  ],
+  "protectedMigrationBytes": [
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0001__create_foundation_schemas.sql",
+      "sha256": "7c7f34ba3a3746883e236a5a4e6eb0efc87e58e3b33f895d7f1d71c369d0eb0d",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0002__enable_btree_gist_extension.sql",
+      "sha256": "438f67ccf3c2f640a1e7a4e325e24fb60d1eb4f363ab545e1e69babba202db16",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0003__create_metadata_audit_event.sql",
+      "sha256": "efbe9ff5bb32fb96011f9d5b80426fb8d4134a2bd2314bb6294d8eb60be8135c",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0004__create_core_organization_metadata.sql",
+      "sha256": "39bff4689febfe3effa1e73953589976fa030c035412263e365f0d1a7be65d2c",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0005__create_iam_access_metadata.sql",
+      "sha256": "51a47d8cf735ff6378e4d0a3d201725b255e8f835e662a7d68b34d6dd51950f1",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0006__create_platform_registry_metadata.sql",
+      "sha256": "7225402b7a77cc04933e5d030772f9f6e2e98f4e552ac577e1254f998d73e902",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0007__create_ingestion_control_plane_authority.sql",
+      "sha256": "83ccccf382389ec62a401393cd85508183240eeb3d94215549a101f6ab5e8781",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0008__attach_control_epoch_triggers.sql",
+      "sha256": "8f148e213c8cd2f50c57c0d585708d59677d72663e4d45a6c62000dc663d5fea",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0009__create_control_boundary_kinds_and_decision_evidence.sql",
+      "sha256": "9b906c8e732aec72b7f069c5374cb0dc9894071e18e091281b9c28785336885d",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0010__create_ingestion_run_checkpoint_and_raw_evidence.sql",
+      "sha256": "a3b8ca08b796c1d211f17a042a8ec546cd0009d4457e2d68dcd930dfc36a13d9",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0011__create_human_identity_and_business_authorization.sql",
+      "sha256": "d5312e5c2348e8abe0fb445652567ad9a0e9ad1b7ce6eeb3a5202bb58af94555",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0012__create_product_listing_identity_and_mapping.sql",
+      "sha256": "e6ea3caa30f69e9f533a69cb1387e25396c15f3f0fce1f0bcdced00c30522bb7",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0013__create_cross_domain_operating_facts.sql",
+      "sha256": "db63fd8a4e50ceb39c78b58856a44ff4b4eed8e758a3975bc96fe9c439aad552",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0014__create_internal_fact_intake_and_file_import.sql",
+      "sha256": "f0649d939caab975ff796b2e257ea1e642f9e7bf851bd7616171ac82e0a0b42a",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0015__create_canonical_metric_definitions_and_values.sql",
+      "sha256": "cc695d22a1249b3e3520e359e75cdbfe7a90fb7519f0cc6e0b74369bdbdbed9b",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0016__create_deterministic_diagnosis_rules_and_findings.sql",
+      "sha256": "9a7b8efa5d1948d3d5ca8522b6d5dd011eb4be2e16f53145c7c7364ae831056c",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0017__create_ai_projection_invocation_and_output.sql",
+      "sha256": "b20b7138b2e177b87ec1a579cbdcdd13c60b4ed045b6721463c5496f974e74ff",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0018__create_recommendation_task_and_approval_workflow.sql",
+      "sha256": "1df2c7fd599354dce06cd8f3a4d6363a88c65fa2c02446cbe569d56b333422d1",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0019__create_commercial_policy_and_guardrails.sql",
+      "sha256": "ba6916d059cb5586bfe784e261a0243832acf97b097c112072899b5d01526e58",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0020__create_price_command_outbox_readback_and_write_gate.sql",
+      "sha256": "8437316450f3bae2e5ef532d360121ad825d25cac2cd67cb840cc31683d6721d",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0021__create_platform_api_profile_and_request_shape.sql",
+      "sha256": "b67375962b84a3f37becd968af7f2aaf97df7b75760ce69748a1f4895a9fc97a",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0022__create_ingestion_run_lifecycle_and_replay_guard.sql",
+      "sha256": "9a93dcaaafca30b9f738129974babe46509784c232854337ea023200d7c33f6e",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0023__create_declared_normalization_and_drift_observation.sql",
+      "sha256": "6fdc3d7bef0b4f0e395a73bac1a7553b134668dd8a684224a74aeaa04f0df0fb",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0024__create_capability_write_operation_shape.sql",
+      "sha256": "55db8c34247172c1746439bb41a9cd376b4ad70e5e256ef0fbf0c5ee2ff80e2b",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0025__create_price_command_attempt_completion_and_lease_recovery.sql",
+      "sha256": "5039cdbf120e4db29d642d8d22dc3f952119921f04f3568eb367f15b9f8fdfa7",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0026__rename_operational_capability_column_to_action_kind.sql",
+      "sha256": "82f42eea7990dc6502447d4832a08ca107830495f8f9d249e9d4b09c088b4df2",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0027__create_account_bound_registry_verification.sql",
+      "sha256": "fbdd185d03324d145793ec7844ebc17aa02b844f8aaffe89579b5df1f6479ba1",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0028__create_bounded_diagnostic_export.sql",
+      "sha256": "43170cf370079706ed8b39792815a5ec2bb447fae2d876afcd830cf7e30a1acf",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0029__version_profit_economics_and_commercial_inputs.sql",
+      "sha256": "5ca31479f5230abb30c1607ac25f2c819145eebab0bcfed7c27750cc90968d03",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0030__create_availability_risk_policy_inbound_and_case.sql",
+      "sha256": "6ad81c234c20134c5444f8b2a7606977fed5661987cd0354ab9ccfd2dda18e3d",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0031__track_sustained_availability_lane.sql",
+      "sha256": "4322ccbbf2ae5e32724c29e4160bdcbacec798932fe6b8fd7be258861435042b",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0032__create_availability_fact_feed_cursor.sql",
+      "sha256": "72fef0835de8d294ae92351758ba05931a9eafc7b38c4cd996720a743d4eec0e",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0033__track_case_improvement_observation.sql",
+      "sha256": "767b3e79a6f17780940a18d323371757e04a82479f7d9882f6d140387619e7f2",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0034__close_availability_deep_review_findings.sql",
+      "sha256": "c7be2f0b6ae9444287875bdfccf4f9bc997e3080ff8689c77e6b6d80a33551b1",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    },
+    {
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0035__close_availability_targeted_findings.sql",
+      "sha256": "e3ce956b28fa60a82aa4f6bce5f760bd803fd9222e5eed04777b6a03753532a7",
+      "equalsProtectedBase": true,
+      "equalsCurrentHead": true
+    }
+  ],
+  "immutableAuthorityHashes": {
+    "docs/03-work-items/SLICE-V1-003-advertising-traffic-efficiency.md": "1606a844934c49a9e67dc0a1a15d49f4003913efc678bae94403c3c29ecb811c",
+    "docs/07-phase-evidence/SLICE-V1-003/SLICE-V1-003-FROZEN-FINDING-SET-001.json": "f4af74f5086772dc70c3ec3cc7aa8808e9441e96109d301b145e70c18f6131a0",
+    "docs/07-phase-evidence/SLICE-V1-003/SLICE-V1-003-FROZEN-FINDING-SET-001.md": "15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1"
+  },
+  "remainingFindingsInReviewedBoundary": [],
+  "runtimeVerdict": "NOT_EXECUTED_R37_AND_W4_PENDING",
+  "controllerVerdict": "NOT_ISSUED",
+  "productionWriteEnabledChange": "NONE",
+  "repositoryWrites": "NONE"
+}

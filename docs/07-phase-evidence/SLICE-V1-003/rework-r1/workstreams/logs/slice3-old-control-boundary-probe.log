@@ -1,0 +1,32 @@
+PASS: ops.observe_ad_reservation_condition(uuid,text,boolean) remains uncallable
+PASS: ops.reopen_ad_lineage_after_regression(uuid,uuid,text,text) remains uncallable
+PASS: exact 73 sanctioned non-trigger callable signatures
+PASS: ops.ad_bid_command app has no DML
+PASS: ops.ad_bid_command_transition app has no DML
+PASS: ops.ad_bid_command_attempt app has no DML
+PASS: ops.ad_bid_command_readback app has no DML
+PASS: ops.ad_action_reservation app has no DML
+PASS: iam.ad_invocation_grant app has no DML
+PASS: ops.ad_outcome_plan_grant app has no DML
+PASS: platform.ad_write_credential_attestation app has no DML
+PASS: ops.ad_gate_authority app has no DML
+PASS: ops.ad_ordinary_promotion app has no DML
+PASS: ops.ad_action_authorization app has no DML
+PASS: ops.ad_authority_invalidation app has no DML
+PASS: ops.ad_compensation_authorization app has no DML
+PASS: ops.ad_compensation_invalidation app has no DML
+PASS: ops.ad_bundle_endorsement app has no DML
+PASS: ops.ad_containment_attestation app has no DML
+PASS: ops.ad_reservation_state_history app has no DML
+PASS: ops.ad_outcome_baseline app has no DML
+PASS: ops.ad_outcome_stage_baseline app has no DML
+PASS: ops.ad_outcome_critical_unit app has no DML
+PASS: ops.ad_outcome_baseline_attestation app has no DML
+Traceback (most recent call last):
+  File "/tmp/r1-old-control-tests/probe.py", line 33, in <module>
+    sql(f"SET ROLE marketops_identity_issuer;SELECT iam.issue_ad_control_invocation_grant('{hashlib.sha256(proof.encode()).hexdigest()}','CONTAINMENT_STOP','{ids['verifierUser']}','{ids['organization']}','{ids['provider']}',repeat('a',64),repeat('b',64),clock_timestamp(),clock_timestamp()+interval '1 hour','{ids['object']}','{stop}',{backend},{tx});",'postgres')
+  File "/tmp/r1-old-control-tests/probe.py", line 6, in sql
+    if r.returncode:raise RuntimeError(r.stderr)
+RuntimeError: ERROR:  unknown control invocation purpose
+CONTEXT:  PL/pgSQL function issue_ad_control_invocation_grant(text,text,uuid,uuid,uuid,text,text,timestamp with time zone,timestamp with time zone,uuid,uuid,integer,bigint) line 6 at RAISE
+

@@ -1,0 +1,2 @@
+source/accepted age=1s, published max=900s, withinPublishedAge=true, productionSpendGrade=CANONICAL_CONFIRMED, sufficientForWrite=true
+source/accepted age=3540s, published max=900s, withinPublishedAge=false, productionSpendGrade=CANONICAL_CONFIRMED, sufficientForWrite=true

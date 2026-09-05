@@ -1,0 +1,98 @@
+{
+  "localW8": {
+    "receipt": {
+      "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/capacity/advertising-capacity-receipt.json",
+      "sha256": "1243a6d86dea5cf7acb418c73506fbba21715faa3275e707eaf08aecb0debeea",
+      "bytes": 2764
+    },
+    "dataset": {
+      "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/capacity/advertising-capacity-dataset.json",
+      "sha256": "b5bb962f4ece17bff3e0be2b3a2ee9155af19c7eb14fa2c4219f1238b367f7bc",
+      "bytes": 4077576
+    },
+    "sourceInputs": {
+      "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/artifacts/capacity/advertising-capacity-source-inputs.json",
+      "sha256": "5b4898fccafe074f317a5bd61ddde25551b9cec46ebe722f03160ad9110d4247",
+      "bytes": 199860
+    },
+    "resources": {
+      "path": "/tmp/slice3-r1-full-clean-w8-9b6e6195/runtime-resources.json",
+      "sha256": "4dd8c67ec12f882167fa01a67d041cd3ac85f127b337d001b67a084c4f85d0a7",
+      "bytes": 591
+    },
+    "measurements": {
+      "finishedAt": "2026-09-05T13:36:17.793205Z",
+      "targeted": {
+        "sampleCount": 1000,
+        "criticalSampleCount": 200,
+        "criticalP95Millis": 30789,
+        "maximumMillis": 239115,
+        "hardBreachCount": 0,
+        "clockDefectCount": 0,
+        "pendingRequests": 0,
+        "failedRequests": 0,
+        "oldestFactAcceptedAt": null,
+        "lastSweepState": "NOT_ESTABLISHED",
+        "lastSweepCompletedAt": null,
+        "observedAt": "2026-09-05T13:34:28.432030Z",
+        "windowHours": 24,
+        "incidents": [
+          "HOURLY_RECONCILIATION_NOT_CURRENT"
+        ],
+        "state": "INCIDENT",
+        "distributionState": "MEASURED"
+      },
+      "targetedWallMillis": 237495,
+      "workerPasses": 5,
+      "sweepWallMillis": 109169,
+      "hourlyMarginMillis": 3490831,
+      "responsibilityTasks": 1200,
+      "droppedLateCorrectionRecovered": 1,
+      "productionWriteEnabled": false,
+      "realProviderAccess": false
+    },
+    "identities": {
+      "datasetId": "synthetic-advertising-portfolio-8c6a4170-ae9a-4f17-b7f0-8b1f63b26d47",
+      "datasetPath": "target/advertising-capacity-dataset.json",
+      "datasetSha256": "b5bb962f4ece17bff3e0be2b3a2ee9155af19c7eb14fa2c4219f1238b367f7bc",
+      "sourceInputsPath": "target/advertising-capacity-source-inputs.json",
+      "sourceInputsSha256": "5b4898fccafe074f317a5bd61ddde25551b9cec46ebe722f03160ad9110d4247",
+      "startedAt": "2026-09-05T13:30:28.862282Z",
+      "datasetCapturedAt": "2026-09-05T13:30:30.886745Z",
+      "measuredLocalGitHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+      "ciIdentity": {
+        "GITHUB_SHA": "NOT_SUPPLIED",
+        "GITHUB_REF": "NOT_SUPPLIED",
+        "GITHUB_EVENT_NAME": "NOT_SUPPLIED",
+        "GITHUB_RUN_ID": "NOT_SUPPLIED",
+        "GITHUB_RUN_ATTEMPT": "NOT_SUPPLIED"
+      },
+      "publicationIdentity": {
+        "sourceHeadSha": "NOT_PROVIDED",
+        "workflowRunId": "NOT_PROVIDED",
+        "artifactName": "NOT_PROVIDED",
+        "testedMergeSha": "NOT_PROVIDED",
+        "workflowJob": "NOT_PROVIDED",
+        "workflowRunAttempt": "NOT_PROVIDED"
+      },
+      "runtimeResourceReceipt": "/tmp/slice3-r1-runtime-resources.json",
+      "runtimeResourceReceiptSha256": "4dd8c67ec12f882167fa01a67d041cd3ac85f127b337d001b67a084c4f85d0a7",
+      "resourceScopeNotice": "JVM processors/memory describe the test host JVM, not Docker limits; the outer runner records actual Docker CPU/memory separately."
+    },
+    "runtime": {
+      "availableProcessors": 8,
+      "arch": "aarch64",
+      "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+      "os": "Mac OS X",
+      "maxJvmMemoryBytes": 4294967296,
+      "java": "21.0.10"
+    }
+  },
+  "remoteW8": {
+    "path": "/tmp/slice3-w8-backend-ci-final-review/summary.json",
+    "sha256": "0235d355eebcd0f688c1041a27cddef0d964bcec558732398b44a94f43350a7d",
+    "bytes": 20422
+  },
+  "boundary": "1000 UNVERIFIED native objects, one organization/store/shared Variant+listing; 200 explicit containment fixtures; real Case/Task/projection/brief paths, 0 commands and no mature-Outcome throughput workload; no extrapolation.",
+  "initialIncidentPreserved": true
+}

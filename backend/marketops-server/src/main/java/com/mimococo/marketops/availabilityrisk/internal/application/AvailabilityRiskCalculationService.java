@@ -101,8 +101,14 @@ public class AvailabilityRiskCalculationService {
                 policies.resolveActivationPolicy(organizationId, asOf).orElse(null), priority,
                 returnQuality);
 
+        // One gatherer for this calculation, so the channel view and the company
+        // view of the same variant ask each identical question once. They read
+        // one snapshot at one instant, so the second answer could only ever have
+        // been the first one again.
+        AvailabilityEvidenceGatherer reading = evidence.forOneCalculation();
+
         List<AvailabilityEvidenceGatherer.ChannelSubject> subjects =
-                evidence.channelSubjects(productVariantId, asOf);
+                reading.channelSubjects(productVariantId, asOf);
         List<VariantRisk.ScoredChild> children = new ArrayList<>();
 
         for (AvailabilityEvidenceGatherer.ChannelSubject subject : subjects) {
@@ -114,7 +120,7 @@ public class AvailabilityRiskCalculationService {
             boolean modeAttributable = modesForListing == 1
                     && !"UNKNOWN".equals(subject.observation().fulfillmentModeCode());
             List<DemandWindowEvidence> windows =
-                    evidence.channelDemandWindows(listingVariantId,
+                    reading.channelDemandWindows(listingVariantId,
                             subject.observation().fulfillmentModeCode(), modeAttributable, asOf);
             DemandDecision demand = demandSettings == null
                     ? missingDemandPolicy()
@@ -125,7 +131,7 @@ public class AvailabilityRiskCalculationService {
             ProfitAssessment assessment = profit.resolve(listingVariantId, asOf);
             ChildRisk risk = ChannelRiskCalculator.calculate(subject.observation(), demand,
                     leadTime, assessment, freshnessMinutes, asOf);
-            ReturnQualityAssessment quality = evidence.returnQuality(
+            ReturnQualityAssessment quality = reading.returnQuality(
                     listingVariantId, returnQuality, asOf);
             if (quality.state() != ReturnQualityAssessment.State.CLEAR) {
                 risk = risk.qualityReview(quality.blockerCode(),
@@ -137,7 +143,7 @@ public class AvailabilityRiskCalculationService {
         }
 
         List<DemandWindowEvidence> companyWindows =
-                evidence.companyDemandWindows(subjects, asOf);
+                reading.companyDemandWindows(subjects, asOf);
         DemandDecision companyDemand = demandSettings == null
                 ? missingDemandPolicy()
                 : DemandPolicyEngine.decide(companyWindows, demandSettings,
@@ -145,7 +151,7 @@ public class AvailabilityRiskCalculationService {
                                 null, null), asOf);
         List<InboundConsignment> consignments =
                 inbound.currentFor(organizationId, productVariantId);
-        CompanyObservation companyObservation = evidence.companyObservation(
+        CompanyObservation companyObservation = reading.companyObservation(
                 organizationId, productVariantId, subjects, consignments, asOf);
         // The company answer inherits the strongest profit lane any of its
         // channels established. A variant profitable on one marketplace is

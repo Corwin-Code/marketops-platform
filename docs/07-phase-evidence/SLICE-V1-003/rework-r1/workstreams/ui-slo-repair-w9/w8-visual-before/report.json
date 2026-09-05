@@ -1,0 +1,1115 @@
+{
+  "kind": "W8_ALL_26_ADVERTISING_ORIGINAL_SCREENSHOTS_BOUNDED_VISUAL_REVIEW",
+  "recordedAtUTC": "2026-09-05T13:38:08.697194+00:00",
+  "head": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "testedMerge": "954ff3617402c3ff22fa8eb86d9aa8abaea76941",
+  "run": 33967874665,
+  "attempt": 1,
+  "job": 101311078665,
+  "artifact": {
+    "path": "/tmp/slice3-w8-frontend-ci/artifact-9970062284.zip",
+    "sha256": "4ffe734fc841d9b2f6e49f9808e7fcef2d82523ef24c33fa924fff4e3d933823"
+  },
+  "originalCount": 26,
+  "actuallyViewedOriginalCount": 26,
+  "contactSheetsActuallyViewed": 21,
+  "independentNativeCropsActuallyViewed": 4,
+  "confirmedIssueCount": 1,
+  "affectedImageCount": 2,
+  "issues": [
+    {
+      "id": "SLO_UNKNOWN_FALSE_NORMAL",
+      "files": [
+        "governed-advertising-all-f-e9164-d-expose-no-invented-action/DATA_REPAIR-actual-http-projection.png",
+        "governed-advertising-all-f-e9164-d-expose-no-invented-action/OPTIMIZATION-actual-http-projection.png"
+      ],
+      "source": "frontend/marketops-console/src/advertising/AdvertisingWorkflow.tsx:186",
+      "cause": "false breach flags and paused!=true are translated to within/active without established coverage and corresponding deadline. Missing-profile backend status uses primitive false flags.",
+      "status": "REPAIR_REQUIRED; reported to parent; no repo edit or rerun in this review"
+    }
+  ],
+  "languageObservation": "Russian Cyrillic synthetic names and ru-RU Moscow date formatting are readable. Most fixed product labels are English/typed state codes; this review does not assert full Russian localization. No observed mojibake or replacement-glyph corruption in inspected text.",
+  "limitations": [
+    "No all-clear claim: one confirmed Unknown display defect remains.",
+    "No additional definite mask/unit/action-control rendering defect observed in the listed ranges.",
+    "Still images cannot prove focus order, Tab/Enter execution, scroll reachability or dynamic API authorization. Named browser tests provide those separate proofs.",
+    "Synthetic fixture labels/official-shaped data are not real Provider authority.",
+    "Longest38693px document sampled by explicit ranges; no claim every JSON field visually checked.",
+    "Backend full W8 still running; no result inferred from screenshot review."
+  ],
+  "repositoryModified": false,
+  "browserMavenDatabaseExecuted": false,
+  "originalArtifactModified": false,
+  "originals": [
+    {
+      "member": "governed-advertising-HISTO-1effc-state-and-separate-outcomes/HISTORY_REGRESSION-actual-http-history.png",
+      "sha256": "b8fa8335ea3d2f1c598b5c1579394e556c92d42e7fd9a9c07e4b6fc4ef57593f",
+      "bytes": 535704,
+      "width": 1280,
+      "height": 5725,
+      "index": 1,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/HISTORY_REGRESSION-actual-http-history.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-1.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-1.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            4285,
+            5725
+          ]
+        },
+        {
+          "file": "middle-1.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            1440,
+            2880
+          ]
+        },
+        {
+          "file": "middle-1.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            2840,
+            4280
+          ]
+        }
+      ],
+      "observation": "Owner FULL; native 30→20 RUB CURRENCY_MAJOR; READBACK_MATCHED is separate from four Outcome rows. Completed, 30-day Retained, Settled and appended regression are visually distinct; regression is PROTECTION_IN_PROGRESS. SYNTHETIC_BROWSER_READ_ORACLE/computation=false labels remain visible. No calculation correctness inferred.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-HISTO-7a41c-state-and-separate-outcomes/HISTORY_MISMATCH-actual-http-history.png",
+      "sha256": "401eeffcec042039c02669796db334dabe575f19368ea8c193f9cd923139f113",
+      "bytes": 341666,
+      "width": 1280,
+      "height": 3151,
+      "index": 2,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/HISTORY_MISMATCH-actual-http-history.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-1.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-1.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            1711,
+            3151
+          ]
+        },
+        {
+          "file": "middle-1.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            1400,
+            2840
+          ]
+        }
+      ],
+      "observation": "Owner FULL; READBACK_MISMATCH and DIFFERENT observed bid 27 remain explicit against 20 target. Warning preserves reservation and asks reconciliation. No Outcome is reported as healthy; empty observation wording says measurement window has not closed.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-HISTO-cbd3f-state-and-separate-outcomes/HISTORY_EXPIRED-actual-http-history.png",
+      "sha256": "2d0242aafc1e6e41a726648edd7d0a4538e91a801bfef48dd0b17ba89b0d31bc",
+      "bytes": 296855,
+      "width": 1280,
+      "height": 2631,
+      "index": 3,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/HISTORY_EXPIRED-actual-http-history.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-1.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-1.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            1191,
+            2631
+          ]
+        }
+      ],
+      "observation": "Owner FULL; PENDING command survives as history with explicit expired approval warning and UTC/Moscow expiry. No execute action visible in this captured state; expired history is not presented as new authority.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-HISTO-d95fb-state-and-separate-outcomes/HISTORY_UNKNOWN-actual-http-history.png",
+      "sha256": "db1fde7702557ba70ed76465b2c6e9cde57a6d642c077776717c60fcf2852d89",
+      "bytes": 322220,
+      "width": 1280,
+      "height": 2935,
+      "index": 4,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/HISTORY_UNKNOWN-actual-http-history.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-1.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-1.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            1495,
+            2935
+          ]
+        },
+        {
+          "file": "middle-1.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            1400,
+            2840
+          ]
+        }
+      ],
+      "observation": "Owner FULL; UNKNOWN_REQUIRES_READBACK, APPLY/TIMEOUT and unresolved configuration warning remain explicit. No observation is presented as neutral success.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-HISTO-d95fb-state-and-separate-outcomes/maker-native-unknown-history-masked.png",
+      "sha256": "30aea697a9e1623df2a1936c60c1a6a7318b2bcb29bf17c824e9eee0f92fee26",
+      "bytes": 320359,
+      "width": 1280,
+      "height": 2928,
+      "index": 5,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/maker-native-unknown-history-masked.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-2.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-2.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            1488,
+            2928
+          ]
+        },
+        {
+          "file": "middle-2.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            1400,
+            2840
+          ]
+        }
+      ],
+      "observation": "Maker MASKED; cause, spend, profit, efficiency, Max CPC and evidence masked; exact native bid/unit and UNKNOWN_REQUIRES_READBACK delivery history remain readable. Financial review button is absent in inspected command/history region.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-independent-proof-early-safety-pending.png",
+      "sha256": "68d005c757725d61632b2eccefe0ab18f069fcb7ac278d9ae712b6c566cfe8fc",
+      "bytes": 1387670,
+      "width": 1280,
+      "height": 13790,
+      "index": 6,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/OZON-independent-proof-early-safety-pending.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-2.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-2.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            12350,
+            13790
+          ]
+        },
+        {
+          "file": "middle-2.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            1440,
+            2880
+          ]
+        },
+        {
+          "file": "middle-2.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            4000,
+            5440
+          ]
+        },
+        {
+          "file": "middle-2.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            7500,
+            8940
+          ]
+        },
+        {
+          "file": "middle-3.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            10400,
+            11840
+          ]
+        }
+      ],
+      "observation": "OZON KEYWORD, CURRENCY_MAJOR, step 0.5, precision 2, UNVERIFIED/SYNTHETIC_FIXTURE remain explicit. MANUAL_CONFIGURATION_VERIFIED and independent proof are distinguished from executor self-report. Early Outcome is NOT_YET_EVALUABLE/OUTCOME_PENDING, unresolved sales/profit and EARLY_SAFETY_ONLY_NOT_EFFICIENCY_SUCCESS, not measured business success.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-maker-manual-draft.png",
+      "sha256": "80cb0fe483a46b36ae758c94625b8fae96d7b0b555be47511efc03ff00379de4",
+      "bytes": 401970,
+      "width": 1280,
+      "height": 3692,
+      "index": 7,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/OZON-maker-manual-draft.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-2.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-2.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            2252,
+            3692
+          ]
+        },
+        {
+          "file": "middle-3.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            1440,
+            2880
+          ]
+        }
+      ],
+      "observation": "OZON Maker MASKED manual draft, revision 0. Visible native configuration/current 30, target 20, CURRENCY_MAJOR; budget unresolved, profile UNVERIFIED. No resulting configuration or outcome is claimed. Native packet disclosure is distinct from masked derived cause/economic evidence.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-owner-manual-issued.png",
+      "sha256": "91cbc96f2660e5633e2fd7ffff175c669747da2dd2be280404a0d02c80913c13",
+      "bytes": 884639,
+      "width": 1280,
+      "height": 8788,
+      "index": 8,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/OZON-owner-manual-issued.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-2.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-2.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            7348,
+            8788
+          ]
+        },
+        {
+          "file": "middle-3.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            1440,
+            2880
+          ]
+        },
+        {
+          "file": "middle-3.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            3800,
+            5240
+          ]
+        },
+        {
+          "file": "middle-4.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            5800,
+            7240
+          ]
+        }
+      ],
+      "observation": "OZON Owner FULL manual issued, revision 2. Exact packet says no API command, profile UNVERIFIED and expected impact OUTCOME_UNPROVEN. Native major-unit configuration, frozen authority/policy identifiers and no established resulting configuration are displayed.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-independent-proof-early-safety-pending.png",
+      "sha256": "2d9128dbad78db807827519e3433d74e938a59054ff4488429ce9675c0c2f3e6",
+      "bytes": 1383866,
+      "width": 1280,
+      "height": 13790,
+      "index": 9,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/WILDBERRIES-independent-proof-early-safety-pending.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-3.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-3.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            12350,
+            13790
+          ]
+        },
+        {
+          "file": "middle-4.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            1440,
+            2880
+          ]
+        },
+        {
+          "file": "middle-4.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            4000,
+            5440
+          ]
+        },
+        {
+          "file": "middle-4.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            7500,
+            8940
+          ]
+        },
+        {
+          "file": "middle-5.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            10400,
+            11840
+          ]
+        }
+      ],
+      "observation": "WILDBERRIES PLACEMENT, CURRENCY_MINOR, step 5, precision 0, DERIVED_FIELD, UNVERIFIED remain distinct from OZON. Independent proof/current target 20 is separated from executor report. Early Outcome remains NOT_YET_EVALUABLE with unresolved sales/profit and explicit not-efficiency-success reason.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-maker-manual-draft.png",
+      "sha256": "28cbbc36f624a0755a812b092543a2c556ab1eb7af17a9ca430b16c172b18b03",
+      "bytes": 401127,
+      "width": 1280,
+      "height": 3692,
+      "index": 10,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/WILDBERRIES-maker-manual-draft.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-3.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-3.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            2252,
+            3692
+          ]
+        },
+        {
+          "file": "middle-5.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            1440,
+            2880
+          ]
+        },
+        {
+          "file": "native-WILDBERRIES-maker-manual-draft.png",
+          "method": "native-width lossless crop viewed independently",
+          "originalY": [
+            1850,
+            2700
+          ]
+        }
+      ],
+      "observation": "WILDBERRIES Maker MASKED draft revision 0. Native PLACEMENT, CURRENCY_MINOR/current 30/target 20 and UNVERIFIED visible. Current budget unresolved. No resulting configuration or observation claimed; exact native crop additionally inspected.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-owner-manual-issued.png",
+      "sha256": "468c215657a2d4024c3a0355abe891830e721b1600d4a67fe09b15071602158c",
+      "bytes": 882394,
+      "width": 1280,
+      "height": 8788,
+      "index": 11,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/WILDBERRIES-owner-manual-issued.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-3.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-3.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            7348,
+            8788
+          ]
+        },
+        {
+          "file": "middle-5.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            1440,
+            2880
+          ]
+        },
+        {
+          "file": "middle-5.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            3800,
+            5240
+          ]
+        },
+        {
+          "file": "middle-6.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            5800,
+            7240
+          ]
+        }
+      ],
+      "observation": "WILDBERRIES Owner issued revision 2; PLACEMENT/CURRENCY_MINOR and step 5 versus OZON KEYWORD/major/0.5 persist through packet and profile sections. Expected impact remains OUTCOME_UNPROVEN; no landed state or observation asserted.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-all-f-e9164-d-expose-no-invented-action/DATA_REPAIR-actual-http-projection.png",
+      "sha256": "600fd69f9bc09fb2437c277ea00f5947aec0081d9e75cc733b48659ac39dcc99",
+      "bytes": 229661,
+      "width": 1280,
+      "height": 2221,
+      "index": 12,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/DATA_REPAIR-actual-http-projection.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-3.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-3.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            781,
+            2221
+          ]
+        },
+        {
+          "file": "native-DATA_REPAIR-actual-http-projection.png",
+          "method": "native-width lossless crop viewed independently",
+          "originalY": [
+            1630,
+            2070
+          ]
+        },
+        {
+          "file": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/DATA_REPAIR-actual-http-projection.png",
+          "method": "full original additionally viewed; tool resized1280x2221to1180x2048",
+          "originalY": [
+            0,
+            2221
+          ]
+        }
+      ],
+      "observation": "DATA_REPAIR fictional projection; incomplete evidence and missing profit/efficiency/Max CPC are not available, not zero. No finite candidate. CONFIRMED DISPLAY DEFECT: profile/calendar missing and all due dates unresolved but summary falsely says within current staffed clock and action clock active.",
+      "confirmedDisplayIssue": "SLO_UNKNOWN_FALSE_NORMAL",
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-all-f-e9164-d-expose-no-invented-action/OPTIMIZATION-actual-http-projection.png",
+      "sha256": "630d6a67299ee8c9284c538a378478d16349f747a970dc8b67e499e90a889db3",
+      "bytes": 230575,
+      "width": 1280,
+      "height": 2221,
+      "index": 13,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/OPTIMIZATION-actual-http-projection.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-4.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-4.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            781,
+            2221
+          ]
+        },
+        {
+          "file": "native-OPTIMIZATION-actual-http-projection.png",
+          "method": "native-width lossless crop viewed independently",
+          "originalY": [
+            1630,
+            2070
+          ]
+        }
+      ],
+      "observation": "OPTIMIZATION fictional projection has incomplete evidence/no finite candidate, not invented optimization authority. Same CONFIRMED DISPLAY DEFECT as DATA_REPAIR: missing profile/deadlines alongside within/active summary.",
+      "confirmedDisplayIssue": "SLO_UNKNOWN_FALSE_NORMAL",
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-all-f-e9164-d-expose-no-invented-action/PROTECTION-actual-http-projection.png",
+      "sha256": "3aa9b38e3aef499743f2b0984c29ed2940666f50655ae10777a39f615d61968d",
+      "bytes": 150597,
+      "width": 1280,
+      "height": 1585,
+      "index": 14,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/PROTECTION-actual-http-projection.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-4.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-4.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            145,
+            1585
+          ]
+        }
+      ],
+      "observation": "PROTECTION projection/native fields and financial evidence visible to Owner. Capture ends after manual-proposal section; no lower workflow state captured, so this image alone cannot establish absence of later asynchronous controls.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-all-f-e9164-d-expose-no-invented-action/WATCH-actual-http-projection.png",
+      "sha256": "3c39f36bb171c4663df0360f37c42dae2381cba4de6f5567677c456e420e03ed",
+      "bytes": 194168,
+      "width": 1280,
+      "height": 2108,
+      "index": 15,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/WATCH-actual-http-projection.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-4.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-4.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            668,
+            2108
+          ]
+        }
+      ],
+      "observation": "WATCH fictional projection; incomplete/not-available economic fields, no finite candidate, unresolved task/coverage/dates. No success badge or write control is visible. Generic disposition text ACTION_IN_PROGRESS is recorded as rendered; snapshot alone does not establish underlying workflow semantics.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-acknowledgement-not-action.png",
+      "sha256": "882300c37178659e793acc2620576a56ebb18cdd16f7ad02fb7817ad34b21501",
+      "bytes": 257044,
+      "width": 1280,
+      "height": 2360,
+      "index": 16,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/keyboard-acknowledgement-not-action.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-4.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-4.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            920,
+            2360
+          ]
+        }
+      ],
+      "observation": "Russian Cyrillic object heading is legible without mojibake. Maker financial fields MASKED; candidate remains DRAFT. ACK capture remains ACTION_REQUIRED and presents no attributable action completion. Keyboard/ACK behavior itself comes from the named browser assertions, not the still image.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-page-two-six-visible-cases.png",
+      "sha256": "b9f0398cdf27e5f20f1cb6dc81e5482b2b40b35267ffdc41fcbeb702fece9e5f",
+      "bytes": 284489,
+      "width": 1280,
+      "height": 2304,
+      "index": 17,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/keyboard-page-two-six-visible-cases.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-5.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-5.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            864,
+            2304
+          ]
+        }
+      ],
+      "observation": "Queue page 2 visibly has six Cyrillic synthetic WATCH rows 047–052, financial fields masked, next page disabled. Exposure envelope MASKED, orchestration INCIDENT/NO_CRITICAL_OBSERVATIONS and sweep NOT_ESTABLISHED remain explicit. Legacy Today work no-store-access text coexists with scoped advertising view.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-watch-second-page-three-cases.png",
+      "sha256": "fa08a0d1bf4d7d9f89741594d6dc615d41c2c5958b5561bba446627d0962a9f0",
+      "bytes": 254179,
+      "width": 1280,
+      "height": 2229,
+      "index": 18,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/keyboard-watch-second-page-three-cases.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-5.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-5.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            789,
+            2229
+          ]
+        }
+      ],
+      "observation": "WATCH lane page 2 visibly has three Cyrillic synthetic rows 050–052, masked financial columns and disabled next page. Orchestration/Envelope unknown and masked states remain explicit. Still image does not prove Tab/Enter/focus or scope rejection by itself.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-real--22caa-sclosure-and-exact-versions/operations-endorsement.png",
+      "sha256": "0b65dd7d1dc2149011c79b9d9ee317a6c31bb39e36b49ea3dc3c9e1ac8fc2501",
+      "bytes": 265822,
+      "width": 1280,
+      "height": 2415,
+      "index": 19,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/operations-endorsement.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-5.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-5.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            975,
+            2415
+          ]
+        }
+      ],
+      "observation": "Operations FULL sees economic evidence and operational-endorsement confirmation. Candidate READY_FOR_REVIEW revision 2 and native 30→20 major unit are explicit; no Owner approval button visible in inspected region.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-real--22caa-sclosure-and-exact-versions/maker-minimum-disclosure.png",
+      "sha256": "331759946e26ebe1b8db2c48559beb7d2bf7cf2e816af7e9824646302bbe1fce",
+      "bytes": 257922,
+      "width": 1280,
+      "height": 2357,
+      "index": 20,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/maker-minimum-disclosure.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-5.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-5.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            917,
+            2357
+          ]
+        }
+      ],
+      "observation": "Maker MASKED after exact selection; candidate VALIDATED revision 1, native 30→20 major-unit visible. Full economic values/cause masked; no economic review control visible in inspected region.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-real--22caa-sclosure-and-exact-versions/owner-approved-command.png",
+      "sha256": "0a8290123cbbb1a8fda6ad2d5b0cbc8c61569192ecfb1a1f454a0cbcd2bee5d5",
+      "bytes": 294377,
+      "width": 1280,
+      "height": 2631,
+      "index": 21,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/owner-approved-command.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-6.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-6.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            1191,
+            2631
+          ]
+        }
+      ],
+      "observation": "Owner command-create confirmation and COMMAND_CREATED revision 4. PENDING command 30→20 major-unit, separate approval expiry and no Outcome observation are explicit. Nothing claims Provider write or financial success.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-real--22caa-sclosure-and-exact-versions/owner-exact-decision-evidence.png",
+      "sha256": "cb68ddbf998ddf5982e89e97304ae441cd3c4f7ac281af066393ca74d583b70d",
+      "bytes": 3397549,
+      "width": 1280,
+      "height": 38693,
+      "index": 22,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/owner-exact-decision-evidence.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-6.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-6.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            37253,
+            38693
+          ]
+        },
+        {
+          "file": "middle-6.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            1440,
+            2880
+          ]
+        },
+        {
+          "file": "middle-6.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            3500,
+            4940
+          ]
+        },
+        {
+          "file": "middle-6.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            9500,
+            10940
+          ]
+        },
+        {
+          "file": "middle-7.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            18500,
+            19940
+          ]
+        },
+        {
+          "file": "middle-7.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            28500,
+            29940
+          ]
+        },
+        {
+          "file": "middle-7.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            35000,
+            36440
+          ]
+        }
+      ],
+      "observation": "Owner FULL long decision evidence page. Selected windows show current guardrail PASS separately from approval-missing reasons, native target 20/current30, materiality evidence, policy/lease/profile identities, six-axis exposure and frozen Outcome plan unknowns. Cross-domain unresolved values and concurrency boundary remain explicit. This is sampled long-page visual inspection, not every JSON line or economic/guardrail verification.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-scope-44936--conditions-are-established/operations-incomplete-recovery-remains-held.png",
+      "sha256": "e8955ae0db3e5644c15e5cf2b3c4b5d84a268784e1557d3548409b340142731a",
+      "bytes": 396484,
+      "width": 1341,
+      "height": 3014,
+      "index": 23,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/operations-incomplete-recovery-remains-held.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-6.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-6.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            1574,
+            3014
+          ]
+        },
+        {
+          "file": "middle-7.png",
+          "method": "contact-sheet selected middle crop resized to at most640px wide",
+          "originalY": [
+            1300,
+            2740
+          ]
+        },
+        {
+          "file": "native-operations-incomplete-recovery-remains-held.png",
+          "method": "native-width lossless crop viewed independently",
+          "originalY": [
+            1400,
+            2100
+          ]
+        }
+      ],
+      "observation": "Operations six-axis Exposure table readable: organization scope/version, 720-hour window, 30-day cohort, axis units/current/limit/reserve and within-limit state. Active ENTITY hold persists with five unresolved attestation conditions; no reenable control visible. Original full-page width 1341 (other images1280) shows horizontal content extent; no missing text in original crop, but horizontal keyboard scroll was not tested by this visual review.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-scope-44936--conditions-are-established/maker-scoped-emergency-hold.png",
+      "sha256": "1efab06ca6b18fd4cd614c5bdf492e416ab8cfc09091a4882f2cf2363280e1d8",
+      "bytes": 294098,
+      "width": 1280,
+      "height": 2472,
+      "index": 24,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/maker-scoped-emergency-hold.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-6.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-6.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            1032,
+            2472
+          ]
+        }
+      ],
+      "observation": "Maker masked Envelope, containment cause/reason MASKED, exact ENTITY hold and five pending conditions retained. No attestation/re-enable controls visible to Maker; scoped rows mask economic columns. Reservation is separate from held configuration.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-active-exact-exception.png",
+      "sha256": "866bdfb2961f41e9bb7d5a1a230c68dcab52ddb1bb1819bca9be36f4c689ef33",
+      "bytes": 253956,
+      "width": 1280,
+      "height": 2272,
+      "index": 25,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/owner-active-exact-exception.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-7.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-7.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            832,
+            2272
+          ]
+        }
+      ],
+      "observation": "ACTIVE exception revision2, ACCEPTED_EXCEPTION_ACTIVE, action clock paused/exposure age continues. Candidate remains DRAFT; no select/endorse/approve/create action visible. Exact end/refresh frozen evidence controls visible for Owner.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    },
+    {
+      "member": "governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-ended-exception-rebuild.png",
+      "sha256": "95651d2e6a7202153452406aee2ab217da34d6f459587f40fb3ed40d5a64eab7",
+      "bytes": 264524,
+      "width": 1280,
+      "height": 2272,
+      "index": 26,
+      "path": "/tmp/slice3-w8-frontend-ci-visual-complete/originals/owner-ended-exception-rebuild.png",
+      "actuallyViewed": true,
+      "views": [
+        {
+          "file": "top-7.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            0,
+            1440
+          ]
+        },
+        {
+          "file": "bottom-7.png",
+          "method": "contact-sheet native crop resized to at most640px wide",
+          "originalY": [
+            832,
+            2272
+          ]
+        }
+      ],
+      "observation": "ENDED exception revision3, ACTION_REQUIRED and IN_COVERAGE resume. Candidate remains DRAFT and no prior authority is reused; request-new-exception fields are disabled until required inputs, frozen historical evidence still available.",
+      "confirmedDisplayIssue": null,
+      "scope": "Only listed pixels and legible labels inspected; sampled long JSON not read exhaustively. Screenshot does not establish off-screen actions, dynamic scrolling, backend permission enforcement, source authenticity or computation correctness."
+    }
+  ]
+}

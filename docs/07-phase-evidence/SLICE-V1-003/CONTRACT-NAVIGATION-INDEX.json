@@ -1,0 +1,432 @@
+[
+  {
+    "line": 1,
+    "level": 1,
+    "title": "SLICE-V1-003 — Advertising & Traffic Efficiency"
+  },
+  {
+    "line": 68,
+    "level": 2,
+    "title": "1. Authority and acceptance semantics"
+  },
+  {
+    "line": 115,
+    "level": 2,
+    "title": "2. Source and predecessor anchoring"
+  },
+  {
+    "line": 151,
+    "level": 3,
+    "title": "2.1 Normative repository references"
+  },
+  {
+    "line": 168,
+    "level": 2,
+    "title": "3. Observable business outcome"
+  },
+  {
+    "line": 214,
+    "level": 2,
+    "title": "4. Primary users and responsibility"
+  },
+  {
+    "line": 241,
+    "level": 2,
+    "title": "5. End-to-end operating path"
+  },
+  {
+    "line": 270,
+    "level": 2,
+    "title": "6. In scope"
+  },
+  {
+    "line": 272,
+    "level": 3,
+    "title": "6.1 Dual-platform operating capability"
+  },
+  {
+    "line": 300,
+    "level": 3,
+    "title": "6.2 Atomic Advertising Case identity"
+  },
+  {
+    "line": 330,
+    "level": 3,
+    "title": "6.3 Common business envelope and platform-native semantics"
+  },
+  {
+    "line": 358,
+    "level": 3,
+    "title": "6.4 Official traffic, spend and provider attribution"
+  },
+  {
+    "line": 384,
+    "level": 3,
+    "title": "6.5 Company sales and sales-protection stages"
+  },
+  {
+    "line": 425,
+    "level": 3,
+    "title": "6.6 Advertising Contribution Profit and dual-axis efficiency"
+  },
+  {
+    "line": 462,
+    "level": 3,
+    "title": "6.7 Deterministic ad-linked conversion, Allowable CPA and Max CPC"
+  },
+  {
+    "line": 508,
+    "level": 3,
+    "title": "6.8 Purpose-specific Freshness and evidence qualification"
+  },
+  {
+    "line": 580,
+    "level": 3,
+    "title": "6.9 Deterministic lanes"
+  },
+  {
+    "line": 617,
+    "level": 3,
+    "title": "6.10 Canonical priority"
+  },
+  {
+    "line": 657,
+    "level": 3,
+    "title": "6.11 Accountable Task and human response"
+  },
+  {
+    "line": 711,
+    "level": 3,
+    "title": "6.12 Exclusive governed Accepted Exception"
+  },
+  {
+    "line": 771,
+    "level": 3,
+    "title": "6.13 Governed Manual Shadow and configuration verification"
+  },
+  {
+    "line": 819,
+    "level": 3,
+    "title": "6.14 Selected controlled write — `AD_BID_CHANGE`"
+  },
+  {
+    "line": 869,
+    "level": 3,
+    "title": "6.15 Deterministic exact Bid target authority"
+  },
+  {
+    "line": 892,
+    "level": 4,
+    "title": "`MAX_CPC_BOUNDED`"
+  },
+  {
+    "line": 902,
+    "level": 4,
+    "title": "`CAUSE_BOUND_PROTECTION_STEP`"
+  },
+  {
+    "line": 930,
+    "level": 3,
+    "title": "6.16 Impact, materiality and approval"
+  },
+  {
+    "line": 988,
+    "level": 3,
+    "title": "6.17 Impact Preview and Approval Lease"
+  },
+  {
+    "line": 1029,
+    "level": 3,
+    "title": "6.18 Command, idempotency and unknown-result convergence"
+  },
+  {
+    "line": 1049,
+    "level": 4,
+    "title": "Verified Provider-native idempotency"
+  },
+  {
+    "line": 1055,
+    "level": 4,
+    "title": "No verified Provider-native idempotency"
+  },
+  {
+    "line": 1075,
+    "level": 3,
+    "title": "6.19 Provider success and Readback"
+  },
+  {
+    "line": 1114,
+    "level": 3,
+    "title": "6.20 Same-object reentry and exact Compensation"
+  },
+  {
+    "line": 1147,
+    "level": 3,
+    "title": "6.21 Affected-set action observation reservation"
+  },
+  {
+    "line": 1188,
+    "level": 3,
+    "title": "6.22 Aggregate active-intervention exposure"
+  },
+  {
+    "line": 1222,
+    "level": 3,
+    "title": "6.23 Comparable baseline and confounder authority"
+  },
+  {
+    "line": 1261,
+    "level": 3,
+    "title": "6.24 Outcome Threshold Policy"
+  },
+  {
+    "line": 1297,
+    "level": 3,
+    "title": "6.25 Protection and primary efficiency outcomes"
+  },
+  {
+    "line": 1332,
+    "level": 3,
+    "title": "6.26 Two-stage advertising-profit Outcome"
+  },
+  {
+    "line": 1336,
+    "level": 4,
+    "title": "Operational stage"
+  },
+  {
+    "line": 1350,
+    "level": 4,
+    "title": "Settled stage"
+  },
+  {
+    "line": 1374,
+    "level": 3,
+    "title": "6.27 Outcome Regression quarantine"
+  },
+  {
+    "line": 1413,
+    "level": 3,
+    "title": "6.28 Transmission-boundary quarantine"
+  },
+  {
+    "line": 1445,
+    "level": 3,
+    "title": "6.29 Emergency Kill and reenablement"
+  },
+  {
+    "line": 1484,
+    "level": 3,
+    "title": "6.30 Scope-monotonic Gate EV and Gate E"
+  },
+  {
+    "line": 1532,
+    "level": 3,
+    "title": "6.31 Ordinary-route promotion"
+  },
+  {
+    "line": 1576,
+    "level": 3,
+    "title": "6.32 Atomic Advertising Decision Policy Bundle"
+  },
+  {
+    "line": 1634,
+    "level": 3,
+    "title": "6.33 Live Queue, Daily Action Brief and Weekly Evidence Review"
+  },
+  {
+    "line": 1672,
+    "level": 3,
+    "title": "6.34 Targeted recalculation and hourly full reconciliation"
+  },
+  {
+    "line": 1706,
+    "level": 2,
+    "title": "7. Explicit non-goals and deferred product work"
+  },
+  {
+    "line": 1748,
+    "level": 2,
+    "title": "8. Source of truth and authority matrix"
+  },
+  {
+    "line": 1781,
+    "level": 2,
+    "title": "9. Binding invariants"
+  },
+  {
+    "line": 1918,
+    "level": 2,
+    "title": "10. Observable state semantics"
+  },
+  {
+    "line": 1923,
+    "level": 3,
+    "title": "10.1 Evidence and decision eligibility"
+  },
+  {
+    "line": 1941,
+    "level": 3,
+    "title": "10.2 Lane and work"
+  },
+  {
+    "line": 1965,
+    "level": 3,
+    "title": "10.3 Recommendation and Approval"
+  },
+  {
+    "line": 1985,
+    "level": 3,
+    "title": "10.4 Controlled and manual execution"
+  },
+  {
+    "line": 2011,
+    "level": 3,
+    "title": "10.5 Reservation, exposure and containment"
+  },
+  {
+    "line": 2025,
+    "level": 3,
+    "title": "10.6 Outcome"
+  },
+  {
+    "line": 2053,
+    "level": 2,
+    "title": "11. Internal response SLO and operability"
+  },
+  {
+    "line": 2058,
+    "level": 3,
+    "title": "Protection and Regression targeted path"
+  },
+  {
+    "line": 2068,
+    "level": 3,
+    "title": "Other targeted paths"
+  },
+  {
+    "line": 2076,
+    "level": 3,
+    "title": "Full reconciliation"
+  },
+  {
+    "line": 2119,
+    "level": 2,
+    "title": "12. Compatibility, migration and recovery"
+  },
+  {
+    "line": 2141,
+    "level": 2,
+    "title": "13. Security, privacy, disclosure and audit"
+  },
+  {
+    "line": 2181,
+    "level": 2,
+    "title": "14. Execution Envelope"
+  },
+  {
+    "line": 2183,
+    "level": 3,
+    "title": "Level 1 — authorized after exact Contract acceptance"
+  },
+  {
+    "line": 2201,
+    "level": 3,
+    "title": "Level 2 — not pre-authorized by this Contract"
+  },
+  {
+    "line": 2210,
+    "level": 3,
+    "title": "Level 3 — separate authority"
+  },
+  {
+    "line": 2234,
+    "level": 2,
+    "title": "15. Stop conditions"
+  },
+  {
+    "line": 2267,
+    "level": 2,
+    "title": "16. Required implementation artifacts"
+  },
+  {
+    "line": 2303,
+    "level": 2,
+    "title": "17. Production Acceptance criteria"
+  },
+  {
+    "line": 2309,
+    "level": 3,
+    "title": "A. Contract, predecessor and Shared-Spine authority"
+  },
+  {
+    "line": 2320,
+    "level": 3,
+    "title": "B. Identity, platform semantics and scope"
+  },
+  {
+    "line": 2335,
+    "level": 3,
+    "title": "C. Advertising facts, attribution, sales and profit"
+  },
+  {
+    "line": 2354,
+    "level": 3,
+    "title": "D. Conversion, Max CPC, Freshness and qualification"
+  },
+  {
+    "line": 2373,
+    "level": 3,
+    "title": "E. Lanes, priority, Task, SLO and Accepted Exception"
+  },
+  {
+    "line": 2398,
+    "level": 3,
+    "title": "F. Governed Manual Shadow and evidence"
+  },
+  {
+    "line": 2411,
+    "level": 3,
+    "title": "G. `AD_BID_CHANGE`, target, materiality and Approval"
+  },
+  {
+    "line": 2440,
+    "level": 3,
+    "title": "H. Command, idempotency, Readback, reentry and Compensation"
+  },
+  {
+    "line": 2459,
+    "level": 3,
+    "title": "I. Reservation, exposure, quarantine, Kill and reenablement"
+  },
+  {
+    "line": 2486,
+    "level": 3,
+    "title": "J. Baseline, outcomes and late financial truth"
+  },
+  {
+    "line": 2507,
+    "level": 3,
+    "title": "K. Gate, Bundle, cadence, UI, security, migration and evidence"
+  },
+  {
+    "line": 2541,
+    "level": 2,
+    "title": "18. Deferred Release and Capability obligations"
+  },
+  {
+    "line": 2582,
+    "level": 2,
+    "title": "19. Engineering closure state"
+  },
+  {
+    "line": 2609,
+    "level": 2,
+    "title": "20. Owner decisions incorporated"
+  },
+  {
+    "line": 2660,
+    "level": 2,
+    "title": "21. Final Contract Gate consequence"
+  }
+]

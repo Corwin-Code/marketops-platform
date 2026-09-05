@@ -1,0 +1,378 @@
+{
+  "schemaVersion": "1.0",
+  "scope": "READ_ONLY_CURRENT_WORKFLOW_REVIEW",
+  "reviewedAt": "2026-09-05T03:13:54.616164+00:00",
+  "executionStatus": "NOT_EXECUTED_BY_THIS_REVIEW",
+  "remoteHeadBinding": "PENDING_FINAL_PUBLISHED_HEAD",
+  "reviewedCodeCheckpoint": "60638b1fc1a227b50f4b3ede1ba0bb983407bfdc",
+  "requiredContexts": [
+    "governance",
+    "backend-build",
+    "architecture-boundary",
+    "backend-integration",
+    "frontend-lint",
+    "frontend-typecheck",
+    "frontend-test",
+    "frontend-build",
+    "dependency-review",
+    "codeql-java",
+    "codeql-typescript",
+    "infrastructure-validation"
+  ],
+  "inputs": {
+    ".github/required-status-checks.json": "8f9192cc821b01de8c2c98ca1199c2e93cfa59b34eb2eef5baa91ce2eb046907",
+    ".github/workflows/backend.yml": "75a089bfed130919f31ce67b06db58965308c2133e8b8781aa7ba1aaf1676fd7",
+    ".github/workflows/frontend.yml": "5de9570d16aaa5ffe66ae612898a649b4269141244d64a0d44d0f4bdc27cb540",
+    ".github/workflows/governance.yml": "be11fddc4cc617a1f0b5c9206e5ca9cdfd7db12a8841d9db39fe4430e152926f",
+    ".github/workflows/infrastructure.yml": "ec0f1ade32d02ee79ec52c345eb979a6c9f0ab856cacf901852c6936ae3065a5",
+    ".github/workflows/security.yml": "654540b595c8257c9e625dcb8728dec94445386f647ee4a8d82b45e80dd5ad28",
+    "scripts/verify_terraform.py": "94b7ad91e809607cb0984298bd00c77e710498b24950acb5e897d2b99b37c1a9",
+    "scripts/verify_migration_artifact.py": "8d6ad9f0394012d5323996658d43b174d62174a89133149402d9f399271da191",
+    "scripts/validation/advertising_browser_isolated.sh": "1d881d56a841ddf36858f91d24183bbabd1ef9d19a9d676b01d33d42087f440f",
+    "scripts/validation/collect_slice3_runtime_resources.py": "2b378a05a77b96727f38209c7e268926325afa28c7e1f3a0c46e79990536e559",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingCapacityEvidence.java": "757c21736c1d957c8aaa00b96e0cb139be037d41ad33cc790a7311123ef1bd61",
+    "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOrchestrationCapacityIT.java": "73b9174ab63b3f1e8ea8704a6845fc4132f8f16fc6c346014e547fe523ff6259",
+    "Makefile": "c0d8f1711cc6d989d2a6dfbedc3192c5053da619c414964e72b7bd8f1bc7bdbb",
+    "backend/marketops-server/pom.xml": "02dd0836c54bbc3298ce326bee0f61077acea4366c734ba82c6710ffafb6079b",
+    "frontend/marketops-console/package.json": "05567a1f945b783ae8f6d28e15816f2cfee414706c21982b7c1afe4f4539e8d2"
+  },
+  "invariants": {
+    "productionWriteEnabled": false,
+    "ready": false,
+    "merge": false,
+    "forcePush": false,
+    "realProviderCalls": "NOT_AUTHORIZED",
+    "sharedOrProductionEnvironment": "NOT_AUTHORIZED"
+  },
+  "jobs": [
+    {
+      "context": "governance",
+      "workflow": "governance.yml",
+      "commands": [
+        "python3 scripts/validate_governance.py",
+        "python3 scripts/validate_production_readiness.py",
+        "python3 -m unittest discover -s tests -p 'test_*.py'"
+      ],
+      "cwd": "."
+    },
+    {
+      "context": "backend-build",
+      "workflow": "backend.yml",
+      "commands": [
+        "python3 scripts/validation/collect_slice3_runtime_resources.py --output build/slice3-runtime-resources.json",
+        "./mvnw -B -ntp clean -Dmarketops.build.gitCommit=\"${SOURCE_HEAD_SHA}\" verify",
+        "bash scripts/verify_coverage_thresholds.sh backend",
+        "python3 scripts/verify_migration_artifact.py"
+      ],
+      "cwd": "backend/marketops-server (Maven); repository root (scripts)",
+      "artifacts": [
+        "backend-supply-chain",
+        "backend-test-reports"
+      ],
+      "sideEffects": [
+        "local isolated PostgreSQL test databases",
+        "verification Docker images tagged by artifact SHA",
+        "read-only network-disabled migration refusal container",
+        "Actions artifact uploads"
+      ],
+      "capacityEvidence": {
+        "receiptPath": "backend/marketops-server/target/advertising-capacity-receipt.json",
+        "artifactName": "backend-test-reports",
+        "uploadCondition": "always()",
+        "retentionDays": 14,
+        "ifNoFilesFound": "warn",
+        "identityEnvironment": {
+          "MARKETOPS_EVIDENCE_SOURCE_HEAD_SHA": "github.event.pull_request.head.sha || github.sha",
+          "MARKETOPS_EVIDENCE_TESTED_MERGE_SHA": "github.sha",
+          "MARKETOPS_EVIDENCE_WORKFLOW_RUN_ID": "github.run_id",
+          "MARKETOPS_EVIDENCE_WORKFLOW_RUN_ATTEMPT": "github.run_attempt",
+          "MARKETOPS_EVIDENCE_WORKFLOW_JOB": "backend-build",
+          "MARKETOPS_EVIDENCE_ARTIFACT_NAME": "backend-test-reports",
+          "SLICE3_RUNTIME_RESOURCE_RECEIPT": "../../build/slice3-runtime-resources.json"
+        },
+        "limit": "Read-only workflow review, not executed capacity evidence. The current helper consumes GITHUB metadata, measured local Head and file hashes; it does not consume all MARKETOPS_EVIDENCE_* variables. Final evidence must bind the actual source PR Head, tested merge, run/attempt, job and artifact using the workflow/run API and payload/resource hashes. Missing uploaded files only warn and cannot be counted as a passing capacity run.",
+        "artifactPaths": [
+          "backend/marketops-server/target/advertising-capacity-receipt.json",
+          "backend/marketops-server/target/advertising-capacity-dataset.json",
+          "backend/marketops-server/target/advertising-capacity-source-inputs.json",
+          "build/slice3-runtime-resources.json"
+        ],
+        "actualCapacityPayloadIdentity": [
+          "datasetId",
+          "datasetPath/datasetSha256",
+          "sourceInputsPath/sourceInputsSha256",
+          "startedAt/datasetCapturedAt",
+          "measuredLocalGitHead",
+          "GITHUB_SHA/GITHUB_REF/GITHUB_EVENT_NAME/GITHUB_RUN_ID/GITHUB_RUN_ATTEMPT",
+          "runtimeResourceReceipt/runtimeResourceReceiptSha256"
+        ],
+        "datasetScope": "Exact ordered rows of core.ad_native_object/core.ad_affected_set/core.ad_object_configuration_observation/ledger.ad_object_fact/ops.ad_containment for the one randomly generated synthetic organization; 1000 objects, one shared product/listing and 200 explicit regression oracles.",
+        "sourceScope": "SHA-256 of each regular src/main and src/test file plus pom.xml. Source contents are not duplicated in the source-input manifest.",
+        "resourceCollection": {
+          "hostFields": [
+            "OS",
+            "architecture",
+            "logical CPU count",
+            "physical memory bytes",
+            "process-affinity count when available"
+          ],
+          "dockerCommand": "docker info --format \"{{.NCPU}} {{.MemTotal}} {{.ServerVersion}}\"",
+          "githubFields": [
+            "GITHUB_RUN_ID",
+            "GITHUB_RUN_ATTEMPT",
+            "GITHUB_JOB",
+            "GITHUB_SHA"
+          ],
+          "effects": [
+            "writes named local JSON and prints those selected resource fields"
+          ],
+          "notCollected": [
+            "container environments",
+            "Docker configuration or registry credentials",
+            "container contents",
+            "Provider or cloud API",
+            "shared database data"
+          ]
+        }
+      }
+    },
+    {
+      "context": "architecture-boundary",
+      "workflow": "backend.yml",
+      "commands": [
+        "./mvnw -B -ntp -Dtest='*ArchitectureTest' -DfailIfNoTests=true test"
+      ],
+      "cwd": "backend/marketops-server"
+    },
+    {
+      "context": "backend-integration",
+      "workflow": "backend.yml",
+      "commands": [
+        "python3 scripts/validation/collect_slice3_runtime_resources.py --output build/slice3-runtime-resources.json",
+        "./mvnw -B -ntp clean verify"
+      ],
+      "cwd": "backend/marketops-server",
+      "artifacts": [
+        "backend-integration-reports"
+      ],
+      "capacityEvidence": {
+        "receiptPath": "backend/marketops-server/target/advertising-capacity-receipt.json",
+        "artifactName": "backend-integration-reports",
+        "uploadCondition": "always()",
+        "retentionDays": 14,
+        "ifNoFilesFound": "warn",
+        "identityEnvironment": {
+          "MARKETOPS_EVIDENCE_SOURCE_HEAD_SHA": "github.event.pull_request.head.sha || github.sha",
+          "MARKETOPS_EVIDENCE_TESTED_MERGE_SHA": "github.sha",
+          "MARKETOPS_EVIDENCE_WORKFLOW_RUN_ID": "github.run_id",
+          "MARKETOPS_EVIDENCE_WORKFLOW_RUN_ATTEMPT": "github.run_attempt",
+          "MARKETOPS_EVIDENCE_WORKFLOW_JOB": "backend-integration",
+          "MARKETOPS_EVIDENCE_ARTIFACT_NAME": "backend-integration-reports",
+          "SLICE3_RUNTIME_RESOURCE_RECEIPT": "../../build/slice3-runtime-resources.json"
+        },
+        "limit": "Read-only workflow review, not executed capacity evidence. The current helper consumes GITHUB metadata, measured local Head and file hashes; it does not consume all MARKETOPS_EVIDENCE_* variables. Final evidence must bind the actual source PR Head, tested merge, run/attempt, job and artifact using the workflow/run API and payload/resource hashes. Missing uploaded files only warn and cannot be counted as a passing capacity run.",
+        "artifactPaths": [
+          "backend/marketops-server/target/advertising-capacity-receipt.json",
+          "backend/marketops-server/target/advertising-capacity-dataset.json",
+          "backend/marketops-server/target/advertising-capacity-source-inputs.json",
+          "build/slice3-runtime-resources.json"
+        ],
+        "actualCapacityPayloadIdentity": [
+          "datasetId",
+          "datasetPath/datasetSha256",
+          "sourceInputsPath/sourceInputsSha256",
+          "startedAt/datasetCapturedAt",
+          "measuredLocalGitHead",
+          "GITHUB_SHA/GITHUB_REF/GITHUB_EVENT_NAME/GITHUB_RUN_ID/GITHUB_RUN_ATTEMPT",
+          "runtimeResourceReceipt/runtimeResourceReceiptSha256"
+        ],
+        "datasetScope": "Exact ordered rows of core.ad_native_object/core.ad_affected_set/core.ad_object_configuration_observation/ledger.ad_object_fact/ops.ad_containment for the one randomly generated synthetic organization; 1000 objects, one shared product/listing and 200 explicit regression oracles.",
+        "sourceScope": "SHA-256 of each regular src/main and src/test file plus pom.xml. Source contents are not duplicated in the source-input manifest.",
+        "resourceCollection": {
+          "hostFields": [
+            "OS",
+            "architecture",
+            "logical CPU count",
+            "physical memory bytes",
+            "process-affinity count when available"
+          ],
+          "dockerCommand": "docker info --format \"{{.NCPU}} {{.MemTotal}} {{.ServerVersion}}\"",
+          "githubFields": [
+            "GITHUB_RUN_ID",
+            "GITHUB_RUN_ATTEMPT",
+            "GITHUB_JOB",
+            "GITHUB_SHA"
+          ],
+          "effects": [
+            "writes named local JSON and prints those selected resource fields"
+          ],
+          "notCollected": [
+            "container environments",
+            "Docker configuration or registry credentials",
+            "container contents",
+            "Provider or cloud API",
+            "shared database data"
+          ]
+        }
+      }
+    },
+    {
+      "context": "frontend-lint",
+      "workflow": "frontend.yml",
+      "commands": [
+        "npm ci",
+        "npm run lint",
+        "npm run format:check"
+      ],
+      "cwd": "frontend/marketops-console"
+    },
+    {
+      "context": "frontend-typecheck",
+      "workflow": "frontend.yml",
+      "commands": [
+        "npm ci",
+        "npm run typecheck"
+      ],
+      "cwd": "frontend/marketops-console"
+    },
+    {
+      "context": "frontend-test",
+      "workflow": "frontend.yml",
+      "commands": [
+        "npm ci",
+        "npm run test:ci",
+        "bash scripts/verify_coverage_thresholds.sh frontend",
+        "npx playwright install --with-deps chromium",
+        "make env-init",
+        "make up",
+        "npm run test:browser",
+        "docker compose --project-name marketops-local --env-file .env.local -f infra/compose/docker-compose.yml down --volumes --remove-orphans",
+        "bash scripts/validation/advertising_browser_isolated.sh"
+      ],
+      "cwd": "frontend/marketops-console (npm/Playwright); repository root (scripts/make/compose)",
+      "artifacts": [
+        "advertising-browser-screenshots",
+        "frontend-coverage"
+      ],
+      "localRestriction": "Run exact marketops-local initialization/teardown only on the fresh ephemeral CI runner; never run it against this workstation existing project. Use the separately owned isolated advertising harness locally."
+    },
+    {
+      "context": "frontend-build",
+      "workflow": "frontend.yml",
+      "commands": [
+        "npm ci",
+        "npm run build",
+        "npm run verify:bundle",
+        "npm run sbom",
+        "npm ls --all --json > npm-dependency-inventory.json"
+      ],
+      "cwd": "frontend/marketops-console",
+      "artifacts": [
+        "frontend-distribution"
+      ],
+      "sideEffects": [
+        "build and SBOM files",
+        "Actions artifact upload; no web deployment or npm publish"
+      ]
+    },
+    {
+      "context": "dependency-review",
+      "workflow": "security.yml",
+      "action": "actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294",
+      "event": "pull_request only",
+      "parameters": {
+        "fail-on-severity": "moderate",
+        "comment-summary-in-pr": "on-failure"
+      },
+      "permissions": {
+        "contents": "read",
+        "pull-requests": "read"
+      },
+      "sideEffects": [
+        "dependency review check result",
+        "configured failure-summary PR comment attempt; permission is read-only, so do not assume it can publish a comment"
+      ]
+    },
+    {
+      "context": "codeql-java",
+      "workflow": "security.yml",
+      "commands": [
+        "CodeQL init java-kotlin, manual build, security-and-quality",
+        "./mvnw -B -ntp -DskipTests clean package",
+        "CodeQL analyze category /language:java-kotlin"
+      ],
+      "cwd": "backend/marketops-server (Maven)",
+      "permissions": {
+        "contents": "read",
+        "security-events": "write"
+      },
+      "sideEffects": [
+        "CodeQL database and SARIF/security-event upload"
+      ],
+      "evidenceLimit": "The skipTests analysis build is not a test result."
+    },
+    {
+      "context": "codeql-typescript",
+      "workflow": "security.yml",
+      "commands": [
+        "CodeQL init javascript-typescript, build-mode none, security-and-quality",
+        "CodeQL analyze category /language:javascript-typescript"
+      ],
+      "permissions": {
+        "contents": "read",
+        "security-events": "write"
+      },
+      "sideEffects": [
+        "CodeQL database and SARIF/security-event upload"
+      ]
+    },
+    {
+      "context": "infrastructure-validation",
+      "workflow": "infrastructure.yml",
+      "commands": [
+        "Install checksum-pinned Terraform 1.14.9 linux_amd64",
+        "python3 scripts/verify_terraform.py",
+        "python3 -m unittest discover -s tests -p 'test_*terraform*.py'",
+        "python3 -m unittest discover -s tests -p 'test_yandex_runtime.py'"
+      ],
+      "cwd": ".",
+      "artifacts": [
+        "infrastructure-verification"
+      ],
+      "sideEffects": [
+        "public checksum-pinned runtime/provider download",
+        "init -backend=false -lockfile=readonly",
+        "mock_provider-only command=plan tests",
+        "local synthetic build/terraform-evidence files and Actions artifact upload"
+      ],
+      "prohibitedAbsent": [
+        "terraform apply",
+        "real state access",
+        "real Yandex account API calls"
+      ]
+    }
+  ],
+  "publicationReview": {
+    "triggers": "pull_request and push to main; security also scheduled. An authorized feature-branch push alone does not trigger the 12 gates; creating/updating the Draft PR triggers pull_request runs.",
+    "credentialPersistence": "All checkouts specify persist-credentials: false; no workflow contains Git write, merge, Ready, force-push, cloud deployment or package registry publication.",
+    "permittedAutomaticOutputs": [
+      "Actions logs/check statuses/job summaries/artifacts",
+      "CodeQL security events"
+    ],
+    "conditionalOutput": "dependency-review action is configured to attempt a PR failure-summary comment. This is workflow behavior, not an agent-authored message.",
+    "localSafety": "Never reuse workstation .env.local or the existing marketops-local compose project. advertising_browser_isolated.sh makes a unique internal Docker network/database, generates synthetic credentials in a 0700 temporary directory with umask 077, and removes only its own resources.",
+    "transport": "Parent performs only the already authorized append-only push to the named branch and creates one Draft PR; this review executed neither."
+  },
+  "requiredFinalReceipt": [
+    "exact final local commit and tree",
+    "exact branch remote head and PR URL/number; draft=true",
+    "source PR head SHA and workflow revision",
+    "actual tested merge SHA for PR jobs, distinct from source head",
+    "all 12 check contexts with run ID, attempt, job ID/URL, conclusion and timestamps",
+    "artifact IDs/names and downloaded SHA-256 including reports and runtime evidence",
+    "cancelled/skipped/stale results listed separately and never counted as PASS",
+    "production_write_enabled=false and external Gate/Provider obligations remain deferred",
+    "downloaded advertising-capacity-receipt.json from each executing backend job; verify source/tested SHA, run/attempt/job/artifact and actual workload/timing assertions",
+    "all three capacity JSONs plus runtime-resource JSON: verify dataset/source/resource SHA-256 links and distinguish host/JVM resources from Docker VM limits"
+  ]
+}

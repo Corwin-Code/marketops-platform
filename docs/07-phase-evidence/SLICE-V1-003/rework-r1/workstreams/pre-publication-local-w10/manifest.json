@@ -1,0 +1,106 @@
+{
+  "kind": "SLICE3_R1_FINAL_LOCAL_EVIDENCE_MANIFEST",
+  "archive": {
+    "path": "original-evidence.tar.gz",
+    "bytes": 93192,
+    "sha256": "06b9976762b8752807cf7dd9913c9bf82b7a0ebb321cfc5daf1632a018568696"
+  },
+  "members": [
+    {
+      "member": "bundle-canary.log",
+      "bytes": 438,
+      "sha256": "c873729931c67f5ba585043d526f9c7f3a6caa9245a284f2c6d955b5908dbdd9"
+    },
+    {
+      "member": "coverage-negative.log",
+      "bytes": 55,
+      "sha256": "f301e9de1ecd14e409558de008d386adf1ec4dd3b32219ca9d7ad9b89c304234"
+    },
+    {
+      "member": "dependencies.json",
+      "bytes": 114964,
+      "sha256": "869bd135029c024148a7903fbb415fb0d15a5ca5e9026d48c2f98b75b374f9d5"
+    },
+    {
+      "member": "dependencies.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "format.log",
+      "bytes": 128,
+      "sha256": "b6ecfe9d20f32556142b8b8e99d437f3fde4fdb6af32b862c0c50cc10641c94d"
+    },
+    {
+      "member": "frontend-sbom.json",
+      "bytes": 764592,
+      "sha256": "9b09d120445a44616a010308f33357ec377630a2dcf1d8474fdcdcea1c7c11b8"
+    },
+    {
+      "member": "governance.log",
+      "bytes": 1147,
+      "sha256": "8d8161c172eef78e4c2c2a25684bc5db735f6025e95a50fb160e9374271d1b2d"
+    },
+    {
+      "member": "lint.log",
+      "bytes": 61,
+      "sha256": "593a58dc506c6936a45297a0670cc1e2a7bca4483499f3f0fe6eafb7dc6bf2c1"
+    },
+    {
+      "member": "node-version.log",
+      "bytes": 9,
+      "sha256": "b7677d3ec37ee1897ba07dc2cfe8292fe421c9ac93396cca5bbece486d1a2a41"
+    },
+    {
+      "member": "npm-audit.json",
+      "bytes": 364,
+      "sha256": "cb328be1d98a0e9f8f586940440d42cc7a733e109e6c3b409f41e649e69c4387"
+    },
+    {
+      "member": "npm-audit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "npm-ci.log",
+      "bytes": 454,
+      "sha256": "59f10dd647c4132b5c19d7eb2ab150d3e45e6e9fe449ace6a8186255d9f7803b"
+    },
+    {
+      "member": "npm-version.log",
+      "bytes": 8,
+      "sha256": "a38e383f1e9080b0dd9001481f6e56b341000de90a05061b66734350ad3adc41"
+    },
+    {
+      "member": "official-build.log",
+      "bytes": 290,
+      "sha256": "65b9f189b3a6336c7470bd7bba3c03aaafd566beca5e2902fd08ca3a8e6f675e"
+    },
+    {
+      "member": "sbom.log",
+      "bytes": 189,
+      "sha256": "4cd8ca3f2603b80371ba7fbb0d2257e4adeeb962a3a9ea027c92b4f77c43b2e6"
+    },
+    {
+      "member": "test-ci.log",
+      "bytes": 694,
+      "sha256": "efde401d2acff16b9d825c1a93214d8a10010472200cb823888993c88b075e7c"
+    },
+    {
+      "member": "typecheck.log",
+      "bytes": 62,
+      "sha256": "3dcbd54c9a6299849509243b7d02a45d6220e98d64b0650feb7843a0ec27071a"
+    }
+  ],
+  "publicationScan": {
+    "files": 17,
+    "decodedBytes": 883455,
+    "matchCounts": {
+      "privateKey": 0,
+      "githubToken": 0,
+      "jwt": 0,
+      "signedQuery": 0
+    },
+    "result": "PASS"
+  }
+}

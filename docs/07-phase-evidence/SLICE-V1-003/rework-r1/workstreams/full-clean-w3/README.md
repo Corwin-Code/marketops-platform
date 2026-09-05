@@ -1,0 +1,3 @@
+Full clean run on fd3e00e3ab033d823bf5577f8dbfca736f067d86: Maven exit 1; 2262 raw testcase nodes, 11 failures, 6 errors and 0 skipped. Source stable: True; checkout clean afterward: True.
+
+Original receipt is preserved unchanged. `testcase-count-reconciliation.json` records raw nodes, suite declarations and Maven console totals separately. `raw-test-artifacts.tar.gz` contains all original non-JAR artifacts; `archive-artifact-index.json` preserves uncompressed SHA-256 identities. The JAR remains in the original temporary output with its measured SHA and embedded source stamp in `verified-jar-identity.json`; failed verification does not make this a release-approved artifact.

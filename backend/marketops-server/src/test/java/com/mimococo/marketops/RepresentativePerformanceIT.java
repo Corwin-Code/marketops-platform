@@ -60,6 +60,12 @@ import tools.jackson.databind.ObjectMapper;
 class RepresentativePerformanceIT {
     private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE = TestDatabase.isolatedContainer();
     private static final String DATASET = "performance/representative-v1.sql";
+
+    /** Rows the dataset writes for each active metric definition. */
+    private static final long VALUES_PER_DEFINITION = 31740L;
+
+    /** Provenance references the dataset writes for each metric value. */
+    private static final long INPUT_REFERENCES_PER_VALUE = 3L;
     private static final String DECLARED_CAPACITY_CONFIGURATION =
             "application-availability-declared-capacity-v1.yaml";
     private static final String DECLARED_CAPACITY_VERSION = "S2_DECLARED_CAPACITY_V1";
@@ -136,14 +142,50 @@ class RepresentativePerformanceIT {
                 counts.put(table,jdbc.sql("SELECT count(*) FROM "+table).query(Long.class).single());
             }
             report.put("rowCounts",counts);
+            // The dataset generates one metric value per definition it applies,
+            // so these two counts move whenever a metric is added. Pinning the
+            // product rather than the total keeps the dataset just as
+            // reproducible and stops the number needing an edit every time the
+            // schema learns a new figure.
+            //
+            // The same ten exclusions the dataset makes, for the same reason:
+            // those metrics are about an advertising object and every subject
+            // here is a listing variant. AD_SPEND and AD_COST_OF_SALE are
+            // advertising-domain metrics the product does compute for a listing
+            // variant, and they are written like any other.
+            long activeDefinitions = jdbc.sql("""
+                    SELECT count(*) FROM mart.metric_definition
+                     WHERE status='ACTIVE'
+                       AND metric_code NOT IN (
+                            'AD_ELIGIBLE_TRAFFIC', 'PROVIDER_ATTRIBUTED_CONVERSION',
+                            'AD_LINKED_ORDER_CONVERSION', 'AD_LINKED_COMPLETED_SALE_CONVERSION',
+                            'AD_LINKED_RETAINED_SALE_CONVERSION', 'AD_ATTRIBUTION_GAP_RATIO',
+                            'ALLOWABLE_CPA', 'MAX_CPC', 'ADVERTISING_CONTRIBUTION_PROFIT',
+                            'CONTRIBUTION_PROFIT_PER_AD_RUB')
+                    """).query(Long.class).single();
+            report.put("activeMetricDefinitions",activeDefinitions);
             assertThat(counts).containsEntry("core.product_variant",5000L).containsEntry("ledger.sales_fact",720000L)
-                    .containsEntry("mart.metric_value",1047420L).containsEntry("mart.metric_input_reference",3142260L)
+                    .containsEntry("mart.metric_value",VALUES_PER_DEFINITION*activeDefinitions)
+                    .containsEntry("mart.metric_input_reference",
+                            INPUT_REFERENCES_PER_VALUE*VALUES_PER_DEFINITION*activeDefinitions)
                     .containsEntry("mart.diagnosis_finding",285660L).containsEntry("ops.recommendation",30000L);
             assertThat(jdbc.sql("SELECT count(*) FROM ops.price_command").query(Integer.class).single()).isZero();
             assertThat(jdbc.sql("SELECT count(*) FROM platform.platform_capability WHERE verification_state='VERIFIED'")
                     .query(Integer.class).single()).isZero();
             verifyAvailabilityPortfolioEnumeration(report);
-            verifyActualAvailabilityRuntime(report);
+            // Timed on its own, because this is the phase the declared-capacity
+            // service level is asserted against and a profile of the whole run
+            // would be dominated by dataset generation.
+            trace.resetTimings();
+            try { verifyActualAvailabilityRuntime(report); }
+            finally {
+                // Written even when the assertion fails, because a run that
+                // missed its service level is exactly the run whose profile
+                // somebody needs.
+                report.put("availabilityRuntimeProfile",Map.of(
+                        "statementCount",trace.totalCalls(),
+                        "slowestStatements",trace.slowestStatements(25)));
+            }
 
             Instant now = Instant.now();
             var actor = new AuthenticatedActor(id("user"),id("org"),id("provider"),"https://performance.fixture.invalid",
@@ -855,6 +897,17 @@ class RepresentativePerformanceIT {
                   FROM generate_series(1, 5000) n
                 """).param("sourceTime", Timestamp.from(factAcceptedAt.minusSeconds(60)))
                 .update();
+        // The dataset script analyses what it writes; this seed writes more
+        // afterwards, and a table the planner has no statistics for can be read
+        // with the wrong plan. Nothing here changes a row, a count or a
+        // threshold — it tells the planner what is already there.
+        for (String table : java.util.List.of(
+                "core.fact_provenance", "core.listing_stock_observation",
+                "core.listing_health_observation", "core.internal_stock_snapshot",
+                "core.listing_mapping", "ledger.sales_fact",
+                "ledger.return_quality_evidence_snapshot")) {
+            jdbc.sql("ANALYZE " + table).update();
+        }
     }
 
     private static Path temporaryDirectory(String prefix) {
@@ -936,6 +989,17 @@ class RepresentativePerformanceIT {
         private boolean enabled;
         private final Map<String,Query> queries = new LinkedHashMap<>();
 
+        /**
+         * Every executed statement, counted and timed.
+         *
+         * <p>Separate from {@link #queries}, which captures a representative
+         * statement per shape for EXPLAIN. This one exists to answer "where did
+         * the time go" for a run that has to meet a service level: an aggregate
+         * that says the availability sweep took ten minutes is a fact nobody can
+         * act on, and one that says which statement spent them is.
+         */
+        private final Map<String,long[]> timings = new LinkedHashMap<>();
+
         Connection connection(Connection target) {
             return (Connection)Proxy.newProxyInstance(Connection.class.getClassLoader(),new Class<?>[]{Connection.class},
                     (proxy,method,args) -> {
@@ -960,8 +1024,47 @@ class RepresentativePerformanceIT {
                             }
                             queries.putIfAbsent(sql,new Query(sql,List.copyOf(bindings.values())));
                         }
-                        return invoke(method,target,args);
+                        if (!method.getName().startsWith("execute")) return invoke(method,target,args);
+                        long started = System.nanoTime();
+                        try { return invoke(method,target,args); }
+                        finally {
+                            long[] counter = timings.computeIfAbsent(sql,ignored -> new long[2]);
+                            counter[0]++;
+                            counter[1] += System.nanoTime() - started;
+                        }
                     });
+        }
+
+        /** Forget every timing, so the next phase is measured on its own. */
+        void resetTimings() { timings.clear(); }
+
+        /**
+         * The statements that cost the most, most expensive first.
+         *
+         * <p>Whitespace is collapsed so one statement issued from one place is
+         * one row here, and the text is bounded because a profile nobody can
+         * read is not a profile.
+         */
+        List<Map<String,Object>> slowestStatements(int limit) {
+            record Cost(String sql,long calls,long millis) {}
+            var costs = new ArrayList<Cost>();
+            timings.forEach((sql,counter) ->
+                    costs.add(new Cost(sql.replaceAll("\\s+"," ").trim(),counter[0],counter[1]/1_000_000L)));
+            costs.sort((left,right) -> Long.compare(right.millis(),left.millis()));
+            var rows = new ArrayList<Map<String,Object>>();
+            for (Cost cost : costs.subList(0,Math.min(limit,costs.size()))) {
+                rows.add(Map.of(
+                        "totalMillis",cost.millis(),
+                        "calls",cost.calls(),
+                        "microsPerCall",cost.calls()==0 ? 0L : cost.millis()*1000L/cost.calls(),
+                        "sql",cost.sql().length()>400 ? cost.sql().substring(0,400)+" …" : cost.sql()));
+            }
+            return rows;
+        }
+
+        /** Every statement, counted, so a round-trip total can be reported. */
+        long totalCalls() {
+            return timings.values().stream().mapToLong(counter -> counter[0]).sum();
         }
 
         List<Map<String,Object>> explain(DataSource source,ObjectMapper mapper) throws Throwable {

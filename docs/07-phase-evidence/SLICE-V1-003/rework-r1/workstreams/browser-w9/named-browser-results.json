@@ -1,0 +1,260 @@
+{
+  "rawReporterSha256": "6c573785bade385712d5b6a725148c6e514b90a0ddc833c36b769c5f1b1e674f",
+  "rawReporterPrivatePath": "/tmp/slice3-w9-browser-evidence/w9-r1/private/raw-playwright-results.json",
+  "stats": {
+    "startTime": "2026-09-05T14:15:34.429Z",
+    "duration": 78889.573,
+    "expected": 12,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 97,
+      "title": "real Maker, Ops Lead and Owner decisions preserve minimum disclosure and exact versions",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-9443041678ce26b8dcca",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:06.834Z",
+          "durationMs": 8100,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 175,
+      "title": "real backend denies absent and forged credentials before advertising data is disclosed",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-61a0f95ad10ec5c7332c",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:15.314Z",
+          "durationMs": 14,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 185,
+      "title": "OZON actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-87fb1433deeb78155e88",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:15.334Z",
+          "durationMs": 6427,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 185,
+      "title": "WILDBERRIES actual governed manual path stays UNVERIFIED and requires an independent observer",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-ebb96133c16052ef10f5",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:21.767Z",
+          "durationMs": 5914,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 278,
+      "title": "all four real HTTP lane projections preserve unknown values and expose no invented action",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-66cbfdce33bdb82fbdbe",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:27.688Z",
+          "durationMs": 2233,
+          "reportedRepairSteps": [
+            {
+              "title": "DATA_REPAIR: missing staffed authority remains unresolved despite false breach flags",
+              "durationMs": 50,
+              "errorPresent": false
+            },
+            {
+              "title": "OPTIMIZATION: missing staffed authority remains unresolved despite false breach flags",
+              "durationMs": 47,
+              "errorPresent": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 361,
+      "title": "three distinct people accept an exact temporary exception, block actions, and end it",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-72c7d2eb2022f0f46ac5",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:29.927Z",
+          "durationMs": 4891,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 420,
+      "title": "scoped emergency hold remains active until independent recovery conditions are established",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-af288b87bf5c722c6ffe",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:34.823Z",
+          "durationMs": 4938,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 470,
+      "title": "HISTORY_UNKNOWN preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-18f9a9535ca3b987c8e7",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:39.769Z",
+          "durationMs": 1660,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 470,
+      "title": "HISTORY_MISMATCH preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-8053fc9ea853c749b00c",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:41.436Z",
+          "durationMs": 776,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 470,
+      "title": "HISTORY_REGRESSION preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-5ccbf40f996f61d6054c",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:42.218Z",
+          "durationMs": 934,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 470,
+      "title": "HISTORY_EXPIRED preserves actual HTTP command history, unresolved state and separate outcomes",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-6492854d67c8bd0dd8c1",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:43.156Z",
+          "durationMs": 858,
+          "reportedRepairSteps": []
+        }
+      ]
+    },
+    {
+      "file": "governed-advertising.spec.ts",
+      "line": 543,
+      "title": "real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets",
+      "suiteTitles": [
+        "governed-advertising.spec.ts"
+      ],
+      "testId": "3ec2ad7859e4b3ac0be0-5649881f60c39e36dbad",
+      "projectName": "",
+      "outcome": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "startedAtUTC": "2026-09-05T14:16:44.019Z",
+          "durationMs": 9106,
+          "reportedRepairSteps": [
+            {
+              "title": "keyboard ACK renders its own completion without completing Action",
+              "durationMs": 11,
+              "errorPresent": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "limit": "Sanitized named outcomes and explicitly whitelisted repair steps only. Raw JSON/trace/env/header/attachment/error bodies remain private; no absent step is invented."
+}

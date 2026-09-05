@@ -1,0 +1,14 @@
+{
+  "group": "frontend-ci-w8",
+  "archive": "original-evidence.tar.gz",
+  "archiveSha256": "affa066f038118bcb7034e74925921ec23b2c1ffeb608ee1adfcbe8a53753692",
+  "originalSources": [
+    "/tmp/slice3-w8-frontend-ci"
+  ],
+  "boundary": "Original bytes in tar. Failed attempts and original receipt identities retained; no source path rewriting. Direct review JSON copies only when LF or no newlines.",
+  "explicitPrivateExclusion": {
+    "source": "/tmp/slice3-w8-frontend-ci/logs.zip.attempt-1.stderr.txt",
+    "sha256": "05a147efc88927d7141be5685fd72ac2fabb8538cf65aca1277d7ce740982476",
+    "sanitizedDerivative": "failed-log-read-sanitized.json"
+  }
+}

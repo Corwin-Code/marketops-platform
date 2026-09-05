@@ -1,0 +1,16 @@
+
+> marketops-console@0.1.0 verify:bundle
+> node scripts/verify-bundle-isolation.mjs
+
+
+> marketops-console@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v8.2.1 building client environment for production...
+[2Ktransforming...✓ 60 modules transformed.
+rendering chunks...
+dist/index.html                  1.32 kB
+dist/assets/index-D7ZS-cuI.js  343.22 kB
+
+✓ built in 69ms
+bundle isolation PASS: only prefixed values reached the bundle

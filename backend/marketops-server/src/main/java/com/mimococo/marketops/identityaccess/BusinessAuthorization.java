@@ -19,6 +19,14 @@ import java.util.UUID;
  */
 public interface BusinessAuthorization {
 
+    /** Assignment eligibility only; this never authenticates or authorizes an action by the target user. */
+    boolean eligibleAssignee(UUID userId, UUID organizationId, BusinessRoleCode requiredRole,
+                            ActionScopeCode action, List<ResourceScope> resources);
+
+    /** Latest continuous validity of the currently held role and covering grants, bounded by the caller's period. */
+    java.time.Instant assignmentValidUntil(UUID userId, UUID organizationId, BusinessRoleCode requiredRole,
+            ActionScopeCode action, List<ResourceScope> resources, java.time.Instant upperBound);
+
     /**
      * Decide one action against one resource, without throwing.
      *

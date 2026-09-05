@@ -1,0 +1,47 @@
+{
+  "kind": "SLICE3_FINAL_GATE_CODEX_ENGINEERING_VERIFICATION",
+  "status": "RESIDUAL_REWORK_VERIFICATION_IN_PROGRESS",
+  "historicalController": {
+    "reviewedHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+    "verdict": "NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED",
+    "evidence": {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/controller-package/VERIFICATION-RESULT.json",
+      "sha256": "6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127"
+    }
+  },
+  "currentControllerVerdict": "NOT_REVIEWED_NEW_CANDIDATE",
+  "executionManifest": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/EXECUTION-MANIFEST.json",
+    "sha256": "563be9c6fe07dfc6fc07976b9b1081a03d45d61af873d6cef89c266f7deeaff9"
+  },
+  "assessedSource": null,
+  "verificationChecks": [],
+  "requiredLayers": [
+    "backend_full",
+    "browser",
+    "frontend_quality",
+    "governance",
+    "infrastructure",
+    "migration",
+    "mixed_capacity",
+    "security",
+    "supply_chain"
+  ],
+  "engineeringClosureClaimMade": false,
+  "independentControllerClosed": false,
+  "productionWriteEnabled": false,
+  "deferredReleaseObligations": 24,
+  "dispositionCounts": {
+    "findings": 22,
+    "historicallyAcceptedForReviewedScope": 17,
+    "residualFindings": 5,
+    "frozenClauses": 115,
+    "criteria": 200,
+    "currentEngineeringVerifiedCriteria": 0
+  },
+  "historicalMeasurementReconciliation": {
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/CV-E-MEASUREMENT-RECONCILIATION.json",
+    "sha256": "879af5b3fff00f88b33a03ed4766608d5f8e2a89d05b90c20ec47b13510eb213"
+  },
+  "publicationBoundary": "No self-referential current-commit/CI identity is invented. Exact append-only containing commit/CI readback remains separate."
+}

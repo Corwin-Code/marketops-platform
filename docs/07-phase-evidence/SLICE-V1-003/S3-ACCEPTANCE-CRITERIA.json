@@ -1,0 +1,802 @@
+[
+  {
+    "id": "S3-AC-001",
+    "text": "repository contains the exact Human Owner-accepted Contract bytes and attributable acceptance evidence."
+  },
+  {
+    "id": "S3-AC-002",
+    "text": "canonical path, Contract SHA-256, source protected-main commit/tree and predecessor Snapshot identities are synchronized without mutation."
+  },
+  {
+    "id": "S3-AC-003",
+    "text": "canonical state advances to SLICE-V1-003 Full-Scope Implementation only after exact acceptance and preserves every SLICE-V1-002 accepted identity."
+  },
+  {
+    "id": "S3-AC-004",
+    "text": "roadmap preserves the Advertising & Traffic Efficiency outcome and records `AD_BID_CHANGE` as the selected controlled-write family."
+  },
+  {
+    "id": "S3-AC-005",
+    "text": "SLICE-V1-002 `STOCK_CHANGE`, replenishment quantity, Overstock, Allocation and Transfer remain unopened."
+  },
+  {
+    "id": "S3-AC-006",
+    "text": "Shared Spine architecture tests prevent a parallel ingestion, Metric, Policy, workflow, Command, Readback, Bundle or audit authority."
+  },
+  {
+    "id": "S3-AC-007",
+    "text": "conditional Design Gate remains untriggered or any later trigger follows the exact governance path."
+  },
+  {
+    "id": "S3-AC-008",
+    "text": "no Release, Gate EV, Gate E, Pilot, deployment or production-write authority is claimed by source completion, tests, merge or this Contract."
+  },
+  {
+    "id": "S3-AC-009",
+    "text": "every atomic Case binds Organization, Platform, Account/Store, minimum verified controllable native object, lineage, bidding mode and Semantic Profile."
+  },
+  {
+    "id": "S3-AC-010",
+    "text": "every atomic Case binds the exact complete affected Internal Variant set and a stable digest/version."
+  },
+  {
+    "id": "S3-AC-011",
+    "text": "a native object controlling multiple Variants cannot be split into separately executable estimated-SKU Cases."
+  },
+  {
+    "id": "S3-AC-012",
+    "text": "Campaign, ad-group, Target, Keyword and SKU relationships remain queryable without inventing unsupported Provider control granularity."
+  },
+  {
+    "id": "S3-AC-013",
+    "text": "Ozon and Wildberries Profiles preserve their different object, status, attribution, unit, precision, step, quota and Readback semantics."
+  },
+  {
+    "id": "S3-AC-014",
+    "text": "unknown native states/fields/modes fail closed for every dependent decision."
+  },
+  {
+    "id": "S3-AC-015",
+    "text": "a native object, lineage or bidding-mode change invalidates stale executable assets unless exact versioned continuity is proven."
+  },
+  {
+    "id": "S3-AC-016",
+    "text": "backend scope enforcement prevents horizontal and vertical Organization/Platform/Store/Product/Data/Action escalation."
+  },
+  {
+    "id": "S3-AC-017",
+    "text": "the Maker can identify the exact controlled object and complete affected-set without automatically receiving unauthorized cross-Store or finance detail."
+  },
+  {
+    "id": "S3-AC-018",
+    "text": "Operations Lead and final approver cannot endorse/approve without the evidence scope required by their responsibility."
+  },
+  {
+    "id": "S3-AC-019",
+    "text": "permission masking is distinguishable from an actual data gap, and Task/Approval participation grants no implicit access."
+  },
+  {
+    "id": "S3-AC-020",
+    "text": "API, export, notification, attachment, error and AI views enforce the same role/scope disclosure contract."
+  },
+  {
+    "id": "S3-AC-021",
+    "text": "official advertising configuration, Spend and traffic facts retain Raw provenance, source times, correction history and Profile identity."
+  },
+  {
+    "id": "S3-AC-022",
+    "text": "missing platform metrics remain `NOT_AVAILABLE`, never zero."
+  },
+  {
+    "id": "S3-AC-023",
+    "text": "late/corrected official Spend triggers attributable recalculation without overwriting history."
+  },
+  {
+    "id": "S3-AC-024",
+    "text": "Provider-native attributed Orders/Revenue/Conversion remain separately visible Provider observations."
+  },
+  {
+    "id": "S3-AC-025",
+    "text": "Provider attribution cannot by itself populate company sales, canonical ad-linked conversion or final profit."
+  },
+  {
+    "id": "S3-AC-026",
+    "text": "estimated SKU Spend remains visibly estimated and cannot independently support high-risk Recommendation, write or Settled result."
+  },
+  {
+    "id": "S3-AC-027",
+    "text": "company Order, Completed, Retained and Settled sale stages remain distinct."
+  },
+  {
+    "id": "S3-AC-028",
+    "text": "Completed Sales drive the early safety Guard; 30-day Retained Sales drive final sales protection."
+  },
+  {
+    "id": "S3-AC-029",
+    "text": "complete affected-set company total sales must pass the frozen preservation rule."
+  },
+  {
+    "id": "S3-AC-030",
+    "text": "every frozen required critical sales unit must independently pass; growth elsewhere cannot offset failure."
+  },
+  {
+    "id": "S3-AC-031",
+    "text": "missing critical-unit evidence yields unresolved/inconclusive rather than pass or zero."
+  },
+  {
+    "id": "S3-AC-032",
+    "text": "Advertising Contribution Profit is reconstructable from governed sales, COGS, fees, fulfillment, return loss, official Spend and applicable variable facts."
+  },
+  {
+    "id": "S3-AC-033",
+    "text": "absolute Advertising Contribution Profit and Contribution Profit per official advertising RUB are calculated under exact versions."
+  },
+  {
+    "id": "S3-AC-034",
+    "text": "primary efficiency success requires the sales rule plus one material profit-axis improvement and no material worsening on the other axis."
+  },
+  {
+    "id": "S3-AC-035",
+    "text": "a still-negative result remains `IMPROVED_NOT_HEALTHY` or Protection-in-progress rather than healthy success."
+  },
+  {
+    "id": "S3-AC-036",
+    "text": "Operational and Settled profit facts remain stage-distinct and expose evidence, window, version, Freshness, Confidence and gaps."
+  },
+  {
+    "id": "S3-AC-037",
+    "text": "Provider-native conversion remains observation-only and company total sales divided by ad Clicks is rejected as canonical object conversion."
+  },
+  {
+    "id": "S3-AC-038",
+    "text": "canonical ad-linked conversion requires deterministic traffic-to-sale-event linkage for the exact object/scope and sale stage."
+  },
+  {
+    "id": "S3-AC-039",
+    "text": "material mapping/linkage/coverage gaps block write-grade Max CPC and expose a Provider-to-canonical attribution discrepancy."
+  },
+  {
+    "id": "S3-AC-040",
+    "text": "Allowable CPA economic unit exactly matches the conversion sale stage; tests reject stage mixing and duplicate loss counting."
+  },
+  {
+    "id": "S3-AC-041",
+    "text": "Max CPC is recalculable from exact stage-consistent versions and is visibly an economic ceiling, not a target."
+  },
+  {
+    "id": "S3-AC-042",
+    "text": "low-sample or estimated conversion cannot produce write-grade Max CPC."
+  },
+  {
+    "id": "S3-AC-043",
+    "text": "Freshness resolves by Evidence Kind, Platform/Account/Store/Semantic Profile and Decision Purpose."
+  },
+  {
+    "id": "S3-AC-044",
+    "text": "source age, report completeness, accepted-fact age, publication/correction lag, version validity, coverage and Provider incident may affect Freshness."
+  },
+  {
+    "id": "S3-AC-045",
+    "text": "a newly ingested old fact is not automatically Fresh; a mature cohort/effective policy is not automatically stale."
+  },
+  {
+    "id": "S3-AC-046",
+    "text": "write-grade Freshness cannot be weaker than corresponding Recommendation-grade Freshness."
+  },
+  {
+    "id": "S3-AC-047",
+    "text": "missing/conflicted Freshness Profile blocks only affected purposes and cannot erase an independent Fresh danger."
+  },
+  {
+    "id": "S3-AC-048",
+    "text": "Optimization Watch, Task, Recommendation and Bid Write qualifications are monotonically stronger."
+  },
+  {
+    "id": "S3-AC-049",
+    "text": "verified Optimization requires complete scope, coverage, sample sufficiency, sustained signal, material value and canonical profit."
+  },
+  {
+    "id": "S3-AC-050",
+    "text": "immature, unsustained or immaterial signals receive Watch reason codes and no automatic Task."
+  },
+  {
+    "id": "S3-AC-051",
+    "text": "a decision-determinative data defect becomes Data Repair rather than Watch."
+  },
+  {
+    "id": "S3-AC-052",
+    "text": "missing/conflicted real qualification Profile blocks Verified Optimization and Bid Increase while preserving observation."
+  },
+  {
+    "id": "S3-AC-053",
+    "text": "each Case deterministically resolves to Protection, Data Repair, Optimization or Watch with evidence and Policy versions."
+  },
+  {
+    "id": "S3-AC-054",
+    "text": "Fresh one-sided danger activates Protection only when unknown facts cannot reverse the dangerous direction."
+  },
+  {
+    "id": "S3-AC-055",
+    "text": "unknown alone cannot trigger increase, decrease, pause or success."
+  },
+  {
+    "id": "S3-AC-056",
+    "text": "lane-first Canonical Priority uses reason-coded hard sub-tiers and lexicographic non-compensating factors."
+  },
+  {
+    "id": "S3-AC-057",
+    "text": "Action/Outcome Regression, Quarantine, Unknown/Mismatch and Compensation responsibility enter Protection P0."
+  },
+  {
+    "id": "S3-AC-058",
+    "text": "sellability/availability/critical-sales danger enters P1; proven continuing economic harm enters P2 unless stronger."
+  },
+  {
+    "id": "S3-AC-059",
+    "text": "Data Repair and Optimization use their accepted independent lexicographic factor order; Watch ranking has no action authority."
+  },
+  {
+    "id": "S3-AC-060",
+    "text": "AI and user-personal sorting cannot change Canonical Rank, due time or escalation."
+  },
+  {
+    "id": "S3-AC-061",
+    "text": "Protection and material actionable Data Repair create/update one cause-routed Task; qualified Optimization does likewise; Watch does not."
+  },
+  {
+    "id": "S3-AC-062",
+    "text": "concurrency, replay and repeated calculation cannot duplicate a Case or active cause Task."
+  },
+  {
+    "id": "S3-AC-063",
+    "text": "independent causes with different owners may create explicitly linked separate Tasks."
+  },
+  {
+    "id": "S3-AC-064",
+    "text": "human SLO distinguishes acknowledgement from action decision/first attributable action."
+  },
+  {
+    "id": "S3-AC-065",
+    "text": "page open or free-text acknowledgement cannot satisfy the action stage."
+  },
+  {
+    "id": "S3-AC-066",
+    "text": "Protection/Regression response is no weaker than Optimization; material Data Repair has a cause-owner Profile."
+  },
+  {
+    "id": "S3-AC-067",
+    "text": "reassignment preserves Case age and SLO history."
+  },
+  {
+    "id": "S3-AC-068",
+    "text": "outside coverage, staffed-clock handling and `OUT_OF_COVERAGE_ACTIVE_HARM` exposure remain simultaneously visible."
+  },
+  {
+    "id": "S3-AC-069",
+    "text": "missing human SLO/Coverage Profile leaves Task active and blocks affected operating readiness rather than claiming on-time."
+  },
+  {
+    "id": "S3-AC-070",
+    "text": "Protection/Regression targeted update meets P95 <= 5 minutes and hard <= 15 minutes; other targeted state update meets hard <= 15 minutes."
+  },
+  {
+    "id": "S3-AC-071",
+    "text": "full reconciliation succeeds at least hourly and repairs a dropped targeted trigger while preserving any SLO violation."
+  },
+  {
+    "id": "S3-AC-072",
+    "text": "Accepted Exception preserves the calculated lane and exact known consequence."
+  },
+  {
+    "id": "S3-AC-073",
+    "text": "Exception requires exact cause/scope, evidence, consequence, Operations endorsement, Owner approval, period, review and Bundle."
+  },
+  {
+    "id": "S3-AC-074",
+    "text": "valid Exception pauses only matching ordinary Action SLO, suppresses duplicate work visibly, cannot coexist with action intent, and invalidation reopens the same Case without automatic renewal."
+  },
+  {
+    "id": "S3-AC-075",
+    "text": "both Ozon and Wildberries expose a complete governed Manual Shadow workflow."
+  },
+  {
+    "id": "S3-AC-076",
+    "text": "Manual Packet binds exact object, affected-set, current/target configuration, evidence, Guardrails, approval route, expiry, Bundle and verification plan."
+  },
+  {
+    "id": "S3-AC-077",
+    "text": "Budget, Pause/Resume or other non-selected manual actions do not create a hidden Provider API path."
+  },
+  {
+    "id": "S3-AC-078",
+    "text": "Manual action cannot proceed when identity, scope, hard evidence, permission or required approval is unresolved."
+  },
+  {
+    "id": "S3-AC-079",
+    "text": "verified official API Readback is accepted as strongest configuration evidence."
+  },
+  {
+    "id": "S3-AC-080",
+    "text": "verified replayable official configuration export can prove exact configuration under a valid source Profile."
+  },
+  {
+    "id": "S3-AC-081",
+    "text": "independent manual verification requires a distinct authorized verifier and records exact object/field/value/observed-at/evidence."
+  },
+  {
+    "id": "S3-AC-082",
+    "text": "executor self-report or incomplete screenshot remains configuration-unverified."
+  },
+  {
+    "id": "S3-AC-083",
+    "text": "manual verification cannot be represented as API Readback, Provider idempotency, exact application time or business success without evidence."
+  },
+  {
+    "id": "S3-AC-084",
+    "text": "manual and controlled real interventions consume the same affected-set reservation and applicable aggregate exposure."
+  },
+  {
+    "id": "S3-AC-085",
+    "text": "`AD_BID_CHANGE` is the only new controlled-write family in this Slice."
+  },
+  {
+    "id": "S3-AC-086",
+    "text": "Budget, Campaign status, strategy/mode and Campaign/Target structure cannot be written through it."
+  },
+  {
+    "id": "S3-AC-087",
+    "text": "a controlled action requires verified explicit native Bid semantics, current Bid, unit/precision/step/min/max, capability, credential, permission and Readback."
+  },
+  {
+    "id": "S3-AC-088",
+    "text": "Provider-unverified paths are structurally unreachable and expose Shadow-only state."
+  },
+  {
+    "id": "S3-AC-089",
+    "text": "Protection Decrease and Optimization Increase are separately gated; exact Compensation uses its own authority."
+  },
+  {
+    "id": "S3-AC-090",
+    "text": "Optimization Increase requires complete write-grade Freshness, qualification, conversion/Max CPC, sales and inventory/sellability safety."
+  },
+  {
+    "id": "S3-AC-091",
+    "text": "Protection Decrease requires exact one-sided danger and a valid candidate basis."
+  },
+  {
+    "id": "S3-AC-092",
+    "text": "all ordinary targets come from one versioned `AD_BID_TARGET_POLICY`."
+  },
+  {
+    "id": "S3-AC-093",
+    "text": "Max CPC is never automatically selected as the target."
+  },
+  {
+    "id": "S3-AC-094",
+    "text": "the exact finite candidate set is deterministic for identical facts and Policy version."
+  },
+  {
+    "id": "S3-AC-095",
+    "text": "Marketplace Operator may select/reject candidates but cannot free-type outside the set."
+  },
+  {
+    "id": "S3-AC-096",
+    "text": "Provider valid-step normalization occurs before Preview/Approval; runtime rounding or target substitution fails acceptance."
+  },
+  {
+    "id": "S3-AC-097",
+    "text": "`MAX_CPC_BOUNDED` Increase never exceeds the conservative Provider-valid ceiling."
+  },
+  {
+    "id": "S3-AC-098",
+    "text": "a Protection intermediate target above the ceiling remains recovery-in-progress and not healthy."
+  },
+  {
+    "id": "S3-AC-099",
+    "text": "`CAUSE_BOUND_PROTECTION_STEP` requires an exact accepted danger cause whose missing conversion cannot reverse danger."
+  },
+  {
+    "id": "S3-AC-100",
+    "text": "cause-bound Preview states that Max CPC is unavailable and the target limits exposure only."
+  },
+  {
+    "id": "S3-AC-101",
+    "text": "estimated conversion/Max CPC, Provider observation, similar-SKU inference and AI magnitude never generate a controlled candidate."
+  },
+  {
+    "id": "S3-AC-102",
+    "text": "Materiality uses visible multi-axis non-compensating hard triggers."
+  },
+  {
+    "id": "S3-AC-103",
+    "text": "initial ordinary nonzero envelope is zero and every initial nonzero action follows Maker → Operations endorsement → Owner final approval."
+  },
+  {
+    "id": "S3-AC-104",
+    "text": "Maker cannot self-endorse or self-approve; unresolved Materiality fails closed."
+  },
+  {
+    "id": "S3-AC-105",
+    "text": "every Preview shows exact Before/After, affected-set, critical sales, Spend, profit, inventory/sellability, versions, Bundle, route and blockers."
+  },
+  {
+    "id": "S3-AC-106",
+    "text": "every executable Approval binds exact current/target, evidence snapshot, affected-set, Policy/Profile/Bundle and actors."
+  },
+  {
+    "id": "S3-AC-107",
+    "text": "every executable Approval has explicit expiry at the earliest bound authority limit and is rechecked through pre-transmission/Retry."
+  },
+  {
+    "id": "S3-AC-108",
+    "text": "expired, killed, quarantined, superseded or materially invalidated Approval cannot be extended/rebound/resurrected."
+  },
+  {
+    "id": "S3-AC-109",
+    "text": "later Ordinary promotion requires exact all-Material mature evidence for the same Platform/Direction/Basis/scope and remains per-command Operator/Operations Maker-Checker."
+  },
+  {
+    "id": "S3-AC-110",
+    "text": "fixed material triggers and Standing Policy automation cannot be downgraded or introduced by Ordinary promotion."
+  },
+  {
+    "id": "S3-AC-111",
+    "text": "one approved action creates one logical Command identity and duplicate submission cannot create a second logical effect."
+  },
+  {
+    "id": "S3-AC-112",
+    "text": "every eligible attempt preserves exact object, affected-set, target, Approval, Bundle and Provider identity where applicable."
+  },
+  {
+    "id": "S3-AC-113",
+    "text": "a Retry cannot change target, scope or Provider idempotency identity."
+  },
+  {
+    "id": "S3-AC-114",
+    "text": "verified Provider-native idempotency is used only under an evidence-backed Capability Profile and status/Readback precedes Retry."
+  },
+  {
+    "id": "S3-AC-115",
+    "text": "without verified Provider idempotency, default is one Provider submission."
+  },
+  {
+    "id": "S3-AC-116",
+    "text": "Timeout plus prior-value Readback never independently authorizes Retry."
+  },
+  {
+    "id": "S3-AC-117",
+    "text": "explicit verified `NOT_APPLIED`, unchanged prior Bid and current authority are required for no-idempotency same-command Retry."
+  },
+  {
+    "id": "S3-AC-118",
+    "text": "unresolved Command blocks replacement/parallel Command for the same native object."
+  },
+  {
+    "id": "S3-AC-119",
+    "text": "Provider acceptance/HTTP success cannot become configuration success."
+  },
+  {
+    "id": "S3-AC-120",
+    "text": "Readback match requires native convergence and exact approved target equality after accepted representation normalization only."
+  },
+  {
+    "id": "S3-AC-121",
+    "text": "tolerance, nearest-value acceptance, runtime rounding and third-value overwrite are rejected."
+  },
+  {
+    "id": "S3-AC-122",
+    "text": "generic same-object reentry is initially disabled pending separately accepted calibration."
+  },
+  {
+    "id": "S3-AC-123",
+    "text": "exact Compensation remains inside original lineage/reservation and targets captured immutable prior Bid only."
+  },
+  {
+    "id": "S3-AC-124",
+    "text": "Compensation requires prior matched Readback, Stop Condition/Regression, current-state ownership, current hard Gates, new Preview, Operations endorsement, Owner approval and exact Gate scope."
+  },
+  {
+    "id": "S3-AC-125",
+    "text": "automatic rollback/Compensation and overwrite of later legitimate/unresolved change are impossible."
+  },
+  {
+    "id": "S3-AC-126",
+    "text": "Compensation Readback is tracked separately from business Outcome."
+  },
+  {
+    "id": "S3-AC-127",
+    "text": "controlled or confirmed real manual intervention reserves the complete affected-set."
+  },
+  {
+    "id": "S3-AC-128",
+    "text": "overlapping affected-set action is blocked until configuration resolution, required early observation and no unresolved Regression."
+  },
+  {
+    "id": "S3-AC-129",
+    "text": "non-overlapping action remains eligible only inside aggregate Exposure."
+  },
+  {
+    "id": "S3-AC-130",
+    "text": "Protection/Regression receives deterministic precedence over ordinary Optimization for overlapping scope."
+  },
+  {
+    "id": "S3-AC-131",
+    "text": "exact Compensation uses original reservation; known material cross-domain change blocks isolation and unexpected change confounds/rebaselines Outcome."
+  },
+  {
+    "id": "S3-AC-132",
+    "text": "Gate E aggregate Envelope independently bounds active count, deduplicated Retained-Sales exposure, official Spend, cumulative absolute Bid change, unresolved writes and recovery headroom."
+  },
+  {
+    "id": "S3-AC-133",
+    "text": "all aggregate axes pass independently; no cross-axis/cross-direction netting exists."
+  },
+  {
+    "id": "S3-AC-134",
+    "text": "Unknown/Mismatch and governed manual interventions consume applicable aggregate capacity."
+  },
+  {
+    "id": "S3-AC-135",
+    "text": "reserved recovery headroom cannot be used by ordinary action."
+  },
+  {
+    "id": "S3-AC-136",
+    "text": "aggregate capacity is revalidated before transmission; Approval neither reserves capacity indefinitely nor extends while waiting."
+  },
+  {
+    "id": "S3-AC-137",
+    "text": "missing/conflicted aggregate Envelope blocks new controlled transmission."
+  },
+  {
+    "id": "S3-AC-138",
+    "text": "Early/Operational/Settled/late-evidence Regression creates object+affected-set+overlap quarantine and invalidates unexecuted overlap assets."
+  },
+  {
+    "id": "S3-AC-139",
+    "text": "invalid shared authority version quarantines all consumers; Provider integrity defect activates exact Platform+Account/Store+Capability scope."
+  },
+  {
+    "id": "S3-AC-140",
+    "text": "local business failure does not automatically stop unrelated valid non-overlapping scopes."
+  },
+  {
+    "id": "S3-AC-141",
+    "text": "quarantine activation prevents every new external side effect after the authoritative instant."
+  },
+  {
+    "id": "S3-AC-142",
+    "text": "PENDING and LEASED-but-unsent Commands terminate or fail transmission; already-transmitted requests continue status/Readback/reconciliation only."
+  },
+  {
+    "id": "S3-AC-143",
+    "text": "unexecuted Manual Packet is revoked; uncertain manual execution enters verification/reconciliation; applied action remains fact."
+  },
+  {
+    "id": "S3-AC-144",
+    "text": "deterministic hard trigger, scoped Operator Hold, Operations business Kill and Platform/Security integrity Kill enforce maximum authorized scope."
+  },
+  {
+    "id": "S3-AC-145",
+    "text": "Emergency stop records reason/evidence/actor/scope/time/review owner and need not wait for Owner availability."
+  },
+  {
+    "id": "S3-AC-146",
+    "text": "no actor who can activate a Hold/Kill may unilaterally reenable."
+  },
+  {
+    "id": "S3-AC-147",
+    "text": "reenablement requires Root Cause closure, Unknown/Mismatch resolution, current authority evidence, Operations endorsement and Owner approval."
+  },
+  {
+    "id": "S3-AC-148",
+    "text": "technical/security cause additionally requires Platform/Security closure attestation."
+  },
+  {
+    "id": "S3-AC-149",
+    "text": "reenablement never restores old decision assets."
+  },
+  {
+    "id": "S3-AC-150",
+    "text": "Exact Compensation may remain separately eligible during quarantine, but no Regression or Kill creates automatic reverse write."
+  },
+  {
+    "id": "S3-AC-151",
+    "text": "every governed action freezes a complete Outcome Evaluation Plan before external execution."
+  },
+  {
+    "id": "S3-AC-152",
+    "text": "the Plan binds Case, affected-set, lineage, action, versions, baseline, windows, critical units, coverage, sample and confounder policy."
+  },
+  {
+    "id": "S3-AC-153",
+    "text": "canonical baseline selection is deterministic and cannot be chosen by AI or after result observation."
+  },
+  {
+    "id": "S3-AC-154",
+    "text": "material confounder keeps early safety Guard active but blocks action-specific final verdict."
+  },
+  {
+    "id": "S3-AC-155",
+    "text": "insufficient comparable history produces `OUTCOME_BASELINE_INSUFFICIENT`, not an invented benchmark."
+  },
+  {
+    "id": "S3-AC-156",
+    "text": "operational association and causal incrementality remain separate."
+  },
+  {
+    "id": "S3-AC-157",
+    "text": "Outcome Policy resolves by exact scoped effective version and has no hidden production default."
+  },
+  {
+    "id": "S3-AC-158",
+    "text": "Policy conflict/missing state blocks final success and dependent Optimization write while preserving observation/proven-harm Task."
+  },
+  {
+    "id": "S3-AC-159",
+    "text": "late data recalculation uses the action-frozen Outcome Policy."
+  },
+  {
+    "id": "S3-AC-160",
+    "text": "`VERIFIED_AD_RISK_CLEARED` proves only the original advertising danger cleared."
+  },
+  {
+    "id": "S3-AC-161",
+    "text": "`VERIFIED_AD_EXPOSURE_STOPPED` proves only no new dangerous exposure under complete evidence."
+  },
+  {
+    "id": "S3-AC-162",
+    "text": "Protection terminal state does not close inherited inventory/listing cause or imply primary success; continuing danger remains active."
+  },
+  {
+    "id": "S3-AC-163",
+    "text": "30-day mature evidence can create formal Operational success/no-improvement/regression with visible not-settled status."
+  },
+  {
+    "id": "S3-AC-164",
+    "text": "Settled outcome uses the same lineage, frozen Policy and stage-consistent Settled baseline."
+  },
+  {
+    "id": "S3-AC-165",
+    "text": "Settled contradiction preserves Operational history and reopens/escalates the same lineage."
+  },
+  {
+    "id": "S3-AC-166",
+    "text": "favorable Settled evidence may upgrade earlier Operational no-improvement with history preserved."
+  },
+  {
+    "id": "S3-AC-167",
+    "text": "Settlement attribution unresolved cannot be converted to final result through estimated allocation."
+  },
+  {
+    "id": "S3-AC-168",
+    "text": "Outcome Regression removes settled-success reuse and creates the correct Finance/Advertising review responsibility."
+  },
+  {
+    "id": "S3-AC-169",
+    "text": "engineering can close without real Provider side effects only when deterministic interfaces and fail-closed states are complete."
+  },
+  {
+    "id": "S3-AC-170",
+    "text": "both platforms deliver full read/diagnosis/Task/Manual Shadow/Outcome business capability at engineering closure."
+  },
+  {
+    "id": "S3-AC-171",
+    "text": "Gate EV is exact Platform+Store+Capability+object+direction+basis+value+window+exposure+actor+abort authority and cannot authorize another scope."
+  },
+  {
+    "id": "S3-AC-172",
+    "text": "Gate E consumes operating foundation, Shadow, direction-specific Gate EV, failure controls, early safety, ownership and aggregate Exposure."
+  },
+  {
+    "id": "S3-AC-173",
+    "text": "Gate E scope is a subset of demonstrated evidence; untested Platform/Direction/Basis/Compensation/Ordinary/reentry remains disabled."
+  },
+  {
+    "id": "S3-AC-174",
+    "text": "30-day and Settled outcomes remain continuing obligations rather than predetermined uplift prerequisites; future expansion requires exact evidence and Gate E Amendment."
+  },
+  {
+    "id": "S3-AC-175",
+    "text": "every production decision resolves to one complete active scope-bound Advertising Decision Policy Bundle."
+  },
+  {
+    "id": "S3-AC-176",
+    "text": "domain version publication alone cannot change production write eligibility."
+  },
+  {
+    "id": "S3-AC-177",
+    "text": "Bundle whole-combination validation covers stage consistency, Provider semantics, monotonicity, materiality, Lease, Exposure and Gate scope."
+  },
+  {
+    "id": "S3-AC-178",
+    "text": "write-expanding Bundle activation requires applicable attestations, Operations endorsement and Owner final approval."
+  },
+  {
+    "id": "S3-AC-179",
+    "text": "Bundle activation is atomic, invalidates old unexecuted assets without rebinding, and preserves transmitted/historical lineages."
+  },
+  {
+    "id": "S3-AC-180",
+    "text": "Bundle rollback creates a new audited version; missing/conflicted Bundle blocks candidate, Approval and transmission."
+  },
+  {
+    "id": "S3-AC-181",
+    "text": "Live Queue presents the current complete operating path with evidence drill-through and role scope."
+  },
+  {
+    "id": "S3-AC-182",
+    "text": "Daily Action Brief is produced each configured operating day as a versioned `as_of` action snapshot."
+  },
+  {
+    "id": "S3-AC-183",
+    "text": "Weekly Evidence Review covers Shadow, actions, verification, SLO, outcomes, Regression, exposure, Bundle/Gate maturity and release obligations."
+  },
+  {
+    "id": "S3-AC-184",
+    "text": "Daily/Weekly artifacts link canonical Cases/Tasks/Metrics/Outcomes and cannot become parallel writers."
+  },
+  {
+    "id": "S3-AC-185",
+    "text": "late facts create explicit Daily/Weekly revision or Delta lineage without overwriting prior publication."
+  },
+  {
+    "id": "S3-AC-186",
+    "text": "AI drafting uses authorized canonical references and cannot modify facts, state or authority."
+  },
+  {
+    "id": "S3-AC-187",
+    "text": "structured UI distinguishes confirmed, estimated, stale, blocked, Operational and Settled states and supports safe drill-through."
+  },
+  {
+    "id": "S3-AC-188",
+    "text": "API filtering/pagination and frontend navigation inherit backend scope and do not leak Provider DTO/SDK types."
+  },
+  {
+    "id": "S3-AC-189",
+    "text": "keyboard use, UTF-8/Russian text, UTC storage, Store-local display and safe errors are verified."
+  },
+  {
+    "id": "S3-AC-190",
+    "text": "Secret, Buyer PII, real Credential and unsafe Raw are absent from Git, fixtures, logs, traces, reports, AI and client bundles."
+  },
+  {
+    "id": "S3-AC-191",
+    "text": "no real Provider call, hidden Budget/Status/strategy write path or browser automation exists in engineering evidence."
+  },
+  {
+    "id": "S3-AC-192",
+    "text": "`production_write_enabled` remains false absent separate exact authority."
+  },
+  {
+    "id": "S3-AC-193",
+    "text": "applied migrations remain byte-identical; clean install and protected-main upgrade pass on real PostgreSQL."
+  },
+  {
+    "id": "S3-AC-194",
+    "text": "restart, replay, concurrency and reconciliation cannot duplicate facts, Cases, Tasks, Approvals, Commands, reservations, exposure, Outcomes or audit."
+  },
+  {
+    "id": "S3-AC-195",
+    "text": "unit/property/architecture/PostgreSQL/browser tests cover calculations, authority boundaries, state distinctions and full operating path."
+  },
+  {
+    "id": "S3-AC-196",
+    "text": "mutation/adversarial/fault-injection tests prove hard Gates, expiry, scope, transmission boundary, no-write, missed trigger, late data and Kill race."
+  },
+  {
+    "id": "S3-AC-197",
+    "text": "performance evidence proves targeted SLOs and hourly reconciliation at declared capacity."
+  },
+  {
+    "id": "S3-AC-198",
+    "text": "security tests prove role-minimal disclosure and no API/export/notification/AI bypass."
+  },
+  {
+    "id": "S3-AC-199",
+    "text": "Requirement/Owner Decision → Design → Code → Test → Evidence traceability and canonical docs/runbooks/evidence/Git identity are synchronized."
+  },
+  {
+    "id": "S3-AC-200",
+    "text": "full repository regression, governance/production-readiness validation and security scans pass with no threshold weakening and no unresolved BLOCKER/MAJOR finding."
+  }
+]

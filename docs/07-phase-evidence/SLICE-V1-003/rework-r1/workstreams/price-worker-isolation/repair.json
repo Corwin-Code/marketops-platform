@@ -1,0 +1,10 @@
+{
+  "kind": "EXPLICIT_SHARED_QUEUE_TEST_CLASS_ISOLATION",
+  "atUTC": "2026-09-05T12:13:43.690110+00:00",
+  "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/PriceCommandWorkerIT.java",
+  "beforeSha256": "f792d74746eb6f2582e8f0f167a45b4b289002e3459cbc6c8d5e6c8a9e4c7385",
+  "afterSha256": "f81b97a5fb8433a59b5e6ce29fcb2972f05b7eb185843349a6e83d1a35194e68",
+  "reason": "Whole-database PriceCommandWorker.runOnce can claim executable fixtures left by independent integration classes. Its beforeCall deliberately binds the current command and cannot validate unrelated scripted commands. Isolate the full test class database; preserve all command transitions, global claim calls, exact current-command assertions and production source.",
+  "verification": "PENDING_COMPLETE_SELECTED_AND_FULL_RUN",
+  "production_write_enabled": false
+}

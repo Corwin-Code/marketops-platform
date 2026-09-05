@@ -1,0 +1,35 @@
+{
+  "sha": "3e4039259c0a56d0f10319cdcae79cab66f81983",
+  "node_id": "C_kwDOTwsbvNoAKDNlNDAzOTI1OWMwYTU2ZDBmMTAzMTljZGNhZTc5Y2FiNjZmODE5ODM",
+  "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/git/commits/3e4039259c0a56d0f10319cdcae79cab66f81983",
+  "html_url": "https://github.com/Corwin-Code/marketops-platform/commit/3e4039259c0a56d0f10319cdcae79cab66f81983",
+  "author": {
+    "name": "Corwin",
+    "email": "superagi.ai@gmail.com",
+    "date": "2026-09-05T11:25:24Z"
+  },
+  "committer": {
+    "name": "Corwin",
+    "email": "superagi.ai@gmail.com",
+    "date": "2026-09-05T11:25:24Z"
+  },
+  "tree": {
+    "sha": "3fbe57fc39f0d4d969e571ea895354e81c4fe1b8",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/git/trees/3fbe57fc39f0d4d969e571ea895354e81c4fe1b8"
+  },
+  "message": "test(advertising): scope queue failure to its exact alert",
+  "parents": [
+    {
+      "sha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+      "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/git/commits/3ed3f4c87c336cb07188e470528f328358fb279f",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/commit/3ed3f4c87c336cb07188e470528f328358fb279f"
+    }
+  ],
+  "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+  }
+}

@@ -1,0 +1,278 @@
+[
+  {
+    "id": 101297026388,
+    "run_id": 33962619117,
+    "workflow_name": "Security",
+    "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/runs/33962619117",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTwsbvM8AAAAXlcX1VA",
+    "head_sha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/jobs/101297026388",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619117/job/101297026388",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-09-05T11:10:35Z",
+    "started_at": "2026-09-05T11:10:37Z",
+    "completed_at": "2026-09-05T11:13:32Z",
+    "name": "codeql-java",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T11:10:38Z",
+        "completed_at": "2026-09-05T11:10:40Z"
+      },
+      {
+        "name": "Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T11:10:40Z",
+        "completed_at": "2026-09-05T11:10:44Z"
+      },
+      {
+        "name": "Set up Java",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T11:10:44Z",
+        "completed_at": "2026-09-05T11:10:47Z"
+      },
+      {
+        "name": "Initialise CodeQL",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-09-05T11:10:47Z",
+        "completed_at": "2026-09-05T11:11:01Z"
+      },
+      {
+        "name": "Build the backend for analysis",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-09-05T11:11:01Z",
+        "completed_at": "2026-09-05T11:12:22Z"
+      },
+      {
+        "name": "Analyse",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-09-05T11:12:22Z",
+        "completed_at": "2026-09-05T11:13:28Z"
+      },
+      {
+        "name": "Post Analyse",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-09-05T11:13:28Z",
+        "completed_at": "2026-09-05T11:13:28Z"
+      },
+      {
+        "name": "Post Initialise CodeQL",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-09-05T11:13:28Z",
+        "completed_at": "2026-09-05T11:13:29Z"
+      },
+      {
+        "name": "Post Set up Java",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-09-05T11:13:29Z",
+        "completed_at": "2026-09-05T11:13:29Z"
+      },
+      {
+        "name": "Post Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-09-05T11:13:29Z",
+        "completed_at": "2026-09-05T11:13:29Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-09-05T11:13:29Z",
+        "completed_at": "2026-09-05T11:13:29Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101297026388",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000001042,
+    "runner_name": "GitHub Actions 1000001042",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  {
+    "id": 101297026494,
+    "run_id": 33962619117,
+    "workflow_name": "Security",
+    "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/runs/33962619117",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTwsbvM8AAAAXlcX1vg",
+    "head_sha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/jobs/101297026494",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619117/job/101297026494",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-09-05T11:10:36Z",
+    "started_at": "2026-09-05T11:10:37Z",
+    "completed_at": "2026-09-05T11:10:46Z",
+    "name": "dependency-review",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T11:10:38Z",
+        "completed_at": "2026-09-05T11:10:39Z"
+      },
+      {
+        "name": "Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T11:10:39Z",
+        "completed_at": "2026-09-05T11:10:42Z"
+      },
+      {
+        "name": "Review the dependencies this change introduces",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T11:10:42Z",
+        "completed_at": "2026-09-05T11:10:44Z"
+      },
+      {
+        "name": "Post Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-09-05T11:10:44Z",
+        "completed_at": "2026-09-05T11:10:45Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-09-05T11:10:45Z",
+        "completed_at": "2026-09-05T11:10:45Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101297026494",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000001048,
+    "runner_name": "GitHub Actions 1000001048",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  {
+    "id": 101297026530,
+    "run_id": 33962619117,
+    "workflow_name": "Security",
+    "head_branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/runs/33962619117",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTwsbvM8AAAAXlcX14g",
+    "head_sha": "3ed3f4c87c336cb07188e470528f328358fb279f",
+    "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/actions/jobs/101297026530",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/33962619117/job/101297026530",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-09-05T11:10:36Z",
+    "started_at": "2026-09-05T11:10:37Z",
+    "completed_at": "2026-09-05T11:11:37Z",
+    "name": "codeql-typescript",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-09-05T11:10:38Z",
+        "completed_at": "2026-09-05T11:10:39Z"
+      },
+      {
+        "name": "Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-09-05T11:10:39Z",
+        "completed_at": "2026-09-05T11:10:43Z"
+      },
+      {
+        "name": "Initialise CodeQL",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-09-05T11:10:43Z",
+        "completed_at": "2026-09-05T11:10:54Z"
+      },
+      {
+        "name": "Analyse",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-09-05T11:10:54Z",
+        "completed_at": "2026-09-05T11:11:34Z"
+      },
+      {
+        "name": "Post Analyse",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-09-05T11:11:34Z",
+        "completed_at": "2026-09-05T11:11:35Z"
+      },
+      {
+        "name": "Post Initialise CodeQL",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-09-05T11:11:35Z",
+        "completed_at": "2026-09-05T11:11:35Z"
+      },
+      {
+        "name": "Post Checkout repository",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-09-05T11:11:35Z",
+        "completed_at": "2026-09-05T11:11:36Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-09-05T11:11:36Z",
+        "completed_at": "2026-09-05T11:11:36Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101297026530",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000001051,
+    "runner_name": "GitHub Actions 1000001051",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  }
+]

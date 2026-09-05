@@ -1,0 +1,36 @@
+{
+  "kind": "CONTROL_W8_MEASUREMENT_REVIEW_MANIFEST",
+  "measuredHead": "9b6e6195f779bd80b1e8ed9c78d6ad9daa1a68af",
+  "measuredTree": "eb4bce1333c87e4de762f6f42bbd3bcd392fec38",
+  "inputPreparationManifest": {
+    "path": "/tmp/slice3-controls-w8-final-preparation/manifest.json",
+    "sha256": "fc20a62a8e1aca7dd75dd204685e75c95c69eff078894803b3b3c4583439b2b2"
+  },
+  "files": [
+    {
+      "path": "/tmp/slice3-controls-w8-measured-final/controls-51-engineering-assessed-w8.json",
+      "sha256": "b73fa8ae7ef54b85ee6da452bd1f176ec80b03a1dfb39abca7d10aab66d244ac"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-measured-final/control-findings-7-engineering-assessed-w8.json",
+      "sha256": "20dec0babbbbd0175bc04470792542bdb44ea7b835ba777efaa291e9518a168c"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-measured-final/independent-frozen-xml-check.json",
+      "sha256": "6d6dc4358e56fb254705938b1ae2c258276cf7a19f574e2a5daeacc23abe016b"
+    },
+    {
+      "path": "/tmp/slice3-controls-w8-measured-final/README.md",
+      "sha256": "bd7ec5798095a52986cbca7c6950bac95b2e286c37ac6a17463892ab390cedba"
+    }
+  ],
+  "generator": {
+    "path": "/tmp/measure-slice3-controls-w8.py",
+    "sha256": "1dc7bf714e953105567ac62a460524aa24889d554ce25cc7cdeccab02812e729"
+  },
+  "uniqueMethods": 136,
+  "actualNamedInvocations": 240,
+  "criteria": 51,
+  "findings": 7,
+  "finalPublicationStatus": "PENDING_FINAL_UI_GOVERNANCE_LATEST_CI_AND_INDEPENDENT_CONTROLLER"
+}

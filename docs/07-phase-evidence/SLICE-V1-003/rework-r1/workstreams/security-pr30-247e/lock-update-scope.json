@@ -1,0 +1,51 @@
+{
+  "beforeSha256": "86b820f905240c477da4d620bb6c8cb30a6d2da6fbc4869ced083258556ce332",
+  "afterSha256": "6e2751b0187c16ac884ddc5584e2cd4f78fc3abd7a401a98388bc9334e0f8ea4",
+  "packageJsonUnchanged": true,
+  "changedPackageNodes": [
+    "node_modules/fast-uri"
+  ],
+  "changedFields": [
+    "version",
+    "resolved",
+    "integrity"
+  ],
+  "oldNode": {
+    "version": "3.1.5",
+    "resolved": "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.5.tgz",
+    "integrity": "sha512-gHwA1O9LDIcKunMKhObS/HimwtehO1nPUECKAu5TpKgaO19fcWEl4bliWe1jWxVFvIXztJjjQ4L8XQ1EU9f7Jw==",
+    "dev": true,
+    "funding": [
+      {
+        "type": "github",
+        "url": "https://github.com/sponsors/fastify"
+      },
+      {
+        "type": "opencollective",
+        "url": "https://opencollective.com/fastify"
+      }
+    ],
+    "license": "BSD-3-Clause",
+    "optional": true
+  },
+  "newNode": {
+    "version": "3.1.6",
+    "resolved": "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.6.tgz",
+    "integrity": "sha512-7Ical1vFEMr0onbVzEDIreM22I4khW+fzyQPwvAFWBp1iwdshSZRsL4jjRvPG9JP1uiqMHRto+YU6R2/CzDz5Q==",
+    "dev": true,
+    "funding": [
+      {
+        "type": "github",
+        "url": "https://github.com/sponsors/fastify"
+      },
+      {
+        "type": "opencollective",
+        "url": "https://opencollective.com/fastify"
+      }
+    ],
+    "license": "BSD-3-Clause",
+    "optional": true
+  },
+  "matchesPrimaryRegistryIntegrityAndTarball": true,
+  "method": "npm update selected newer compatible 3.1.7; exact-version scope assertion rejected that result. Preserved it as intermediate evidence, then replaced only the same node version/resolved/integrity with primary npm metadata for the explicitly authorized 3.1.6. No override or package.json change."
+}
