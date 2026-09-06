@@ -37,6 +37,23 @@ SELECT e.decision_purpose,e.evidence_kind,e.freshness_profile_id,e.source_time,
   resolver does not fall back to a broader policy to escape an ambiguous narrow
   scope.
 
+For Optimization, inspect the selected Task and bid-write qualification policies
+separately. Each consumes its own minimum recoverable amount and confidence
+requirement in both the current period result and eligibility decision. A
+numeric estimated value or a passed lower tier does not satisfy a higher tier.
+Under-ceiling recoverable value is the static space in the same observed
+traffic cohort, capped by both its Max CPC and original allowable spend; it is
+not a forecast of additional sales. Confirm the observed Bid's currency and
+native denomination before interpreting that value. The actual Increase still
+needs the complete Target and Outcome policy authorities and bounded candidate.
+
+For a semantic Profile, confirm its platform and optional Store restriction as
+well as semantic identity. A global and Store-bound semantic Profile that both
+apply at the same rank are ambiguous even if one has a newer effective date.
+Profiles for another platform or Store neither qualify this object nor suppress
+its legitimate broader Profile. The single and bulk readers use this same rule;
+combining the 48 requested pairs does not supply missing/default authority.
+
 Effective-dated canonical cost and fee metrics use their actual applicability
 calculation time for freshness. The age of a still-applicable cost transaction by
 itself does not invalidate that metric. Its input lineage and confidence remain
@@ -86,14 +103,20 @@ recalculate the affected objects. Scheduled expiry checks and reconciliation
 also use the canonical advertising calculation path.
 
 A Protection responsibility Task can remain actionable when complete write-grade
-MaxCPC economics are unavailable. A cause-bound bid candidate is restricted to a
-published `KNOWN_NOT_SELLABLE_WITH_FRESH_SPEND` or
-`KNOWN_UNAVAILABLE_WITH_FRESH_SPEND` cause, with fresh spend, exact current native
+MaxCPC economics are unavailable. Missing or conflicted Outcome Policy authority
+also leaves Queue observation and proven-harm responsibility visible. The exact
+`OUTCOME_POLICY_UNRESOLVED` or `OUTCOME_POLICY_CONFLICTED` reason blocks new
+verified Optimization and its bid-write qualification; otherwise qualified
+Optimization is routed to Data Repair until its authority is resolved.
+
+The physical-danger cause-bound route requires a
+published `PROMOTED_VARIANT_NOT_SELLABLE` or
+`PROMOTED_VARIANT_UNAVAILABLE` cause, with fresh spend, exact current native
 configuration, complete affected set and the matching sellability or availability
 proof. Missing conversion and economic facts do not suppress that one-sided harm,
 but unresolved critical-sales safety or another independent control still blocks
 writing. A separate accountable DataRepair case retains the missing evidence.
-The published `PROVEN_ADVERTISING_LOSS` economic cause-bound rule additionally
+The published `PROVEN_ADVERTISING_LOSS` economic cause-bound rule
 requires complete canonical linked sales, effective costs and fees, fresh official
 spend, exact configuration and affected set, plus qualified sellability and
 availability. It can tolerate unresolved conversion only when the precise Owner

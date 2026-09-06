@@ -53,7 +53,8 @@ public class AdvertisingManualWorkflowService {
         var visibleOptions=permitted(actor,scope,ActionScopeCode.ADVERTISING_VIEW)
                 ? workflow.options(caseId) : List.<AdvertisingManualWorkflowRepository.Option>of();
         result.set("options",mapper.valueToTree(visibleOptions));
-        result.set("allowedActions",mapper.valueToTree(!visibleOptions.isEmpty()
+        result.set("blockerCodes",mapper.valueToTree(visibleOptions.stream().flatMap(option->option.blockerCodes().stream()).distinct().toList()));
+        result.set("allowedActions",mapper.valueToTree(visibleOptions.stream().anyMatch(option->option.blockerCodes().isEmpty())
                 && permitted(actor,scope,ActionScopeCode.ADVERTISING_TASK_ACT)
                 ? List.of("SELECT_MANUAL_PROPOSAL") : List.of()));
         return result;
@@ -64,6 +65,12 @@ public class AdvertisingManualWorkflowService {
         UUID proposal=workflow.generate(UUID.randomUUID(),caseId,policyId,candidateId);
         UUID packet=UUID.randomUUID();
         UUID baseline=outcomes.prepareManual(actor.organizationId(),proposal,clock.instant());
+        if (baseline == null) {
+            var reasons = outcomes.manualPolicyReasons(actor.organizationId(),proposal,clock.instant());
+            throw OperationRejectedException.of(reasons.contains("OUTCOME_POLICY_CONFLICTED")
+                    ? ErrorCode.OUTCOME_POLICY_CONFLICTED : reasons.contains("OUTCOME_POLICY_UNRESOLVED")
+                    ? ErrorCode.OUTCOME_POLICY_UNRESOLVED : ErrorCode.GUARDRAIL_BLOCKED);
+        }
         workflow.select(packet,proposal,baseline,MetadataFieldPolicy.requireText("reason",reason),
                 proof("MANUAL_PACKET_SELECT",proposal,packet));
         return packet(actor,packet);

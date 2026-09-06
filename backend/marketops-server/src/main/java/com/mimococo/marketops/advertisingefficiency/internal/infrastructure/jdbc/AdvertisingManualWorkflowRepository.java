@@ -20,7 +20,15 @@ public class AdvertisingManualWorkflowRepository {
     public record Option(UUID policyId, int policyVersion, String actionKind, UUID candidateId,
             BigDecimal currentBid, BigDecimal targetBid, BigDecimal targetBudget, String targetStatus,
             String currencyCode, String bidUnitCode, String verificationMode, String apiProfileState,
-            Instant validUntil) { }
+            Instant validUntil, List<String> blockerCodes) {
+        public Option(UUID policyId, int policyVersion, String actionKind, UUID candidateId,
+                BigDecimal currentBid, BigDecimal targetBid, BigDecimal targetBudget, String targetStatus,
+                String currencyCode, String bidUnitCode, String verificationMode, String apiProfileState, Instant validUntil) {
+            this(policyId,policyVersion,actionKind,candidateId,currentBid,targetBid,targetBudget,targetStatus,
+                    currencyCode,bidUnitCode,verificationMode,apiProfileState,validUntil,List.of("OUTCOME_POLICY_UNRESOLVED"));
+        }
+        public Option { blockerCodes = List.copyOf(blockerCodes); }
+    }
     public record Transaction(int backendPid, long transactionId) { }
 
     public Optional<Scope> caseScope(UUID caseId) {
@@ -49,13 +57,26 @@ public class AdvertisingManualWorkflowRepository {
         return jdbc.sql("""
                 SELECT p.id,p.policy_version,p.action_kind,candidate.id candidate_id,candidate.current_bid_amount,
                        candidate.provider_normalized_amount,p.target_budget,p.target_status,p.currency_code,
-                       profile.bid_unit_code,p.verification_mode,profile.verification_state,p.effective_to
+                       profile.bid_unit_code,p.verification_mode,profile.verification_state,p.effective_to,
+                       resolved.state outcome_policy_state
                   FROM mart.ad_case c JOIN core.ad_manual_policy p ON p.organization_id=c.organization_id
                    AND p.store_id=c.store_id AND p.cause_code=c.cause_code AND p.semantic_profile_id=c.semantic_profile_id
                   JOIN platform.ad_semantic_profile profile ON profile.id=p.semantic_profile_id
                   LEFT JOIN ops.ad_bid_candidate candidate ON p.action_kind='AD_BID_CHANGE' AND candidate.case_id=c.id
                    AND candidate.candidate_basis=p.candidate_basis AND candidate.affected_set_digest=
                        (SELECT affected_set_digest FROM core.ad_affected_set WHERE id=c.affected_set_id)
+                  LEFT JOIN LATERAL (SELECT cfg.observed_budget_amount FROM core.ad_object_configuration_observation cfg
+                    WHERE cfg.organization_id=c.organization_id AND cfg.ad_native_object_id=c.ad_native_object_id
+                     AND cfg.semantic_profile_id=c.semantic_profile_id AND cfg.observed_at<=statement_timestamp()
+                     AND cfg.evidence_grade IN ('OFFICIAL_API_READBACK','OFFICIAL_CONFIGURATION_EXPORT')
+                     AND NOT EXISTS(SELECT 1 FROM core.ad_object_configuration_observation n WHERE n.supersedes_observation_id=cfg.id)
+                    ORDER BY cfg.observed_at DESC,cfg.id LIMIT 1) configuration ON true
+                  CROSS JOIN LATERAL core.ad_outcome_bound_policy_resolution(c.organization_id,c.platform_code,c.store_id,
+                    CASE WHEN p.action_kind='AD_BID_CHANGE' THEN candidate.direction
+                     WHEN p.action_kind='AD_BUDGET_CHANGE' THEN CASE WHEN configuration.observed_budget_amount IS NULL THEN NULL
+                       WHEN p.target_budget<configuration.observed_budget_amount THEN 'PROTECTION_DECREASE' ELSE 'OPTIMIZATION_INCREASE' END
+                     WHEN profile.status_semantics->>p.target_status IN ('PAUSED','STOPPED') THEN 'PROTECTION_DECREASE'
+                     ELSE 'OPTIMIZATION_INCREASE' END,c.cause_code,statement_timestamp(),p.outcome_policy_id) resolved
                  WHERE c.id=:id AND c.superseded_at IS NULL AND p.effective_from<=statement_timestamp()
                    AND EXISTS (SELECT 1 FROM core.ad_affected_set affected WHERE affected.id=c.affected_set_id
                        AND affected.resolution_state='COMPLETE')
@@ -68,7 +89,8 @@ public class AdvertisingManualWorkflowRepository {
                         rs.getBigDecimal("current_bid_amount"), rs.getBigDecimal("provider_normalized_amount"),
                         rs.getBigDecimal("target_budget"), rs.getString("target_status"), rs.getString("currency_code"),
                         rs.getString("bid_unit_code"), rs.getString("verification_mode"), rs.getString("verification_state"),
-                        rs.getTimestamp("effective_to").toInstant())).list();
+                        rs.getTimestamp("effective_to").toInstant(), "RESOLVED".equals(rs.getString("outcome_policy_state"))
+                            ? List.of() : List.of(rs.getString("outcome_policy_state")))).list();
     }
 
     public UUID publish(String content, String proof) {

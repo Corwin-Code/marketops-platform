@@ -29,6 +29,17 @@ public class AdvertisingDecisionRepository {
         this.jdbc = jdbc;
     }
 
+    public List<String> outcomePolicyFailures(UUID recommendationId, Instant at) {
+        return jdbc.sql("""
+                SELECT resolved.state FROM ops.recommendation r
+                JOIN ops.ad_bid_candidate c ON c.id=CASE WHEN ops.ad_bid_parameter_contract_is_valid(r.proposed_parameters)
+                    THEN (r.proposed_parameters->>'candidateId')::uuid END
+                    AND c.organization_id=r.organization_id
+                CROSS JOIN LATERAL ops.ad_outcome_candidate_policy_resolution(c.id,:at) resolved
+                WHERE r.id=:recommendation AND resolved.state<>'RESOLVED'
+                """).param("recommendation",recommendationId).param("at",java.sql.Timestamp.from(at)).query(String.class).list();
+    }
+
     public List<String> economicCauseBoundFailures(UUID recommendationId, Instant at) {
         return jdbc.sql("""
                 SELECT unnest(ops.ad_economic_cause_bound_failures(candidate.id,:at))

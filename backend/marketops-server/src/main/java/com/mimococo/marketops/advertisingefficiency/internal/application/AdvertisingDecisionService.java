@@ -116,6 +116,7 @@ public class AdvertisingDecisionService implements AdvertisingDecisionAuthority 
                 .actionBlockers(row.candidateBasis(),row.causeCode(),row.blockerCodes()));
         blockers.addAll(decisions.isolationFailures(row.recommendationId(),clock.instant()));
         blockers.addAll(decisions.economicCauseBoundFailures(row.recommendationId(),clock.instant()));
+        blockers.addAll(decisions.outcomePolicyFailures(row.recommendationId(),clock.instant()));
         return blockers.stream().distinct().toList();
     }
 
@@ -179,6 +180,7 @@ public class AdvertisingDecisionService implements AdvertisingDecisionAuthority 
             reasons.add("APPROVAL_LEASE_POLICY_ABSENT");
         }
         reasons.addAll(decisions.isolationFailures(row.recommendationId(),now));
+        reasons.addAll(decisions.outcomePolicyFailures(row.recommendationId(),now));
         return List.copyOf(reasons);
     }
 

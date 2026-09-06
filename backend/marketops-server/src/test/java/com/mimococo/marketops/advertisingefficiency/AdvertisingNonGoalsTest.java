@@ -179,8 +179,9 @@ class AdvertisingNonGoalsTest {
      *
      * <p>So AD_BUDGET_CHANGE and AD_STATUS_CHANGE are permitted to appear, and
      * are permitted to appear in the original manual packet vocabulary and
-     * the governed manual policy/proposal/proof migration. An occurrence elsewhere would mean
-     * something other than a human instruction had learned to name them.
+     * the governed manual policy/proposal/proof migration. The read-only manual
+     * options projection may also name a budget change to derive its existing
+     * direction for Outcome Policy resolution; it cannot execute that change.
      */
     @Test
     @DisplayName("TC-ADV-NONGOAL-005 budget and status actions exist only as human instructions")
@@ -192,13 +193,35 @@ class AdvertisingNonGoalsTest {
                     carrying.add(source);
                 }
             }
+            List<String> allowed = new ArrayList<>(List.of(
+                    "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
+                    "V0060__govern_manual_proposals_packets_and_configuration_proof.sql"));
+            if (action.equals("AD_BUDGET_CHANGE")) allowed.add("AdvertisingManualWorkflowRepository.java");
             assertThat(carrying)
-                    .describedAs("%s is restricted to the two governed human-instruction migrations", action)
+                    .describedAs("%s remains confined to governed human instructions and their checked read-only projection", action)
                     .extracting(path -> path.getFileName().toString())
-                    .containsExactlyInAnyOrder(
-                            "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
-                            "V0060__govern_manual_proposals_packets_and_configuration_proof.sql");
+                    .containsExactlyInAnyOrderElementsOf(allowed);
         }
+        String manual = read(repositoryRoot().resolve(
+                "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingManualWorkflowRepository.java"));
+        int start = manual.indexOf("    public List<Option> options(UUID caseId) {");
+        int end = manual.indexOf("    public UUID publish(", start);
+        assertThat(start).isGreaterThanOrEqualTo(0);
+        assertThat(end).isGreaterThan(start);
+        String options = manual.substring(start, end);
+        assertThat(manual.substring(0, start) + manual.substring(end))
+                .doesNotContain("AD_BUDGET_CHANGE", "AD_STATUS_CHANGE");
+        assertThat(options).contains("p.action_kind='AD_BUDGET_CHANGE'",
+                "configuration.observed_budget_amount", "core.ad_outcome_bound_policy_resolution",
+                ".query(", ").list();");
+        assertThat(java.util.regex.Pattern.compile("jdbc\\.sql\\(").matcher(options).results().count()).isEqualTo(1);
+        int sqlStart = options.indexOf("\"\"\"") + 3;
+        int sqlEnd = options.indexOf("\"\"\"", sqlStart);
+        assertThat(sqlStart).isGreaterThanOrEqualTo(3);
+        assertThat(sqlEnd).isGreaterThan(sqlStart);
+        assertThat(options.substring(sqlStart, sqlEnd).stripLeading()).startsWith("SELECT ")
+                .doesNotContainPattern("(?i)\\b(?:INSERT|UPDATE|DELETE|MERGE|CALL|CREATE|ALTER|DROP|TRUNCATE)\\b");
+        assertThat(options).doesNotContain(".update(", ".execute(");
     }
 
     @Test

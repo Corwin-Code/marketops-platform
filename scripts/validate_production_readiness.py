@@ -177,6 +177,7 @@ APPROVED_MIGRATIONS = (
     "V0069__reopen_invalidated_protection_outcomes.sql",
     "V0070__record_canonical_metric_reevaluation_proofs.sql",
     "V0071__align_frozen_outcome_company_profile_scope.sql",
+    "V0072__resolve_outcome_policy_with_explicit_scope_state.sql",
 )
 
 DEFERRED_EVIDENCE_REGISTER = (

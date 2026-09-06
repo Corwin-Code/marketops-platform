@@ -18,6 +18,7 @@ class AdvertisingQualificationBoundaryTest {
     static final UUID ID=UUID.fromString("eef76bf0-d152-4ca5-bfc1-27b2d79adcf6");
     static final Instant AT=Instant.parse("2026-09-04T00:00:00Z");
     static final AdMeasure SPEND=AdMeasure.available(new BigDecimal("100"),AdEvidenceState.CANONICAL_CONFIRMED);
+    static final AdMeasure RECOVERABLE=AdMeasure.available(BigDecimal.ONE,AdEvidenceState.CANONICAL_CONFIRMED);
     static final AdvertisingContributionProfit PROFIT=new AdvertisingContributionProfit(SPEND,SPEND,"RUB",List.of());
     static AdvertisingPolicyRepository.QualificationPolicy policy(int completed,int retained,long traffic,String spend,int days) {
         return new AdvertisingPolicyRepository.QualificationPolicy(ID,1,"OPTIMIZATION_BID_WRITE",days,BigDecimal.ONE,BigDecimal.ONE,
@@ -63,25 +64,69 @@ class AdvertisingQualificationBoundaryTest {
     @Test void aRetainedConversionStillUsesTheIndependentlyMeasuredCompletedCount() {
         var eligible=evidence(20,true,false);
         assertCanonicalPurposeProofs(eligible);
-        assertThat(AdvertisingCaseCalculationService.qualificationConditions(eligible,policy(20,10,100,"100",30),conversion(),SPEND,PROFIT)).isTrue();
-        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence(19,true,false),policy(20,10,100,"100",30),conversion(),SPEND,PROFIT)).isFalse();
-        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence(0,true,false),policy(1,10,100,"100",30),conversion(),SPEND,PROFIT)).isFalse();
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(eligible,policy(20,10,100,"100",30),conversion(),SPEND,PROFIT,RECOVERABLE)).isTrue();
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence(19,true,false),policy(20,10,100,"100",30),conversion(),SPEND,PROFIT,RECOVERABLE)).isFalse();
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence(0,true,false),policy(1,10,100,"100",30),conversion(),SPEND,PROFIT,RECOVERABLE)).isFalse();
     }
     @Test void everyPublishedSampleSpendAndWindowBoundaryMustIndependentlyPass() {
         var evidence=evidence(20,true,false);
         assertCanonicalPurposeProofs(evidence);
-        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,policy(20,10,100,"100",30),conversion(),SPEND,PROFIT)).isTrue();
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,policy(20,10,100,"100",30),conversion(),SPEND,PROFIT,RECOVERABLE)).isTrue();
         for(var policy:List.of(policy(21,10,100,"100",30),policy(20,11,100,"100",30),policy(20,10,101,"100",30),
                 policy(20,10,100,"100.0001",30),policy(20,10,100,"100",29))) {
-            assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,policy,conversion(),SPEND,PROFIT)).as(policy.toString()).isFalse();
+            assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,policy,conversion(),SPEND,PROFIT,RECOVERABLE)).as(policy.toString()).isFalse();
         }
     }
     @Test void goodSamplesCannotOverrideMissingComparableHistoryOrAProviderIncident() {
         var eligible=evidence(20,true,false);
         assertCanonicalPurposeProofs(eligible);
-        assertThat(AdvertisingCaseCalculationService.qualificationConditions(eligible,policy(20,10,100,"100",30),conversion(),SPEND,PROFIT)).isTrue();
-        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence(20,false,false),policy(20,10,100,"100",30),conversion(),SPEND,PROFIT)).isFalse();
-        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence(20,true,true),policy(20,10,100,"100",30),conversion(),SPEND,PROFIT)).isFalse();
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(eligible,policy(20,10,100,"100",30),conversion(),SPEND,PROFIT,RECOVERABLE)).isTrue();
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence(20,false,false),policy(20,10,100,"100",30),conversion(),SPEND,PROFIT,RECOVERABLE)).isFalse();
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence(20,true,true),policy(20,10,100,"100",30),conversion(),SPEND,PROFIT,RECOVERABLE)).isFalse();
+    }
+    @Test void unavailableRecoverableValueCannotSatisfyEvenAZeroPublishedAmount() {
+        var evidence=evidence(20,true,false);
+        assertCanonicalPurposeProofs(evidence);
+        var original=policy(20,10,100,"100",30);
+        var zeroMinimum=new AdvertisingPolicyRepository.QualificationPolicy(original.id(),original.version(),original.purposeTier(),
+                original.eligibleObservationWindowDays(),original.minimumSourceCoverageRatio(),original.minimumAffectedSetCoverageRatio(),
+                original.minimumTrafficDenominator(),original.minimumCompletedSaleEvents(),original.minimumRetainedSaleEvents(),
+                original.minimumSpendAmount(),original.currencyCode(),original.minimumSustainedPeriods(),BigDecimal.ZERO,
+                original.requiresCorrectionWindowClosed(),original.requiresComparableBaseline(),original.minimumConfidenceState());
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,zeroMinimum,conversion(),SPEND,PROFIT,
+                AdMeasure.available(BigDecimal.ZERO,AdEvidenceState.CANONICAL_CONFIRMED))).isTrue();
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,zeroMinimum,conversion(),SPEND,PROFIT,
+                AdMeasure.notAvailable(AdEvidenceState.NOT_AVAILABLE))).isFalse();
+    }
+    @Test void presentRecoverableAndProfitCannotBypassThePublishedConfidence() {
+        var evidence=evidence(20,true,false);
+        assertCanonicalPurposeProofs(evidence);
+        var canonical=policy(20,10,100,"100",30);
+        var operational=new AdvertisingPolicyRepository.QualificationPolicy(canonical.id(),canonical.version(),canonical.purposeTier(),
+                canonical.eligibleObservationWindowDays(),canonical.minimumSourceCoverageRatio(),canonical.minimumAffectedSetCoverageRatio(),
+                canonical.minimumTrafficDenominator(),canonical.minimumCompletedSaleEvents(),canonical.minimumRetainedSaleEvents(),
+                canonical.minimumSpendAmount(),canonical.currencyCode(),canonical.minimumSustainedPeriods(),canonical.minimumRecoverableAmount(),
+                canonical.requiresCorrectionWindowClosed(),canonical.requiresComparableBaseline(),"CANONICAL_PENDING_SETTLEMENT");
+        var operationalValue=AdMeasure.available(BigDecimal.ONE,AdEvidenceState.OPERATIONAL);
+        var operationalProfit=new AdvertisingContributionProfit(
+                AdMeasure.available(SPEND.value(),AdEvidenceState.OPERATIONAL),operationalValue,"RUB",List.of());
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,canonical,conversion(),SPEND,PROFIT,RECOVERABLE)).isTrue();
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,operational,conversion(),SPEND,operationalProfit,operationalValue)).isTrue();
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,canonical,conversion(),SPEND,PROFIT,operationalValue)).isFalse();
+        assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,canonical,conversion(),SPEND,operationalProfit,RECOVERABLE)).isFalse();
+        for (var state:AdEvidenceState.values()) {
+            if (state==AdEvidenceState.CANONICAL_CONFIRMED || state==AdEvidenceState.OPERATIONAL) continue;
+            var presentValue=AdMeasure.available(BigDecimal.ONE,state);
+            var presentProfit=new AdvertisingContributionProfit(AdMeasure.available(SPEND.value(),state),presentValue,"RUB",List.of());
+            assertThat(presentValue.present()).isTrue();
+            assertThat(presentProfit.resolved()).as("resolved means numeric presence, not proof authority").isTrue();
+            for (var policy:List.of(canonical,operational)) {
+                assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,policy,conversion(),SPEND,PROFIT,presentValue))
+                        .as(policy.minimumConfidenceState()+" recoverable "+state).isFalse();
+                assertThat(AdvertisingCaseCalculationService.qualificationConditions(evidence,policy,conversion(),SPEND,presentProfit,RECOVERABLE))
+                        .as(policy.minimumConfidenceState()+" profit "+state).isFalse();
+            }
+        }
     }
     static void assertCanonicalPurposeProofs(AdvertisingEvidenceGatherer.Evidence evidence) {
         var proofs=AdvertisingPurposeFreshness.assess(evidence,"OPTIMIZATION_BID_WRITE",List.of(

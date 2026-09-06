@@ -319,15 +319,19 @@ class AdvertisingCaseMeasureCalculationTest {
     }
 
     @Test
-    @DisplayName("TC-AD-MEASURE-022 a bid under its ceiling has nothing to recover")
-    void abidUnderItsCeilingRecoversNothing() {
+    @DisplayName("TC-AD-MEASURE-022 a bid under its ceiling exposes only the same observed cohort's economic space")
+    void abidUnderItsCeilingHasBoundedObservedEconomicSpace() {
         var result = service.calculateFrom(fully()
                 .completedSales(sales(100L, "240000.0000", 1L))
                 .configuration(configurationRow("5.0000", "OFFICIAL_API_READBACK"))
                 .build());
 
         assertThat(only(result).recoverableProfit().valueState()).isEqualTo(ValueState.AVAILABLE);
-        assertThat(only(result).recoverableProfit().value()).isEqualByComparingTo("0.0000");
+        // 1000 observed clicks, ceiling 10, allowable spend 10000 and bid 5:
+        // min(1000 * 10, 10000) - 1000 * 5 = 5000, without additional traffic.
+        assertThat(only(result).eligibleTraffic().value()).isEqualByComparingTo("1000");
+        assertThat(only(result).maxCpc().ceiling().amount()).isEqualByComparingTo("10");
+        assertThat(only(result).recoverableProfit().value()).isEqualByComparingTo("5000.0000");
     }
 
     @Test

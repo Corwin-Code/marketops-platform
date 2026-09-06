@@ -127,7 +127,21 @@ class AdvertisingEvidenceGatherer {
             Map<UUID, Integer> sustainedPeriods, boolean comparableBaseline, List<UUID> metricValueIds,
             Map<String, AdvertisingEvidenceRepository.RankContext> rankContexts, boolean compensationPending,
             boolean providerIncidentOpen, AdvertisingEvidenceRepository.CriticalSignals criticalSignals,
-            Long canonicalCompletedEventCount) {
+            Long canonicalCompletedEventCount,
+            Map<String, AdvertisingPolicyRepository.OutcomePolicyResolution> outcomePolicies) {
+        Authorities {
+            outcomePolicies = Map.copyOf(outcomePolicies);
+        }
+        Authorities(Map<UUID, AdvertisingPolicyRepository.AllowableCpaDefinition> cpas,
+                Map<String, AdvertisingPolicyRepository.FreshnessProfile> freshness, Map<UUID, Integer> periods,
+                boolean baseline, List<UUID> metrics, Map<String, AdvertisingEvidenceRepository.RankContext> ranks,
+                boolean compensation, boolean incident, AdvertisingEvidenceRepository.CriticalSignals criticalSignals,
+                Long canonicalCompletedEventCount) {
+            this(cpas,freshness,periods,baseline,metrics,ranks,compensation,incident,criticalSignals,canonicalCompletedEventCount,Map.of());
+        }
+        AdvertisingPolicyRepository.OutcomePolicyResolution outcomePolicy(String cause) {
+            return outcomePolicies.getOrDefault(cause, AdvertisingPolicyRepository.OutcomePolicyResolution.unresolved());
+        }
         Authorities(Map<UUID, AdvertisingPolicyRepository.AllowableCpaDefinition> cpas,
                 Map<String, AdvertisingPolicyRepository.FreshnessProfile> freshness, Map<UUID, Integer> periods,
                 boolean baseline, List<UUID> metrics, Map<String, AdvertisingEvidenceRepository.RankContext> ranks,
@@ -262,7 +276,8 @@ class AdvertisingEvidenceGatherer {
                         economics.values().stream().flatMap(value -> value.lineage().stream())
                                 .map(MetricValueView::metricValueId).distinct().sorted().toList(),
                         rankContexts(organizationId, objectId, asOf), facts.compensationPending(organizationId, objectId),
-                        facts.providerIncidentOpen(organizationId, objectId, asOf), facts.criticalSignals(organizationId, objectId, asOf),canonicalCompletedEvents)));
+                        facts.providerIncidentOpen(organizationId, objectId, asOf), facts.criticalSignals(organizationId, objectId, asOf),canonicalCompletedEvents,
+                        policies.resolveOutcomePolicies(organizationId,object.platformCode(),object.storeId(),asOf))));
     }
 
     Map<UUID, VariantEconomics> economicsForSales(

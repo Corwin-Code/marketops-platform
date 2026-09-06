@@ -2048,10 +2048,12 @@ export interface AdvertisingManualOption {
   readonly bidUnitCode: string;
   readonly verificationMode: string;
   readonly apiProfileState: string;
+  readonly blockerCodes: readonly string[];
 }
 export interface AdvertisingManualOptions {
   readonly options: readonly AdvertisingManualOption[];
   readonly allowedActions: readonly string[];
+  readonly blockerCodes: readonly string[];
 }
 export function fetchAdvertisingManualOptions(
   context: ConsoleRequest,
@@ -2063,6 +2065,12 @@ export function fetchAdvertisingManualOptions(
     (body) => {
       if (!isRecord(body) || !Array.isArray(body.options) || !Array.isArray(body.allowedActions))
         return undefined;
+      if (
+        body.blockerCodes !== undefined &&
+        (!Array.isArray(body.blockerCodes) ||
+          !body.blockerCodes.every((item: unknown) => typeof item === 'string'))
+      )
+        return undefined;
       const options: AdvertisingManualOption[] = [];
       for (const row of body.options) {
         if (
@@ -2070,6 +2078,12 @@ export function fetchAdvertisingManualOptions(
           typeof row.policyId !== 'string' ||
           typeof row.policyVersion !== 'number' ||
           typeof row.actionKind !== 'string'
+        )
+          return undefined;
+        if (
+          row.blockerCodes !== undefined &&
+          (!Array.isArray(row.blockerCodes) ||
+            !row.blockerCodes.every((item: unknown) => typeof item === 'string'))
         )
           return undefined;
         options.push({
@@ -2087,6 +2101,8 @@ export function fetchAdvertisingManualOptions(
             typeof row.verificationMode === 'string' ? row.verificationMode : 'UNRESOLVED',
           apiProfileState:
             typeof row.apiProfileState === 'string' ? row.apiProfileState : 'UNRESOLVED',
+          blockerCodes:
+            row.blockerCodes === undefined ? ['OUTCOME_POLICY_UNRESOLVED'] : row.blockerCodes,
         });
       }
       return {
@@ -2094,6 +2110,12 @@ export function fetchAdvertisingManualOptions(
         allowedActions: body.allowedActions.filter(
           (item): item is string => typeof item === 'string',
         ),
+        blockerCodes: [
+          ...new Set([
+            ...(body.blockerCodes ?? []),
+            ...options.flatMap((option) => option.blockerCodes),
+          ]),
+        ],
       };
     },
   );

@@ -12,6 +12,12 @@ import java.util.UUID;
 /** Explicit line-level evidence for pure calculator tests. Never used by a runtime path. */
 final class AdvertisingCalculationFixture {
     private AdvertisingCalculationFixture() { }
+    static Map<String, AdvertisingPolicyRepository.OutcomePolicyResolution> outcomePolicies() {
+        var policy = new AdvertisingPolicyRepository.OutcomePolicyResolution("RESOLVED",
+                UUID.fromString("00000000-0000-0000-0000-000000000072"), 1);
+        return Map.of("PROVEN_ADVERTISING_LOSS",policy,"PROMOTED_VARIANT_NOT_SELLABLE",policy,
+                "PROMOTED_VARIANT_UNAVAILABLE",policy,"RECOVERABLE_ADVERTISING_PROFIT",policy);
+    }
     static AdvertisingEvidenceGatherer.Evidence withLineage(AdvertisingEvidenceGatherer.Evidence e) {
         var set = e.affectedSet().orElse(null);
         var definition = e.conversion().orElse(null);
@@ -63,6 +69,6 @@ final class AdvertisingCalculationFixture {
                 sales, e.retainedSales(), e.variantShares(), e.containment(), e.conversion(), e.allowableCpa(),
                 e.writeQualification(), e.taskQualification(), e.priority(), economics, availability,
                 e.windowStart(), e.asOf(), new AdvertisingEvidenceGatherer.Authorities(cpas, profiles, Map.of(), false,
-                        List.of(), Map.of(), false));
+                        List.of(), Map.of(), false,false,AdvertisingEvidenceRepository.CriticalSignals.absent(),null,outcomePolicies()));
     }
 }

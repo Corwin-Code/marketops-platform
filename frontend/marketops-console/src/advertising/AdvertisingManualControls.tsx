@@ -131,6 +131,9 @@ export function AdvertisingManualProposalControls({
       {options?.options.length === 0 && (
         <p>No current immutable Owner manual plan and canonical proposal is available.</p>
       )}
+      {options !== undefined && options.blockerCodes.length > 0 && (
+        <p>Some manual proposals need policy resolution: {options.blockerCodes.join(', ')}.</p>
+      )}
       {options?.allowedActions.includes('SELECT_MANUAL_PROPOSAL') === true && (
         <label>
           Manual selection reason
@@ -158,10 +161,13 @@ export function AdvertisingManualProposalControls({
             <p>
               API profile: {option.apiProfileState}. This human workflow creates no API command.
             </p>
+            {option.blockerCodes.length > 0 && (
+              <p>This proposal is unavailable: {option.blockerCodes.join(', ')}.</p>
+            )}
             {options.allowedActions.includes('SELECT_MANUAL_PROPOSAL') && (
               <button
                 type="button"
-                disabled={busy || reason.trim().length === 0}
+                disabled={busy || reason.trim().length === 0 || option.blockerCodes.length > 0}
                 onClick={() => {
                   setBusy(true);
                   void selectAdvertisingManualOption(context, caseId, option, reason.trim()).then(

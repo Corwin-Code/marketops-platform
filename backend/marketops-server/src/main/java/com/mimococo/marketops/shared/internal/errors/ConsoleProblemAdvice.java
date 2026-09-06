@@ -62,6 +62,8 @@ public class ConsoleProblemAdvice {
             Map.entry(ErrorCode.WRITE_GATE_CLOSED, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.COMMAND_STATE_INVALID, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.RECOMMENDATION_STALE, HttpStatus.CONFLICT),
+            Map.entry(ErrorCode.OUTCOME_POLICY_UNRESOLVED, HttpStatus.CONFLICT),
+            Map.entry(ErrorCode.OUTCOME_POLICY_CONFLICTED, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.APPROVAL_REQUIRED, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.COMPENSATION_UNSAFE, HttpStatus.CONFLICT),
             Map.entry(ErrorCode.READBACK_REQUIRED, HttpStatus.CONFLICT));

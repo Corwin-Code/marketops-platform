@@ -69,15 +69,8 @@ class AdvertisingOutcomePlanningService implements AdvertisingOutcomePlanning {
                   AND c.affected_set_digest=a.affected_set_digest AND a.resolution_state='COMPLETE'
                   AND k.superseded_at IS NULL
                   AND cardinality(ops.ad_economic_cause_bound_failures(c.id,:at))=0
-                  AND p.status IN('ACTIVE','RETIRED') AND p.effective_from<=:at AND (p.effective_to IS NULL OR p.effective_to>:at)
-                  AND (p.scope_kind='ORGANIZATION' OR (p.scope_kind='PLATFORM' AND p.platform_code=k.platform_code)
-                    OR (p.scope_kind='STORE' AND p.store_ref_id=k.store_id))
-                  AND NOT EXISTS(SELECT 1 FROM core.ad_outcome_policy other WHERE other.organization_id=p.organization_id AND other.direction=p.direction
-                    AND other.id<>p.id AND other.status IN('ACTIVE','RETIRED') AND other.effective_from<=:at AND (other.effective_to IS NULL OR other.effective_to>:at)
-                    AND (other.scope_kind='ORGANIZATION' OR (other.scope_kind='PLATFORM' AND other.platform_code=k.platform_code)
-                      OR (other.scope_kind='STORE' AND other.store_ref_id=k.store_id))
-                    AND CASE other.scope_kind WHEN 'STORE' THEN 0 WHEN 'PLATFORM' THEN 1 ELSE 2 END
-                      <=CASE p.scope_kind WHEN 'STORE' THEN 0 WHEN 'PLATFORM' THEN 1 ELSE 2 END)
+                  AND EXISTS(SELECT 1 FROM ops.ad_outcome_candidate_policy_resolution(c.id,:at) resolved
+                    WHERE resolved.state='RESOLVED' AND resolved.policy_id=p.id AND resolved.policy_version=p.policy_version)
                 LIMIT 2
                 """).param("organization",organizationId).param("candidate",candidateId).param("at",Timestamp.from(at))
                 .query((rs,index)->new Scope(organizationId,candidateId,rs.getObject("ad_native_object_id",UUID.class),
@@ -202,15 +195,8 @@ class AdvertisingOutcomePlanningService implements AdvertisingOutcomePlanning {
                 WHERE proposal.id=:proposal AND proposal.organization_id=:organization
                     AND ops.ad_manual_proposal_current(proposal.id) AND a.resolution_state='COMPLETE'
                     AND p.direction=proposal.intended_state->>'direction'
-                    AND p.status IN('ACTIVE','RETIRED') AND p.effective_from<=:at AND (p.effective_to IS NULL OR p.effective_to>:at)
-                    AND (p.scope_kind='ORGANIZATION' OR (p.scope_kind='PLATFORM' AND p.platform_code=k.platform_code)
-                      OR (p.scope_kind='STORE' AND p.store_ref_id=k.store_id))
-                    AND NOT EXISTS(SELECT 1 FROM core.ad_outcome_policy other WHERE other.organization_id=p.organization_id AND other.direction=p.direction
-                      AND other.id<>p.id AND other.status IN('ACTIVE','RETIRED') AND other.effective_from<=:at AND (other.effective_to IS NULL OR other.effective_to>:at)
-                      AND (other.scope_kind='ORGANIZATION' OR (other.scope_kind='PLATFORM' AND other.platform_code=k.platform_code)
-                        OR (other.scope_kind='STORE' AND other.store_ref_id=k.store_id))
-                      AND CASE other.scope_kind WHEN 'STORE' THEN 0 WHEN 'PLATFORM' THEN 1 ELSE 2 END
-                        <=CASE p.scope_kind WHEN 'STORE' THEN 0 WHEN 'PLATFORM' THEN 1 ELSE 2 END)
+                    AND EXISTS(SELECT 1 FROM ops.ad_outcome_manual_policy_resolution(proposal.id,:at) resolved
+                      WHERE resolved.state='RESOLVED' AND resolved.policy_id=p.id AND resolved.policy_version=p.policy_version)
                 """).param("proposal",proposalId).param("organization",organizationId).param("at",Timestamp.from(at))
                 .query((rs,index)->new Scope(organizationId,null,rs.getObject("ad_native_object_id",UUID.class),rs.getObject("case_id",UUID.class),
                         rs.getObject("calculation_id",UUID.class),rs.getObject("affected_set_id",UUID.class),rs.getString("affected_set_digest"),
@@ -223,6 +209,26 @@ class AdvertisingOutcomePlanningService implements AdvertisingOutcomePlanning {
                             rs.getBigDecimal("minimum_ad_spend_denominator"),rs.getObject("comparison_scale",Integer.class),rs.getString("comparison_rounding_mode"),
                             rs.getObject("material_boundary_inclusive",Boolean.class),rs.getString("negative_profit_terminal")),rs.getTimestamp("expires_at").toInstant(),rs.getString("direction"),rs.getString("cause_code"),rs.getInt("lineage_generation"))).optional();
         return scope.map(value->freeze(value,at,proposalId)).orElse(null);
+    }
+
+    @Override @Transactional(readOnly = true)
+    public List<String> policyReasons(UUID organizationId, UUID candidateId, Instant at) {
+        return jdbc.sql("""
+                SELECT resolved.state FROM ops.ad_bid_candidate c
+                CROSS JOIN LATERAL ops.ad_outcome_candidate_policy_resolution(c.id,:at) resolved
+                WHERE c.id=:candidate AND c.organization_id=:organization AND resolved.state<>'RESOLVED'
+                """).param("candidate",candidateId).param("organization",organizationId).param("at",Timestamp.from(at))
+                .query(String.class).list();
+    }
+
+    @Override @Transactional(readOnly = true)
+    public List<String> manualPolicyReasons(UUID organizationId, UUID proposalId, Instant at) {
+        return jdbc.sql("""
+                SELECT resolved.state FROM ops.ad_manual_proposal m
+                CROSS JOIN LATERAL ops.ad_outcome_manual_policy_resolution(m.id,:at) resolved
+                WHERE m.id=:proposal AND m.organization_id=:organization AND resolved.state<>'RESOLVED'
+                """).param("proposal",proposalId).param("organization",organizationId).param("at",Timestamp.from(at))
+                .query(String.class).list();
     }
 
     @Override @Transactional

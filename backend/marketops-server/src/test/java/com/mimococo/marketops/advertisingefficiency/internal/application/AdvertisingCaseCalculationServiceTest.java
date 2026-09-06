@@ -554,7 +554,7 @@ class AdvertisingCaseCalculationServiceTest {
                 e.windowStart(),asOf,new AdvertisingEvidenceGatherer.Authorities(authority.cpaByVariant(),authority.freshness(),
                 authority.sustainedPeriods(),authority.comparableBaseline(),authority.metricValueIds(),
                 Map.of("__OBJECT_DEPENDENCIES__",new AdvertisingEvidenceRepository.RankContext(origin,null,0,1,0)),
-                authority.compensationPending(),authority.providerIncidentOpen(),authority.criticalSignals(),authority.canonicalCompletedEventCount()));
+                authority.compensationPending(),authority.providerIncidentOpen(),authority.criticalSignals(),authority.canonicalCompletedEventCount(),authority.outcomePolicies()));
         var result=service.calculateFrom(evidence);
         assertThat(result.cases().getFirst().decision().protectionTier())
                 .isEqualTo(com.mimococo.marketops.advertisingefficiency.ProtectionTier.P1);
@@ -608,6 +608,130 @@ class AdvertisingCaseCalculationServiceTest {
             assertThat(factor.displayNote()).isEqualTo("PRIORITY_POLICY_UNRESOLVED:PROFILE");
         });
         assertThat(first.decision().blockerCodes()).doesNotContain("PRIORITY_POLICY_UNRESOLVED");
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"OUTCOME_POLICY_UNRESOLVED","OUTCOME_POLICY_CONFLICTED"})
+    void unavailableOutcomePolicyIsVisibleWithoutSilencingTheSameProvenHarm(String state) {
+        var e=populated(facts("4500",1000L,60L,true,false),null,null,null,null,
+                Map.of(VARIANT,new AdvertisingEvidenceGatherer.VariantAvailability("NOT_SELLABLE","AVAILABLE")));
+        var positive=service.calculateFrom(e);
+        assertThat(positive.cases().getFirst().decision().cause()).isEqualTo(AdvertisingCause.PROMOTED_VARIANT_NOT_SELLABLE);
+        assertThat(positive.cases().getFirst().decision().blockerCodes()).doesNotContain(state);
+        var authorities=e.authorities();
+        var resolutions=new java.util.HashMap<>(authorities.outcomePolicies());
+        resolutions.put("PROMOTED_VARIANT_NOT_SELLABLE",new AdvertisingPolicyRepository.OutcomePolicyResolution(state,null,null));
+        var changed=new AdvertisingEvidenceGatherer.Evidence(e.object(),e.affectedSet(),e.configuration(),e.objectFacts(),
+                e.completedSales(),e.retainedSales(),e.variantShares(),e.containment(),e.conversion(),e.allowableCpa(),
+                e.writeQualification(),e.taskQualification(),e.priority(),e.economics(),e.variantAvailability(),e.windowStart(),e.asOf(),
+                new AdvertisingEvidenceGatherer.Authorities(authorities.cpaByVariant(),authorities.freshness(),authorities.sustainedPeriods(),
+                    authorities.comparableBaseline(),authorities.metricValueIds(),authorities.rankContexts(),authorities.compensationPending(),
+                    authorities.providerIncidentOpen(),authorities.criticalSignals(),authorities.canonicalCompletedEventCount(),resolutions));
+        var negative=service.calculateFrom(changed);
+        assertThat(negative.cases().getFirst().decision().lane()).isEqualTo(AdvertisingLane.PROTECTION);
+        assertThat(negative.cases().getFirst().decision().cause()).isEqualTo(AdvertisingCause.PROMOTED_VARIANT_NOT_SELLABLE);
+        assertThat(negative.cases().getFirst().decision().blockerCodes()).contains(state);
+        assertThat(negative.policies().versionDigest()).isNotEqualTo(positive.policies().versionDigest());
+        assertThat(negative.writeQualificationSatisfied()).isFalse();
+    }
+
+    private static AdvertisingEvidenceGatherer.Evidence optimizationEvidence(String outcomeState, boolean material) {
+        BigDecimal amount=material?BigDecimal.ONE:new BigDecimal("1000000000");
+        return optimizationEvidence(outcomeState,amount,amount);
+    }
+
+    private static AdvertisingEvidenceGatherer.Evidence optimizationEvidence(String outcomeState,
+            BigDecimal taskMinimum, BigDecimal writeMinimum) {
+        // Complete same-cohort line/Metric inputs are built explicitly. Policy
+        // resolution is the only changed authority in each positive/adverse pair.
+        var e=populated(facts("4500",1000L,60L,true,false),sales(50,"40000"),sales(40,"30000"),
+                "CANONICAL_AD_LINKED_RETAINED_SALE","CANONICAL_AD_LINKED_RETAINED_SALE",
+                Map.of(VARIANT,new AdvertisingEvidenceGatherer.VariantAvailability("SELLABLE","AVAILABLE")));
+        var a=e.authorities();
+        var profiles=new java.util.HashMap<>(a.freshness());
+        for (String purpose:List.of("TASK_ACTIVATION","OPTIMIZATION_RECOMMENDATION","OPTIMIZATION_BID_WRITE")) {
+            for (String kind:List.of("OFFICIAL_AD_SPEND","OFFICIAL_AD_TRAFFIC","AD_LINKED_SALE_EVENT","COST_AND_FEE",
+                    "AD_OBJECT_CONFIGURATION","AFFECTED_SET","SELLABILITY","AVAILABILITY")) {
+                profiles.put(purpose+":"+kind,new AdvertisingPolicyRepository.FreshnessProfile(ID,1,kind,purpose,
+                        60,60,0,0,true,true,BigDecimal.ONE,"CANONICAL_CONFIRMED",true,AS_OF.plusSeconds(3600)));
+            }
+        }
+        UUID taskId=UUID.fromString("00000000-0000-0000-0000-000000000073");
+        UUID writeId=UUID.fromString("00000000-0000-0000-0000-000000000074");
+        var task=new AdvertisingPolicyRepository.QualificationPolicy(taskId,1,"OPTIMIZATION_TASK",30,
+                BigDecimal.ONE,BigDecimal.ONE,1000,20,30,new BigDecimal("100"),"RUB",2,taskMinimum,true,true,"CANONICAL_CONFIRMED");
+        var write=new AdvertisingPolicyRepository.QualificationPolicy(writeId,1,"OPTIMIZATION_BID_WRITE",30,
+                BigDecimal.ONE,BigDecimal.ONE,1000,20,30,new BigDecimal("100"),"RUB",2,writeMinimum,true,true,"CANONICAL_CONFIRMED");
+        var outcomes=new java.util.HashMap<>(a.outcomePolicies());
+        if ("OUTCOME_POLICY_UNRESOLVED".equals(outcomeState)) outcomes.remove("RECOVERABLE_ADVERTISING_PROFIT");
+        else if (!"RESOLVED".equals(outcomeState)) outcomes.put("RECOVERABLE_ADVERTISING_PROFIT",
+                new AdvertisingPolicyRepository.OutcomePolicyResolution(outcomeState,null,null));
+        return new AdvertisingEvidenceGatherer.Evidence(e.object(),e.affectedSet(),e.configuration(),e.objectFacts(),e.completedSales(),
+                e.retainedSales(),e.variantShares(),e.containment(),e.conversion(),e.allowableCpa(),Optional.of(write),Optional.of(task),
+                e.priority(),e.economics(),e.variantAvailability(),e.windowStart(),e.asOf(),new AdvertisingEvidenceGatherer.Authorities(
+                    a.cpaByVariant(),profiles,Map.of(taskId,1,writeId,1),true,a.metricValueIds(),a.rankContexts(),false,false,
+                    a.criticalSignals(),50L,outcomes));
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"OUTCOME_POLICY_UNRESOLVED","OUTCOME_POLICY_CONFLICTED"})
+    void otherwiseQualifiedOptimizationRequiresItsOwnCompleteUniqueOutcomePolicy(String state) {
+        var positive=service.calculateFrom(optimizationEvidence("RESOLVED",true));
+        assertThat(positive.cases()).hasSize(1);
+        assertThat(positive.cases().getFirst().decision().lane()).isEqualTo(AdvertisingLane.OPTIMIZATION);
+        assertThat(positive.cases().getFirst().decision().blockerCodes()).isEmpty();
+        assertThat(positive.writeQualificationSatisfied()).isTrue();
+        assertThat(positive.qualificationPeriods()).allSatisfy(period->assertThat(period.qualified()).isTrue());
+        var negative=service.calculateFrom(optimizationEvidence(state,true));
+        assertThat(negative.cases()).hasSize(1);
+        assertThat(negative.cases().getFirst().decision().lane()).isEqualTo(AdvertisingLane.DATA_REPAIR);
+        assertThat(negative.cases().getFirst().decision().cause()).isEqualTo(AdvertisingCause.DECISION_POLICY_UNRESOLVED);
+        assertThat(negative.cases().getFirst().decision().blockerCodes()).contains(state);
+        assertThat(negative.writeQualificationSatisfied()).isFalse();
+        assertThat(negative.qualificationPeriods()).isEqualTo(positive.qualificationPeriods());
+        assertThat(negative.cases().getFirst().officialSpend()).isEqualTo(positive.cases().getFirst().officialSpend());
+        assertThat(negative.cases().getFirst().contributionProfit()).isEqualTo(positive.cases().getFirst().contributionProfit());
+        assertThat(negative.policies().versionDigest()).isNotEqualTo(positive.policies().versionDigest());
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"OUTCOME_POLICY_UNRESOLVED","OUTCOME_POLICY_CONFLICTED"})
+    void immaterialWatchCannotQualifyForWriteEvenWithResolvedOutcomeAuthority(String state) {
+        var resolved=service.calculateFrom(optimizationEvidence("RESOLVED",false));
+        assertThat(resolved.cases().getFirst().decision().lane()).isEqualTo(AdvertisingLane.WATCH);
+        assertThat(resolved.cases().getFirst().recoverableProfit().value()).isLessThan(new BigDecimal("1000000000"));
+        assertThat(resolved.writeQualificationSatisfied()).isFalse();
+        assertThat(resolved.qualificationPeriods()).hasSize(2).allSatisfy(period->assertThat(period.qualified()).isFalse());
+        var unresolved=service.calculateFrom(optimizationEvidence(state,false));
+        assertThat(unresolved.cases()).hasSize(1);
+        assertThat(unresolved.cases().getFirst().decision().lane()).isEqualTo(AdvertisingLane.WATCH);
+        assertThat(unresolved.writeQualificationSatisfied()).isFalse();
+        assertThat(unresolved.qualificationPeriods()).isEqualTo(resolved.qualificationPeriods());
+    }
+
+    @Test
+    void eachTierConsumesItsOwnExactRecoverableMinimumIncludingCurrentPeriodResults() {
+        var initial=service.calculateFrom(optimizationEvidence("RESOLVED",true));
+        BigDecimal recoverable=initial.cases().getFirst().recoverableProfit().value();
+        assertThat(recoverable).isGreaterThan(BigDecimal.ONE);
+        var atBoundary=service.calculateFrom(optimizationEvidence("RESOLVED",BigDecimal.ONE,recoverable));
+        assertThat(atBoundary.cases().getFirst().decision().lane()).isEqualTo(AdvertisingLane.OPTIMIZATION);
+        assertThat(atBoundary.writeQualificationSatisfied()).isTrue();
+        assertThat(atBoundary.qualificationPeriods()).hasSize(2).allSatisfy(period->assertThat(period.qualified()).isTrue());
+        var writeMinimum=recoverable.add(new BigDecimal("0.0001"));
+        var stricterEvidence=optimizationEvidence("RESOLVED",BigDecimal.ONE,writeMinimum);
+        assertThat(stricterEvidence.taskQualification().orElseThrow().minimumRecoverableAmount()).isLessThanOrEqualTo(recoverable);
+        assertThat(stricterEvidence.writeQualification().orElseThrow().minimumRecoverableAmount()).isGreaterThan(recoverable);
+        var belowWrite=service.calculateFrom(stricterEvidence);
+        assertThat(belowWrite.cases().getFirst().decision().lane()).isEqualTo(AdvertisingLane.OPTIMIZATION);
+        assertThat(belowWrite.writeQualificationSatisfied()).isFalse();
+        assertThat(belowWrite.qualificationPeriods()).hasSize(2).allSatisfy(period->{
+            boolean task=period.policyId().equals(stricterEvidence.taskQualification().orElseThrow().id());
+            assertThat(period.qualified()).as(task?"Task amount met":"Write amount not met").isEqualTo(task);
+        });
+        assertThat(belowWrite.cases().getFirst().recoverableProfit()).isEqualTo(atBoundary.cases().getFirst().recoverableProfit());
+        assertThat(belowWrite.cases().getFirst().contributionProfit()).isEqualTo(atBoundary.cases().getFirst().contributionProfit());
+        assertThat(belowWrite.cases().getFirst().officialSpend()).isEqualTo(atBoundary.cases().getFirst().officialSpend());
     }
 
 }

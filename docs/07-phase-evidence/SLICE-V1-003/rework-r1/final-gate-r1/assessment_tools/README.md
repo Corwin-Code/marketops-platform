@@ -1,6 +1,6 @@
 # Current assessment preparation tools
 
-This is a self-contained Python 3.9+ standard-library assembler and a sibling synthetic boundary checker. Copy only `assemble_assessment_with_structured.py`, `check_structured_adapter.py`, and this README into the reviewed `final-gate-r1/assessment_tools/` directory before the new source checkpoint. No runtime library, private /tmp helper import, generated slots, or previous execution manifest is required. The scripts locate the repository via `bootstrap-manifest.json`, preferring the current working directory and its parents, then the script's parents.
+This directory contains a self-contained Python standard-library assembler, its synthetic boundary checker, and a separate method-binding proposal tool with synthetic tests. No runtime library, private /tmp helper import, generated slots, or previous execution manifest is required. The assembler and checker locate the repository via `bootstrap-manifest.json`, preferring the current working directory and its parents, then the script's parents.
 
 Both commands require an explicit dedicated `/tmp` output directory outside the repository. They do not write repository files. The assembler produces PENDING slots, node observations and pending candidates only. It never selects a proof automatically, generates a COMPLETE manifest, grants Controller approval, or changes production enablement. The current-source evidence and per-row review remain root-owned.
 
@@ -22,3 +22,26 @@ Structured and named-record adapters require actual registered raw JSON bytes pl
 The final portable version passed 24 actual synthetic boundary checks, including a real isolated Git checkpoint and the complete prepare → merge-reviews → catalog → assemble-pending flow. The receipt is `/tmp/slice3-portable-assessment-tools-check-r4/STRUCTURED-ADAPTER-SAFETY-CHECKS.json`. These are tool checks, not project or closure evidence; actual new-checkpoint execution and additional-input receipts remain required. Earlier versions/checks retain their own hashes.
 
 Other executed derivation helpers must be pinned separately: `../reconcile_measurements.py` for the CV-E recount; any additional review-generator script only if root actually uses it after the checkpoint. `collect_execution.py` already captures itself in its measured source inventory. The repository finalizer is already a scripts/ runtime-validator input. No old `/tmp/prepare_review_c.py` or `/tmp/assemble_assessment.py` is imported by this tool.
+
+`propose_method_bindings.py` joins only explicitly reviewed source-method plans
+to an admitted current execution catalog. It emits proposals into a new `/tmp`
+directory; it cannot edit review slots, admit a layer, mark a criterion complete
+or grant Controller approval. Pin both it and `test_propose_method_bindings.py`
+as additional derivation inputs before use, and record their actual invocations.
+Their synthetic checks remain separate from product test counts.
+
+Each plan and blocker review must identify the exact current Head, tree and
+source inventory. A new checkpoint needs actual source re-review; replacing old
+hashes does not establish it. The proposal tool checks registered source bytes,
+completed successful parent receipts and original raw reports. All registered
+Java XML files are searched for failed, skipped or ambiguous expansions of an
+explicitly selected method, including a wholly omitted report. Python, browser
+and TypeScript names match exactly. It does not discover evidence absent from a
+parent receipt or replace the root's review of complete layer scope. Structured
+raw JSON assertions remain a separate explicit binding step.
+
+Run `python3 -m unittest discover -s <this-directory> -p test_propose_method_bindings.py`
+for the synthetic boundaries. Use `python3 <this-directory>/propose_method_bindings.py --help`
+for explicit expected-source, catalog, plan, blocker and output arguments. A zero
+exit code means a proposal report was generated; remaining gaps and blocked rows
+must be reviewed individually and are never a closure PASS.

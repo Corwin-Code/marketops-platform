@@ -75,7 +75,8 @@ class AdvertisingCaseCalculationService {
         MaxCpc maxCpc = maxCpcOf(evidence, conversion, currency);
         AdvertisingContributionProfit profit = profitOf(evidence, affectedSet, currency);
         AdMeasure attributionGap = attributionGapOf(evidence);
-        AdMeasure recoverable = recoverableProfitOf(profit, maxCpc, economicBidOf(evidence, currentBid), officialSpend);
+        AdMeasure recoverable = recoverableProfitOf(maxCpc, economicBidOf(evidence, currentBid, currency),
+                officialSpend, eligibleTraffic, economicsOf(evidence, currency).allowableSpend());
 
         AdEvidenceState evidenceState = evidenceStateOf(
                 affectedSet, officialSpend, profit, conversion);
@@ -100,13 +101,29 @@ class AdvertisingCaseCalculationService {
                 dataDefect,
                 List.copyOf(blockers),
                 object.independentlyControllable(),
-                optimizationQualified(evidence, conversion, officialSpend, profit),
+                optimizationQualified(evidence, conversion, officialSpend, profit, recoverable),
                 optimizationMaterial(evidence, recoverable),
                 recoverable,
                 evidenceState,
                 confidence);
 
         AdLaneResolver.Decision primary = AdLaneResolver.resolve(signals);
+        boolean outcomeAuthorityResolved = true;
+        // Missing/conflicted Outcome authority cannot erase proven harm or Queue
+        // observation. A would-be Optimization Task consumes that authority and
+        // instead exposes the owned decision-policy repair with the exact reason.
+        if (com.mimococo.marketops.advertisingefficiency.internal.domain.BidDirectionForCause.of(primary.cause()).isPresent()) {
+            var outcome = evidence.authorities().outcomePolicy(primary.cause().name());
+            outcomeAuthorityResolved = outcome.resolved();
+            if (!outcomeAuthorityResolved) {
+                blockers.addAll(outcome.blockerCodes());
+                primary = new AdLaneResolver.Decision(
+                        primary.lane() == AdvertisingLane.OPTIMIZATION ? AdvertisingLane.DATA_REPAIR : primary.lane(),
+                        primary.protectionTier(),
+                        primary.lane() == AdvertisingLane.OPTIMIZATION ? AdvertisingCause.DECISION_POLICY_UNRESOLVED : primary.cause(),
+                        primary.evidenceState(), primary.confidence(), blockers.stream().distinct().toList());
+            }
+        }
         AdPolicySet policies = policySetOf(evidence);
 
         List<AdCaseCalculation.ScoredCase> cases = new ArrayList<>(2);
@@ -137,14 +154,16 @@ class AdvertisingCaseCalculationService {
                 List.copyOf(cases), java.util.stream.Stream.concat(evidence.taskQualification().stream(),
                         evidence.writeQualification().stream()).map(policy -> new AdCaseCalculation.QualificationPeriod(
                                 policy.id(), evidence.windowStart(), evidence.asOf(),
-                                qualificationConditions(evidence, policy, conversion, officialSpend, profit)))
+                                qualificationConditions(evidence, policy, conversion, officialSpend, profit, recoverable)))
                         .toList(), java.util.stream.Stream.of("QUEUE_OBSERVATION", "TASK_ACTIVATION",
                                 "PROTECTION_RECOMMENDATION", "OPTIMIZATION_RECOMMENDATION", "PROTECTION_BID_WRITE", "OPTIMIZATION_BID_WRITE")
                                 .flatMap(purpose -> AdvertisingPurposeFreshness.assess(evidence, purpose,
                                         List.of("OFFICIAL_AD_SPEND", "OFFICIAL_AD_TRAFFIC", "AD_LINKED_SALE_EVENT",
                                                 "COST_AND_FEE", "AD_OBJECT_CONFIGURATION", "AFFECTED_SET", "SELLABILITY", "AVAILABILITY")).stream()).toList(),
-                        evidence.writeQualification().map(policy -> qualificationConditions(evidence, policy,
-                                conversion, officialSpend, profit)
+                        outcomeAuthorityResolved
+                                && evidence.authorities().outcomePolicy("RECOVERABLE_ADVERTISING_PROFIT").resolved()
+                                && evidence.writeQualification().map(policy -> qualificationConditions(evidence, policy,
+                                conversion, officialSpend, profit, recoverable)
                                 && evidence.authorities().sustainedPeriods().getOrDefault(policy.id(), 0) + 1
                                         >= policy.minimumSustainedPeriods()).orElse(false));
     }
@@ -332,16 +351,13 @@ class AdvertisingCaseCalculationService {
         return AdMeasure.available(gap, AdEvidenceState.OPERATIONAL);
     }
 
-    /**
-     * How much contribution a bounded correction could plausibly recover.
-     *
-     * <p>Only computable when the current bid sits above a write-grade ceiling:
-     * the recoverable amount is the spend that the ceiling says was never
-     * economic. With no ceiling there is no defensible number, and an invented
-     * one would become the rank of an opportunity nobody can justify.
-     */
-    private static AdMeasure economicBidOf(AdvertisingEvidenceGatherer.Evidence evidence, AdMeasure nativeBid) {
-        if (!nativeBid.present() || evidence.configuration().isEmpty()) { return AdMeasure.notAvailable(AdEvidenceState.UNKNOWN); }
+    /** Convert the observed native bid to the currency-major unit used by Max CPC. */
+    private static AdMeasure economicBidOf(AdvertisingEvidenceGatherer.Evidence evidence, AdMeasure nativeBid,
+            String economicCurrency) {
+        if (!nativeBid.present() || evidence.configuration().isEmpty() || economicCurrency == null
+                || !economicCurrency.equals(evidence.configuration().get().bidCurrencyCode())) {
+            return AdMeasure.notAvailable(AdEvidenceState.UNKNOWN);
+        }
         return switch (evidence.configuration().get().bidUnitCode()) {
             case "CURRENCY_MAJOR" -> nativeBid;
             case "CURRENCY_MINOR" -> AdMeasure.available(nativeBid.value().movePointLeft(2), nativeBid.evidenceState());
@@ -349,22 +365,45 @@ class AdvertisingCaseCalculationService {
         };
     }
 
-    private static AdMeasure recoverableProfitOf(
-            AdvertisingContributionProfit profit, MaxCpc maxCpc,
-            AdMeasure currentBid, AdMeasure officialSpend) {
+    /**
+     * Static economic space over the same observed cohort, never a forecast of
+     * additional traffic, sales or profit. The caller supplies the exact traffic
+     * denominator and allowable spend already consumed by this calculation's
+     * write-grade Max CPC. Cap by both that ceiling and the unrounded allowable
+     * spend, then floor once to Money precision so rounding cannot create space.
+     * The existing above-ceiling excess-spend diagnostic remains separate.
+     */
+    static AdMeasure recoverableProfitOf(MaxCpc maxCpc,
+            AdMeasure currentBid, AdMeasure officialSpend,
+            AdMeasure eligibleTraffic, AdMeasure allowableSpend) {
         if (!maxCpc.writeGrade() || !currentBid.present() || !officialSpend.present()) {
             return AdMeasure.notAvailable(AdEvidenceState.NOT_AVAILABLE);
         }
         BigDecimal ceiling = maxCpc.ceiling().amount();
-        if (currentBid.value().compareTo(ceiling) <= 0) {
-            return AdMeasure.available(BigDecimal.ZERO, maxCpc.evidenceState());
+        if (currentBid.value().compareTo(ceiling) < 0) {
+            if (!currentBid.sufficientForWrite() || !officialSpend.sufficientForWrite()
+                    || !eligibleTraffic.sufficientForWrite() || !allowableSpend.sufficientForWrite()
+                    || currentBid.value().signum() < 0 || eligibleTraffic.value().signum() <= 0) {
+                return AdMeasure.notAvailable(AdEvidenceState.NOT_AVAILABLE);
+            }
+            BigDecimal traffic = eligibleTraffic.value();
+            BigDecimal headroom = traffic.multiply(ceiling).min(allowableSpend.value())
+                    .subtract(traffic.multiply(currentBid.value())).max(BigDecimal.ZERO)
+                    .setScale(Money.SCALE, RoundingMode.FLOOR);
+            return AdMeasure.available(headroom, maxCpc.evidenceState()
+                    .weakest(currentBid.evidenceState()).weakest(officialSpend.evidenceState())
+                    .weakest(eligibleTraffic.evidenceState()).weakest(allowableSpend.evidenceState()));
+        }
+        if (currentBid.value().compareTo(ceiling) == 0) {
+            return AdMeasure.available(BigDecimal.ZERO, maxCpc.evidenceState()
+                    .weakest(currentBid.evidenceState()).weakest(officialSpend.evidenceState()));
         }
         BigDecimal excessShare = currentBid.value().subtract(ceiling)
                 .divide(currentBid.value(), CONTEXT);
         return AdMeasure.available(
                 officialSpend.value().multiply(excessShare, CONTEXT)
                         .setScale(Money.SCALE, RoundingMode.HALF_UP),
-                maxCpc.evidenceState().weakest(officialSpend.evidenceState()));
+                maxCpc.evidenceState().weakest(currentBid.evidenceState()).weakest(officialSpend.evidenceState()));
     }
 
     // ----------------------------------------------------------------------
@@ -493,16 +532,16 @@ class AdvertisingCaseCalculationService {
     }
 
     private static boolean optimizationQualified(AdvertisingEvidenceGatherer.Evidence evidence,
-            AdLinkedConversion conversion, AdMeasure officialSpend, AdvertisingContributionProfit profit) {
+            AdLinkedConversion conversion, AdMeasure officialSpend, AdvertisingContributionProfit profit, AdMeasure recoverable) {
         return evidence.taskQualification().map(policy -> qualificationConditions(evidence, policy, conversion,
-                officialSpend, profit) && evidence.authorities().sustainedPeriods().getOrDefault(policy.id(), 0) + 1
+                officialSpend, profit, recoverable) && evidence.authorities().sustainedPeriods().getOrDefault(policy.id(), 0) + 1
                         >= policy.minimumSustainedPeriods()).orElse(false);
     }
 
     static boolean qualificationConditions(AdvertisingEvidenceGatherer.Evidence evidence,
             AdvertisingPolicyRepository.QualificationPolicy required, AdLinkedConversion conversion,
-            AdMeasure officialSpend, AdvertisingContributionProfit profit) {
-        if (!conversion.writeGrade() || !profit.resolved() || !officialSpend.present()
+            AdMeasure officialSpend, AdvertisingContributionProfit profit, AdMeasure recoverable) {
+        if (!recoverable.sufficientForWrite() || !conversion.writeGrade() || !profit.resolved() || !officialSpend.present()
                 || !java.util.Objects.equals(required.currencyCode(), evidence.objectFacts()
                         .map(AdvertisingEvidenceRepository.ObjectFactAggregate::currencyCode).orElse(null))) {
             return false;
@@ -522,8 +561,10 @@ class AdvertisingCaseCalculationService {
         boolean window = Duration.between(evidence.windowStart(), evidence.asOf()).equals(
                 Duration.ofDays(required.eligibleObservationWindowDays()));
         boolean confidence = switch (required.minimumConfidenceState()) {
-            case "CANONICAL_CONFIRMED" -> profit.absoluteProfit().evidenceState()==AdEvidenceState.CANONICAL_CONFIRMED;
-            case "CANONICAL_PENDING_SETTLEMENT", "OPERATIONAL" -> !profit.absoluteProfit().evidenceState().blocked();
+            case "CANONICAL_CONFIRMED" -> profit.absoluteProfit().evidenceState()==AdEvidenceState.CANONICAL_CONFIRMED
+                    && recoverable.evidenceState()==AdEvidenceState.CANONICAL_CONFIRMED;
+            case "CANONICAL_PENDING_SETTLEMENT", "OPERATIONAL" -> profit.absoluteProfit().sufficientForWrite()
+                    && recoverable.sufficientForWrite();
             default -> false;
         };
         return window && confidence && sourceCoverage != null
@@ -534,6 +575,7 @@ class AdvertisingCaseCalculationService {
                 && completed >= required.minimumCompletedSaleEvents() && retained >= required.minimumRetainedSaleEvents()
                 && conversion.eligibleTrafficCount() >= required.minimumTrafficDenominator()
                 && officialSpend.value().compareTo(required.minimumSpendAmount()) >= 0
+                && recoverable.value().compareTo(required.minimumRecoverableAmount()) >= 0
                 && (!required.requiresCorrectionWindowClosed() || evidence.objectFacts().map(facts -> !facts.anyCorrectionWindowOpen()).orElse(false))
                 && (!required.requiresComparableBaseline() || evidence.authorities().comparableBaseline());
     }
@@ -579,6 +621,13 @@ class AdvertisingCaseCalculationService {
         evidence.authorities().cpaByVariant().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
             versions.add("variantCpa:" + entry.getKey() + "=" + entry.getValue().id() + ":" + entry.getValue().version());
             refs.add(new AdPolicySet.InputReference("ALLOWABLE_CPA_DEFINITION", entry.getValue().id(), entry.getValue().version(), null, evidence.asOf()));
+        });
+        evidence.authorities().outcomePolicies().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
+            var resolution = entry.getValue();
+            versions.add("outcome:" + entry.getKey() + "=" + resolution.state() + ":" + resolution.policyId() + ":" + resolution.policyVersion());
+            if (resolution.resolved() && refs.stream().noneMatch(ref -> "OUTCOME_POLICY".equals(ref.role())
+                    && resolution.policyId().equals(ref.id()))) refs.add(new AdPolicySet.InputReference("OUTCOME_POLICY",resolution.policyId(),
+                    resolution.policyVersion(),null,evidence.asOf()));
         });
         evidence.authorities().freshness().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
             versions.add("freshness:" + entry.getKey() + "=" + entry.getValue().id() + ":" + entry.getValue().version());

@@ -31,6 +31,35 @@ public class AdvertisingPolicyRepository {
         this.jdbc = jdbc;
     }
 
+    public record OutcomePolicyResolution(String state, UUID policyId, Integer policyVersion) {
+        public static OutcomePolicyResolution unresolved() {
+            return new OutcomePolicyResolution("OUTCOME_POLICY_UNRESOLVED", null, null);
+        }
+        public boolean resolved() { return "RESOLVED".equals(state) && policyId != null && policyVersion != null; }
+        public java.util.List<String> blockerCodes() {
+            return resolved() ? java.util.List.of() : java.util.List.of(
+                    "OUTCOME_POLICY_CONFLICTED".equals(state) ? state : "OUTCOME_POLICY_UNRESOLVED");
+        }
+    }
+
+    /** One captured as-of read; only the causes that consume a new-action Outcome Plan. */
+    public java.util.Map<String, OutcomePolicyResolution> resolveOutcomePolicies(
+            UUID organization, String platform, UUID store, Instant at) {
+        var rows = jdbc.sql("""
+                SELECT requested.cause_code,r.state,r.policy_id,r.policy_version
+                FROM (VALUES ('PROVEN_ADVERTISING_LOSS','PROTECTION_DECREASE'),
+                    ('PROMOTED_VARIANT_NOT_SELLABLE','PROTECTION_DECREASE'),
+                    ('PROMOTED_VARIANT_UNAVAILABLE','PROTECTION_DECREASE'),
+                    ('RECOVERABLE_ADVERTISING_PROFIT','OPTIMIZATION_INCREASE')) requested(cause_code,direction)
+                CROSS JOIN LATERAL core.ad_outcome_policy_resolution(:organization,:platform,:store,
+                    requested.direction,requested.cause_code,:at) r
+                """).param("organization",organization).param("platform",platform).param("store",store)
+                .param("at",java.sql.Timestamp.from(at)).query((rs,n)->java.util.Map.entry(rs.getString("cause_code"),
+                    new OutcomePolicyResolution(rs.getString("state"),rs.getObject("policy_id",UUID.class),
+                        rs.getObject("policy_version",Integer.class)))).list();
+        return rows.stream().collect(java.util.stream.Collectors.toUnmodifiableMap(java.util.Map.Entry::getKey,java.util.Map.Entry::getValue));
+    }
+
     /** A resolved version: what it is, and which version of it. */
     public record ResolvedVersion(UUID id, int version) {
     }

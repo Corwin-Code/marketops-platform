@@ -6,6 +6,12 @@ An active intervention holds its complete canonical affected set. API reservatio
 
 `ops.release_ad_action_reservation` derives conditions from current command/manual proof and immutable Outcome evidence. It does not trust caller booleans or the reservation's cached flags. Release requires exact resolved configuration, no unknown/mismatch, a latest eligible early Completed-Sales observation with company preservation and every required critical unit passing, and no unresolved regression or holding containment. `false` means continue holding. An hourly reconciliation may retry this factual check and count only actual releases.
 
+A factual RELEASED reservation does not authorize another ordinary same-object
+command. The current creator still refuses a different recommendation with
+`MO092` while generic reentry awaits accepted calibration, even when a new
+reservation can be taken. Same-command governed retry and exact Compensation
+retain their separate rules; see [unknown-result handling](advertising-unknown-result.md).
+
 Late regression preserves the original observation history and appends quarantine. It reacquires a released reservation only when no newer intervention already holds the scope. The quarantine still blocks the intersecting scope when immediate reacquisition is impossible.
 
 Every applicable organization, platform and Store envelope constrains these six axes independently:

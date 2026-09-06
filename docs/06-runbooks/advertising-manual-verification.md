@@ -35,6 +35,16 @@ configuration-proof rows by SQL; that bypasses the human workflow and is not an
 operating route. An expired or invalidated decision needs new evidence and a new
 governed decision, never an edited expiry.
 
+Read each option's `blockerCodes`, as well as the response's aggregate reasons.
+`OUTCOME_POLICY_UNRESOLVED` and `OUTCOME_POLICY_CONFLICTED` keep that option visible
+but disable its selection. Another valid option's global `SELECT_MANUAL_PROPOSAL` action
+does not authorize a blocked option. The server repeats the exact current scoped
+resolution and bound-policy check inside selection; refusal returns HTTP 409
+with the exact code and creates no selected packet or frozen baseline. A missing
+legacy option field is unresolved in the console, and unknown reasons remain
+visible. Resolve the actual authority through its governed policy workflow;
+do not choose a broader or later favorable version to bypass the binding.
+
 ## Establish configuration, not confidence
 
 | Evidence grade | Required proof |
@@ -62,13 +72,20 @@ Controlled and Manual actions use one frozen baseline and Outcome plan.
 Configuration proof anchors observation. Early Completed-Sales safety requires
 company coverage and every action-time frozen critical unit; absent or unmatured
 evidence remains unknown or `NOT_YET_OBSERVABLE`. Configuration alone is not
-safety, efficiency or health.
+safety, efficiency or health. New observations carry the persisted
+`OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY` inference limit. Historical
+absence or unsupported values remain UNKNOWN; no favorable stage verdict proves
+causal incrementality.
 
 Only canonical complete early safety plus valid current configuration may release
 the reservation. The 30-day Retained Operational business result and mature
 Settled confirmation use their own frozen windows and Owner thresholds. Late
 adverse facts append a new observation and reopen/quarantine as necessary;
-previous observations remain readable. Negative profit cannot close Protection.
+previous observations remain readable. Negative profit does not resolve an
+economic-loss cause or establish efficiency health. Original physical-risk
+clearance is separate and still requires the complete frozen safety window.
+Reservation release itself grants no new ordinary same-object command authority;
+see [reservation and reentry boundaries](advertising-reservation-or-exposure-block.md).
 
 ## Investigate a stuck workflow
 

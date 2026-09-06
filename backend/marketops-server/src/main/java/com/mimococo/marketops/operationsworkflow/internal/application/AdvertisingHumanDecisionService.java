@@ -94,7 +94,12 @@ public class AdvertisingHumanDecisionService {
         exceptions.refreshInvalidation(caseId);
         if (exceptions.hasActive(caseId)) throw OperationRejectedException.of(ErrorCode.INVALID_STATE_TRANSITION);
         UUID baseline=outcomes.prepare(actor.organizationId(),candidateId,clock.instant());
-        if(baseline==null) throw OperationRejectedException.of(ErrorCode.GUARDRAIL_BLOCKED);
+        if (baseline == null) {
+            var reasons = outcomes.policyReasons(actor.organizationId(),candidateId,clock.instant());
+            throw OperationRejectedException.of(reasons.contains("OUTCOME_POLICY_CONFLICTED")
+                    ? ErrorCode.OUTCOME_POLICY_CONFLICTED : reasons.contains("OUTCOME_POLICY_UNRESOLVED")
+                    ? ErrorCode.OUTCOME_POLICY_UNRESOLVED : ErrorCode.GUARDRAIL_BLOCKED);
+        }
         var preview = guardrails.previewAdBidChange(recommendations.require(recommendationId),
                 GuardrailPurpose.IMPACT_PREVIEW);
         if (!preview.verdict().passed()) throw OperationRejectedException.of(ErrorCode.GUARDRAIL_BLOCKED);

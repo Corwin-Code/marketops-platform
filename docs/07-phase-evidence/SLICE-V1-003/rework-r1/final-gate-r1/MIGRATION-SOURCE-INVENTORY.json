@@ -10,8 +10,8 @@
   "sourceHead": null,
   "worktreeModified": true,
   "preservedCount": 65,
-  "newRange": "0066-0071",
-  "migrationCount": 71,
+  "newRange": "0066-0072",
+  "migrationCount": 72,
   "migrations": [
     {
       "version": "0001",
@@ -720,6 +720,16 @@
       "lines": 132,
       "sha256": "9bb4a05cb85e02619d27f157f02acebfbbc8f3665d01b8ebe0578fb0ee6d18a0",
       "gitBlobSha1": "dbc48809b9bb4a2d157440bb436df2f33105d5fa",
+      "historicalW10ByteEqual": null,
+      "scope": "FINAL_GATE_R1_FORWARD_MIGRATION"
+    },
+    {
+      "version": "0072",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0072__resolve_outcome_policy_with_explicit_scope_state.sql",
+      "bytes": 19291,
+      "lines": 233,
+      "sha256": "c5a45216287eac32c943c18214913fabb12793c05bcd5918fc6d869c88a35b0e",
+      "gitBlobSha1": "9892b0bac2164a121006ee057c5f43fefd5eff21",
       "historicalW10ByteEqual": null,
       "scope": "FINAL_GATE_R1_FORWARD_MIGRATION"
     }

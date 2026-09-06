@@ -7,6 +7,7 @@ import {
 import { AdvertisingManualShadow } from '../advertising/AdvertisingManualShadow';
 import { AdvertisingWorkflow } from '../advertising/AdvertisingWorkflow';
 import { parseAdvertisingManualPacket } from '../api/advertising';
+import { fetchAdvertisingManualOptions } from '../api/console';
 import type { ConsoleRequest } from '../api/console';
 
 const packetBody = {
@@ -61,6 +62,7 @@ describe('governed human controls use exact server authority', () => {
                   bidUnitCode: 'CURRENCY_MAJOR',
                   verificationMode: 'INDEPENDENT_OR_OFFICIAL',
                   apiProfileState: 'UNVERIFIED',
+                  blockerCodes: [],
                 },
               ],
               allowedActions: ['SELECT_MANUAL_PROPOSAL'],
@@ -86,6 +88,165 @@ describe('governed human controls use exact server authority', () => {
     });
     expect(screen.getByText(/API profile: UNVERIFIED/u)).toBeInTheDocument();
     expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
+  });
+
+  it('keeps conflicting and unresolved manual options visible without granting another option authority', async () => {
+    const option = (policyId: string, blockerCodes: readonly string[]): unknown => ({
+      policyId,
+      policyVersion: 1,
+      actionKind: 'AD_BID_CHANGE',
+      candidateId: `candidate-${policyId}`,
+      targetBid: 20,
+      blockerCodes,
+    });
+    const { context, fetchImpl } = client((_url, init) =>
+      response(
+        init.method === 'POST'
+          ? packetBody
+          : {
+              options: [
+                option('conflicted', ['OUTCOME_POLICY_CONFLICTED']),
+                option('unresolved', ['OUTCOME_POLICY_UNRESOLVED']),
+                option('resolved', []),
+              ],
+              blockerCodes: ['OUTCOME_POLICY_CONFLICTED', 'OUTCOME_POLICY_UNRESOLVED'],
+              allowedActions: ['SELECT_MANUAL_PROPOSAL'],
+            },
+      ),
+    );
+    const reload = vi.fn();
+    render(<AdvertisingManualProposalControls context={context} caseId="case-1" reload={reload} />);
+    const selects = await screen.findAllByRole('button', { name: 'Select exact manual proposal' });
+    expect(selects).toHaveLength(3);
+    const [conflictedSelect, unresolvedSelect, resolvedSelect] = selects;
+    if (
+      conflictedSelect === undefined ||
+      unresolvedSelect === undefined ||
+      resolvedSelect === undefined
+    )
+      throw new Error('All three exact manual proposals must be rendered');
+    fireEvent.change(screen.getByRole('textbox', { name: 'Manual selection reason' }), {
+      target: { value: 'Select the independently resolved policy' },
+    });
+    expect(
+      screen.getByText(/This proposal is unavailable: OUTCOME_POLICY_CONFLICTED/u),
+    ).toBeVisible();
+    expect(
+      screen.getByText(/This proposal is unavailable: OUTCOME_POLICY_UNRESOLVED/u),
+    ).toBeVisible();
+    expect(conflictedSelect).toBeDisabled();
+    expect(unresolvedSelect).toBeDisabled();
+    expect(resolvedSelect).toBeEnabled();
+    fireEvent.click(conflictedSelect);
+    fireEvent.click(unresolvedSelect);
+    expect(
+      vi.mocked(fetchImpl).mock.calls.filter(([, init]) => init?.method === 'POST'),
+    ).toHaveLength(0);
+    fireEvent.click(resolvedSelect);
+    await waitFor(() => expect(reload).toHaveBeenCalledOnce());
+    const posts = vi.mocked(fetchImpl).mock.calls.filter(([, init]) => init?.method === 'POST');
+    expect(posts).toHaveLength(1);
+    expect(JSON.parse(String(posts[0]?.[1]?.body))).toEqual({
+      policyId: 'resolved',
+      candidateId: 'candidate-resolved',
+      reason: 'Select the independently resolved policy',
+    });
+  });
+
+  it('explains policy repair when every manual option is blocked and the server grants no selection', async () => {
+    const { context, fetchImpl } = client(() =>
+      response({
+        options: [
+          {
+            policyId: 'missing',
+            policyVersion: 1,
+            actionKind: 'AD_STATUS_CHANGE',
+            blockerCodes: ['OUTCOME_POLICY_UNRESOLVED'],
+          },
+        ],
+        blockerCodes: ['OUTCOME_POLICY_UNRESOLVED'],
+        allowedActions: [],
+      }),
+    );
+    render(
+      <AdvertisingManualProposalControls context={context} caseId="case-1" reload={vi.fn()} />,
+    );
+    await screen.findByText(/This proposal is unavailable: OUTCOME_POLICY_UNRESOLVED/u);
+    expect(
+      screen.queryByRole('button', { name: 'Select exact manual proposal' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('textbox', { name: 'Manual selection reason' }),
+    ).not.toBeInTheDocument();
+    expect(
+      vi.mocked(fetchImpl).mock.calls.filter(([, init]) => init?.method === 'POST'),
+    ).toHaveLength(0);
+  });
+
+  it('treats a legacy manual option without policy resolution as unresolved even with a global selection action', async () => {
+    const { context, fetchImpl } = client(() =>
+      response({
+        options: [{ policyId: 'legacy', policyVersion: 1, actionKind: 'AD_BID_CHANGE' }],
+        allowedActions: ['SELECT_MANUAL_PROPOSAL'],
+      }),
+    );
+    render(
+      <AdvertisingManualProposalControls context={context} caseId="case-1" reload={vi.fn()} />,
+    );
+    const select = await screen.findByRole('button', { name: 'Select exact manual proposal' });
+    fireEvent.change(screen.getByRole('textbox', { name: 'Manual selection reason' }), {
+      target: { value: 'A human reason cannot invent missing policy resolution' },
+    });
+    expect(select).toBeDisabled();
+    expect(
+      screen.getByText(/This proposal is unavailable: OUTCOME_POLICY_UNRESOLVED/u),
+    ).toBeVisible();
+    fireEvent.click(select);
+    expect(
+      vi.mocked(fetchImpl).mock.calls.filter(([, init]) => init?.method === 'POST'),
+    ).toHaveLength(0);
+  });
+
+  it.each([null, 'OUTCOME_POLICY_CONFLICTED', [1]])(
+    'rejects malformed manual policy blockers %j without silently dropping them',
+    async (blockerCodes) => {
+      const { context } = client(() =>
+        response({
+          options: [
+            { policyId: 'malformed', policyVersion: 1, actionKind: 'AD_BID_CHANGE', blockerCodes },
+          ],
+          allowedActions: ['SELECT_MANUAL_PROPOSAL'],
+        }),
+      );
+      const result = await fetchAdvertisingManualOptions(context, 'case-1');
+      expect(result).toEqual({
+        ok: false,
+        failure: { kind: 'malformed', detail: 'the body did not match the contract' },
+      });
+    },
+  );
+
+  it('preserves an unfamiliar manual blocker as a refusal instead of inferring an empty policy result', async () => {
+    const { context } = client(() =>
+      response({
+        options: [
+          {
+            policyId: 'future',
+            policyVersion: 1,
+            actionKind: 'AD_BID_CHANGE',
+            blockerCodes: ['POLICY_REVIEW_REQUIRED'],
+          },
+        ],
+        blockerCodes: [],
+        allowedActions: ['SELECT_MANUAL_PROPOSAL'],
+      }),
+    );
+    const result = await fetchAdvertisingManualOptions(context, 'case-1');
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value.options[0]?.blockerCodes).toEqual(['POLICY_REVIEW_REQUIRED']);
+      expect(result.value.blockerCodes).toEqual(['POLICY_REVIEW_REQUIRED']);
+    }
   });
 
   it('an executor report has no evidence grade, actor override or verifier input', async () => {

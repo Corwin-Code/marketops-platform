@@ -15,6 +15,16 @@ calculation, policy, affected set or expired plan requires a new review chain.
 The observed window starts from actual verified landing plus the frozen offset,
 not from command creation or an executor's report.
 
+For a new action, `OUTCOME_POLICY_UNRESOLVED` means no complete unique applicable
+policy matches its binding; `OUTCOME_POLICY_CONFLICTED` means applicable maximal
+policies overlap. Queue observation and proven-harm responsibility continue, but
+the system cannot seal a favorable final-success or Optimization authority from
+those missing thresholds. Inspect the exact scope, cause and effective period;
+do not select by newest timestamp or substitute a broad version. Once an action
+has its approved frozen plan, late evaluation continues using that exact Policy
+version even if a later current policy is more favorable or conflicted. Compare
+the preserved snapshot and original observation bytes when investigating a revision.
+
 The canonical planner uses the separately configured trusted issuer to attest the
 entire computed baseline, all three stage snapshots and critical-unit membership.
 Its short-lived proof is bound to the exact application backend and transaction,
@@ -51,7 +61,8 @@ unit retains an unresolved guard and the reservation.
 ```sql
 SELECT o.id,o.command_id,o.manual_packet_id,o.outcome_stage,o.revision_no,o.verdict,
        o.guard_state,o.supersedes_observation_id,
-       a.dual_axis_verdict,a.sales_preservation_verdict,a.business_outcome
+       a.dual_axis_verdict,a.sales_preservation_verdict,a.business_outcome,
+       a.input_snapshot->>'inferenceScope' AS inference_scope
   FROM ops.ad_outcome_observation o
   JOIN ops.ad_outcome_axes a ON a.observation_id=o.id
  WHERE o.organization_id=:organizationId AND o.ad_native_object_id=:objectId
@@ -66,13 +77,21 @@ The business outcome distinguishes `OUTCOME_PENDING`, `PROTECTION_IN_PROGRESS`,
 cleared loss is a narrower fact than verified efficiency success and does not
 waive sales safety. Configuration verification alone is not a business outcome.
 
+`OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY` records the inference limit:
+these are observed associations, without established causal incrementality.
+Absent or unsupported historical markers remain UNKNOWN in the public reader
+and console; a favorable verdict does not strengthen that interpretation.
+Windows and evaluation times are absolute instants. Compare their actual epochs
+across UTC and Store-session displays without adding a timezone offset.
+
 Exposure stopped requires exact action identity and affected scope, verified
 configuration and canonical complete closed zero-spend coverage of the whole
 window. Physical risk clearance requires the original sellability or availability
 cause to be resolved throughout a complete qualified safety window; missing
 profit attribution does not invent either financial success or physical harm.
 Economic risk clearance requires the original loss to be resolved with canonical
-nonnegative profit and preserved sales under the frozen stage rules.
+nonnegative profit under the frozen stage rules. It does not establish company
+sales preservation; the independent company and critical-unit guards still apply.
 
 If a same-window correction invalidates a prior verified terminal proof, the
 existing responsibility reopens and its authority remains invalidated. Across

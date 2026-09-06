@@ -152,6 +152,12 @@ public enum ErrorCode {
     /** Deterministic guardrails refused the proposed action. */
     GUARDRAIL_BLOCKED("The proposed action was refused by commercial guardrails."),
 
+    /** No complete unique applicable Outcome Policy matches the frozen action authority. */
+    OUTCOME_POLICY_UNRESOLVED("The applicable Outcome Policy is unresolved."),
+
+    /** More than one most-specific applicable Outcome Policy remains. */
+    OUTCOME_POLICY_CONFLICTED("The applicable Outcome Policies conflict."),
+
     /** The recommendation expired or no longer matches current entity versions. */
     RECOMMENDATION_STALE("The recommendation is no longer current."),
 

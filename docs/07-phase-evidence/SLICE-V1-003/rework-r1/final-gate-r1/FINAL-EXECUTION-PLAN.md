@@ -3,11 +3,13 @@
 This is a command plan, not an execution receipt or a PASS assessment. It was
 prepared by reading the five current workflows, Makefile, current verification
 scripts and W6/W9/W10 command receipts. Root selects the final checkpoint after
-V0071 and the completed scope/precision/marker and mixed-load diagnostics.
+V0072, explicit Outcome Policy consumer repair, same-cohort economic headroom
+and per-tier materiality/confidence repair, and the completed
+scope/precision/marker and mixed-load diagnostics.
 Those dirty-worktree diagnostics do not establish a final checkpoint or full
 verification PASS. No heavy command was executed to synchronize this plan.
-The source migration inventory contains V0001–V0071: the original 70 recorded
-hashes are preserved and V0071 is appended. Its final source Head remains null
+The source migration inventory contains V0001–V0072: the original 71 recorded
+hashes are preserved and V0072 is appended. Its final source Head remains null
 until checkpointing.
 
 Use one exclusive Maven/Docker/browser slot. Preserve backend reports, JAR and
@@ -90,7 +92,7 @@ candidate directory or reuse old reports after a failed command.
 | `migration` | Packaged resolver and isolated images from the exact verified JAR | Script logs, summary/migration inventory, JAR hash equality, image IDs/labels, wrong-hash and missing-envelope refusals |
 | `security` | Current npm audit plus exact checkpoint Dependency Review, Java/TS security-and-quality CodeQL and aggregate CodeQL | Audit JSON/exit; run/jobs/checks; both exact analyses and SARIFs; dependency diff; current alert delta/triage; source/merge byte comparison |
 | `supply_chain` | Full-run backend SBOM/licenses plus current validated frontend SBOM and complete dependency/license trees | Original SBOM/license files, inventory logs, exact dependency manifests/lock hash and full-run JAR binding |
-| `mixed_capacity` | Reuse the actual mixed-capacity test executed inside the successful full backend run | Exact mixed JUnit node, all three mixed JSON files, workload/stage/state/refusal lists, resource receipt, source/tested-merge/run/job/artifact/dataset identities |
+| `mixed_capacity` | Reuse the actual mixed-capacity test executed inside the successful full backend run | Exact mixed JUnit node, all four mixed JSON files (dataset, diagnostic, receipt, source inputs), workload/stage/state/refusal lists, resource receipt, source/tested-merge/run/job/artifact/dataset identities |
 
 ## Backend full and mixed capacity
 
@@ -322,10 +324,10 @@ tests cover synthetic infrastructure semantics, not a cloud account or apply.
 
 Run against the exact full-verified JAR while `target` still holds that artifact.
 The script's JAR migration bytes must equal current canonical source, including
-every approved forward migration through V0071 (71 total); it also refuses
-packaged test authority. Verify V0001–V0070 against their preserved inventory
-hashes and V0071 against its appended source hash. The protected V0035 upgrade
-start remains fixed; 36 additional migrations reach V0071.
+every approved forward migration through V0072 (72 total); it also refuses
+packaged test authority. Verify V0001–V0071 against their preserved inventory
+hashes and V0072 against its appended source hash. The protected V0035 upgrade
+start remains fixed; 37 additional migrations reach V0072.
 It uses a local Unix Docker daemon, empty auth config, minimal image context,
 network-disabled build/run and no database connection.
 

@@ -68,18 +68,69 @@ publication lag and correction rules. A new ingestion time cannot make an old
 report current. Mature Outcome cohorts use their applicable maturity policy.
 Late effective cost metadata must reconfirm the consumed source evidence.
 
-A `MAX_CPC_BOUNDED` action requires its six purpose inputs. The narrow
-`CAUSE_BOUND_PROTECTION_STEP` route requires fresh native configuration,
-affected-set mapping, official spend and the exact known not-sellable or
-unavailable danger. Only the closed financial-uncertainty allowlist in
-`AdActionDependencyPolicy` and its SQL counterpart may be excluded from this
-route's action blockers. Missing, duplicated, expired or adverse critical-sales
-proof, policy uncertainty and native/scope uncertainty still block. Raw financial
-uncertainty remains visible in the Preview and does not imply profitability.
+A `MAX_CPC_BOUNDED` action requires its six purpose inputs. The
+`CAUSE_BOUND_PROTECTION_STEP` route consumes the exact Owner-accepted cause and
+its dependency set. Physical not-sellable or unavailable danger requires fresh
+native configuration, affected-set mapping, official spend and the matching
+physical proof. Only its closed financial-uncertainty allowlist may be excluded.
+`PROVEN_ADVERTISING_LOSS` requires fresh native configuration, complete
+affected-set mapping and official spend, complete canonical negative linked
+profit, effective costs/fees and qualified sellability and availability;
+only unresolved conversion may be tolerated under that exact economic rule.
+`AdActionDependencyPolicy` and its SQL counterpart enforce the same cause rules.
+Missing, duplicated, expired or adverse critical-sales proof, policy uncertainty
+and native/scope uncertainty still block. Raw financial uncertainty remains
+visible in Preview and does not imply profitability.
 
 Optimization qualification counts distinct complete canonical periods. Refresh
-count is not sustained evidence. Policy resolution refuses conflicting applicable
+count is not sustained evidence. Every current period and eligibility decision
+consumes that purpose tier's own minimum recoverable amount, alongside its
+sample, spend, window, coverage, confidence and correction requirements. A Task
+threshold cannot supply a higher bid-write threshold. Numeric presence alone
+does not establish the required confidence grade.
+
+For a current Bid below Max CPC, recoverable value measures static economic
+space over the same observed cohort: `max(0, min(N * C, A) - N * b)`, floored
+once to four currency decimals. `N` is the qualified traffic denominator, `C`
+is its write-grade Max CPC, `A` is the same attributed-economics allowable spend
+before Max CPC rounding, and `b` is the observed Bid converted to the matching
+major currency. Both caps apply; missing, mismatched-currency or non-write-grade
+inputs cannot create this value. It does not forecast additional traffic, sales
+or profit. At the ceiling the value is zero; above it the existing excess-spend
+diagnostic remains, with the weakest consumed input grade. That diagnostic
+alone cannot authorize an Increase. Actual candidates still apply the exact
+Target Policy's headroom, step limits and native grid.
+
+Policy resolution refuses conflicting applicable
 versions and does not fall back to a broad version when a narrower one conflicts.
+Outcome Policy resolution uses one SQL authority across calculation, Preview,
+new baseline preparation, sealed selection and Manual options. Applicability
+includes organization, platform, Store, direction, cause and the half-open
+effective period. Geographic and cause specificity must both dominate another
+applicable policy before it can replace it: a Store-generic policy and an
+organization-exact-cause policy are incomparable. Multiple maximal policies
+produce `OUTCOME_POLICY_CONFLICTED`; a missing or incomplete unique maximum
+produces `OUTCOME_POLICY_UNRESOLVED`. Effective date, ID and insertion order do
+not break ties, and an incomplete specific policy cannot fall back to a broad one.
+Current selection must also match the exact Bundle or Manual policy binding.
+The Case's original lifecycle, affected cohort and stage windows retain their
+existing authorities; this resolver adds no independent cohort or lifecycle model.
+
+Queue observation and proven-harm Protection responsibilities continue with the
+exact policy reason visible. Otherwise qualified Optimization becomes a Data
+Repair responsibility while its Outcome authority is unresolved. Independent
+bid-write qualification also requires its own resolved Optimization Outcome
+Policy and its own amount and confidence thresholds. New final-success
+authority cannot be manufactured from missing policy. Completed actions continue
+to evaluate the immutable Policy version and plan frozen for that action; a later
+favorable policy or new current conflict does not rewrite its thresholds.
+
+The gatherer resolves its six purposes by eight evidence kinds in one query;
+the single reader delegates to the same typed-authority rule, without a cache or
+default. Scope includes platform, Store and a semantic Profile's optional Store
+restriction. Simultaneously applicable same-rank Profiles remain unresolved,
+regardless of effective-date or insertion order. Unrelated platform/Store
+Profiles neither qualify this object nor suppress an otherwise valid Profile.
 
 `AdPriorityPolicy` uses a versioned lexicographic vector: lane, Protection
 sub-tier and fixed intra-tier factors. It never blends ranks into a compensating
@@ -239,6 +290,10 @@ A reservation covers the entire affected set. Configuration proof plus complete
 early company and every frozen critical-unit Completed-Sales guard may release
 it. Elapsed time, a caller boolean or one favorable child cannot. A later
 regression reopens the reservation or quarantines overlap with a new action.
+Release does not grant ordinary same-object command reentry: a different
+recommendation is still refused while generic reentry awaits accepted
+calibration. Same-command governed retry and exact prior-Bid Compensation retain
+their separate controls; see the unknown-result and reservation runbooks.
 
 Kill, quarantine, credential revocation and reenablement operate on exact
 organization/platform/account/store/capability/direction/object scope. Changes
@@ -292,12 +347,30 @@ Settled business stages:
 | `SETTLED` | Mature financial confirmation against the frozen stage-consistent baseline; can contradict the earlier result. |
 
 `businessOutcome`, profit-axis verdict and safety verdict are separate fields.
-Actual zero official spend with landed configuration may prove exposure stopped;
-canonical eligible nonnegative profit can clear an original loss cause. Neither
-alone proves overall efficiency or inventory repair. Negative profit cannot close
-Protection. Missing company or critical-unit coverage is unknown. A current
-incident/hold is a confounder. Late financial corrections append a revision,
-retain prior versions and reopen/escalate/quarantine as required.
+Exposure stopped requires the exact original identity/affected scope, verified
+configuration and complete closed canonical zero-spend coverage of the whole
+window. Physical risk clearance requires resolution of the original frozen cause
+throughout its complete qualified safety window; profit may remain unresolved without
+becoming efficiency success. Canonical eligible nonnegative profit can clear an
+original economic-loss cause under its separate stage and sales-preservation
+rules; that narrow risk result does not establish company sales preservation.
+The independent company and critical-unit guards still apply. Negative profit
+does not clear that economic cause or establish efficiency
+health. None of these narrower facts proves inventory or Listing repair.
+Current incidents and holds continue to affect their dependent evidence
+qualification and efficiency comparability. Missing company or critical-unit
+coverage remains unknown. A same-window loss
+of terminal proof reopens the original responsibility; a merely unknown later
+stage does not erase a prior lawful safety window. Actual renewed exposure or
+cause-specific harm remains actionable. Late corrections append revisions and
+retain prior versions; the outcome-regression runbook gives the operational checks.
+
+New command and Manual observations persist
+`inferenceScope=OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY` in the immutable
+input snapshot and its digest. This describes an observed association, without
+establishing causal incrementality. Readers and UI keep absent or unsupported
+historical values UNKNOWN. Outcome window and evaluation timestamps are absolute
+instants; UTC or Store-session presentation must not shift their stored epochs.
 
 A mature Settled contradiction of the current successful Retained result also
 creates a linked Finance review responsibility through the Shared Task service.
@@ -349,6 +422,21 @@ Candidate V0036–V0056 are reworked under the R1 authorization. New migrations 
 | V0063 | Canonical triggers, exact expiry/maturity, queue recovery and SLO |
 | V0064 | Expired authority reconciliation and advertising recommendation uniqueness |
 | V0065 | Exact Settled contradiction to linked Finance responsibility and observation journal |
+| V0066 | Exact policy-qualified economic cause-bound Protection dependencies |
+| V0067 | Frozen per-input/purpose Profiles, canonical input validation and due-input identity |
+| V0068 | Preserve per-critical-unit sales guards on the responsible Case |
+| V0069 | Reopen original Protection responsibility when terminal proof becomes invalid |
+| V0070 | Existing canonical Metric writer's immutable value/run reevaluation proofs |
+| V0071 | Exact platform and optional-Store company-profile applicability in two repeated baseline checks |
+| V0072 | One explicit scoped Outcome Policy resolver, exact current bound-policy checks and canonical Case policy evidence |
+
+The current executable set contains 72 migrations. V0070 retains the existing
+canonical writer and immutable Metric value; reevaluation appends the exact run
+proof. V0071 preserves the prior function ACL and all V0001–V0070 bytes; it changes
+only the two repeated scope predicates. V0072 preserves all V0001–V0071 bytes and
+the existing resolver/baseline ACL; new read-only helpers revoke PUBLIC execution
+and grant only the application role. Historical migration evidence retains
+its original version range and source identity.
 
 Browser history scenarios use explicitly time-travelled synthetic read oracles
 for Unknown, mismatch, expiry and revision display. These retain the frozen
