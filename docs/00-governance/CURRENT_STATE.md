@@ -33,9 +33,9 @@ slice_v1_003_rework_starting_head: a0711f1ae430e70ab7ec06917004e9dbfd1fb4eb
 slice_v1_003_rework_starting_tree: fb4d242d62febd87191da9dce353bdef99f5a77d
 slice_v1_003_frozen_findings_sha256: 15b3c076fc7f1d283a2c7359d9647d91d3ecfccd9b229be1f734f4e7d4ceefc1
 slice_v1_003_rework_takeover: docs/07-phase-evidence/SLICE-V1-003/rework-r1/TAKEOVER_RECEIPT.md
-slice_v1_003_rework_status: CODEX_RESIDUAL_REWORK_AND_VERIFICATION_IN_PROGRESS
+slice_v1_003_rework_status: CODEX_ENGINEERING_COMPLETE_CONTROLLER_PENDING
 slice_v1_003_rework_transport: APPEND_ONLY_NAMED_BRANCH_ONE_DRAFT_PR_AND_CI_AUTHORIZED
-slice_v1_003_implementation_state: RESIDUAL_REWORK_IMPLEMENTED_VERIFICATION_IN_PROGRESS
+slice_v1_003_implementation_state: RESIDUAL_REWORK_ENGINEERING_VERIFIED
 slice_v1_003_controlled_write_target: AD_BID_CHANGE
 slice_v1_003_controlled_write_provider_paths: STRUCTURALLY_UNREACHABLE_PENDING_VERIFIED_CAPABILITY_AND_GATE
 slice_v1_003_real_provider_calls: NONE
@@ -63,7 +63,7 @@ slice_v1_001_amendment_002_acceptance: HUMAN_OWNER_ACCEPTED_FOR_SUPPLEMENTAL_R2
 slice_v1_001_amendment_002_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-AMENDMENT-002-ACCEPTANCE-EVIDENCE.md
 slice_v1_001_amendment_002_acceptance_evidence_sha256: f28ad2395e22a7dd996ace6db4883f35e408bb4ea24de61e777e03b8616d9923
 active_slice_contract_authorization_condition: EXACT_HASH_INDEPENDENTLY_REVIEWED_AND_OWNER_AUTHORIZED_ON_PROTECTED_MAIN
-active_gate: CODEX_SLICE_V1_003_RESIDUAL_REWORK_VERIFICATION
+active_gate: CONTROLLER_SLICE_V1_003_FINAL_CLOSURE_VERIFICATION
 authorization: FULL_SCOPE_IMPLEMENTATION
 slice_v1_002_implementation_state: ENGINEERING_IMPLEMENTATION_MERGED
 slice_v1_002_branch: fix/SLICE-V1-002-root-cause-rework-r1
@@ -147,8 +147,8 @@ slice_v1_003_migration_inventory: docs/07-phase-evidence/SLICE-V1-003/rework-r1/
 slice_v1_003_deferred_release_register: docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-REL-DEFERRED-REGISTER.json
 slice_v1_003_measurements: docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/
 slice_v1_003_runbooks: docs/06-runbooks/
-slice_v1_003_engineering_closure_claim: NOT_CLAIMED_RESIDUAL_VERIFICATION_PENDING
-slice_v1_003_controller_verdict: NOT_REVIEWED_NEW_CANDIDATE
+slice_v1_003_engineering_closure_claim: CODEX_ENGINEERING_COMPLETE_INDEPENDENT_CONTROLLER_PENDING
+slice_v1_003_controller_verdict: PENDING_INDEPENDENT_REVIEW
 slice_v1_003_historical_controller_verdict: NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED
 slice_v1_003_historical_controller_reviewed_head: 3ff042df66d5d6924b587cac96fc652b93bf5e7a
 slice_v1_003_historical_controller_report_sha256: 6f9581d9b09485a35fe404b13ab06422dc2672b7182afc52da2442dcc7660127
@@ -230,7 +230,7 @@ slice_v1_001_snapshot_sha256: 5abce67327673dc0248f11ece1f31cd11d1ec7c0e69a1e8482
 slice_v1_001_owner_acceptance_comment: 5469935477
 slice_v1_001_owner_acceptance_evidence: docs/08-handoffs/OWNER-SLICE-V1-001-FORMAL-CLOSURE-ACCEPTANCE-EVIDENCE.md
 slice_v1_001_owner_acceptance_evidence_sha256: 50c171f24037cf36ccb4724288a7b82831b7dd008985f9b594ef2020c1c5ef33
-candidate_state_scope: SLICE_V1_003_RESIDUAL_REWORK_NOT_CONTROLLER_APPROVED
+candidate_state_scope: SLICE_V1_003_ENGINEERING_COMPLETE_NOT_CONTROLLER_APPROVED
 merge_authorization: NOT_AUTHORIZED_SEPARATE_LEVEL_3_AUTHORITY_REQUIRED
 production_deployment: NOT_AUTHORIZED
 gate_ev: NOT_AUTHORIZED
@@ -239,8 +239,8 @@ slice_v1_001_as_built_design: docs/02-architecture/designs/SLICE-V1-001-design.m
 slice_v1_001_acceptance_status: docs/07-phase-evidence/SLICE-V1-001/acceptance-status.md
 slice_v1_001_executable_evidence: docs/07-phase-evidence/SLICE-V1-001/executable-evidence.md
 slice_v1_001_deferred_evidence_register: docs/07-phase-evidence/SLICE-V1-001/deferred-evidence-register.json
-next_authorized_actor: CODEX
-next_action: COMPLETE_AUTHORIZED_RESIDUAL_REWORK_AND_EXACT_EVIDENCE
+next_authorized_actor: CONTROLLER
+next_action: INDEPENDENT_FINAL_CLOSURE_VERIFICATION_ON_EXACT_CURRENT_HEAD
 slice_v1_001_handoff_pending: CONTROLLER_FORMAL_CLOSURE_AND_BRANCH_CLEANUP_READBACK
 production_write_enabled: false
 controlled_write_enablement: CAPABILITY_SPECIFIC_GATE_REQUIRED
@@ -628,28 +628,26 @@ capability anywhere in the module or in any migration.
 
 ## Next authorized action
 
-Codex continues the existing Owner-authorized R1 verification. Product H
-`e278b1e3d8541aeb806e41d6cbef4deac8d16d06` has preserved complete local and remote
-measurements and 342 reviewed evidence rows. The subsequent document-phase
-regression exposed two governance-test assumptions tied to the old pending
-phase. The test now reads the validated current actor and scope while retaining
-the forbidden mutations. This verification-source change requires a new exact
-checkpoint and complete current-source evidence; H results are not restamped.
+The independent Controller receives the final exact candidate for closure
+verification after its append-only publication and external CI readback. Codex
+engineering rework on measured source `32b307c648d16f2ecb7f0074e615e78e95ed4121`
+has nine completed verification scopes, all 22 Frozen Findings with current
+evidence, 199 engineering-verified ACs and AC-200 candidate prerequisites passed
+with independent review pending. CV-A through CV-E and all 115 Frozen
+remedy/verification clauses are bound to actual original named evidence.
 
-The [phase-transition correction](../07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/GOVERNANCE-PHASE-TRANSITION-REWORK.md)
-preserves the two failures, interrupted earlier run, exact source delta and
-preceding engineering materializations. Current central views remain pending
-until the new full source-bound verification and publication are complete.
+The [current handoff](../07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/CURRENT-ENGINEERING-HANDOFF.md)
+records measured source, original commands/counts and CI. The final docs-only
+containing commit and its exact CI are supplied by a separate external readback;
+no old run is reassigned and no self-referential commit is required.
 
-The independent Controller's historical W10 verdict remains
-`NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED` on
-`3ff042df66d5d6924b587cac96fc652b93bf5e7a`. No new independent verdict, Frozen
-Finding Set or Contract amendment is created. The accepted Contract, all 22
-Findings and all 24 production-blocking release obligations remain unchanged.
+The historical Controller verdict on `3ff042df66d5d6924b587cac96fc652b93bf5e7a`
+remains `NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED`. Codex does not issue a new
+independent verdict. Contract, Frozen Findings, Owner Decisions and all 24
+production-blocking release obligations remain unchanged.
 
-The PR remains Draft. No Ready, merge, force-push, direct-main publication, real
-Provider access, credential provisioning, shared/production access, deployment,
-Terraform apply, Gate EV/E, Pilot or production enablement is granted.
+PR #30 remains Draft. No Ready, merge, force-push, direct-main publication, real
+Provider or shared/production access, deployment, Gate EV/E or Pilot is granted.
 `production_write_enabled=false` remains in force.
 
 ## SLICE-V1-003 Codex R1 execution record

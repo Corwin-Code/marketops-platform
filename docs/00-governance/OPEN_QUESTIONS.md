@@ -39,3 +39,10 @@ trigger affects the Slice architecture as a whole.
 
 No Secret, real Token, Buyer PII or unredacted production payload belongs in this
 register, GitHub, chat or the public repository.
+
+## SLICE-V1-003 engineering handoff
+
+The [current R1 handoff](../07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/CURRENT-ENGINEERING-HANDOFF.md)
+completes engineering evidence only. OQ-114 through OQ-120 and all 24 S3-REL
+obligations retain their exact external/configuration dispositions above.
+Independent Controller acceptance is pending; `production_write_enabled=false`.

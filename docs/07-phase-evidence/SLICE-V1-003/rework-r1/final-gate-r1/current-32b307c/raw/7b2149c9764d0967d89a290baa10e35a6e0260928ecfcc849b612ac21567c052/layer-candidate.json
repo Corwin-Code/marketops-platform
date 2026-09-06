@@ -1,0 +1,346 @@
+{
+  "kind": "SLICE3_LAYER_EXECUTION_CANDIDATE",
+  "id": "browser",
+  "runId": "final-browser-r9",
+  "command": "/bin/bash /private/tmp/slice3-final-drivers-32b307c-r1/browser-owned-child.sh",
+  "argv": [
+    "/bin/bash",
+    "/private/tmp/slice3-final-drivers-32b307c-r1/browser-owned-child.sh"
+  ],
+  "cwd": ".",
+  "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+  "sourceTree": "ca2e7f0a3b0f6b8361ffed3f2181a6bd8d000ca2",
+  "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+  "workingTreeDirty": false,
+  "workingTreeStatus": [],
+  "identityScope": "CLEAN_COMMIT_TREE",
+  "sourceInventorySha256": "246182d691995ec50c39bc05db67510d30cd3186bba1efa42e3f19a06ef342cb",
+  "sourceInventory": {
+    "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/source-before.json",
+    "sha256": "246182d691995ec50c39bc05db67510d30cd3186bba1efa42e3f19a06ef342cb",
+    "bytes": 310649
+  },
+  "startedAt": "2026-09-06T17:32:18.492535+00:00",
+  "result": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "productionWriteEnabled": false,
+  "controllerApprovalClaimMade": false,
+  "engineeringClosureClaimMade": false,
+  "publicationIdentity": {
+    "GITHUB_SHA": null,
+    "GITHUB_RUN_ID": null,
+    "GITHUB_RUN_ATTEMPT": null,
+    "GITHUB_JOB": null,
+    "MARKETOPS_EVIDENCE_SOURCE_HEAD_SHA": null,
+    "MARKETOPS_EVIDENCE_TESTED_MERGE_SHA": null
+  },
+  "finishedAt": "2026-09-06T17:36:27.970678+00:00",
+  "elapsedSeconds": 249.479,
+  "exitCode": 0,
+  "executionError": null,
+  "sourceStable": true,
+  "sourceChangedPaths": [],
+  "identityAfter": {
+    "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+    "sourceTree": "ca2e7f0a3b0f6b8361ffed3f2181a6bd8d000ca2",
+    "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "workingTreeDirty": false,
+    "workingTreeStatus": [],
+    "identityScope": "CLEAN_COMMIT_TREE"
+  },
+  "sourceInventoryAfterSha256": "246182d691995ec50c39bc05db67510d30cd3186bba1efa42e3f19a06ef342cb",
+  "evidence": [
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/command.log",
+      "sha256": "09af70f68849b9888d1984c1d8d534a1a90cdf40917c96fd830616f07c052112",
+      "bytes": 4605
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/adapter-sha256.txt",
+      "sha256": "bc490f872eb84fee35292df089d106e090c3ae591e0a2bdd8499a8bc8d3be753"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising-raw-artifacts.json",
+      "sha256": "54715747dba3f1bede230b94ae6f519e9eb6fdc2a439b48cfc54ea1193dad897"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising-receipt.json",
+      "sha256": "6a5891e19934b20a327f7b2d029e302c878d013936afad5d8a8d14bfbc704fa1"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/backend-build-info.properties",
+      "sha256": "afa038bb5c3dcf2597ae30809b63c34cf197e8e18d21c5b049cf5c52c58b3ad0"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/command.log",
+      "sha256": "9af87dbbbc27161f5825f1670dc2f417e84827c27a4fc1f8f6fbf519b17005bb"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/frontend-dist/assets/index-DzyR0AvL.js",
+      "sha256": "3c9aeefe8579da11669f13d9f1540201fb9c8d096b59f7ea535fc80f7908d870"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/frontend-dist/index.html",
+      "sha256": "e1d5a79e6915e64d70afd59bc531022e98251d86ae5c5d33cf8ab5ccb41a8043"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/html/index.html",
+      "sha256": "e73b4d39c847bebfde28c9f0c0f39735a60b22606fdd629637c18699693ec1ed"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/report.json",
+      "sha256": "d43c3894649c980e648b1fe2958a2c074056be6608472e4a1cc36befe6eb414f"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/report.xml",
+      "sha256": "61f5ef4c557cecbb868b5c4fec43909019d0a4b66f63dc77c0c33077cdd9a3fb"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-HISTO-1effc-state-and-separate-outcomes/HISTORY_REGRESSION-actual-http-history.png",
+      "sha256": "79cb4c69470d7f1bee95531ee56c87ea93a0fb8bd64789c6d889a6325d3251a5"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-HISTO-7a41c-state-and-separate-outcomes/HISTORY_MISMATCH-actual-http-history.png",
+      "sha256": "93a347988bb050f52bc6a60896a13ea17871c52a8b8e5159746821fb78e91fb6"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-HISTO-cbd3f-state-and-separate-outcomes/HISTORY_EXPIRED-actual-http-history.png",
+      "sha256": "2d004a11b50dc8b910bcfbaeb0ca36af2a28a1cdf241b038182f34160bcead7e"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-HISTO-d95fb-state-and-separate-outcomes/HISTORY_UNKNOWN-actual-http-history.png",
+      "sha256": "3dfb10470328a4a326ba8a3505996eab0b58f6a8f9ca338ab8f8411115008a5e"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-HISTO-d95fb-state-and-separate-outcomes/maker-native-unknown-history-masked.png",
+      "sha256": "bdaa48270e93ebb949c22de4200aa0069b23d8a0b3be847bfacbf55da75cb082"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-independent-proof-early-safety-pending.png",
+      "sha256": "c6670e2be754b51a4eab23305e1bf7bc2705e6f40e730c64a22f913b0f15d8ef"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-maker-manual-draft.png",
+      "sha256": "90bc195deea7900f07660a1ca16a3218a26cbc54b751244e49442d264565b381"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-owner-manual-issued.png",
+      "sha256": "0ad253ad65979a1b39f03e949f78f681dde66cbca354cac2108b93a15be5d7a7"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-OZON--9c98d-res-an-independent-observer/OZON-partial-screenshot-remains-unverified-held.png",
+      "sha256": "ddf3a453bf600fafad0ee27644cbc63ec4b2f8c764cb9129ade300f067d40175"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-independent-proof-early-safety-pending.png",
+      "sha256": "83b7604ee1790d6e60bc1d6d123ba6fd2de0058bcdf5bd37371337e669950f85"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-maker-manual-draft.png",
+      "sha256": "49c7d6ab98c33eb434850f8ac77e7afd23856f4c329474feb6614e987b2c7ff6"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-owner-manual-issued.png",
+      "sha256": "cdc53a1d1b957931c5f404bd854da4e94c1ab06a9728729beb3853790f059829"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-WILDB-455c7-res-an-independent-observer/WILDBERRIES-partial-screenshot-remains-unverified-held.png",
+      "sha256": "0bf4c789d32d6927d6e4b73b9382324959ffa61f828e1a3405dea177860c9bad"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-all-f-e9164-d-expose-no-invented-action/DATA_REPAIR-actual-http-projection.png",
+      "sha256": "716b25fdfd191385cc6cce935b3f7f027ba7fb97f41552fa096930c0ba17c4a7"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-all-f-e9164-d-expose-no-invented-action/OPTIMIZATION-actual-http-projection.png",
+      "sha256": "220b73c1568b39d6677542fd5e4f64fbbaa0dc387eeff170afcc10d1bbe8b95e"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-all-f-e9164-d-expose-no-invented-action/PROTECTION-actual-http-projection.png",
+      "sha256": "4eb4729d3a469968234516a0cd34eadeff5c019a38e46dab2a4b68ce42fbbd07"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-all-f-e9164-d-expose-no-invented-action/WATCH-actual-http-projection.png",
+      "sha256": "e38d6512e17781e6e0c0396fa518b9d2cb38646b5039fb1819c5ea53f73d24ff"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-acknowledgement-not-action.png",
+      "sha256": "79234b324bf88dc7111a114816da8ed63dbf0ccec92184d9e333174ff8a2d276"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-page-two-six-visible-cases.png",
+      "sha256": "2d76275342fa1159c6f4f30fb1b4cdd0d649664b8560707604f62163063c4493"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-real--1ded8--boundaries-and-lane-resets/keyboard-watch-second-page-three-cases.png",
+      "sha256": "7cc8bb902b69a0acebfa55a98b5ee9da6a40c9b0876010efded0025970c6b7d7"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-real--22caa-sclosure-and-exact-versions/maker-minimum-disclosure.png",
+      "sha256": "42c8e6df508f8cf3bbcf7d3ed9388a7e68000239fc2bee0806b7130e1ae449cc"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-real--22caa-sclosure-and-exact-versions/operations-endorsement.png",
+      "sha256": "494c84c26fe6e46ef5925a70c3a24e125b90e2650ba0089b4ab3863fc5b82985"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-real--22caa-sclosure-and-exact-versions/owner-approved-command.png",
+      "sha256": "840242f0680269e0c85fb7520f3c9ed532431c80e26d445fdeba78c8b3820d75"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-real--22caa-sclosure-and-exact-versions/owner-exact-decision-evidence.png",
+      "sha256": "6565d9e48c44f6f7350c2e3169f41d3e64e84d9049e0a14e58d9653ef1bf52d1"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-scope-44936--conditions-are-established/maker-scoped-emergency-hold.png",
+      "sha256": "3865554773b9216727e7db88ffb9d4c1f04d2f55b22d5f915ecba7dbee5de81b"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-scope-44936--conditions-are-established/operations-incomplete-recovery-remains-held.png",
+      "sha256": "372c539f2118814cb5e417a3e25581a78c87f4db644bda5979ed8edef41cca79"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-active-exact-exception.png",
+      "sha256": "0157aa24f95f48fe8a23cd9df11ecea4825a8d946f7800eb9ef6f8e5d962b519"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/advertising/test-results/governed-advertising-three-c3bb7-on-block-actions-and-end-it/owner-ended-exception-rebuild.png",
+      "sha256": "5ac2a15b9af37565ae59cdac7425fa5d33cdeeaab4adf7c2fb255b5e273b2e26"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/cleanup-receipt.json",
+      "sha256": "6dfa21f7314b87bef61adb37ce8a5553f81c5a135b385d6c8396da6cfd414979"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/clone-source-after.json",
+      "sha256": "788cbd4e1d250b2c3c2a0f1004af7a4a110cf177b8bcf2ea3707a7ff5c6061d7"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/clone-source-before.json",
+      "sha256": "788cbd4e1d250b2c3c2a0f1004af7a4a110cf177b8bcf2ea3707a7ff5c6061d7"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/docker-after.json",
+      "sha256": "8bdef57c533f423f0bdf3096851c65511a7f27e4746c83b5b6d61dbd02d60bf8"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/docker-before.json",
+      "sha256": "0ba857f85e6423d7dcbcccba3d18f492d24ee60dc223f1ea5764dcf8dec37348"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/docker-client-configuration.json",
+      "sha256": "ecfdf6a3b272eb68dffc0f2e70aed431baa57c1437b61d1ecec83aef6c7ff99f"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/driver-exit.json",
+      "sha256": "2e0830e0d45bdecf002a813ad0275d90d1001af8cafd077cbb7015a379757fb3"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/env-init-metadata.log",
+      "sha256": "afd521c2b041748e4f6d6536b90ce32c089a358efabf351228ca247d57939e62"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/execution-driver.sh",
+      "sha256": "7240c80fa11bde3b24bd862b978f041ff2eed95531d15d585f646bb52a505804"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/execution-helper.py",
+      "sha256": "c901107bf96866e8491930cb0515549b7cfceb34278313a34b9cd736b2787fad"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/execution-input-sha256.txt",
+      "sha256": "635a70558ec82f8d4008813254fc053ee2fe937344672450f47a1bd139982f03"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy-cleanup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy-empty-namespace.json",
+      "sha256": "16a61932f48f8c2c23ad2d5302c8b3f76a7eb86f3ee547a51dc1ce8c372d0726"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy-owned-services.json",
+      "sha256": "89fdfc636216d130e3c8b9d58ce33a2103ff3a9e6dbed64625732599aabd5621"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy-ownership.json",
+      "sha256": "1c3bb3f7998985a5a0e9571df401eaf509b94b83ad8a7e2897af6bbdf4e8c404"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy-port.json",
+      "sha256": "250af77b8b787c1ea136776984472ed91963f69c74ea71ff3b5f07dd9850aad5"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy-raw-artifacts.json",
+      "sha256": "eeac16bff0e099112f2ed1828e444760e154d0d3b2d431a8627ecd91b6484942"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy-receipt.json",
+      "sha256": "e59db32d6fc56e9282717e698222235479f8510a0f1ab610305afdc165934546"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy/backend-build-info.properties",
+      "sha256": "afa038bb5c3dcf2597ae30809b63c34cf197e8e18d21c5b049cf5c52c58b3ad0"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy/command.log",
+      "sha256": "d3fdee782627d057b78744325a189370c52933ccf3e17ea791bd8c082f0cb5c3"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy/frontend-dist/assets/index-BuiJqR2K.js",
+      "sha256": "e9507a42ab38ec66807250926a0b981628440401f39359897bf074d1600d9dd6"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy/frontend-dist/index.html",
+      "sha256": "40e54f772704903bccc4fddc78095f6b60794c101108f4fd4e5236a724b9d4ff"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy/html/index.html",
+      "sha256": "c7eedf2f8b5599381cca9ee379c690df8027c963d649a5fce3b3b5db45fa2c82"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy/report.json",
+      "sha256": "574711b5a53873f9ddc96003bea1c0d8119df7ac2c55a5804b8ad93accf53982"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/legacy/report.xml",
+      "sha256": "82d77889b0ac7bf73259a50037b65e77f1b7d41d1e476b8110b6f43c11debc33"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/owned-docker-events.jsonl",
+      "sha256": "5fe9bceb67113d46d744b1de55c522e4967fb1db99da00df63d40399de1c3d45"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/owned-docker-wrapper.sh",
+      "sha256": "49ce1465d2ff6a321df1e94aba3778aeb776a6e5b61110e903c2b0a55729ab7f"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/port-preflight-observations.jsonl",
+      "sha256": "01f2111a14f063a4bf461bf08c56f323fbff14408760963c5a916ec27b090f82"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/raw/build/final-gate-r9-32b307c/browser-r4/tool-versions.log",
+      "sha256": "f41e5985f94da2e8710a00f088557251defb4592789921ac56ea5fff333efe0a"
+    }
+  ],
+  "capturePatterns": [
+    "build/final-gate-r9-32b307c/browser-r4/**/*"
+  ],
+  "stalePreexistingReports": [],
+  "xmlParseErrors": [],
+  "testcaseCounts": {
+    "passed": 37,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "namedTestcaseNodes": {
+    "path": "/private/tmp/slice3-final-execution-32b307c-r1/browser-r4/named-testcase-nodes.json",
+    "sha256": "f1e192aa530993912e6c92a060549a630f1710f7243a3c49d61fa7f7790791ad",
+    "bytes": 19180
+  },
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "boundary": "Command exit and raw reports only. Root must review full layer scope, source identity, assertions, capacity/resource bounds and publication evidence before any PASS assessment."
+}

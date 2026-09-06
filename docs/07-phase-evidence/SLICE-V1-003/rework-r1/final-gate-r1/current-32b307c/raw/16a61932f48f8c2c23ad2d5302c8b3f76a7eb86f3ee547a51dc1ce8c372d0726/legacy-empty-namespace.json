@@ -1,0 +1,9 @@
+{
+  "project": "slice3-fg-legacy-slice3-final-browser-work-7tia4q",
+  "preexistingResources": {
+    "container": [],
+    "network": [],
+    "volume": []
+  },
+  "emptyBeforeAnyComposeOperation": true
+}

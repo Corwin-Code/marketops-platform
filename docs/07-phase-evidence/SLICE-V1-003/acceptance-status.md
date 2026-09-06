@@ -1,5 +1,9 @@
 # SLICE-V1-003 — acceptance status
 
+The authoritative current [200-row R1 matrix](rework-r1/S3-AC-REWORK-STATUS.json) records 199 engineering-verified criteria and AC-200 candidate prerequisites passed with independent Controller review pending. See [the current handoff](rework-r1/final-gate-r1/CURRENT-ENGINEERING-HANDOFF.md). The original counts and closure statements below are preserved as historical assessment, not the current disposition.
+
+## Historical record — original checkpoint scope
+
 Two hundred criteria, each read against the repository and then challenged.
 Every claim of VERIFIED was put to a second reader who opened the cited
 evidence; eight did not survive that and were lowered. The counts below are

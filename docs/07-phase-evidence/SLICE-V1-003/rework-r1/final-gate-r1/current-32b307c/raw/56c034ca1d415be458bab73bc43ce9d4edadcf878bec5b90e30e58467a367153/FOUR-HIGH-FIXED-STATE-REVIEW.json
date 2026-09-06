@@ -1,0 +1,140 @@
+{
+  "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+  "testedMerge": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+  "raw": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/fixed-alerts-pages.json",
+    "sha256": "ba1e4454b5c144f8dc19e02351f6c45ad771b507d5bc25e0c10e9d924219fbd3",
+    "bytes": 82543
+  },
+  "alerts": [
+    {
+      "number": 229,
+      "ruleId": "js/insecure-temporary-file",
+      "state": "fixed",
+      "fixedAt": "2026-09-06T15:14:50Z",
+      "historicalLastSeenInstance": {
+        "ref": "refs/pull/30/merge",
+        "analysis_key": ".github/workflows/security.yml:codeql-typescript",
+        "environment": "{}",
+        "category": "/language:javascript-typescript",
+        "state": "fixed",
+        "commit_sha": "1b31eb47522f5ef700642848d3ea5d5410b3fdc4",
+        "message": {
+          "text": "Insecure creation of file in the os temp dir."
+        },
+        "location": {
+          "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50/locator-diagnostic.cjs",
+          "start_line": 31,
+          "end_line": 31,
+          "start_column": 19,
+          "end_column": 73
+        },
+        "classifications": [
+          "documentation"
+        ]
+      },
+      "scope": "Actual Code Scanning fixed state on the current PR, after originals were preserved in a byte-exact ZIP and maintained replays use owned private temporary directories. No alert dismissal or suppression."
+    },
+    {
+      "number": 230,
+      "ruleId": "js/insecure-temporary-file",
+      "state": "fixed",
+      "fixedAt": "2026-09-06T15:14:50Z",
+      "historicalLastSeenInstance": {
+        "ref": "refs/pull/30/merge",
+        "analysis_key": ".github/workflows/security.yml:codeql-typescript",
+        "environment": "{}",
+        "category": "/language:javascript-typescript",
+        "state": "fixed",
+        "commit_sha": "1b31eb47522f5ef700642848d3ea5d5410b3fdc4",
+        "message": {
+          "text": "Insecure creation of file in the os temp dir."
+        },
+        "location": {
+          "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2/slice3-datetime-canonical-diagnostic-r1.cjs",
+          "start_line": 41,
+          "end_line": 41,
+          "start_column": 19,
+          "end_column": 70
+        },
+        "classifications": [
+          "documentation"
+        ]
+      },
+      "scope": "Actual Code Scanning fixed state on the current PR, after originals were preserved in a byte-exact ZIP and maintained replays use owned private temporary directories. No alert dismissal or suppression."
+    },
+    {
+      "number": 231,
+      "ruleId": "js/insecure-temporary-file",
+      "state": "fixed",
+      "fixedAt": "2026-09-06T15:14:50Z",
+      "historicalLastSeenInstance": {
+        "ref": "refs/pull/30/merge",
+        "analysis_key": ".github/workflows/security.yml:codeql-typescript",
+        "environment": "{}",
+        "category": "/language:javascript-typescript",
+        "state": "fixed",
+        "commit_sha": "1b31eb47522f5ef700642848d3ea5d5410b3fdc4",
+        "message": {
+          "text": "Insecure creation of file in the os temp dir."
+        },
+        "location": {
+          "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2/datetime-diagnostic.cjs",
+          "start_line": 41,
+          "end_line": 41,
+          "start_column": 19,
+          "end_column": 70
+        },
+        "classifications": [
+          "documentation"
+        ]
+      },
+      "scope": "Actual Code Scanning fixed state on the current PR, after originals were preserved in a byte-exact ZIP and maintained replays use owned private temporary directories. No alert dismissal or suppression."
+    },
+    {
+      "number": 232,
+      "ruleId": "js/insecure-temporary-file",
+      "state": "fixed",
+      "fixedAt": "2026-09-06T15:14:50Z",
+      "historicalLastSeenInstance": {
+        "ref": "refs/pull/30/merge",
+        "analysis_key": ".github/workflows/security.yml:codeql-typescript",
+        "environment": "{}",
+        "category": "/language:javascript-typescript",
+        "state": "fixed",
+        "commit_sha": "1b31eb47522f5ef700642848d3ea5d5410b3fdc4",
+        "message": {
+          "text": "Insecure creation of file in the os temp dir."
+        },
+        "location": {
+          "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50/slice3-manual-select-locator-diagnostic-r2.cjs",
+          "start_line": 31,
+          "end_line": 31,
+          "start_column": 19,
+          "end_column": 73
+        },
+        "classifications": [
+          "documentation"
+        ]
+      },
+      "scope": "Actual Code Scanning fixed state on the current PR, after originals were preserved in a byte-exact ZIP and maintained replays use owned private temporary directories. No alert dismissal or suppression."
+    }
+  ],
+  "priorFailureReview": {
+    "path": "/private/tmp/slice3-failed-security-review-344f597-r1/REVIEW.json",
+    "sha256": "8c71c00de7591435079bae2c6a9c99308cd8e6c3ae6e8462209099e72e38d9b4",
+    "bytes": 9224
+  },
+  "archiveAndMappingReview": {
+    "path": "/private/tmp/slice3-diagnostic-relocation-audit-r1/REVIEW.json",
+    "sha256": "1451abbbf4c8e1fa13a68b4867c3b347687b596f63060f4b6e5c9358f8f72346",
+    "bytes": 2100
+  },
+  "safeReplayActualExecution": {
+    "path": "/private/tmp/slice3-safe-diagnostic-replay-verification-r2/REVIEW.json",
+    "sha256": "9c6829d42c990974a927bdff413452e4f99359daf53d6874957c698109ac34ad",
+    "bytes": 3385
+  },
+  "runtimeRulesChangedOrSuppressed": false,
+  "historicalBytesPreserved": true
+}

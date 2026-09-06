@@ -48,3 +48,12 @@ retain the original Base, Head, tree and SHA identities. Append-only transport o
 the named branch, one Draft PR and CI are authorized. Ready, merge, force-push,
 real Provider or shared/production access and enablement remain unauthorized.
 This entry makes no engineering-closure or release claim.
+
+## SLICE-V1-003 R1 engineering closure record — no new Owner Decision
+
+Measured `32b307c` engineering rework and complete relevant verification are
+recorded in the [current handoff](../07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/CURRENT-ENGINEERING-HANDOFF.md).
+All 22 original Findings and CV-A..E have current engineering evidence; independent
+Controller review of the final containing Head remains pending. Accepted Contract,
+47 Owner Decisions, Frozen Finding Set and 24 deferred release obligations are
+unchanged. This record grants no Ready, merge, Gate EV or production authority.

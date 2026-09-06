@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "gh",
+    "api",
+    "repos/Corwin-Code/marketops-platform/pulls/30",
+    "-X",
+    "GET"
+  ],
+  "startedAt": "2026-09-06T17:35:33.422081+00:00",
+  "finishedAt": "2026-09-06T17:35:34.670519+00:00",
+  "elapsedSeconds": 1.2484754590000051,
+  "exitCode": 0,
+  "failure": null,
+  "artifact": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/pr30-after.json.attempt-1",
+    "sha256": "a26d3184b6b9b65be9e529a560bff1f7a0a8e900de6e7220d5679696fb7c5235",
+    "bytes": 17938
+  },
+  "stderr": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/pr30-after.json.attempt-1.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "attempt": 1,
+  "boundary": "Original bytes of one read-only capture attempt; never overwritten."
+}

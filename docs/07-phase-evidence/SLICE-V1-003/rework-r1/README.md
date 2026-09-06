@@ -1,5 +1,9 @@
 # SLICE-V1-003 — Codex R1 current evidence
 
+Current measured-source engineering rework is complete: 22 Findings, CV-A..E, and 199 ACs are engineering verified; AC-200 awaits independent Controller approval. See [the current handoff](final-gate-r1/CURRENT-ENGINEERING-HANDOFF.md) and [current execution manifest](final-gate-r1/EXECUTION-MANIFEST.json). The following implementation history retains its original checkpoint scope.
+
+## Historical record — original checkpoint scope
+
 Current verification continues after the
 [governance phase-transition test correction](final-gate-r1/GOVERNANCE-PHASE-TRANSITION-REWORK.md)
 and [diagnostic priority-page read repair](final-gate-r1/PRIORITY-PAGE-READ-REWORK.md).

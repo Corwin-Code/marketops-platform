@@ -1,0 +1,133 @@
+{
+  "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+  "sourceTree": "ca2e7f0a3b0f6b8361ffed3f2181a6bd8d000ca2",
+  "sourceInventorySha256": "246182d691995ec50c39bc05db67510d30cd3186bba1efa42e3f19a06ef342cb",
+  "sourceInventory": {
+    "path": "/private/tmp/slice3-final-drivers-32b307c-r1/expected-source-inventory.json",
+    "sha256": "246182d691995ec50c39bc05db67510d30cd3186bba1efa42e3f19a06ef342cb",
+    "bytes": 310649
+  },
+  "sourceStable": true,
+  "sourceStabilityBasis": "Exact official checkout, merge tree and every inventory Git blob verified by the referenced capture/decoder; no remote worktree-after snapshot is claimed.",
+  "result": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "exitCode": 0,
+  "exitCodeBasis": "Successful original GitHub job and required non-continue-on-error steps; adapter did not launch a process.",
+  "startedAt": "2026-09-06T17:22:14Z",
+  "finishedAt": "2026-09-06T17:57:40Z",
+  "runId": "34048388804/attempt-1/backend-build + final-frontend-supply-32b307c-r2",
+  "testedMerge": "f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+  "originalJob": {
+    "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-jobs.json",
+    "sha256": "b992219065bf6dd739f0f744a94444661f271420d36d1ce8a2c3afe8ef55d5ca",
+    "bytes": 7691
+  },
+  "originalRun": {
+    "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-run.json",
+    "sha256": "0dff93ed456b74980133aeedb23729ee3a648e4e0ddc8859101457b5204c4930",
+    "bytes": 13685
+  },
+  "newExecutionPerformed": false,
+  "derivationHelper": {
+    "path": "/private/tmp/slice3-final-closure-32b307c-r1/register_actual_scopes.py",
+    "sha256": "83c1ae4503ab8662bbe2adaa71081934a7ef212c8c6fc4716ce41474a157f904",
+    "bytes": 10969
+  },
+  "evidenceSource": "GITHUB_ACTIONS_ORIGINAL_COMPLETED_SCOPE",
+  "productionWriteEnabled": false,
+  "controllerApprovalClaimMade": false,
+  "engineeringClosureClaimMade": false,
+  "kind": "EXPLICIT_SAME_SOURCE_CI_BACKEND_AND_LOCAL_FRONTEND_SUPPLY_SCOPES",
+  "id": "supply_chain",
+  "command": "CI backend-build generated/published backend SBOM and licenses; separately: python3 scripts/collect_supply_chain.py --skip-backend",
+  "evidence": [
+    {
+      "path": "/private/tmp/slice3-final-closure-32b307c-r1/ci-originals/backend-supply-chain/licenses/backend-license-inventory.txt",
+      "sha256": "4e765e7d8392b13ca211618338eb1291577df4d940ad0f5999fd50a7aa35e2a3",
+      "bytes": 22439
+    },
+    {
+      "path": "/private/tmp/slice3-final-closure-32b307c-r1/ci-originals/backend-supply-chain/marketops-server-sbom.json",
+      "sha256": "7a71d2bb18908c260da21b574bba16bf110d87a5f58bf6f85283de1b97496709",
+      "bytes": 235515
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/CI-CAPTURE-RECEIPT.json",
+      "sha256": "60e19584b6ca8913fc71e6e336cbd38bb7c145a34243609c169434b525463265",
+      "bytes": 21930
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/BACKEND-CI-CONTAINING-RECEIPT.json",
+      "sha256": "7795d52e58d8324ad7c5251ecd3485a272b737430d59c6ebd9d2263e688ec083",
+      "bytes": 58184
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-jobs.json",
+      "sha256": "b992219065bf6dd739f0f744a94444661f271420d36d1ce8a2c3afe8ef55d5ca",
+      "bytes": 7691
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/backend-run.json",
+      "sha256": "0dff93ed456b74980133aeedb23729ee3a648e4e0ddc8859101457b5204c4930",
+      "bytes": 13685
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/BACKEND-ARTIFACT-MEMBER-INDEX.json",
+      "sha256": "2d644060025453899464a2cdb2b6fc1f9f74cb520e5cf938ac478ad2fd17b296",
+      "bytes": 851998
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/LOCAL-CONTAINING-SOURCE-EQUIVALENCE.json",
+      "sha256": "545b2b96f4d0781b4eed945f9877c5dd491926b4969d04619d092b0cdb6cae7d",
+      "bytes": 727729
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-32b307c-all-r1/BACKEND-SOURCE-INPUT-COMPARISON.json",
+      "sha256": "f3d62d326c3e08482dae54a6d53446007cb17fb55b585072a6568cbed7be49c5",
+      "bytes": 1237784
+    },
+    {
+      "path": "/private/tmp/slice3-final-closure-32b307c-r1/CI-ORIGINAL-MEMBER-ORIGINS.json",
+      "sha256": "2ec0e440f4a0219d88c6465ce983f0c3dfb840ddeb9cada6e762c5e31c79aceb",
+      "bytes": 225233
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-supply-only-r2/command.log",
+      "sha256": "07ab4fe44da70f4ac8b6430e6be984e52aeac85e632a6049b5af023ab29e048f",
+      "bytes": 242
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-supply-only-r2/raw/build/supply-chain/INVENTORY.md",
+      "sha256": "6a1a85905a87c2abaeacd5894ab0ea1d69ca8768ef042ff8479132092c78b6e4"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-supply-only-r2/raw/build/supply-chain/frontend-dependencies.json",
+      "sha256": "869bd135029c024148a7903fbb415fb0d15a5ca5e9026d48c2f98b75b374f9d5"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-supply-only-r2/raw/build/supply-chain/frontend-licenses.txt",
+      "sha256": "45c9c1646411e970eda4f713313599cbbf16b1f87eb29ccf6d34743e26e92014"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-supply-only-r2/raw/build/supply-chain/frontend-sbom.json",
+      "sha256": "cbe15b1ebebb261505fbd7d01a6e58ae911af83f07091fa5022b1183a11bebd3"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-supply-only-r2/layer-candidate.json",
+      "sha256": "8805ccf71f99a5433ab33ece616f89efa42f4f0da7a290ab6e87aa7e8467462e",
+      "bytes": 3769
+    }
+  ],
+  "actualExecutionParents": [
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/backend-full/layer-candidate.json",
+      "sha256": "538fffc9a1a51572102869f8953434627853968e1b1149dd85c845ff6c3f5d66",
+      "bytes": 83366
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-supply-only-r2/layer-candidate.json",
+      "sha256": "8805ccf71f99a5433ab33ece616f89efa42f4f0da7a290ab6e87aa7e8467462e",
+      "bytes": 3769
+    }
+  ],
+  "boundary": "Two separately timed original executions of one exact source. This aggregate is not an extra execution or throughput measurement. No executable JAR was downloaded from CI or invented."
+}

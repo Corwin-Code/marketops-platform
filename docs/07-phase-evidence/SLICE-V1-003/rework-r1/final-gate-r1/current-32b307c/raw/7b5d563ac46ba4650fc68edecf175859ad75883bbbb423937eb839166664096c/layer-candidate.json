@@ -1,0 +1,363 @@
+{
+  "kind": "SLICE3_LAYER_EXECUTION_CANDIDATE",
+  "id": "frontend_quality",
+  "runId": "final-frontend-r9",
+  "command": "bash --noprofile --norc -euo pipefail -c '\n    mkdir -p \"$SLICE3_PUBLIC/frontend\"\n    cd frontend/marketops-console\n    node --version\n    npm --version\n    npm ci --include=dev --include=optional\n    npm run lint\n    npm run format:check\n    npm run typecheck\n    npm run test:ci -- --reporter=default --reporter=json --outputFile=\"$SLICE3_PUBLIC/frontend/tests.json\"\n    cp -R coverage \"$SLICE3_PUBLIC/frontend/positive-coverage\"\n    cd \"$SLICE3_REPO\"\n    bash scripts/verify_coverage_thresholds.sh frontend > \"$SLICE3_PUBLIC/frontend/coverage-negative.log\" 2>&1\n    cd frontend/marketops-console\n    npm run verify:bundle\n    MARKETOPS_BUILD_COMMIT=\"$SLICE3_SOURCE_HEAD\" VITE_MARKETOPS_API_BASE_URL=http://127.0.0.1:8080 VITE_MARKETOPS_ENVIRONMENT=ci npm run build\n  '",
+  "argv": [
+    "bash",
+    "--noprofile",
+    "--norc",
+    "-euo",
+    "pipefail",
+    "-c",
+    "\n    mkdir -p \"$SLICE3_PUBLIC/frontend\"\n    cd frontend/marketops-console\n    node --version\n    npm --version\n    npm ci --include=dev --include=optional\n    npm run lint\n    npm run format:check\n    npm run typecheck\n    npm run test:ci -- --reporter=default --reporter=json --outputFile=\"$SLICE3_PUBLIC/frontend/tests.json\"\n    cp -R coverage \"$SLICE3_PUBLIC/frontend/positive-coverage\"\n    cd \"$SLICE3_REPO\"\n    bash scripts/verify_coverage_thresholds.sh frontend > \"$SLICE3_PUBLIC/frontend/coverage-negative.log\" 2>&1\n    cd frontend/marketops-console\n    npm run verify:bundle\n    MARKETOPS_BUILD_COMMIT=\"$SLICE3_SOURCE_HEAD\" VITE_MARKETOPS_API_BASE_URL=http://127.0.0.1:8080 VITE_MARKETOPS_ENVIRONMENT=ci npm run build\n  "
+  ],
+  "cwd": ".",
+  "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+  "sourceTree": "ca2e7f0a3b0f6b8361ffed3f2181a6bd8d000ca2",
+  "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+  "workingTreeDirty": false,
+  "workingTreeStatus": [],
+  "identityScope": "CLEAN_COMMIT_TREE",
+  "sourceInventorySha256": "246182d691995ec50c39bc05db67510d30cd3186bba1efa42e3f19a06ef342cb",
+  "sourceInventory": {
+    "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/source-before.json",
+    "sha256": "246182d691995ec50c39bc05db67510d30cd3186bba1efa42e3f19a06ef342cb",
+    "bytes": 310649
+  },
+  "startedAt": "2026-09-06T17:29:47.680173+00:00",
+  "result": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "productionWriteEnabled": false,
+  "controllerApprovalClaimMade": false,
+  "engineeringClosureClaimMade": false,
+  "publicationIdentity": {
+    "GITHUB_SHA": null,
+    "GITHUB_RUN_ID": null,
+    "GITHUB_RUN_ATTEMPT": null,
+    "GITHUB_JOB": null,
+    "MARKETOPS_EVIDENCE_SOURCE_HEAD_SHA": null,
+    "MARKETOPS_EVIDENCE_TESTED_MERGE_SHA": null
+  },
+  "finishedAt": "2026-09-06T17:30:44.056627+00:00",
+  "elapsedSeconds": 56.376,
+  "exitCode": 0,
+  "executionError": null,
+  "sourceStable": true,
+  "sourceChangedPaths": [],
+  "identityAfter": {
+    "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+    "sourceTree": "ca2e7f0a3b0f6b8361ffed3f2181a6bd8d000ca2",
+    "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "workingTreeDirty": false,
+    "workingTreeStatus": [],
+    "identityScope": "CLEAN_COMMIT_TREE"
+  },
+  "sourceInventoryAfterSha256": "246182d691995ec50c39bc05db67510d30cd3186bba1efa42e3f19a06ef342cb",
+  "evidence": [
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/command.log",
+      "sha256": "79ab44c8102b7ebd7a91219ca9212273f41079c865ad221e4cc81c2a88810766",
+      "bytes": 17589
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/coverage-negative.log",
+      "sha256": "f301e9de1ecd14e409558de008d386adf1ec4dd3b32219ca9d7ad9b89c304234"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/base.css",
+      "sha256": "3f876e51f0a46864ffa7665b4b7a1f5fb5f6f37fb6a28f014e2b12d82962c852"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/block-navigation.js",
+      "sha256": "cd8db34b1fbeb973354a93f8b4133c7c7eab34cdda9429a0434be91384783b7e"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/favicon.png",
+      "sha256": "5b0cfd52dc0bfbe544f4e1a9c77aa46b8629b0e0aad6c54f95eef457b86c2a89"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/index.html",
+      "sha256": "bf9d2bf0abecdb38f323e939a4b39f91b515ecfdc61813df3bf2b73444d3e08f"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/prettify.css",
+      "sha256": "ea3fe433f9450698ca8a230271688e7aeec12f99c8a7ef6c94379abb38f27823"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/prettify.js",
+      "sha256": "fa1b1e1b906ddcfa08b46f161c0f924f506e1a31b4f3e09b8caaa2463ef52c18"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/sort-arrow-sprite.png",
+      "sha256": "42c895355f9838ede83fdfdca90127d8471aefed5ecf5342374f65ec7c3f10ab"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/sorter.js",
+      "sha256": "f8cc5d157379d844fd695ad567b6c29b3c1f0812964ddf6f95c26327e434bab5"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/App.tsx.html",
+      "sha256": "51262dd72979ce13dc57a73c1443965312459762fd90eaa5416c6480bf43d90a"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/ConsoleShell.tsx.html",
+      "sha256": "e45e207efc196ccd91af708448abb142a4ee3b6a782a2a35c8155f485c11aefe"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingBriefView.tsx.html",
+      "sha256": "bb00c10122c7bce2d525193aa4a75afd07a652f62d7981c6d95571b3691fe681"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingCaseView.tsx.html",
+      "sha256": "1329c28d2c4634679e1bc190cce887575d460a5e8d150e3bae47190d769baf16"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingCommandTimeline.tsx.html",
+      "sha256": "3cb7396bfeee0c50152e10e2dc463c7f12c87ca80443b290f7fb2fa4ff0e88ba"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingCompensation.tsx.html",
+      "sha256": "221706a8ac3f0b5770ebde1103efa71772ab49fb057556833d09c81d757a735c"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingContainmentControls.tsx.html",
+      "sha256": "3e6d853938aa7cdb077746e87e3d1d8c3bff034bb983fc179616ad26e9c2316a"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingEvidenceDetails.tsx.html",
+      "sha256": "a410545e49c28e44ca40a2f24e322a03e5d8dc824868706d123c02d8b1a207db"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingManualControls.tsx.html",
+      "sha256": "282a2e691264998721bdfd838ebea293881fa42c3454e63c4104e8bc8334f93e"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingManualShadow.tsx.html",
+      "sha256": "56ff1b145150f7fec4d93d989d6f92c20edccee0691e5a9bfa359008e6b12ac8"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingOperations.tsx.html",
+      "sha256": "58d7b209e1c05fe76cb9a6471f85b8dd25e0ecd94508557add9781d1a4c22089"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingOrchestration.tsx.html",
+      "sha256": "b5c550d61530233da85032479db2d135d682b3c862912909a3aed918d98c4d33"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingOutcomeHistory.tsx.html",
+      "sha256": "a6f97802de302014847953915f955bb9f48ecd570321e4297497280b0e0162f5"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingQueue.tsx.html",
+      "sha256": "af7650577409318a26e2cd7881176069dc2ba89031727b15352089e33826b2c0"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingResponsibilityControls.tsx.html",
+      "sha256": "91fb3fba022bc758bde5c5c93a7b7d972a56523bf6b7100490e828972fdafcd4"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingTimestamp.tsx.html",
+      "sha256": "bf31103d06c1f40ac1243907df58c38ca88ccec2b0110cc7c2af9691e3535021"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/AdvertisingWorkflow.tsx.html",
+      "sha256": "8c87ba30b8b8f33ebfe279abd332ea0b13463552e2265e0c874acf6bee44d261"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/EvidenceChip.tsx.html",
+      "sha256": "4bb44be78208a5fc3d3e977db48d191efe937e834bdd4872de14fd57b938715f"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/evidencePresentation.ts.html",
+      "sha256": "11923015b27fb0448270b92412cc5bc6ac6dfd42e30c24dd49ed3c58d2edd0cf"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/advertising/index.html",
+      "sha256": "3ce63cc7f64ac5fe9836fc5a1b0d995630bd241728f44da34eebdfd7383271dd"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/api/advertising.ts.html",
+      "sha256": "c068c08c385f6d3eac0d819e3a65a8eb1119dcc3aaa465b56260ebae4ad7deff"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/api/console.ts.html",
+      "sha256": "63901c7eefc6e4d2743af53a1e786fff26335ba1a6be774cd5de646d58199776"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/api/diagnosticExport.ts.html",
+      "sha256": "3d522a945d5f391361fbdca5e5b98e1649c8bbd1eed61e31d93a2d1371a013dc"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/api/index.html",
+      "sha256": "ba8c33e1dacd74426f4d042ed31215d6abc3734d51a48c9ace43d4ffd87e3a27"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/api/metaStatus.ts.html",
+      "sha256": "b64568c24695a77113f7f51ab48badfed6a4832ed4b2075ced03d45bbeb318ce"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/availability/AvailabilityAuthorityPanel.tsx.html",
+      "sha256": "5db652d8158bc2dee62d87587895ae71594c2ae5805c05d0c69f6d441a6bb053"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/availability/AvailabilityCases.tsx.html",
+      "sha256": "81eeddb343f38c775fe9c4f359630361a28fefa476200b8a203c83b10d25c22b"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/availability/AvailabilityQueue.tsx.html",
+      "sha256": "da61371918ad939bf5bc21e7c2b13708db85035d84c9d55d366a87e6feb1d11e"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/availability/casePresentation.ts.html",
+      "sha256": "88bc4d79862ee207f2ca73a5c8d6ba11148d83ce3fc6fb1ffe79345650bcc1bc"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/availability/index.html",
+      "sha256": "b8eca95cd0c4fb0ab9a864fd844a998fc9fa9839d584bd5b48a200e3822af7db"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/availability/riskPresentation.ts.html",
+      "sha256": "620b4936c674b489498294ddb6dcfd88f9fb34e5f5943e07ed968172f91af3a0"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/buildInfo.ts.html",
+      "sha256": "9277af800801db181958c60962d31618e1a3546d0cae994221499a254be01323"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/commands/CommandTimeline.tsx.html",
+      "sha256": "1a9c0a6d9ddfe74a2ac4eb2956de40a5510dd5a20b83ea7db5f540c31fe07a76"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/commands/index.html",
+      "sha256": "e3499388ad8987a00d860b295f9eb648d1993311157143d29da1103abec2d2e9"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/config.ts.html",
+      "sha256": "7b0de70c2766256df4deaa652dc0e05a795e725da3c51727114490d014822388"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/diagnosis/AiExplanationPanel.tsx.html",
+      "sha256": "0641587e9f91da705f6373a39f00f223969e9c19158bb5fba6c5aee113c84470"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/diagnosis/DiagnosticExportPanel.tsx.html",
+      "sha256": "eabed25b4bf3c4ac728375d198e5f5f0016b5bfc21e2823ee44bd5c3c3d6bd11"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/diagnosis/MetricEvidencePanel.tsx.html",
+      "sha256": "71eccace76e561fc8d6f750820dd2b916dd113103f6c89fae0d65f6baac30a28"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/diagnosis/SubjectDiagnosisView.tsx.html",
+      "sha256": "dd356e2e287a5b3e732c347c8a5a681cb12481ec532445f84518b02729d5f8b4"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/diagnosis/index.html",
+      "sha256": "6abd56df877ecd3635dea811b83513707780c077a43e765a61b25236bb579c59"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/health/HealthShell.tsx.html",
+      "sha256": "51e6f52f57cebf2341e444b628e9deb04c5c92ef809eb34cad9344e46dabe172"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/health/healthState.ts.html",
+      "sha256": "b030adac7d82f5daa3b8f7367cb876dc310368902af23585e4cbb65c037be260"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/health/index.html",
+      "sha256": "46729d461e3ca24d2333daa528b9c58d3d402b4c5f0c1ff7284e4fe1b60e6d2b"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/index.html",
+      "sha256": "17385b4b67f9d556746b9f57f696dae9c9bd36ce2b379bacb5dcbbb6ce140558"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/queue/PriorityQueue.tsx.html",
+      "sha256": "3c57d507858ac11da1c4e4a5fd33d1711144fdd922da37d1089dca1023848a7f"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/queue/index.html",
+      "sha256": "48f36e203d2c06c5ca75f89239d95157ca2186e7f0fd50c237a4c05af6fe4197"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/session/SignIn.tsx.html",
+      "sha256": "dab03896b6497901feb1415182c9a2d404758ceca470e5fc5af9fa7f29ce0013"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/session/index.html",
+      "sha256": "1be85b91e65c3ba0ff5222864c20852794bb6bbb6531596a71e4f1acc32632d1"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/session/oidc.ts.html",
+      "sha256": "82dd1e18a6bf2275a4e86693b96211456bda0d820d502b322ecc4f8792d56909"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/session/pkce.ts.html",
+      "sha256": "deeaa645e6c6c15c0d4092f9d67bbfc0a6a8cef9b3be662ab2d44617839cf188"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/session/session.ts.html",
+      "sha256": "b14715ffceabf6e2ba8c2fe10b5250af079b89a25bea0fe52f5062a2b078234e"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/state/ValueCell.tsx.html",
+      "sha256": "02c2e504efcce71df2807638503e494d893ef5a349eee376ba348249c99cfbe8"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/state/confidence.ts.html",
+      "sha256": "a75b18a837e0a0c3f876960cb97fd7111218c0ebd755100007c92ee49319dfb0"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/state/index.html",
+      "sha256": "1300a7c056eba08a1b5b5aaf7ba93e1e7d987326c3532ea71bc6ac2a49aa57fe"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/vite-env.d.ts.html",
+      "sha256": "a8bceed6268cf675635160777e026917913645d5ace8eab40bcdf969842b14e7"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/workflow/RecommendationReview.tsx.html",
+      "sha256": "064c3834e706e1f788e3ff162addc0af0e5c4fbcb3455cb21bdf8284a95ec1cc"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/workflow/SubjectRecommendations.tsx.html",
+      "sha256": "06828d71138e67de1b750fa7d2523abbfd9dc0ccb5bfd412176b419d8d10efbb"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov-report/src/workflow/index.html",
+      "sha256": "6a6a40e7e80c9ae7b582f6b630208d8aef7adcf9e6a93ba02d89d85b0953f608"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/positive-coverage/lcov.info",
+      "sha256": "d343095200aeecba3912ad25e74b51ce8a42eb7ca6f80f90a1496ecf3925d389"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/build/final-gate-r9-32b307c/frontend/tests.json",
+      "sha256": "3c72cbe2d3b64e5a184ca85bddc294e0e1ba6f5c91a08df9628cdb5fd2d8c426"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/frontend/marketops-console/dist/assets/index-BN0oEpMQ.js",
+      "sha256": "4e985b68ce92c355fce5a2bd4a4f94b2995144813981f15fb567555cc5d46184"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/raw/frontend/marketops-console/dist/index.html",
+      "sha256": "3bfdf0febf6928f41bd6a64022971dda99befa2ed3d31195b164ce29fd7e0f9a"
+    }
+  ],
+  "capturePatterns": [
+    "build/final-gate-r9-32b307c/frontend/**/*",
+    "frontend/marketops-console/dist/**/*"
+  ],
+  "stalePreexistingReports": [],
+  "xmlParseErrors": [],
+  "testcaseCounts": null,
+  "namedTestcaseNodes": {
+    "path": "/private/tmp/slice3-final-execution-32b307c-r1/frontend-quality/named-testcase-nodes.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "bytes": 3
+  },
+  "failures": null,
+  "errors": null,
+  "skipped": null,
+  "boundary": "Command exit and raw reports only. Root must review full layer scope, source identity, assertions, capacity/resource bounds and publication evidence before any PASS assessment."
+}

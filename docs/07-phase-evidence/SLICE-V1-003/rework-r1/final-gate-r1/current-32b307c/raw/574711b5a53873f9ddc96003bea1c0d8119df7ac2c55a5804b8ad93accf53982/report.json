@@ -1,0 +1,1038 @@
+{
+  "config": {
+    "argv": [
+      "/Users/chzhengx/Library/Application Support/fnm/node-versions/v24.19.0/installation/bin/node",
+      "/private/tmp/slice3-final-browser-work.7TIa4Q/source/frontend/marketops-console/node_modules/.bin/playwright",
+      "test",
+      "--config=playwright.legacy-isolated.config.ts",
+      "--reporter=list,json,junit,html"
+    ],
+    "configFile": "/private/tmp/slice3-final-browser-work.7TIa4Q/source/frontend/marketops-console/playwright.legacy-isolated.config.ts",
+    "rootDir": "/private/tmp/slice3-final-browser-work.7TIa4Q/source/frontend/marketops-console/tests/browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/private/tmp/slice3-final-browser-work.7TIa4Q/source/frontend/marketops-console/test-results/legacy-isolated",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/private/tmp/slice3-final-browser-work.7TIa4Q/source/frontend/marketops-console/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ],
+      [
+        "junit"
+      ],
+      [
+        "html"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "advertising-brief.spec.ts",
+      "file": "advertising-brief.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TC-BROWSER-017 the brief reads are refused without an authenticated caller",
+          "file": "advertising-brief.spec.ts",
+          "line": 149,
+          "column": 6,
+          "specs": [
+            {
+              "title": "the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF with no token",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 502,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:18.769Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b2129eafa76f0ab72cdd-834cf626de67a948c7be",
+              "file": "advertising-brief.spec.ts",
+              "line": 155,
+              "column": 5
+            },
+            {
+              "title": "the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04 with no token",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 131,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:19.700Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b2129eafa76f0ab72cdd-0200d39685823d98ffe2",
+              "file": "advertising-brief.spec.ts",
+              "line": 155,
+              "column": 5
+            },
+            {
+              "title": "the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04/history with no token",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 129,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:19.839Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b2129eafa76f0ab72cdd-e9db6321842407364e52",
+              "file": "advertising-brief.spec.ts",
+              "line": 155,
+              "column": 5
+            }
+          ]
+        },
+        {
+          "title": "TC-BROWSER-018 the brief renders as published",
+          "file": "advertising-brief.spec.ts",
+          "line": 172,
+          "column": 6,
+          "specs": [
+            {
+              "title": "every section is shown, including the ones that found nothing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 329,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:19.973Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b2129eafa76f0ab72cdd-61148485f461f1fe913a",
+              "file": "advertising-brief.spec.ts",
+              "line": 173,
+              "column": 3
+            },
+            {
+              "title": "a restatement keeps the reading somebody acted on",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 271,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:20.308Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b2129eafa76f0ab72cdd-dfef58bf6ed82d1e764c",
+              "file": "advertising-brief.spec.ts",
+              "line": 199,
+              "column": 3
+            },
+            {
+              "title": "nothing published is stated, not shown as a fault",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 216,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:20.584Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b2129eafa76f0ab72cdd-587205b00a0d73497a87",
+              "file": "advertising-brief.spec.ts",
+              "line": 218,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "advertising-execution.spec.ts",
+      "file": "advertising-execution.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TC-BROWSER-015 the advertising reads are refused without an authenticated caller",
+          "file": "advertising-execution.spec.ts",
+          "line": 163,
+          "column": 6,
+          "specs": [
+            {
+              "title": "the backend refuses /api/v1/console/advertising/reservations with no token",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 114,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:20.812Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "19c1e201ddc4cda8645f-671e86fea03161e7cb94",
+              "file": "advertising-execution.spec.ts",
+              "line": 169,
+              "column": 5
+            },
+            {
+              "title": "the backend refuses /api/v1/console/advertising/exposure with no token",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 127,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:20.932Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "19c1e201ddc4cda8645f-6064079b32f1e5dcc9bc",
+              "file": "advertising-execution.spec.ts",
+              "line": 169,
+              "column": 5
+            },
+            {
+              "title": "the backend refuses /api/v1/console/advertising/containments with no token",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 130,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:21.064Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "19c1e201ddc4cda8645f-1017d807d867589086f0",
+              "file": "advertising-execution.spec.ts",
+              "line": 169,
+              "column": 5
+            },
+            {
+              "title": "the backend refuses an advertising read carrying a made-up token",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 144,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:21.199Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "19c1e201ddc4cda8645f-1bd1c79d91af6311e3d0",
+              "file": "advertising-execution.spec.ts",
+              "line": 185,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "TC-BROWSER-016 the execution surfaces render in a real browser",
+          "file": "advertising-execution.spec.ts",
+          "line": 202,
+          "column": 6,
+          "specs": [
+            {
+              "title": "the envelope is shown axis by axis, with no combined figure",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 356,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:21.349Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "19c1e201ddc4cda8645f-a82ed021637272fd07ab",
+              "file": "advertising-execution.spec.ts",
+              "line": 203,
+              "column": 3
+            },
+            {
+              "title": "a hold names its kind and every condition still outstanding",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 254,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:21.710Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "19c1e201ddc4cda8645f-3008675572bb2f37acc1",
+              "file": "advertising-execution.spec.ts",
+              "line": 257,
+              "column": 3
+            },
+            {
+              "title": "no envelope is presented as no write at all, not as an empty one",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 294,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:21.969Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "19c1e201ddc4cda8645f-e0035ceb94a3469941fe",
+              "file": "advertising-execution.spec.ts",
+              "line": 280,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "availability-journey.spec.ts",
+      "file": "availability-journey.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "TC-BROWSER-014 stockout queue, accountable case and structured action",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1567,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T17:34:22.271Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8036133013e1e991dd02-a81b1fb72aea1e364e9c",
+          "file": "availability-journey.spec.ts",
+          "line": 11,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "business-journey.spec.ts",
+      "file": "business-journey.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "TC-BROWSER-013 authenticated evidence, approval, command and readback journey",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4232,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T17:34:23.847Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "874e36fd9948a1c4403c-fef50962fd7fbb441ebe",
+          "file": "business-journey.spec.ts",
+          "line": 4,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "health-shell.spec.ts",
+      "file": "health-shell.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "the built console recovers across a real database outage",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10079,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-06T17:34:28.091Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "450496b15120cced346a-2475c0c6a6fa75f0355a",
+          "file": "health-shell.spec.ts",
+          "line": 63,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "operating-console.spec.ts",
+      "file": "operating-console.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor",
+          "file": "operating-console.spec.ts",
+          "line": 33,
+          "column": 6,
+          "specs": [
+            {
+              "title": "shows the platform panel and no operating data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 153,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:38.187Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5c235735b01437bc871d-665847065225436c23ea",
+              "file": "operating-console.spec.ts",
+              "line": 34,
+              "column": 3
+            },
+            {
+              "title": "the backend refuses an operating request that carries no token",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 119,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:38.348Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5c235735b01437bc871d-b555e58592d753701cec",
+              "file": "operating-console.spec.ts",
+              "line": 44,
+              "column": 3
+            },
+            {
+              "title": "the backend refuses an operating request that carries a made-up token",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 131,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:38.473Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5c235735b01437bc871d-2bf9cfb6949947a1538d",
+              "file": "operating-console.spec.ts",
+              "line": 58,
+              "column": 3
+            },
+            {
+              "title": "the built bundle carries no token, password or secret reference",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 132,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:38.612Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5c235735b01437bc871d-3e6c3e29246ffb20d2fa",
+              "file": "operating-console.spec.ts",
+              "line": 79,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "TC-BROWSER-012 asynchronous export presentation and browser download integrity",
+          "file": "operating-console.spec.ts",
+          "line": 162,
+          "column": 6,
+          "specs": [
+            {
+              "title": "waits for 202 completion and saves only the verified large export",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2843,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:38.753Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5c235735b01437bc871d-e38eed2cec0a85c1b449",
+              "file": "operating-console.spec.ts",
+              "line": 164,
+              "column": 5
+            },
+            {
+              "title": "refuses a corrupt final part without offering a partial file",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2834,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:41.602Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5c235735b01437bc871d-80c9636fb2a74ec8f707",
+              "file": "operating-console.spec.ts",
+              "line": 164,
+              "column": 5
+            }
+          ]
+        },
+        {
+          "title": "TC-BROWSER-011 the operator journey runs in a real browser",
+          "file": "operating-console.spec.ts",
+          "line": 315,
+          "column": 6,
+          "specs": [
+            {
+              "title": "signs in, reaches the work list, and never labels doubt as certainty",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 297,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:44.441Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5c235735b01437bc871d-14d48cd6683dde2d841e",
+              "file": "operating-console.spec.ts",
+              "line": 316,
+              "column": 3
+            },
+            {
+              "title": "an ended session takes the operator back to sign-in with no data left on screen",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 249,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:44.743Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5c235735b01437bc871d-d69730a23e91fea74e55",
+              "file": "operating-console.spec.ts",
+              "line": 402,
+              "column": 3
+            },
+            {
+              "title": "a refused sign-in leaves the visitor told rather than blank",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 198,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T17:34:44.997Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5c235735b01437bc871d-3be80c8b3abd4e447bcf",
+              "file": "operating-console.spec.ts",
+              "line": 418,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-06T17:33:32.072Z",
+    "duration": 73286.541,
+    "expected": 25,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

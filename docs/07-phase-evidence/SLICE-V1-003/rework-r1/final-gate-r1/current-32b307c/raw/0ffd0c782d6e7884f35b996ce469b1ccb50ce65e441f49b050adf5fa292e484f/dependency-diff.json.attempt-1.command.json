@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "gh",
+    "api",
+    "repos/Corwin-Code/marketops-platform/dependency-graph/compare/08ad7da7d9e75b4ddd1c387a22ac0affba9e1430...32b307c648d16f2ecb7f0074e615e78e95ed4121",
+    "-X",
+    "GET"
+  ],
+  "startedAt": "2026-09-06T17:35:19.169230+00:00",
+  "finishedAt": "2026-09-06T17:35:24.690394+00:00",
+  "elapsedSeconds": 5.521309417000001,
+  "exitCode": 1,
+  "failure": null,
+  "artifact": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/dependency-diff.json.attempt-1",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "stderr": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/dependency-diff.json.attempt-1.stderr",
+    "sha256": "434932cf7d1f1e80f44a77d24d5f86544ae691063c7e40731ca90ba8de08e596",
+    "bytes": 180
+  },
+  "attempt": 1,
+  "boundary": "Original bytes of one read-only capture attempt; never overwritten."
+}

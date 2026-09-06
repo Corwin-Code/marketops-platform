@@ -1,5 +1,9 @@
 # Final Gate R1 residual rework evidence
 
+Current engineering evidence is complete on `32b307c`; see [the current handoff](CURRENT-ENGINEERING-HANDOFF.md) and [execution manifest](EXECUTION-MANIFEST.json). Independent Controller review and all 24 real release obligations remain pending. The historical descriptions below are not current verification status.
+
+## Historical record — original checkpoint scope
+
 The [current engineering handoff](CURRENT-ENGINEERING-HANDOFF.md) tracks the
 new verification-source checkpoint after the phase-transition test correction
 and [diagnostic priority-page read repair](PRIORITY-PAGE-READ-REWORK.md), followed

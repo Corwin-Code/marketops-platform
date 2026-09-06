@@ -1,0 +1,12 @@
+{
+  "kind": "IMMUTABLE_EXTERNAL_PARENT_REFERENCE",
+  "receipt": {
+    "path": "/private/tmp/slice3-security-admission-32b307c-r1/SECURITY-RECEIPT.json",
+    "sha256": "9e0123ffbb0dfe53053d6d7dee1b5afa039c6cbb6b7e193fe6b869db6e89d437",
+    "bytes": 49269
+  },
+  "sourceHead": "32b307c648d16f2ecb7f0074e615e78e95ed4121",
+  "sourceTree": "ca2e7f0a3b0f6b8361ffed3f2181a6bd8d000ca2",
+  "criteriaCopiedOrModified": false,
+  "localAuditIsAdditionalEvidence": true
+}

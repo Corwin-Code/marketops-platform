@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "gh",
+    "api",
+    "repos/Corwin-Code/marketops-platform/git/commits/f9fe2f58f23327b5ffa0ff755a2f392fc7a3215e",
+    "-X",
+    "GET"
+  ],
+  "startedAt": "2026-09-06T17:34:52.572868+00:00",
+  "finishedAt": "2026-09-06T17:34:55.000016+00:00",
+  "elapsedSeconds": 2.4271805420000003,
+  "exitCode": 0,
+  "failure": null,
+  "artifact": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/tested-merge-commit.json",
+    "sha256": "2d1a49ee3b2ef97094a49109df51359ef172e5adb46ab17899a7a5eb889b4e64",
+    "bytes": 2687
+  },
+  "stderr": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/tested-merge-commit.json.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "attempt": 1,
+  "boundary": "Original bytes of one read-only capture attempt; never overwritten.",
+  "originalResponse": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/tested-merge-commit.json.attempt-1",
+    "sha256": "2d1a49ee3b2ef97094a49109df51359ef172e5adb46ab17899a7a5eb889b4e64",
+    "bytes": 2687
+  },
+  "originalStderr": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/tested-merge-commit.json.attempt-1.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "attemptReceipts": [
+    {
+      "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/tested-merge-commit.json.attempt-1.command.json",
+      "sha256": "c0a0f0656a77c2aa33743dfbcb3eef46fd6c78a625d58ba7c228f804cc68b506",
+      "bytes": 888
+    }
+  ],
+  "canonicalResponseIsExactCopy": true
+}

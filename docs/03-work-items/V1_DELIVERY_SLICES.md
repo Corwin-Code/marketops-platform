@@ -188,3 +188,12 @@ hard-code its data model or algorithm for a handful of pilot SKUs.
 Every active Slice has one canonical contract under `docs/03-work-items/`. Its
 implementation tranches may use Issues/PRs, but those records must cite the Slice
 and may refine only `HOW`, not redefine `WHAT`, hard boundaries or acceptance.
+
+## SLICE-V1-003 current engineering delivery checkpoint
+
+The accepted-scope baseline table above is preserved. Current R1 engineering
+rework is complete on measured `32b307c`, with independent Controller review of
+the final containing Head pending. See [the current handoff](../07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/CURRENT-ENGINEERING-HANDOFF.md).
+This updates delivery progress only; no later Slice, extra write Capability,
+Ready/merge or production enablement is authorized. All 24 release obligations
+remain deferred and production-blocking.

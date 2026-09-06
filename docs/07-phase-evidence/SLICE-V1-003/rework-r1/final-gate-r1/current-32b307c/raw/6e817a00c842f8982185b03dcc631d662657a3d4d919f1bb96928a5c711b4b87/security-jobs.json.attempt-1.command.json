@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "gh",
+    "api",
+    "repos/Corwin-Code/marketops-platform/actions/runs/34048388769/attempts/1/jobs?per_page=100",
+    "-X",
+    "GET"
+  ],
+  "startedAt": "2026-09-06T17:35:02.445318+00:00",
+  "finishedAt": "2026-09-06T17:35:03.683857+00:00",
+  "elapsedSeconds": 1.2385800419999988,
+  "exitCode": 0,
+  "failure": null,
+  "artifact": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/security-jobs.json.attempt-1",
+    "sha256": "a55ed8450daaf2c61135659a22f1798ebbdf77df60506fbcb5620fc4136d08b3",
+    "bytes": 6756
+  },
+  "stderr": {
+    "path": "/private/tmp/slice3-security-ci-32b307c-completed-r1/security-jobs.json.attempt-1.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "attempt": 1,
+  "boundary": "Original bytes of one read-only capture attempt; never overwritten."
+}

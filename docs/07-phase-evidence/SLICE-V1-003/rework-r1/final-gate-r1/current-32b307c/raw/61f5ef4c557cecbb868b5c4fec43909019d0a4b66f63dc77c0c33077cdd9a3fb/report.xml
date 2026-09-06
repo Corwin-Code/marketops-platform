@@ -1,0 +1,28 @@
+<testsuites id="" name="" tests="12" failures="0" skipped="0" errors="0" time="92.31109">
+<testsuite name="governed-advertising.spec.ts" timestamp="2026-09-06T17:35:36.300Z" hostname="" tests="12" failures="0" skipped="0" time="45.183" errors="0">
+<testcase name="real Maker, Ops Lead and Owner decisions preserve minimum disclosure and exact versions" classname="governed-advertising.spec.ts" time="10.129">
+</testcase>
+<testcase name="real backend denies absent and forged credentials before advertising data is disclosed" classname="governed-advertising.spec.ts" time="0.016">
+</testcase>
+<testcase name="OZON actual governed manual path stays UNVERIFIED and requires an independent observer" classname="governed-advertising.spec.ts" time="8.373">
+</testcase>
+<testcase name="WILDBERRIES actual governed manual path stays UNVERIFIED and requires an independent observer" classname="governed-advertising.spec.ts" time="8.124">
+</testcase>
+<testcase name="all four real HTTP lane projections preserve unknown values and expose no invented action" classname="governed-advertising.spec.ts" time="2.197">
+</testcase>
+<testcase name="three distinct people accept an exact temporary exception, block actions, and end it" classname="governed-advertising.spec.ts" time="3.501">
+</testcase>
+<testcase name="scoped emergency hold remains active until independent recovery conditions are established" classname="governed-advertising.spec.ts" time="2.074">
+</testcase>
+<testcase name="HISTORY_UNKNOWN preserves actual HTTP command history, unresolved state and separate outcomes" classname="governed-advertising.spec.ts" time="1.223">
+</testcase>
+<testcase name="HISTORY_MISMATCH preserves actual HTTP command history, unresolved state and separate outcomes" classname="governed-advertising.spec.ts" time="0.742">
+</testcase>
+<testcase name="HISTORY_REGRESSION preserves actual HTTP command history, unresolved state and separate outcomes" classname="governed-advertising.spec.ts" time="0.959">
+</testcase>
+<testcase name="HISTORY_EXPIRED preserves actual HTTP command history, unresolved state and separate outcomes" classname="governed-advertising.spec.ts" time="0.783">
+</testcase>
+<testcase name="real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets" classname="governed-advertising.spec.ts" time="7.062">
+</testcase>
+</testsuite>
+</testsuites>

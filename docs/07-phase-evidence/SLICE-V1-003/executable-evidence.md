@@ -1,5 +1,9 @@
 # SLICE-V1-003 — executable evidence
 
+Current commands, exact source, full results and CI are recorded in [the R1 handoff](rework-r1/final-gate-r1/CURRENT-ENGINEERING-HANDOFF.md) and [execution manifest](rework-r1/final-gate-r1/EXECUTION-MANIFEST.json). The original `77faa37` instructions and counts below are historical and are not assigned to the current source.
+
+## Historical record — original checkpoint scope
+
 Every claim below is a command anybody can run against this tree. Nothing here
 is a summary of a summary: the counts are what the runner printed.
 

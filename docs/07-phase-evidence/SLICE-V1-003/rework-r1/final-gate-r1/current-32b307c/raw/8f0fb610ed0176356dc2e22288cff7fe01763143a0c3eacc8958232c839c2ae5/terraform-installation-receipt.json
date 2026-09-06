@@ -1,0 +1,9 @@
+{
+  "version": "1.14.9",
+  "platform": "darwin_arm64",
+  "archiveSha256": "5bc0b11b7a63c8984a41d82523356df46f7833c2e9651a39a7f8919422de5cde",
+  "binarySha256": "e6c2079a84ab7b336a9f8466d58d20fa1adf8a9c9a3bd826917a0c177e85cfaa",
+  "linuxChecksumMatchesPinnedWorkflow": true,
+  "source": "https://releases.hashicorp.com/terraform/1.14.9/",
+  "execution": "NOT_RUN"
+}
