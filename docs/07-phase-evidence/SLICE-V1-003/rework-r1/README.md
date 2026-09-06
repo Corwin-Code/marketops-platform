@@ -18,6 +18,7 @@ CV-A through CV-E concern the original Frozen Finding Set.
 | --- | --- |
 | [Takeover receipt](TAKEOVER_RECEIPT.md) | Completed package, repository and Owner authority checks. |
 | [Current final-gate work](final-gate-r1/README.md) | Residual implementation, verification and original Controller intake. |
+| [Checkpoint 344f597 repairs](final-gate-r1/CHECKPOINT-344F597-REWORK.md) | Exact failed backend/CodeQL checkpoint, synthetic authentication clock, complete purpose-evidence batching and safe historical diagnostic replays. |
 | [Execution manifest](final-gate-r1/EXECUTION-MANIFEST.json) | Current execution admission state and exact raw proof references. |
 | [Acceptance matrix](S3-AC-REWORK-STATUS.json) | All 200 exact accepted criteria; AC200 requires independent Controller review. |
 | [Finding matrix](FINDING-CLOSURE-MATRIX.json) | All 22 unchanged Frozen findings and their individual evidence dispositions. |

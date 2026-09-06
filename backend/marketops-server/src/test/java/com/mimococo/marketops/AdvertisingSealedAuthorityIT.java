@@ -56,6 +56,87 @@ class AdvertisingSealedAuthorityIT {
         }
     }
 
+    @Test void syntheticIssuerKeepsNativeClockAndExactBindingsForFinalAndControlGrants() throws Exception {
+        for (String purpose : new String[]{null, "CONTAINMENT_STOP"}) {
+            try (var app = transaction(); var administrator = admin.getConnection()) {
+                int pid;
+                long transactionId;
+                try (var query = app.createStatement(); var row = query.executeQuery("SELECT pg_backend_pid(),txid_current()")) {
+                    row.next(); pid = row.getInt(1); transactionId = row.getLong(2);
+                }
+                String issued = AdvertisingR1Fixture.proof(admin, app, graph, graph.id("ownerUser"),
+                        purpose, graph.id("recommendation"), graph.id("approval"));
+                try (var query = administrator.prepareStatement("""
+                        SELECT authenticated_at, step_up_valid_until, issued_at, expires_at,
+                               backend_pid, transaction_id, actor_user_id, organization_id,
+                               identity_provider_id, recommendation_id, approval_decision_id,
+                               purpose, consumed_at
+                          FROM iam.ad_invocation_grant
+                         WHERE proof_hash=encode(sha256(convert_to(?,'UTF8')),'hex')
+                        """)) {
+                    query.setString(1, issued);
+                    try (var row = query.executeQuery()) {
+                        assertThat(row.next()).isTrue();
+                        var authenticated = row.getTimestamp(1).toInstant();
+                        var stepUp = row.getTimestamp(2).toInstant();
+                        var issuedAt = row.getTimestamp(3).toInstant();
+                        var expires = row.getTimestamp(4).toInstant();
+                        assertThat(java.time.Duration.between(authenticated, stepUp)).isEqualTo(java.time.Duration.ofHours(1));
+                        assertThat(authenticated).isBeforeOrEqualTo(issuedAt);
+                        assertThat(expires).isAfter(issuedAt).isBeforeOrEqualTo(issuedAt.plusSeconds(30));
+                        assertThat(expires).isBeforeOrEqualTo(stepUp);
+                        assertThat(row.getInt(5)).isEqualTo(pid);
+                        assertThat(row.getLong(6)).isEqualTo(transactionId);
+                        assertThat(row.getObject(7, UUID.class)).isEqualTo(graph.id("ownerUser"));
+                        assertThat(row.getObject(8, UUID.class)).isEqualTo(graph.id("organization"));
+                        assertThat(row.getObject(9, UUID.class)).isEqualTo(graph.id("provider"));
+                        assertThat(row.getObject(10, UUID.class)).isEqualTo(graph.id("recommendation"));
+                        assertThat(row.getObject(11, UUID.class)).isEqualTo(graph.id("approval"));
+                        assertThat(row.getString(12)).isEqualTo(purpose == null ? "FINAL_APPROVAL" : purpose);
+                        assertThat(row.getTimestamp(13)).isNull();
+                        assertThat(row.next()).isFalse();
+                    }
+                }
+                app.rollback();
+            }
+        }
+    }
+
+    @Test void actualIssuerStillRejectsFutureAuthenticationAndExpiredStepUp() throws Exception {
+        for (boolean futureAuthentication : new boolean[]{true, false}) {
+            String digest = UUID.randomUUID().toString().replace("-", "").repeat(2);
+            try (var app = transaction(); var identity = admin.getConnection()) {
+                try (var role = identity.createStatement()) { role.execute("SET ROLE marketops_identity_issuer"); }
+                int pid;
+                long transactionId;
+                try (var query = app.createStatement(); var row = query.executeQuery("SELECT pg_backend_pid(),txid_current()")) {
+                    row.next(); pid = row.getInt(1); transactionId = row.getLong(2);
+                }
+                try (var query = identity.prepareStatement("""
+                        WITH auth_clock AS MATERIALIZED (SELECT clock_timestamp() AS at)
+                        SELECT iam.issue_ad_invocation_grant(?,?,?,?,?,?,
+                               auth_clock.at + CASE WHEN ? THEN interval '1 hour' ELSE interval '-1 minute' END,
+                               auth_clock.at + CASE WHEN ? THEN interval '2 hours' ELSE interval '-1 second' END,
+                               ?,?,?,?) FROM auth_clock
+                        """)) {
+                    query.setString(1, digest); query.setObject(2, graph.id("ownerUser"));
+                    query.setObject(3, graph.id("organization")); query.setObject(4, graph.id("provider"));
+                    query.setString(5, "a".repeat(64)); query.setString(6, "b".repeat(64));
+                    query.setBoolean(7, futureAuthentication); query.setBoolean(8, futureAuthentication);
+                    query.setObject(9, graph.id("recommendation")); query.setObject(10, graph.id("approval"));
+                    query.setInt(11, pid); query.setLong(12, transactionId);
+                    assertThatThrownBy(query::execute).isInstanceOfSatisfying(SQLException.class, failure -> {
+                        assertThat(failure.getSQLState()).isEqualTo("MO092");
+                        assertThat(failure.getMessage()).contains("trusted current authentication required");
+                    });
+                }
+                app.rollback();
+            }
+            assertThat(JdbcClient.create(admin).sql("SELECT count(*) FROM iam.ad_invocation_grant WHERE proof_hash=:digest")
+                    .param("digest", digest).query(Integer.class).single()).isZero();
+        }
+    }
+
     @Test void pendingApprovalCannotTakeAnExposureReservation() throws Exception {
         try(var app=transaction()) {
             assertThatThrownBy(()->AdvertisingR1Fixture.reserve(app,graph)).hasMessageContaining("exact intervention");

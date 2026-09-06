@@ -11176,19 +11176,11 @@
       "sha256": "106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2",
       "bytes": 2894,
       "roles": [
-        "HISTORICAL_BROWSER_REPAIR_DIAGNOSTIC_SOURCE",
-        "HISTORICAL_UNSAFE_REPLAY_SOURCE_ARCHIVED_BYTE_EXACT"
+        "HISTORICAL_BROWSER_REPAIR_DIAGNOSTIC_SOURCE"
       ],
-      "archiveLocations": [
-        {
-          "archiveRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/original-diagnostic-sources.zip",
-          "archiveSha256": "3d2de53ce4575c2631a28a8feeed27ae2dddb7b5de59f0064a054bfa58080ac8",
-          "member": "106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2/slice3-datetime-canonical-diagnostic-r1.cjs",
-          "memberSha256": "106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2",
-          "memberBytes": 2894,
-          "memberIndexRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/ARCHIVE-MEMBER-INDEX.json"
-        }
-      ]
+      "archiveLocations": [],
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2/slice3-datetime-canonical-diagnostic-r1.cjs",
+      "copyRequired": true
     },
     {
       "canonicalOriginalPath": "/private/tmp/slice3-failed-checkpoint-5fd53c0.INDEPENDENT-SCAN.json",
@@ -229189,19 +229181,11 @@
       "sha256": "106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2",
       "bytes": 2894,
       "roles": [
-        "HISTORICAL_EXACT_FAILURE_OR_CHECKPOINT_PACKAGE",
-        "HISTORICAL_UNSAFE_REPLAY_SOURCE_ARCHIVED_BYTE_EXACT"
+        "HISTORICAL_EXACT_FAILURE_OR_CHECKPOINT_PACKAGE"
       ],
-      "archiveLocations": [
-        {
-          "archiveRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/original-diagnostic-sources.zip",
-          "archiveSha256": "3d2de53ce4575c2631a28a8feeed27ae2dddb7b5de59f0064a054bfa58080ac8",
-          "member": "106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2/datetime-diagnostic.cjs",
-          "memberSha256": "106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2",
-          "memberBytes": 2894,
-          "memberIndexRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/ARCHIVE-MEMBER-INDEX.json"
-        }
-      ]
+      "archiveLocations": [],
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2/datetime-diagnostic.cjs",
+      "copyRequired": true
     },
     {
       "canonicalOriginalPath": "/private/tmp/slice3-frontend-failure-95902cf-r1/datetime-diagnostic.json",
@@ -229352,19 +229336,11 @@
       "sha256": "63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50",
       "bytes": 2444,
       "roles": [
-        "HISTORICAL_EXACT_FAILURE_OR_CHECKPOINT_PACKAGE",
-        "HISTORICAL_UNSAFE_REPLAY_SOURCE_ARCHIVED_BYTE_EXACT"
+        "HISTORICAL_EXACT_FAILURE_OR_CHECKPOINT_PACKAGE"
       ],
-      "archiveLocations": [
-        {
-          "archiveRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/original-diagnostic-sources.zip",
-          "archiveSha256": "3d2de53ce4575c2631a28a8feeed27ae2dddb7b5de59f0064a054bfa58080ac8",
-          "member": "63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50/locator-diagnostic.cjs",
-          "memberSha256": "63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50",
-          "memberBytes": 2444,
-          "memberIndexRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/ARCHIVE-MEMBER-INDEX.json"
-        }
-      ]
+      "archiveLocations": [],
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50/locator-diagnostic.cjs",
+      "copyRequired": true
     },
     {
       "canonicalOriginalPath": "/private/tmp/slice3-frontend-failure-da559bd-r1/locator-diagnostic.json",
@@ -236027,19 +236003,11 @@
       "sha256": "63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50",
       "bytes": 2444,
       "roles": [
-        "HISTORICAL_BROWSER_REPAIR_DIAGNOSTIC_SOURCE",
-        "HISTORICAL_UNSAFE_REPLAY_SOURCE_ARCHIVED_BYTE_EXACT"
+        "HISTORICAL_BROWSER_REPAIR_DIAGNOSTIC_SOURCE"
       ],
-      "archiveLocations": [
-        {
-          "archiveRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/original-diagnostic-sources.zip",
-          "archiveSha256": "3d2de53ce4575c2631a28a8feeed27ae2dddb7b5de59f0064a054bfa58080ac8",
-          "member": "63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50/slice3-manual-select-locator-diagnostic-r2.cjs",
-          "memberSha256": "63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50",
-          "memberBytes": 2444,
-          "memberIndexRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/ARCHIVE-MEMBER-INDEX.json"
-        }
-      ]
+      "archiveLocations": [],
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50/slice3-manual-select-locator-diagnostic-r2.cjs",
+      "copyRequired": true
     },
     {
       "canonicalOriginalPath": "/private/tmp/slice3-method-proposals-e278b1e-r3/PROPOSED-METHOD-BINDINGS.json",
@@ -239541,34 +239509,6 @@
       "archiveLocations": [],
       "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/cbaf3379dc3cf5cae3bfc0ee24393b420e5394c90293b86f97fe5a05dbfa589c/ARCHIVE-MEMBER-INDEX.json",
       "copyRequired": true
-    },
-    {
-      "canonicalOriginalPath": "/tmp/slice3-safe-diagnostic-replay-candidate-r1/files/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/original-diagnostic-sources.zip",
-      "originalPaths": [
-        "/tmp/slice3-safe-diagnostic-replay-candidate-r1/files/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/original-diagnostic-sources.zip"
-      ],
-      "sha256": "3d2de53ce4575c2631a28a8feeed27ae2dddb7b5de59f0064a054bfa58080ac8",
-      "bytes": 5988,
-      "roles": [
-        "BYTE_EXACT_HISTORICAL_DIAGNOSTIC_ARCHIVE"
-      ],
-      "archiveLocations": [],
-      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/original-diagnostic-sources.zip",
-      "copyRequired": true
-    },
-    {
-      "canonicalOriginalPath": "/tmp/slice3-safe-diagnostic-replay-candidate-r1/files/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/ARCHIVE-MEMBER-INDEX.json",
-      "originalPaths": [
-        "/tmp/slice3-safe-diagnostic-replay-candidate-r1/files/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/ARCHIVE-MEMBER-INDEX.json"
-      ],
-      "sha256": "41c64cfb2d565c7b11ac39004875afc09c4ee6b38c248dd0881481c27ebe7db8",
-      "bytes": 5479,
-      "roles": [
-        "BYTE_EXACT_HISTORICAL_DIAGNOSTIC_ARCHIVE"
-      ],
-      "archiveLocations": [],
-      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/ARCHIVE-MEMBER-INDEX.json",
-      "copyRequired": true
     }
   ],
   "originalJsonBytesRewritten": false,
@@ -239587,35 +239527,5 @@
     },
     "rawJsonBytesChanged": false,
     "directFinalizerProofsChanged": false
-  },
-  "diagnosticTransportRevision": {
-    "historicalHead": "344f59797fbc6874ac878ca2e2f1bf5885ef4ec0",
-    "archiveIndexRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/ARCHIVE-MEMBER-INDEX.json",
-    "historicalLoosePathsArchived": [
-      "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2/datetime-diagnostic.cjs",
-      "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2/slice3-datetime-canonical-diagnostic-r1.cjs",
-      "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50/locator-diagnostic.cjs",
-      "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50/slice3-manual-select-locator-diagnostic-r2.cjs"
-    ],
-    "safeReplays": [
-      {
-        "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostic_replays/manual-select-locator.cjs",
-        "sha256": "99de1747d0858536cc0bbe0549d66fe41c69dd1663f0208290a8db6c5201addd",
-        "bytes": 2786,
-        "historicalSourceSha256": "63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50",
-        "boundary": "Maintained detached micro-diagnostic replay. No full application or PostgreSQL acceptance claim."
-      },
-      {
-        "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostic_replays/datetime-canonical.cjs",
-        "sha256": "dfc7d1c71b1d6141873f4969e603b26716fa9256c3c2942649151d956d5502fe",
-        "bytes": 3239,
-        "historicalSourceSha256": "106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2",
-        "boundary": "Maintained detached micro-diagnostic replay. No full application or PostgreSQL acceptance claim."
-      }
-    ],
-    "historicalSourceBytesChanged": false,
-    "securityControlsChanged": false,
-    "selectedProofsChanged": false,
-    "priorMapsDirectory": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/original-pre-diagnostic-repair-344f597"
   }
 }

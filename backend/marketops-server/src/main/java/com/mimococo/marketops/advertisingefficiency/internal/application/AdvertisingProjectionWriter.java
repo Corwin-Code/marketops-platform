@@ -104,9 +104,8 @@ class AdvertisingProjectionWriter {
                     calculation.asOf(), calculatedAt, calculationKind, calculationId,
                     reconciliationRunId, run.lane(), run.cycles(), run.since()));
 
-            for (var evidence : calculation.purposeEvidence()) {
-                projection.recordPurposeEvidence(caseId, calculation.organizationId(), calculationId, evidence);
-            }
+            projection.recordPurposeEvidenceBatch(caseId, calculation.organizationId(), calculationId,
+                    calculation.purposeEvidence());
             for (AdRankFactor factor : scored.ranking().factors()) {
                 projection.insertFactor(ids.newId(), caseId, calculation.organizationId(),
                         calculationId, factor.code().name(), factor.value(), factor.weight(),

@@ -1,7 +1,13 @@
 const { createRequire } = require('node:module');
 const { readFileSync, writeFileSync } = require('node:fs');
+const { mkdtempSync } = require('node:fs');
+const { tmpdir } = require('node:os');
+const { join, resolve } = require('node:path');
+// Run from the repository root; each invocation owns a private temporary directory.
+const outputDirectory = mkdtempSync(join(tmpdir(), 'slice3-diagnostic-'));
+const outputPath = join(outputDirectory, 'result.json');
 const { createHash } = require('node:crypto');
-const root = '/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console';
+const root = resolve('frontend/marketops-console');
 const localRequire = createRequire(root + '/package.json');
 const { chromium } = localRequire('@playwright/test');
 const source = readFileSync(root + '/src/advertising/AdvertisingManualControls.tsx', 'utf8');
@@ -28,7 +34,8 @@ if (labels.length !== 2) throw new Error('Expected both exact source controls');
     }
     const snapshot = await page.locator('body').ariaSnapshot();
     const result = {sourceSha256:createHash('sha256').update(source).digest('hex'), controls, selections, snapshot, scope:'Isolated exact label/option markup diagnostic only; not full application acceptance.'};
-    writeFileSync('/tmp/slice3-manual-select-locator-diagnostic-r2.json', JSON.stringify(result,null,2)+'\n');
+    writeFileSync(outputPath, JSON.stringify(result,null,2)+'\n', { flag: 'wx', mode: 0o600 });
+    console.log(JSON.stringify({ outputPath }));
     console.log(JSON.stringify(result,null,2));
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode=1; });

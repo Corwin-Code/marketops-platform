@@ -4,8 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.Map;
@@ -220,20 +218,19 @@ public final class AdvertisingR1Fixture {
         String digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(proof.getBytes(StandardCharsets.UTF_8)));
         try (Connection identity = isolatedAdmin.getConnection()) {
             try (var role = identity.createStatement()) { role.execute("SET ROLE marketops_identity_issuer"); }
-            Instant authenticated;
-            try (var clockQuery=identity.createStatement(); var clockRow=clockQuery.executeQuery("SELECT clock_timestamp()")) {
-                clockRow.next(); authenticated=clockRow.getTimestamp(1).toInstant();
-            }
-            String sql = purpose == null ? "SELECT iam.issue_ad_invocation_grant(?,?,?,?,?,?,?,?,?,?,?,?)"
-                    : "SELECT iam.issue_ad_control_invocation_grant(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            // Capture the synthetic authentication event once on the server, in the issuing
+            // statement. Do not carry a wall-clock value through a separate Java/SQL round trip.
+            String invocation = purpose == null
+                    ? "iam.issue_ad_invocation_grant(?,?,?,?,?,?,auth_clock.at,auth_clock.at+interval '1 hour',?,?,?,?)"
+                    : "iam.issue_ad_control_invocation_grant(?,?,?,?,?,?,?,auth_clock.at,auth_clock.at+interval '1 hour',?,?,?,?)";
+            String sql = "WITH auth_clock AS MATERIALIZED (SELECT clock_timestamp() AS at) SELECT "
+                    + invocation + " FROM auth_clock";
             try (var issue = identity.prepareStatement(sql)) {
                 int i=1;
                 if (purpose != null) issue.setString(i++, purpose);
                 issue.setString(i++, digest); issue.setObject(i++, actor);
                 issue.setObject(i++, graph.id("organization")); issue.setObject(i++, graph.id("provider"));
                 issue.setString(i++, "a".repeat(64)); issue.setString(i++, "b".repeat(64));
-                issue.setTimestamp(i++, Timestamp.from(authenticated));
-                issue.setTimestamp(i++, Timestamp.from(authenticated.plusSeconds(3600)));
                 issue.setObject(i++, target); issue.setObject(i++, version);
                 issue.setInt(i++, pid); issue.setLong(i, transaction); issue.execute();
             }

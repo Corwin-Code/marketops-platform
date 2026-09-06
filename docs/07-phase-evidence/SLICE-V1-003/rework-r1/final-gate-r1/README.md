@@ -2,7 +2,8 @@
 
 The [current engineering handoff](CURRENT-ENGINEERING-HANDOFF.md) tracks the
 new verification-source checkpoint after the phase-transition test correction
-and [diagnostic priority-page read repair](PRIORITY-PAGE-READ-REWORK.md).
+and [diagnostic priority-page read repair](PRIORITY-PAGE-READ-REWORK.md), followed
+by the [344f597 checkpoint verification repairs](CHECKPOINT-344F597-REWORK.md).
 Product H nine-scope measurements, 342-row review and exact CI remain preserved;
 they are not assigned to the changed source.
 

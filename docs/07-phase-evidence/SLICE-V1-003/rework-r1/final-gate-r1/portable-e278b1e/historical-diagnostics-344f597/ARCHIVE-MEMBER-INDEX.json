@@ -1,0 +1,94 @@
+{
+  "kind": "HISTORICAL_DIAGNOSTIC_SOURCE_PRESERVATION_AND_SAFE_REPLAY_RELOCATION",
+  "historicalHead": "344f59797fbc6874ac878ca2e2f1bf5885ef4ec0",
+  "archive": {
+    "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/historical-diagnostics-344f597/original-diagnostic-sources.zip",
+    "sha256": "3d2de53ce4575c2631a28a8feeed27ae2dddb7b5de59f0064a054bfa58080ac8",
+    "bytes": 5988
+  },
+  "files": [
+    {
+      "originalPath": "/private/tmp/slice3-frontend-failure-95902cf-r1/datetime-diagnostic.cjs",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2/datetime-diagnostic.cjs",
+      "sha256": "106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2",
+      "bytes": 2894,
+      "copyRequired": true,
+      "gitFileLimitExceeded": false,
+      "gitFileWarning": false,
+      "member": "106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2/datetime-diagnostic.cjs",
+      "historicalHead": "344f59797fbc6874ac878ca2e2f1bf5885ef4ec0",
+      "historicalGitBlob": "957c57cf4f87c98d123d1565838981bdf4efd89a"
+    },
+    {
+      "originalPath": "/private/tmp/slice3-datetime-canonical-diagnostic-r1.cjs",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2/slice3-datetime-canonical-diagnostic-r1.cjs",
+      "sha256": "106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2",
+      "bytes": 2894,
+      "copyRequired": true,
+      "gitFileLimitExceeded": false,
+      "gitFileWarning": false,
+      "member": "106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2/slice3-datetime-canonical-diagnostic-r1.cjs",
+      "historicalHead": "344f59797fbc6874ac878ca2e2f1bf5885ef4ec0",
+      "historicalGitBlob": "957c57cf4f87c98d123d1565838981bdf4efd89a"
+    },
+    {
+      "originalPath": "/private/tmp/slice3-frontend-failure-da559bd-r1/locator-diagnostic.cjs",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50/locator-diagnostic.cjs",
+      "sha256": "63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50",
+      "bytes": 2444,
+      "copyRequired": true,
+      "gitFileLimitExceeded": false,
+      "gitFileWarning": false,
+      "member": "63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50/locator-diagnostic.cjs",
+      "historicalHead": "344f59797fbc6874ac878ca2e2f1bf5885ef4ec0",
+      "historicalGitBlob": "e10cd920aa3ca7be327dba35835dda908db78b31"
+    },
+    {
+      "originalPath": "/private/tmp/slice3-manual-select-locator-diagnostic-r2.cjs",
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50/slice3-manual-select-locator-diagnostic-r2.cjs",
+      "sha256": "63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50",
+      "bytes": 2444,
+      "copyRequired": true,
+      "gitFileLimitExceeded": false,
+      "gitFileWarning": false,
+      "member": "63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50/slice3-manual-select-locator-diagnostic-r2.cjs",
+      "historicalHead": "344f59797fbc6874ac878ca2e2f1bf5885ef4ec0",
+      "historicalGitBlob": "e10cd920aa3ca7be327dba35835dda908db78b31"
+    }
+  ],
+  "safeReplays": [
+    {
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostic_replays/manual-select-locator.cjs",
+      "sha256": "99de1747d0858536cc0bbe0549d66fe41c69dd1663f0208290a8db6c5201addd",
+      "bytes": 2786,
+      "historicalSourceSha256": "63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50",
+      "boundary": "Maintained detached micro-diagnostic replay. No full application or PostgreSQL acceptance claim."
+    },
+    {
+      "repositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/diagnostic_replays/datetime-canonical.cjs",
+      "sha256": "dfc7d1c71b1d6141873f4969e603b26716fa9256c3c2942649151d956d5502fe",
+      "bytes": 3239,
+      "historicalSourceSha256": "106d0779b601cbbcc6c9f37cc39a2b15f44a799158cafb1a71f48a66dc4efec2",
+      "boundary": "Maintained detached micro-diagnostic replay. No full application or PostgreSQL acceptance claim."
+    }
+  ],
+  "zipCrcAndEveryMemberShaVerified": true,
+  "originalBytesChanged": false,
+  "selectedFinalizerProofsChanged": false,
+  "securityFinding": {
+    "rule": "js/insecure-temporary-file",
+    "alertNumbers": [
+      229,
+      230,
+      231,
+      232
+    ],
+    "severity": "high",
+    "historicalCheckId": 101500097812,
+    "historicalCheckConclusion": "failure",
+    "repair": "Current replay scripts create a new private directory with mkdtempSync and create the result with exclusive wx and mode 0600. Unsafe historical scripts are retained as non-executed archive evidence; no security rule or alert state is changed."
+  },
+  "historicalReferenceResolution": "Original metadata snapshots retain their original path/hash claims. Resolve any removed loose path through this index to its exact archive member. Replays have new paths and new hashes; their execution cannot substitute for original diagnostic evidence.",
+  "productionWriteEnabled": false,
+  "engineeringClosureClaimMade": false
+}

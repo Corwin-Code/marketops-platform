@@ -1,6 +1,12 @@
 const { createRequire } = require('node:module');
 const { writeFileSync } = require('node:fs');
-const localRequire = createRequire('/Users/chzhengx/Code/personal/marketops-platform/frontend/marketops-console/package.json');
+const { mkdtempSync } = require('node:fs');
+const { tmpdir } = require('node:os');
+const { join, resolve } = require('node:path');
+// Run from the repository root; each invocation owns a private temporary directory.
+const outputDirectory = mkdtempSync(join(tmpdir(), 'slice3-diagnostic-'));
+const outputPath = join(outputDirectory, 'result.json');
+const localRequire = createRequire(resolve('frontend/marketops-console/package.json'));
 const { chromium } = localRequire('@playwright/test');
 (async () => {
   const browser = await chromium.launch({headless:true});
@@ -38,7 +44,8 @@ const { chromium } = localRequire('@playwright/test');
     }
     const report = {kind:'TEMPORARY_BROWSER_TIME_NORMALIZATION_DIAGNOSTIC',results,totalInstants:4000,totalFills:28,
       scope:'Detached native datetime-local canonicalization plus actual Playwright fill only. No application, PostgreSQL, Provider, or full integration acceptance claim.'};
-    writeFileSync('/tmp/slice3-datetime-canonical-diagnostic-r1.json',JSON.stringify(report,null,2)+'\n');
+    writeFileSync(outputPath,JSON.stringify(report,null,2)+'\n', { flag: 'wx', mode: 0o600 });
+    console.log(JSON.stringify({ outputPath }));
     console.log(JSON.stringify({totalInstants:4000,totalFills:28,originalRejectedInBothTimezones:true,allCanonicalInstantsAndFillsVerified:true}));
   } finally {await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

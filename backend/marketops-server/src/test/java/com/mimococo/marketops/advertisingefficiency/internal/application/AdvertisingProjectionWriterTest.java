@@ -405,6 +405,22 @@ class AdvertisingProjectionWriterTest {
                 any(),any(),any(),any(),any(),any(),any(),any(),any(),any());
     }
 
+    @Test void purposeBatchKeepsUnresolvedEvidenceAndThePersistedCaseAndCalculationIdentity() {
+        org.mockito.Mockito.doReturn(EXISTING).when(projection).upsertCase(any());
+        var base=calculation(protectionCase());
+        var purposes=List.of(
+                new AdCaseCalculation.PurposeEvidence("PROTECTION_BID_WRITE","SELLABILITY",PROFILE,
+                        AS_OF,AS_OF,AS_OF.plusSeconds(60),true,List.of()),
+                new AdCaseCalculation.PurposeEvidence("OPTIMIZATION_BID_WRITE","COST_AND_FEE",null,
+                        null,null,null,false,List.of("UNKNOWN","PROFILE_MISSING")));
+        var input=new AdCaseCalculation(base.organizationId(),base.adNativeObjectId(),base.storeId(),base.platformCode(),
+                base.semanticProfileId(),base.lineageGeneration(),base.asOf(),base.policies(),base.affectedSet(),
+                base.affectedSetId(),base.cases(),base.qualificationPeriods(),purposes,base.writeQualificationSatisfied());
+        var result=write(input).cases().getFirst();
+        verify(projection).recordPurposeEvidenceBatch(eq(EXISTING),eq(ORG),eq(result.calculationId()),eq(purposes));
+        verify(projection,org.mockito.Mockito.never()).recordPurposeEvidence(any(),any(),any(),any());
+    }
+
     private AdvertisingProjectionWriter.Written write(AdCaseCalculation calculation) {
         return writer.write(calculation, AdvertisingProjectionWriter.TARGETED, null);
     }

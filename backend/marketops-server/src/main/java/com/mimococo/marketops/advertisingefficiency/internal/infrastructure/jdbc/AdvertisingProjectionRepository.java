@@ -340,6 +340,39 @@ public class AdvertisingProjectionRepository {
                 .param("reasons", evidence.reasonCodes().toArray(new String[0])).update();
     }
 
+    /** Append every purpose row in bounded statements; row constraints and expiry triggers still execute. */
+    @org.springframework.transaction.annotation.Transactional
+    public void recordPurposeEvidenceBatch(UUID caseId, UUID organization, UUID calculation,
+            List<com.mimococo.marketops.advertisingefficiency.internal.domain.AdCaseCalculation.PurposeEvidence> evidence) {
+        var rows = List.copyOf(evidence);
+        // Bound SQL parameters without truncating a larger evidence set. The enclosing
+        // transaction includes all chunks and the case projection that owns them.
+        for (int start = 0; start < rows.size(); start += 128) {
+            var chunk = rows.subList(start, Math.min(start + 128, rows.size()));
+            var values = new java.util.StringJoiner(",");
+            for (int i = 0; i < chunk.size(); i++) {
+                values.add("(:caseId,:organization,:calculation,:purpose" + i + ",:kind" + i
+                        + ",:profile" + i + ",:source" + i + ",:accepted" + i + ",:expires" + i
+                        + ",:eligible" + i + ",:reasons" + i + ")");
+            }
+            var statement = jdbc.sql("""
+                    INSERT INTO mart.ad_case_purpose_evidence (case_id, organization_id, calculation_id,
+                        decision_purpose, evidence_kind, freshness_profile_id, source_time, accepted_at,
+                        expires_at, eligible, reason_codes)
+                    VALUES
+                    """ + values)
+                    .param("caseId", caseId).param("organization", organization).param("calculation", calculation);
+            for (int i = 0; i < chunk.size(); i++) {
+                var row = chunk.get(i);
+                statement.param("purpose" + i, row.purpose()).param("kind" + i, row.kind())
+                        .param("profile" + i, row.profileId()).param("source" + i, ts(row.sourceTime()))
+                        .param("accepted" + i, ts(row.acceptedAt())).param("expires" + i, ts(row.expiresAt()))
+                        .param("eligible" + i, row.eligible()).param("reasons" + i, row.reasonCodes().toArray(new String[0]));
+            }
+            statement.update();
+        }
+    }
+
     public void recordQualification(UUID organization, UUID object, UUID policy,
             Instant from, Instant to, boolean qualified, Instant at) {
         jdbc.sql("""
