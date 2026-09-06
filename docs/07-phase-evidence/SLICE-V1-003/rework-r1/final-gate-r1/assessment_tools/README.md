@@ -45,3 +45,37 @@ for the synthetic boundaries. Use `python3 <this-directory>/propose_method_bindi
 for explicit expected-source, catalog, plan, blocker and output arguments. A zero
 exit code means a proposal report was generated; remaining gaps and blocked rows
 must be reviewed individually and are never a closure PASS.
+
+
+## Evidence derivation after an unchanged product checkpoint
+
+A documentation-only descendant can use the explicit `derivationSourceIdentity`
+mode. The original product Head, tree, source inventory and raw execution
+receipts remain unchanged. The tools record their own actual committed Head,
+tree, Git blobs and completed independent execution receipts. The validator
+checks clean ancestry, every original runtime Git entry and worktree byte, and
+rejects any changed or newly added runtime input. The only declared line-ending
+transformations are the two existing Windows command files. An inventoried
+document such as the collector remains a frozen execution input.
+
+Additional helper source must be bound to its actual tool commit and a real,
+completed execution. Root captures the command process, return code, timestamps,
+source pins before and after, and original logs. Synthetic receipt fixtures in
+the tool tests are refusal checks; they are never project execution evidence.
+The later catalog and binding invocations receive their own actual capture.
+
+Governance may refer to the original product verification and separate later
+tool executions through an explicitly labelled composite record. That record
+preserves each original run and makes no claim that they were one command.
+An additional helper node must come from the exact evidence members of its
+actual helper execution receipt. Product and tool execution identities remain
+separate in the catalog, proposal and final proof provenance. Old successful
+helper runs remain historical evidence of their own committed dependencies;
+an unchanged test filename does not make an old run validate a changed binder.
+
+The JUnit source resolver uses the original testcase FQCN or the original root
+suite FQCN for display-named Java classes. It preserves each raw classname,
+method name, ordinal and SHA. A repeated method across distinct nested classes
+stays ambiguous. Browser JUnit uses its explicit original file mapping and
+exact raw identity. No inferred class name, omitted parameter, missing report
+or failed sibling can supply an admissible proof.

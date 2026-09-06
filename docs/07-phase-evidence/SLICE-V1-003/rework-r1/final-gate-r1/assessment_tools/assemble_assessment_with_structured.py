@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bounded current-evidence preparation. Writes only /tmp; never emits COMPLETE/PASS layers."""
 from pathlib import Path
-import argparse,collections,hashlib,json,re,subprocess,sys,xml.etree.ElementTree as ET
+import argparse,collections,hashlib,importlib.util,json,re,subprocess,sys,xml.etree.ElementTree as ET
 if not __debug__:raise SystemExit('REFUSED: optimized Python disables required boundary checks')
 SELF=Path(__file__).resolve()
 def repository_root():
@@ -17,11 +17,14 @@ def temporary_output(path):
  assert out!=temporary and out.is_relative_to(temporary) and not out.is_relative_to(ROOT), 'Output must be a dedicated /tmp directory outside the repository'
  return out
 GATE=ROOT/'docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1'
-HEAD=TREE=INVENTORY=INVENTORY_SHA=SOURCE_IDENTITY=None
+HEAD=TREE=INVENTORY=INVENTORY_SHA=SOURCE_IDENTITY=SOURCE_IDENTITY_BASE=None
+DERIVATION_VALIDATION={}
 LAYERS=['backend_full','frontend_quality','browser','governance','infrastructure','migration','security','supply_chain','mixed_capacity']
 sha=lambda raw:hashlib.sha256(raw).hexdigest()
 load=lambda path:json.loads(Path(path).read_text())
 def write(name,obj):
+ if isinstance(obj,dict) and SOURCE_IDENTITY and SOURCE_IDENTITY.get('derivationSourceIdentity') is not None:
+  obj={**obj,'derivationSourceIdentity':SOURCE_IDENTITY['derivationSourceIdentity'],'additionalExecutionInputs':SOURCE_IDENTITY.get('additionalExecutionInputs',[]),'derivationSourceValidation':DERIVATION_VALIDATION}
  p=OUT/name
  assert p.resolve().is_relative_to(temporary_output(OUT))
  p.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n')
@@ -59,6 +62,19 @@ def inv():
  return {r['path']:r for r in load(INVENTORY)['files']}
 def all_sources():
  result=inv()
+ if SOURCE_IDENTITY.get('derivationSourceIdentity') is not None:
+  # Bootstrap only the explicitly pinned local helper; its shared validator then
+  # checks ancestry, every product input, all helper receipts and the clean tree.
+  path=SELF.with_name('propose_method_bindings.py');relative=path.relative_to(ROOT).as_posix()
+  rows=[r for r in SOURCE_IDENTITY.get('additionalExecutionInputs',[]) if r.get('path')==relative]
+  assert len(rows)==1, 'Derivation source validator must be uniquely registered'
+  row=rows[0];head=SOURCE_IDENTITY['derivationSourceIdentity']['sourceHead']
+  assert re.fullmatch('[0-9a-f]{40}',head) and row.get('sourceHead')==head and row.get('scope')=='EVIDENCE_DERIVATION_ONLY'
+  raw=subprocess.check_output(['git','--no-replace-objects','show',head+':'+relative],cwd=ROOT)
+  assert sha(raw)==row.get('sha256') and path.read_bytes()==raw, 'Derivation source validator differs from its exact Git bytes'
+  module=load_junit_helper(path)
+  return module.derivation_sources(SOURCE_IDENTITY,load(INVENTORY),ROOT,SOURCE_IDENTITY_BASE,DERIVATION_VALIDATION)
+
  for row in SOURCE_IDENTITY.get('additionalExecutionInputs',[]):
   path=row['path'];assert row['sourceHead']==HEAD and row.get('scope')=='EVIDENCE_DERIVATION_ONLY'
   raw=subprocess.check_output(['git','show',HEAD+':'+path],cwd=ROOT)
@@ -164,19 +180,36 @@ def prepare():
   write('EXECUTION-INPUTS.json',{'kind':'ROOT_REGISTERED_CURRENT_EXECUTION_INPUTS','sourceHead':HEAD,'sourceTree':TREE,'layers':[{'id':name,'adapter':'collector','receipt':None,'junitSourceByClass':{},'jsonRecordAdapters':[]} for name in LAYERS],'sourcePrefixToRepository':{},'artifactDestinations':{}})
  print(json.dumps({'preparedCriteria':200,'preparedFindings':22,'exactFrozenClauses':115,'CV':5,'methodLocators':len(catalog),'staleDraftPins':len(drifts),'unresolvedClauseLocators':sum(len(c['unresolvedHistoricalLocators']) for c in clauses)}))
 
-def source_for_java(classname,inventory):
- outer=classname.split('$')[0].replace('.','/')+'.java'
- found=[p for p in inventory if p.endswith('/'+outer)]
- return found[0] if len(found)==1 else None
+def load_junit_helper(path):
+ spec=importlib.util.spec_from_file_location('bound_junit_source_resolver',path)
+ module=importlib.util.module_from_spec(spec);previous=sys.dont_write_bytecode
+ try:
+  sys.dont_write_bytecode=True;spec.loader.exec_module(module)
+ finally:sys.dont_write_bytecode=previous
+ return module
+
+def bound_execution_helper(inventory):
+ path=SELF.with_name('propose_method_bindings.py')
+ assert path.is_relative_to(ROOT), 'Shared JUnit source resolver must be a repository input'
+ relative=path.relative_to(ROOT).as_posix()
+ assert relative in inventory and inventory[relative]['sha256']==sha(path.read_bytes()), 'Shared JUnit source resolver is unmeasured or changed'
+ return load_junit_helper(path)
+
+def backend_junit_reader(inventory):
+ return bound_execution_helper(inventory).read_xml
 
 def catalog(configpath):
- config=load(configpath);inventory=all_sources();nodes=[];layers=[];issues=[]
+ config=load(configpath);inventory=all_sources();nodes=[];layers=[];issues=[];java_reader=None
  require_identity(config)
  require_identity(load(OUT/'ASSESSMENT-SLOTS.json'),True)
  for spec in config['layers']:
   if not spec.get('receipt'):layers.append({'id':spec['id'],'state':'NO_EXECUTION_RECEIPT_REGISTERED'});continue
   receiptpath=Path(spec['receipt']);receiptpath=receiptpath if receiptpath.is_absolute() else Path(configpath).resolve().parent/receiptpath
-  receipt=load(receiptpath);security=spec.get('adapter')=='security'
+  receipt=load(receiptpath);security=spec.get('adapter')=='security';composite=None;layer_reference=ref(receiptpath)
+  if receipt.get('kind')=='EXPLICIT_COMPOSITE_PRODUCT_AND_DERIVATION_SCOPES':
+   assert spec['id']=='governance' and not security, 'Composite scope is only allowed for governance'
+   composite=bound_execution_helper(inventory).composite_execution_context(layer_reference,{'sourceHead':HEAD,'sourceTree':TREE,'sourceInventorySha256':INVENTORY_SHA},SOURCE_IDENTITY_BASE,SOURCE_IDENTITY)
+   receiptpath=composite['parentPath'];receipt=composite['parent']
   if security:
    same=receipt['sourceHead']==HEAD and receipt['sourceTree']==TREE and receipt['executionSourceInventory']['sha256']==INVENTORY_SHA
    terminal=same and all(receipt['criteria'].values()) and receipt['run']['status']=='completed' and receipt['run']['conclusion']=='success'
@@ -185,20 +218,30 @@ def catalog(configpath):
    same=receipt['sourceHead']==HEAD and receipt['sourceTree']==TREE and receipt['sourceInventorySha256']==INVENTORY_SHA
    terminal=same and receipt.get('result')=='COMMAND_SUCCEEDED_REVIEW_REQUIRED' and receipt.get('sourceStable') is True and receipt.get('exitCode')==0 and bool(receipt.get('finishedAt'))
    state=receipt['result'];runid=receipt['runId'];artifacts=[ref(resolve(e,receiptpath.parent)) for e in receipt.get('evidence',[])]
-  layers.append({'id':spec['id'],'runId':runid,'receipt':ref(receiptpath),'state':state,'exactSourceIdentityMatches':same,'terminalSuccessfulCommandObserved':terminal,'engineeringLayerReview':'PENDING','overallPassClaimMade':False})
+  if composite:
+   for execution in composite['toolReceipts'].values():artifacts.extend(ref(resolve(e,execution['path'].parent)) for e in execution['receipt']['evidence'])
+  layers.append({'id':spec['id'],'runId':runid,'receipt':layer_reference,**({'kind':'EXPLICIT_COMPOSITE_PRODUCT_AND_DERIVATION_SCOPES','parent':composite['parentReference'],'toolExecutions':composite['toolExecutions']} if composite else {}),'state':state,'exactSourceIdentityMatches':same,'terminalSuccessfulCommandObserved':terminal,'engineeringLayerReview':'PENDING','overallPassClaimMade':False})
   if not same:issues.append({'layer':spec['id'],'problem':'SOURCE_IDENTITY_DIFFERS'});continue
   def add(row):
-   canonical=json.dumps([spec['id'],runid,row.get('sourcePath'),row.get('class'),row.get('name'),row['evidence'],row.get('assertions')],sort_keys=True)
-   row.update(nodeId=sha(canonical.encode())[:24],layer=spec['id'],runId=runid,sourceHead=HEAD,sourceTree=TREE,sourceInventorySha256=INVENTORY_SHA,terminalSuccessfulCommandObserved=terminal,admissibleAfterIndependentScopeReview=terminal and row['observedResult']=='PASSED' and SOURCE_IDENTITY.get('disposition')!='FAILED_CHECKPOINT')
    path=row.get('sourcePath');row['sourceAuthorityScope']='ADDITIONAL_DERIVATION_INPUT' if inventory.get(path,{}).get('additionalDerivationInput') else 'RUNTIME_SOURCE_INVENTORY';row['source']={'path':path,'sha256':inventory[path]['sha256']} if path in inventory else None
-   if row['source'] is None:row['admissibleAfterIndependentScopeReview']=False
+   product={'sourceHead':HEAD,'sourceTree':TREE,'sourceInventorySha256':INVENTORY_SHA}
+   scope={'runId':runid}
+   if SOURCE_IDENTITY.get('derivationSourceIdentity') is not None:
+    scope.update(productSourceIdentity=product,executionSourceIdentity=product,actualExecutionReceipt=ref(receiptpath))
    if inventory.get(path,{}).get('additionalDerivationInput'):
     extra=inventory[path]
     if not extra.get('executionReceipt'):
-     row['admissibleAfterIndependentScopeReview']=False;row['additionalSourceBoundary']='SOURCE_PIN_ONLY_NO_EXECUTION_RECEIPT'
+     row['additionalSourceBoundary']='SOURCE_PIN_ONLY_NO_EXECUTION_RECEIPT'
+    elif SOURCE_IDENTITY.get('derivationSourceIdentity') is not None:
+     scope=bound_execution_helper(inventory).additional_node_execution(extra,row['evidence'],composite,SOURCE_IDENTITY,SOURCE_IDENTITY_BASE)
     else:
-     resolve(extra['executionReceipt']);row['additionalExecutionReceipt']=extra['executionReceipt']
+     resolve(extra['executionReceipt'],SOURCE_IDENTITY_BASE)
+   elif composite and row['source'] is not None:
+    scope=bound_execution_helper(inventory).product_node_execution(row['evidence'],composite,SOURCE_IDENTITY,SOURCE_IDENTITY_BASE)
+   canonical=json.dumps([spec['id'],scope['runId'],path,row.get('class'),row.get('name'),row['evidence'],row.get('assertions')],sort_keys=True)
+   row.update(nodeId=sha(canonical.encode())[:24],layer=spec['id'],sourceHead=HEAD,sourceTree=TREE,sourceInventorySha256=INVENTORY_SHA,terminalSuccessfulCommandObserved=terminal,admissibleAfterIndependentScopeReview=terminal and row['observedResult']=='PASSED' and row['source'] is not None and not row.get('additionalSourceBoundary') and SOURCE_IDENTITY.get('disposition')!='FAILED_CHECKPOINT',**scope)
    nodes.append(row)
+
   if security:
    for name,value in receipt['criteria'].items():
     add({'kind':'json','name':'security.'+name,'class':None,'sourcePath':'.github/workflows/security.yml','evidence':ref(receiptpath),'observedResult':'PASSED' if value is True else 'NOT_PASSED','assertions':[{'pointer':'/criteria/'+name,'expected':value}],'scope':None})
@@ -207,10 +250,15 @@ def catalog(configpath):
    if path.suffix!='.xml':continue
    try:tree=ET.parse(path)
    except ET.ParseError as error:issues.append({'layer':spec['id'],'path':str(path),'problem':str(error)});continue
-   for ordinal,node in enumerate(tree.getroot().iter('testcase')):
-    result=next((tag.upper() for tag in ['failure','error','skipped'] if node.find(tag) is not None),'PASSED')
-    classname=node.get('classname','');source=source_for_java(classname,inventory) if spec['id']=='backend_full' else spec.get('junitSourceByClass',{}).get(classname)
-    add({'kind':'junit','class':classname,'name':node.get('name'),'sourcePath':source,'evidence':{k:evidence[k] for k in ['path','sha256']},'nodeOrdinal':ordinal,'observedResult':result,'scope':None})
+   if spec['id']=='backend_full':
+    if java_reader is None:java_reader=backend_junit_reader(inventory)
+    for original in java_reader(path,inventory):
+     add({'kind':'junit',**original,'evidence':{k:evidence[k] for k in ['path','sha256']},'scope':None})
+   else:
+    for ordinal,node in enumerate(tree.getroot().iter('testcase')):
+     result=next((tag.upper() for tag in ['failure','error','skipped'] if node.find(tag) is not None),'PASSED')
+     classname=node.get('classname','');source=spec.get('junitSourceByClass',{}).get(classname)
+     add({'kind':'junit','class':classname,'name':node.get('name'),'sourcePath':source,'evidence':{k:evidence[k] for k in ['path','sha256']},'nodeOrdinal':ordinal,'observedResult':result,'scope':None})
   # Explicit original-object receipts: only already registered execution artifacts qualify.
   # Nested provenance artifacts must be selected by an exact reference pointer on this receipt.
   registered=[ref(receiptpath)]+list(artifacts)
@@ -246,6 +294,16 @@ def catalog(configpath):
     for prefix,replacement in config.get('sourcePrefixToRepository',{}).items():
      if source and source.startswith(prefix):source=replacement+source[len(prefix):]
     add({'kind':'json','class':adapter.get('class'),'name':identity,'sourcePath':source,'evidence':evidence,'observedResult':'PASSED' if json_equal(status,adapter['passedValue']) else str(status),'assertions':[{'pointer':adapter['recordsPointer']+'/'+str(index)+adapter['statusPointer'],'expected':status}],'scope':None})
+ java_families=collections.defaultdict(set)
+ for n in nodes:
+  if n['kind']=='junit' and n['layer']=='backend_full' and n.get('sourcePath'):
+   family=(n['layer'],n['runId'],n['sourcePath'],re.split(r'[\[(]',n['name'] or '',maxsplit=1)[0])
+   java_families[family].add(n.get('class'))
+ for n in nodes:
+  if n['kind']=='junit' and n['layer']=='backend_full' and n.get('sourcePath'):
+   family=(n['layer'],n['runId'],n['sourcePath'],re.split(r'[\[(]',n['name'] or '',maxsplit=1)[0])
+   if len(java_families[family])>1:
+    n['admissibleAfterIndependentScopeReview']=False;n['ambiguity']='AMBIGUOUS_NESTED_METHOD_CLASSES'
  duplicates=collections.Counter((n['layer'],n['runId'],n['evidence']['path'],n.get('class'),n['name']) for n in nodes if n['kind']=='junit')
  for n in nodes:
   if n['kind']=='junit' and duplicates[(n['layer'],n['runId'],n['evidence']['path'],n.get('class'),n['name'])]!=1:
@@ -327,9 +385,34 @@ def assemble(configpath):
     require_identity(node,True)
     assert node['source']['path'] in measured and node['source']['sha256']==measured[node['source']['path']]['sha256'], 'Selected proof source is outside expected measured inputs'
     resolve(node['source'])
+    additional=measured[node['source']['path']].get('additionalDerivationInput')
+    if SOURCE_IDENTITY.get('derivationSourceIdentity') is not None:
+     matches=[layer for layer in catalog['layers'] if layer['id']==node['layer']]
+     assert len(matches)==1, 'Selected proof requires one original execution layer'
+     composite=matches[0].get('kind')=='EXPLICIT_COMPOSITE_PRODUCT_AND_DERIVATION_SCOPES'
+     if additional or composite:
+      assert node['layer']=='governance', 'Composite proof requires the explicit governance layer'
+      helper=bound_execution_helper(measured);context=helper.composite_execution_context(matches[0]['receipt'],{'sourceHead':HEAD,'sourceTree':TREE,'sourceInventorySha256':INVENTORY_SHA},SOURCE_IDENTITY_BASE,SOURCE_IDENTITY)
+      scope=helper.additional_node_execution(measured[node['source']['path']],node['evidence'],context,SOURCE_IDENTITY,SOURCE_IDENTITY_BASE) if additional else helper.product_node_execution(node['evidence'],context,SOURCE_IDENTITY,SOURCE_IDENTITY_BASE)
+      assert helper.execution_scope_matches(node,scope,SOURCE_IDENTITY_BASE), 'Selected execution scope differs from the original raw receipt'
+    elif additional:
+     # Original same-Head mode uses the original parent run and its registered
+     # artifacts; it neither needs a D wrapper nor gains new receipt fields.
+     matches=[layer for layer in catalog['layers'] if layer['id']==node['layer']]
+     assert len(matches)==1, 'Additional proof requires one original parent layer'
+     parent_path=resolve(matches[0]['receipt']);parent=load(parent_path)
+     require_identity(parent,True)
+     assert node['runId']==parent['runId'], 'Same-Head additional proof differs from original parent run'
+     parent_keys={(str(resolve(r,parent_path.parent)),r['sha256']) for r in [matches[0]['receipt'],*parent.get('evidence',[])]}
+     assert (str(resolve(node['evidence'])),node['evidence']['sha256']) in parent_keys, 'Same-Head additional proof is not an original parent artifact'
     reference=published(node['evidence'])
    except (ValueError,AssertionError) as error:issues.append({'id':row['id'],'problem':str(error)});continue
    proof={k:node[k] for k in ['kind','layer','source']};proof.update(scope=selected['scope'],role=selected['role'],evidence=reference)
+   for field in ['runId','productSourceIdentity','executionSourceIdentity','sourceAuthorityScope']:
+    if field in node:proof[field]=node[field]
+   if SOURCE_IDENTITY.get('derivationSourceIdentity') is not None:
+    for field in ['actualExecutionReceipt','additionalExecutionReceipt']:
+     if field in node:proof[field]=published(node[field])
    if node['kind']=='junit':proof.update({k:node[k] for k in ['class','name']})
    else:proof['assertions']=node['assertions']
    proofs.append(proof)
@@ -354,6 +437,7 @@ args=parser.parse_args()
 try:
  OUT=temporary_output(args.out)
  OUT.mkdir(parents=True,exist_ok=True)
+ SOURCE_IDENTITY_BASE=args.source_identity.resolve().parent
  SOURCE_IDENTITY=load(args.source_identity)
  HEAD=SOURCE_IDENTITY['sourceHead'];TREE=SOURCE_IDENTITY['sourceTree'];INVENTORY=resolve(SOURCE_IDENTITY['inventory']);INVENTORY_SHA=SOURCE_IDENTITY['inventory']['sha256']
  assert re.fullmatch('[0-9a-f]{40}',HEAD) and re.fullmatch('[0-9a-f]{40}',TREE)
