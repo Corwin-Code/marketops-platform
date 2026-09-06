@@ -79,3 +79,23 @@ no other browser `selectOption` call sites. Timeout limits, full evidence payloa
 checks and all state, reservation and authority assertions are retained.
 The diagnostic is not application acceptance: the changed browser source still
 requires a fresh complete application/browser and exact-commit verification.
+
+The `95902cfc35281de46a7206ba270a525cd9bd1775` local browser run
+then passed all 37 scenarios in 161.008 seconds on stable source, including both
+platform manual-observation journeys. All resources created by that driver were
+removed. Its remote Frontend run `34024864257`, attempt 1, passed the 25 existing
+scenarios and 11 of 12 advertising scenarios, but exposed a separate input-format
+failure in the Wildberries direct-observation step. Chromium normalizes
+`2026-09-06T09:34:48.230` to a shorter fractional representation. Playwright 1.62.1
+rejects a `fill` value when native input normalization changes its string.
+
+Both test observation times now use a detached native `datetime-local` input to
+produce the browser's canonical string before the real visible input is filled.
+The actual captured Instant and exact HTTP payload assertions are unchanged.
+A temporary Chromium diagnostic reproduced the original refusal in UTC and
+Asia/Taipei, verified all 1,000 millisecond values at two second boundaries in
+each timezone (4,000 exact Instant comparisons), and completed 28 canonical
+Playwright fills. This normalization diagnostic is not application acceptance.
+The incomplete `95902cf` backend run was interrupted with exit 130 and its
+partial reports retained; its prewritten `RUNNING_NOT_ASSESSED` candidate is not
+a terminal success. The next commit requires fresh complete verification.

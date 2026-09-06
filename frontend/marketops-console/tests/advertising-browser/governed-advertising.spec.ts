@@ -317,7 +317,11 @@ for (const platform of ['OZON', 'WILDBERRIES']) {
     const partialTime = await verifier.page.evaluate(() => {
       const actual = new Date();
       const local = new Date(actual.getTime() - actual.getTimezoneOffset() * 60_000);
-      return { iso: actual.toISOString(), local: local.toISOString().slice(0, 23) };
+      const input = document.createElement('input');
+      input.type = 'datetime-local';
+      input.step = '0.001';
+      input.value = local.toISOString().slice(0, 23);
+      return { iso: actual.toISOString(), local: input.value };
     });
     await verifier.page
       .getByLabel('Time actually observed (your local time)')
@@ -431,7 +435,11 @@ for (const platform of ['OZON', 'WILDBERRIES']) {
     const directTime = await verifier.page.evaluate(() => {
       const actual = new Date();
       const local = new Date(actual.getTime() - actual.getTimezoneOffset() * 60_000);
-      return { iso: actual.toISOString(), local: local.toISOString().slice(0, 23) };
+      const input = document.createElement('input');
+      input.type = 'datetime-local';
+      input.step = '0.001';
+      input.value = local.toISOString().slice(0, 23);
+      return { iso: actual.toISOString(), local: input.value };
     });
     await verifier.page
       .getByLabel('Time actually observed (your local time)')
