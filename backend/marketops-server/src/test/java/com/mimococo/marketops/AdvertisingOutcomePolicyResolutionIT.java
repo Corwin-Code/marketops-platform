@@ -145,14 +145,17 @@ class AdvertisingOutcomePolicyResolutionIT {
     @Test void originalCompatibilityResolverKeepsItsApplicationOnlyReadPrivilege() {
         for(String signature:List.of(
                 "core.resolve_ad_outcome_policy(uuid,text,uuid,text,text,timestamp with time zone)",
-                "core.ad_outcome_policy_resolution(uuid,text,uuid,text,text,timestamp with time zone)")) {
+                "core.ad_outcome_policy_resolution(uuid,text,uuid,text,text,timestamp with time zone)",
+                "core.ad_outcome_bound_policy_resolution(uuid,text,uuid,text,text,timestamp with time zone,uuid)",
+                "ops.ad_outcome_candidate_policy_resolution(uuid,timestamp with time zone)",
+                "ops.ad_outcome_manual_policy_resolution(uuid,timestamp with time zone)")) {
             assertThat(app.sql("SELECT has_function_privilege(current_user,CAST(:signature AS regprocedure),'EXECUTE')")
                     .param("signature",signature).query(Boolean.class).single()).isTrue();
             assertThat(AdvertisingSealedAuthorityIT.seed.sql("SELECT EXISTS(SELECT 1 FROM pg_proc p CROSS JOIN LATERAL aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) x WHERE p.oid=CAST(:signature AS regprocedure) AND x.grantee=0 AND x.privilege_type='EXECUTE')")
                     .param("signature",signature).query(Boolean.class).single()).isFalse();
+            assertThat(AdvertisingSealedAuthorityIT.seed.sql("SELECT prosecdef FROM pg_proc WHERE oid=CAST(:signature AS regprocedure)")
+                    .param("signature",signature).query(Boolean.class).single()).isFalse();
         }
-        assertThat(AdvertisingSealedAuthorityIT.seed.sql("SELECT prosecdef FROM pg_proc WHERE oid='core.resolve_ad_outcome_policy(uuid,text,uuid,text,text,timestamp with time zone)'::regprocedure")
-                .query(Boolean.class).single()).isFalse();
         assertThat(AdvertisingSealedAuthorityIT.seed.sql("SELECT production_write_enabled FROM ops.ad_gate_authority WHERE id=:id")
                 .param("id",f.graph.id("gate")).query(Boolean.class).single()).isFalse();
     }

@@ -31,6 +31,8 @@ class AdvertisingPrivilegeBoundaryIT extends PostgresContainerSupport {
     /** Callable signatures exclude trigger-only functions, which PostgreSQL cannot invoke directly. */
     private static final List<String> SANCTIONED_FUNCTIONS = List.of(
             "core.ad_freshness_purpose_violations(uuid, timestamp with time zone)",
+            "core.ad_outcome_bound_policy_resolution(uuid, text, uuid, text, text, timestamp with time zone, uuid)",
+            "core.ad_outcome_policy_resolution(uuid, text, uuid, text, text, timestamp with time zone)",
             "core.ad_qualification_tier_is_monotonic(uuid, text, text, uuid, timestamp with time zone)",
             "core.resolve_ad_outcome_policy(uuid, text, uuid, text, text, timestamp with time zone)",
             "ops.activate_ad_bundle(uuid, uuid, text)",
@@ -65,11 +67,13 @@ class AdvertisingPrivilegeBoundaryIT extends PostgresContainerSupport {
             "ops.ad_ordinary_promotion_covers(uuid, uuid, numeric)",
             "ops.ad_outcome_baseline_is_attested(uuid)",
             "ops.ad_outcome_baseline_is_canonical(uuid, timestamp with time zone)",
+            "ops.ad_outcome_candidate_policy_resolution(uuid, timestamp with time zone)",
             "ops.ad_outcome_freshness_snapshot(uuid)",
             "ops.ad_protection_outcome_invalidated(uuid)",
             "ops.ad_outcome_frozen_profile_is_valid(jsonb, uuid, uuid, text, text, timestamp with time zone)",
             "ops.ad_outcome_input_profiles_are_canonical(jsonb, uuid, uuid, text, text, timestamp with time zone, timestamp with time zone, timestamp with time zone)",
             "ops.ad_outcome_input_state_digest(uuid, jsonb, timestamp with time zone)",
+            "ops.ad_outcome_manual_policy_resolution(uuid, timestamp with time zone)",
             "ops.ad_outcome_payload_digest(jsonb, jsonb, jsonb)",
             "ops.ad_outcome_plan_snapshot(uuid)",
             "ops.ad_overlapping_reservation(uuid, uuid[], uuid)",

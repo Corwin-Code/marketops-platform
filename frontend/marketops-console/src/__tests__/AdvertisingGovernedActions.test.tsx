@@ -143,10 +143,16 @@ describe('governed human controls use exact server authority', () => {
       vi.mocked(fetchImpl).mock.calls.filter(([, init]) => init?.method === 'POST'),
     ).toHaveLength(0);
     fireEvent.click(resolvedSelect);
-    await waitFor(() => expect(reload).toHaveBeenCalledOnce());
+    await waitFor(() => {
+      expect(reload).toHaveBeenCalledOnce();
+    });
     const posts = vi.mocked(fetchImpl).mock.calls.filter(([, init]) => init?.method === 'POST');
     expect(posts).toHaveLength(1);
-    expect(JSON.parse(String(posts[0]?.[1]?.body))).toEqual({
+    const body = posts[0]?.[1]?.body;
+    if (typeof body !== 'string') {
+      throw new Error('Manual selection must send a JSON string body');
+    }
+    expect(JSON.parse(body)).toEqual({
       policyId: 'resolved',
       candidateId: 'candidate-resolved',
       reason: 'Select the independently resolved policy',

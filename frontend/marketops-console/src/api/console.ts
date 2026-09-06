@@ -2101,8 +2101,7 @@ export function fetchAdvertisingManualOptions(
             typeof row.verificationMode === 'string' ? row.verificationMode : 'UNRESOLVED',
           apiProfileState:
             typeof row.apiProfileState === 'string' ? row.apiProfileState : 'UNRESOLVED',
-          blockerCodes:
-            row.blockerCodes === undefined ? ['OUTCOME_POLICY_UNRESOLVED'] : row.blockerCodes,
+          blockerCodes: row.blockerCodes ?? ['OUTCOME_POLICY_UNRESOLVED'],
         });
       }
       return {
