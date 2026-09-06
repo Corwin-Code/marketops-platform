@@ -1,7 +1,8 @@
 # Final Gate R1 residual rework evidence
 
 The [current engineering handoff](CURRENT-ENGINEERING-HANDOFF.md) tracks the
-new verification-source checkpoint after the phase-transition test correction.
+new verification-source checkpoint after the phase-transition test correction
+and [diagnostic priority-page read repair](PRIORITY-PAGE-READ-REWORK.md).
 Product H nine-scope measurements, 342-row review and exact CI remain preserved;
 they are not assigned to the changed source.
 

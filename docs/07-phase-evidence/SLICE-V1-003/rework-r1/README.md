@@ -1,7 +1,8 @@
 # SLICE-V1-003 — Codex R1 current evidence
 
 Current verification continues after the
-[governance phase-transition test correction](final-gate-r1/GOVERNANCE-PHASE-TRANSITION-REWORK.md).
+[governance phase-transition test correction](final-gate-r1/GOVERNANCE-PHASE-TRANSITION-REWORK.md)
+and [diagnostic priority-page read repair](final-gate-r1/PRIORITY-PAGE-READ-REWORK.md).
 The complete product H measurements and engineering materializations remain
 preserved under their exact source identity. The corrected verification source
 will receive its own full inventory, completed layers and publication readback.

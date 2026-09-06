@@ -13,9 +13,11 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -201,6 +203,35 @@ public class MetricRepository {
                 .optional();
     }
 
+    /** Current values for one bounded page, using the same authority and version order as a single read. */
+    public Map<UUID, Map<MetricCode, MetricValueView>> currentValuesForSubjects(
+            SubjectKind subjectKind, List<UUID> subjectIds, MetricWindow window,
+            Set<MetricCode> metricCodes) {
+        List<UUID> subjects = List.copyOf(subjectIds);
+        Set<MetricCode> codes = Set.copyOf(metricCodes);
+        if (subjects.size() > 500) {
+            throw new IllegalArgumentException("A current-value page is limited to 500 subjects");
+        }
+        if (subjects.isEmpty() || codes.isEmpty()) return Map.of();
+        List<MetricValueView> latest = jdbc.sql(currentValueSql(true)
+                        + " AND value.metric_code IN (:metricCodes)"
+                        + " ORDER BY value.subject_id, value.metric_code,"
+                        + " greatest(value.computed_at,proof.verified_at) DESC,"
+                        + " value.computed_at DESC, value.id DESC")
+                .param("subjectKind", subjectKind.name())
+                .param("subjectIds", subjects)
+                .param("windowCode", window.name())
+                .param("metricCodes", codes.stream().map(Enum::name).sorted().toList())
+                .query(MetricRepository::mapValue).list();
+        Map<UUID, Map<MetricCode, MetricValueView>> values = new HashMap<>();
+        for (MetricValueView value : latest) {
+            values.computeIfAbsent(value.subjectId(), ignored -> new EnumMap<>(MetricCode.class))
+                    .put(value.metricCode(), value);
+        }
+        values.replaceAll((subject, byCode) -> Map.copyOf(byCode));
+        return Map.copyOf(values);
+    }
+
     /**
      * The current value of every metric for one subject and window.
      *
@@ -333,8 +364,12 @@ public class MetricRepository {
     }
 
     private static String currentValueSql() {
+        return currentValueSql(false);
+    }
+
+    private static String currentValueSql(boolean page) {
         return """
-                SELECT value.id, value.metric_code, value.definition_version,
+                SELECT %s value.id, value.metric_code, value.definition_version,
                        value.subject_kind, value.subject_id, value.window_code,
                        value.period_start, value.period_end, value.value_state,
                        value.numeric_value, value.currency_code, value.confidence_state,
@@ -343,9 +378,10 @@ public class MetricRepository {
                   FROM mart.metric_value AS value
                   CROSS JOIN LATERAL mart.metric_value_verification(value.id,NULL::timestamptz) proof
                  WHERE value.subject_kind = :subjectKind
-                   AND value.subject_id = :subjectId
+                   AND %s
                    AND value.window_code = :windowCode
-                """;
+                """.formatted(page ? "DISTINCT ON (value.subject_id, value.metric_code)" : "",
+                        page ? "value.subject_id IN (:subjectIds)" : "value.subject_id = :subjectId");
     }
 
     private static MetricValueView mapValue(ResultSet rows, int rowNumber) throws SQLException {

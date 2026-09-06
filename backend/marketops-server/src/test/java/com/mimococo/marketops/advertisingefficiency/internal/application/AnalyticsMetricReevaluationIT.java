@@ -51,9 +51,39 @@ class AnalyticsMetricReevaluationIT {
     }
 
     @AfterEach void preserveSyntheticBoundary() {
-        fixture.clearIdentity();
-        assertThat(fixture.productionWrites.getEnabled()).isFalse();
-        assertThat(fixture.provider.calls).isEmpty();
+        try {
+            assertBatchCurrentReadMatchesCanonicalScalarReads();
+        } finally {
+            fixture.clearIdentity();
+            assertThat(fixture.productionWrites.getEnabled()).isFalse();
+            assertThat(fixture.provider.calls).isEmpty();
+        }
+    }
+
+    /** Recheck the page read after every actual writer/verification scenario in this class. */
+    private void assertBatchCurrentReadMatchesCanonicalScalarReads() {
+        var repository = context.getBean(
+                com.mimococo.marketops.analyticsdecision.internal.infrastructure.jdbc.MetricRepository.class);
+        UUID subject = fixture.graph.id("listingVariant"), absent = UUID.randomUUID();
+        var codes = java.util.Set.of(MetricCode.UNIT_COST, MetricCode.COMPLETED_NET_SALES,
+                MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT);
+        for (MetricWindow window : java.util.List.of(MetricWindow.D30, MetricWindow.D7)) {
+            var batch = repository.currentValuesForSubjects(SubjectKind.PLATFORM_LISTING_VARIANT,
+                    java.util.List.of(subject, absent, subject), window, codes);
+            assertThat(batch.keySet()).isSubsetOf(java.util.Set.of(subject));
+            for (MetricCode code : codes) {
+                assertThat(java.util.Optional.ofNullable(batch.getOrDefault(subject, java.util.Map.of()).get(code)))
+                        .as("batch/scalar complete value identity, proof and unavailable state for %s/%s", window, code)
+                        .isEqualTo(repository.currentValue(code, SubjectKind.PLATFORM_LISTING_VARIANT, subject, window));
+            }
+        }
+        assertThat(repository.currentValuesForSubjects(SubjectKind.PRODUCT_VARIANT,
+                java.util.List.of(subject), MetricWindow.D30, codes)).isEmpty();
+        assertThat(repository.currentValuesForSubjects(SubjectKind.PLATFORM_LISTING_VARIANT,
+                java.util.List.of(), MetricWindow.D30, codes)).isEmpty();
+        assertThatThrownBy(() -> repository.currentValuesForSubjects(SubjectKind.PLATFORM_LISTING_VARIANT,
+                java.util.Collections.nCopies(501, subject), MetricWindow.D30, codes))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test void sameInputReevaluationKeepsValueAndDigestAndAppendsSuccessfulProof() {

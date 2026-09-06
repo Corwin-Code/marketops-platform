@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -150,15 +151,17 @@ public class AnalyticsQueryService implements MetricQuery, DiagnosisQuery {
     @Transactional(readOnly = true, timeout = 5)
     public List<PrioritySubjectView> priorityQueue(UUID storeId, MetricWindow window,
                                                    int limit) {
+        List<DiagnosisRepository.PriorityRow> rows =
+                diagnoses.priorityQueue(storeId, window, Math.clamp(limit, 1, 500));
+        Map<UUID, Map<MetricCode, MetricValueView>> current = metrics.currentValuesForSubjects(
+                SubjectKind.PLATFORM_LISTING_VARIANT,
+                rows.stream().map(DiagnosisRepository.PriorityRow::subjectId).toList(), window,
+                Set.of(MetricCode.COMPLETED_NET_SALES, MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT));
         List<PrioritySubjectView> queue = new ArrayList<>();
-        for (DiagnosisRepository.PriorityRow row
-                : diagnoses.priorityQueue(storeId, window, Math.clamp(limit, 1, 500))) {
-            Optional<MetricValueView> netSales = metrics.currentValue(
-                    MetricCode.COMPLETED_NET_SALES, SubjectKind.PLATFORM_LISTING_VARIANT,
-                    row.subjectId(), window);
-            Optional<MetricValueView> profit = metrics.currentValue(
-                    MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT,
-                    SubjectKind.PLATFORM_LISTING_VARIANT, row.subjectId(), window);
+        for (DiagnosisRepository.PriorityRow row : rows) {
+            Map<MetricCode, MetricValueView> values = current.getOrDefault(row.subjectId(), Map.of());
+            Optional<MetricValueView> netSales = Optional.ofNullable(values.get(MetricCode.COMPLETED_NET_SALES));
+            Optional<MetricValueView> profit = Optional.ofNullable(values.get(MetricCode.OPERATIONAL_CONTRIBUTION_PROFIT));
             queue.add(new PrioritySubjectView(
                     SubjectKind.PLATFORM_LISTING_VARIANT,
                     row.subjectId(),

@@ -917,9 +917,11 @@ class RepresentativePerformanceIT {
 
     private Map<String,Object> measure(BenchmarkCase test,AuthenticatedActor actor) throws Exception {
         var values = new ArrayList<Double>();
+        var metricReadQueries = new ArrayList<Long>();
         int responseBytes = 0;
         for (int sample=-WARMUPS;sample<SAMPLES;sample++) {
             trace.enabled = sample == -WARMUPS;
+            long metricReadsBefore = trace.metricReadCalls();
             long start = System.nanoTime();
             var response = mvc.perform(get(test.url()).with(SecurityMockMvcRequestPostProcessors.authentication(
                     new UsernamePasswordAuthenticationToken(actor,null,List.of())))).andReturn().getResponse();
@@ -927,13 +929,21 @@ class RepresentativePerformanceIT {
             assertThat(response.getStatus()).as(test.name()).isEqualTo(200);
             responseBytes = Math.max(responseBytes,response.getContentAsByteArray().length);
             verifyPayload(test,response.getContentAsByteArray());
-            if (sample>=0) values.add(elapsed);
+            long metricReads = trace.metricReadCalls() - metricReadsBefore;
+            if (test.name().startsWith("priority")) {
+                assertThat(metricReads).as(test.name()+" reads page metrics in one bounded query").isEqualTo(1);
+            }
+            if (sample>=0) {
+                values.add(elapsed);
+                metricReadQueries.add(metricReads);
+            }
         }
         trace.enabled = false;
         List<Double> sorted = values.stream().sorted().toList();
         return Map.of("name",test.name(),"sloMillis",test.sloMillis(),"samplesMillis",values,
                 "p50Millis",sorted.get(SAMPLES/2),"p95Millis",sorted.get((int)Math.ceil(SAMPLES*0.95)-1),
-                "maxMillis",sorted.getLast(),"maxResponseBytes",responseBytes);
+                "maxMillis",sorted.getLast(),"maxResponseBytes",responseBytes,
+                "metricReadQueriesPerRequest",metricReadQueries);
     }
 
     /** A fast empty or stripped response is not performance success. */
@@ -1065,6 +1075,13 @@ class RepresentativePerformanceIT {
         /** Every statement, counted, so a round-trip total can be reported. */
         long totalCalls() {
             return timings.values().stream().mapToLong(counter -> counter[0]).sum();
+        }
+
+        /** Actual canonical metric SELECT round trips, independent of EXPLAIN shape deduplication. */
+        long metricReadCalls() {
+            return timings.entrySet().stream()
+                    .filter(entry -> entry.getKey().contains("FROM mart.metric_value AS value"))
+                    .mapToLong(entry -> entry.getValue()[0]).sum();
         }
 
         List<Map<String,Object>> explain(DataSource source,ObjectMapper mapper) throws Throwable {
