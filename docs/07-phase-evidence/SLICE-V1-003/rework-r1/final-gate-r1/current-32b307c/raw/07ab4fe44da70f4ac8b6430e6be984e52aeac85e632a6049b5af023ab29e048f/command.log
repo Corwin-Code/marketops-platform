@@ -1,0 +1,10 @@
+
+> marketops-console@0.1.0 presbom
+> node scripts/prepare-sbom-output.mjs
+
+
+> marketops-console@0.1.0 sbom
+> node scripts/generate-validated-sbom.mjs
+
+CycloneDX JSON schema validation PASS
+supply chain inventory written to build/supply-chain
