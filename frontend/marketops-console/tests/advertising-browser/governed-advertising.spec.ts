@@ -305,10 +305,10 @@ for (const platform of ['OZON', 'WILDBERRIES']) {
       .getByRole('textbox', { name: 'Independently observed exact native value' })
       .fill('20');
     await verifier.page
-      .getByLabel('Observation source', { exact: true })
+      .getByRole('combobox', { name: 'Observation source', exact: true })
       .selectOption('SCREENSHOT');
     await verifier.page
-      .getByLabel('Observation completeness', { exact: true })
+      .getByRole('combobox', { name: 'Observation completeness', exact: true })
       .selectOption('INCOMPLETE');
     await verifier.page
       .getByLabel('Observation evidence reference', { exact: true })
@@ -409,10 +409,10 @@ for (const platform of ['OZON', 'WILDBERRIES']) {
 
     // The same value qualifies only after a separate, explicit complete direct observation.
     await verifier.page
-      .getByLabel('Observation source', { exact: true })
+      .getByRole('combobox', { name: 'Observation source', exact: true })
       .selectOption('DIRECT_OFFICIAL_CONSOLE');
     await verifier.page
-      .getByLabel('Observation completeness', { exact: true })
+      .getByRole('combobox', { name: 'Observation completeness', exact: true })
       .selectOption('COMPLETE');
     await verifier.page
       .getByLabel('Observation evidence reference', { exact: true })

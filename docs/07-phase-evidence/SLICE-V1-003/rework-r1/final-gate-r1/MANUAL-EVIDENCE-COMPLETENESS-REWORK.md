@@ -56,3 +56,26 @@ are required before engineering closure.
 
 Production writes remain disabled. Real Provider, shared/production access,
 Ready, merge and force-push remain outside this execution.
+
+The subsequent clean `da559bdb24eb0b614454a230438126fb31f736ee`
+checkpoint completed all 2,769 local backend tests (1,630 unit and 1,139
+integration), with zero failures, errors or skips, in 2,631.614 seconds. Its
+source remained stable. The same-JAR migration and supply-chain checks also
+completed successfully. These results retain that exact checkpoint identity.
+
+Frontend CI run `34022694375`, attempt 1, passed 358 unit tests and 25 existing
+browser scenarios. Ten advertising browser scenarios passed; both platform
+manual-observation scenarios timed out before the evidence assertions at the
+exact `Observation source` label lookup. The official screenshots artifact is
+`9986150226`, SHA-256
+`5be42f785fba8b75d48a94fa49a141dcc78736383d1147210c79082979749df4`.
+This failed checkpoint is preserved and does not establish complete verification.
+
+A temporary Chromium diagnostic using the actual label and option text found
+zero exact-label matches and exactly one `combobox` with each exact accessible
+name. Both source and completeness choices were selected successfully. The four
+browser lookups now use those exact roles and names. The same-class scan found
+no other browser `selectOption` call sites. Timeout limits, full evidence payload
+checks and all state, reservation and authority assertions are retained.
+The diagnostic is not application acceptance: the changed browser source still
+requires a fresh complete application/browser and exact-commit verification.
