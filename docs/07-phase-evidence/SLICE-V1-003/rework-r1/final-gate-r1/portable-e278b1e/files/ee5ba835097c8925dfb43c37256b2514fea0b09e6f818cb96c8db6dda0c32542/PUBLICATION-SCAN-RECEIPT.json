@@ -1,0 +1,80 @@
+{
+  "kind": "LOCAL_LAYER_PUBLICATION_PATTERN_SCAN_RECEIPT",
+  "createdAt": "2026-09-06T04:47:52.566875+00:00",
+  "layer": "browser-r4",
+  "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+  "sourceTree": "8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc",
+  "sourceInventorySha256": "9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec",
+  "runId": "final-browser-r5-r4",
+  "originalCommandResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "originalCommandExitCode": 0,
+  "originalCollectorTestcaseCounts": {
+    "passed": 37,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "layerReceipt": {
+    "path": "/private/tmp/slice3-final-execution-02e6172-r5/browser-r4/layer-candidate.json",
+    "sha256": "5865a3ac52422f6ad18a38d2e107466d164e755df249758774dedb07b0b645f8"
+  },
+  "boundary": "Independent successful browser-r4 command, original collector 37 passed / 0 failure / 0 error / 0 skipped. The prior r1/r2/r3 whole-layer failures remain separate unchanged historical records. Full nine-layer engineering admission and Controller approval remain separate.",
+  "scanResult": "COMPLETE_ZERO_SHAPE_HITS_ORIGINALS_STABLE",
+  "scanCommand": {
+    "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/SCAN-COMMAND.json",
+    "sha256": "aa902d844f3e4164a1e5e236d6910582a3db5f8e42e03b606276fb3eb7d7888a",
+    "size": 1344
+  },
+  "rulesSource": {
+    "path": "scripts/validate_governance.py",
+    "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+    "archivedSource": "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-source-02e6172.py",
+    "sha256": "89f716bbada69c90db33869b7d15ba5e702b595f07d4ac690373ebbadff60b34"
+  },
+  "patternCount": 9,
+  "scope": "All physical layer files plus actual ZIP/GZIP/TAR nested members; raw UTF-8 bytes and decoded XML/HTML/JSON strings. Image bytes are scanned without OCR or pixel inspection.",
+  "originalPhysicalFiles": 74,
+  "originalPhysicalBytes": 32779841,
+  "archiveMembers": 0,
+  "scannedRecords": 74,
+  "scannedBytesIncludingArchiveContainersAndDuplicatePhysicalCopies": 32779841,
+  "originalEvidenceReferencesVerified": 66,
+  "originalBytesAndFilesetUnchanged": true,
+  "hitCount": 0,
+  "triage": {
+    "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/TRIAGE.json",
+    "sha256": "9061ae39ad2271c5a9f2d55c6108a49554a279bfa1e7f10dc8cad832a277984b",
+    "size": 508
+  },
+  "originalFileIndex": {
+    "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/ORIGINAL-FILE-SHA-INDEX.json",
+    "sha256": "42aebf631e2b2eedb56b031f70fe29b4971eb15d901c6108f89ca67bacd652ed",
+    "size": 30563
+  },
+  "archiveMemberIndex": {
+    "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/MEMBERS.jsonl",
+    "sha256": "35c6bb1cf7a949143e73abbb74902a62a51f72e4ded11e5c1962b0fa4ebdeb7c",
+    "size": 17099
+  },
+  "rawScanInput": {
+    "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/SCAN-INPUT.json",
+    "sha256": "19ed5de262c543f20c1095dfa2f648cc807b63b6860883570b1b821ae0ec6f20",
+    "size": 18880
+  },
+  "rawScanSummary": {
+    "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/SCAN-SUMMARY.json",
+    "sha256": "29166da2d7643b3cb812484f580dfdea5588c927c401946b5c922de59ae99833",
+    "size": 1587
+  },
+  "rawHits": {
+    "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/HITS.jsonl",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+  },
+  "noOcrOrPixelInspection": true,
+  "mediaByteScanOnly": true,
+  "productTestsRun": 0,
+  "rawPublicationAuthorized": false,
+  "engineeringClosureClaimMade": false,
+  "controllerApprovalClaimMade": false
+}

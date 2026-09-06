@@ -1,17 +1,12 @@
 # SLICE-V1-003 — Codex R1 current evidence
 
-The current candidate is undergoing the final verification requested by the
-Controller's closure report and the existing Frozen Finding Set. The preceding
-measured product checkpoint is
-`02e617278793b4458dfb7cac74c2a937f1dfcb00`, tree
-`8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc`. The full execution inventory contains
-1,278 files and has SHA-256
-`9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec`.
-That checkpoint precedes the newly identified manual evidence-completeness
-repair. Its successful measurements retain their original identity and do not
-establish execution of the later source. Current engineering closure remains
-pending until the repaired source's nine required layers, individual evidence
-bindings and final publication checks are admitted.
+Current verification continues after the
+[governance phase-transition test correction](final-gate-r1/GOVERNANCE-PHASE-TRANSITION-REWORK.md).
+The complete product H measurements and engineering materializations remain
+preserved under their exact source identity. The corrected verification source
+will receive its own full inventory, completed layers and publication readback.
+No H execution is promoted to the changed source. Independent Controller
+acceptance remains pending.
 
 The [original W10 index](final-gate-r1/historical-w10-central/README.md) is
 preserved byte for byte. Its earlier closure claims and capacity measurements
@@ -28,7 +23,7 @@ CV-A through CV-E concern the original Frozen Finding Set.
 | [Engineering verification](ENGINEERING_VERIFICATION.json) | Derived verification state; historical runs do not supply current PASS. |
 | [Outcome Policy and economic qualification](final-gate-r1/POST-7e66cf8-OUTCOME-POLICY-REWORK.md) | Explicit scope resolution, frozen authority, bounded observed headroom and independent Task/write materiality. |
 | [Verification corrections](final-gate-r1/POST-1381ef7-VERIFICATION-FIX.md) | Exact four-reader privilege list and frontend quality corrections; original failures retained. |
-| [Manual evidence completeness](final-gate-r1/MANUAL-EVIDENCE-COMPLETENESS-REWORK.md) | Existing DR007/AC081–082 source, completeness and actual observation-time repair; fresh verification required. |
+| [Manual evidence completeness](final-gate-r1/MANUAL-EVIDENCE-COMPLETENESS-REWORK.md) | Existing DR007/AC081–082 source, completeness and actual observation-time repair; full current H verification passed. |
 | [Historical measurement reconciliation](final-gate-r1/CV-E-MEASUREMENT-RECONCILIATION.json) | W10's two actual CI measurements and distinct earlier local measurements. |
 | [Current migration source inventory](final-gate-r1/MIGRATION-SOURCE-INVENTORY.json) | Exact current source bytes; packaged and database execution are verified separately. |
 | [Historical migration inventory](MIGRATION-INVENTORY.json) | Original 65-migration W10 record, preserved with its original measured identities. |

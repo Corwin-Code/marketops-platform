@@ -1,0 +1,17 @@
+{"path": "command.log", "bytes": 242, "sha256": "07ab4fe44da70f4ac8b6430e6be984e52aeac85e632a6049b5af023ab29e048f", "type": "FILE", "depth": 0}
+{"path": "identity-after.json", "bytes": 283, "sha256": "883600ccab94d8ec5f01e515f454347e08751e659248d1f486a920fc913901a7", "type": "FILE", "depth": 0}
+{"path": "identity-before.json", "bytes": 283, "sha256": "883600ccab94d8ec5f01e515f454347e08751e659248d1f486a920fc913901a7", "type": "FILE", "depth": 0}
+{"path": "layer-candidate.json", "bytes": 6411, "sha256": "5440963f6580de92d156d2626df2cbf7f2299b73d1b5f8888d34fd8ee4d6020c", "type": "FILE", "depth": 0}
+{"path": "named-testcase-nodes.json", "bytes": 3, "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570", "type": "FILE", "depth": 0}
+{"path": "preserved-reports.json", "bytes": 2979, "sha256": "48c688fee42adcb7674ece420558336696510f6a1696ea8184a8402213ae0ca6", "type": "FILE", "depth": 0}
+{"path": "raw/build/final-gate-r5-02e6172/supply-chain/INVENTORY.md", "bytes": 809, "sha256": "6a1a85905a87c2abaeacd5894ab0ea1d69ca8768ef042ff8479132092c78b6e4", "type": "FILE", "depth": 0}
+{"path": "raw/build/final-gate-r5-02e6172/supply-chain/backend-licenses.txt", "bytes": 22439, "sha256": "4e765e7d8392b13ca211618338eb1291577df4d940ad0f5999fd50a7aa35e2a3", "type": "FILE", "depth": 0}
+{"path": "raw/build/final-gate-r5-02e6172/supply-chain/backend-products-after.json", "bytes": 3291, "sha256": "bc72bebacdabd65dffe95b9eedfecc880257863dd44a3272780625dd74b45c36", "type": "FILE", "depth": 0}
+{"path": "raw/build/final-gate-r5-02e6172/supply-chain/backend-products-before.json", "bytes": 3291, "sha256": "bc72bebacdabd65dffe95b9eedfecc880257863dd44a3272780625dd74b45c36", "type": "FILE", "depth": 0}
+{"path": "raw/build/final-gate-r5-02e6172/supply-chain/backend-sbom.json", "bytes": 235515, "sha256": "7a71d2bb18908c260da21b574bba16bf110d87a5f58bf6f85283de1b97496709", "type": "FILE", "depth": 0}
+{"path": "raw/build/final-gate-r5-02e6172/supply-chain/frontend-dependencies.json", "bytes": 114964, "sha256": "869bd135029c024148a7903fbb415fb0d15a5ca5e9026d48c2f98b75b374f9d5", "type": "FILE", "depth": 0}
+{"path": "raw/build/final-gate-r5-02e6172/supply-chain/frontend-licenses.txt", "bytes": 9439, "sha256": "45c9c1646411e970eda4f713313599cbbf16b1f87eb29ccf6d34743e26e92014", "type": "FILE", "depth": 0}
+{"path": "raw/build/final-gate-r5-02e6172/supply-chain/frontend-sbom.json", "bytes": 619826, "sha256": "cbe15b1ebebb261505fbd7d01a6e58ae911af83f07091fa5022b1183a11bebd3", "type": "FILE", "depth": 0}
+{"path": "report-state-before.json", "bytes": 3, "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356", "type": "FILE", "depth": 0}
+{"path": "source-after.json", "bytes": 309596, "sha256": "9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec", "type": "FILE", "depth": 0}
+{"path": "source-before.json", "bytes": 309596, "sha256": "9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec", "type": "FILE", "depth": 0}

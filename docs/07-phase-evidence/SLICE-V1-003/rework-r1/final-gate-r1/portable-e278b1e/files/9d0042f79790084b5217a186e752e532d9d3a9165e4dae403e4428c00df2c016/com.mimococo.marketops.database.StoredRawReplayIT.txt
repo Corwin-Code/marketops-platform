@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.mimococo.marketops.database.StoredRawReplayIT
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.856 s -- in com.mimococo.marketops.database.StoredRawReplayIT

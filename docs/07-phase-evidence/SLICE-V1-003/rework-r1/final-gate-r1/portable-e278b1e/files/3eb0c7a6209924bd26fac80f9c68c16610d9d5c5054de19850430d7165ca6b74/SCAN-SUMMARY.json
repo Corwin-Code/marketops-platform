@@ -1,0 +1,23 @@
+{
+  "kind": "RAW_PUBLICATION_SHAPE_SCAN",
+  "status": "COMPLETE",
+  "scope": "All original files plus actual ZIP/GZIP/TAR nested members; raw UTF-8 bytes and decoded XML/HTML/JSON strings.",
+  "originalBytesUnchanged": true,
+  "originalFiles": 310,
+  "scannedRecords": 24953,
+  "archiveMembers": 24643,
+  "scannedBytesIncludingArchiveContainersAndDuplicatePhysicalCopies": 193780376,
+  "elapsedSeconds": 16.587,
+  "hitCount": 5,
+  "ruleCounts": {
+    "1": 4,
+    "7": 1
+  },
+  "rawFilesWithHits": [
+    "raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar"
+  ],
+  "unreviewedHits": 5,
+  "rawPublicationAuthorized": false,
+  "testOrClosurePassImplied": false,
+  "limitations": "A bounded pattern scan is not a universal no-PII proof. Every shape hit needs exact classification; JWT/test-token bytes remain private. Source checkpoint remains historical; no final closure is implied."
+}

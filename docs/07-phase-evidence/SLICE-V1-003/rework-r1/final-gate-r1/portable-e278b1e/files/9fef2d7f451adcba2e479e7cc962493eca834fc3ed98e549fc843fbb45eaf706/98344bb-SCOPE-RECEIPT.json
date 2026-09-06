@@ -1,0 +1,103 @@
+{
+  "kind": "INDEPENDENT_CHECKPOINT_RAW_SCOPE_RECONCILIATION",
+  "sourceHead": "98344bb42025b300ae1265faccd232d9ed5437fc",
+  "sourceTree": "565c2e052abd0eaf35d72b5c7b3e0a3c28f834ad",
+  "sourceInventorySha256": "94ec04852bf9587a82299662bdf7118716bc433f41a727a27bf3844626a2742f",
+  "checkpointDisposition": "FAILED_TERMINATED_PARTIAL_CHECKPOINT_NOT_COMPLETE_BACKEND_VERIFICATION",
+  "exactLayerReceipt": {
+    "path": "/tmp/slice3-final-execution-98344bb-r3/backend-full/layer-candidate.json",
+    "bytes": 97499,
+    "sha256": "7bb1aa794a738eecbdfd0675091aa5efe78b33d7d79a726c92b87521d38b8e39"
+  },
+  "immutableArchiveIndex": {
+    "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/98344bb-INDEX.json",
+    "bytes": 204005,
+    "sha256": "f023776b7c904552241174d3bd445366daf1c41d3cb04f1396292a2f63b100ed"
+  },
+  "independentRawJUnitCounts": {
+    "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/98344bb-RAW-JUNIT-RECONCILIATION.json",
+    "bytes": 947574,
+    "sha256": "13ad620ffbd9be95c03aa5b86081a0ca9d8f55b27d13f2adc9e4670d021daa5d"
+  },
+  "publicationShapeScan": {
+    "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/98344bb-publication-scan/SCAN-SUMMARY.json",
+    "bytes": 904,
+    "sha256": "3eb0c7a6209924bd26fac80f9c68c16610d9d5c5054de19850430d7165ca6b74"
+  },
+  "exactHitClassification": {
+    "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/98344bb-publication-scan/HIT-CLASSIFICATION.json",
+    "bytes": 8065,
+    "sha256": "c1ef9e507072b7c97e34a8eb45124c31f372c2527b654112d251aade30a83009"
+  },
+  "measuredCommandExitCode": 143,
+  "commandCompletedSuccessfully": false,
+  "sourceStable": true,
+  "workingTreeDirty": false,
+  "testcaseCounts": {
+    "passed": 1967,
+    "failures": 3,
+    "errors": 0,
+    "skipped": 0
+  },
+  "families": {
+    "integration": {
+      "passed": 379,
+      "failures": 3
+    },
+    "unit": {
+      "passed": 1588
+    }
+  },
+  "ciEvidenceScope": "LOCAL_EXECUTION_ONLY_NO_WORKFLOW_JOB_ARTIFACT_ID_OR_TESTED_MERGE_INFERRED",
+  "archiveScan": {
+    "records": 24953,
+    "nestedMembers": 24643,
+    "bytesIncludingNestedAndDuplicateCopies": 193780376,
+    "rawHits": 5,
+    "exactNonSecretOccurrenceAllowlistCount": 5,
+    "jwtHits": 0,
+    "unreviewedPrivateHits": 0
+  },
+  "productionWriteEnabled": false,
+  "controllerApprovalClaimMade": false,
+  "engineeringClosureClaimMade": false,
+  "rawPublicationAuthorized": false,
+  "repositoryModified": false,
+  "productTestsReexecuted": false,
+  "packagedBuildIdentity": {
+    "jar": {
+      "path": "/tmp/slice3-final-execution-98344bb-r3/backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar",
+      "bytes": 42423444,
+      "sha256": "d75f4d021e118786b6181bfde4ff7862a9e714fb64693d9d41e309a38f79e0cb"
+    },
+    "member": "META-INF/build-info.properties",
+    "memberSha256": "9f51a8e6d530745ca0ba702e48c89bf1437bf3faf5fac8c791696d1278b05f1f",
+    "properties": {
+      "build.artifact": "marketops-server",
+      "build.gitCommit": "98344bb42025b300ae1265faccd232d9ed5437fc",
+      "build.group": "com.mimococo.marketops",
+      "build.name": "MarketOps Server",
+      "build.time": "2026-01-01T00\\:00\\:00Z",
+      "build.version": "0.1.0-SNAPSHOT"
+    },
+    "buildGitCommitMatchesMeasuredHead": true
+  },
+  "coverage": {
+    "report": null,
+    "boundary": "Terminated partial run has no completed report; preserved jacoco.exec is not a replacement full-coverage assertion."
+  },
+  "capacityMeasurements": [],
+  "preservedArtifacts": {
+    "jacocoExec": 1,
+    "sbomFiles": [
+      {
+        "path": "/tmp/slice3-final-execution-98344bb-r3/backend-full/raw/backend/marketops-server/target/marketops-server-sbom.json",
+        "bytes": 235515,
+        "sha256": "7a71d2bb18908c260da21b574bba16bf110d87a5f58bf6f85283de1b97496709"
+      }
+    ],
+    "jarCount": 1,
+    "totalRawFiles": 310
+  },
+  "remainingBoundary": "Accepted Contract section 6.24 policy resolution repair remains outside this checkpoint. A later source checkpoint needs full current evidence; this archive does not close criteria, all 22 findings, CV-A..E or independent Controller review."
+}

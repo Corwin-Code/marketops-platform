@@ -1,0 +1,80 @@
+{
+  "kind": "OFFICIAL_FAILED_CHECKPOINT_BACKEND_RAW_PUBLICATION_SAFETY_REVIEW",
+  "status": "COMPLETE_NO_CONFIGURED_SHAPE_MATCHES",
+  "sourceHead": "5fd53c0959ad50d949ee92c7477f1fef9954f2a2",
+  "runId": 33994962312,
+  "runAttempt": 1,
+  "checkpointResult": "FAILURE_HISTORICAL_ONLY_NOT_CURRENT_CLOSURE",
+  "originalRoot": "/tmp/slice3-checkpoint-backend-ci-5fd53c0",
+  "actualRawBytesAndMembersScanned": true,
+  "summaryOnlyScan": false,
+  "originalFiles": 26,
+  "actualArchiveMembers": 2512,
+  "scannedBytesIncludingContainersAndDuplicateCopies": 96476657,
+  "archives": [
+    {
+      "path": "backend-integration-reports.zip",
+      "bytes": 955259,
+      "sha256": "80ade2c60372cb9147b2fefb242fc569e654260d193423297673c196127a4902",
+      "type": "ZIP",
+      "depth": 0,
+      "memberCount": 165
+    },
+    {
+      "path": "backend-test-reports.zip",
+      "bytes": 6071456,
+      "sha256": "0ebac9cc8a7d33677001586f7730b002247af5138859a272932857ddd5546b3b",
+      "type": "ZIP",
+      "depth": 0,
+      "memberCount": 2316
+    },
+    {
+      "path": "run-logs.zip",
+      "bytes": 1319104,
+      "sha256": "44fb1fbc1764d37b94c0d07fee0463b5a9f4585753b82e71a83722f9e5ea6373",
+      "type": "ZIP",
+      "depth": 0,
+      "memberCount": 31
+    }
+  ],
+  "archiveMemberMaximumDepth": 1,
+  "nestedArchiveContainersFound": 0,
+  "fileTypesByExtension": {
+    ".css": 2,
+    ".csv": 1,
+    ".gif": 16,
+    ".html": 1889,
+    ".js": 2,
+    ".json": 33,
+    ".log": 2,
+    ".txt": 309,
+    ".xml": 281
+  },
+  "inspectionViews": [
+    "Raw decoded UTF-8 byte content for every non-container member and physical file",
+    "XML/HTML entities decoded before matching",
+    "JSON string values decoded, including archived JSON members"
+  ],
+  "governanceRulesSource": {
+    "path": "scripts/validate_governance.py",
+    "sha256": "89f716bbada69c90db33869b7d15ba5e702b595f07d4ac690373ebbadff60b34"
+  },
+  "configuredGovernanceRules": 7,
+  "additionalJwtShapeRule": true,
+  "hitCount": 0,
+  "perHitClassifications": [],
+  "unreviewedHits": 0,
+  "testTokenShapeHits": 0,
+  "anyMatchedValuePrinted": false,
+  "originalManifestVerified": true,
+  "officialArtifactDigestAndSizeVerified": true,
+  "originalBytesUnchanged": true,
+  "rawPublicationAuthorized": false,
+  "anyTestOrClosurePassImplied": false,
+  "limitations": [
+    "No configured shape matches were found; this is not a universal absence-of-secret or PII assertion.",
+    "No source payloads were redacted, altered, dismissed, or cleaned up. Every original/member byte hash is recorded for reproducibility.",
+    "If another review identifies a test token or credential-shaped payload, its raw bytes must remain private; this scan does not override that evidence.",
+    "The official backend run failed. These files are historical diagnostic evidence and cannot be treated as a successful current-source backend or final closure run."
+  ]
+}

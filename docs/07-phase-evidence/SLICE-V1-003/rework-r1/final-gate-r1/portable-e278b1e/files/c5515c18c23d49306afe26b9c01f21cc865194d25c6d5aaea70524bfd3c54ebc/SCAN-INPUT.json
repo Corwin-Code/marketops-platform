@@ -1,0 +1,198 @@
+{
+  "kind": "ORIGINAL_LOCAL_LAYER_RAW_SCAN_INPUT",
+  "files": {
+    "ARTIFACT-INDEX.json": {
+      "bytes": 6989,
+      "sha256": "90c8bd28127cbc9c635359b87fd5a46afd9af0298376ff50dd9295db6fc78b9b"
+    },
+    "commands.json": {
+      "bytes": 6253,
+      "sha256": "f83c8552cd8c85a9dd7c55da7a752836fedb2ef77a0ab4cb48120cb5cc945a64"
+    },
+    "executed-source-inventory.json": {
+      "bytes": 309596,
+      "sha256": "9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec"
+    },
+    "execution-input.py": {
+      "bytes": 11082,
+      "sha256": "c99da95263e92be83c59d5d16226bc2b6008f279192ba4b1b28c596d81d60fdc"
+    },
+    "expected-source.json": {
+      "bytes": 2596,
+      "sha256": "15b414035affdae6994d4f4f55f9baafedf8ef1904df1911159f0f08c473a9b9"
+    },
+    "parent-security-reference.json": {
+      "bytes": 475,
+      "sha256": "00ee5c8bb020e19e938468688c7daa4e019c71f7dc03e41b9139bb6c9734af3f"
+    },
+    "raw/git-00.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/git-00.stdout": {
+      "bytes": 41,
+      "sha256": "2b18dd9aaff76e93921a443fb38ad819421073f0e0089cc9298b2fedb31bd461"
+    },
+    "raw/git-01.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/git-01.stdout": {
+      "bytes": 41,
+      "sha256": "b9c44de3f1e16c74554c0fcd1079fb8fbc07e1c2b0ace48c4e0122a698c23261"
+    },
+    "raw/git-02.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/git-02.stdout": {
+      "bytes": 49,
+      "sha256": "e1e28dc139261953a5171ead76d89098cf09788d93628ee6f6d8ecc6a42b00c4"
+    },
+    "raw/git-03.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/git-03.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/git-04.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/git-04.stdout": {
+      "bytes": 41,
+      "sha256": "2b18dd9aaff76e93921a443fb38ad819421073f0e0089cc9298b2fedb31bd461"
+    },
+    "raw/git-05.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/git-05.stdout": {
+      "bytes": 41,
+      "sha256": "b9c44de3f1e16c74554c0fcd1079fb8fbc07e1c2b0ace48c4e0122a698c23261"
+    },
+    "raw/git-06.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/git-06.stdout": {
+      "bytes": 49,
+      "sha256": "e1e28dc139261953a5171ead76d89098cf09788d93628ee6f6d8ecc6a42b00c4"
+    },
+    "raw/git-07.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/git-07.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/node-version.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/node-version.stdout": {
+      "bytes": 9,
+      "sha256": "b7677d3ec37ee1897ba07dc2cfe8292fe421c9ac93396cca5bbece486d1a2a41"
+    },
+    "raw/npm-audit.json": {
+      "bytes": 364,
+      "sha256": "cb328be1d98a0e9f8f586940440d42cc7a733e109e6c3b409f41e649e69c4387"
+    },
+    "raw/npm-audit.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/npm-version.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/npm-version.stdout": {
+      "bytes": 8,
+      "sha256": "a38e383f1e9080b0dd9001481f6e56b341000de90a05061b66734350ad3adc41"
+    },
+    "receipt.json": {
+      "bytes": 10229,
+      "sha256": "4c6c11027b35193fb8a6874592d6a30b3035414de9cebc12fba919f8e0424743"
+    },
+    "source-after.json": {
+      "bytes": 465047,
+      "sha256": "fbf2080f642259ecd2ece735a15478100f45fa8b7f9a1a774b2e25b2d7725a18"
+    },
+    "source-before.json": {
+      "bytes": 465047,
+      "sha256": "44070f427e5db129ec0d4affb1f6d4962c72f6b12a1cb34d3b67b924392423be"
+    },
+    "tool-identity.json": {
+      "bytes": 1188,
+      "sha256": "4d02b4202844077963fa2c21a1ff8a01cd5fb7a10af20f73f3132f5f1aff7ebb"
+    }
+  },
+  "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+  "sourceTree": "8d8dd0b3429797a0e01b2ff91c1ba5c09de17dcc",
+  "runId": "security-npm-audit-r2",
+  "sourceInventorySha256": "9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec",
+  "checkpointCommandResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "sourceStable": true,
+  "layerReceipt": {
+    "path": "/private/tmp/slice3-final-execution-02e6172-r5/security-npm-audit-r2/receipt.json",
+    "sha256": "4c6c11027b35193fb8a6874592d6a30b3035414de9cebc12fba919f8e0424743"
+  },
+  "allCollectorEvidenceReferencesVerified": 30,
+  "scanner": {
+    "path": "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/scan_layer_raw.py",
+    "sha256": "944d60fc07f5ac6635b44c5721fe910f83b465fa60cad4d2f1c61e017510ad77"
+  },
+  "receiptSchema": "receipt.json",
+  "rulesSource": {
+    "path": "scripts/validate_governance.py",
+    "sourceHead": "02e617278793b4458dfb7cac74c2a937f1dfcb00",
+    "archivedSource": "/private/tmp/slice3-local-layer-publication-scans-02e6172-r1/governance-source-02e6172.py",
+    "sha256": "89f716bbada69c90db33869b7d15ba5e702b595f07d4ac690373ebbadff60b34"
+  },
+  "patterns": [
+    {
+      "id": 1,
+      "pattern": "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"
+    },
+    {
+      "id": 2,
+      "pattern": "\\bAKIA[0-9A-Z]{16}\\b"
+    },
+    {
+      "id": 3,
+      "pattern": "\\bghp_[A-Za-z0-9]{30,}\\b"
+    },
+    {
+      "id": 4,
+      "pattern": "\\bgithub_pat_[A-Za-z0-9_]{30,}\\b"
+    },
+    {
+      "id": 5,
+      "pattern": "\\bxox[baprs]-[A-Za-z0-9-]{20,}\\b"
+    },
+    {
+      "id": 6,
+      "pattern": "\\bsk-[A-Za-z0-9]{24,}\\b"
+    },
+    {
+      "id": 7,
+      "pattern": "(?i)(?:password|passwd|secret|token|api[_-]?key)\\s*[:=]\\s*[\\\"'][^\\\"']{12,}[\\\"']"
+    },
+    {
+      "id": 8,
+      "pattern": "\\beyJ[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{8,}\\b"
+    },
+    {
+      "id": 9,
+      "pattern": "(?i)https?://[^\\s\\\"<>]*(?:X-Amz-Signature|X-Goog-Signature|[?&]sig=|[?&]signature=|[?&]access_token=|[?&]token=)[^\\s\\\"<>]*"
+    }
+  ],
+  "rawContentPrinted": false,
+  "checkpointBoundary": "Completed original 02e local security-npm-audit-r2 command; product nine-layer admission and independent Controller review remain separate.",
+  "checkpointExitCode": 0,
+  "originalCollectorTestcaseCounts": null,
+  "sourceReceiptAuthority": "Original immutable local command receipt; scan does not convert command completion into nine-layer admission."
+}

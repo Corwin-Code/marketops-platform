@@ -1,0 +1,22 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/Corwin-Code/marketops-platform/actions/runs/34001582060/artifacts?per_page=100"
+  ],
+  "startedAt": "2026-09-06T00:38:58.204173+00:00",
+  "finishedAt": "2026-09-06T00:39:00.271145+00:00",
+  "elapsedSeconds": 2.067,
+  "exitCode": 0,
+  "artifact": {
+    "path": "security-artifacts.json",
+    "bytes": 32,
+    "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+  },
+  "stderr": {
+    "path": "security-artifacts.json.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "boundary": "Read-only GitHub API response for checkpoint 7e66cf8; exact source CI only, not independent Controller approval."
+}

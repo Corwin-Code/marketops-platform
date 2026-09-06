@@ -1,0 +1,48 @@
+{
+  "kind": "BYTE_EXACT_OFFICIAL_SARIF_PUBLICATION_ARCHIVE",
+  "archive": {
+    "path": "/private/tmp/slice3-official-sarif-package-e278b1e-r2/official-typescript-sarif-originals.zip",
+    "sha256": "4aa69731e9c321e335711e1d8c55b16dacf6567f0eb5141243127e981cb394ff",
+    "bytes": 549306
+  },
+  "files": [
+    {
+      "originalPath": "/private/tmp/slice3-checkpoint-ci-7e66cf8/typescript.sarif-r2.json",
+      "member": "4e91bec2cca35c67a0640e24b6245348aa52322250034e959d551900f6124ab7/typescript.sarif-r2.json",
+      "sha256": "4e91bec2cca35c67a0640e24b6245348aa52322250034e959d551900f6124ab7",
+      "bytes": 938202,
+      "previousUntrackedDirectRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/4e91bec2cca35c67a0640e24b6245348aa52322250034e959d551900f6124ab7/typescript.sarif-r2.json"
+    },
+    {
+      "originalPath": "/private/tmp/slice3-security-ci-e278b1e-r1/typescript.sarif.json",
+      "member": "9bdbfd3880525efd01dd562dcc433319babe2f600115717c817aa1a937d0255c/typescript.sarif.json",
+      "sha256": "9bdbfd3880525efd01dd562dcc433319babe2f600115717c817aa1a937d0255c",
+      "bytes": 938202,
+      "previousUntrackedDirectRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/9bdbfd3880525efd01dd562dcc433319babe2f600115717c817aa1a937d0255c/typescript.sarif.json"
+    },
+    {
+      "originalPath": "/private/tmp/slice3-security-ci-e278b1e-r1/typescript.sarif.json.attempt-1",
+      "member": "9bdbfd3880525efd01dd562dcc433319babe2f600115717c817aa1a937d0255c/typescript.sarif.json.attempt-1",
+      "sha256": "9bdbfd3880525efd01dd562dcc433319babe2f600115717c817aa1a937d0255c",
+      "bytes": 938202,
+      "previousUntrackedDirectRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/9bdbfd3880525efd01dd562dcc433319babe2f600115717c817aa1a937d0255c/typescript.sarif.json.attempt-1"
+    },
+    {
+      "originalPath": "/private/tmp/slice3-checkpoint-ci-1381ef7/typescript.sarif.json",
+      "member": "d06b750f8c566556a27818580f68f362fc143ab72da1d68a9e44676f8658c0ff/typescript.sarif.json",
+      "sha256": "d06b750f8c566556a27818580f68f362fc143ab72da1d68a9e44676f8658c0ff",
+      "bytes": 938202,
+      "previousUntrackedDirectRepositoryPath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/d06b750f8c566556a27818580f68f362fc143ab72da1d68a9e44676f8658c0ff/typescript.sarif.json"
+    }
+  ],
+  "memberCount": 4,
+  "zipCrcAndEveryMemberShaVerified": true,
+  "originalBytesUnchanged": true,
+  "recordedAt": "2026-09-06T11:30:06.780309+00:00",
+  "exactContextReview": {
+    "path": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/EXACT-SARIF-HELP-TRIAGE.json",
+    "sha256": "6db9e16dcc629f3414986b1c4d6ab9a1d1025b533ea0ce6cb486e44f297eaa59",
+    "bytes": 150902
+  },
+  "boundary": "Official CodeQL help examples remain byte-exact and explicitly recursively scanned/reviewed. Native artifact ZIP transport preserves the existing unmodified repository text-pattern gate. No credential or source assertion is redacted, suppressed or changed; original analysis identities remain historical/current as recorded. None of these four files is a direct selected finalizer proof."
+}

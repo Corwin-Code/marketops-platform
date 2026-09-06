@@ -1,0 +1,11 @@
+--- /tmp/slice3-structured-crosschecks-e278b1e-r1/map_structured_nodes.py
++++ /tmp/slice3-structured-crosschecks-e278b1e-r1/map_structured_nodes_r2.py
+@@ -40,7 +40,7 @@
+     if isinstance(v.get('path'),str)and v.get('sha256')and refEq(v,n['evidence']):return True
+     return any(actual_reference(x)for x in v.values())
+    return isinstance(v,list)and any(actual_reference(x)for x in v)
+-  assert actual_reference(parent),'Exact structured raw member absent from actual registered parent'
++  assert refEq(n['evidence'],layer['receipt'])or actual_reference(parent),'Exact structured raw is neither the actual registered execution receipt nor its registered member'
+   for key in ['productSourceIdentity','executionSourceIdentity']:
+    if key in n or key in e:assert eq(n.get(key),e.get(key))
+   if 'actualExecutionReceipt'in n or 'actualExecutionReceipt'in e:assert refEq(n['actualExecutionReceipt'],e['actualExecutionReceipt'])

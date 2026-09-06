@@ -1,0 +1,32 @@
+{
+  "kind": "ARCHIVE_COMMAND_EXECUTION_RECEIPT",
+  "argv": [
+    "python3",
+    "/tmp/slice3-browser-r4-archives-02e6172-r1/archive_browser_r4.py"
+  ],
+  "startedAt": "2026-09-06T04:47:52.685885+00:00",
+  "finishedAt": "2026-09-06T04:47:53.851361+00:00",
+  "exitCode": 0,
+  "tool": {
+    "path": "/tmp/slice3-browser-r4-archives-02e6172-r1/archive_browser_r4.py",
+    "packageRelativePath": "archive_browser_r4.py",
+    "sha256": "1a2348210c6357aed99ee9ee564a263bf1ae2bab7531f7f064cb53c28196c519",
+    "bytes": 8373
+  },
+  "rawCommandLog": {
+    "path": "/tmp/slice3-browser-r4-archives-02e6172-r1/archive-command.log",
+    "packageRelativePath": "archive-command.log",
+    "sha256": "27344d1d82e9f4af26f3aaf1361f6da8726e7edc7522e0b2b349c28677d2c743",
+    "bytes": 205
+  },
+  "outputReceipt": {
+    "path": "/tmp/slice3-browser-r4-archives-02e6172-r1/ARCHIVING-RECEIPT.json",
+    "packageRelativePath": "ARCHIVING-RECEIPT.json",
+    "sha256": "e875a36a9d56f168cce69be607580197a0556b87a5378f023ccd75136ff721c3",
+    "bytes": 2755
+  },
+  "archivesCompleted": 1,
+  "originalBytesUnchanged": true,
+  "productTestsRun": 0,
+  "publicationPerformed": false
+}

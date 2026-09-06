@@ -1,0 +1,14 @@
+{
+  "batch": "05",
+  "argv": [
+    "python3",
+    "/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+    "--manifest",
+    "/tmp/slice3-final-publication-scans-e278b1e-r1/input-05.json",
+    "--out",
+    "/tmp/slice3-final-publication-scans-e278b1e-r1/scan-05"
+  ],
+  "startedAt": "2026-09-06T11:18:38.684862+00:00",
+  "finishedAt": "2026-09-06T11:18:57.601663+00:00",
+  "exitCode": 0
+}

@@ -1,0 +1,60 @@
+{
+  "kind": "BROWSER_R4_SCAN_OUTPUT_FILE_SHA_INDEX",
+  "files": [
+    {
+      "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/README.md",
+      "sha256": "f349d6d348bdf81d7dbb49ab11755b10dc1bdf560d58e3c4fad31300fd8497fb",
+      "size": 398
+    },
+    {
+      "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/SCAN-COMMAND.json",
+      "sha256": "aa902d844f3e4164a1e5e236d6910582a3db5f8e42e03b606276fb3eb7d7888a",
+      "size": 1344
+    },
+    {
+      "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/governance-source-02e6172.py",
+      "sha256": "89f716bbada69c90db33869b7d15ba5e702b595f07d4ac690373ebbadff60b34",
+      "size": 259762
+    },
+    {
+      "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/HITS.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/MEMBERS.jsonl",
+      "sha256": "35c6bb1cf7a949143e73abbb74902a62a51f72e4ded11e5c1962b0fa4ebdeb7c",
+      "size": 17099
+    },
+    {
+      "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/ORIGINAL-FILE-SHA-INDEX.json",
+      "sha256": "42aebf631e2b2eedb56b031f70fe29b4971eb15d901c6108f89ca67bacd652ed",
+      "size": 30563
+    },
+    {
+      "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/PUBLICATION-SCAN-RECEIPT.json",
+      "sha256": "ee5ba835097c8925dfb43c37256b2514fea0b09e6f818cb96c8db6dda0c32542",
+      "size": 3610
+    },
+    {
+      "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/SCAN-INPUT.json",
+      "sha256": "19ed5de262c543f20c1095dfa2f648cc807b63b6860883570b1b821ae0ec6f20",
+      "size": 18880
+    },
+    {
+      "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/SCAN-SUMMARY.json",
+      "sha256": "29166da2d7643b3cb812484f580dfdea5588c927c401946b5c922de59ae99833",
+      "size": 1587
+    },
+    {
+      "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan/TRIAGE.json",
+      "sha256": "9061ae39ad2271c5a9f2d55c6108a49554a279bfa1e7f10dc8cad832a277984b",
+      "size": 508
+    },
+    {
+      "path": "/tmp/slice3-browser-r4-evidence-02e6172-r1/scan_layer_raw.py",
+      "sha256": "944d60fc07f5ac6635b44c5721fe910f83b465fa60cad4d2f1c61e017510ad77",
+      "size": 10841
+    }
+  ]
+}

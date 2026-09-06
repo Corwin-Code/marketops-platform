@@ -1,0 +1,1 @@
+{"review": {"path": "/private/tmp/slice3-structured-crosschecks-e278b1e-r1/SECURITY-RAW-CROSSCHECK.json", "sha256": "2460f0b4b8dcf96847a18f40aa3784a5b90deaff6c05483aa421446f1c6b63b3", "bytes": 150760}, "rawFiles": 149, "sourceMembers": 1280, "sarif": 100, "openQuality": 95, "historicalDismissedHigh": 5, "npmAllZero": true}

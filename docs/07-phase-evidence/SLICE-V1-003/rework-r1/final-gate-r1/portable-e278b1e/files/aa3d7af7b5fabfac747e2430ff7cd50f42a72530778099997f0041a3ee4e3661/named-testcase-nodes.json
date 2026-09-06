@@ -1,0 +1,446 @@
+[
+  {
+    "class": "governed-advertising.spec.ts",
+    "name": "real Maker, Ops Lead and Owner decisions preserve minimum disclosure and exact versions",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/advertising/report.xml",
+      "sha256": "038cea2452b22b0bea5bab5788f43393c24a2de3c0ae6741a3328f27215dd6b1",
+      "bytes": 2376
+    },
+    "nodeIndex": 0,
+    "seconds": "9.183"
+  },
+  {
+    "class": "governed-advertising.spec.ts",
+    "name": "real backend denies absent and forged credentials before advertising data is disclosed",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/advertising/report.xml",
+      "sha256": "038cea2452b22b0bea5bab5788f43393c24a2de3c0ae6741a3328f27215dd6b1",
+      "bytes": 2376
+    },
+    "nodeIndex": 1,
+    "seconds": "0.014"
+  },
+  {
+    "class": "governed-advertising.spec.ts",
+    "name": "OZON actual governed manual path stays UNVERIFIED and requires an independent observer",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/advertising/report.xml",
+      "sha256": "038cea2452b22b0bea5bab5788f43393c24a2de3c0ae6741a3328f27215dd6b1",
+      "bytes": 2376
+    },
+    "nodeIndex": 2,
+    "seconds": "8.534"
+  },
+  {
+    "class": "governed-advertising.spec.ts",
+    "name": "WILDBERRIES actual governed manual path stays UNVERIFIED and requires an independent observer",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/advertising/report.xml",
+      "sha256": "038cea2452b22b0bea5bab5788f43393c24a2de3c0ae6741a3328f27215dd6b1",
+      "bytes": 2376
+    },
+    "nodeIndex": 3,
+    "seconds": "7.888"
+  },
+  {
+    "class": "governed-advertising.spec.ts",
+    "name": "all four real HTTP lane projections preserve unknown values and expose no invented action",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/advertising/report.xml",
+      "sha256": "038cea2452b22b0bea5bab5788f43393c24a2de3c0ae6741a3328f27215dd6b1",
+      "bytes": 2376
+    },
+    "nodeIndex": 4,
+    "seconds": "2.094"
+  },
+  {
+    "class": "governed-advertising.spec.ts",
+    "name": "three distinct people accept an exact temporary exception, block actions, and end it",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/advertising/report.xml",
+      "sha256": "038cea2452b22b0bea5bab5788f43393c24a2de3c0ae6741a3328f27215dd6b1",
+      "bytes": 2376
+    },
+    "nodeIndex": 5,
+    "seconds": "3.337"
+  },
+  {
+    "class": "governed-advertising.spec.ts",
+    "name": "scoped emergency hold remains active until independent recovery conditions are established",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/advertising/report.xml",
+      "sha256": "038cea2452b22b0bea5bab5788f43393c24a2de3c0ae6741a3328f27215dd6b1",
+      "bytes": 2376
+    },
+    "nodeIndex": 6,
+    "seconds": "2.057"
+  },
+  {
+    "class": "governed-advertising.spec.ts",
+    "name": "HISTORY_UNKNOWN preserves actual HTTP command history, unresolved state and separate outcomes",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/advertising/report.xml",
+      "sha256": "038cea2452b22b0bea5bab5788f43393c24a2de3c0ae6741a3328f27215dd6b1",
+      "bytes": 2376
+    },
+    "nodeIndex": 7,
+    "seconds": "1.43"
+  },
+  {
+    "class": "governed-advertising.spec.ts",
+    "name": "HISTORY_MISMATCH preserves actual HTTP command history, unresolved state and separate outcomes",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/advertising/report.xml",
+      "sha256": "038cea2452b22b0bea5bab5788f43393c24a2de3c0ae6741a3328f27215dd6b1",
+      "bytes": 2376
+    },
+    "nodeIndex": 8,
+    "seconds": "0.692"
+  },
+  {
+    "class": "governed-advertising.spec.ts",
+    "name": "HISTORY_REGRESSION preserves actual HTTP command history, unresolved state and separate outcomes",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/advertising/report.xml",
+      "sha256": "038cea2452b22b0bea5bab5788f43393c24a2de3c0ae6741a3328f27215dd6b1",
+      "bytes": 2376
+    },
+    "nodeIndex": 9,
+    "seconds": "0.936"
+  },
+  {
+    "class": "governed-advertising.spec.ts",
+    "name": "HISTORY_EXPIRED preserves actual HTTP command history, unresolved state and separate outcomes",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/advertising/report.xml",
+      "sha256": "038cea2452b22b0bea5bab5788f43393c24a2de3c0ae6741a3328f27215dd6b1",
+      "bytes": 2376
+    },
+    "nodeIndex": 10,
+    "seconds": "0.63"
+  },
+  {
+    "class": "governed-advertising.spec.ts",
+    "name": "real keyboard navigation and scoped HTTP pagination preserve page boundaries and lane resets",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/advertising/report.xml",
+      "sha256": "038cea2452b22b0bea5bab5788f43393c24a2de3c0ae6741a3328f27215dd6b1",
+      "bytes": 2376
+    },
+    "nodeIndex": 11,
+    "seconds": "6.564"
+  },
+  {
+    "class": "advertising-brief.spec.ts",
+    "name": "TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF with no token",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 0,
+    "seconds": "0.467"
+  },
+  {
+    "class": "advertising-brief.spec.ts",
+    "name": "TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04 with no token",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 1,
+    "seconds": "0.134"
+  },
+  {
+    "class": "advertising-brief.spec.ts",
+    "name": "TC-BROWSER-017 the brief reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/briefs/DAILY_ACTION_BRIEF/2026-09-04/history with no token",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 2,
+    "seconds": "0.166"
+  },
+  {
+    "class": "advertising-brief.spec.ts",
+    "name": "TC-BROWSER-018 the brief renders as published › every section is shown, including the ones that found nothing",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 3,
+    "seconds": "0.368"
+  },
+  {
+    "class": "advertising-brief.spec.ts",
+    "name": "TC-BROWSER-018 the brief renders as published › a restatement keeps the reading somebody acted on",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 4,
+    "seconds": "0.28"
+  },
+  {
+    "class": "advertising-brief.spec.ts",
+    "name": "TC-BROWSER-018 the brief renders as published › nothing published is stated, not shown as a fault",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 5,
+    "seconds": "0.281"
+  },
+  {
+    "class": "advertising-execution.spec.ts",
+    "name": "TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/reservations with no token",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 6,
+    "seconds": "0.19"
+  },
+  {
+    "class": "advertising-execution.spec.ts",
+    "name": "TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/exposure with no token",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 7,
+    "seconds": "0.117"
+  },
+  {
+    "class": "advertising-execution.spec.ts",
+    "name": "TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses /api/v1/console/advertising/containments with no token",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 8,
+    "seconds": "0.122"
+  },
+  {
+    "class": "advertising-execution.spec.ts",
+    "name": "TC-BROWSER-015 the advertising reads are refused without an authenticated caller › the backend refuses an advertising read carrying a made-up token",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 9,
+    "seconds": "0.119"
+  },
+  {
+    "class": "advertising-execution.spec.ts",
+    "name": "TC-BROWSER-016 the execution surfaces render in a real browser › the envelope is shown axis by axis, with no combined figure",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 10,
+    "seconds": "0.427"
+  },
+  {
+    "class": "advertising-execution.spec.ts",
+    "name": "TC-BROWSER-016 the execution surfaces render in a real browser › a hold names its kind and every condition still outstanding",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 11,
+    "seconds": "0.255"
+  },
+  {
+    "class": "advertising-execution.spec.ts",
+    "name": "TC-BROWSER-016 the execution surfaces render in a real browser › no envelope is presented as no write at all, not as an empty one",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 12,
+    "seconds": "0.219"
+  },
+  {
+    "class": "availability-journey.spec.ts",
+    "name": "TC-BROWSER-014 stockout queue, accountable case and structured action",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 13,
+    "seconds": "1.591"
+  },
+  {
+    "class": "business-journey.spec.ts",
+    "name": "TC-BROWSER-013 authenticated evidence, approval, command and readback journey",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 14,
+    "seconds": "3.997"
+  },
+  {
+    "class": "health-shell.spec.ts",
+    "name": "the built console recovers across a real database outage",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 15,
+    "seconds": "10.052"
+  },
+  {
+    "class": "operating-console.spec.ts",
+    "name": "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › shows the platform panel and no operating data",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 16,
+    "seconds": "0.155"
+  },
+  {
+    "class": "operating-console.spec.ts",
+    "name": "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the backend refuses an operating request that carries no token",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 17,
+    "seconds": "0.138"
+  },
+  {
+    "class": "operating-console.spec.ts",
+    "name": "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the backend refuses an operating request that carries a made-up token",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 18,
+    "seconds": "0.114"
+  },
+  {
+    "class": "operating-console.spec.ts",
+    "name": "TC-BROWSER-010 nothing operational reaches an unauthenticated visitor › the built bundle carries no token, password or secret reference",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 19,
+    "seconds": "0.135"
+  },
+  {
+    "class": "operating-console.spec.ts",
+    "name": "TC-BROWSER-012 asynchronous export presentation and browser download integrity › waits for 202 completion and saves only the verified large export",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 20,
+    "seconds": "2.779"
+  },
+  {
+    "class": "operating-console.spec.ts",
+    "name": "TC-BROWSER-012 asynchronous export presentation and browser download integrity › refuses a corrupt final part without offering a partial file",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 21,
+    "seconds": "2.742"
+  },
+  {
+    "class": "operating-console.spec.ts",
+    "name": "TC-BROWSER-011 the operator journey runs in a real browser › signs in, reaches the work list, and never labels doubt as certainty",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 22,
+    "seconds": "0.308"
+  },
+  {
+    "class": "operating-console.spec.ts",
+    "name": "TC-BROWSER-011 the operator journey runs in a real browser › an ended session takes the operator back to sign-in with no data left on screen",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 23,
+    "seconds": "0.274"
+  },
+  {
+    "class": "operating-console.spec.ts",
+    "name": "TC-BROWSER-011 the operator journey runs in a real browser › a refused sign-in leaves the visitor told rather than blank",
+    "status": "PASSED",
+    "report": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/raw/build/final-gate-r6-e278b1e/browser-r4/legacy/report.xml",
+      "sha256": "7ba19f00d2853ebfb84b2b8e753431057d3edb354b9c1afd118e4e287edebf9d",
+      "bytes": 6450
+    },
+    "nodeIndex": 24,
+    "seconds": "0.202"
+  }
+]

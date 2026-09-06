@@ -3166,7 +3166,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
     def test_rework_identity_phase_and_actor_cannot_drift(self) -> None:
         mutations = (
             (
-                "next_authorized_actor: CODEX",
+                self.current_line("next_authorized_actor"),
                 "next_authorized_actor: SOMEBODY_ELSE",
             ),
             (
@@ -3187,7 +3187,7 @@ class V1CurrentStateContractTests(unittest.TestCase):
                 "slice_v1_001_closure_claim: OWNER_FORMALLY_CLOSED",
             ),
             (
-                "candidate_state_scope: SLICE_V1_003_RESIDUAL_REWORK_NOT_CONTROLLER_APPROVED",
+                self.current_line("candidate_state_scope"),
                 "candidate_state_scope: PRODUCTION_READY",
             ),
             (

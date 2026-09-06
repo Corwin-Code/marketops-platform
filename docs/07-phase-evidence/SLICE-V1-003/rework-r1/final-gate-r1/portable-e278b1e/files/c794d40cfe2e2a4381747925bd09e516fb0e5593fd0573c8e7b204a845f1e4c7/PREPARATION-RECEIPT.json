@@ -1,0 +1,233 @@
+{
+  "kind": "STRUCTURED_CONFIG_PREPARATION_ONLY",
+  "startedAt": "2026-09-06T10:37:32.983792+00:00",
+  "finishedAt": "2026-09-06T10:37:35.005078+00:00",
+  "elapsedSeconds": 2.021206,
+  "argv": [
+    "/tmp/slice3-structured-registration-composite-r3/prepare_structured_registration.py",
+    "--tool-sha256",
+    "304a937aa62e56a9dce44377b8d3294ae4b2e4d46443fea4ec227f9aee0d4229",
+    "--repo",
+    "/Users/chzhengx/Code/personal/marketops-platform",
+    "--requirements",
+    "/tmp/slice3-structured-binding-requirements-e278b1e-r2/STRUCTURED-BINDING-REQUIREMENTS.json",
+    "--expected-source",
+    "/tmp/slice3-registered-inputs-e278b1e-r1/EXPECTED-SOURCE.json",
+    "--config",
+    "/tmp/slice3-completed-registration-e278b1e-r1/EXECUTION-INPUTS.json",
+    "--out",
+    "/tmp/slice3-structured-registration-e278b1e-r1"
+  ],
+  "exitCode": 0,
+  "registrationToolSha256": "304a937aa62e56a9dce44377b8d3294ae4b2e4d46443fea4ec227f9aee0d4229",
+  "registrationToolBytesStable": true,
+  "registrationToolScope": "INDEPENDENT_PINNED_CONFIG_PREPARATION_NOT_SELECTED_PRODUCT_OR_D_SOURCE",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "inputs": [
+    {
+      "path": "/private/tmp/slice3-structured-registration-composite-r3/prepare_structured_registration.py",
+      "sha256": "304a937aa62e56a9dce44377b8d3294ae4b2e4d46443fea4ec227f9aee0d4229"
+    },
+    {
+      "path": "/private/tmp/slice3-structured-binding-requirements-e278b1e-r2/STRUCTURED-BINDING-REQUIREMENTS.json",
+      "sha256": "9c67df831b513739fce2f6ac02d8ff91ae8faa312741ec64e2e8a2443a6417dc"
+    },
+    {
+      "path": "/private/tmp/slice3-registered-inputs-e278b1e-r1/EXPECTED-SOURCE.json",
+      "sha256": "4f72d4ab9a9c0b2571cf558a89979a145a5f03a4f9bf1dc418cd1204500bee5a"
+    },
+    {
+      "path": "/private/tmp/slice3-completed-registration-e278b1e-r1/EXECUTION-INPUTS.json",
+      "sha256": "502997d6483b7aa439b6939651595dcc1e8a3f405ed22841dfce90d136c6cc80"
+    }
+  ],
+  "sourceChecks": [
+    {
+      "planProofId": "source-proof-ace1a61c3f87f1a63a45c15e",
+      "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingMixedCapacityEvidence.java",
+      "sha256": "c8e622536bd45733744534d647fc217bfa7eb1c288fa9c50efc8ee303449cef4",
+      "sourceAuthorityScope": "RUNTIME_SOURCE_INVENTORY",
+      "executionReceipt": null,
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-9b84af18c1abdb959fc34e22",
+      "sourcePath": "scripts/verify_migration_artifact.py",
+      "sha256": "8d6ad9f0394012d5323996658d43b174d62174a89133149402d9f399271da191",
+      "sourceAuthorityScope": "RUNTIME_SOURCE_INVENTORY",
+      "executionReceipt": null,
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-d36cf26359e1333837cc6381",
+      "sourcePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py",
+      "sha256": "b1320c09791dfd4263905768edd3b4280ffbe588e193e294353f981f7ce02053",
+      "sourceAuthorityScope": "RUNTIME_SOURCE_INVENTORY",
+      "executionReceipt": null,
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-08c882ac3c40e02973cd511a",
+      "sourcePath": ".github/workflows/security.yml",
+      "sha256": "654540b595c8257c9e625dcb8728dec94445386f647ee4a8d82b45e80dd5ad28",
+      "sourceAuthorityScope": "RUNTIME_SOURCE_INVENTORY",
+      "executionReceipt": null,
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-917cef537160ee8db3249b27",
+      "sourcePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/reconcile_measurements.py",
+      "sha256": "b2cbf1e75ca98e3e69ab9d5d88efb26312013430d21002717df6d68eac08649c",
+      "sourceAuthorityScope": "EVIDENCE_DERIVATION_ONLY",
+      "executionReceipt": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/layer-candidate.json",
+        "sha256": "3b7a98a36204402ef91df5c0d2a2e5b6898e0927e052937ad4b7f508af5e9509",
+        "bytes": 8324
+      },
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-6b0800afc4c50374c5778a41",
+      "sourcePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py",
+      "sha256": "b1320c09791dfd4263905768edd3b4280ffbe588e193e294353f981f7ce02053",
+      "sourceAuthorityScope": "RUNTIME_SOURCE_INVENTORY",
+      "executionReceipt": null,
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-897e11b3117080a6dacb0f2d",
+      "sourcePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py",
+      "sha256": "b1320c09791dfd4263905768edd3b4280ffbe588e193e294353f981f7ce02053",
+      "sourceAuthorityScope": "RUNTIME_SOURCE_INVENTORY",
+      "executionReceipt": null,
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-824cec3f580149dc4519e4e0",
+      "sourcePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py",
+      "sha256": "b1320c09791dfd4263905768edd3b4280ffbe588e193e294353f981f7ce02053",
+      "sourceAuthorityScope": "RUNTIME_SOURCE_INVENTORY",
+      "executionReceipt": null,
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-16cec657dda52ddbcd6234b5",
+      "sourcePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py",
+      "sha256": "b1320c09791dfd4263905768edd3b4280ffbe588e193e294353f981f7ce02053",
+      "sourceAuthorityScope": "RUNTIME_SOURCE_INVENTORY",
+      "executionReceipt": null,
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-ab96c4f72f8be606d69199d2",
+      "sourcePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py",
+      "sha256": "b1320c09791dfd4263905768edd3b4280ffbe588e193e294353f981f7ce02053",
+      "sourceAuthorityScope": "RUNTIME_SOURCE_INVENTORY",
+      "executionReceipt": null,
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-cf31c3d308bf2f52b3cc0622",
+      "sourcePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py",
+      "sha256": "b1320c09791dfd4263905768edd3b4280ffbe588e193e294353f981f7ce02053",
+      "sourceAuthorityScope": "RUNTIME_SOURCE_INVENTORY",
+      "executionReceipt": null,
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-c79daf810ae410d7832fefe6",
+      "sourcePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/collect_execution.py",
+      "sha256": "b1320c09791dfd4263905768edd3b4280ffbe588e193e294353f981f7ce02053",
+      "sourceAuthorityScope": "RUNTIME_SOURCE_INVENTORY",
+      "executionReceipt": null,
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-83dd6d613cca463007248731",
+      "sourcePath": ".github/workflows/security.yml",
+      "sha256": "654540b595c8257c9e625dcb8728dec94445386f647ee4a8d82b45e80dd5ad28",
+      "sourceAuthorityScope": "RUNTIME_SOURCE_INVENTORY",
+      "executionReceipt": null,
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-432c837f999bcc073f7b673d",
+      "sourcePath": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingMixedOrchestrationCapacityIT.java",
+      "sha256": "28b23a5af40ca8899e76f93ab74308fb151d7ae947e25d563a08f415826e81b7",
+      "sourceAuthorityScope": "RUNTIME_SOURCE_INVENTORY",
+      "executionReceipt": null,
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    },
+    {
+      "planProofId": "source-proof-782fd45d97c56d1bac77f18a",
+      "sourcePath": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/reconcile_measurements.py",
+      "sha256": "b2cbf1e75ca98e3e69ab9d5d88efb26312013430d21002717df6d68eac08649c",
+      "sourceAuthorityScope": "EVIDENCE_DERIVATION_ONLY",
+      "executionReceipt": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/governance-r2/layer-candidate.json",
+        "sha256": "3b7a98a36204402ef91df5c0d2a2e5b6898e0927e052937ad4b7f508af5e9509",
+        "bytes": 8324
+      },
+      "executedSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "executedSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+      "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+    }
+  ],
+  "explicitRawLocatorMappings": [],
+  "derivationSourceIdentity": null,
+  "derivationSourceValidation": {},
+  "outputs": [
+    {
+      "path": "/private/tmp/slice3-structured-registration-e278b1e-r1/CONFIG-ADAPTER-PATCH.json",
+      "sha256": "831d1bf99d1614f5bc611318627f5c1b1f2a040a9e4e8474e6a6d4df1cf2e86c"
+    },
+    {
+      "path": "/private/tmp/slice3-structured-registration-e278b1e-r1/STRUCTURED-NODE-SELECTION-RULES.json",
+      "sha256": "031326ca1473933a5f7c56c8d15c55ed93142d8c0a6ea17e74b678a7beb9d7f8"
+    },
+    {
+      "path": "/private/tmp/slice3-structured-registration-e278b1e-r1/PENDING-STRUCTURED-BINDINGS.json",
+      "sha256": "ce02d260eaf27e50ef079b01497f7130f22179c0a386443cc140708d3206d977"
+    }
+  ],
+  "preparedScalarAdapters": 433,
+  "authoredDefinitionCount": 15,
+  "authoredRowCount": 119,
+  "authoredStructuredReferenceCount": 107,
+  "explicitScopeCorrections": [
+    "Original requirements governance scope says 14 structured checks; original raw result contains 24. D counts must come from actual separate receipt and are not product test counts."
+  ],
+  "productTestsRun": false,
+  "productTestCountAdded": 0,
+  "proofSelections": [],
+  "engineeringClosureClaimMade": false
+}

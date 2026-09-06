@@ -1,0 +1,40 @@
+{
+  "kind": "PRESERVED_FAILED_EXACT_SOURCE_FRONTEND_CI_CHECKPOINT",
+  "sourceHead": "da559bdb24eb0b614454a230438126fb31f736ee",
+  "sourceTree": "97d7ae4e51d6af565b295c361e5f59ac024ac42d",
+  "runId": 34022694375,
+  "runAttempt": 1,
+  "conclusion": "failure",
+  "jobId": 101458060328,
+  "failedSteps": [
+    "Exercise governed advertising roles in a fresh isolated database"
+  ],
+  "unitTests": 358,
+  "legacyBrowser": {
+    "passed": 25,
+    "failed": 0
+  },
+  "advertisingBrowser": {
+    "passed": 10,
+    "failed": 2,
+    "failedScope": "Ozon and Wildberries manual execution scenarios time out at the same exact Observation source label lookup, before the downstream evidence assertions execute."
+  },
+  "artifact": {
+    "id": 9986150226,
+    "sha256": "5be42f785fba8b75d48a94fa49a141dcc78736383d1147210c79082979749df4",
+    "bytes": 15373317,
+    "zipMembers": 34,
+    "crcVerified": true
+  },
+  "diagnosis": "Both actual label/option text controls have zero exact-label matches and one exact combobox-role match. Four explicit selections work in a temporary Chromium diagnostic. Full real-application execution is still required after changing the browser locators.",
+  "authority": "No timeout, assertion, product control, Contract, Frozen Finding or production enablement changed by this capture.",
+  "priorCaptureFailures": [
+    {
+      "path": "/tmp/slice3-frontend-ci-da559bd-screenshots-9986150226.zip",
+      "reason": "Original read failed with EOF; later exact official artifact fetch succeeded."
+    }
+  ],
+  "allWorkflowsPass": false,
+  "engineeringClosureAdmitted": false,
+  "capturedAt": "2026-09-06T09:19:39.175417+00:00"
+}

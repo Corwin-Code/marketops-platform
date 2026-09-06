@@ -1,0 +1,9 @@
+........................env-init: FAILED — target is not ignored by Git; refusing to write
+..env-init: refusing to overwrite in a non-interactive shell
+...........................................................................................................................................................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 421 tests in 8.399s
+
+OK
+Assembled 200 exact criteria and 22 exact findings; all remain verification-pending.
+{"result": "DERIVATION_VALID", "mode": "check", "engineeringClosureClaimMade": false}

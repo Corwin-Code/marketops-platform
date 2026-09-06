@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.mimococo.marketops.marketplaceintegration.PriceCommandStateTest
+-------------------------------------------------------------------------------
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.060 s -- in com.mimococo.marketops.marketplaceintegration.PriceCommandStateTest

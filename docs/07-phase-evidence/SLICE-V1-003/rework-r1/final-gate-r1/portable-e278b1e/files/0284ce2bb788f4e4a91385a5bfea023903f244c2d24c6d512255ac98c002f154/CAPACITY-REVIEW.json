@@ -1,0 +1,1118 @@
+{
+  "kind": "INDEPENDENT_CURRENT_ORIGINAL_CAPACITY_ARTIFACT_REVIEW",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "sourceInventorySha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "parentExecution": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/layer-candidate.json",
+    "sha256": "92d617f4b76c9555eec6201da195254d03a040b825dd3b5d7012ce7a91fa8932",
+    "bytes": 746046
+  },
+  "reviewScript": {
+    "path": "/private/tmp/slice3-audit-capacity-e278b1e-r6.py",
+    "sha256": "461f28e8d102efb8650248c7d6741d2e732a61cff71a4f536e50c27a3c32525e",
+    "bytes": 20077
+  },
+  "reviewedAt": "2026-09-06T10:36:04.095813+00:00",
+  "originalParentNodeCounts": {
+    "integration": 1139,
+    "unit": 1630
+  },
+  "originalNodeIndex": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/named-testcase-nodes.json",
+    "sha256": "9da85954b1f8bb9705d4b3ea613ecb7bbb4faa0efe2942c9cbbf0b39d020a54b",
+    "bytes": 1571773
+  },
+  "capacityNamedNodes": {
+    "original": [
+      {
+        "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+        "name": "replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach",
+        "status": "PASSED",
+        "report": {
+          "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+          "sha256": "6db128846ec6478e534664ff3116bd55959890e2036b26497aca6acd17687b4a",
+          "bytes": 41488
+        },
+        "nodeIndex": 0,
+        "seconds": "0.354"
+      },
+      {
+        "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+        "name": "sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization",
+        "status": "PASSED",
+        "report": {
+          "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+          "sha256": "6db128846ec6478e534664ff3116bd55959890e2036b26497aca6acd17687b4a",
+          "bytes": 41488
+        },
+        "nodeIndex": 1,
+        "seconds": "0.44"
+      },
+      {
+        "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT",
+        "name": "declaredThousandObjectPortfolioMeetsAdvertisingSloAndRepairsDroppedCorrections",
+        "status": "PASSED",
+        "report": {
+          "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+          "sha256": "6db128846ec6478e534664ff3116bd55959890e2036b26497aca6acd17687b4a",
+          "bytes": 41488
+        },
+        "nodeIndex": 2,
+        "seconds": "272.95"
+      }
+    ],
+    "mixed": [
+      {
+        "class": "com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT",
+        "name": "declaredPortfolioProcessesFreshMatureRevisionsAndRepairsDroppedCorrectionsWithExpiredControls",
+        "status": "PASSED",
+        "report": {
+          "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.xml",
+          "sha256": "b42c251d45c02aa4c83e756b33e3b4fa96ab71a85d426db0ea543a83e9272b19",
+          "bytes": 41100
+        },
+        "nodeIndex": 0,
+        "seconds": "401.966"
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "originalPath": "backend/marketops-server/target/advertising-capacity-dataset.json",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-capacity-dataset.json",
+        "sha256": "ee845e81fbdbdc92ea396e9fc9257a56c7ab8106da9d95ae7147018b36609991",
+        "bytes": 4077576
+      },
+      "writtenDuringCommand": true
+    },
+    {
+      "originalPath": "backend/marketops-server/target/advertising-capacity-receipt.json",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-capacity-receipt.json",
+        "sha256": "33cf6886c8f89e690c262f288d70ce27627d1a52b92e78949552e343504062b6",
+        "bytes": 2861
+      },
+      "writtenDuringCommand": true
+    },
+    {
+      "originalPath": "backend/marketops-server/target/advertising-capacity-source-inputs.json",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-capacity-source-inputs.json",
+        "sha256": "ab62f305c80ef21b8027881c4fe417e79abbf08ef66de7995e0bb2f2e3c4c03a",
+        "bytes": 206437
+      },
+      "writtenDuringCommand": true
+    },
+    {
+      "originalPath": "backend/marketops-server/target/advertising-mixed-capacity-dataset.json",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-dataset.json",
+        "sha256": "e5a7b9184528352ae934450d930687393888890d0a307091f8e3ffe726207722",
+        "bytes": 9793843
+      },
+      "writtenDuringCommand": true
+    },
+    {
+      "originalPath": "backend/marketops-server/target/advertising-mixed-capacity-diagnostic.json",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-diagnostic.json",
+        "sha256": "472b014459a512b75d5638d7a38b82873edaef8d23d0e5d578750f2c17b882dd",
+        "bytes": 2057300
+      },
+      "writtenDuringCommand": true
+    },
+    {
+      "originalPath": "backend/marketops-server/target/advertising-mixed-capacity-receipt.json",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-receipt.json",
+        "sha256": "e8d0016362505e7b225dbe7fbce07da7b74ca05e5509d63b3f5dc41ace527c46",
+        "bytes": 33696
+      },
+      "writtenDuringCommand": true
+    },
+    {
+      "originalPath": "backend/marketops-server/target/advertising-mixed-capacity-source-inputs.json",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-source-inputs.json",
+        "sha256": "ab62f305c80ef21b8027881c4fe417e79abbf08ef66de7995e0bb2f2e3c4c03a",
+        "bytes": 206437
+      },
+      "writtenDuringCommand": true
+    },
+    {
+      "originalPath": "backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.xml",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.xml",
+        "sha256": "b42c251d45c02aa4c83e756b33e3b4fa96ab71a85d426db0ea543a83e9272b19",
+        "bytes": 41100
+      },
+      "writtenDuringCommand": true
+    },
+    {
+      "originalPath": "backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+        "sha256": "6db128846ec6478e534664ff3116bd55959890e2036b26497aca6acd17687b4a",
+        "bytes": 41488
+      },
+      "writtenDuringCommand": true
+    },
+    {
+      "originalPath": "backend/marketops-server/target/failsafe-reports/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.txt",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/failsafe-reports/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.txt",
+        "sha256": "a7aaff51bfd414eafa38284d8cebc4944eeddac97e2c5e096a61ad990c685fd8",
+        "bytes": 460
+      },
+      "writtenDuringCommand": true
+    },
+    {
+      "originalPath": "backend/marketops-server/target/failsafe-reports/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.txt",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/backend/marketops-server/target/failsafe-reports/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.txt",
+        "sha256": "1f34445fa5cd2a109a0d3be0297491867d63fa0e3d6e7ab196789b028c642af8",
+        "bytes": 450
+      },
+      "writtenDuringCommand": true
+    },
+    {
+      "originalPath": "build/final-gate-r6-e278b1e/backend/runtime-resources.json",
+      "raw": {
+        "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/build/final-gate-r6-e278b1e/backend/runtime-resources.json",
+        "sha256": "7aff67e281033313c05661001b37a69e102d6b8d60734642fa4a634d7f5cf06a",
+        "bytes": 591
+      },
+      "writtenDuringCommand": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "exact successful stable completed original parent",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "no stale reports / XML parse errors / source changes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "unchanged full source inventory",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "full source inventory size",
+      "passed": true,
+      "actual": 1280
+    },
+    {
+      "name": "original named index digest",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original 2769 successful node observations",
+      "passed": true,
+      "actual": {
+        "PASSED": 2769
+      }
+    },
+    {
+      "name": "collector named unit/integration observations",
+      "passed": true,
+      "actual": {
+        "integration": 1139,
+        "unit": 1630
+      }
+    },
+    {
+      "name": "original member backend/marketops-server/target/advertising-capacity-dataset.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original member backend/marketops-server/target/advertising-capacity-receipt.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original member backend/marketops-server/target/advertising-capacity-source-inputs.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original member backend/marketops-server/target/advertising-mixed-capacity-dataset.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original member backend/marketops-server/target/advertising-mixed-capacity-diagnostic.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original member backend/marketops-server/target/advertising-mixed-capacity-receipt.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original member backend/marketops-server/target/advertising-mixed-capacity-source-inputs.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original member backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.xml",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original member backend/marketops-server/target/failsafe-reports/TEST-com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.xml",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original member backend/marketops-server/target/failsafe-reports/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingMixedOrchestrationCapacityIT.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original member backend/marketops-server/target/failsafe-reports/com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingOrchestrationCapacityIT.txt",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original member build/final-gate-r6-e278b1e/backend/runtime-resources.json",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original linked dataset",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original linked source-inputs",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original exact source head",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original dataset identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original original scoped source inputs",
+      "passed": true,
+      "actual": 1063
+    },
+    {
+      "name": "original named original nodes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original named XML parent membership",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original unique passed raw XML replayAndAnExpiredLeaseCannotSwallowANewerFactOrHideAnOldBreach",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original XML testcase duration matches original index",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original named XML parent membership",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original unique passed raw XML sameAsOfTargetedAndSweepShareOneProjectionAndPolicyChangeWakesOnlyItsOrganization",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original XML testcase duration matches original index",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original named XML parent membership",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original unique passed raw XML declaredThousandObjectPortfolioMeetsAdvertisingSloAndRepairsDroppedCorrections",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original XML testcase duration matches original index",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original declared topology and false production/provider",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original unchanged latency thresholds",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original targeted hard/clock/failure/backlog zeros",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original hourly margin arithmetic",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original time contained in parent execution",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original 1000 unique original objects",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original 200 original containment inputs",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original complete single shared product/listing affected sets",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed linked dataset",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed linked source-inputs",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed exact source head",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed dataset identity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed original scoped source inputs",
+      "passed": true,
+      "actual": 1063
+    },
+    {
+      "name": "mixed named original nodes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed named XML parent membership",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed unique passed raw XML declaredPortfolioProcessesFreshMatureRevisionsAndRepairsDroppedCorrectionsWithExpiredControls",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed XML testcase duration matches original index",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed declared topology and false production/provider",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed unchanged latency thresholds",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed targeted hard/clock/failure/backlog zeros",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed hourly margin arithmetic",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed time contained in parent execution",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed 1000 unique original objects",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed 200 original containment inputs",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "mixed complete single shared product/listing affected sets",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "original and mixed distinct synthetic organizations",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "same original backend-scoped source bytes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "same original outer resources",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "runtime snapshot inside parent before both workloads",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "diagnostic identifies same workload",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "SQL profiling disabled in normal full execution",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "diagnostic completion and thresholds preserved",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "five unchanged bounded worker passes",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "phase drained and final targeted statistics identical",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "targeted wall consistent",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "independent percentile_disc recomputation",
+      "passed": true,
+      "actual": {
+        "samples": 1040,
+        "criticalSamples": 1040,
+        "criticalP95Millis": 226605,
+        "maximumMillis": 263105
+      }
+    },
+    {
+      "name": "1040 targeted observations cover all 1000 objects",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "every actual diagnostic SLO clock valid",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "all 105 setup observations retained unchanged in captured common fields",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "setup stages actual dataset",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "final stages actual diagnostic",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "immutable retained sequence 40 original / 40 first / 40 second",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "first retained revision verdicts",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "latest retained verdicts",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "positive actual preserved critical sales guard refs",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "expiry/invalidation/held-released counts preserved",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "all 40 historical app gates refuse specific expired and invalidated authority",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "current app gate disabled",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "repair receipt identical to diagnostic original phase",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "one frozen sweep evaluation cutoff",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "same 40 original dropped requests repaired",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "40 newly accepted later outcome notifications retained",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "name": "40 repaired original SLO observations",
+      "passed": true,
+      "actual": null
+    }
+  ],
+  "allReviewedChecksPassed": true,
+  "observedThresholdResult": "BOTH_ORIGINAL_DECLARED_CAPACITY_WORKLOADS_WITHIN_UNCHANGED_BOUNDS",
+  "originalCapacity": {
+    "dataset": {
+      "sharedListings": 1,
+      "organizations": 1,
+      "sharedProducts": 1,
+      "stores": 1,
+      "nativeObjects": 1000,
+      "completeAffectedSetMembersPerObject": 1,
+      "regressionObjects": 200
+    },
+    "targeted": {
+      "sampleCount": 1000,
+      "criticalSampleCount": 200,
+      "criticalP95Millis": 23365,
+      "maximumMillis": 199533,
+      "hardBreachCount": 0,
+      "clockDefectCount": 0,
+      "pendingRequests": 0,
+      "failedRequests": 0,
+      "oldestFactAcceptedAt": null,
+      "lastSweepState": "NOT_ESTABLISHED",
+      "lastSweepCompletedAt": null,
+      "observedAt": "2026-09-06T10:21:54.818936Z",
+      "windowHours": 24,
+      "incidents": [
+        "HOURLY_RECONCILIATION_NOT_CURRENT"
+      ],
+      "state": "INCIDENT",
+      "distributionState": "MEASURED"
+    },
+    "targetedWallMillis": 197867,
+    "workerPasses": 5,
+    "sweepWallMillis": 72784,
+    "hourlyMarginMillis": 3527216,
+    "responsibilityTasks": 1200,
+    "droppedLateCorrectionRecovered": 1,
+    "runtime": {
+      "java": "21.0.10",
+      "maxJvmMemoryBytes": 4294967296,
+      "os": "Mac OS X",
+      "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+      "arch": "aarch64",
+      "availableProcessors": 8
+    }
+  },
+  "mixedCapacity": {
+    "dataset": {
+      "sharedListings": 1,
+      "nativeObjects": 1000,
+      "historicalLandedCommands": 40,
+      "exceptionInputs": 20,
+      "stores": 1,
+      "organizations": 1,
+      "syntheticContainmentObjects": 200,
+      "currentUntransmittedCommand": 1,
+      "sharedProducts": 1
+    },
+    "setupOutcomeStages": {
+      "OPERATIONAL": 40,
+      "RETAINED": 40,
+      "SETTLED": 25
+    },
+    "afterTargetedOutcomeStages": {
+      "OPERATIONAL": 40,
+      "OPERATIONAL_REVISED": 40,
+      "RETAINED": 40,
+      "RETAINED_REVISED": 40,
+      "SETTLED": 25,
+      "SETTLED_REVISED": 25
+    },
+    "afterTargetedRetainedVerdicts": {
+      "IMPROVED": 20,
+      "REGRESSED": 20
+    },
+    "criticalSalesGuardEvidenceAfterTargeted": 80,
+    "afterSweepOutcomeStages": {
+      "OPERATIONAL": 40,
+      "OPERATIONAL_REVISED": 80,
+      "RETAINED": 40,
+      "RETAINED_REVISED": 80,
+      "SETTLED": 25,
+      "SETTLED_REVISED": 50
+    },
+    "latestRetainedVerdicts": {
+      "REGRESSED": 40
+    },
+    "exceptionStates": {
+      "EXPIRED": 10,
+      "INVALIDATED": 10
+    },
+    "targeted": {
+      "sampleCount": 1040,
+      "criticalSampleCount": 1040,
+      "criticalP95Millis": 226605,
+      "maximumMillis": 263105,
+      "hardBreachCount": 0,
+      "clockDefectCount": 0,
+      "pendingRequests": 0,
+      "failedRequests": 0,
+      "oldestFactAcceptedAt": null,
+      "lastSweepState": "NOT_ESTABLISHED",
+      "lastSweepCompletedAt": null,
+      "observedAt": "2026-09-06T10:28:00.860944Z",
+      "windowHours": 24,
+      "incidents": [
+        "HOURLY_RECONCILIATION_NOT_CURRENT"
+      ],
+      "state": "INCIDENT",
+      "distributionState": "MEASURED"
+    },
+    "targetedWallMillis": 242356,
+    "responsibilityTasksAfterTargeted": 2040,
+    "expiredAuthorizations": 40,
+    "expiredAuthorizationsAlreadyInvalidated": 40,
+    "newAuthorizationExpiryJournals": 0,
+    "heldReservations": 1,
+    "releasedHistoricalReservations": 40,
+    "workerPasses": 5,
+    "sweepWallMillis": 116776,
+    "hourlyMarginMillis": 3483224,
+    "droppedLateCorrectionObjectsRecovered": 40,
+    "sweepRepairedRequestRows": 40,
+    "sweepRunId": "b24d4afc-4513-4a92-a06f-e4360a15a5a6",
+    "runtime": {
+      "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+      "java": "21.0.10",
+      "availableProcessors": 8,
+      "maxJvmMemoryBytes": 4294967296
+    },
+    "postgresContainerResources": {
+      "containerId": "5c79b034d3097d2d93b071e8aa554453c34a23f55462211644e69b874193597f",
+      "image": "postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3",
+      "nanoCpus": 0,
+      "cpuQuota": 0,
+      "cpuPeriod": 0,
+      "cpuSet": "",
+      "memoryBytes": 0,
+      "limitNotice": "Zero or null container limits mean no additional per-container cap; Docker daemon/VM limits still apply. Only this test-owned PostgreSQL container's safe resource fields are recorded."
+    },
+    "diagnosticSqlProfilingEnabled": false
+  },
+  "rawRecomputed": {
+    "targetedSamples": 1040,
+    "criticalP95Millis": 226605,
+    "maximumMillis": 263105,
+    "sloRowCountsByPath": {
+      "RECONCILIATION": 40,
+      "TARGETED": 1040
+    },
+    "outcomeRows": 315,
+    "outcomeCountsByStage": {
+      "OPERATIONAL": 40,
+      "OPERATIONAL_REVISED": 80,
+      "RETAINED": 40,
+      "RETAINED_REVISED": 80,
+      "SETTLED": 25,
+      "SETTLED_REVISED": 50
+    },
+    "outcomeCountsByVerdict": {
+      "IMPROVED": 20,
+      "INDETERMINATE": 195,
+      "REGRESSED": 60,
+      "UNCHANGED": 40
+    },
+    "workerPasses": [
+      {
+        "number": 1,
+        "handled": 250,
+        "totalHandled": 250,
+        "workerElapsedMillis": 36960,
+        "backlog": {
+          "pending": 790,
+          "oldestFactAcceptedAt": "2026-09-06T10:23:37.490989Z"
+        },
+        "finishedAt": "2026-09-06T10:24:35.381239Z",
+        "diagnosticCollectionMillis": 1
+      },
+      {
+        "number": 2,
+        "handled": 250,
+        "totalHandled": 500,
+        "workerElapsedMillis": 25759,
+        "backlog": {
+          "pending": 540,
+          "oldestFactAcceptedAt": "2026-09-06T10:23:37.490989Z"
+        },
+        "finishedAt": "2026-09-06T10:25:31.199722Z",
+        "diagnosticCollectionMillis": 0
+      },
+      {
+        "number": 3,
+        "handled": 250,
+        "totalHandled": 750,
+        "workerElapsedMillis": 26678,
+        "backlog": {
+          "pending": 290,
+          "oldestFactAcceptedAt": "2026-09-06T10:23:37.490989Z"
+        },
+        "finishedAt": "2026-09-06T10:26:27.925227Z",
+        "diagnosticCollectionMillis": 9
+      },
+      {
+        "number": 4,
+        "handled": 250,
+        "totalHandled": 1000,
+        "workerElapsedMillis": 27630,
+        "backlog": {
+          "pending": 40,
+          "oldestFactAcceptedAt": "2026-09-06T10:23:37.490989Z"
+        },
+        "finishedAt": "2026-09-06T10:27:25.620081Z",
+        "diagnosticCollectionMillis": 0
+      },
+      {
+        "number": 5,
+        "handled": 40,
+        "totalHandled": 1040,
+        "workerElapsedMillis": 5039,
+        "backlog": {
+          "pending": 0,
+          "oldestFactAcceptedAt": null
+        },
+        "finishedAt": "2026-09-06T10:28:00.725770Z",
+        "diagnosticCollectionMillis": 5
+      }
+    ],
+    "workerMillisSum": 122066,
+    "fixedDelayCount": 4,
+    "fixedDelayMillisEach": 30000,
+    "targetedWallIncludesFixedDelaysAndSetupAfterAcceptedFact": true
+  },
+  "postSweepPendingBoundary": {
+    "frozenSweepAsOf": "2026-09-06T10:28:01.858947+00:00",
+    "originalDroppedCount": 40,
+    "originalDroppedState": "COMPLETED",
+    "originalDroppedPointers": [
+      "/requestRows/2000",
+      "/requestRows/2001",
+      "/requestRows/2002",
+      "/requestRows/2003",
+      "/requestRows/2004",
+      "/requestRows/2005",
+      "/requestRows/2006",
+      "/requestRows/2007",
+      "/requestRows/2008",
+      "/requestRows/2009",
+      "/requestRows/2010",
+      "/requestRows/2011",
+      "/requestRows/2012",
+      "/requestRows/2013",
+      "/requestRows/2014",
+      "/requestRows/2015",
+      "/requestRows/2016",
+      "/requestRows/2017",
+      "/requestRows/2018",
+      "/requestRows/2019",
+      "/requestRows/2020",
+      "/requestRows/2021",
+      "/requestRows/2022",
+      "/requestRows/2023",
+      "/requestRows/2024",
+      "/requestRows/2025",
+      "/requestRows/2026",
+      "/requestRows/2027",
+      "/requestRows/2028",
+      "/requestRows/2029",
+      "/requestRows/2030",
+      "/requestRows/2031",
+      "/requestRows/2032",
+      "/requestRows/2033",
+      "/requestRows/2034",
+      "/requestRows/2035",
+      "/requestRows/2036",
+      "/requestRows/2037",
+      "/requestRows/2038",
+      "/requestRows/2039"
+    ],
+    "newDistinctPendingCount": 40,
+    "newPendingPointers": [
+      "/requestRows/2040",
+      "/requestRows/2041",
+      "/requestRows/2042",
+      "/requestRows/2043",
+      "/requestRows/2044",
+      "/requestRows/2045",
+      "/requestRows/2046",
+      "/requestRows/2047",
+      "/requestRows/2048",
+      "/requestRows/2049",
+      "/requestRows/2050",
+      "/requestRows/2051",
+      "/requestRows/2052",
+      "/requestRows/2053",
+      "/requestRows/2054",
+      "/requestRows/2055",
+      "/requestRows/2056",
+      "/requestRows/2057",
+      "/requestRows/2058",
+      "/requestRows/2059",
+      "/requestRows/2060",
+      "/requestRows/2061",
+      "/requestRows/2062",
+      "/requestRows/2063",
+      "/requestRows/2064",
+      "/requestRows/2065",
+      "/requestRows/2066",
+      "/requestRows/2067",
+      "/requestRows/2068",
+      "/requestRows/2069",
+      "/requestRows/2070",
+      "/requestRows/2071",
+      "/requestRows/2072",
+      "/requestRows/2073",
+      "/requestRows/2074",
+      "/requestRows/2075",
+      "/requestRows/2076",
+      "/requestRows/2077",
+      "/requestRows/2078",
+      "/requestRows/2079"
+    ],
+    "newPendingTrigger": "OUTCOME_MATURITY_OR_REGRESSION",
+    "allAcceptedAfterFrozenAsOf": true,
+    "sameHistoricalObjects": true,
+    "allOriginalDroppedIDsDistinctFromNewPendingIDs": true,
+    "oldestPendingAgeAtDiagnosticFinishSeconds": 108.839176,
+    "newPendingConsumedInThisTest": false,
+    "inference": "V0063 inserts a current accepted-fact wakeup after each Outcome output. All current pending rows are post-cutoff; repairCoveredRequests deliberately closes only rows whose latest accepted fact is covered by fixed sweep asOf. This is not evidence of an un-repaired original correction. Unchanged-input state digest excludes own Outcome and queue output; same-run targeted first phase already drains analogous 40 successor notifications. No assertion claims these final 40 were consumed or establishes their eventual latency."
+  },
+  "historicalInputBoundary": {
+    "originalCanonicalInputRows": {
+      "core.ad_native_object": 1000,
+      "core.ad_affected_set": 1000,
+      "core.ad_object_configuration_observation": 1000,
+      "ledger.ad_object_fact": 1000,
+      "ops.ad_containment": 200
+    },
+    "mixedCanonicalInputRows": {
+      "core.ad_native_object": 1000,
+      "core.ad_affected_set": 1000,
+      "core.ad_object_configuration_observation": 1040,
+      "core.fact_provenance": 82,
+      "core.listing_price_observation": 2,
+      "core.listing_health_observation": 2,
+      "core.listing_stock_observation": 2,
+      "ledger.ad_object_fact": 1081,
+      "ledger.ad_linked_sale_event": 40,
+      "ledger.sales_fact": 82,
+      "ledger.return_quality_evidence_snapshot": 81,
+      "mart.metric_value": 160,
+      "mart.calculation_run": 81,
+      "ops.ad_containment": 200,
+      "ops.ad_bid_command": 41,
+      "ops.ad_action_reservation": 41,
+      "ops.ad_action_authorization": 41,
+      "ops.ad_outcome_baseline": 41,
+      "ops.ad_outcome_observation": 105,
+      "ops.ad_accepted_exception": 20,
+      "core.ad_freshness_profile": 36,
+      "core.ad_conversion_definition": 1,
+      "core.ad_outcome_policy": 1,
+      "core.ad_outcome_critical_unit_rule": 0,
+      "core.ad_reporting_calendar": 1,
+      "ops.ad_outcome_stage_baseline": 123,
+      "ops.ad_outcome_baseline_attestation": 41,
+      "mart.metric_input_reference": 160,
+      "mart.metric_value_evaluation": 0,
+      "mart.ad_case_purpose_evidence": 246
+    },
+    "historicalCohorts": 40,
+    "setupObservationsPreserved": 105,
+    "actualMeasuredAppendedObservations": 210,
+    "metricRunInputStates": {
+      "SUCCEEDED": 81
+    },
+    "freshnessProfiles": [
+      {
+        "purpose": "EARLY_COMPLETED_SALES_OUTCOME",
+        "sourceMaxAgeMinutes": 1440,
+        "acceptedMaxAgeMinutes": 1440,
+        "confidence": "CANONICAL_CONFIRMED",
+        "count": 8
+      },
+      {
+        "purpose": "EARLY_COMPLETED_SALES_OUTCOME",
+        "sourceMaxAgeMinutes": 259200,
+        "acceptedMaxAgeMinutes": 259200,
+        "confidence": "CANONICAL_CONFIRMED",
+        "count": 2
+      },
+      {
+        "purpose": "FINAL_RETAINED_SALES_OUTCOME",
+        "sourceMaxAgeMinutes": 1440,
+        "acceptedMaxAgeMinutes": 1440,
+        "confidence": "CANONICAL_CONFIRMED",
+        "count": 8
+      },
+      {
+        "purpose": "FINAL_RETAINED_SALES_OUTCOME",
+        "sourceMaxAgeMinutes": 259200,
+        "acceptedMaxAgeMinutes": 259200,
+        "confidence": "CANONICAL_CONFIRMED",
+        "count": 2
+      },
+      {
+        "purpose": "PROTECTION_BID_WRITE",
+        "sourceMaxAgeMinutes": 60,
+        "acceptedMaxAgeMinutes": 60,
+        "confidence": "CANONICAL_CONFIRMED",
+        "count": 6
+      },
+      {
+        "purpose": "SETTLED_FINANCIAL_OUTCOME",
+        "sourceMaxAgeMinutes": 1440,
+        "acceptedMaxAgeMinutes": 1440,
+        "confidence": "CANONICAL_CONFIRMED",
+        "count": 8
+      },
+      {
+        "purpose": "SETTLED_FINANCIAL_OUTCOME",
+        "sourceMaxAgeMinutes": 259200,
+        "acceptedMaxAgeMinutes": 259200,
+        "confidence": "CANONICAL_CONFIRMED",
+        "count": 2
+      }
+    ],
+    "admissionOrApplyThroughputClaimed": false
+  },
+  "resources": {
+    "outerOriginalReceipt": {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/backend-full/raw/build/final-gate-r6-e278b1e/backend/runtime-resources.json",
+      "sha256": "7aff67e281033313c05661001b37a69e102d6b8d60734642fa4a634d7f5cf06a",
+      "bytes": 591
+    },
+    "actual": {
+      "schemaVersion": "1.0",
+      "recordedAt": "2026-09-06T09:51:55.887937+00:00",
+      "host": {
+        "os": "Darwin",
+        "architecture": "arm64",
+        "logicalProcessors": 8,
+        "physicalMemoryBytes": 17179869184,
+        "processAffinityProcessors": null
+      },
+      "docker": {
+        "logicalProcessors": 4,
+        "memoryBytes": 6210576384,
+        "serverVersion": "29.7.2"
+      },
+      "github": {
+        "runId": null,
+        "runAttempt": null,
+        "job": null,
+        "testedCheckout": null
+      },
+      "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+    },
+    "jvmScope": "8 processors / 4 GiB maximum heap on the macOS host JVM; not Docker limits",
+    "dockerScope": "4 logical CPUs / 6210576384 bytes Docker daemon VM; 16 GiB physical host memory is a separate outer bound",
+    "ownedPostgresScope": "Mixed exact pinned PostgreSQL 17.6 container has no added per-container CPU/memory quota; inherits outer Docker VM bounds",
+    "sqlProfilingEnabled": false,
+    "instantaneousUtilizationClaimed": false
+  },
+  "limitations": [
+    "Only this original full backend execution and its 1000-object single-org/store shared-product/listing workloads are reviewed; no larger or multi-store scale claim.",
+    "The original topology remains UNVERIFIED and has no command execution; historical mixed authorized command/baseline rows are explicitly synthetic constrained fixture input, not measured new admission or APPLY throughput.",
+    "Original targeted snapshots report INCIDENT solely because the first hourly sweep was not yet established; this raw state is preserved, not rewritten as global healthy status.",
+    "Final mixed diagnostic has 40 fresh post-cutoff successor notifications pending. Original 40 deliberately dropped requests were repaired; final queue emptiness or successor latency was not measured.",
+    "The mature/revised positive and negative RETAINED evidence is actual. SETTLED and OPERATIONAL revised observations remain INDETERMINATE in this workload; no positive settled financial closure inferred.",
+    "Container safe limits are recorded only for mixed; original topology uses the same TestDatabase definition and outer resource receipt but does not emit an exact original container resource object.",
+    "Original source input list is a 1063-file backend subset, cross-matched to the complete parent 1280-file execution inventory; it is not described as a full repository inventory.",
+    "Capacity scope review does not admit the complete nine-layer gate, engineering closure, Controller approval, PR readiness, merge or production writes."
+  ],
+  "testRunRepeated": false,
+  "countAddedToBackendTotal": 0,
+  "proofSelections": [],
+  "layerAdmissionPerformed": false,
+  "engineeringClosureClaimMade": false,
+  "controllerApprovalClaimMade": false,
+  "productionWriteEnabled": false
+}

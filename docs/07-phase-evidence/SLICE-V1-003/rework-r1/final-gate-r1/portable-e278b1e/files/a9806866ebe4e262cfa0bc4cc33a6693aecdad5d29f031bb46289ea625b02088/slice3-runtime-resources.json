@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0",
+  "recordedAt": "2026-09-06T09:44:24.705130+00:00",
+  "host": {
+    "os": "Linux",
+    "architecture": "x86_64",
+    "logicalProcessors": 4,
+    "physicalMemoryBytes": 16766414848,
+    "processAffinityProcessors": 4
+  },
+  "docker": {
+    "logicalProcessors": 4,
+    "memoryBytes": 16766414848,
+    "serverVersion": "28.0.4"
+  },
+  "github": {
+    "runId": "34025462661",
+    "runAttempt": "1",
+    "job": "backend-integration",
+    "testedCheckout": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a"
+  },
+  "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+}

@@ -1,0 +1,44 @@
+{
+  "files": [
+    {
+      "path": "FAILURE-RECEIPT.json",
+      "sha256": "30184959f781c463b82f09fdaf0775ba3af5960d64e40a0e29fc6243e84b8b8e",
+      "bytes": 1644
+    },
+    {
+      "path": "advertising-browser-screenshots.zip",
+      "sha256": "5be42f785fba8b75d48a94fa49a141dcc78736383d1147210c79082979749df4",
+      "bytes": 15373317
+    },
+    {
+      "path": "artifacts.json",
+      "sha256": "49d0cf751473073efbf7ee532faf428cecbf732000f52ac1e55f7d71bd5dde26",
+      "bytes": 2280
+    },
+    {
+      "path": "frontend-test.log",
+      "sha256": "8385faaedc3ecfc988f96a2a8822d6ffb2a264d25a277c4c5ced8e35f4cb8316",
+      "bytes": 780128
+    },
+    {
+      "path": "jobs.json",
+      "sha256": "39ce4fb66473621238f3d7e31c7777c567db6e65642d0774f87623cf8318cb50",
+      "bytes": 11645
+    },
+    {
+      "path": "locator-diagnostic.cjs",
+      "sha256": "63d27ec0edac819fabc06113c7d59d5bac1da8bf7b1786b77ebc64d484188d50",
+      "bytes": 2444
+    },
+    {
+      "path": "locator-diagnostic.json",
+      "sha256": "a76178b07255107e898e4786eaa236046b4396009f69aa101f697b7596bc5184",
+      "bytes": 1352
+    },
+    {
+      "path": "run.json",
+      "sha256": "f014b46e6de2406e84a34ebbcefc2212400b35c092aa4e87de6a40a5d6d4f01c",
+      "bytes": 13695
+    }
+  ]
+}

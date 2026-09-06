@@ -1,0 +1,18 @@
+{
+  "name": "finalizer-check",
+  "argv": [
+    "python3",
+    "scripts/validation/finalize_slice3_rework_assessment.py",
+    "--check"
+  ],
+  "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+  "startedAt": "2026-09-06T11:50:51.483479+00:00",
+  "finishedAt": "2026-09-06T11:50:55.912732+00:00",
+  "exitCode": 0,
+  "log": {
+    "path": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/finalizer-check.log",
+    "sha256": "f8d3faa48e1cdc69769ffa65f9c638a34346e09729a0dd0d2e2f91b53b51f2b1",
+    "bytes": 85
+  },
+  "scope": "Current evidence-only document publication after exact assertion conjunction; product H runtime sources are unchanged."
+}

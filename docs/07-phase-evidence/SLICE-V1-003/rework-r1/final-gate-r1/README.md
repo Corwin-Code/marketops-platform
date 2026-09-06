@@ -1,5 +1,10 @@
 # Final Gate R1 residual rework evidence
 
+The [current engineering handoff](CURRENT-ENGINEERING-HANDOFF.md) tracks the
+new verification-source checkpoint after the phase-transition test correction.
+Product H nine-scope measurements, 342-row review and exact CI remain preserved;
+they are not assigned to the changed source.
+
 The preserved Controller verdict on W10 is
 `NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED`. CV-A through CV-E are checks
 against five existing Findings. They neither add Findings nor amend the accepted
@@ -9,8 +14,8 @@ under the existing R1 authority, with the PR Draft and production writes disable
 The final source-to-clause review also identified an unmet part of the existing
 DR007 verification requirement: independent manual observations lacked explicit
 source, completeness and actual observation time. The
-[manual evidence repair](MANUAL-EVIDENCE-COMPLETENESS-REWORK.md) is in progress
-under the same R1 authorization. Earlier `02e6172` product and `9d962df` tool
+[manual evidence repair](MANUAL-EVIDENCE-COMPLETENESS-REWORK.md) is implemented
+and fully verified on product Head `e278b1e` under the same R1 authorization. Earlier `02e6172` product and `9d962df` tool
 results remain preserved; they are not measurements of that later repair.
 
 `controller-package/` preserves all 15 supplied files byte-for-byte. Its original

@@ -1,0 +1,35 @@
+{
+  "kind": "READ_ONLY_GITHUB_API_COMMAND",
+  "argv": [
+    "gh",
+    "api",
+    "--method",
+    "GET",
+    "repos/Corwin-Code/marketops-platform/actions/runs/34025462661"
+  ],
+  "attempt": 2,
+  "startedAt": "2026-09-06T10:26:05.963992+00:00",
+  "finishedAt": "2026-09-06T10:26:08.050429+00:00",
+  "elapsedSeconds": 2.086,
+  "exitCode": 0,
+  "response": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-run-after.json.attempt-2",
+    "sha256": "e6e58c548fc25060e12b3e17627d30c3d08700c6a12fe6677eacc255b41caa10",
+    "bytes": 13688
+  },
+  "stderr": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-run-after.json.attempt-2.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "selectedOriginalAttempt": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-run-after.json.attempt-2.command.json",
+    "sha256": "658b754f32ad0d3a05d242476daeaa58495d5b33e8b0483c83b692b22900872b",
+    "bytes": 780
+  },
+  "canonicalResponse": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-run-after.json",
+    "sha256": "e6e58c548fc25060e12b3e17627d30c3d08700c6a12fe6677eacc255b41caa10",
+    "bytes": 13688
+  }
+}

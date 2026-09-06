@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.mimococo.marketops.ApplicationConfigurationTest
+-------------------------------------------------------------------------------
+Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.049 s -- in com.mimococo.marketops.ApplicationConfigurationTest

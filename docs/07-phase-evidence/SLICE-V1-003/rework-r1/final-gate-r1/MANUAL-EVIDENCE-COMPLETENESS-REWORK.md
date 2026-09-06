@@ -99,3 +99,17 @@ Playwright fills. This normalization diagnostic is not application acceptance.
 The incomplete `95902cf` backend run was interrupted with exit 130 and its
 partial reports retained; its prewritten `RUNNING_NOT_ASSESSED` candidate is not
 a terminal success. The next commit requires fresh complete verification.
+
+
+## Completed product H verification
+
+The subsequent source is `e278b1e3d8541aeb806e41d6cbef4deac8d16d06`, tree
+`178132dd32a92e59e320eb100774b5bb9f6fb248`, with a fresh 1,280-file inventory.
+The full clean backend passed all 2,769 nodes, frontend quality passed 358 tests,
+and the actual browser run passed all 37 journeys, including the 12 advertising
+journeys. All nine engineering scopes and all 13 product H remote contexts pass.
+The native datetime canonicalization preserves the exact actual instant and
+request assertions; the failed F/G CI artifacts and interrupted G local backend
+remain historical. The [current handoff](CURRENT-ENGINEERING-HANDOFF.md) and
+[execution manifest](EXECUTION-MANIFEST.json) bind the completed raw results.
+The containing evidence-only commit receives its own separate final CI readback.

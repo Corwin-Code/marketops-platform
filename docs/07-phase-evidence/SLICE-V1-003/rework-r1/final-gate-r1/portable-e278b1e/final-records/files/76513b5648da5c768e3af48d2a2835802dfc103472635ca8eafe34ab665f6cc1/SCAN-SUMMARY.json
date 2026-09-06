@@ -1,0 +1,18 @@
+{
+  "kind": "EXPLICIT_ORIGINAL_FILE_RECURSIVE_PATTERN_SCAN",
+  "status": "COMPLETE",
+  "scope": "Actual governance-test phase correction and explicit current pending-state documents; all H materializations remain historical.",
+  "originalFiles": 26,
+  "originalBytesUnchanged": true,
+  "scannedRecords": 26,
+  "archiveMembers": 0,
+  "scannedBytesIncludingContainersAndDuplicateCopies": 13293172,
+  "elapsedSeconds": 2.706,
+  "hitCount": 0,
+  "ruleCounts": {},
+  "unreviewedHits": 0,
+  "rawPublicationAuthorized": false,
+  "productExecutions": 0,
+  "closureClaimMade": false,
+  "limits": "Nine bounded patterns; UTF8/raw/entity/JSON strings and actual nested archive members. Images scanned as bytes, no OCR. All hits require exact context review; no generic no-PII claim."
+}

@@ -1,0 +1,9 @@
+{"layer": "frontend-quality", "archiveSha256": "0222c6b762003eac70867db83174a1541997129cae45004e546cf097a1ff7d08", "archiveBytes": 725359, "members": 80, "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED"}
+{"layer": "governance-r2", "archiveSha256": "63d873943d40dd74abc5b4439c20b699a870928be9ce6c2ecc6ae2c566043d30", "archiveBytes": 249823, "members": 19, "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED"}
+{"layer": "infrastructure", "archiveSha256": "c251576494349685b9918236713964b5d3d2a8be4f9c373766bff4b8b83bbd18", "archiveBytes": 2481358, "members": 23, "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED"}
+{"layer": "migration", "archiveSha256": "0c915e67f8ccb87f28aa6d7ad49ed2c25311dd1f806aeb7b088d2d53625fa57b", "archiveBytes": 172198, "members": 25, "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED"}
+{"layer": "supply-chain", "archiveSha256": "59bf1277404e2f56d0f2e0b3eccbcb14090538b8a8675649e330638cffba10bb", "archiveBytes": 269994, "members": 17, "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED"}
+{"layer": "security-npm-audit-r2", "archiveSha256": "963ef4c5aabd739741853d4e10ffb160cc106852925c117154c4ad662720700c", "archiveBytes": 252638, "members": 32, "originalResult": "COMMAND_SUCCEEDED_REVIEW_REQUIRED"}
+{"layer": "browser", "archiveSha256": "99906230d47ad34b61f8035f08fe157ea1adb7a2d71cfefc7db09562ea86bc77", "archiveBytes": 203533, "members": 23, "originalResult": "COMMAND_FAILED"}
+{"layer": "browser-r2", "archiveSha256": "c098bbfa44a2dbb6ce690511ce7ed7da22dd8fe388cf8270078f4c31df886068", "archiveBytes": 1535867, "members": 62, "originalResult": "COMMAND_FAILED"}
+{"layer": "browser-r3", "archiveSha256": "5d1111518811f8a5a2c2671493e92c43ea490836ec0b609743beca6eb8e354de", "archiveBytes": 715367, "members": 38, "originalResult": "COMMAND_FAILED"}

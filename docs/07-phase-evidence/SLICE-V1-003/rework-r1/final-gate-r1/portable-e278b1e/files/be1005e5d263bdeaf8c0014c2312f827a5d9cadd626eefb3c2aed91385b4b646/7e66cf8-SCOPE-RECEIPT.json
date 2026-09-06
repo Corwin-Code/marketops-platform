@@ -1,0 +1,391 @@
+{
+  "kind": "INDEPENDENT_CHECKPOINT_RAW_SCOPE_RECONCILIATION",
+  "sourceHead": "7e66cf87afc15773d4f6e6e6717a86e7b8336ae5",
+  "sourceTree": "4fe4ffd46ff408ff97cd59a2b676c575a73982ac",
+  "sourceInventorySha256": "2f0e83ee4c70a445e9e8ac4191ef0bd86629b3639f5d7b6e3bb472939bfc6986",
+  "checkpointDisposition": "COMPLETE_BACKEND_PASS_CHECKPOINT_BEFORE_SECTION_6_24_REPAIR_NOT_FINAL_CLOSURE",
+  "exactLayerReceipt": {
+    "path": "/tmp/slice3-final-execution-7e66cf8-r3/backend-full/layer-candidate.json",
+    "bytes": 739887,
+    "sha256": "5e05b81dd5d3cd97e6231409f702d5c514fd10f3f261223b0003460877b2990e"
+  },
+  "immutableArchiveIndex": {
+    "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/7e66cf8-INDEX.json",
+    "bytes": 1586706,
+    "sha256": "d25e35447883a451c6c30dead07711ceca446419a62707fd97600bc20a904df1"
+  },
+  "independentRawJUnitCounts": {
+    "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/7e66cf8-RAW-JUNIT-RECONCILIATION.json",
+    "bytes": 1267914,
+    "sha256": "867115e3561989e9c5410bda65d91e1e43f5bb5d4a79468c6664928bf8897294"
+  },
+  "publicationShapeScan": {
+    "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/7e66cf8-publication-scan/SCAN-SUMMARY.json",
+    "bytes": 905,
+    "sha256": "a2f513c32813b5d8116bdec4f537f4ca3822edc8f252f86095cee58ea460d200"
+  },
+  "exactHitClassification": {
+    "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/7e66cf8-publication-scan/HIT-CLASSIFICATION.json",
+    "bytes": 8072,
+    "sha256": "f9d7705c41afa89c30eb151b911e480146fc898077d00ad15394d0f26fa9fbe2"
+  },
+  "measuredCommandExitCode": 0,
+  "commandCompletedSuccessfully": true,
+  "sourceStable": true,
+  "workingTreeDirty": false,
+  "testcaseCounts": {
+    "passed": 2644,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "families": {
+    "integration": {
+      "passed": 1056
+    },
+    "unit": {
+      "passed": 1588
+    }
+  },
+  "ciEvidenceScope": "LOCAL_EXECUTION_ONLY_NO_WORKFLOW_JOB_ARTIFACT_ID_OR_TESTED_MERGE_INFERRED",
+  "archiveScan": {
+    "records": 27031,
+    "nestedMembers": 24643,
+    "bytesIncludingNestedAndDuplicateCopies": 242614859,
+    "rawHits": 5,
+    "exactNonSecretOccurrenceAllowlistCount": 5,
+    "jwtHits": 0,
+    "unreviewedPrivateHits": 0
+  },
+  "productionWriteEnabled": false,
+  "controllerApprovalClaimMade": false,
+  "engineeringClosureClaimMade": false,
+  "rawPublicationAuthorized": false,
+  "repositoryModified": false,
+  "productTestsReexecuted": false,
+  "packagedBuildIdentity": {
+    "jar": {
+      "path": "/tmp/slice3-final-execution-7e66cf8-r3/backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar",
+      "bytes": 42423444,
+      "sha256": "c03f8df43aab37b07373436c51411f35b63615d96c95292df400046b982770f9"
+    },
+    "member": "META-INF/build-info.properties",
+    "memberSha256": "0ac9d85c39800d0514db5fef90c7c831d2a07465fe43dc6747ee6637fcf751a4",
+    "properties": {
+      "build.artifact": "marketops-server",
+      "build.gitCommit": "7e66cf87afc15773d4f6e6e6717a86e7b8336ae5",
+      "build.group": "com.mimococo.marketops",
+      "build.name": "MarketOps Server",
+      "build.time": "2026-01-01T00\\:00\\:00Z",
+      "build.version": "0.1.0-SNAPSHOT"
+    },
+    "buildGitCommitMatchesMeasuredHead": true
+  },
+  "coverage": {
+    "report": {
+      "path": "/tmp/slice3-final-execution-7e66cf8-r3/backend-full/raw/backend/marketops-server/target/site/jacoco/jacoco.xml",
+      "bytes": 3894826,
+      "sha256": "12354e2b36ad625aef3a36419bbe7314f724beb817461ca473fa167002045aa2"
+    },
+    "rootCounters": {
+      "INSTRUCTION": {
+        "missed": 21993,
+        "covered": 133227
+      },
+      "BRANCH": {
+        "missed": 3053,
+        "covered": 7888
+      },
+      "LINE": {
+        "missed": 3847,
+        "covered": 24184
+      },
+      "COMPLEXITY": {
+        "missed": 3493,
+        "covered": 7331
+      },
+      "METHOD": {
+        "missed": 871,
+        "covered": 4356
+      },
+      "CLASS": {
+        "missed": 106,
+        "covered": 1008
+      }
+    },
+    "sumOfActualClassCounters": {
+      "INSTRUCTION": {
+        "missed": 21993,
+        "covered": 133227
+      },
+      "BRANCH": {
+        "missed": 3053,
+        "covered": 7888
+      },
+      "LINE": {
+        "missed": 3847,
+        "covered": 24186
+      },
+      "COMPLEXITY": {
+        "missed": 3493,
+        "covered": 7331
+      },
+      "METHOD": {
+        "missed": 871,
+        "covered": 4356
+      },
+      "CLASS": {
+        "missed": 106,
+        "covered": 1008
+      }
+    },
+    "classAggregationMatchesRootForTypes": {
+      "INSTRUCTION": true,
+      "BRANCH": true,
+      "LINE": false,
+      "COMPLEXITY": true,
+      "METHOD": true,
+      "CLASS": true
+    },
+    "sumOfActualSourcefileLineCounters": {
+      "missed": 3847,
+      "covered": 24184
+    },
+    "sourcefileLineAggregationMatchesRoot": true,
+    "aggregationBoundary": "Root LINE uses sourcefile line aggregation. Multiple classes from one source file may share a source line, so adding class LINE counters is not the same measure. Every non-LINE class-counter sum matches root here; neither original counter set is rewritten or substituted."
+  },
+  "capacityMeasurements": [
+    {
+      "receipt": {
+        "path": "/tmp/slice3-final-execution-7e66cf8-r3/backend-full/raw/backend/marketops-server/target/advertising-capacity-receipt.json",
+        "bytes": 2861,
+        "sha256": "6d3d7531d882d71174a75099618e884a15ba455ddd3f843dbf7c02bd86f98d05"
+      },
+      "dataset": {
+        "path": "/tmp/slice3-final-execution-7e66cf8-r3/backend-full/raw/backend/marketops-server/target/advertising-capacity-dataset.json",
+        "bytes": 4076976,
+        "sha256": "a62500253883d7d16713b4b16e0d0050d794309d88df4f540796e6de4070a03c"
+      },
+      "sourceInputs": {
+        "path": "/tmp/slice3-final-execution-7e66cf8-r3/backend-full/raw/backend/marketops-server/target/advertising-capacity-source-inputs.json",
+        "bytes": 204824,
+        "sha256": "799cc1ab3aa5ad5d1ad61d1130a7d7ccca9136ecf77611a0268851c84c1fbd17"
+      },
+      "datasetId": "synthetic-advertising-portfolio-0ba62cc2-6c16-42ee-83f8-1ab78171c9ca",
+      "publicationIdentity": {
+        "sourceHeadSha": "7e66cf87afc15773d4f6e6e6717a86e7b8336ae5",
+        "workflowRunId": "NOT_PROVIDED",
+        "artifactName": "NOT_PROVIDED",
+        "testedMergeSha": "NOT_PROVIDED",
+        "workflowJob": "NOT_PROVIDED",
+        "workflowRunAttempt": "NOT_PROVIDED"
+      },
+      "outerRuntimeResourceReceipt": {
+        "path": "/tmp/slice3-final-execution-7e66cf8-r3/backend-full/raw/build/final-gate-r3-7e66cf8/backend/runtime-resources.json",
+        "bytes": 591,
+        "sha256": "5c6a25198d0af3a5b265dfc2ba418c206b19ea6a43b21f5c64a124a1570ca821"
+      },
+      "hostAndDockerResources": {
+        "schemaVersion": "1.0",
+        "recordedAt": "2026-09-06T00:33:31.370295+00:00",
+        "host": {
+          "os": "Darwin",
+          "architecture": "arm64",
+          "logicalProcessors": 8,
+          "physicalMemoryBytes": 17179869184,
+          "processAffinityProcessors": null
+        },
+        "docker": {
+          "logicalProcessors": 4,
+          "memoryBytes": 6210576384,
+          "serverVersion": "29.7.2"
+        },
+        "github": {
+          "runId": null,
+          "runAttempt": null,
+          "job": null,
+          "testedCheckout": null
+        },
+        "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+      },
+      "jvmAndDatabaseRuntime": {
+        "java": "21.0.10",
+        "availableProcessors": 8,
+        "arch": "aarch64",
+        "postgres": "17.6 (Debian 17.6-2.pgdg12+1)",
+        "os": "Mac OS X",
+        "maxJvmMemoryBytes": 4294967296
+      },
+      "postgresContainerResources": null,
+      "actualDatasetCounts": {
+        "organizations": 1,
+        "sharedListings": 1,
+        "regressionObjects": 200,
+        "completeAffectedSetMembersPerObject": 1,
+        "nativeObjects": 1000,
+        "stores": 1,
+        "sharedProducts": 1
+      },
+      "actualTargeted": {
+        "sampleCount": 1000,
+        "criticalSampleCount": 200,
+        "criticalP95Millis": 23389,
+        "maximumMillis": 196064,
+        "hardBreachCount": 0,
+        "clockDefectCount": 0,
+        "pendingRequests": 0,
+        "failedRequests": 0,
+        "oldestFactAcceptedAt": null,
+        "lastSweepState": "NOT_ESTABLISHED",
+        "lastSweepCompletedAt": null,
+        "observedAt": "2026-09-06T01:01:38.600082Z",
+        "windowHours": 24,
+        "incidents": [
+          "HOURLY_RECONCILIATION_NOT_CURRENT"
+        ],
+        "state": "INCIDENT",
+        "distributionState": "MEASURED"
+      },
+      "targetedWallMillis": 194589,
+      "sweepWallMillis": 71507,
+      "observedThresholdComparisons": {
+        "p95MillisLE300000": true,
+        "maxMillisLE900000": true,
+        "sweepMillisLT1800000": true,
+        "noHardBreaches": true,
+        "noClockDefects": true,
+        "noFailedRequests": true,
+        "noPendingRequests": true
+      },
+      "scopeNotice": null,
+      "boundary": "This exact local checkpoint measurement is retained independently. Targeted before-sweep health is INCIDENT and is not relabelled globally healthy. Container zero quotas mean no extra per-container cap, not no Docker VM limit. No real Provider or current final source claim."
+    },
+    {
+      "receipt": {
+        "path": "/tmp/slice3-final-execution-7e66cf8-r3/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-receipt.json",
+        "bytes": 33696,
+        "sha256": "8e03787af6a7664c1bb86a607b16d608bbe51b17590b22a5721b910087c78339"
+      },
+      "dataset": {
+        "path": "/tmp/slice3-final-execution-7e66cf8-r3/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-dataset.json",
+        "bytes": 9776404,
+        "sha256": "5059de7eeeb66047bd46acdf6be464960ec3e3bd8b9f8af45b8031f49bbbbf6c"
+      },
+      "sourceInputs": {
+        "path": "/tmp/slice3-final-execution-7e66cf8-r3/backend-full/raw/backend/marketops-server/target/advertising-mixed-capacity-source-inputs.json",
+        "bytes": 204824,
+        "sha256": "799cc1ab3aa5ad5d1ad61d1130a7d7ccca9136ecf77611a0268851c84c1fbd17"
+      },
+      "datasetId": "synthetic-advertising-mixed-portfolio-7b64c4d7-48cd-4978-beba-f21fdddf247f",
+      "publicationIdentity": {
+        "sourceHeadSha": "7e66cf87afc15773d4f6e6e6717a86e7b8336ae5",
+        "workflowRunId": "NOT_PROVIDED",
+        "artifactName": "NOT_PROVIDED",
+        "testedMergeSha": "NOT_PROVIDED",
+        "workflowJob": "NOT_PROVIDED",
+        "workflowRunAttempt": "NOT_PROVIDED"
+      },
+      "outerRuntimeResourceReceipt": {
+        "path": "/tmp/slice3-final-execution-7e66cf8-r3/backend-full/raw/build/final-gate-r3-7e66cf8/backend/runtime-resources.json",
+        "bytes": 591,
+        "sha256": "5c6a25198d0af3a5b265dfc2ba418c206b19ea6a43b21f5c64a124a1570ca821"
+      },
+      "hostAndDockerResources": {
+        "schemaVersion": "1.0",
+        "recordedAt": "2026-09-06T00:33:31.370295+00:00",
+        "host": {
+          "os": "Darwin",
+          "architecture": "arm64",
+          "logicalProcessors": 8,
+          "physicalMemoryBytes": 17179869184,
+          "processAffinityProcessors": null
+        },
+        "docker": {
+          "logicalProcessors": 4,
+          "memoryBytes": 6210576384,
+          "serverVersion": "29.7.2"
+        },
+        "github": {
+          "runId": null,
+          "runAttempt": null,
+          "job": null,
+          "testedCheckout": null
+        },
+        "boundary": "Host/JVM resources and Docker VM limits are separate. No provider, cloud or shared database was inspected."
+      },
+      "jvmAndDatabaseRuntime": {
+        "maxJvmMemoryBytes": 4294967296,
+        "availableProcessors": 8,
+        "java": "21.0.10",
+        "postgres": "17.6 (Debian 17.6-2.pgdg12+1)"
+      },
+      "postgresContainerResources": {
+        "containerId": "be59bb27ec587857a8173e05c30bc69b222a222de58a10086c4640953800762c",
+        "image": "postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3",
+        "nanoCpus": 0,
+        "cpuQuota": 0,
+        "cpuPeriod": 0,
+        "cpuSet": "",
+        "memoryBytes": 0,
+        "limitNotice": "Zero or null container limits mean no additional per-container cap; Docker daemon/VM limits still apply. Only this test-owned PostgreSQL container's safe resource fields are recorded."
+      },
+      "actualDatasetCounts": {
+        "historicalLandedCommands": 40,
+        "nativeObjects": 1000,
+        "sharedListings": 1,
+        "sharedProducts": 1,
+        "currentUntransmittedCommand": 1,
+        "syntheticContainmentObjects": 200,
+        "organizations": 1,
+        "stores": 1,
+        "exceptionInputs": 20
+      },
+      "actualTargeted": {
+        "sampleCount": 1040,
+        "criticalSampleCount": 1040,
+        "criticalP95Millis": 230847,
+        "maximumMillis": 267025,
+        "hardBreachCount": 0,
+        "clockDefectCount": 0,
+        "pendingRequests": 0,
+        "failedRequests": 0,
+        "oldestFactAcceptedAt": null,
+        "lastSweepState": "NOT_ESTABLISHED",
+        "lastSweepCompletedAt": null,
+        "observedAt": "2026-09-06T01:07:41.445363Z",
+        "windowHours": 24,
+        "incidents": [
+          "HOURLY_RECONCILIATION_NOT_CURRENT"
+        ],
+        "state": "INCIDENT",
+        "distributionState": "MEASURED"
+      },
+      "targetedWallMillis": 246362,
+      "sweepWallMillis": 111378,
+      "observedThresholdComparisons": {
+        "p95MillisLE300000": true,
+        "maxMillisLE900000": true,
+        "sweepMillisLT1800000": true,
+        "noHardBreaches": true,
+        "noClockDefects": true,
+        "noFailedRequests": true,
+        "noPendingRequests": true
+      },
+      "scopeNotice": "Historical synthetic constrained inputs; actual mature/revised Outcome and control-state processing. No admission/APPLY throughput or new multi-store scale claim.",
+      "boundary": "This exact local checkpoint measurement is retained independently. Targeted before-sweep health is INCIDENT and is not relabelled globally healthy. Container zero quotas mean no extra per-container cap, not no Docker VM limit. No real Provider or current final source claim."
+    }
+  ],
+  "preservedArtifacts": {
+    "jacocoExec": 1,
+    "sbomFiles": [
+      {
+        "path": "/tmp/slice3-final-execution-7e66cf8-r3/backend-full/raw/backend/marketops-server/target/marketops-server-sbom.json",
+        "bytes": 235515,
+        "sha256": "7a71d2bb18908c260da21b574bba16bf110d87a5f58bf6f85283de1b97496709"
+      }
+    ],
+    "jarCount": 1,
+    "totalRawFiles": 2388
+  },
+  "remainingBoundary": "Accepted Contract section 6.24 policy resolution repair remains outside this checkpoint. A later source checkpoint needs full current evidence; this archive does not close criteria, all 22 findings, CV-A..E or independent Controller review."
+}

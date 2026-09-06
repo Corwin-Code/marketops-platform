@@ -1,0 +1,521 @@
+{
+  "kind": "EXACT_CURRENT_ARCHIVE_MEMBER_MATCH_REVIEW",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "recordedAt": "2026-09-06T11:20:02.459150+00:00",
+  "scannerInput": {
+    "path": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/scan-05/SCAN-INPUT.json",
+    "sha256": "71e847c8966737c6e4b14d235ba798c69bf6d23a4f3a11aa2dc7acb0af113aba",
+    "bytes": 1561
+  },
+  "scanSummary": {
+    "path": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/scan-05/SCAN-SUMMARY.json",
+    "sha256": "84e36d71da1a5acada72dd49d9067c4d544f7552cdf3887b1e24927300d78b03",
+    "bytes": 762
+  },
+  "originalHits": {
+    "path": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/scan-05/HITS.jsonl",
+    "sha256": "9185cf93aac3638001d60f49a15fe9e80491f03bdecbc4ad161c81d45e6ecfb3",
+    "bytes": 3505
+  },
+  "originalMembers": {
+    "path": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/scan-05/MEMBERS.jsonl",
+    "sha256": "544421ec117d746c3997fdadb632e6fca4b0f48b0ce671b1a86db228c0a594ac",
+    "bytes": 11205501
+  },
+  "triageTool": {
+    "path": "/private/tmp/slice3-triage-exact-library-hits-r1.py",
+    "sha256": "0e1445da1c5b4fc607dc5b67d3b3ba221443ce917fabe2b2680ecc1e1d08884c",
+    "bytes": 4120
+  },
+  "priorExactClassConstantReview": {
+    "path": "/private/tmp/slice3-publication-hit-triage-02e6172-r5-r2/EXACT-HIT-TRIAGE.json",
+    "sha256": "2d7661b290b8168da6def56a6935dbd2d751a5990ea370b894ea63101075c472",
+    "bytes": 20887
+  },
+  "hits": [
+    {
+      "currentHit": {
+        "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/spring-security-core-7.1.0.jar#member=1451!org/springframework/security/converter/RsaKeyConverters.class#member=275",
+        "rule": 1,
+        "view": "RAW_BYTES",
+        "line": 16,
+        "characterOffset": 1667,
+        "matchedCharacters": 27,
+        "matchedSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+        "classification": "REQUIRES_EXACT_CONTEXT_REVIEW",
+        "publishableRaw": false,
+        "redactedContext": "<Raw context omitted; exact original file, line, offset and match SHA identify private triage scope>"
+      },
+      "actualArchiveChain": [
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip",
+          "sha256": "253492e090cdd9da0a0977d49a030eef6350ad8f0f3114970f0658f6297dabb1",
+          "bytes": 39401052
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65",
+          "sha256": "d75f4d021e118786b6181bfde4ff7862a9e714fb64693d9d41e309a38f79e0cb",
+          "bytes": 42423444,
+          "crc32": "95b4240d",
+          "member": "backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar",
+          "ordinalAmongFiles": 65
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/spring-security-core-7.1.0.jar#member=1451",
+          "sha256": "f8cecce9e65db9fe9ea42ca92b04d6e4e4320ff9d492aa60b753716ea397262c",
+          "bytes": 641354,
+          "crc32": "bfe9b829",
+          "member": "BOOT-INF/lib/spring-security-core-7.1.0.jar",
+          "ordinalAmongFiles": 1451
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/spring-security-core-7.1.0.jar#member=1451!org/springframework/security/converter/RsaKeyConverters.class#member=275",
+          "sha256": "5e29e7be649f5f999f92ec5e7e2ee69833801efbd2f92088af93978c34627144",
+          "bytes": 7805,
+          "crc32": "481366e0",
+          "member": "org/springframework/security/converter/RsaKeyConverters.class",
+          "ordinalAmongFiles": 275
+        }
+      ],
+      "wholeClassSha256": "5e29e7be649f5f999f92ec5e7e2ee69833801efbd2f92088af93978c34627144",
+      "priorParsedConstantProof": {
+        "evidence": {
+          "path": "/private/tmp/slice3-publication-hit-triage-02e6172-r5-r2/EXACT-HIT-TRIAGE.json",
+          "sha256": "2d7661b290b8168da6def56a6935dbd2d751a5990ea370b894ea63101075c472",
+          "bytes": 20887
+        },
+        "hitId": "CURRENT02e-HIT-01"
+      },
+      "exactWholeClassAndMatchBytesUnchanged": true,
+      "constantPoolOverlap": [
+        {
+          "constantPoolIndex": 90,
+          "tag": 1,
+          "byteStart": 1664,
+          "byteEnd": 1694,
+          "utf8Length": 27,
+          "utf8Sha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d"
+        }
+      ],
+      "parsedContext": {
+        "role": "PEM header comparator literal",
+        "constantPoolIndex": 90,
+        "stringReferenceIndices": [
+          89
+        ],
+        "entireConstantIsHeaderOnly": true,
+        "embeddedKeyBodyInConstant": false
+      },
+      "classification": "FIXED_LIBRARY_FORMAT_LITERAL_NOT_SECRET",
+      "reason": "The complete 27-byte UTF8 constant is only the standard private-key format header, referenced as a Java string. No encoded key payload is contained in this constant.",
+      "exactHitRequiresRedaction": false,
+      "scope": "Applies only to this actual entire class SHA and exact offset/matched SHA. No class-path, library, source-directory or future-file waiver."
+    },
+    {
+      "currentHit": {
+        "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/spring-security-core-7.1.0.jar#member=1451!org/springframework/security/converter/RsaKeyConverters.class#member=275",
+        "rule": 1,
+        "view": "RAW_BYTES",
+        "line": 22,
+        "characterOffset": 2641,
+        "matchedCharacters": 27,
+        "matchedSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+        "classification": "REQUIRES_EXACT_CONTEXT_REVIEW",
+        "publishableRaw": false,
+        "redactedContext": "<Raw context omitted; exact original file, line, offset and match SHA identify private triage scope>"
+      },
+      "actualArchiveChain": [
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip",
+          "sha256": "253492e090cdd9da0a0977d49a030eef6350ad8f0f3114970f0658f6297dabb1",
+          "bytes": 39401052
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65",
+          "sha256": "d75f4d021e118786b6181bfde4ff7862a9e714fb64693d9d41e309a38f79e0cb",
+          "bytes": 42423444,
+          "crc32": "95b4240d",
+          "member": "backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar",
+          "ordinalAmongFiles": 65
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/spring-security-core-7.1.0.jar#member=1451",
+          "sha256": "f8cecce9e65db9fe9ea42ca92b04d6e4e4320ff9d492aa60b753716ea397262c",
+          "bytes": 641354,
+          "crc32": "bfe9b829",
+          "member": "BOOT-INF/lib/spring-security-core-7.1.0.jar",
+          "ordinalAmongFiles": 1451
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/spring-security-core-7.1.0.jar#member=1451!org/springframework/security/converter/RsaKeyConverters.class#member=275",
+          "sha256": "5e29e7be649f5f999f92ec5e7e2ee69833801efbd2f92088af93978c34627144",
+          "bytes": 7805,
+          "crc32": "481366e0",
+          "member": "org/springframework/security/converter/RsaKeyConverters.class",
+          "ordinalAmongFiles": 275
+        }
+      ],
+      "wholeClassSha256": "5e29e7be649f5f999f92ec5e7e2ee69833801efbd2f92088af93978c34627144",
+      "priorParsedConstantProof": {
+        "evidence": {
+          "path": "/private/tmp/slice3-publication-hit-triage-02e6172-r5-r2/EXACT-HIT-TRIAGE.json",
+          "sha256": "2d7661b290b8168da6def56a6935dbd2d751a5990ea370b894ea63101075c472",
+          "bytes": 20887
+        },
+        "hitId": "CURRENT02e-HIT-02"
+      },
+      "exactWholeClassAndMatchBytesUnchanged": true,
+      "constantPoolOverlap": [
+        {
+          "constantPoolIndex": 141,
+          "tag": 1,
+          "byteStart": 2556,
+          "byteEnd": 2668,
+          "utf8Length": 109,
+          "utf8Sha256": "bf606642b795f682bc0f6d4f6715e322677658f8069c2163a9b0cd7f5d7d08e3"
+        }
+      ],
+      "parsedContext": {
+        "role": "PKCS8 format-validation error message",
+        "constantPoolIndex": 141,
+        "stringReferenceIndices": [
+          140
+        ],
+        "headerIsDiagnosticSuffix": true,
+        "embeddedKeyBodyInConstant": false
+      },
+      "classification": "FIXED_LIBRARY_FORMAT_LITERAL_NOT_SECRET",
+      "reason": "The matched header occurs at the end of a fixed 109-byte PKCS8 validation error message. The constant describes required input format; it contains no key body.",
+      "exactHitRequiresRedaction": false,
+      "scope": "Applies only to this actual entire class SHA and exact offset/matched SHA. No class-path, library, source-directory or future-file waiver."
+    },
+    {
+      "currentHit": {
+        "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/tomcat-embed-core-11.0.22.jar#member=1460!org/apache/catalina/users/MemoryUserDatabase.class#member=635",
+        "rule": 7,
+        "view": "RAW_BYTES",
+        "line": 55,
+        "characterOffset": 5495,
+        "matchedCharacters": 75,
+        "matchedSha256": "39abcd0f51e4adb6579bc07c0990814eeeb3eb7325d8af8fe715995539e517ed",
+        "classification": "REQUIRES_EXACT_CONTEXT_REVIEW",
+        "publishableRaw": false,
+        "redactedContext": "<Raw context omitted; exact original file, line, offset and match SHA identify private triage scope>"
+      },
+      "actualArchiveChain": [
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip",
+          "sha256": "253492e090cdd9da0a0977d49a030eef6350ad8f0f3114970f0658f6297dabb1",
+          "bytes": 39401052
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65",
+          "sha256": "d75f4d021e118786b6181bfde4ff7862a9e714fb64693d9d41e309a38f79e0cb",
+          "bytes": 42423444,
+          "crc32": "95b4240d",
+          "member": "backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar",
+          "ordinalAmongFiles": 65
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/tomcat-embed-core-11.0.22.jar#member=1460",
+          "sha256": "78cd7cd7c104b6b87142c1b0bd902e1ce005b0245c3cefa8a06759148947200b",
+          "bytes": 3599448,
+          "crc32": "766de4a5",
+          "member": "BOOT-INF/lib/tomcat-embed-core-11.0.22.jar",
+          "ordinalAmongFiles": 1460
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/tomcat-embed-core-11.0.22.jar#member=1460!org/apache/catalina/users/MemoryUserDatabase.class#member=635",
+          "sha256": "7d7c6eccf34b4e88727c1477972a7fe62e6ae1c1058089eea3b461d5550abff3",
+          "bytes": 17476,
+          "crc32": "b27a4799",
+          "member": "org/apache/catalina/users/MemoryUserDatabase.class",
+          "ordinalAmongFiles": 635
+        }
+      ],
+      "wholeClassSha256": "7d7c6eccf34b4e88727c1477972a7fe62e6ae1c1058089eea3b461d5550abff3",
+      "priorParsedConstantProof": {
+        "evidence": {
+          "path": "/private/tmp/slice3-publication-hit-triage-02e6172-r5-r2/EXACT-HIT-TRIAGE.json",
+          "sha256": "2d7661b290b8168da6def56a6935dbd2d751a5990ea370b894ea63101075c472",
+          "bytes": 20887
+        },
+        "hitId": "CURRENT02e-HIT-03"
+      },
+      "exactWholeClassAndMatchBytesUnchanged": true,
+      "constantPoolOverlap": [
+        {
+          "constantPoolIndex": 404,
+          "tag": 1,
+          "byteStart": 5490,
+          "byteEnd": 5505,
+          "utf8Length": 12,
+          "utf8Sha256": "5d1535f70cd6feb3d693dc32ba59c524d64c76f789e546d3faf9f5ad913f1d2f"
+        },
+        {
+          "constantPoolIndex": 405,
+          "tag": 11,
+          "byteStart": 5505,
+          "byteEnd": 5510,
+          "references": [
+            170,
+            406
+          ]
+        },
+        {
+          "constantPoolIndex": 406,
+          "tag": 12,
+          "byteStart": 5510,
+          "byteEnd": 5515,
+          "references": [
+            407,
+            145
+          ]
+        },
+        {
+          "constantPoolIndex": 407,
+          "tag": 1,
+          "byteStart": 5515,
+          "byteEnd": 5529,
+          "utf8Length": 11,
+          "utf8Sha256": "5e47773615ecac035cc90a508a73b7970be82405b99259ede2891b5578c6cb96"
+        },
+        {
+          "constantPoolIndex": 408,
+          "tag": 11,
+          "byteStart": 5529,
+          "byteEnd": 5534,
+          "references": [
+            170,
+            409
+          ]
+        },
+        {
+          "constantPoolIndex": 409,
+          "tag": 12,
+          "byteStart": 5534,
+          "byteEnd": 5539,
+          "references": [
+            410,
+            145
+          ]
+        },
+        {
+          "constantPoolIndex": 410,
+          "tag": 1,
+          "byteStart": 5539,
+          "byteEnd": 5553,
+          "utf8Length": 11,
+          "utf8Sha256": "af9a02dbeeea653a5c610dd86ab72e9cde6b8e0fb3eb6b6fe4d529bfc19dea7b"
+        },
+        {
+          "constantPoolIndex": 411,
+          "tag": 8,
+          "byteStart": 5553,
+          "byteEnd": 5556,
+          "references": 412
+        },
+        {
+          "constantPoolIndex": 412,
+          "tag": 1,
+          "byteStart": 5556,
+          "byteEnd": 5570,
+          "utf8Length": 11,
+          "utf8Sha256": "fa826f19425aba2fa58d40dd9e0b533c752bbfa3cdee7ed22aa0003d42eeba46"
+        }
+      ],
+      "parsedContext": {
+        "role": "XML user-serialization syntax plus class-file reference records",
+        "constantPoolIndices": [
+          404,
+          405,
+          406,
+          407,
+          408,
+          409,
+          410,
+          411,
+          412
+        ],
+        "fixedPasswordAttributeFragmentIndex": 404,
+        "fixedFullNameAttributeFragmentIndex": 412,
+        "interface": "org/apache/catalina/User",
+        "accessorSymbols": [
+          "getPassword",
+          "getFullName"
+        ],
+        "matchedSpanCrossesNineConstantPoolEntries": true,
+        "literalPasswordValueAssigned": false
+      },
+      "classification": "BINARY_CONSTANT_POOL_CROSS_RECORD_REGEX_FALSE_POSITIVE",
+      "reason": "The 75-character regex match crosses nine constant-pool records: an empty password attribute syntax fragment, binary InterfaceMethodref/NameAndType records for runtime User accessors, and the next fullName attribute fragment. Those structural bytes and method symbols are not a serialized password or secret literal.",
+      "exactHitRequiresRedaction": false,
+      "scope": "Applies only to this actual entire class SHA and exact offset/matched SHA. No class-path, library, source-directory or future-file waiver."
+    },
+    {
+      "currentHit": {
+        "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/tomcat-embed-core-11.0.22.jar#member=1460!org/apache/tomcat/util/net/openssl/OpenSSLContext.class#member=1542",
+        "rule": 1,
+        "view": "RAW_BYTES",
+        "line": 132,
+        "characterOffset": 10606,
+        "matchedCharacters": 27,
+        "matchedSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+        "classification": "REQUIRES_EXACT_CONTEXT_REVIEW",
+        "publishableRaw": false,
+        "redactedContext": "<Raw context omitted; exact original file, line, offset and match SHA identify private triage scope>"
+      },
+      "actualArchiveChain": [
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip",
+          "sha256": "253492e090cdd9da0a0977d49a030eef6350ad8f0f3114970f0658f6297dabb1",
+          "bytes": 39401052
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65",
+          "sha256": "d75f4d021e118786b6181bfde4ff7862a9e714fb64693d9d41e309a38f79e0cb",
+          "bytes": 42423444,
+          "crc32": "95b4240d",
+          "member": "backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar",
+          "ordinalAmongFiles": 65
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/tomcat-embed-core-11.0.22.jar#member=1460",
+          "sha256": "78cd7cd7c104b6b87142c1b0bd902e1ce005b0245c3cefa8a06759148947200b",
+          "bytes": 3599448,
+          "crc32": "766de4a5",
+          "member": "BOOT-INF/lib/tomcat-embed-core-11.0.22.jar",
+          "ordinalAmongFiles": 1460
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/tomcat-embed-core-11.0.22.jar#member=1460!org/apache/tomcat/util/net/openssl/OpenSSLContext.class#member=1542",
+          "sha256": "8a0505d24a30463d1fe0bd717364b4d67987525f95bf5186a8548c2ee7013860",
+          "bytes": 20470,
+          "crc32": "151cbcd6",
+          "member": "org/apache/tomcat/util/net/openssl/OpenSSLContext.class",
+          "ordinalAmongFiles": 1542
+        }
+      ],
+      "wholeClassSha256": "8a0505d24a30463d1fe0bd717364b4d67987525f95bf5186a8548c2ee7013860",
+      "priorParsedConstantProof": {
+        "evidence": {
+          "path": "/private/tmp/slice3-publication-hit-triage-02e6172-r5-r2/EXACT-HIT-TRIAGE.json",
+          "sha256": "2d7661b290b8168da6def56a6935dbd2d751a5990ea370b894ea63101075c472",
+          "bytes": 20887
+        },
+        "hitId": "CURRENT02e-HIT-04"
+      },
+      "exactWholeClassAndMatchBytesUnchanged": true,
+      "constantPoolOverlap": [
+        {
+          "constantPoolIndex": 752,
+          "tag": 1,
+          "byteStart": 10603,
+          "byteEnd": 10634,
+          "utf8Length": 28,
+          "utf8Sha256": "7ba879c4b1496ebeac4c6883b7fd6c27527c0fe184a3c6b52c954cd38b51769f"
+        }
+      ],
+      "parsedContext": {
+        "role": "PEM header plus newline constant",
+        "constantPoolIndex": 752,
+        "stringReferenceIndices": [
+          751
+        ],
+        "headerAndOneNewlineOnly": true,
+        "embeddedKeyBodyInConstant": false
+      },
+      "classification": "FIXED_LIBRARY_FORMAT_LITERAL_NOT_SECRET",
+      "reason": "The complete 28-byte constant contains the standard header and one newline only. It is formatting syntax, with no encoded key payload.",
+      "exactHitRequiresRedaction": false,
+      "scope": "Applies only to this actual entire class SHA and exact offset/matched SHA. No class-path, library, source-directory or future-file waiver."
+    },
+    {
+      "currentHit": {
+        "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/tomcat-embed-core-11.0.22.jar#member=1460!org/apache/tomcat/util/net/openssl/OpenSSLContext.class#member=1542",
+        "rule": 1,
+        "view": "RAW_BYTES",
+        "line": 137,
+        "characterOffset": 12530,
+        "matchedCharacters": 27,
+        "matchedSha256": "3021d90eb9437b2d8f30e8363695c4418b5e5f1870801b5c317e9398ee0f572d",
+        "classification": "REQUIRES_EXACT_CONTEXT_REVIEW",
+        "publishableRaw": false,
+        "redactedContext": "<Raw context omitted; exact original file, line, offset and match SHA identify private triage scope>"
+      },
+      "actualArchiveChain": [
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip",
+          "sha256": "253492e090cdd9da0a0977d49a030eef6350ad8f0f3114970f0658f6297dabb1",
+          "bytes": 39401052
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65",
+          "sha256": "d75f4d021e118786b6181bfde4ff7862a9e714fb64693d9d41e309a38f79e0cb",
+          "bytes": 42423444,
+          "crc32": "95b4240d",
+          "member": "backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar",
+          "ordinalAmongFiles": 65
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/tomcat-embed-core-11.0.22.jar#member=1460",
+          "sha256": "78cd7cd7c104b6b87142c1b0bd902e1ce005b0245c3cefa8a06759148947200b",
+          "bytes": 3599448,
+          "crc32": "766de4a5",
+          "member": "BOOT-INF/lib/tomcat-embed-core-11.0.22.jar",
+          "ordinalAmongFiles": 1460
+        },
+        {
+          "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/slice3-backend-98344bb-r3-immutable.zip!backend-full/raw/backend/marketops-server/target/marketops-server-0.1.0-SNAPSHOT.jar#member=65!BOOT-INF/lib/tomcat-embed-core-11.0.22.jar#member=1460!org/apache/tomcat/util/net/openssl/OpenSSLContext.class#member=1542",
+          "sha256": "8a0505d24a30463d1fe0bd717364b4d67987525f95bf5186a8548c2ee7013860",
+          "bytes": 20470,
+          "crc32": "151cbcd6",
+          "member": "org/apache/tomcat/util/net/openssl/OpenSSLContext.class",
+          "ordinalAmongFiles": 1542
+        }
+      ],
+      "wholeClassSha256": "8a0505d24a30463d1fe0bd717364b4d67987525f95bf5186a8548c2ee7013860",
+      "priorParsedConstantProof": {
+        "evidence": {
+          "path": "/private/tmp/slice3-publication-hit-triage-02e6172-r5-r2/EXACT-HIT-TRIAGE.json",
+          "sha256": "2d7661b290b8168da6def56a6935dbd2d751a5990ea370b894ea63101075c472",
+          "bytes": 20887
+        },
+        "hitId": "CURRENT02e-HIT-05"
+      },
+      "exactWholeClassAndMatchBytesUnchanged": true,
+      "constantPoolOverlap": [
+        {
+          "constantPoolIndex": 842,
+          "tag": 1,
+          "byteStart": 12527,
+          "byteEnd": 12560,
+          "utf8Length": 30,
+          "utf8Sha256": "52e84355a4dd5f7dfbc37fba19e63acae606316537d2095a0f5118f8fe827b0f"
+        }
+      ],
+      "parsedContext": {
+        "role": "StringConcatFactory format recipe",
+        "constantPoolIndex": 842,
+        "stringReferenceIndices": [
+          841
+        ],
+        "concatDynamicArgumentMarkers": 2,
+        "fixedContentOnlyHeaderAndNewline": true,
+        "embeddedKeyBodyInConstant": false
+      },
+      "classification": "FIXED_LIBRARY_FORMAT_LITERAL_NOT_SECRET",
+      "reason": "The 30-byte concat recipe contains the header, newline, and two U+0001 dynamic argument markers. Runtime data is substituted by Java concatenation; this recipe does not embed key bytes.",
+      "exactHitRequiresRedaction": false,
+      "scope": "Applies only to this actual entire class SHA and exact offset/matched SHA. No class-path, library, source-directory or future-file waiver."
+    }
+  ],
+  "reviewedHitCount": 5,
+  "unresolvedHitCount": 0,
+  "originalRawOrScanBytesChanged": false,
+  "secretValuesPrinted": false,
+  "productTestsRun": 0,
+  "engineeringClosureClaimMade": false,
+  "productionWriteEnabled": false,
+  "disposition": "ALL_EXACT_REHASHED_CLASS_CONSTANT_MATCHES_NEED_NO_SECRET_REDACTION"
+}

@@ -1,0 +1,135 @@
+{
+  "scope": "Actual governance-test phase correction and explicit current pending-state documents; all H materializations remain historical.",
+  "files": [
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/FINAL-RECORDS-INDEX-3.json",
+      "sha256": "aa66c43b23c9b33c8775c63febbf49b571c1402592db02d778127098e65c4056",
+      "bytes": 10219
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/c29b3ec8fd608aaeed14d9f93ba3cf2778d53f88fc56e73b4f58395450215ab8/pending-finalizer.log",
+      "sha256": "c29b3ec8fd608aaeed14d9f93ba3cf2778d53f88fc56e73b4f58395450215ab8",
+      "bytes": 86
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/217eb8358dc0ccce7cafc02fa0ab37d2e41f78e00e07492a6d30f9aea0f1a971/VERIFICATION-RECEIPTS.json",
+      "sha256": "217eb8358dc0ccce7cafc02fa0ab37d2e41f78e00e07492a6d30f9aea0f1a971",
+      "bytes": 2751
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/f9f0af8a9e2a031de84e9c135520eba8fbe710527e9747059c6b1c1f0919167d/CORRECTION-RECEIPT.json",
+      "sha256": "f9f0af8a9e2a031de84e9c135520eba8fbe710527e9747059c6b1c1f0919167d",
+      "bytes": 5327
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/0f2dae42a7e65056321852b30f477da745787929cef512ea340453cb94f8bbfb/finalizer-check-RECEIPT.json",
+      "sha256": "0f2dae42a7e65056321852b30f477da745787929cef512ea340453cb94f8bbfb",
+      "bytes": 659
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/f1bc95187d3cecdfba2b435a24e90edfb00fb85915c9ccb001db6eaa1b07bdb0/production-readiness-RECEIPT.json",
+      "sha256": "f1bc95187d3cecdfba2b435a24e90edfb00fb85915c9ccb001db6eaa1b07bdb0",
+      "bytes": 640
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/118401f9c8f40bf82e092bdd336f315fdcb43c46ea2d4ce4589252b1b19ab642/all-governance-tests.log",
+      "sha256": "118401f9c8f40bf82e092bdd336f315fdcb43c46ea2d4ce4589252b1b19ab642",
+      "bytes": 88355
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/b246581cb9eb1a0f6421298b513848593501ca0531e940fb1a058f3f397af1b2/input-15.json",
+      "sha256": "b246581cb9eb1a0f6421298b513848593501ca0531e940fb1a058f3f397af1b2",
+      "bytes": 12813
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/c251c76e91695a2d27d694ecd04d8ffacc5d6c2cfde6f2096eb2709f4b7a31d4/scan-15.log",
+      "sha256": "c251c76e91695a2d27d694ecd04d8ffacc5d6c2cfde6f2096eb2709f4b7a31d4",
+      "bytes": 754
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/f2a117d8f09aadf94c31ea92ad46922be44ff5d17d767dc151fe67830ba42580/governance-RECEIPT.json",
+      "sha256": "f2a117d8f09aadf94c31ea92ad46922be44ff5d17d767dc151fe67830ba42580",
+      "bytes": 609
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/10494ce91d1c69531d7631eda551e09f7c5d930b487561bedf2ac92246cf0c12/all-governance-tests-RECEIPT.json",
+      "sha256": "10494ce91d1c69531d7631eda551e09f7c5d930b487561bedf2ac92246cf0c12",
+      "bytes": 686
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/a5881f332134eb3f95d15fd2456a023c6a8dcb8c3754a0a65cb520f1dfe36e13/MEMBERS.jsonl",
+      "sha256": "a5881f332134eb3f95d15fd2456a023c6a8dcb8c3754a0a65cb520f1dfe36e13",
+      "bytes": 12602
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/e03100f99c49c81784c17093ed98f495231375bb35026d63efc5f4dd83bc3a05/SCAN-SUMMARY.json",
+      "sha256": "e03100f99c49c81784c17093ed98f495231375bb35026d63efc5f4dd83bc3a05",
+      "bytes": 788
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/5226c354b7004c3307d9386e127076800523c140b6c148282042b94756ca921f/SCAN-INPUT.json",
+      "sha256": "5226c354b7004c3307d9386e127076800523c140b6c148282042b94756ca921f",
+      "bytes": 13540
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/59a665ed133c711c908a5dd8fcc38166a912d16ae25cb8e92e6abd7c855cf7d8/production-readiness.log",
+      "sha256": "59a665ed133c711c908a5dd8fcc38166a912d16ae25cb8e92e6abd7c855cf7d8",
+      "bytes": 287
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/tests/test_validate_governance.py",
+      "sha256": "476a71bf881a6826a80a3306e0862f7c504333fc01ba5d2ce23170036d824be4",
+      "bytes": 173232
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/00-governance/CURRENT_STATE.md",
+      "sha256": "e057ffeafb5c71c873e8a009fa25be46ef847ec7a4c9d7af82f7f6588f401e1a",
+      "bytes": 42139
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/ENGINEERING_VERIFICATION.json",
+      "sha256": "80d37922b741d103ec631945508d3f1bbfed34c9183fb0d66f02dea1a8d62843",
+      "bytes": 4981
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/FINDING-CLOSURE-MATRIX.json",
+      "sha256": "efffa31085feb50e5c64498ec81e2cdcbcda39de391c8ebc3cd56354bab20acf",
+      "bytes": 50360
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-AC-REWORK-STATUS.json",
+      "sha256": "b5041381a64e36e2ddc7f14d7ec2ee49760997a0bae3d311777d78c9d810080f",
+      "bytes": 160102
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/README.md",
+      "sha256": "c56acd47c4e139da00a4b263c0a7beb2bbc734de85480624d91b688a64cb05b7",
+      "bytes": 5185
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/EXECUTION-MANIFEST.json",
+      "sha256": "304303d59e41bc9b293a82649a8e933800ac62c8ec2888a28d43350068bbd07f",
+      "bytes": 4454
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/FROZEN-CLAUSE-ASSESSMENT.json",
+      "sha256": "3c8c71c0895ce146814238a998556bedd701cb99104105466844b73c7e60f45e",
+      "bytes": 12693625
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/CURRENT-ENGINEERING-HANDOFF.md",
+      "sha256": "20e3c5df5072d200b0991e68fc80ac3a89e53634177abf13dd968813304c6bc7",
+      "bytes": 597
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/GOVERNANCE-PHASE-TRANSITION-REWORK.md",
+      "sha256": "7ea3a574fcb89834c236ba32da22fdfb2b475ca584d148a35c24634aff6d6ccc",
+      "bytes": 2737
+    },
+    {
+      "path": "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/README.md",
+      "sha256": "642c9f4f3f4670e4e54b60c7fb1dfd6be86f000dfbdd28d0e1c896567644e046",
+      "bytes": 5644
+    }
+  ]
+}

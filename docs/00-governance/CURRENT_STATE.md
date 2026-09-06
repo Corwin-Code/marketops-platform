@@ -628,31 +628,24 @@ capability anywhere in the module or in any migration.
 
 ## Next authorized action
 
-Codex is continuing the existing Owner-authorized R1 root-cause repair and
-verification. The independent Controller reviewed W10 Head
-`3ff042df66d5d6924b587cac96fc652b93bf5e7a` and returned
-`NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED`. Its immutable
-[verification record](../07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/controller-package/VERIFICATION-RESULT.json)
-accepted the reviewed-scope evidence for 17 Findings and identified residual or
-incomplete evidence for S3-DR-004, 011, 015, 020 and 022 through CV-A–CV-E.
-No new Frozen Finding Set or Contract amendment was created.
+Codex continues the existing Owner-authorized R1 verification. Product H
+`e278b1e3d8541aeb806e41d6cbef4deac8d16d06` has preserved complete local and remote
+measurements and 342 reviewed evidence rows. The subsequent document-phase
+regression exposed two governance-test assumptions tied to the old pending
+phase. The test now reads the validated current actor and scope while retaining
+the forbidden mutations. This verification-source change requires a new exact
+checkpoint and complete current-source evidence; H results are not restamped.
 
-The current candidate has no independent Controller verdict. The
-[current engineering view](../07-phase-evidence/SLICE-V1-003/rework-r1/ENGINEERING_VERIFICATION.json)
-and all 22/200 rows remain pending complete current-source verification.
-Historical W10 assessments and measurements remain available at their exact
-source identities. S3-AC-200 retains the Controller's historical NOT_PASSED
-conclusion; neither a source map nor diagnostic class passes supplies a new
-no-unresolved-Blocker/Major verdict.
+The [phase-transition correction](../07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/GOVERNANCE-PHASE-TRANSITION-REWORK.md)
+preserves the two failures, interrupted earlier run, exact source delta and
+preceding engineering materializations. Current central views remain pending
+until the new full source-bound verification and publication are complete.
 
-The next authorized actor remains Codex under
-`OWNER_CODEX_SLICE_V1_003_ROOT_CAUSE_REWORK_R1`. Complete all residual repairs,
-same-class review, relevant full verification, append-only publication to the
-named branch and exact CI evidence for the same Draft PR, then return the new
-candidate for independent Controller re-verification. No engineering completion
-or independent closure is claimed during this work. The accepted Contract,
-22-item Frozen Finding Set and all 24 production-blocking release obligations
-remain unchanged.
+The independent Controller's historical W10 verdict remains
+`NOT_PASS_EXISTING_FINDINGS_NOT_FULLY_CLOSED` on
+`3ff042df66d5d6924b587cac96fc652b93bf5e7a`. No new independent verdict, Frozen
+Finding Set or Contract amendment is created. The accepted Contract, all 22
+Findings and all 24 production-blocking release obligations remain unchanged.
 
 The PR remains Draft. No Ready, merge, force-push, direct-main publication, real
 Provider access, credential provisioning, shared/production access, deployment,

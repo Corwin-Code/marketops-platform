@@ -1,0 +1,142 @@
+{
+  "kind": "SLICE3_LAYER_EXECUTION_CANDIDATE",
+  "id": "migration",
+  "runId": "final-migration-r6",
+  "command": "bash --noprofile --norc -euo pipefail -c '\n    mkdir -p \"$SLICE3_PUBLIC/migration\"\n    python3 \"$SLICE3_DRIVER_SUPPORT\" --config \"$SLICE3_DRIVER_CONFIG\" products \"$SLICE3_PUBLIC/migration/backend-products-before.json\"\n    python3 scripts/verify_migration_artifact.py --output \"$SLICE3_PUBLIC/migration\"\n    python3 \"$SLICE3_DRIVER_SUPPORT\" --config \"$SLICE3_DRIVER_CONFIG\" products \"$SLICE3_PUBLIC/migration/backend-products-after.json\"\n  '",
+  "argv": [
+    "bash",
+    "--noprofile",
+    "--norc",
+    "-euo",
+    "pipefail",
+    "-c",
+    "\n    mkdir -p \"$SLICE3_PUBLIC/migration\"\n    python3 \"$SLICE3_DRIVER_SUPPORT\" --config \"$SLICE3_DRIVER_CONFIG\" products \"$SLICE3_PUBLIC/migration/backend-products-before.json\"\n    python3 scripts/verify_migration_artifact.py --output \"$SLICE3_PUBLIC/migration\"\n    python3 \"$SLICE3_DRIVER_SUPPORT\" --config \"$SLICE3_DRIVER_CONFIG\" products \"$SLICE3_PUBLIC/migration/backend-products-after.json\"\n  "
+  ],
+  "cwd": ".",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+  "workingTreeDirty": false,
+  "workingTreeStatus": [],
+  "identityScope": "CLEAN_COMMIT_TREE",
+  "sourceInventorySha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "sourceInventory": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/source-before.json",
+    "sha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+    "bytes": 310088
+  },
+  "startedAt": "2026-09-06T10:35:44.865606+00:00",
+  "result": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "productionWriteEnabled": false,
+  "controllerApprovalClaimMade": false,
+  "engineeringClosureClaimMade": false,
+  "publicationIdentity": {
+    "GITHUB_SHA": null,
+    "GITHUB_RUN_ID": null,
+    "GITHUB_RUN_ATTEMPT": null,
+    "GITHUB_JOB": null,
+    "MARKETOPS_EVIDENCE_SOURCE_HEAD_SHA": null,
+    "MARKETOPS_EVIDENCE_TESTED_MERGE_SHA": null
+  },
+  "finishedAt": "2026-09-06T10:35:52.913578+00:00",
+  "elapsedSeconds": 8.047,
+  "exitCode": 0,
+  "executionError": null,
+  "sourceStable": true,
+  "sourceChangedPaths": [],
+  "identityAfter": {
+    "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+    "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+    "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "workingTreeDirty": false,
+    "workingTreeStatus": [],
+    "identityScope": "CLEAN_COMMIT_TREE"
+  },
+  "sourceInventoryAfterSha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "evidence": [
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/command.log",
+      "sha256": "ba11821ca6da7fe88721568ba8e461d7a792118453b590b21c3a7dbbaff47dfd",
+      "bytes": 1313
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/backend-artifact-label.log",
+      "sha256": "d9847a50a24eda8ee8cf391f473ef3392d7ae16963cfb94331e64197d14d7f16"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/backend-build.log",
+      "sha256": "0aa0a516e995bde91a0dc95b21c22db6196d24852a5a6231d7b4fe9a09093f2a"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/backend-products-after.json",
+      "sha256": "42a06bf2922c620ed72df9cbd0eba3e0caa3b7c9f997173d40438e129aedaa37"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/backend-products-before.json",
+      "sha256": "42a06bf2922c620ed72df9cbd0eba3e0caa3b7c9f997173d40438e129aedaa37"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/backend.image-id",
+      "sha256": "41bb055baa22608f0c83ffb55838f57813b02b7422b637fb3531f038fc14d617"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/checkout-identity.log",
+      "sha256": "fa725b8edc8a22981f696e7783e2ef73ca6bc3663fc830f76fe1a88696565ee1"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/checkout-status.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/compile-probe.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/docker-endpoint.log",
+      "sha256": "b7bc7f05ceabc075a8f3a67ad28e796f5e83f56ba3736ac739f028f7704e21e0"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/migration-artifact-label.log",
+      "sha256": "d9847a50a24eda8ee8cf391f473ef3392d7ae16963cfb94331e64197d14d7f16"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/migration-build.log",
+      "sha256": "4b57897baae92942bfbf1de3b32cf386beb6ca0332ca64c229f98fcba0c1394e"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/migration.image-id",
+      "sha256": "142f063cbb2c2ca040e5c456567fea46209c7bea92a0bdea7d8f2bbaa176fa52"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/missing-envelope-refused.log",
+      "sha256": "6a1471119d91cbdd1ee0b645f0c9e3ef0b2548ba83333db718e636cc7a1d8168"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/packaged-resolver.log",
+      "sha256": "e57d1f84ad9c9b4e5d4f795ea6f4ff34b0124ca9ebd3bd66b278aaba5009a22f"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/summary.json",
+      "sha256": "58882654a2d86279958b8004d2d4d8832b7874f06aa7a05ddcc3cee624fa71c5"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/raw/build/final-gate-r6-e278b1e/migration/wrong-artifact-build-refused.log",
+      "sha256": "65023f3d58a0a9e9812f735d334e6507522788e35eda3eedb864f06cf9283ef4"
+    }
+  ],
+  "capturePatterns": [
+    "build/final-gate-r6-e278b1e/migration/**/*"
+  ],
+  "stalePreexistingReports": [],
+  "xmlParseErrors": [],
+  "testcaseCounts": null,
+  "namedTestcaseNodes": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/migration/named-testcase-nodes.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "bytes": 3
+  },
+  "failures": null,
+  "errors": null,
+  "skipped": null,
+  "boundary": "Command exit and raw reports only. Root must review full layer scope, source identity, assertions, capacity/resource bounds and publication evidence before any PASS assessment."
+}

@@ -1,0 +1,42 @@
+{
+  "kind": "PREVIOUS_CHECKPOINT_HIGH_CODE_FIXED_NOT_DISMISSED",
+  "alertNumber": 221,
+  "state": "fixed",
+  "fixedAt": "2026-09-06T00:37:13Z",
+  "dismissedAt": null,
+  "dismissedReason": null,
+  "dismissedComment": null,
+  "fixedAlertAuthority": {
+    "path": "fixed-alerts-pages.json",
+    "sha256": "344b78ac6c159fa17aae0ccd3afa23447e8abc439a2420391f6771d0dc8adf9d",
+    "bytes": 60149
+  },
+  "lastSeenInstanceCommit": "a5eee142f45e7a46b455ddc267237f5ecdbd0bc2",
+  "lastSeenInstanceRef": "refs/pull/30/merge",
+  "lastSeenInstanceNotice": "The most_recent_instance is the old last-seen occurrence at the failed checkpoint, not a fabricated current-merge instance. Current scoped fixed state, exact new SARIF absence and source bytes establish closure.",
+  "newTestedMerge": "f9a1d73f324323d13ea72db3890090c9b9d85450",
+  "currentJavaAnalysisId": 1730566375,
+  "absentFromCurrentSarif": true,
+  "absentFromCurrentOpenAlertNumbers": true,
+  "sourceFix": {
+    "sourceHead": "7e66cf87afc15773d4f6e6e6717a86e7b8336ae5",
+    "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeInferenceScopeIT.java",
+    "sha256": "4bfab5776c72baa8d3d532bdfe32722f40a1e4d8112c06b4104b9ebb3d2eb004",
+    "patch": {
+      "path": "alert-221-source-fix.patch",
+      "sha256": "3a63e182d55ec0cc329d98fae1fa4c0b77ebb52b9cf50b46fb7902832898609c",
+      "bytes": 1890
+    },
+    "preparedSql": "SELECT pg_catalog.set_config('TimeZone', ?, true)",
+    "parameter": "zoneStatement.setString(1,zone)",
+    "preservedOracles": [
+      "app-role connection and transaction",
+      "UTC and Europe/Moscow exact setting result",
+      "stored timestamptz instants and epoch values",
+      "timezone offsets 0/10800",
+      "no naive advertising timestamps",
+      "transaction rollback and final read-back"
+    ]
+  },
+  "alertsModifiedByCollector": false
+}

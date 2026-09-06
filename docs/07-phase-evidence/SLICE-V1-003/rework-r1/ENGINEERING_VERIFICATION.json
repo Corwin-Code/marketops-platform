@@ -12,10 +12,51 @@
   "currentControllerVerdict": "NOT_REVIEWED_NEW_CANDIDATE",
   "executionManifest": {
     "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/EXECUTION-MANIFEST.json",
-    "sha256": "563be9c6fe07dfc6fc07976b9b1081a03d45d61af873d6cef89c266f7deeaff9"
+    "sha256": "304303d59e41bc9b293a82649a8e933800ac62c8ec2888a28d43350068bbd07f"
   },
   "assessedSource": null,
-  "verificationChecks": [],
+  "verificationChecks": [
+    {
+      "id": "CV-A",
+      "result": "PENDING",
+      "engineeringReason": "Full document-phase regression found two test assumptions fixed to the preceding pending phase. They now select the exact validated current actor and scope, preserving both forbidden-value mutations. The changed governance test source requires a new exact verification checkpoint; previous H measurements remain historical, not current-source PASS.",
+      "proofLimits": "No preceding H execution is reassigned to the changed source. Independent Controller approval and production enablement remain absent.",
+      "proofs": [],
+      "layers": []
+    },
+    {
+      "id": "CV-B",
+      "result": "PENDING",
+      "engineeringReason": "Full document-phase regression found two test assumptions fixed to the preceding pending phase. They now select the exact validated current actor and scope, preserving both forbidden-value mutations. The changed governance test source requires a new exact verification checkpoint; previous H measurements remain historical, not current-source PASS.",
+      "proofLimits": "No preceding H execution is reassigned to the changed source. Independent Controller approval and production enablement remain absent.",
+      "proofs": [],
+      "layers": []
+    },
+    {
+      "id": "CV-C",
+      "result": "PENDING",
+      "engineeringReason": "Full document-phase regression found two test assumptions fixed to the preceding pending phase. They now select the exact validated current actor and scope, preserving both forbidden-value mutations. The changed governance test source requires a new exact verification checkpoint; previous H measurements remain historical, not current-source PASS.",
+      "proofLimits": "No preceding H execution is reassigned to the changed source. Independent Controller approval and production enablement remain absent.",
+      "proofs": [],
+      "layers": []
+    },
+    {
+      "id": "CV-D",
+      "result": "PENDING",
+      "engineeringReason": "Full document-phase regression found two test assumptions fixed to the preceding pending phase. They now select the exact validated current actor and scope, preserving both forbidden-value mutations. The changed governance test source requires a new exact verification checkpoint; previous H measurements remain historical, not current-source PASS.",
+      "proofLimits": "No preceding H execution is reassigned to the changed source. Independent Controller approval and production enablement remain absent.",
+      "proofs": [],
+      "layers": []
+    },
+    {
+      "id": "CV-E",
+      "result": "PENDING",
+      "engineeringReason": "Full document-phase regression found two test assumptions fixed to the preceding pending phase. They now select the exact validated current actor and scope, preserving both forbidden-value mutations. The changed governance test source requires a new exact verification checkpoint; previous H measurements remain historical, not current-source PASS.",
+      "proofLimits": "No preceding H execution is reassigned to the changed source. Independent Controller approval and production enablement remain absent.",
+      "proofs": [],
+      "layers": []
+    }
+  ],
   "requiredLayers": [
     "backend_full",
     "browser",

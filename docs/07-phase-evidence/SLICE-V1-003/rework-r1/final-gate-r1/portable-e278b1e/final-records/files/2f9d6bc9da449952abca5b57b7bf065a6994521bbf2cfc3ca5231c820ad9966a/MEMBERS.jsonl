@@ -1,0 +1,5 @@
+{"path": "/private/tmp/slice3-final-row-audit-e278b1e-r2/ROW-AUDIT.json", "bytes": 18742483, "sha256": "61d1978770acaecdac8de2fbc726f7ee7d1441addc7237b3cb75092fc3f0fe39", "type": "FILE", "depth": 0}
+{"path": "/private/tmp/slice3-root-admission-e278b1e-r1/FROZEN-CLAUSE-ASSESSMENT.json", "bytes": 12693212, "sha256": "d5f34c5e2f82fe694ce8f93506bcf29c85fb7f48c0ca2001980d4e75903d5d50", "type": "FILE", "depth": 0}
+{"path": "/private/tmp/slice3-final-assessment-e278b1e-r2/FROZEN-CLAUSE-ASSESSMENT-CANDIDATE.json", "bytes": 12685519, "sha256": "0d8b696d46986e2b8d2e999187f72700bdb220fa30787f8e6d24768b3179c1f8", "type": "FILE", "depth": 0}
+{"path": "/private/tmp/slice3-backend-publication-scan-e278b1e-r6/MEMBERS.jsonl", "bytes": 12230052, "sha256": "43d5184e66450cd356a147ef9b90cc75a1ece80ad1a799e49149cc95f4b3a85b", "type": "FILE", "depth": 0}
+{"path": "/private/tmp/slice3-backend-publication-scan-da559bd-r6/MEMBERS.jsonl", "bytes": 12230052, "sha256": "9c0188c68fd68be877fe675cbf71ff7b95e115cef813df187ad7bb1ae5e2b02a", "type": "FILE", "depth": 0}

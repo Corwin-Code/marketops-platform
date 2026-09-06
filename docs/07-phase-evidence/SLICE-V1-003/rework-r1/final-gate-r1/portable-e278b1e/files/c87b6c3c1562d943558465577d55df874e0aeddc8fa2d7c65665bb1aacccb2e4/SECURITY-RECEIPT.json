@@ -1,0 +1,351 @@
+{
+  "kind": "EXACT_SOURCE_CHECKPOINT_SECURITY_EXECUTION_RECEIPT",
+  "recordedAtUTC": "2026-09-06T00:30:52.919871+00:00",
+  "sourceHead": "98344bb42025b300ae1265faccd232d9ed5437fc",
+  "sourceTree": "565c2e052abd0eaf35d72b5c7b3e0a3c28f834ad",
+  "testedMerge": "a5eee142f45e7a46b455ddc267237f5ecdbd0bc2",
+  "testedMergeTree": "565c2e052abd0eaf35d72b5c7b3e0a3c28f834ad",
+  "testedMergeParents": [
+    "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "98344bb42025b300ae1265faccd232d9ed5437fc"
+  ],
+  "identityScope": "CLEAN_COMMIT_TREE",
+  "executionSourceInventory": {
+    "path": "executed-source-inventory.json",
+    "sha256": "94ec04852bf9587a82299662bdf7118716bc433f41a727a27bf3844626a2742f",
+    "bytes": 307984
+  },
+  "executionSourceIdentity": {
+    "path": "executed-source-identity.json",
+    "sha256": "d63fdf5b33e9540a09583ae57fdef1f8f7d2495cc99bc31ac508884bb9721c87",
+    "bytes": 283
+  },
+  "expectedSource": {
+    "path": "expected-source.json",
+    "sha256": "14b6f4ed9d405c5d08c6d7da6942fb01b35e5436aa1911b1e09b934297b42f28",
+    "bytes": 1879
+  },
+  "sourceInventoryComparison": {
+    "path": "SOURCE-IDENTITY-COMPARISON.json",
+    "sha256": "d57ea5ab621bfebbbfd61d547f256475a19193b4ae68e431ae357ae84304e6ac",
+    "bytes": 804333
+  },
+  "sourceIdentity": {
+    "inventoryFiles": 1272,
+    "directByteMatches": 1270,
+    "declaredCrLfCheckoutConversions": 2,
+    "allExecutionInputBytesUnchanged": true,
+    "allMatchExactRemoteTreeWithDeclaredCheckoutRules": true,
+    "testedMergeSignatureVerified": true,
+    "sourceCommitSignatureStatus": "unsigned"
+  },
+  "run": {
+    "id": 34000991780,
+    "run_attempt": 1,
+    "check_suite_id": 92131454723,
+    "head_sha": "98344bb42025b300ae1265faccd232d9ed5437fc",
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34000991780",
+    "run_started_at": "2026-09-06T00:19:42Z",
+    "updated_at": "2026-09-06T00:24:07Z"
+  },
+  "jobs": [
+    {
+      "id": 101399709466,
+      "name": "codeql-java",
+      "run_id": 34000991780,
+      "run_attempt": 1,
+      "head_sha": "98344bb42025b300ae1265faccd232d9ed5437fc",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T00:19:44Z",
+      "completed_at": "2026-09-06T00:24:06Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34000991780/job/101399709466"
+    },
+    {
+      "id": 101399709536,
+      "name": "codeql-typescript",
+      "run_id": 34000991780,
+      "run_attempt": 1,
+      "head_sha": "98344bb42025b300ae1265faccd232d9ed5437fc",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T00:19:44Z",
+      "completed_at": "2026-09-06T00:20:58Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34000991780/job/101399709536"
+    },
+    {
+      "id": 101399709548,
+      "name": "dependency-review",
+      "run_id": 34000991780,
+      "run_attempt": 1,
+      "head_sha": "98344bb42025b300ae1265faccd232d9ed5437fc",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T00:19:44Z",
+      "completed_at": "2026-09-06T00:19:59Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34000991780/job/101399709548"
+    }
+  ],
+  "aggregateCodeQL": {
+    "id": 101399837816,
+    "name": "CodeQL",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "98344bb42025b300ae1265faccd232d9ed5437fc",
+    "started_at": "2026-09-06T00:20:47Z",
+    "completed_at": "2026-09-06T00:20:50Z",
+    "details_url": "https://github.com/Corwin-Code/marketops-platform/runs/101399837816",
+    "output": {
+      "title": "96 new alerts including 1 high severity security vulnerability",
+      "summary": "### New alerts in code changed by this pull request\n\nSecurity Alerts:\n * 1 high\n\nOther Alerts:\n * 11 warnings\n * 84 notes\n\n_Alerts not introduced by this pull request might have been detected because the code changes were too large._\n\nSee annotations below for details.\n\n[View all branch alerts](/Corwin-Code/marketops-platform/security/code-scanning?query=pr%3A30+tool%3ACodeQL+is%3Aopen).",
+      "text": null,
+      "annotations_count": 96,
+      "annotations_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101399837816/annotations"
+    }
+  },
+  "aggregateAnnotations": {
+    "path": "aggregate-codeql-annotations-pages.json",
+    "sha256": "886e3416b1fe21548623211cb5c93e2aa6e7b161412d9980cd122d14194649b4",
+    "bytes": 57388
+  },
+  "actionsArtifacts": {
+    "totalCount": 0,
+    "artifactIds": [],
+    "authority": {
+      "path": "security-artifacts.json",
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c",
+      "bytes": 32
+    },
+    "sarifOrigin": "Direct Code Scanning analysis API responses with exact analysis IDs; these are not uploaded Actions artifacts."
+  },
+  "sarifAnalyses": [
+    {
+      "category": "/language:java-kotlin",
+      "analysisId": 1730544168,
+      "sarifId": "4012cbca-a989-11f1-9031-151460e2c164",
+      "analysisUrl": "https://api.github.com/repos/Corwin-Code/marketops-platform/code-scanning/analyses/1730544168",
+      "analysisKey": ".github/workflows/security.yml:codeql-java",
+      "createdAt": "2026-09-06T00:23:58Z",
+      "matchingCompletedJobId": 101399709466,
+      "analysisCreatedWithinMatchingJob": true,
+      "resultsCount": 100,
+      "rulesCount": 240,
+      "tool": {
+        "name": "CodeQL",
+        "guid": null,
+        "version": "2.26.4"
+      },
+      "rawResponse": {
+        "path": "java.sarif.json",
+        "sha256": "183d64b4d2f5714ce96b6646fff4c4a4f0dc7e12adff9f263eb842102c2b1350",
+        "bytes": 1534982
+      },
+      "rawSecurityResults": [
+        {
+          "ruleId": "java/spring-disabled-csrf-protection",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/web/IdentitySecurityConfig.java",
+          "region": {
+            "endColumn": 45,
+            "endLine": 83,
+            "startColumn": 31,
+            "startLine": 83
+          },
+          "numericSecuritySeverity": "8.8",
+          "dispositionOrigin": "Actual GitHub alert state is recorded separately; raw SARIF results are unchanged."
+        },
+        {
+          "ruleId": "java/xss",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/http/BoundedOutboundHttp.java",
+          "region": {
+            "endColumn": 107,
+            "endLine": 167,
+            "startColumn": 62,
+            "startLine": 167
+          },
+          "numericSecuritySeverity": "7.8",
+          "dispositionOrigin": "Actual GitHub alert state is recorded separately; raw SARIF results are unchanged."
+        },
+        {
+          "ruleId": "java/concatenated-sql-query",
+          "path": "backend/marketops-server/src/test/java/com/mimococo/marketops/advertisingefficiency/internal/application/AdvertisingOutcomeInferenceScopeIT.java",
+          "region": {
+            "endColumn": 71,
+            "endLine": 67,
+            "startColumn": 39,
+            "startLine": 67
+          },
+          "numericSecuritySeverity": "8.8",
+          "dispositionOrigin": "Actual GitHub alert state is recorded separately; raw SARIF results are unchanged."
+        },
+        {
+          "ruleId": "java/user-controlled-bypass",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosticExportService.java",
+          "region": {
+            "endColumn": 69,
+            "endLine": 72,
+            "startColumn": 9,
+            "startLine": 72
+          },
+          "numericSecuritySeverity": "7.8",
+          "dispositionOrigin": "Actual GitHub alert state is recorded separately; raw SARIF results are unchanged."
+        },
+        {
+          "ruleId": "java/user-controlled-bypass",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosticExportService.java",
+          "region": {
+            "endColumn": 68,
+            "endLine": 80,
+            "startColumn": 9,
+            "startLine": 80
+          },
+          "numericSecuritySeverity": "7.8",
+          "dispositionOrigin": "Actual GitHub alert state is recorded separately; raw SARIF results are unchanged."
+        }
+      ]
+    },
+    {
+      "category": "/language:javascript-typescript",
+      "analysisId": 1730539252,
+      "sarifId": "cee0cd1c-a988-11f1-9724-664731180263",
+      "analysisUrl": "https://api.github.com/repos/Corwin-Code/marketops-platform/code-scanning/analyses/1730539252",
+      "analysisKey": ".github/workflows/security.yml:codeql-typescript",
+      "createdAt": "2026-09-06T00:20:48Z",
+      "matchingCompletedJobId": 101399709536,
+      "analysisCreatedWithinMatchingJob": true,
+      "resultsCount": 1,
+      "rulesCount": 201,
+      "tool": {
+        "name": "CodeQL",
+        "guid": null,
+        "version": "2.26.4"
+      },
+      "rawResponse": {
+        "path": "typescript.sarif.json",
+        "sha256": "ca632247d6a524d3e559ad53877e7e0f291776317a404743d8f738176b2631be",
+        "bytes": 938202
+      },
+      "rawSecurityResults": [
+        {
+          "ruleId": "js/empty-password-in-configuration-file",
+          "path": "backend/marketops-server/src/main/resources/application-production.yaml",
+          "region": {
+            "endColumn": 17,
+            "endLine": 21,
+            "startColumn": 15,
+            "startLine": 21
+          },
+          "numericSecuritySeverity": "7.5",
+          "dispositionOrigin": "Actual GitHub alert state is recorded separately; raw SARIF results are unchanged."
+        }
+      ]
+    }
+  ],
+  "rawSarifResultCount": 101,
+  "allRawSarifResultsMatchExactCurrentAlertLocations": true,
+  "openAlerts": {
+    "priorW8Count": 87,
+    "priorCheckpointCount": 91,
+    "currentCount": 96,
+    "levelCounts": {
+      "note": 84,
+      "warning": 11,
+      "error": 1
+    },
+    "new": [
+      221,
+      222,
+      223,
+      224,
+      225
+    ],
+    "removed": [],
+    "newSecurityHighOrCritical": 1,
+    "newHighAlertNumbers": [
+      221
+    ],
+    "currentOpenSecurityHighOrCritical": 1,
+    "historicalExpressionMatches": 91,
+    "historicalChangedWholeFileContextReviews": 12,
+    "triage": {
+      "path": "ALERT-DELTA-TRIAGE.json",
+      "sha256": "617235bc12540c31e61ed5f12004f64ffe602fadc853e79b35d8190aaf8feaf5",
+      "bytes": 172561
+    }
+  },
+  "historicalDismissedHigh": {
+    "count": 5,
+    "sourceAndDismissalMetadataUnchanged": true,
+    "reconciliation": {
+      "path": "HISTORICAL-DISMISSED-HIGH-RECONCILIATION.json",
+      "sha256": "ebac4fa4b8c374e2b36fc45f3d36a6fbaeb90d5f271ffd257fe700a5e4cc6d8e",
+      "bytes": 7690
+    },
+    "stillPresentInRawSarif": true
+  },
+  "dependencyReview": {
+    "failOnSeverity": "moderate",
+    "addedDependencyRecords": 4,
+    "addedVulnerabilityRecords": 0,
+    "removedDependencyRecords": 1,
+    "removedVulnerabilityRecords": 4,
+    "rawDiff": {
+      "path": "dependency-diff.json",
+      "sha256": "693fb17df7dcce698c2ced75a1d1f46a906bf446caf4275693042467cba9388f",
+      "bytes": 2475
+    },
+    "actualJobResult": "success",
+    "defaultBranchBoundary": {
+      "path": "DEPENDABOT-DEFAULT-BRANCH-BOUNDARY.json",
+      "sha256": "3b38ffc4a52f3e6fdba6145381ab9f6a662cc8ae1fd4aed46e79dd206da0773c",
+      "bytes": 3099
+    },
+    "boundary": "PR delta only. main still has four open HIGH Dependabot alerts. No npm audit is claimed by this collector."
+  },
+  "rawLogs": {
+    "path": "security-job-logs.zip",
+    "sha256": "60c212ff01f3e719cffc6edfe17e86af2ebe266cdaa1e744edd60a1383c2e1c0",
+    "bytes": 236291
+  },
+  "rawLogMemberIndex": {
+    "path": "RAW-LOG-MEMBER-INDEX.json",
+    "sha256": "082ab4cad7f3e50cc548000b95156366db01eeb6599cc66581fb9d5c9f2b930f",
+    "bytes": 12346
+  },
+  "publicationScan": {
+    "path": "RAW-PUBLICATION-SCAN.json",
+    "sha256": "0cdf666e8f2059dee2568878c3258e0a369f7698ed37e73d1481adad874814f5",
+    "bytes": 25695
+  },
+  "secretShapeTriage": {
+    "path": "SECRET-SHAPE-TRIAGE.json",
+    "sha256": "bc0cfcdea92eebdce76b8c7787a61daba08737210ae3b7810efac54949ec14a7",
+    "bytes": 4315
+  },
+  "criteria": {
+    "allThreeSecurityJobsSuccess": true,
+    "aggregateCodeQLSuccess": false,
+    "exactSourceBindingVerified": true,
+    "compiledJavaManualBuildAndSARIFVerified": true,
+    "completeJavaAndTypescriptSARIFVerified": true,
+    "noNewSecurityHighOrCritical": false,
+    "allHistoricalOpenExpressionsRechecked": true,
+    "historicalDismissedHighSeparated": true,
+    "rawPayloadSafeAfterExactStaticRuleHelpTriage": true
+  },
+  "securityLayerResult": "FAIL_FOR_THIS_EXACT_SOURCE_CHECKPOINT",
+  "productionWriteEnabled": false,
+  "controllerApprovalClaimMade": false,
+  "newDismissalsPerformed": false,
+  "limits": [
+    "This receipt belongs only to checkpoint 98344bb, even if a successor source later resolves the failure.",
+    "The Security workflow and all three jobs succeeded, but aggregate CodeQL failed. Alert #221 remains a new open HIGH; bounded constant-input analysis does not override that failure.",
+    "The aggregate describes 96 new PR alerts relative to main. The independently preserved prior-checkpoint delta is five added: one HIGH SQL concatenation and four test-only deprecation notes.",
+    "Five historical dismissed HIGH results remain in raw SARIF with unchanged source bytes and dismissal metadata. They are separate from the new open HIGH.",
+    "Default-branch Dependabot still reports four HIGH fast-uri advisories. This PR dependency delta uses first-patched 3.1.6 and adds no reported vulnerabilities; a current npm audit and broader supply-chain audits remain separate layers.",
+    "The tested merge check-runs API returned zero. Every job checkout log and both SARIF provenances establish the actual tested merge; check runs attach to source Head.",
+    "Raw SARIF/log bytes remain unchanged. Regex matches are allowed only in SHA-256-identical historical static CodeQL rule-help examples, not application secrets.",
+    "No complete backend result, successor-source CI, independent Controller approval, Ready, merge or production enablement is claimed."
+  ]
+}

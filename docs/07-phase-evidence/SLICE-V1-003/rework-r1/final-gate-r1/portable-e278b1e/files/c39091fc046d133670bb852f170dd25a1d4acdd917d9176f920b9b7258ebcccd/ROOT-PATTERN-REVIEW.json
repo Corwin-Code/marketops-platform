@@ -1,0 +1,15 @@
+{
+  "kind": "ROOT_EXACT_ZERO_HIT_PATTERN_SCOPE_REVIEW",
+  "originalSummary": {
+    "path": "/private/tmp/slice3-local-publication-scan-e278b1e-r1/SCAN-SUMMARY.json",
+    "sha256": "20a97e1e6553cdf29dba2322110c32e5be81d71f6bf24491063b43dd4a9ede20"
+  },
+  "reviewedOriginalFiles": 16,
+  "reviewedExpandedRecords": 288,
+  "unreviewedHits": 0,
+  "patternCount": 9,
+  "scope": "Exact current e278b1e local package bytes, including every retained GET attempt and original raw; no blanket publication permission.",
+  "limits": "Nine bounded patterns; UTF8/raw/entity/JSON strings and actual nested archive members. Images scanned as bytes, no OCR. All hits require exact context review; no generic no-PII claim.",
+  "noProductOrControllerApprovalImplied": true,
+  "originalBytesChanged": false
+}

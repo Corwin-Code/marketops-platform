@@ -1,0 +1,77 @@
+[
+  {
+    "name": "finalizer-check",
+    "argv": [
+      "python3",
+      "scripts/validation/finalize_slice3_rework_assessment.py",
+      "--check"
+    ],
+    "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+    "startedAt": "2026-09-06T11:50:51.483479+00:00",
+    "finishedAt": "2026-09-06T11:50:55.912732+00:00",
+    "exitCode": 0,
+    "log": {
+      "path": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/finalizer-check.log",
+      "sha256": "f8d3faa48e1cdc69769ffa65f9c638a34346e09729a0dd0d2e2f91b53b51f2b1",
+      "bytes": 85
+    },
+    "scope": "Current evidence-only document publication after exact assertion conjunction; product H runtime sources are unchanged."
+  },
+  {
+    "name": "governance",
+    "argv": [
+      "python3",
+      "scripts/validate_governance.py"
+    ],
+    "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+    "startedAt": "2026-09-06T11:50:51.483725+00:00",
+    "finishedAt": "2026-09-06T11:52:14.546572+00:00",
+    "exitCode": 0,
+    "log": {
+      "path": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/governance.log",
+      "sha256": "d16ddd0173e27cf60e9e5642df238396e067ba7c8770d890d56d4ae4b005805d",
+      "bytes": 30
+    },
+    "scope": "Current evidence-only document publication after exact assertion conjunction; product H runtime sources are unchanged."
+  },
+  {
+    "name": "production-readiness",
+    "argv": [
+      "python3",
+      "scripts/validate_production_readiness.py"
+    ],
+    "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+    "startedAt": "2026-09-06T11:50:51.484010+00:00",
+    "finishedAt": "2026-09-06T11:50:59.930636+00:00",
+    "exitCode": 0,
+    "log": {
+      "path": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/production-readiness.log",
+      "sha256": "59a665ed133c711c908a5dd8fcc38166a912d16ae25cb8e92e6abd7c855cf7d8",
+      "bytes": 287
+    },
+    "scope": "Current evidence-only document publication after exact assertion conjunction; product H runtime sources are unchanged."
+  },
+  {
+    "name": "all-governance-tests",
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-p",
+      "test_*.py"
+    ],
+    "cwd": "/Users/chzhengx/Code/personal/marketops-platform",
+    "startedAt": "2026-09-06T11:50:55.913924+00:00",
+    "finishedAt": "2026-09-06T11:53:45.175121+00:00",
+    "exitCode": 1,
+    "log": {
+      "path": "/private/tmp/slice3-final-docs-verification-e278b1e-r2/all-governance-tests.log",
+      "sha256": "118401f9c8f40bf82e092bdd336f315fdcb43c46ea2d4ce4589252b1b19ab642",
+      "bytes": 88355
+    },
+    "scope": "Current evidence-only document publication after exact assertion conjunction; product H runtime sources are unchanged."
+  }
+]

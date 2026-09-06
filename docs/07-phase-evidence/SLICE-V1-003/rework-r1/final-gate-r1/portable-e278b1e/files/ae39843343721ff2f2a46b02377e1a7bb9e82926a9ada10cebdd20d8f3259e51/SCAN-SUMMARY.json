@@ -1,0 +1,18 @@
+{
+  "kind": "RAW_PUBLICATION_SHAPE_SCAN",
+  "status": "COMPLETE",
+  "scope": "All original files plus actual ZIP/GZIP/TAR nested members; raw UTF-8 bytes and decoded XML/HTML/JSON strings.",
+  "originalBytesUnchanged": true,
+  "originalFiles": 13,
+  "scannedRecords": 2654,
+  "archiveMembers": 2641,
+  "scannedBytesIncludingArchiveContainersAndDuplicatePhysicalCopies": 100164372,
+  "elapsedSeconds": 16.877,
+  "hitCount": 0,
+  "ruleCounts": {},
+  "rawFilesWithHits": [],
+  "unreviewedHits": 0,
+  "rawPublicationAuthorized": false,
+  "testOrClosurePassImplied": false,
+  "limitations": "A bounded pattern scan is not a universal no-PII proof. Every shape hit needs exact classification; JWT/test-token bytes remain private. Checkpoint remains historical before section 6.24 repair, not final closure."
+}

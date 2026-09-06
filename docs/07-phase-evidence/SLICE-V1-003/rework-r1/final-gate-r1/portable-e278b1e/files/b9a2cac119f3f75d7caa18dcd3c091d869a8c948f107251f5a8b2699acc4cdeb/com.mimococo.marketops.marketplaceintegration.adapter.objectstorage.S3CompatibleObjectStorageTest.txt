@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorageTest
+-------------------------------------------------------------------------------
+Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.180 s -- in com.mimococo.marketops.marketplaceintegration.adapter.objectstorage.S3CompatibleObjectStorageTest

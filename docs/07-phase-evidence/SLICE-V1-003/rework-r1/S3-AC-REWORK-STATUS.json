@@ -16,7 +16,7 @@
   "production_write_enabled": false,
   "execution_manifest": {
     "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/EXECUTION-MANIFEST.json",
-    "sha256": "563be9c6fe07dfc6fc07976b9b1081a03d45d61af873d6cef89c266f7deeaff9"
+    "sha256": "304303d59e41bc9b293a82649a8e933800ac62c8ec2888a28d43350068bbd07f"
   },
   "entries": [
     {

@@ -1,0 +1,103 @@
+{
+  "kind": "HISTORICAL1381_ARCHIVE_AND_FRESH_EXACT_CLASSIFICATION_DELIVERY",
+  "sourceHead": "1381ef78594875a1e1304e4d9a636e49d0fab71f",
+  "sourceTree": "d366331b9b0ad7f8eb0f90c8536f46c0d2b9ce5e",
+  "files": [
+    {
+      "path": "/private/tmp/slice3-historical-1381-publication-package-r1/1381ef7-failed-and-cancelled-original-439-files.zip",
+      "sha256": "2885187d54c6903c28bcd60d87742fd8222c2d9e5fd06bb02fa643249c29c6d1",
+      "bytes": 45559410
+    },
+    {
+      "path": "/private/tmp/slice3-historical-1381-publication-package-r1/ARCHIVE-MEMBER-INDEX.json",
+      "sha256": "e5d11b892686ea932c2b938c268e330a955d4f150363e21d2836be9ee0c574ff",
+      "bytes": 236351
+    },
+    {
+      "path": "/private/tmp/slice3-historical-1381-publication-package-r1/RAW-TESTCASE-RECONCILIATION.json",
+      "sha256": "5c6912ad8f0e7678677cc3eb17e3dc4e976d506394799619266411655c3e71b4",
+      "bytes": 2553608
+    },
+    {
+      "path": "/private/tmp/slice3-historical-1381-publication-package-r1/README.md",
+      "sha256": "92425690404a90ed274bdf7987e5a2f7ad050eb60abe9dad6dd2af9168d03d15",
+      "bytes": 1223
+    },
+    {
+      "path": "/private/tmp/slice3-historical-1381-publication-package-r1/archive_original_1381.py",
+      "sha256": "d90c1e16c93a4f6af3aab4156f8614d134b97c4a12935eb07be7ef1c55f6236a",
+      "bytes": 9396
+    },
+    {
+      "path": "/private/tmp/slice3-historical-1381-publication-package-r1/classify_exact_hits.initial.py",
+      "sha256": "6328d00fdb4e6e3dacca6ecbbfb13488833d84202a2188848b7f99ed50667e0a",
+      "bytes": 10333
+    },
+    {
+      "path": "/private/tmp/slice3-historical-1381-publication-package-r1/classify_exact_hits.py",
+      "sha256": "298160548c7cbf65b712c096103506f2297b5d85da970580955384c8237eb9fa",
+      "bytes": 10334
+    },
+    {
+      "path": "/private/tmp/slice3-historical-1381-publication-package-r1/triage-r2/EXACT-HIT-TRIAGE.json",
+      "sha256": "13acc9aebe35e3492fbc8b24da96e94eac6a36443aa045378f0354fb2c1c8299",
+      "bytes": 22412
+    },
+    {
+      "path": "/private/tmp/slice3-historical-1381-publication-package-r1/triage-r2/INDEX.json",
+      "sha256": "c440a55707bf1a6487358c20a4fd04bb9667a2e80dad338a8679ff2b4217e567",
+      "bytes": 639
+    }
+  ],
+  "originalScanAndReusableToolReferences": [
+    {
+      "path": "/private/tmp/slice3-historical-1381-raw-scan-r1/HITS.jsonl",
+      "sha256": "aba8ea119d24c307b48edaff478f7e6429c6bbfe93c200c0c11446c69f67e577",
+      "bytes": 3235
+    },
+    {
+      "path": "/private/tmp/slice3-historical-1381-raw-scan-r1/MEMBERS.jsonl",
+      "sha256": "bb97ea2bd22e5cc65dda34320f8fd43502043ddc15ee03217340b81278a29178",
+      "bytes": 10117436
+    },
+    {
+      "path": "/private/tmp/slice3-historical-1381-raw-scan-r1/SCAN-INPUT.json",
+      "sha256": "29f56e8e490ec11935597fd08d84bd10067ac9b3bedcea5283be793101c5cbd4",
+      "bytes": 126183
+    },
+    {
+      "path": "/private/tmp/slice3-historical-1381-raw-scan-r1/SCAN-SUMMARY.json",
+      "sha256": "8c12ea679918eee0c67096148daf64f70b8fc7db04b137496e04b593df939b35",
+      "bytes": 842
+    },
+    {
+      "path": "/private/tmp/slice3-historical-1381-scan-input-r1.json",
+      "sha256": "d81b31ff6b63da6a9ed3d87748a9a4700bbb6dae818307d8759aeb656db94d91",
+      "bytes": 131230
+    },
+    {
+      "path": "/private/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+      "sha256": "aebf01d82dd3c8845fe538589caf7ccb21d16363422d57f2a2ddad6e93bf76f8",
+      "bytes": 8132
+    },
+    {
+      "path": "/private/tmp/inspect_slice3_class_hits.py",
+      "sha256": "5e854a3e44d657934f64060495cfce7fa6bf9d9b69846b3e861bde67ca1fe116",
+      "bytes": 2834
+    },
+    {
+      "path": "/private/tmp/slice3-backend-checkpoint-archives-r1/archive_backend.py",
+      "sha256": "4f24865a3f866900abd3b92d24395e7eb312b85fcfe9ff0b0c1e0c17343e1e70",
+      "bytes": 5363
+    }
+  ],
+  "preserveOriginalAbsolutePathJsonBytes": true,
+  "archiveOriginalFiles": 439,
+  "rawOriginalScanUnreviewedHits": 5,
+  "independentlyClassifiedExactHits": 5,
+  "independentUnresolvedHits": 0,
+  "publicationPerformed": false,
+  "repositoryModified": false,
+  "productTestsExecuted": false,
+  "engineeringClosureClaimMade": false
+}

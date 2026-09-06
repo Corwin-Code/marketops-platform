@@ -1,0 +1,22 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/Corwin-Code/marketops-platform/actions/runs/34008254541/jobs?per_page=100"
+  ],
+  "startedAt": "2026-09-06T03:43:03.589636+00:00",
+  "finishedAt": "2026-09-06T03:43:05.114976+00:00",
+  "elapsedSeconds": 1.525,
+  "exitCode": 0,
+  "artifact": {
+    "path": "backend-jobs-r2.json",
+    "bytes": 7366,
+    "sha256": "9e33225051bc69d7c5d006eee170f26277b56ed0b2f529e2cd18c64673e792a2"
+  },
+  "stderr": {
+    "path": "backend-jobs-r2.json.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "boundary": "Read-only GitHub API response for checkpoint 02e6172 PR30 all required CI scopes; ongoing runs stay pending and exact CI does not establish independent Controller or complete local engineering closure."
+}

@@ -1,0 +1,110 @@
+{
+  "kind": "SLICE3_LAYER_EXECUTION_CANDIDATE",
+  "id": "supply_chain",
+  "runId": "final-supply-chain-r6",
+  "command": "bash --noprofile --norc -euo pipefail -c '\n    mkdir -p \"$SLICE3_PUBLIC/supply-chain\"\n    python3 \"$SLICE3_DRIVER_SUPPORT\" --config \"$SLICE3_DRIVER_CONFIG\" products \"$SLICE3_PUBLIC/supply-chain/backend-products-before.json\"\n    python3 scripts/collect_supply_chain.py --skip-backend\n    cp build/supply-chain/frontend-sbom.json build/supply-chain/frontend-dependencies.json build/supply-chain/frontend-licenses.txt build/supply-chain/INVENTORY.md \"$SLICE3_PUBLIC/supply-chain/\"\n    cp backend/marketops-server/target/marketops-server-sbom.json \"$SLICE3_PUBLIC/supply-chain/backend-sbom.json\"\n    cp backend/marketops-server/target/licenses/backend-license-inventory.txt \"$SLICE3_PUBLIC/supply-chain/backend-licenses.txt\"\n    python3 \"$SLICE3_DRIVER_SUPPORT\" --config \"$SLICE3_DRIVER_CONFIG\" products \"$SLICE3_PUBLIC/supply-chain/backend-products-after.json\"\n  '",
+  "argv": [
+    "bash",
+    "--noprofile",
+    "--norc",
+    "-euo",
+    "pipefail",
+    "-c",
+    "\n    mkdir -p \"$SLICE3_PUBLIC/supply-chain\"\n    python3 \"$SLICE3_DRIVER_SUPPORT\" --config \"$SLICE3_DRIVER_CONFIG\" products \"$SLICE3_PUBLIC/supply-chain/backend-products-before.json\"\n    python3 scripts/collect_supply_chain.py --skip-backend\n    cp build/supply-chain/frontend-sbom.json build/supply-chain/frontend-dependencies.json build/supply-chain/frontend-licenses.txt build/supply-chain/INVENTORY.md \"$SLICE3_PUBLIC/supply-chain/\"\n    cp backend/marketops-server/target/marketops-server-sbom.json \"$SLICE3_PUBLIC/supply-chain/backend-sbom.json\"\n    cp backend/marketops-server/target/licenses/backend-license-inventory.txt \"$SLICE3_PUBLIC/supply-chain/backend-licenses.txt\"\n    python3 \"$SLICE3_DRIVER_SUPPORT\" --config \"$SLICE3_DRIVER_CONFIG\" products \"$SLICE3_PUBLIC/supply-chain/backend-products-after.json\"\n  "
+  ],
+  "cwd": ".",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+  "workingTreeDirty": false,
+  "workingTreeStatus": [],
+  "identityScope": "CLEAN_COMMIT_TREE",
+  "sourceInventorySha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "sourceInventory": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/supply-chain/source-before.json",
+    "sha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+    "bytes": 310088
+  },
+  "startedAt": "2026-09-06T10:36:04.679168+00:00",
+  "result": "COMMAND_SUCCEEDED_REVIEW_REQUIRED",
+  "productionWriteEnabled": false,
+  "controllerApprovalClaimMade": false,
+  "engineeringClosureClaimMade": false,
+  "publicationIdentity": {
+    "GITHUB_SHA": null,
+    "GITHUB_RUN_ID": null,
+    "GITHUB_RUN_ATTEMPT": null,
+    "GITHUB_JOB": null,
+    "MARKETOPS_EVIDENCE_SOURCE_HEAD_SHA": null,
+    "MARKETOPS_EVIDENCE_TESTED_MERGE_SHA": null
+  },
+  "finishedAt": "2026-09-06T10:36:07.584524+00:00",
+  "elapsedSeconds": 2.905,
+  "exitCode": 0,
+  "executionError": null,
+  "sourceStable": true,
+  "sourceChangedPaths": [],
+  "identityAfter": {
+    "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+    "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+    "branch": "feat/SLICE-V1-003-advertising-traffic-efficiency",
+    "workingTreeDirty": false,
+    "workingTreeStatus": [],
+    "identityScope": "CLEAN_COMMIT_TREE"
+  },
+  "sourceInventoryAfterSha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "evidence": [
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/supply-chain/command.log",
+      "sha256": "07ab4fe44da70f4ac8b6430e6be984e52aeac85e632a6049b5af023ab29e048f",
+      "bytes": 242
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/supply-chain/raw/build/final-gate-r6-e278b1e/supply-chain/INVENTORY.md",
+      "sha256": "6a1a85905a87c2abaeacd5894ab0ea1d69ca8768ef042ff8479132092c78b6e4"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/supply-chain/raw/build/final-gate-r6-e278b1e/supply-chain/backend-licenses.txt",
+      "sha256": "4e765e7d8392b13ca211618338eb1291577df4d940ad0f5999fd50a7aa35e2a3"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/supply-chain/raw/build/final-gate-r6-e278b1e/supply-chain/backend-products-after.json",
+      "sha256": "42a06bf2922c620ed72df9cbd0eba3e0caa3b7c9f997173d40438e129aedaa37"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/supply-chain/raw/build/final-gate-r6-e278b1e/supply-chain/backend-products-before.json",
+      "sha256": "42a06bf2922c620ed72df9cbd0eba3e0caa3b7c9f997173d40438e129aedaa37"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/supply-chain/raw/build/final-gate-r6-e278b1e/supply-chain/backend-sbom.json",
+      "sha256": "7a71d2bb18908c260da21b574bba16bf110d87a5f58bf6f85283de1b97496709"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/supply-chain/raw/build/final-gate-r6-e278b1e/supply-chain/frontend-dependencies.json",
+      "sha256": "869bd135029c024148a7903fbb415fb0d15a5ca5e9026d48c2f98b75b374f9d5"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/supply-chain/raw/build/final-gate-r6-e278b1e/supply-chain/frontend-licenses.txt",
+      "sha256": "45c9c1646411e970eda4f713313599cbbf16b1f87eb29ccf6d34743e26e92014"
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/supply-chain/raw/build/final-gate-r6-e278b1e/supply-chain/frontend-sbom.json",
+      "sha256": "cbe15b1ebebb261505fbd7d01a6e58ae911af83f07091fa5022b1183a11bebd3"
+    }
+  ],
+  "capturePatterns": [
+    "build/final-gate-r6-e278b1e/supply-chain/**/*"
+  ],
+  "stalePreexistingReports": [],
+  "xmlParseErrors": [],
+  "testcaseCounts": null,
+  "namedTestcaseNodes": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/supply-chain/named-testcase-nodes.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "bytes": 3
+  },
+  "failures": null,
+  "errors": null,
+  "skipped": null,
+  "boundary": "Command exit and raw reports only. Root must review full layer scope, source identity, assertions, capacity/resource bounds and publication evidence before any PASS assessment."
+}

@@ -1,0 +1,321 @@
+{
+  "kind": "EXACT_HISTORICAL_FAILED_CHECKPOINT_SECURITY_SCOPE_RECEIPT",
+  "recordedAtUTC": "2026-09-06T03:08:37.001014+00:00",
+  "sourceHead": "1381ef78594875a1e1304e4d9a636e49d0fab71f",
+  "sourceTree": "d366331b9b0ad7f8eb0f90c8536f46c0d2b9ce5e",
+  "testedMerge": "ddec24ca37d71a61772b6682e633d7536da1cb3e",
+  "testedMergeTree": "d366331b9b0ad7f8eb0f90c8536f46c0d2b9ce5e",
+  "testedMergeParents": [
+    "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "1381ef78594875a1e1304e4d9a636e49d0fab71f"
+  ],
+  "sourceInventorySha256": "0270adc39585c868a5f6993b8b35324a2bd3b5addf3ebc6c67485269d43a061f",
+  "sourceDisposition": "FAILED_CHECKPOINT",
+  "declaredCheckpointInventory": {
+    "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/declared-checkpoint-source-inventory.json",
+    "sha256": "0270adc39585c868a5f6993b8b35324a2bd3b5addf3ebc6c67485269d43a061f",
+    "bytes": 309596
+  },
+  "sourceInventoryComparison": {
+    "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/SOURCE-IDENTITY-COMPARISON.json",
+    "sha256": "364f785bef0aef45bc6d31a7892d0ac5d774a6e161a8d3a96e0c69b78f023379",
+    "bytes": 2102
+  },
+  "run": {
+    "id": 34007484547,
+    "run_attempt": 1,
+    "run_number": 101,
+    "check_suite_id": 92147336060,
+    "head_sha": "1381ef78594875a1e1304e4d9a636e49d0fab71f",
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34007484547",
+    "run_started_at": "2026-09-06T02:50:03Z",
+    "updated_at": "2026-09-06T02:53:40Z"
+  },
+  "jobs": [
+    {
+      "id": 101417260298,
+      "name": "dependency-review",
+      "run_id": 34007484547,
+      "run_attempt": 1,
+      "head_sha": "1381ef78594875a1e1304e4d9a636e49d0fab71f",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T02:50:06Z",
+      "completed_at": "2026-09-06T02:50:20Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34007484547/job/101417260298"
+    },
+    {
+      "id": 101417260409,
+      "name": "codeql-java",
+      "run_id": 34007484547,
+      "run_attempt": 1,
+      "head_sha": "1381ef78594875a1e1304e4d9a636e49d0fab71f",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T02:50:05Z",
+      "completed_at": "2026-09-06T02:53:39Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34007484547/job/101417260409"
+    },
+    {
+      "id": 101417260440,
+      "name": "codeql-typescript",
+      "run_id": 34007484547,
+      "run_attempt": 1,
+      "head_sha": "1381ef78594875a1e1304e4d9a636e49d0fab71f",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T02:50:05Z",
+      "completed_at": "2026-09-06T02:51:16Z",
+      "html_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34007484547/job/101417260440"
+    }
+  ],
+  "aggregateCodeQL": {
+    "id": 101417381823,
+    "name": "CodeQL",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "1381ef78594875a1e1304e4d9a636e49d0fab71f",
+    "started_at": "2026-09-06T02:51:07Z",
+    "completed_at": "2026-09-06T02:51:11Z",
+    "details_url": "https://github.com/Corwin-Code/marketops-platform/runs/101417381823",
+    "output": {
+      "title": "94 new alerts",
+      "summary": "### New alerts in code changed by this pull request\n\n * 11 warnings\n * 83 notes\n\n_Alerts not introduced by this pull request might have been detected because the code changes were too large._\n\nSee annotations below for details.\n\n[View all branch alerts](/Corwin-Code/marketops-platform/security/code-scanning?query=pr%3A30+tool%3ACodeQL+is%3Aopen).",
+      "text": null,
+      "annotations_count": 94,
+      "annotations_url": "https://api.github.com/repos/Corwin-Code/marketops-platform/check-runs/101417381823/annotations"
+    }
+  },
+  "aggregateAnnotations": {
+    "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/aggregate-codeql-annotations-pages.json",
+    "sha256": "6936a9855471c01d34fc21a4d75c185fc7eccaf3634f2c8d7eca8627d778a1de",
+    "bytes": 56101
+  },
+  "actionsArtifacts": {
+    "totalCount": 0,
+    "artifactIds": [],
+    "authority": {
+      "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/security-artifacts-r1.json",
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c",
+      "bytes": 32
+    },
+    "sarifOrigin": "Direct Code Scanning analysis API, exact analysis/sarif IDs; not Actions artifact IDs."
+  },
+  "sarifAnalyses": [
+    {
+      "category": "/language:java-kotlin",
+      "analysisId": 1730792964,
+      "sarifId": "24608344-a99e-11f1-9c0d-35fb0963157b",
+      "analysisUrl": "https://api.github.com/repos/Corwin-Code/marketops-platform/code-scanning/analyses/1730792964",
+      "analysisKey": ".github/workflows/security.yml:codeql-java",
+      "createdAt": "2026-09-06T02:53:31Z",
+      "matchingCompletedJobId": 101417260409,
+      "analysisCreatedWithinMatchingJob": true,
+      "resultsCount": 98,
+      "rulesCount": 240,
+      "tool": {
+        "name": "CodeQL",
+        "guid": null,
+        "version": "2.26.4"
+      },
+      "rawResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/java.sarif.json",
+        "sha256": "1711669abb8887f8ec4ccf014555fbb722942d2c37e5b78c293ac44739b9f851",
+        "bytes": 1532899
+      },
+      "rawSecurityResults": [
+        {
+          "ruleId": "java/spring-disabled-csrf-protection",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/identityaccess/internal/web/IdentitySecurityConfig.java",
+          "region": {
+            "endColumn": 45,
+            "endLine": 83,
+            "startColumn": 31,
+            "startLine": 83
+          },
+          "numericSecuritySeverity": "8.8",
+          "scope": "Raw unchanged result; current GitHub alert/dismissal is separately reconciled."
+        },
+        {
+          "ruleId": "java/xss",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/shared/internal/http/BoundedOutboundHttp.java",
+          "region": {
+            "endColumn": 107,
+            "endLine": 167,
+            "startColumn": 62,
+            "startLine": 167
+          },
+          "numericSecuritySeverity": "7.8",
+          "scope": "Raw unchanged result; current GitHub alert/dismissal is separately reconciled."
+        },
+        {
+          "ruleId": "java/user-controlled-bypass",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosticExportService.java",
+          "region": {
+            "endColumn": 69,
+            "endLine": 72,
+            "startColumn": 9,
+            "startLine": 72
+          },
+          "numericSecuritySeverity": "7.8",
+          "scope": "Raw unchanged result; current GitHub alert/dismissal is separately reconciled."
+        },
+        {
+          "ruleId": "java/user-controlled-bypass",
+          "path": "backend/marketops-server/src/main/java/com/mimococo/marketops/analyticsdecision/internal/application/DiagnosticExportService.java",
+          "region": {
+            "endColumn": 68,
+            "endLine": 80,
+            "startColumn": 9,
+            "startLine": 80
+          },
+          "numericSecuritySeverity": "7.8",
+          "scope": "Raw unchanged result; current GitHub alert/dismissal is separately reconciled."
+        }
+      ]
+    },
+    {
+      "category": "/language:javascript-typescript",
+      "analysisId": 1730789976,
+      "sarifId": "cf413e30-a99d-11f1-92f0-8b94ca31cea4",
+      "analysisUrl": "https://api.github.com/repos/Corwin-Code/marketops-platform/code-scanning/analyses/1730789976",
+      "analysisKey": ".github/workflows/security.yml:codeql-typescript",
+      "createdAt": "2026-09-06T02:51:08Z",
+      "matchingCompletedJobId": 101417260440,
+      "analysisCreatedWithinMatchingJob": true,
+      "resultsCount": 1,
+      "rulesCount": 201,
+      "tool": {
+        "name": "CodeQL",
+        "guid": null,
+        "version": "2.26.4"
+      },
+      "rawResponse": {
+        "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/typescript.sarif.json",
+        "sha256": "d06b750f8c566556a27818580f68f362fc143ab72da1d68a9e44676f8658c0ff",
+        "bytes": 938202
+      },
+      "rawSecurityResults": [
+        {
+          "ruleId": "js/empty-password-in-configuration-file",
+          "path": "backend/marketops-server/src/main/resources/application-production.yaml",
+          "region": {
+            "endColumn": 17,
+            "endLine": 21,
+            "startColumn": 15,
+            "startLine": 21
+          },
+          "numericSecuritySeverity": "7.5",
+          "scope": "Raw unchanged result; current GitHub alert/dismissal is separately reconciled."
+        }
+      ]
+    }
+  ],
+  "rawSarifResultCount": 99,
+  "allRawSarifResultsMatchExactCurrentAlertLocations": true,
+  "openAlerts": {
+    "priorW8Count": 87,
+    "prior7eCheckpointCount": 95,
+    "currentCount": 94,
+    "levelCounts": {
+      "note": 83,
+      "warning": 11
+    },
+    "added": [],
+    "removed": [
+      212
+    ],
+    "newSecurityHighOrCritical": 0,
+    "currentOpenSecurityHighOrCritical": 0,
+    "exactFlaggedExpressionMatches": 94,
+    "wholeSourceByteMatches": 89,
+    "changedWholeSourceContextsReviewed": [
+      197,
+      198,
+      199,
+      211,
+      217
+    ],
+    "triage": {
+      "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/ALERT-DELTA-TRIAGE.json",
+      "sha256": "e12043bfccc120b65ec328c34ee0dbfda26616ed1f32794be25c0befb1e5aedd",
+      "bytes": 173396
+    },
+    "removedQualityNote": {
+      "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/REMOVED-QUALITY-NOTE-212.json",
+      "sha256": "c4a4e385c006c0f94045b18afb3aec591d676cced743052b9fb8ba6339aefcff",
+      "bytes": 1221
+    }
+  },
+  "historicalDismissedHigh": {
+    "count": 5,
+    "unchangedSourceAndDismissalMetadata": true,
+    "stillPresentInRawSarif": true,
+    "reconciliation": {
+      "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/HISTORICAL-DISMISSED-HIGH-RECONCILIATION.json",
+      "sha256": "4f9c2cf4134634e1c9238293518536c57cf94d1bf4b3d488c6be63e027a414ee",
+      "bytes": 7693
+    }
+  },
+  "dependencyReview": {
+    "actualJobResult": "success",
+    "scope": "Actual PR dependency delta only; no full repository audit/default-branch vulnerability absence claim.",
+    "addedDependencyRecords": 4,
+    "addedVulnerabilityRecords": 0,
+    "removedDependencyRecords": 1,
+    "rawDiff": {
+      "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/dependency-diff.json",
+      "sha256": "693fb17df7dcce698c2ced75a1d1f46a906bf446caf4275693042467cba9388f",
+      "bytes": 2475
+    }
+  },
+  "rawLogs": {
+    "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/security-job-logs.zip",
+    "sha256": "43638db8ea5bb1b3e3c137daafad095bea5fc7745891ea7457348cb4515f21a2",
+    "bytes": 237134
+  },
+  "rawLogMemberIndex": {
+    "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/RAW-LOG-MEMBER-INDEX.json",
+    "sha256": "a1a0fffc87b44903fd1635d4c6a74a6b5219fa30a691325213cdabf8f47bc4e8",
+    "bytes": 12331
+  },
+  "publicationScan": {
+    "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/RAW-PUBLICATION-SCAN.json",
+    "sha256": "9e87efd3d15d783c27a3c53f9e67c636eb4db28324ef76910a692aab6b908e9c",
+    "bytes": 20489
+  },
+  "secretShapeTriage": {
+    "path": "/private/tmp/slice3-checkpoint-ci-1381ef7/SECRET-SHAPE-TRIAGE.json",
+    "sha256": "e027b66c7a217bb05853e09d6556c13a0a016906baa7518bbc01539cad2c6cd6",
+    "bytes": 4315
+  },
+  "criteria": {
+    "allThreeSecurityJobsSuccess": true,
+    "aggregateCodeQLSuccess": true,
+    "exactRemoteSourceInventoryBinding": true,
+    "actualThreeCheckoutsAndJavaBuildVerified": true,
+    "bothExactSarifAnalysesAndAllLocationsVerified": true,
+    "noNewSecurityHighOrCritical": true,
+    "all94OpenExpressionsRechecked": true,
+    "allFiveChangedSourceContextsReviewed": true,
+    "fiveHistoricalDismissedHighKeptSeparate": true,
+    "originalRawLogCrcVerified": true,
+    "noUnreviewedPublicationPatternHits": true
+  },
+  "securityScopeResult": "SUCCESS_FOR_EXACT_1381_SECURITY_ONLY",
+  "overallCheckpointComplete": false,
+  "overallCheckpointAdmissibleForFinalClosure": false,
+  "productionWriteEnabled": false,
+  "controllerApprovalClaimMade": false,
+  "alertsModifiedOrDismissed": false,
+  "limits": [
+    "Checkpoint1381 has failed frontend and reported local backend oracle failure; Security success cannot substitute for its failed full layers or a successor checkpoint.",
+    "All current open94 quality findings remain. Five historical dismissed HIGH remain in raw SARIF. No zero-quality or zero-raw-HIGH claim.",
+    "The tested-merge check-runs endpoint returned zero; actual checkout logs, both exact SARIF provenances and remote commit parents/tree identify the tested merge. Checks attach to sourceHead.",
+    "The complete1278 source comparison uses original inventory and immutable Git only; current dirty source is excluded.",
+    "PR18 metadata was an initial unrelated read and is not used. One EOF request is preserved alongside successful retry.",
+    "No full backend/frontend/browser/supply-chain PASS, independent Controller approval, Ready, merge, real Provider or production enablement is supplied."
+  ]
+}

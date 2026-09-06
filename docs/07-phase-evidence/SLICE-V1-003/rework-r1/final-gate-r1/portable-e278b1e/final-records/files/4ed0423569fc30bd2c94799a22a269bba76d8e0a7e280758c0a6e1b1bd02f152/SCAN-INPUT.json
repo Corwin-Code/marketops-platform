@@ -1,0 +1,455 @@
+{
+  "kind": "EXPLICIT_ORIGINAL_FILE_MANIFEST_SCAN",
+  "scope": "Final additional canonical views, native SARIF packaging and actual publication-review metadata bytes.",
+  "files": {
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/CURRENT-ENGINEERING-HANDOFF.md": {
+      "sha256": "36e14cd2a06b14145619e504c8191a294828589036266d2e3865daf1955252bd",
+      "bytes": 8800
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/ARTIFACT-DESTINATIONS.json": {
+      "sha256": "cbf38627796131ed22996e7bb7b8252b83dab0c9e6b74e8e790ae10cd23b486e",
+      "bytes": 1640371
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/EXECUTION-INPUTS-WITH-PORTABLE-DESTINATIONS.json": {
+      "sha256": "92da0e3d138dcc5fde3e89388fab0ec72e5a09323be3140be7ba0f34012097d0",
+      "bytes": 6106175
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/FINAL-RECORDS-INDEX.json": {
+      "sha256": "87cea2d094c8db1c02df13001157e29f38c935dbd7e4a44458e958ad57dc815f",
+      "bytes": 47909
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/PUBLICATION-PLAN.json": {
+      "sha256": "ff811dd986d237b2033f882d49c8aace99cb553f9640ceaf7a5ce61494470054",
+      "bytes": 8859800
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/RELOCATION-MAPPING.json": {
+      "sha256": "43d6f9d2be8750f02913c667d00d92c34977e3c1765618a95c50befac0cd1923",
+      "bytes": 19075390
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/files/cbaf3379dc3cf5cae3bfc0ee24393b420e5394c90293b86f97fe5a05dbfa589c/ARCHIVE-MEMBER-INDEX.json": {
+      "sha256": "cbaf3379dc3cf5cae3bfc0ee24393b420e5394c90293b86f97fe5a05dbfa589c",
+      "bytes": 3273
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/01de02e8b4a3927c48fad61b62f822ce0e55e3192a861aab418a4f1fa1048322/input-12.json": {
+      "sha256": "01de02e8b4a3927c48fad61b62f822ce0e55e3192a861aab418a4f1fa1048322",
+      "bytes": 303149
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/03de3bee741063de2bc33410778da1eaffaf42ae762bd97a2f03959f1dcf512f/HITS.jsonl": {
+      "sha256": "03de3bee741063de2bc33410778da1eaffaf42ae762bd97a2f03959f1dcf512f",
+      "bytes": 3690
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/0ba77222a1d8c845047d98b41f0e28d8d6d8f5127625a818c815d5b940d4241a/slice3-prepare-portable-publication-e278b1e-r1.py": {
+      "sha256": "0ba77222a1d8c845047d98b41f0e28d8d6d8f5127625a818c815d5b940d4241a",
+      "bytes": 21914
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/0ce0f26233fde7236e2891f438de27a9628a22e494d024bb14d5d4fb072ccc6e/SCAN-SUMMARY.json": {
+      "sha256": "0ce0f26233fde7236e2891f438de27a9628a22e494d024bb14d5d4fb072ccc6e",
+      "bytes": 753
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/116ed76eff353d333c84840eef3f0cae0a08e222431e6f9e77b6f7bfe5c4c69e/COVERAGE-PREPARATION.json": {
+      "sha256": "116ed76eff353d333c84840eef3f0cae0a08e222431e6f9e77b6f7bfe5c4c69e",
+      "bytes": 2201086
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/13e052970ca0fa3f3d1ba13419a1429f955c34ffc52cf67600e22eef72fca86d/EXACT-HIT-TRIAGE.json": {
+      "sha256": "13e052970ca0fa3f3d1ba13419a1429f955c34ffc52cf67600e22eef72fca86d",
+      "bytes": 25395
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/17996437c2a304d71f10babeb7886dc7d5d67179480e2099e1e7be9c48c9b89d/SCAN-SUMMARY.json": {
+      "sha256": "17996437c2a304d71f10babeb7886dc7d5d67179480e2099e1e7be9c48c9b89d",
+      "bytes": 751
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/1877e82b04a8373f614419b4537832be6ef34ca22f9b8acdf02c75acb0769833/input-02.json": {
+      "sha256": "1877e82b04a8373f614419b4537832be6ef34ca22f9b8acdf02c75acb0769833",
+      "bytes": 344
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/19afa7445813f5925f88b8c6151c2793a98602e6481b2116557ea6873251f381/collect_final_security.py": {
+      "sha256": "19afa7445813f5925f88b8c6151c2793a98602e6481b2116557ea6873251f381",
+      "bytes": 19461
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/2148f3ef7b26ee0096e58f0f1a4a13a91ee1f2107afbd4b72ea5760239b9843d/SCAN-INPUT.json": {
+      "sha256": "2148f3ef7b26ee0096e58f0f1a4a13a91ee1f2107afbd4b72ea5760239b9843d",
+      "bytes": 1554
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/22b95d4f56dc6fc3a35fdbfffec1767047856f2336e0b78f187c3defcd72c168/input-06.json": {
+      "sha256": "22b95d4f56dc6fc3a35fdbfffec1767047856f2336e0b78f187c3defcd72c168",
+      "bytes": 337
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/23831bce30473eee4accd2cf4f7d165de0a2eb8ef9446258da81976de565f0ac/SCAN-INPUT.json": {
+      "sha256": "23831bce30473eee4accd2cf4f7d165de0a2eb8ef9446258da81976de565f0ac",
+      "bytes": 3748
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/27d8fd921898f383894d2b3dfd884e763c7255e7d2577096b7cd17a39017451e/SCAN-SUMMARY.json": {
+      "sha256": "27d8fd921898f383894d2b3dfd884e763c7255e7d2577096b7cd17a39017451e",
+      "bytes": 727
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/280a2e0947e2d632f50c033a3e451722257ee39e3c1813611ab6d804dedfc87b/EXACT-HIT-TRIAGE.json": {
+      "sha256": "280a2e0947e2d632f50c033a3e451722257ee39e3c1813611ab6d804dedfc87b",
+      "bytes": 25595
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/2f9d6bc9da449952abca5b57b7bf065a6994521bbf2cfc3ca5231c820ad9966a/MEMBERS.jsonl": {
+      "sha256": "2f9d6bc9da449952abca5b57b7bf065a6994521bbf2cfc3ca5231c820ad9966a",
+      "bytes": 1051
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/32ba35d803043f0f8fb287837ea83779fbb9073c16e7b0505566ab2fc2f6e934/SCAN-INPUT.json": {
+      "sha256": "32ba35d803043f0f8fb287837ea83779fbb9073c16e7b0505566ab2fc2f6e934",
+      "bytes": 1568
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/334d49f65619638a0b05d445ab6a4f748348187509b1cd07a611f83dfdc92b40/SCAN-SUMMARY.json": {
+      "sha256": "334d49f65619638a0b05d445ab6a4f748348187509b1cd07a611f83dfdc92b40",
+      "bytes": 762
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/33b12a444a814e68c257d386f52c61894809b7e3064c2ea48b1dcf1c63d9868d/HITS.jsonl": {
+      "sha256": "33b12a444a814e68c257d386f52c61894809b7e3064c2ea48b1dcf1c63d9868d",
+      "bytes": 12500
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/427c67ef2e621d28199f15abd0b05b005972a8ecce8ba631ee3811fd671edf02/slice3-package-official-sarif-e278b1e-r2.py": {
+      "sha256": "427c67ef2e621d28199f15abd0b05b005972a8ecce8ba631ee3811fd671edf02",
+      "bytes": 7076
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/43534c8f7412748d5c98bdf2edc910f8a066ee96c7ff4eefa301aa491c3f29ba/HITS.jsonl": {
+      "sha256": "43534c8f7412748d5c98bdf2edc910f8a066ee96c7ff4eefa301aa491c3f29ba",
+      "bytes": 3510
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/44a427eab5ce9147e18d8586ceaafe6429567a7272a60494141fcd9ab53c2145/SCAN-SUMMARY.json": {
+      "sha256": "44a427eab5ce9147e18d8586ceaafe6429567a7272a60494141fcd9ab53c2145",
+      "bytes": 727
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/4f7dba84d3eef018f41163ed1db8a249ebf4c12d6a0d60445d5083fcd645d536/MEMBERS.jsonl": {
+      "sha256": "4f7dba84d3eef018f41163ed1db8a249ebf4c12d6a0d60445d5083fcd645d536",
+      "bytes": 1959
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/50b5b70aae5642e6b526e0245df45f5e8bacf9f672d2ad2c96b04ed8b17c1f4f/input-04.json": {
+      "sha256": "50b5b70aae5642e6b526e0245df45f5e8bacf9f672d2ad2c96b04ed8b17c1f4f",
+      "bytes": 364
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/50e574adae8e1036567407b6ea251ca6578f98169c63307e7408d6cc55b20c53/HITS.jsonl": {
+      "sha256": "50e574adae8e1036567407b6ea251ca6578f98169c63307e7408d6cc55b20c53",
+      "bytes": 3545
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/51a4304a61fa6fdee7258db36cbe5ffc581278cca6f90fb99f1b3b72216eb4a3/input-05.json": {
+      "sha256": "51a4304a61fa6fdee7258db36cbe5ffc581278cca6f90fb99f1b3b72216eb4a3",
+      "bytes": 344
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/526dc8defbd9947599251c91899a3e1453f971bad20eb29c52804ffba822d47f/SCAN-INPUT.json": {
+      "sha256": "526dc8defbd9947599251c91899a3e1453f971bad20eb29c52804ffba822d47f",
+      "bytes": 9551
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/527d4707f48354e91f9060c4ceca9c1f53d50b82677294befc7532c05f84186e/input-03.json": {
+      "sha256": "527d4707f48354e91f9060c4ceca9c1f53d50b82677294befc7532c05f84186e",
+      "bytes": 303
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/533d4b9fcbe90dea1a2931200b0d11f1ab0726abf368af44a9e8ed04109b9cbb/HITS.jsonl": {
+      "sha256": "533d4b9fcbe90dea1a2931200b0d11f1ab0726abf368af44a9e8ed04109b9cbb",
+      "bytes": 3305
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/544421ec117d746c3997fdadb632e6fca4b0f48b0ce671b1a86db228c0a594ac/MEMBERS.jsonl": {
+      "sha256": "544421ec117d746c3997fdadb632e6fca4b0f48b0ce671b1a86db228c0a594ac",
+      "bytes": 11205501
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/5479a87b87815c298e206895c3c5b2daa782bbc59f5de3c666c5b09374793119/decode_backend_r3.py": {
+      "sha256": "5479a87b87815c298e206895c3c5b2daa782bbc59f5de3c666c5b09374793119",
+      "bytes": 15883
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/563be9c6fe07dfc6fc07976b9b1081a03d45d61af873d6cef89c266f7deeaff9/ORIGINAL-PENDING-EXECUTION-MANIFEST.json": {
+      "sha256": "563be9c6fe07dfc6fc07976b9b1081a03d45d61af873d6cef89c266f7deeaff9",
+      "bytes": 436
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/57cdbaafa90eb5ab2dab11741920a16a9131b9d7840207acb3a3141c1338746e/SCAN-SUMMARY.json": {
+      "sha256": "57cdbaafa90eb5ab2dab11741920a16a9131b9d7840207acb3a3141c1338746e",
+      "bytes": 736
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/59e4e01346d8089ec57bd1e58f455811cb4fc44e212d3a75c8a8bd970e3e81bb/command-12.json": {
+      "sha256": "59e4e01346d8089ec57bd1e58f455811cb4fc44e212d3a75c8a8bd970e3e81bb",
+      "bytes": 392
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/5a1048211090a145ff65ffa04b2cfa5c7cd22887aec877bddcb80a35f0a6c0df/command-07.json": {
+      "sha256": "5a1048211090a145ff65ffa04b2cfa5c7cd22887aec877bddcb80a35f0a6c0df",
+      "bytes": 392
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/5c0ee7d426fffab3ca5e6730b19128fdd85f595d1acee84b0d6e6e4a329f6221/SCAN-INPUT.json": {
+      "sha256": "5c0ee7d426fffab3ca5e6730b19128fdd85f595d1acee84b0d6e6e4a329f6221",
+      "bytes": 1561
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/5d16bafac28ceee4098003be98c7aa67d54346f7ef135d742ecda96cdb317754/command-09.json": {
+      "sha256": "5d16bafac28ceee4098003be98c7aa67d54346f7ef135d742ecda96cdb317754",
+      "bytes": 392
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/606b63a62dcaa2a95133731c6127241f7203bdb90b995f5050c84b313941ef27/input-10.json": {
+      "sha256": "606b63a62dcaa2a95133731c6127241f7203bdb90b995f5050c84b313941ef27",
+      "bytes": 2685
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/64c9434a6f6a6cfaa97c745efb2d322cf84203cef6f23df9f43ccf71b59bd172/SCAN-INPUT.json": {
+      "sha256": "64c9434a6f6a6cfaa97c745efb2d322cf84203cef6f23df9f43ccf71b59bd172",
+      "bytes": 1555
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/6996764a839a01fc3cf5c3f7e3db17cbb440b5ad26918f84fea7b4b9ad8f5a5d/MEMBERS.jsonl": {
+      "sha256": "6996764a839a01fc3cf5c3f7e3db17cbb440b5ad26918f84fea7b4b9ad8f5a5d",
+      "bytes": 8771
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/6db9e16dcc629f3414986b1c4d6ab9a1d1025b533ea0ce6cb486e44f297eaa59/EXACT-SARIF-HELP-TRIAGE.json": {
+      "sha256": "6db9e16dcc629f3414986b1c4d6ab9a1d1025b533ea0ce6cb486e44f297eaa59",
+      "bytes": 150902
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/6f635c514e81e17cad1b11bc29c7285e37f7ceeaf15a89398fd6349c2cf8dddc/MEMBERS.jsonl": {
+      "sha256": "6f635c514e81e17cad1b11bc29c7285e37f7ceeaf15a89398fd6349c2cf8dddc",
+      "bytes": 533909
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/71e847c8966737c6e4b14d235ba798c69bf6d23a4f3a11aa2dc7acb0af113aba/SCAN-INPUT.json": {
+      "sha256": "71e847c8966737c6e4b14d235ba798c69bf6d23a4f3a11aa2dc7acb0af113aba",
+      "bytes": 1561
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/71fad8bbcad4bb59fe175977312bf5bbe5297684c134824c9d89662221044196/SCAN-INPUT.json": {
+      "sha256": "71fad8bbcad4bb59fe175977312bf5bbe5297684c134824c9d89662221044196",
+      "bytes": 1520
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/72d06a79c4bb2e64437db419ad03c94248a01591c8ea73bd6d7dd9d8376c9090/command-05.json": {
+      "sha256": "72d06a79c4bb2e64437db419ad03c94248a01591c8ea73bd6d7dd9d8376c9090",
+      "bytes": 392
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/74ebf38a593acbbc3e8f612b84f994e6e308181f54422284e1432eeebfadd3db/input-01.json": {
+      "sha256": "74ebf38a593acbbc3e8f612b84f994e6e308181f54422284e1432eeebfadd3db",
+      "bytes": 351
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/781cce1f7fb3cd5e77afbd1752d2595a6028136200b3160f3ba5ffbb46f8bad4/RECEIPT.json": {
+      "sha256": "781cce1f7fb3cd5e77afbd1752d2595a6028136200b3160f3ba5ffbb46f8bad4",
+      "bytes": 1921
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/78513d7f929bdb3a157a5b693a3b59e263e30d28cebe5ac5a9b8e5d21b438bc1/slice3-prepare-security-schema-e278b1e-r1.py": {
+      "sha256": "78513d7f929bdb3a157a5b693a3b59e263e30d28cebe5ac5a9b8e5d21b438bc1",
+      "bytes": 2628
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/7d4d7419e581c69ed0b5f2cd4a4f910155b10bfeeb398a8c52ffaa11c8f96d4f/BATCH-EXECUTION.json": {
+      "sha256": "7d4d7419e581c69ed0b5f2cd4a4f910155b10bfeeb398a8c52ffaa11c8f96d4f",
+      "bytes": 5055
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/7d9a8b2731c21ff3e012eab690447e8bb1d15d1eba281cafb6ed0413eba13425/HITS.jsonl": {
+      "sha256": "7d9a8b2731c21ff3e012eab690447e8bb1d15d1eba281cafb6ed0413eba13425",
+      "bytes": 26636
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/828bf982b2055d0008597fb8fc1238c7234edc3f644078f671076295d2f11f5a/SCAN-SUMMARY.json": {
+      "sha256": "828bf982b2055d0008597fb8fc1238c7234edc3f644078f671076295d2f11f5a",
+      "bytes": 761
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/84e36d71da1a5acada72dd49d9067c4d544f7552cdf3887b1e24927300d78b03/SCAN-SUMMARY.json": {
+      "sha256": "84e36d71da1a5acada72dd49d9067c4d544f7552cdf3887b1e24927300d78b03",
+      "bytes": 762
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/893bc70131e7a6995e2e5f309b9c599eeac6aa0f721527c79de0c98658772583/MEMBERS.jsonl": {
+      "sha256": "893bc70131e7a6995e2e5f309b9c599eeac6aa0f721527c79de0c98658772583",
+      "bytes": 10901427
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/8ad321933a51c3df0aacee3c8fa4552d1363a162c6ff3208f5c1f94c1ddc1467/input-08.json": {
+      "sha256": "8ad321933a51c3df0aacee3c8fa4552d1363a162c6ff3208f5c1f94c1ddc1467",
+      "bytes": 1171
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/8dced3c43be55454ee448628588f9f79a754fc2cd1cece815bfad493f1caeb16/command-11.json": {
+      "sha256": "8dced3c43be55454ee448628588f9f79a754fc2cd1cece815bfad493f1caeb16",
+      "bytes": 392
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/8e47c9c5641c5beb168b00392b7759fa3d3565d82188c267cffdfed0dfcc20c5/SCAN-SUMMARY.json": {
+      "sha256": "8e47c9c5641c5beb168b00392b7759fa3d3565d82188c267cffdfed0dfcc20c5",
+      "bytes": 728
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/9170eb59595ed7db48c7992f307d08c8e63ce67a45d9b7e859cfd9ed1cc9b47a/MEMBERS.jsonl": {
+      "sha256": "9170eb59595ed7db48c7992f307d08c8e63ce67a45d9b7e859cfd9ed1cc9b47a",
+      "bytes": 290255
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/9185cf93aac3638001d60f49a15fe9e80491f03bdecbc4ad161c81d45e6ecfb3/HITS.jsonl": {
+      "sha256": "9185cf93aac3638001d60f49a15fe9e80491f03bdecbc4ad161c81d45e6ecfb3",
+      "bytes": 3505
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/95b10653f43b6c111efe5d117f490f47e6b71ba57b5a957550109677523693d7/command-04.json": {
+      "sha256": "95b10653f43b6c111efe5d117f490f47e6b71ba57b5a957550109677523693d7",
+      "bytes": 392
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/966d39b8effa21d6d44d4f8fe14433831160200edfaaf235b4ce1cec9b8f8489/SCAN-INPUT.json": {
+      "sha256": "966d39b8effa21d6d44d4f8fe14433831160200edfaaf235b4ce1cec9b8f8489",
+      "bytes": 1581
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/97c740e2808066c518d2099a6baa1c93ca4307b7fa8590668a5cae911656e1c0/input-09.json": {
+      "sha256": "97c740e2808066c518d2099a6baa1c93ca4307b7fa8590668a5cae911656e1c0",
+      "bytes": 2082
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/9853b0b12a84ad42ab7e71cf95e3e39e53a9c6a8f7ef10e35aefe5b1c5efceac/SCAN-INPUT.json": {
+      "sha256": "9853b0b12a84ad42ab7e71cf95e3e39e53a9c6a8f7ef10e35aefe5b1c5efceac",
+      "bytes": 3201
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/9aed40a5d06703b1e533333293ff559ecb60770cfc73921df24d91e96de59c02/input-11.json": {
+      "sha256": "9aed40a5d06703b1e533333293ff559ecb60770cfc73921df24d91e96de59c02",
+      "bytes": 8866
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/a0246c51acda3437a2cd4ea5d1b3d8b39af793aaa48a623f22d54d144733e2a6/SCAN-SUMMARY.json": {
+      "sha256": "a0246c51acda3437a2cd4ea5d1b3d8b39af793aaa48a623f22d54d144733e2a6",
+      "bytes": 762
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/a76e6c3e15c96e555af63062fa8667df3f4c3efb3c4330d2aa51ecaff74494e3/SCAN-INPUT.json": {
+      "sha256": "a76e6c3e15c96e555af63062fa8667df3f4c3efb3c4330d2aa51ecaff74494e3",
+      "bytes": 287972
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/b34f720e90f88e46e5eb71d849100db51ee4c81d4e0852e421c459547d7ccfe0/MEMBERS.jsonl": {
+      "sha256": "b34f720e90f88e46e5eb71d849100db51ee4c81d4e0852e421c459547d7ccfe0",
+      "bytes": 2487940
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/b821d07a36c44c56414f054f74d31c823a9dfaf5dab6aaff43743fea10964c95/input-07.json": {
+      "sha256": "b821d07a36c44c56414f054f74d31c823a9dfaf5dab6aaff43743fea10964c95",
+      "bytes": 338
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/bd6133d725c80359c870352b41ae251815aa9a51ae91940f1eb358bbc8255446/slice3-triage-publication-sarif-help-r1.py": {
+      "sha256": "bd6133d725c80359c870352b41ae251815aa9a51ae91940f1eb358bbc8255446",
+      "bytes": 5589
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/bf6c459ddb139208f54cc7cf2ace1f6ddacdd16cdfcb26183c23b2ee670e3697/SCAN-INPUT.json": {
+      "sha256": "bf6c459ddb139208f54cc7cf2ace1f6ddacdd16cdfcb26183c23b2ee670e3697",
+      "bytes": 2332
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/c2d023c06281d35303afcbef1ed142143f8fc233b2f21808fc0e453e84367cd6/command-03.json": {
+      "sha256": "c2d023c06281d35303afcbef1ed142143f8fc233b2f21808fc0e453e84367cd6",
+      "bytes": 392
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/c4732db2fe953c06411f87b58c6b62475ea683152325ead5c53d8928b213b550/decode_nonbackend.py": {
+      "sha256": "c4732db2fe953c06411f87b58c6b62475ea683152325ead5c53d8928b213b550",
+      "bytes": 6646
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/c7b15852200823b1810277d2ae04e0eb29a30e39e3ff480f4d7e3992e741baf4/command-01.json": {
+      "sha256": "c7b15852200823b1810277d2ae04e0eb29a30e39e3ff480f4d7e3992e741baf4",
+      "bytes": 392
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/c90960e7fac20ff0bf8490a1ea67ec57e16994deeb26a247b14c1d5ed8802ca3/review_final_security.py": {
+      "sha256": "c90960e7fac20ff0bf8490a1ea67ec57e16994deeb26a247b14c1d5ed8802ca3",
+      "bytes": 9656
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/d41391c2afdd611fb4607c3782335fd08c6d2d2abd6d5d90a9f2d11066b30e8f/command-10.json": {
+      "sha256": "d41391c2afdd611fb4607c3782335fd08c6d2d2abd6d5d90a9f2d11066b30e8f",
+      "bytes": 392
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/d7fc42384cabe77f3344cf40695eb4adbeb5db798f79aa63b9bfec79697f9333/slice3-scan-security-raw-r3.py": {
+      "sha256": "d7fc42384cabe77f3344cf40695eb4adbeb5db798f79aa63b9bfec79697f9333",
+      "bytes": 6342
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/dbd6736586b03e1beee5270814dfde1a4cd6a88c045c7c51254b4db32c32ea1a/EXACT-HIT-TRIAGE.json": {
+      "sha256": "dbd6736586b03e1beee5270814dfde1a4cd6a88c045c7c51254b4db32c32ea1a",
+      "bytes": 25420
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/dd407a29bf91481c84f7b9e769aec1ae4e10038331a0a4b30d3ab2720f28d3ae/EXACT-HIT-TRIAGE.json": {
+      "sha256": "dd407a29bf91481c84f7b9e769aec1ae4e10038331a0a4b30d3ab2720f28d3ae",
+      "bytes": 24395
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/dff97d59fa81b13d8e5e94de1a6580faaa0dbb6a15089c018bff6defdae3a2f1/command-06.json": {
+      "sha256": "dff97d59fa81b13d8e5e94de1a6580faaa0dbb6a15089c018bff6defdae3a2f1",
+      "bytes": 392
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/e2f3ee6d7a2a8350bc0bfc42095dac39c5ec02a0b0207cc77d7369fb32d1c494/SCAN-SUMMARY.json": {
+      "sha256": "e2f3ee6d7a2a8350bc0bfc42095dac39c5ec02a0b0207cc77d7369fb32d1c494",
+      "bytes": 762
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/e66d9cbcb750d330c2fc8c23ea2eb25db5589244679f7afe7f5572cf5cf48113/MEMBERS.jsonl": {
+      "sha256": "e66d9cbcb750d330c2fc8c23ea2eb25db5589244679f7afe7f5572cf5cf48113",
+      "bytes": 25098
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/e694a833161e7f378983db434bcc40ef85f76d3839e24e5ea1cc2950df80e02e/command-08.json": {
+      "sha256": "e694a833161e7f378983db434bcc40ef85f76d3839e24e5ea1cc2950df80e02e",
+      "bytes": 392
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/e6f8b3e784d47893e24d64688c0b978eea88670add04164d50b5bf0cf19bcef4/COPY-RECEIPT.json": {
+      "sha256": "e6f8b3e784d47893e24d64688c0b978eea88670add04164d50b5bf0cf19bcef4",
+      "bytes": 530466
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/e7f89e0446ad8ea263d3ba217cda3835116614919c96a45ae113bf2693b07d17/EXACT-HIT-TRIAGE.json": {
+      "sha256": "e7f89e0446ad8ea263d3ba217cda3835116614919c96a45ae113bf2693b07d17",
+      "bytes": 26320
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/ea75adac96617a8943c831c6f186f35b4fde17c8ab62d60c029a9d122291f925/MEMBERS.jsonl": {
+      "sha256": "ea75adac96617a8943c831c6f186f35b4fde17c8ab62d60c029a9d122291f925",
+      "bytes": 12224834
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/ecc4e343fc1ba3527d2c28e94ae536baebe83fd5e21e7bd2824f629860bea84d/SCAN-SUMMARY.json": {
+      "sha256": "ecc4e343fc1ba3527d2c28e94ae536baebe83fd5e21e7bd2824f629860bea84d",
+      "bytes": 728
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/ef3f988171a9106573b3567b0d1b8add86de7c7bc51944c5c496a1cece4a134b/command-02.json": {
+      "sha256": "ef3f988171a9106573b3567b0d1b8add86de7c7bc51944c5c496a1cece4a134b",
+      "bytes": 392
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/ef8ecc3b29400c5e2223d8d2d069c935ad5d128f06b7fa49a84ff33e2109a7ae/MEMBERS.jsonl": {
+      "sha256": "ef8ecc3b29400c5e2223d8d2d069c935ad5d128f06b7fa49a84ff33e2109a7ae",
+      "bytes": 12462488
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/f9d631215eb6c604a57192d9457633a856521bd8662bae1bc2840071d58dafd0/MEMBERS.jsonl": {
+      "sha256": "f9d631215eb6c604a57192d9457633a856521bd8662bae1bc2840071d58dafd0",
+      "bytes": 12029856
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/final-records/files/fe6c67cdd2048b35a46022cfd064ee7bc173111287c3e8376cbf952ea3a3c9a1/capture_ci.py": {
+      "sha256": "fe6c67cdd2048b35a46022cfd064ee7bc173111287c3e8376cbf952ea3a3c9a1",
+      "bytes": 17283
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/original-pre-packaging/ARTIFACT-DESTINATIONS.json": {
+      "sha256": "c0759f6852a6cb590debafc57ce119c88939e35975a1c4e31ffb4d341750bd51",
+      "bytes": 1640819
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/original-pre-packaging/EXECUTION-INPUTS-WITH-PORTABLE-DESTINATIONS.json": {
+      "sha256": "21784970fd580ab8bd7b1a2e9b6cea617018c84ca838708b64bb8ceacbe59574",
+      "bytes": 6106623
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/original-pre-packaging/PUBLICATION-PLAN.json": {
+      "sha256": "21e20be250a953c400770d9103ff7e54126a03d84a3bd5b92f9bdd9fb8de7df3",
+      "bytes": 8858771
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/portable-e278b1e/original-pre-packaging/RELOCATION-MAPPING.json": {
+      "sha256": "5081104730a179f02a4e2087288e22e75d1ea079b1b8baf731ea6b1b12ae70d9",
+      "bytes": 19070896
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/00-governance/CURRENT_STATE.md": {
+      "sha256": "5bd13b0dd5e3807ec2e0a8f4160d4d2383544533c84531ff366954e47c3971b9",
+      "bytes": 42443
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/ENGINEERING_VERIFICATION.json": {
+      "sha256": "19f443b9e54a03f155b412b36b51611732e08ab8f16a84372b0c675a851576a9",
+      "bytes": 952268
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/FINDING-CLOSURE-MATRIX.json": {
+      "sha256": "644976eab44c016f4b96966bdf0ad35588e8941945c969f6e9dc1ece2bf3edfd",
+      "bytes": 2304965
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/README.md": {
+      "sha256": "9fa52b1d0cc704f8223ff550b39705bfad8cdd1504d9d2f39683653c24544fef",
+      "bytes": 5419
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/S3-AC-REWORK-STATUS.json": {
+      "sha256": "0a50a56f6694789aa61b2686242eb0fac41acc2ffd8d0676b7d3caef2fe20e49",
+      "bytes": 5865511
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/MANUAL-EVIDENCE-COMPLETENESS-REWORK.md": {
+      "sha256": "c159a2837858f37651faab14cc47c2a65a3cbedd77c4169d3a11e54b59bcc9fd",
+      "bytes": 7422
+    },
+    "/Users/chzhengx/Code/personal/marketops-platform/docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/README.md": {
+      "sha256": "b89b04bf5e21278fdff18151d49fd102322ea0d01638199e66f2bce8d8df73e9",
+      "bytes": 5603
+    }
+  },
+  "manifest": {
+    "path": "/private/tmp/slice3-final-publication-scans-e278b1e-r1/input-13.json",
+    "sha256": "27ebb748a684d44bd4ddd5caa6da0826caca9ff56e852ea88fcc11e47a2a2920"
+  },
+  "scanner": {
+    "path": "/private/tmp/slice3-scan-explicit-publication-manifest-r1.py",
+    "sha256": "aebf01d82dd3c8845fe538589caf7ccb21d16363422d57f2a2ddad6e93bf76f8"
+  },
+  "rulesSource": {
+    "path": "/Users/chzhengx/Code/personal/marketops-platform/scripts/validate_governance.py",
+    "sha256": "89f716bbada69c90db33869b7d15ba5e702b595f07d4ac690373ebbadff60b34"
+  },
+  "patterns": [
+    "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",
+    "\\bAKIA[0-9A-Z]{16}\\b",
+    "\\bghp_[A-Za-z0-9]{30,}\\b",
+    "\\bgithub_pat_[A-Za-z0-9_]{30,}\\b",
+    "\\bxox[baprs]-[A-Za-z0-9-]{20,}\\b",
+    "\\bsk-[A-Za-z0-9]{24,}\\b",
+    "(?i)(?:password|passwd|secret|token|api[_-]?key)\\s*[:=]\\s*[\\\"'][^\\\"']{12,}[\\\"']",
+    "\\beyJ[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{8,}\\b",
+    "(?i)https?://[^\\s\\\"<>]*(?:X-Amz-Signature|X-Goog-Signature|[?&]sig=|[?&]signature=|[?&]access_token=|[?&]token=)[^\\s\\\"<>]*"
+  ],
+  "productExecutions": 0,
+  "closureClaimMade": false
+}

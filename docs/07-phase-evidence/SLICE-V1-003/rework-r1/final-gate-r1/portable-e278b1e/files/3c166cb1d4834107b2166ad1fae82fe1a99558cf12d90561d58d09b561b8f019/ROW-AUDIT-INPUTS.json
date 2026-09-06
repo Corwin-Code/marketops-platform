@@ -1,0 +1,47 @@
+{
+  "slots": {
+    "path": "/private/tmp/slice3-final-assessment-e278b1e-r2/ASSESSMENT-SLOTS.json",
+    "sha256": "9a40efe1bb796c333722d043506130127b051ac3c69b5c02ef24119ad949a2ce",
+    "bytes": 8337480
+  },
+  "nodeCatalog": {
+    "path": "/private/tmp/slice3-final-assessment-e278b1e-r2/CURRENT-NODE-CATALOG.json",
+    "sha256": "7a1a9bfb7c2c3577c462b0b6502f95c03cb83c73a834d65b43639e7c6ea857ca",
+    "bytes": 11370195
+  },
+  "rootSelections": {
+    "path": "/private/tmp/slice3-root-selected-evidence-e278b1e-r3/ROOT-PROOF-SELECTIONS.json",
+    "sha256": "e61cd898d6bd705da39a228ca6077ff5caca18392c4bdf3d24d07b29747a074d",
+    "bytes": 7087128
+  },
+  "clausesCandidate": {
+    "path": "/private/tmp/slice3-final-assessment-e278b1e-r2/FROZEN-CLAUSE-ASSESSMENT-CANDIDATE.json",
+    "sha256": "0d8b696d46986e2b8d2e999187f72700bdb220fa30787f8e6d24768b3179c1f8",
+    "bytes": 12685519
+  },
+  "manifestCandidate": {
+    "path": "/private/tmp/slice3-final-assessment-e278b1e-r2/EXECUTION-MANIFEST-CANDIDATE.json",
+    "sha256": "2deb248c32e5541d3829c9a7a93e1c39ea42a0ca1135fddbe351d88c64827e43",
+    "bytes": 8653619
+  },
+  "expectedSource": {
+    "path": "/private/tmp/slice3-registered-inputs-e278b1e-r1/EXPECTED-SOURCE.json",
+    "sha256": "4f72d4ab9a9c0b2571cf558a89979a145a5f03a4f9bf1dc418cd1204500bee5a",
+    "bytes": 6217
+  },
+  "sourcePlan": {
+    "path": "/private/tmp/slice3-publication-observation-e278b1e-r2/SOURCE-METHOD-REVIEW-PLAN.json",
+    "sha256": "5d41e1aa1507bc1acbe6201bbd89964d244561cd4df2d8a800a5ef56d358ce63",
+    "bytes": 5745634
+  },
+  "methodProposals": {
+    "path": "/private/tmp/slice3-method-proposals-e278b1e-r3/PROPOSED-METHOD-BINDINGS.json",
+    "sha256": "2e20fa3e5b312d2447be104392073d0623ffeaefa681eceb5b525998eedef416",
+    "bytes": 10482682
+  },
+  "layerConfig": {
+    "path": "/private/tmp/slice3-publication-observation-e278b1e-r2/EXECUTION-INPUTS.json",
+    "sha256": "274a428e674fb87c2613611b5aba070521c4b78c382cd57c1f5a0f8bcbec36d0",
+    "bytes": 5535200
+  }
+}

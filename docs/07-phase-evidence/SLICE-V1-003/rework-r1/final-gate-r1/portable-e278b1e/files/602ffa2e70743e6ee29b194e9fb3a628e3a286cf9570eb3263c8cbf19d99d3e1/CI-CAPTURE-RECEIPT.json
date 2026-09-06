@@ -1,0 +1,537 @@
+{
+  "kind": "EXACT_FINAL_CONTAINING_CI_READ_ONLY_CAPTURE",
+  "startedAt": "2026-09-06T10:25:04.124401+00:00",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "productSourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "sourceInventoryFileCount": 1280,
+  "checkpointScope": "PRODUCT_CHECKPOINT",
+  "sourceInventorySha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "inputFiles": {
+    "captureTool": {
+      "path": "/private/tmp/slice3-post-v73-ci-kit-r2/nonsecurity/capture_ci.py",
+      "sha256": "fe6c67cdd2048b35a46022cfd064ee7bc173111287c3e8376cbf952ea3a3c9a1",
+      "bytes": 17283
+    },
+    "sourceInventory": {
+      "path": "/private/tmp/slice3-final-drivers-e278b1e-r6/expected-source-inventory.json",
+      "sha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+      "bytes": 310088
+    }
+  },
+  "repository": "Corwin-Code/marketops-platform",
+  "prNumber": 30,
+  "securityScope": "Status/run/attempt/job metadata only. Security logs/artifacts/alerts require the separate Security evidence collector.",
+  "productionWriteEnabled": false,
+  "providerAccessPerformed": false,
+  "engineeringClosureClaimMade": false,
+  "controllerApprovalClaimMade": false,
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "baseHead": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+  "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+  "testedMergeParents": [
+    "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+    "e278b1e3d8541aeb806e41d6cbef4deac8d16d06"
+  ],
+  "testedMergeTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "sourceBinding": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/LOCAL-CONTAINING-SOURCE-EQUIVALENCE.json",
+    "sha256": "a827fd836fa3ae6544dd995a5c24ece3e8af71c6947197b02b44ba4d790e4cb4",
+    "bytes": 726519
+  },
+  "contexts": [
+    {
+      "id": 101465647962,
+      "name": "CodeQL",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:44:52Z",
+      "completed_at": "2026-09-06T09:44:55Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/runs/101465647962"
+    },
+    {
+      "id": 101465559204,
+      "name": "backend-build",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:44:08Z",
+      "completed_at": "2026-09-06T10:22:16Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462661/job/101465559204"
+    },
+    {
+      "id": 101465559043,
+      "name": "architecture-boundary",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:44:09Z",
+      "completed_at": "2026-09-06T09:45:08Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462661/job/101465559043"
+    },
+    {
+      "id": 101465558950,
+      "name": "backend-integration",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:44:11Z",
+      "completed_at": "2026-09-06T10:24:24Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462661/job/101465558950"
+    },
+    {
+      "id": 101465518958,
+      "name": "frontend-build",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:49Z",
+      "completed_at": "2026-09-06T09:44:18Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462660/job/101465518958"
+    },
+    {
+      "id": 101465518950,
+      "name": "frontend-test",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:49Z",
+      "completed_at": "2026-09-06T09:48:20Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462660/job/101465518950"
+    },
+    {
+      "id": 101465518862,
+      "name": "frontend-typecheck",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:49Z",
+      "completed_at": "2026-09-06T09:44:14Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462660/job/101465518862"
+    },
+    {
+      "id": 101465518817,
+      "name": "frontend-lint",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:49Z",
+      "completed_at": "2026-09-06T09:44:27Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462660/job/101465518817"
+    },
+    {
+      "id": 101465518582,
+      "name": "dependency-review",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:48Z",
+      "completed_at": "2026-09-06T09:44:00Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462624/job/101465518582"
+    },
+    {
+      "id": 101465518555,
+      "name": "infrastructure-validation",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:49Z",
+      "completed_at": "2026-09-06T09:44:16Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462662/job/101465518555"
+    },
+    {
+      "id": 101465518548,
+      "name": "codeql-java",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:48Z",
+      "completed_at": "2026-09-06T09:48:05Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462624/job/101465518548"
+    },
+    {
+      "id": 101465518436,
+      "name": "codeql-typescript",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:48Z",
+      "completed_at": "2026-09-06T09:45:01Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462624/job/101465518436"
+    },
+    {
+      "id": 101465518260,
+      "name": "governance",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:48Z",
+      "completed_at": "2026-09-06T09:44:44Z",
+      "details_url": "https://github.com/Corwin-Code/marketops-platform/actions/runs/34025462604/job/101465518260"
+    }
+  ],
+  "workflows": [
+    {
+      "workflow": "Backend",
+      "key": "backend",
+      "runId": 34025462661,
+      "runAttempt": 1,
+      "run": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-run.json",
+        "sha256": "e6e58c548fc25060e12b3e17627d30c3d08700c6a12fe6677eacc255b41caa10",
+        "bytes": 13688
+      },
+      "jobs": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-jobs.json",
+        "sha256": "32b4e1c5b4bdc9e2abe7db40e5aeadc8311b21f833f2cc0f4b7d93b71fef23db",
+        "bytes": 7691
+      },
+      "status": "completed",
+      "conclusion": "success",
+      "jobNames": [
+        "backend-build",
+        "backend-integration",
+        "architecture-boundary"
+      ],
+      "logs": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-logs.zip",
+        "sha256": "d51947286911495f89c34c0aa52c307f906151739379436162a661fd0f49bc9b",
+        "bytes": 1331621
+      },
+      "artifactApi": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-artifacts.json",
+        "sha256": "494f229e591d64f8f8b051761f7cd6a665d5e47bbdb36e057a864774127ae6ee",
+        "bytes": 2277
+      }
+    },
+    {
+      "workflow": "Frontend",
+      "key": "frontend",
+      "runId": 34025462660,
+      "runAttempt": 1,
+      "run": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-run.json",
+        "sha256": "9be100db7a64f7a793a322a7fb9730f47d56e52744672678f0e809823a9bc197",
+        "bytes": 13690
+      },
+      "jobs": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-jobs.json",
+        "sha256": "9060fe108b102e6da83cb270234e40567f909a09cb57e290b44daba5e10aa355",
+        "bytes": 11645
+      },
+      "status": "completed",
+      "conclusion": "success",
+      "jobNames": [
+        "frontend-lint",
+        "frontend-typecheck",
+        "frontend-test",
+        "frontend-build"
+      ],
+      "logs": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-logs.zip",
+        "sha256": "5aa9318a64c69f8a15766c4afb9027072c7bb10d7f6139438ef3e3747ffd0fd9",
+        "bytes": 231707
+      },
+      "artifactApi": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-artifacts.json",
+        "sha256": "4114a7e08ca1cd354a0baaa87d8656ebf5771792be61c2f44e743939ac0e9acc",
+        "bytes": 2280
+      }
+    },
+    {
+      "workflow": "Governance",
+      "key": "governance",
+      "runId": 34025462604,
+      "runAttempt": 1,
+      "run": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/governance-run.json",
+        "sha256": "b3a6497ca5e8a0131f5b94d9ea5bdd7e9c177ec0e9a99b5188cb03d5f1c6040b",
+        "bytes": 13694
+      },
+      "jobs": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/governance-jobs.json",
+        "sha256": "a1392760fbff9288d9a91ec82dc534a6ad0bc565cf58fb97a8fd7721a5a0161a",
+        "bytes": 2372
+      },
+      "status": "completed",
+      "conclusion": "success",
+      "jobNames": [
+        "governance"
+      ],
+      "logs": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/governance-logs.zip",
+        "sha256": "edf4963a3da4c6cd704b82229db2ac266a7c3c82698d98f5aecafa08de0ff905",
+        "bytes": 12345
+      },
+      "artifactApi": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/governance-artifacts.json",
+        "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c",
+        "bytes": 32
+      }
+    },
+    {
+      "workflow": "Infrastructure",
+      "key": "infrastructure",
+      "runId": 34025462662,
+      "runAttempt": 1,
+      "run": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-run.json",
+        "sha256": "b0e719022d0a4bd45c6eec0fdd61842b79e1d7faeae71f4b659bc911d1bdf184",
+        "bytes": 13701
+      },
+      "jobs": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-jobs.json",
+        "sha256": "be3e94f943af53114a21c5815920cb75a5b9fbb114aafc5d28492399abcad698",
+        "bytes": 2768
+      },
+      "status": "completed",
+      "conclusion": "success",
+      "jobNames": [
+        "infrastructure-validation"
+      ],
+      "logs": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-logs.zip",
+        "sha256": "1af7104ce7ddc386f3f4e763575d6fc5d3ce4089b24ba709e727c020c50d82a0",
+        "bytes": 16917
+      },
+      "artifactApi": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-artifacts.json",
+        "sha256": "b7fdf0295906f0aa6d439b9943dfda49455431d581dea0b817c6e3bc77b8a4f0",
+        "bytes": 785
+      }
+    },
+    {
+      "workflow": "Security",
+      "key": "security",
+      "runId": 34025462624,
+      "runAttempt": 1,
+      "run": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/security-run.json",
+        "sha256": "321483932724c8534884316ac7e6c70f568ef59b5edd160791f3901bdacf8d0a",
+        "bytes": 13690
+      },
+      "jobs": {
+        "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/security-jobs.json",
+        "sha256": "5dc695def0f03c74f9cd9583391395078c7dc2474c241bd05f79bb02fc563d4f",
+        "bytes": 6756
+      },
+      "status": "completed",
+      "conclusion": "success",
+      "jobNames": [
+        "dependency-review",
+        "codeql-java",
+        "codeql-typescript"
+      ]
+    }
+  ],
+  "artifactIndex": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/OFFICIAL-ARTIFACT-MEMBER-INDEX.json",
+    "sha256": "712ff6782c2fa5f11f7174e40c7c985728bce23a08e82e22aae43c4ffeca31d0",
+    "bytes": 879051
+  },
+  "logIndex": {
+    "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/RAW-LOG-MEMBER-INDEX.json",
+    "sha256": "ecb52fbd552db22f23ae5f521a5822cb8ef17654226cfed0a7b674a2dc8b8d24",
+    "bytes": 38797
+  },
+  "allRequiredAndAggregateSucceeded": true,
+  "result": "CAPTURE_COMPLETE_REQUIRES_BACKEND_AND_SECURITY_REVIEW",
+  "finishedAt": "2026-09-06T10:26:14.479516+00:00",
+  "elapsedSeconds": 70.355,
+  "commandReceipts": [
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/pr30-before.json.attempt-1.command.json",
+      "sha256": "2bf70234298b25ae9bf7da912bd19a6e170f6d8913895b5dcff8debf4c790514",
+      "bytes": 752
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/source-commit.json.attempt-1.command.json",
+      "sha256": "c9c8838dd80dd38fb288726a19fd409308c0911d273420cb344f8b2b62f7b7d1",
+      "bytes": 799
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/tested-merge-commit.json.attempt-1.command.json",
+      "sha256": "9869857ba7bed1e6cbb98421938b9853ae055e5c1da365818b3ef8cf9ec1803e",
+      "bytes": 811
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/check-runs.json.attempt-1.command.json",
+      "sha256": "20945baef3bcf4093e01344faa723a09131699c95b8b563c61c14515c7fc3947",
+      "bytes": 828
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/workflow-runs.json.attempt-1.command.json",
+      "sha256": "77ba46140c87d961f8e0a5588979a7fe3962d71a56fa2e0eed9cec592bfb56b7",
+      "bytes": 841
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-run.json.attempt-1.command.json",
+      "sha256": "1d9fd0551552eab886e0226f2e51e0caf233314ca75b76b681951b068a7c887a",
+      "bytes": 768
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-jobs.json.attempt-1.command.json",
+      "sha256": "e4f59ea1d990c07c918388aa0041d84bb20390ab812cf94d43b2db62c0a8f060",
+      "bytes": 798
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-logs.zip.attempt-1.command.json",
+      "sha256": "7a1098c49abe065f1d4cc4647a197019361d028f98f9dfe5b198ddaa9235e668",
+      "bytes": 786
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-artifacts.json.attempt-1.command.json",
+      "sha256": "a50e0c64b1208c1c6427b43fa92fa538d59ef4f33e5817280dbc018db2b454b3",
+      "bytes": 802
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-test-reports.zip.attempt-1.command.json",
+      "sha256": "fc788c13a2b4a8fbbe41ef97b9d60fe05155c20d87cd94349eb392a59658217d",
+      "bytes": 794
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-integration-reports.zip.attempt-1.command.json",
+      "sha256": "93519e314cede34c49eb0399ed116b123fe25d7abb577289e16fa00b443f3c9b",
+      "bytes": 808
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-supply-chain.zip.attempt-1.command.json",
+      "sha256": "fb4b93bc4534dc3d0210589543dcd6c5466732650a190f2c3bdf2d3e01ba25ec",
+      "bytes": 790
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-run.json.attempt-1.command.json",
+      "sha256": "0c1f36c292d76b6e27d0fdc588175dbefc0ff8995127c550bc9e121179d69f4d",
+      "bytes": 770
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-jobs.json.attempt-1.command.json",
+      "sha256": "dc43567db60b9324dfc82d569a46c330fcfda8bde0ce4d36399e62b0bc934bcf",
+      "bytes": 801
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-logs.zip.attempt-1.command.json",
+      "sha256": "7ea7ad6982ed77cb814d16c42860d93f8a1bdfbd6b77a16185a5e15041eea023",
+      "bytes": 787
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-artifacts.json.attempt-1.command.json",
+      "sha256": "57f810851109cff10d51c81b93c06d01af271bf3ec70e99a0477d56aae65b7aa",
+      "bytes": 804
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-coverage.zip.attempt-1.command.json",
+      "sha256": "050d37324e2e28a6ea3b07719533213bb56f80e561c46c586e407d85976a7e22",
+      "bytes": 787
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/advertising-browser-screenshots.zip.attempt-1.command.json",
+      "sha256": "afe6d6d14ead472fcd97b1c73f00e166390a2c2a77e56f18b363db500641b00a",
+      "bytes": 817
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-distribution.zip.attempt-1.command.json",
+      "sha256": "ad17259783db1626ef3f84418ff19fd539e0578452a70eea00eaed00261c5c3d",
+      "bytes": 795
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/governance-run.json.attempt-1.command.json",
+      "sha256": "cd38ad5449c1a6ecd77d4fe34d96e0d9ca62296ef61977968058cb0bea8ed55d",
+      "bytes": 774
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/governance-jobs.json.attempt-1.command.json",
+      "sha256": "d27088a01cbcff68d242d9bd95c134fee2f06613115817b33a0d63a438e9b477",
+      "bytes": 804
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/governance-logs.zip.attempt-1.command.json",
+      "sha256": "a8402be4c32907d79a46b3293de4a1684b7cf4abd498dd978151d194794a6c02",
+      "bytes": 790
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/governance-artifacts.json.attempt-1.command.json",
+      "sha256": "d057764bb1b2a02a3245056ac8a3c56194154146c60d7ebf8da660a62ddc63c5",
+      "bytes": 806
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-run.json.attempt-1.command.json",
+      "sha256": "9d641ba0d5d114b560880668980bc5b04b44f3fee952b224c3eef0f0b18a89de",
+      "bytes": 782
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-jobs.json.attempt-1.command.json",
+      "sha256": "3a8d01640a0c4b26721191dbbf02384487b7b87d95bbe700aa5298574a7065e7",
+      "bytes": 812
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-logs.zip.attempt-1.command.json",
+      "sha256": "888ede30bba4adca663e77b9d80a3714bbb6ccb68ea72dbfc66a6d80f851edf6",
+      "bytes": 798
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-artifacts.json.attempt-1.command.json",
+      "sha256": "407b05b75baf82969a5c1efc2b4c01bed75f9a9165e5d3b7e50df1585949e428",
+      "bytes": 815
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-verification.zip.attempt-1.command.json",
+      "sha256": "e441a6a0aee7d528f08aabcf96f1425e36152406546ee358b8c7ec8042ec22a6",
+      "bytes": 808
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/security-run.json.attempt-1.command.json",
+      "sha256": "f947006eb992b30e1ef6b6578eec6416ecd1fa0cb45d5765537c14a8e28f9646",
+      "bytes": 770
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/security-jobs.json.attempt-1.command.json",
+      "sha256": "5b37c5263e884a9a09054e82ffb7a7726e2eef4ca251cbb084a8397313929437",
+      "bytes": 800
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-run-after.json.attempt-1.command.json",
+      "sha256": "a2702e8b85ab22ab36fa375d0160ebb8dabb7791f3ce95e5fd88fb7617570ecd",
+      "bytes": 777
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/backend-run-after.json.attempt-2.command.json",
+      "sha256": "658b754f32ad0d3a05d242476daeaa58495d5b33e8b0483c83b692b22900872b",
+      "bytes": 780
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/frontend-run-after.json.attempt-1.command.json",
+      "sha256": "47462ec07dd83b691411a15df03ff398392563d4f396b9c74f5d6ddd61163484",
+      "bytes": 782
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/governance-run-after.json.attempt-1.command.json",
+      "sha256": "6c32bd5c282617284b93932f530b28af820929ef03a5623d42cbc06fa43089d8",
+      "bytes": 786
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/infrastructure-run-after.json.attempt-1.command.json",
+      "sha256": "f28508e0c316281cb3dd6c5a4e99e637648eff143cd5c5df0692b59fd0e02006",
+      "bytes": 794
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/security-run-after.json.attempt-1.command.json",
+      "sha256": "255b41d44802793d58bf44ff491483c4fba3419cbb79f7961c27c81d561a4e33",
+      "bytes": 782
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/pr30-after.json.attempt-1.command.json",
+      "sha256": "a7bda6425bc25797f5633b2527366d8debcf8997c7acdf0dc59f8137124bd6dd",
+      "bytes": 750
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-e278b1e-all-r1/check-runs-after.json.attempt-1.command.json",
+      "sha256": "4da7f646b5b7d7008f5ef81063e17eac91fb7ba8d846f75423f9f440c6c7f93e",
+      "bytes": 840
+    }
+  ],
+  "exitCode": 0,
+  "rawPublicationSafetyReview": "NOT_PERFORMED",
+  "proofsCreated": 0
+}

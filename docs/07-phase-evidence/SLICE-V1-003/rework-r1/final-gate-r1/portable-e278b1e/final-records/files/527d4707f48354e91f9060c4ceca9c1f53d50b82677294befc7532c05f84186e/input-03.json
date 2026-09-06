@@ -1,0 +1,10 @@
+{
+  "scope": "Actual final-publication additional bytes, batch 3. No product test is executed.",
+  "files": [
+    {
+      "path": "/private/tmp/slice3-failed-checkpoint-5fd53c0.zip",
+      "sha256": "8184cfb9fe314b3c4f2caedbd6aee612efbf4bf1e55518f2006c1f43b22948ee",
+      "bytes": 45924295
+    }
+  ]
+}

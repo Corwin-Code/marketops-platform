@@ -1,0 +1,22 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/Corwin-Code/marketops-platform/git/commits/1381ef78594875a1e1304e4d9a636e49d0fab71f"
+  ],
+  "startedAt": "2026-09-06T03:02:33.722852+00:00",
+  "finishedAt": "2026-09-06T03:02:34.748934+00:00",
+  "elapsedSeconds": 1.026,
+  "exitCode": 0,
+  "artifact": {
+    "path": "source-commit.json",
+    "bytes": 1191,
+    "sha256": "66fcd897f55a07161ad3eeb53305f24b32a9cf5291811c6a59df490501ab3a37"
+  },
+  "stderr": {
+    "path": "source-commit.json.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "boundary": "Read-only GitHub API response for checkpoint 1381ef7; historical Security scope only. Overall checkpoint has failed backend/frontend; no independent Controller or product completion."
+}

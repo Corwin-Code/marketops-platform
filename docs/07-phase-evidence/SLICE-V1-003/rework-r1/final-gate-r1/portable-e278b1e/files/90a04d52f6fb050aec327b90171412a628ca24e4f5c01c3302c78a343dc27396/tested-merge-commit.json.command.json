@@ -1,0 +1,22 @@
+{
+  "command": [
+    "gh",
+    "api",
+    "repos/Corwin-Code/marketops-platform/git/commits/f9a1d73f324323d13ea72db3890090c9b9d85450"
+  ],
+  "startedAt": "2026-09-06T00:34:54.029818+00:00",
+  "finishedAt": "2026-09-06T00:34:55.165550+00:00",
+  "elapsedSeconds": 1.136,
+  "exitCode": 0,
+  "artifact": {
+    "path": "tested-merge-commit.json",
+    "bytes": 2687,
+    "sha256": "b10ae26633bfeebb584c28d90bc26deb81e9530bf6ae2a372fdae24794a02c94"
+  },
+  "stderr": {
+    "path": "tested-merge-commit.json.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "boundary": "Read-only GitHub API response for checkpoint 7e66cf8; exact source CI only, not independent Controller approval."
+}

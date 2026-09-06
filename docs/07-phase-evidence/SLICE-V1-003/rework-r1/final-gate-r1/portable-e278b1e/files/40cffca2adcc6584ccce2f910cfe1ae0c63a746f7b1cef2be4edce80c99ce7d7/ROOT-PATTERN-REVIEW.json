@@ -1,0 +1,15 @@
+{
+  "kind": "ROOT_EXACT_ZERO_HIT_PATTERN_SCOPE_REVIEW",
+  "originalSummary": {
+    "path": "/private/tmp/slice3-frontend-failure-publication-scan-95902cf-r1/SCAN-SUMMARY.json",
+    "sha256": "d1ed8ee62158d22627b6dc15bdea220dbc5de0feaa86ab62347dcaaca5cd7e89"
+  },
+  "reviewedOriginalFiles": 9,
+  "reviewedExpandedRecords": 41,
+  "unreviewedHits": 0,
+  "patternCount": 9,
+  "scope": "Preserved historical frontend-failure-95902cf exact package bytes; not current e278b1e execution or proof admission.",
+  "limits": "Nine bounded patterns; UTF8/raw/entity/JSON strings and actual nested archive members. Images scanned as bytes, no OCR. All hits require exact context review; no generic no-PII claim.",
+  "noProductOrControllerApprovalImplied": true,
+  "originalBytesChanged": false
+}

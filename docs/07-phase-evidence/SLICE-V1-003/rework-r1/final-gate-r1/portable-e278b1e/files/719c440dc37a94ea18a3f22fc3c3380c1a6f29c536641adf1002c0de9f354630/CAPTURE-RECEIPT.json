@@ -1,0 +1,370 @@
+{
+  "kind": "READ_ONLY_FINAL_EVIDENCE_COMMIT_SECURITY_CAPTURE",
+  "startedAt": "2026-09-06T09:50:48.424688+00:00",
+  "phase": "completed",
+  "head": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "tree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "base": "08ad7da7d9e75b4ddd1c387a22ac0affba9e1430",
+  "automaticPassClaimMade": false,
+  "controllerApprovalClaimMade": false,
+  "productionWriteEnabled": false,
+  "mutationsPerformed": false,
+  "baselineBinding": {
+    "path": "/private/tmp/slice3-security-ci-e278b1e-r1/HISTORICAL-BASELINE-BINDING.json",
+    "sha256": "ce3fe773784dd086a3142343b0bda14a40cb9c2234239dac2cd520fdb9e2cf88",
+    "bytes": 2262
+  },
+  "productInventoryFileCount": 1280,
+  "checkpointScope": "PRODUCT_CHECKPOINT",
+  "baselineSecurity": {
+    "path": "/private/tmp/slice3-checkpoint-ci-02e6172-schema-adapter-r1/SCHEMA-ADAPTER-RECEIPT.json",
+    "sha256": "1db1ad54fb7a0bf7d64d7acf4d8076084ff946acd016324802be277af95b7c60",
+    "bytes": 20088
+  },
+  "productExpected": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/EXPECTED-SOURCE.json",
+    "sha256": "1687693188515af33d7434811811189c52857ba2fc69d19cd279b6b23bfdf283",
+    "bytes": 3677
+  },
+  "productInventory": {
+    "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/source-before.json",
+    "sha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+    "bytes": 310088
+  },
+  "productSourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "derivationSourceIdentity": null,
+  "testedMerge": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+  "productToContainingChangedPaths": [],
+  "evidenceHelperComparisons": [
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/assemble_assessment_with_structured.py",
+      "sha256": "f781d1a58d1ddf66e79413c09ac5781626782d974bf387611ff56b467f502b55",
+      "gitBlob": "e971aafeadf530cfa8c056fe81bc84e3bc09cf3d",
+      "scope": "Present exact bytes only; prior D execution is separately bound and not claimed rerun by CI."
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/check_structured_adapter.py",
+      "sha256": "6c947546f2f31e07f399ed94f057cd8b91e5057b2fb1d5d8cc27ed3a12c8b3b5",
+      "gitBlob": "2fbcaca8ee19c166e1af73682ee514da0f574ecf",
+      "scope": "Present exact bytes only; prior D execution is separately bound and not claimed rerun by CI."
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/reconcile_measurements.py",
+      "sha256": "b2cbf1e75ca98e3e69ab9d5d88efb26312013430d21002717df6d68eac08649c",
+      "gitBlob": "4f1064bed7b1d701bac73aa3c43b9200b0c7ba39",
+      "scope": "Present exact bytes only; prior D execution is separately bound and not claimed rerun by CI."
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/propose_method_bindings.py",
+      "sha256": "c981b52bb0a15c7d1ac1f9225b6a7c77ba38e54ac6d888ca95830b65a4377a98",
+      "gitBlob": "225e129e5b74abb2842d767a31ad2348d7fc0684",
+      "scope": "Present exact bytes only; prior D execution is separately bound and not claimed rerun by CI."
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_propose_method_bindings.py",
+      "sha256": "24d0423c7b0ccfc9cf41e83e1a8bd970751ff699d4ffeae6556a4644d8cb283c",
+      "gitBlob": "f54a7a7abfa35ed25ada318e9bde4ccc3e4c4e25",
+      "scope": "Present exact bytes only; prior D execution is separately bound and not claimed rerun by CI."
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_composite_execution_scopes.py",
+      "sha256": "82c0abea029c3f7f60a21cb3eaf24c41297d7cc50a67e83704aebf6e035d39e8",
+      "gitBlob": "0dd3c1d1340dc719b6690e2e74f0cba0258243c7",
+      "scope": "Present exact bytes only; prior D execution is separately bound and not claimed rerun by CI."
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_derivation_source_identity.py",
+      "sha256": "fc300bb17d220335e01f6028fe9fdc8eff75b578bbbdcac3d506081beda7377f",
+      "gitBlob": "d711f45241949b2259b66cfbe929e79181e547aa",
+      "scope": "Present exact bytes only; prior D execution is separately bound and not claimed rerun by CI."
+    },
+    {
+      "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/assessment_tools/test_nested_junit_source.py",
+      "sha256": "cc6ffb75e6ea28ed4e0896292e34bdbf18bceda7f5a546a0e90c0a98868bdd1f",
+      "gitBlob": "55072ec8c609071aeae4a32fa83354749ea63ffb",
+      "scope": "Present exact bytes only; prior D execution is separately bound and not claimed rerun by CI."
+    }
+  ],
+  "run": {
+    "id": 34025462624,
+    "run_attempt": 1,
+    "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+    "status": "completed",
+    "conclusion": "success",
+    "run_started_at": "2026-09-06T09:43:46Z",
+    "updated_at": "2026-09-06T09:48:06Z"
+  },
+  "checkContexts": [
+    {
+      "id": 101465647962,
+      "name": "CodeQL",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 101465559204,
+      "name": "backend-build",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 101465559043,
+      "name": "architecture-boundary",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 101465558950,
+      "name": "backend-integration",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 101465518958,
+      "name": "frontend-build",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 101465518950,
+      "name": "frontend-test",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 101465518862,
+      "name": "frontend-typecheck",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 101465518817,
+      "name": "frontend-lint",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 101465518582,
+      "name": "dependency-review",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 101465518555,
+      "name": "infrastructure-validation",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 101465518548,
+      "name": "codeql-java",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 101465518436,
+      "name": "codeql-typescript",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 101465518260,
+      "name": "governance",
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "jobs": [
+    {
+      "id": 101465518436,
+      "name": "codeql-typescript",
+      "run_id": 34025462624,
+      "run_attempt": 1,
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:48Z",
+      "completed_at": "2026-09-06T09:45:01Z"
+    },
+    {
+      "id": 101465518548,
+      "name": "codeql-java",
+      "run_id": 34025462624,
+      "run_attempt": 1,
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:48Z",
+      "completed_at": "2026-09-06T09:48:05Z"
+    },
+    {
+      "id": 101465518582,
+      "name": "dependency-review",
+      "run_id": 34025462624,
+      "run_attempt": 1,
+      "head_sha": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-06T09:43:48Z",
+      "completed_at": "2026-09-06T09:44:00Z"
+    }
+  ],
+  "artifactIds": [],
+  "actionsArtifactBoundary": "The exact source Security workflow has no Actions artifact upload. SARIF is bound by Code Scanning analysis/sarif ID.",
+  "selectedAnalyses": [
+    {
+      "ref": "refs/pull/30/merge",
+      "commit_sha": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+      "analysis_key": ".github/workflows/security.yml:codeql-java",
+      "environment": "{}",
+      "category": "/language:java-kotlin",
+      "error": "",
+      "created_at": "2026-09-06T09:47:57Z",
+      "results_count": 99,
+      "rules_count": 240,
+      "id": 1731486719,
+      "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/code-scanning/analyses/1731486719",
+      "sarif_id": "0a12e1d2-a9d8-11f1-89f5-19a9b442a531",
+      "tool": {
+        "name": "CodeQL",
+        "guid": null,
+        "version": "2.26.4"
+      },
+      "deletable": true,
+      "warning": ""
+    },
+    {
+      "ref": "refs/pull/30/merge",
+      "commit_sha": "196afde14f0d51f88c4b27ac2e7cff7d645b5a1a",
+      "analysis_key": ".github/workflows/security.yml:codeql-typescript",
+      "environment": "{}",
+      "category": "/language:javascript-typescript",
+      "error": "",
+      "created_at": "2026-09-06T09:44:53Z",
+      "results_count": 1,
+      "rules_count": 201,
+      "id": 1731481122,
+      "url": "https://api.github.com/repos/Corwin-Code/marketops-platform/code-scanning/analyses/1731481122",
+      "sarif_id": "9b9e0b1e-a9d7-11f1-96cb-4c5cfaeb0c56",
+      "tool": {
+        "name": "CodeQL",
+        "guid": null,
+        "version": "2.26.4"
+      },
+      "deletable": true,
+      "warning": ""
+    }
+  ],
+  "captureDisposition": "RAW_TERMINAL_SECURITY_CAPTURE_REQUIRES_INDEPENDENT_ALERT_SOURCE_LOG_AND_PUBLICATION_REVIEW",
+  "reusedOriginalMetadata": [],
+  "finishedAt": "2026-09-06T09:51:23.139706+00:00",
+  "failure": null,
+  "inputsBefore": [
+    {
+      "path": "/private/tmp/slice3-post-v73-ci-kit-r2/security/collect_final_security.py",
+      "sha256": "19afa7445813f5925f88b8c6151c2793a98602e6481b2116557ea6873251f381",
+      "bytes": 19461
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/EXPECTED-SOURCE.json",
+      "sha256": "1687693188515af33d7434811811189c52857ba2fc69d19cd279b6b23bfdf283",
+      "bytes": 3677
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172-schema-adapter-r1/SCHEMA-ADAPTER-RECEIPT.json",
+      "sha256": "1db1ad54fb7a0bf7d64d7acf4d8076084ff946acd016324802be277af95b7c60",
+      "bytes": 20088
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/source-before.json",
+      "sha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+      "bytes": 310088
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/ALERT-DELTA-TRIAGE.json",
+      "sha256": "adada57576a31472f203613c9ba831e90df93f956934469bfeb1898fa0a427c4",
+      "bytes": 173430
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/HISTORICAL-DISMISSED-HIGH-RECONCILIATION.json",
+      "sha256": "0e225fbcf370539e68ec6eaf5ab48d70b111dc4f9eb57728d619a6d5f9f0232f",
+      "bytes": 7693
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/SOURCE-IDENTITY-COMPARISON.json",
+      "sha256": "c33108bac35e7bb10bce8774bb1a4542e85f7267eb7ba695629729d6fb77e84c",
+      "bytes": 2098
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/actual-source-before.json",
+      "sha256": "9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec",
+      "bytes": 309596
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/security-job-logs.zip",
+      "sha256": "8ab7f2358b228161fa33ee9d7c391174cf0a6f030e70c1819664b3c2479575b1",
+      "bytes": 237998
+    }
+  ],
+  "inputsAfter": [
+    {
+      "path": "/private/tmp/slice3-post-v73-ci-kit-r2/security/collect_final_security.py",
+      "sha256": "19afa7445813f5925f88b8c6151c2793a98602e6481b2116557ea6873251f381",
+      "bytes": 19461
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/EXPECTED-SOURCE.json",
+      "sha256": "1687693188515af33d7434811811189c52857ba2fc69d19cd279b6b23bfdf283",
+      "bytes": 3677
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172-schema-adapter-r1/SCHEMA-ADAPTER-RECEIPT.json",
+      "sha256": "1db1ad54fb7a0bf7d64d7acf4d8076084ff946acd016324802be277af95b7c60",
+      "bytes": 20088
+    },
+    {
+      "path": "/private/tmp/slice3-final-execution-e278b1e-r6/browser-r4/source-before.json",
+      "sha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+      "bytes": 310088
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/ALERT-DELTA-TRIAGE.json",
+      "sha256": "adada57576a31472f203613c9ba831e90df93f956934469bfeb1898fa0a427c4",
+      "bytes": 173430
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/HISTORICAL-DISMISSED-HIGH-RECONCILIATION.json",
+      "sha256": "0e225fbcf370539e68ec6eaf5ab48d70b111dc4f9eb57728d619a6d5f9f0232f",
+      "bytes": 7693
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/SOURCE-IDENTITY-COMPARISON.json",
+      "sha256": "c33108bac35e7bb10bce8774bb1a4542e85f7267eb7ba695629729d6fb77e84c",
+      "bytes": 2098
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/actual-source-before.json",
+      "sha256": "9706e844337851329c5e30954598162ac52144c82facaf736b04475c25f0c6ec",
+      "bytes": 309596
+    },
+    {
+      "path": "/private/tmp/slice3-checkpoint-ci-02e6172/security-job-logs.zip",
+      "sha256": "8ab7f2358b228161fa33ee9d7c391174cf0a6f030e70c1819664b3c2479575b1",
+      "bytes": 237998
+    }
+  ],
+  "inputsStable": true
+}

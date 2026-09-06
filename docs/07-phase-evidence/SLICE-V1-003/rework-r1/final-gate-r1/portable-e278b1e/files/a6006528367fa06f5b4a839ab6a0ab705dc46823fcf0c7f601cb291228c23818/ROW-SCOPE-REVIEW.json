@@ -1,0 +1,5697 @@
+{
+  "kind": "ROOT_CURRENT_ROW_SCOPE_REVIEW_RECORD",
+  "sourceHead": "e278b1e3d8541aeb806e41d6cbef4deac8d16d06",
+  "sourceTree": "178132dd32a92e59e320eb100774b5bb9f6fb248",
+  "sourceInventorySha256": "73cc1dc47aebd86cf93de3afbdfe4d905b6c5b4f8b1335488f28ca63fe963eda",
+  "rootSelections": {
+    "path": "/private/tmp/slice3-root-selected-evidence-e278b1e-r3/ROOT-PROOF-SELECTIONS.json",
+    "sha256": "e61cd898d6bd705da39a228ca6077ff5caca18392c4bdf3d24d07b29747a074d",
+    "bytes": 7087128
+  },
+  "rootReviewInputs": {
+    "sourcePlan": {
+      "path": "/private/tmp/slice3-publication-observation-e278b1e-r2/SOURCE-METHOD-REVIEW-PLAN.json",
+      "sha256": "5d41e1aa1507bc1acbe6201bbd89964d244561cd4df2d8a800a5ef56d358ce63",
+      "bytes": 5745634
+    },
+    "methods": {
+      "path": "/private/tmp/slice3-method-proposals-e278b1e-r3/PROPOSED-METHOD-BINDINGS.json",
+      "sha256": "2e20fa3e5b312d2447be104392073d0623ffeaefa681eceb5b525998eedef416",
+      "bytes": 10482682
+    },
+    "structured": {
+      "path": "/private/tmp/slice3-structured-proposals-e278b1e-r4/PROPOSED-STRUCTURED-BINDINGS.json",
+      "sha256": "9192260274e6174ccaa0d4a859a8526371d6adfaeaa7c74dec9bf10b9953dd8c",
+      "bytes": 5964256
+    },
+    "catalog": {
+      "path": "/private/tmp/slice3-final-assessment-e278b1e-r2/CURRENT-NODE-CATALOG.json",
+      "sha256": "7a1a9bfb7c2c3577c462b0b6502f95c03cb83c73a834d65b43639e7c6ea857ca",
+      "bytes": 11370195
+    },
+    "slots": {
+      "path": "/private/tmp/slice3-final-assessment-e278b1e-r2/ASSESSMENT-SLOTS.json",
+      "sha256": "d88055fe323ae59be7d8eaaf3565fa8f5ee4d371b4415acac8714e386ea145b8",
+      "bytes": 1515043
+    },
+    "publicationReview": {
+      "path": "/private/tmp/slice3-publication-observation-e278b1e-r2/ROOT-PUBLICATION-OBSERVATION-REVIEW.json",
+      "sha256": "0767e54c806d9d13cff61aecd32dcd905c5800bc8ea413383111458208425be5",
+      "bytes": 3668612
+    },
+    "scopeReviews": {
+      "path": "/private/tmp/slice3-structured-crosschecks-e278b1e-r1/ALL-STRUCTURED-SCOPE-REVIEWS.json",
+      "sha256": "75c505643c86814a7be6b70b23fec6364ab6192cee4baea8fc1a516203c115f0",
+      "bytes": 790834
+    }
+  },
+  "rows": [
+    {
+      "id": "S3-AC-001",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "governance"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-002",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "governance"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-003",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "governance"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-004",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "governance"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-005",
+      "rowKind": "criteria",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-006",
+      "rowKind": "criteria",
+      "methodSelections": 16,
+      "structuredSelections": 0,
+      "finalSelections": 16,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-007",
+      "rowKind": "criteria",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "governance"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-008",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "governance"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-009",
+      "rowKind": "criteria",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-010",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-011",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-012",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-013",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-014",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-015",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-016",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-017",
+      "rowKind": "criteria",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-018",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-019",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-020",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-021",
+      "rowKind": "criteria",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-022",
+      "rowKind": "criteria",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-023",
+      "rowKind": "criteria",
+      "methodSelections": 14,
+      "structuredSelections": 0,
+      "finalSelections": 14,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-024",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-025",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-026",
+      "rowKind": "criteria",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-027",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-028",
+      "rowKind": "criteria",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-029",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-030",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-031",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-032",
+      "rowKind": "criteria",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-033",
+      "rowKind": "criteria",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-034",
+      "rowKind": "criteria",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-035",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-036",
+      "rowKind": "criteria",
+      "methodSelections": 16,
+      "structuredSelections": 0,
+      "finalSelections": 16,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-037",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-038",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-039",
+      "rowKind": "criteria",
+      "methodSelections": 13,
+      "structuredSelections": 0,
+      "finalSelections": 13,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-040",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-041",
+      "rowKind": "criteria",
+      "methodSelections": 21,
+      "structuredSelections": 0,
+      "finalSelections": 21,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-042",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-043",
+      "rowKind": "criteria",
+      "methodSelections": 16,
+      "structuredSelections": 0,
+      "finalSelections": 16,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-044",
+      "rowKind": "criteria",
+      "methodSelections": 14,
+      "structuredSelections": 0,
+      "finalSelections": 14,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-045",
+      "rowKind": "criteria",
+      "methodSelections": 10,
+      "structuredSelections": 0,
+      "finalSelections": 10,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-046",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-047",
+      "rowKind": "criteria",
+      "methodSelections": 27,
+      "structuredSelections": 0,
+      "finalSelections": 27,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-048",
+      "rowKind": "criteria",
+      "methodSelections": 8,
+      "structuredSelections": 0,
+      "finalSelections": 8,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-049",
+      "rowKind": "criteria",
+      "methodSelections": 13,
+      "structuredSelections": 0,
+      "finalSelections": 13,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-050",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-051",
+      "rowKind": "criteria",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-052",
+      "rowKind": "criteria",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-053",
+      "rowKind": "criteria",
+      "methodSelections": 15,
+      "structuredSelections": 0,
+      "finalSelections": 15,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-054",
+      "rowKind": "criteria",
+      "methodSelections": 24,
+      "structuredSelections": 0,
+      "finalSelections": 24,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-055",
+      "rowKind": "criteria",
+      "methodSelections": 15,
+      "structuredSelections": 0,
+      "finalSelections": 15,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-056",
+      "rowKind": "criteria",
+      "methodSelections": 8,
+      "structuredSelections": 0,
+      "finalSelections": 8,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-057",
+      "rowKind": "criteria",
+      "methodSelections": 7,
+      "structuredSelections": 0,
+      "finalSelections": 7,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-058",
+      "rowKind": "criteria",
+      "methodSelections": 10,
+      "structuredSelections": 0,
+      "finalSelections": 10,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-059",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-060",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-061",
+      "rowKind": "criteria",
+      "methodSelections": 14,
+      "structuredSelections": 0,
+      "finalSelections": 14,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-062",
+      "rowKind": "criteria",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-063",
+      "rowKind": "criteria",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-064",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-065",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-066",
+      "rowKind": "criteria",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-067",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-068",
+      "rowKind": "criteria",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-069",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-070",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-071",
+      "rowKind": "criteria",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-072",
+      "rowKind": "criteria",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-073",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-074",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-075",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-076",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-077",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-078",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-079",
+      "rowKind": "criteria",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-080",
+      "rowKind": "criteria",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-081",
+      "rowKind": "criteria",
+      "methodSelections": 41,
+      "structuredSelections": 0,
+      "finalSelections": 41,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-082",
+      "rowKind": "criteria",
+      "methodSelections": 35,
+      "structuredSelections": 0,
+      "finalSelections": 35,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-083",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-084",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-085",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-086",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-087",
+      "rowKind": "criteria",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-088",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-089",
+      "rowKind": "criteria",
+      "methodSelections": 8,
+      "structuredSelections": 0,
+      "finalSelections": 8,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-090",
+      "rowKind": "criteria",
+      "methodSelections": 29,
+      "structuredSelections": 0,
+      "finalSelections": 29,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-091",
+      "rowKind": "criteria",
+      "methodSelections": 14,
+      "structuredSelections": 0,
+      "finalSelections": 14,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-092",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-093",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-094",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-095",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-096",
+      "rowKind": "criteria",
+      "methodSelections": 7,
+      "structuredSelections": 0,
+      "finalSelections": 7,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-097",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-098",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-099",
+      "rowKind": "criteria",
+      "methodSelections": 27,
+      "structuredSelections": 0,
+      "finalSelections": 27,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-100",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-101",
+      "rowKind": "criteria",
+      "methodSelections": 19,
+      "structuredSelections": 0,
+      "finalSelections": 19,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-102",
+      "rowKind": "criteria",
+      "methodSelections": 11,
+      "structuredSelections": 0,
+      "finalSelections": 11,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-103",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-104",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-105",
+      "rowKind": "criteria",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-106",
+      "rowKind": "criteria",
+      "methodSelections": 18,
+      "structuredSelections": 0,
+      "finalSelections": 18,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-107",
+      "rowKind": "criteria",
+      "methodSelections": 30,
+      "structuredSelections": 0,
+      "finalSelections": 30,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-108",
+      "rowKind": "criteria",
+      "methodSelections": 34,
+      "structuredSelections": 0,
+      "finalSelections": 34,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-109",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-110",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-111",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-112",
+      "rowKind": "criteria",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-113",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-114",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-115",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-116",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-117",
+      "rowKind": "criteria",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-118",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-119",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-120",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-121",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-122",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-123",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-124",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-125",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-126",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-127",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-128",
+      "rowKind": "criteria",
+      "methodSelections": 10,
+      "structuredSelections": 0,
+      "finalSelections": 10,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-129",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-130",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-131",
+      "rowKind": "criteria",
+      "methodSelections": 8,
+      "structuredSelections": 0,
+      "finalSelections": 8,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-132",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-133",
+      "rowKind": "criteria",
+      "methodSelections": 7,
+      "structuredSelections": 0,
+      "finalSelections": 7,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-134",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-135",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-136",
+      "rowKind": "criteria",
+      "methodSelections": 19,
+      "structuredSelections": 0,
+      "finalSelections": 19,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-137",
+      "rowKind": "criteria",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-138",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-139",
+      "rowKind": "criteria",
+      "methodSelections": 11,
+      "structuredSelections": 0,
+      "finalSelections": 11,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-140",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-141",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-142",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-143",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-144",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-145",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-146",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-147",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-148",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-149",
+      "rowKind": "criteria",
+      "methodSelections": 14,
+      "structuredSelections": 0,
+      "finalSelections": 14,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-150",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-151",
+      "rowKind": "criteria",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-152",
+      "rowKind": "criteria",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-153",
+      "rowKind": "criteria",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-154",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-155",
+      "rowKind": "criteria",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-156",
+      "rowKind": "criteria",
+      "methodSelections": 14,
+      "structuredSelections": 0,
+      "finalSelections": 14,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-157",
+      "rowKind": "criteria",
+      "methodSelections": 61,
+      "structuredSelections": 0,
+      "finalSelections": 61,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-158",
+      "rowKind": "criteria",
+      "methodSelections": 38,
+      "structuredSelections": 0,
+      "finalSelections": 38,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-159",
+      "rowKind": "criteria",
+      "methodSelections": 7,
+      "structuredSelections": 0,
+      "finalSelections": 7,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-160",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-161",
+      "rowKind": "criteria",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-162",
+      "rowKind": "criteria",
+      "methodSelections": 7,
+      "structuredSelections": 0,
+      "finalSelections": 7,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-163",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-164",
+      "rowKind": "criteria",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-165",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-166",
+      "rowKind": "criteria",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-167",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-168",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-169",
+      "rowKind": "criteria",
+      "methodSelections": 7,
+      "structuredSelections": 0,
+      "finalSelections": 7,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-170",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-171",
+      "rowKind": "criteria",
+      "methodSelections": 20,
+      "structuredSelections": 0,
+      "finalSelections": 20,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-172",
+      "rowKind": "criteria",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-173",
+      "rowKind": "criteria",
+      "methodSelections": 23,
+      "structuredSelections": 0,
+      "finalSelections": 23,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-174",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 225,
+      "finalSelections": 230,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "mixed_capacity"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-175",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-176",
+      "rowKind": "criteria",
+      "methodSelections": 14,
+      "structuredSelections": 0,
+      "finalSelections": 14,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-177",
+      "rowKind": "criteria",
+      "methodSelections": 11,
+      "structuredSelections": 0,
+      "finalSelections": 11,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-178",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-179",
+      "rowKind": "criteria",
+      "methodSelections": 11,
+      "structuredSelections": 0,
+      "finalSelections": 11,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-180",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-181",
+      "rowKind": "criteria",
+      "methodSelections": 16,
+      "structuredSelections": 0,
+      "finalSelections": 16,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-182",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-183",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-184",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-185",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-186",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-187",
+      "rowKind": "criteria",
+      "methodSelections": 17,
+      "structuredSelections": 0,
+      "finalSelections": 17,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-188",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-189",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-190",
+      "rowKind": "criteria",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-191",
+      "rowKind": "criteria",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-192",
+      "rowKind": "criteria",
+      "methodSelections": 8,
+      "structuredSelections": 0,
+      "finalSelections": 8,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-193",
+      "rowKind": "criteria",
+      "methodSelections": 7,
+      "structuredSelections": 13,
+      "finalSelections": 20,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "migration"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-194",
+      "rowKind": "criteria",
+      "methodSelections": 11,
+      "structuredSelections": 225,
+      "finalSelections": 236,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "mixed_capacity"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-195",
+      "rowKind": "criteria",
+      "methodSelections": 9,
+      "structuredSelections": 342,
+      "finalSelections": 351,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality",
+        "governance",
+        "infrastructure",
+        "migration",
+        "mixed_capacity",
+        "security",
+        "supply_chain"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-196",
+      "rowKind": "criteria",
+      "methodSelections": 21,
+      "structuredSelections": 0,
+      "finalSelections": 21,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-197",
+      "rowKind": "criteria",
+      "methodSelections": 3,
+      "structuredSelections": 225,
+      "finalSelections": 228,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "mixed_capacity"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-198",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-199",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 426,
+      "finalSelections": 430,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality",
+        "governance",
+        "infrastructure",
+        "migration",
+        "mixed_capacity",
+        "security",
+        "supply_chain"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-AC-200",
+      "rowKind": "criteria",
+      "methodSelections": 4,
+      "structuredSelections": 342,
+      "finalSelections": 346,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality",
+        "governance",
+        "infrastructure",
+        "migration",
+        "mixed_capacity",
+        "security",
+        "supply_chain"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-001",
+      "rowKind": "findings",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "governance"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-002",
+      "rowKind": "findings",
+      "methodSelections": 11,
+      "structuredSelections": 0,
+      "finalSelections": 11,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-003",
+      "rowKind": "findings",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-004",
+      "rowKind": "findings",
+      "methodSelections": 68,
+      "structuredSelections": 0,
+      "finalSelections": 68,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-005",
+      "rowKind": "findings",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-006",
+      "rowKind": "findings",
+      "methodSelections": 24,
+      "structuredSelections": 0,
+      "finalSelections": 24,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-007",
+      "rowKind": "findings",
+      "methodSelections": 54,
+      "structuredSelections": 0,
+      "finalSelections": 54,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-008",
+      "rowKind": "findings",
+      "methodSelections": 17,
+      "structuredSelections": 0,
+      "finalSelections": 17,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-009",
+      "rowKind": "findings",
+      "methodSelections": 64,
+      "structuredSelections": 0,
+      "finalSelections": 64,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-010",
+      "rowKind": "findings",
+      "methodSelections": 11,
+      "structuredSelections": 0,
+      "finalSelections": 11,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-011",
+      "rowKind": "findings",
+      "methodSelections": 67,
+      "structuredSelections": 0,
+      "finalSelections": 67,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-012",
+      "rowKind": "findings",
+      "methodSelections": 19,
+      "structuredSelections": 0,
+      "finalSelections": 19,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-013",
+      "rowKind": "findings",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-014",
+      "rowKind": "findings",
+      "methodSelections": 31,
+      "structuredSelections": 0,
+      "finalSelections": 31,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-015",
+      "rowKind": "findings",
+      "methodSelections": 88,
+      "structuredSelections": 0,
+      "finalSelections": 88,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-016",
+      "rowKind": "findings",
+      "methodSelections": 22,
+      "structuredSelections": 0,
+      "finalSelections": 22,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-017",
+      "rowKind": "findings",
+      "methodSelections": 32,
+      "structuredSelections": 0,
+      "finalSelections": 32,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-018",
+      "rowKind": "findings",
+      "methodSelections": 21,
+      "structuredSelections": 0,
+      "finalSelections": 21,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-019",
+      "rowKind": "findings",
+      "methodSelections": 14,
+      "structuredSelections": 0,
+      "finalSelections": 14,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-020",
+      "rowKind": "findings",
+      "methodSelections": 23,
+      "structuredSelections": 225,
+      "finalSelections": 248,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "mixed_capacity"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-021",
+      "rowKind": "findings",
+      "methodSelections": 42,
+      "structuredSelections": 0,
+      "finalSelections": 42,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-022",
+      "rowKind": "findings",
+      "methodSelections": 23,
+      "structuredSelections": 439,
+      "finalSelections": 462,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality",
+        "governance",
+        "infrastructure",
+        "migration",
+        "mixed_capacity",
+        "security",
+        "supply_chain"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-001:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "governance"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-001:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "governance"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-001:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 0,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "security"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-001:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "governance"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-001:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 0,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "security"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-001:VERIFICATION:3",
+      "rowKind": "clauses",
+      "methodSelections": 0,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "security"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-002:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-002:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-002:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-002:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-002:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-003:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-003:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-003:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-003:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-003:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-003:VERIFICATION:3",
+      "rowKind": "clauses",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-004:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 29,
+      "structuredSelections": 0,
+      "finalSelections": 29,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-004:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-004:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 34,
+      "structuredSelections": 0,
+      "finalSelections": 34,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-004:REQUIRED_REWORK:4",
+      "rowKind": "clauses",
+      "methodSelections": 30,
+      "structuredSelections": 0,
+      "finalSelections": 30,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-004:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 33,
+      "structuredSelections": 0,
+      "finalSelections": 33,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-004:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 16,
+      "structuredSelections": 0,
+      "finalSelections": 16,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-004:VERIFICATION:3",
+      "rowKind": "clauses",
+      "methodSelections": 13,
+      "structuredSelections": 0,
+      "finalSelections": 13,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-005:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-005:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-005:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-005:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-005:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-005:VERIFICATION:3",
+      "rowKind": "clauses",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-006:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 14,
+      "structuredSelections": 0,
+      "finalSelections": 14,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-006:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-006:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-006:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 7,
+      "structuredSelections": 0,
+      "finalSelections": 7,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-006:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 8,
+      "structuredSelections": 0,
+      "finalSelections": 8,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-006:VERIFICATION:3",
+      "rowKind": "clauses",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-007:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-007:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-007:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 46,
+      "structuredSelections": 0,
+      "finalSelections": 46,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-007:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-007:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 41,
+      "structuredSelections": 0,
+      "finalSelections": 41,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-007:VERIFICATION:3",
+      "rowKind": "clauses",
+      "methodSelections": 8,
+      "structuredSelections": 0,
+      "finalSelections": 8,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-008:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-008:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-008:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-008:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 10,
+      "structuredSelections": 0,
+      "finalSelections": 10,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-008:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-009:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 23,
+      "structuredSelections": 0,
+      "finalSelections": 23,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-009:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 10,
+      "structuredSelections": 0,
+      "finalSelections": 10,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-009:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 40,
+      "structuredSelections": 0,
+      "finalSelections": 40,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-009:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 25,
+      "structuredSelections": 0,
+      "finalSelections": 25,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-009:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 26,
+      "structuredSelections": 0,
+      "finalSelections": 26,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-010:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-010:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-010:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 11,
+      "structuredSelections": 0,
+      "finalSelections": 11,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-010:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-010:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 7,
+      "structuredSelections": 0,
+      "finalSelections": 7,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-011:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 13,
+      "structuredSelections": 0,
+      "finalSelections": 13,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-011:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 18,
+      "structuredSelections": 0,
+      "finalSelections": 18,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-011:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 22,
+      "structuredSelections": 0,
+      "finalSelections": 22,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-011:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-011:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 20,
+      "structuredSelections": 0,
+      "finalSelections": 20,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-011:VERIFICATION:3",
+      "rowKind": "clauses",
+      "methodSelections": 12,
+      "structuredSelections": 0,
+      "finalSelections": 12,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-012:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-012:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 8,
+      "structuredSelections": 0,
+      "finalSelections": 8,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-012:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 7,
+      "structuredSelections": 0,
+      "finalSelections": 7,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-012:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 16,
+      "structuredSelections": 0,
+      "finalSelections": 16,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-013:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-013:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-013:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-013:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-014:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 6,
+      "structuredSelections": 0,
+      "finalSelections": 6,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-014:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-014:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 15,
+      "structuredSelections": 0,
+      "finalSelections": 15,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-014:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 13,
+      "structuredSelections": 0,
+      "finalSelections": 13,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-015:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 30,
+      "structuredSelections": 0,
+      "finalSelections": 30,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-015:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 22,
+      "structuredSelections": 0,
+      "finalSelections": 22,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-015:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 33,
+      "structuredSelections": 0,
+      "finalSelections": 33,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-015:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 41,
+      "structuredSelections": 0,
+      "finalSelections": 41,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-016:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-016:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-016:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 7,
+      "structuredSelections": 0,
+      "finalSelections": 7,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-016:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-016:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-016:VERIFICATION:3",
+      "rowKind": "clauses",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-017:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 24,
+      "structuredSelections": 0,
+      "finalSelections": 24,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-017:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-017:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 11,
+      "structuredSelections": 0,
+      "finalSelections": 11,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-017:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 24,
+      "structuredSelections": 0,
+      "finalSelections": 24,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-017:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-017:VERIFICATION:3",
+      "rowKind": "clauses",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-018:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 2,
+      "structuredSelections": 0,
+      "finalSelections": 2,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-018:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 12,
+      "structuredSelections": 0,
+      "finalSelections": 12,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-018:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-018:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 11,
+      "structuredSelections": 0,
+      "finalSelections": 11,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-018:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 9,
+      "structuredSelections": 0,
+      "finalSelections": 9,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-019:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-019:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 10,
+      "structuredSelections": 0,
+      "finalSelections": 10,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-019:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-019:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 4,
+      "structuredSelections": 0,
+      "finalSelections": 4,
+      "roles": [
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-019:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 0,
+      "finalSelections": 3,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "backend_full",
+        "browser"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-020:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 18,
+      "structuredSelections": 225,
+      "finalSelections": 243,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "mixed_capacity"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-020:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 4,
+      "structuredSelections": 225,
+      "finalSelections": 229,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "mixed_capacity"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-020:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 5,
+      "structuredSelections": 225,
+      "finalSelections": 230,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "mixed_capacity"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-020:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 20,
+      "structuredSelections": 225,
+      "finalSelections": 245,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "mixed_capacity"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-020:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 225,
+      "finalSelections": 228,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "mixed_capacity"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-021:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 19,
+      "structuredSelections": 0,
+      "finalSelections": 19,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-021:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 26,
+      "structuredSelections": 0,
+      "finalSelections": 26,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-021:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 5,
+      "structuredSelections": 0,
+      "finalSelections": 5,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-021:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 21,
+      "structuredSelections": 0,
+      "finalSelections": 21,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-022:REQUIRED_REWORK:1",
+      "rowKind": "clauses",
+      "methodSelections": 3,
+      "structuredSelections": 342,
+      "finalSelections": 345,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality",
+        "governance",
+        "infrastructure",
+        "migration",
+        "mixed_capacity",
+        "security",
+        "supply_chain"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-022:REQUIRED_REWORK:2",
+      "rowKind": "clauses",
+      "methodSelections": 13,
+      "structuredSelections": 69,
+      "finalSelections": 82,
+      "roles": [
+        "adverse",
+        "positive"
+      ],
+      "layers": [
+        "backend_full",
+        "governance",
+        "security"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-022:REQUIRED_REWORK:3",
+      "rowKind": "clauses",
+      "methodSelections": 14,
+      "structuredSelections": 439,
+      "finalSelections": 453,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality",
+        "governance",
+        "infrastructure",
+        "migration",
+        "mixed_capacity",
+        "security",
+        "supply_chain"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-022:VERIFICATION:1",
+      "rowKind": "clauses",
+      "methodSelections": 8,
+      "structuredSelections": 342,
+      "finalSelections": 350,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "browser",
+        "frontend_quality",
+        "governance",
+        "infrastructure",
+        "migration",
+        "mixed_capacity",
+        "security",
+        "supply_chain"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "S3-DR-022:VERIFICATION:2",
+      "rowKind": "clauses",
+      "methodSelections": 1,
+      "structuredSelections": 0,
+      "finalSelections": 1,
+      "roles": [
+        "adverse"
+      ],
+      "layers": [
+        "governance"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "CV-A",
+      "rowKind": "verificationChecks",
+      "methodSelections": 44,
+      "structuredSelections": 0,
+      "finalSelections": 44,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "CV-B",
+      "rowKind": "verificationChecks",
+      "methodSelections": 33,
+      "structuredSelections": 0,
+      "finalSelections": 33,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "CV-C",
+      "rowKind": "verificationChecks",
+      "methodSelections": 33,
+      "structuredSelections": 0,
+      "finalSelections": 33,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "frontend_quality"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "CV-D",
+      "rowKind": "verificationChecks",
+      "methodSelections": 11,
+      "structuredSelections": 225,
+      "finalSelections": 236,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "backend_full",
+        "mixed_capacity"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    },
+    {
+      "id": "CV-E",
+      "rowKind": "verificationChecks",
+      "methodSelections": 10,
+      "structuredSelections": 167,
+      "finalSelections": 177,
+      "roles": [
+        "adverse",
+        "positive",
+        "supporting"
+      ],
+      "layers": [
+        "governance"
+      ],
+      "selectedAmbiguousNodes": 0,
+      "scopeDisposition": "ROOT_REVIEWED_WITH_EVERY_STATED_SOURCE_AND_RAW_BOUNDARY"
+    }
+  ],
+  "counts": {
+    "criteria": 200,
+    "findings": 22,
+    "clauses": 115,
+    "verificationChecks": 5
+  },
+  "mechanical115ClauseAudit": "STILL_REQUIRED_AFTER_PENDING_ASSEMBLY",
+  "controllerApprovalClaimMade": false,
+  "engineeringClosureClaimMade": false,
+  "productionWriteEnabled": false
+}
