@@ -112,6 +112,133 @@ class AdvertisingReservationIT {
         assertThat(seed.sql("SELECT early_observation_complete FROM ops.ad_action_reservation WHERE id=:id")
                 .param("id",graph.id("reservation")).query(Boolean.class).single()).isFalse();
     }
+    @Test void releasedEarlySafetyReservationDoesNotPermitANewSameObjectRecommendation() throws Exception {
+        UUID historicalCommand=command();
+        fictionalReadback(historicalCommand,20);
+        // Trusted synthetic historical INPUT: the matched action has already completed early
+        // safety and released exposure. This test proves subsequent app SQL admission, not the
+        // earlier Outcome computation/release (covered by AdvertisingFrozenOutcomeIT).
+        seed.sql("UPDATE ops.ad_bid_command SET state='READBACK_MATCHED',terminal_at=clock_timestamp() WHERE id=:id")
+                .param("id",historicalCommand).update();
+        seed.sql("""
+            UPDATE ops.ad_action_reservation SET state='RELEASED',configuration_resolved=true,
+              unknown_or_mismatch_open=false,early_observation_complete=true,regression_open=false,
+              released_at=clock_timestamp(),release_reason='Synthetic historical completed early safety',version=version+1
+            WHERE id=:id
+            """).param("id",graph.id("reservation")).update();
+        seed.sql("UPDATE ops.recommendation SET state='CLOSED',updated_at=clock_timestamp(),version=version+1 WHERE id=:id")
+                .param("id",graph.id("recommendation")).update();
+        assertThat(appRead.sql("""
+            SELECT state,configuration_resolved,unknown_or_mismatch_open,early_observation_complete,regression_open
+            FROM ops.ad_action_reservation WHERE id=:id
+            """).param("id",graph.id("reservation")).query().singleRow())
+                .containsEntry("state","RELEASED").containsEntry("configuration_resolved",true)
+                .containsEntry("unknown_or_mismatch_open",false).containsEntry("early_observation_complete",true)
+                .containsEntry("regression_open",false);
+        assertThat(appRead.sql("SELECT count(*) FROM ops.ad_action_reservation WHERE organization_id=:org AND state='ACTIVE'")
+                .param("org",graph.id("organization")).query(Integer.class).single()).isZero();
+
+        var next=freshRecommendationForSameCanonicalCandidate();
+        UUID authorization;
+        try(var app=transaction()) {
+            String proof=AdvertisingR1Fixture.proof(admin,app,next,next.id("ownerUser"),null,
+                    next.id("recommendation"),next.id("approval"));
+            authorization=AdvertisingR1Fixture.seal(app,next,proof);
+            app.commit();
+        }
+        // The fresh approval is actually sealed by the app role, and every condition before
+        // the generic reentry branch is current. An overlap/expired-authority refusal is not proof.
+        assertThat(appRead.sql("""
+            SELECT a.expires_at>clock_timestamp()
+              AND a.authority_snapshot-'decisionEvidence'=ops.ad_bundle_authority_snapshot(a.bundle_id)
+              AND NOT EXISTS(SELECT 1 FROM ops.ad_authority_invalidation i WHERE i.authorization_id=a.id)
+              AND ops.ad_outcome_baseline_is_canonical(a.outcome_baseline_id,clock_timestamp())
+              AND cardinality(ops.ad_economic_cause_bound_failures(a.candidate_id,clock_timestamp()))=0
+              AND cardinality(ops.ad_action_isolation_failures(b.affected_set_id,b.id,clock_timestamp()))=0
+              AND ops.ad_materiality_assessment(a.bundle_id,a.candidate_id)->>'route'=a.materiality_route
+            FROM ops.ad_action_authorization a JOIN ops.ad_outcome_baseline b ON b.id=a.outcome_baseline_id
+            WHERE a.id=:id
+            """).param("id",authorization).query(Boolean.class).single()).isTrue();
+        String historyBefore=reservationReentryHistory(historicalCommand);
+        String authorityBefore=appRead.sql("SELECT to_jsonb(a)::text FROM ops.ad_action_authorization a WHERE id=:id")
+                .param("id",authorization).query(String.class).single();
+        try(var app=transaction()) {
+            // Successfully taking a fresh reservation proves the old holder is no longer active.
+            assertThat(AdvertisingR1Fixture.reserve(app,next)).isEqualTo(next.id("reservation"));
+            assertThatThrownBy(()->AdvertisingR1Fixture.createCommand(app,next))
+                    .isInstanceOfSatisfying(org.postgresql.util.PSQLException.class,failure->{
+                        assertThat(failure.getSQLState()).isEqualTo("MO092");
+                        assertThat(failure.getServerErrorMessage().getMessage())
+                                .isEqualTo("general same-object reentry is disabled pending accepted calibration");
+                    });
+            app.rollback();
+        }
+        assertThat(reservationReentryHistory(historicalCommand)).isEqualTo(historyBefore);
+        assertThat(appRead.sql("SELECT to_jsonb(a)::text FROM ops.ad_action_authorization a WHERE id=:id")
+                .param("id",authorization).query(String.class).single()).isEqualTo(authorityBefore);
+        assertThat(appRead.sql("SELECT count(*) FROM ops.ad_bid_command WHERE organization_id=:org")
+                .param("org",graph.id("organization")).query(Integer.class).single()).isEqualTo(1);
+        assertThat(appRead.sql("SELECT count(*) FROM ops.ad_bid_command_attempt a JOIN ops.ad_bid_command c ON c.id=a.command_id WHERE c.organization_id=:org")
+                .param("org",graph.id("organization")).query(Integer.class).single()).isEqualTo(1);
+        assertThat(appRead.sql("SELECT count(*) FROM ops.ad_action_reservation WHERE id=:id")
+                .param("id",next.id("reservation")).query(Integer.class).single()).isZero();
+        assertThat(appRead.sql("SELECT production_write_enabled FROM ops.ad_gate_authority WHERE id=:id")
+                .param("id",graph.id("gate")).query(Boolean.class).single()).isFalse();
+    }
+    private String reservationReentryHistory(UUID command) {
+        return appRead.sql("""
+            SELECT jsonb_build_object('command',to_jsonb(c),'reservation',to_jsonb(r),
+              'approval',to_jsonb(a),'recommendation',to_jsonb(proposal),
+              'attempts',(SELECT jsonb_agg(to_jsonb(t) ORDER BY t.id) FROM ops.ad_bid_command_attempt t WHERE t.command_id=c.id),
+              'readbacks',(SELECT jsonb_agg(to_jsonb(rb) ORDER BY rb.id) FROM ops.ad_bid_command_readback rb WHERE rb.command_id=c.id))::text
+            FROM ops.ad_bid_command c JOIN ops.ad_action_reservation r ON r.id=c.reservation_id
+            JOIN ops.approval_decision a ON a.id=c.approval_decision_id
+            JOIN ops.recommendation proposal ON proposal.id=c.recommendation_id WHERE c.id=:id
+            """).param("id",command).query(String.class).single();
+    }
+    private AdvertisingR1Fixture.Graph freshRecommendationForSameCanonicalCandidate() {
+        var ids=new java.util.HashMap<>(graph.ids());
+        for(String name:List.of("recommendation","selection","endorsement","approval","reservation")) ids.put(name,UUID.randomUUID());
+        var next=new AdvertisingR1Fixture.Graph(java.util.Map.copyOf(ids),graph.platform());
+        // New reviewed proposal inputs keep the exact object/candidate/baseline. The public
+        // rule keys on a different recommendation, independent of candidate or reservation identity.
+        seed.sql("""
+            INSERT INTO ops.recommendation SELECT (jsonb_populate_record(NULL::ops.recommendation,
+              to_jsonb(prior)||jsonb_build_object('id',:fresh::text,'state','APPROVED','version',0,
+                'created_at',clock_timestamp(),'updated_at',clock_timestamp()))).*
+            FROM ops.recommendation prior WHERE prior.id=:prior
+            """).param("fresh",next.id("recommendation")).param("prior",graph.id("recommendation")).update();
+        seed.sql("""
+            INSERT INTO ops.ad_candidate_selection SELECT (jsonb_populate_record(NULL::ops.ad_candidate_selection,
+              to_jsonb(prior)||jsonb_build_object('id',:fresh::text,'recommendation_id',:recommendation::text,
+                'selected_at',clock_timestamp(),'authority_snapshot',jsonb_build_object(
+                  'bid',ops.ad_bid_authority_snapshot(:recommendation),'bundle',ops.ad_bundle_authority_snapshot(prior.bundle_id))))).*
+            FROM ops.ad_candidate_selection prior WHERE prior.id=:prior
+            """).param("fresh",next.id("selection")).param("recommendation",next.id("recommendation"))
+                .param("prior",graph.id("selection")).update();
+        seed.sql("""
+            INSERT INTO ops.ad_candidate_endorsement SELECT (jsonb_populate_record(NULL::ops.ad_candidate_endorsement,
+              to_jsonb(prior)||jsonb_build_object('id',:fresh::text,'selection_id',:selection::text,
+                'recommendation_id',:recommendation::text,'endorsed_at',clock_timestamp(),
+                'authority_snapshot',(SELECT authority_snapshot FROM ops.ad_candidate_selection WHERE id=:selection)))).*
+            FROM ops.ad_candidate_endorsement prior WHERE prior.id=:prior
+            """).param("fresh",next.id("endorsement")).param("selection",next.id("selection"))
+                .param("recommendation",next.id("recommendation")).param("prior",graph.id("endorsement")).update();
+        seed.sql("""
+            INSERT INTO ops.guardrail_evaluation SELECT (jsonb_populate_record(NULL::ops.guardrail_evaluation,
+              to_jsonb(prior)||jsonb_build_object('id',gen_random_uuid(),'recommendation_id',:fresh::text,
+                'evaluated_at',clock_timestamp(),'authority_snapshot',ops.ad_bid_authority_snapshot(:fresh)))).*
+            FROM ops.guardrail_evaluation prior WHERE prior.recommendation_id=:prior
+            """).param("fresh",next.id("recommendation")).param("prior",graph.id("recommendation")).update();
+        seed.sql("""
+            INSERT INTO ops.approval_decision SELECT (jsonb_populate_record(NULL::ops.approval_decision,
+              to_jsonb(prior)||jsonb_build_object('id',:fresh::text,'recommendation_id',:recommendation::text,
+                'authenticated_at',clock_timestamp(),'decided_at',clock_timestamp()))).*
+            FROM ops.approval_decision prior WHERE prior.id=:prior
+            """).param("fresh",next.id("approval")).param("recommendation",next.id("recommendation"))
+                .param("prior",graph.id("approval")).update();
+        return next;
+    }
     @Test void emptyScopeHasNoContainment() { assertThat(active(digest())).isEmpty(); }
     @Test void authenticatedOperationsStopCoversTheStoreCapability() throws Exception {
         stop("verifierUser","PLATFORM_STORE_CAPABILITY","KILL_SWITCH_ACTIVE","BUSINESS_HARM");

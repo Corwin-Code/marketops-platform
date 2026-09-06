@@ -43,6 +43,13 @@ public final class TestDatabase {
         return container;
     }
 
+    /** Explicit test-only server options, applied before this independent server starts. */
+    public static PostgreSQLContainer isolatedContainer(String... postgresArguments) {
+        var container = build().withCommand(postgresArguments);
+        container.start();
+        return container;
+    }
+
     public static String migrationRole() {
         return MIGRATION_ROLE;
     }

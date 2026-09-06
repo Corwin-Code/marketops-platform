@@ -86,6 +86,29 @@ class FinalSlice3AssessmentTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     check('<testsuite><testcase classname="Fixture" name="case"/></testsuite>',lambda p,l:source.write_text('changed after test'))
 
+    def test_structured_raw_proof_preserves_json_types_and_exact_pointer_semantics(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root/'Source.py').write_text('synthetic proof fixture source\n')
+            value = {'flag': False, 'count': 0, 'items': [{'ok': True}],
+                     '': {'key': 'empty-key'}, 'a/b': {'~': 3}}
+            (root/'raw.json').write_text(json.dumps(value))
+            with patch.object(assessment, 'ROOT', root):
+                evidence = assessment.reference(Path('raw.json'))
+                proof = {'kind': 'json', 'layer': 'governance', 'scope': 'Synthetic JSON proof boundary only',
+                         'source': assessment.reference(Path('Source.py')), 'evidence': evidence}
+                layers = {'governance': {'sourceInventorySha256': 'd'*64, 'evidence': [evidence]}}
+                proof['assertions'] = [{'pointer': '', 'expected': dict(reversed(list(value.items())))},
+                                       {'pointer': '/', 'expected': {'key': 'empty-key'}},
+                                       {'pointer': '/a~1b/~0', 'expected': 3},
+                                       {'pointer': '/items/0/ok', 'expected': True}]
+                assessment.validate_proof(proof, layers, 'd'*64)
+                for pointer, expected in [('/flag', 0), ('/count', False), ('/items/-1/ok', True),
+                                          ('/missing', None), ('count', 0), ('/a~2b', 3), ('/items/1', {})]:
+                    with self.subTest(pointer=pointer, expected=expected), self.assertRaises(ValueError):
+                        proof['assertions'] = [{'pointer': pointer, 'expected': expected}]
+                        assessment.validate_proof(proof, layers, 'd'*64)
+
     def complete_phase_fixture(self, directory):
         """Synthetic measurements live only in an isolated temporary repository."""
         root = Path(directory)

@@ -15,7 +15,7 @@ export interface AdvertisingOutcomeHistoryProps {
 }
 
 /**
- * What one bid change actually did, stage by stage.
+ * What was observed after one bid change, stage by stage.
  *
  * Completed, 30-day retained and settled stages carry independent sales and
  * economic observations. Unknown axes remain unresolved at every stage.
@@ -104,6 +104,14 @@ export function AdvertisingOutcomeHistory({
               {observation.guardState === undefined ? null : (
                 <small> — completed-sales guard: {observation.guardState}</small>
               )}
+            </p>
+            <p
+              aria-label="Outcome inference scope"
+              data-inference-scope={observation.inferenceScope}
+            >
+              {observation.inferenceScope === 'OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY'
+                ? 'Observed association; causal incrementality not established.'
+                : 'Inference scope: Unknown.'}
             </p>
             <dl>
               <dt>Baseline</dt>

@@ -136,6 +136,24 @@ def source_inventory(ref: dict) -> dict:
     return document
 
 
+def json_pointer_value(value, pointer: str):
+    require(isinstance(pointer, str) and (pointer == '' or pointer.startswith('/')),
+            'Structured proof has an invalid JSON pointer')
+    require(not re.search(r'~(?:[^01]|$)', pointer), 'Structured proof has an invalid JSON pointer escape')
+    if pointer == '':
+        return value
+    for key in pointer[1:].split('/'):
+        key = key.replace('~1', '/').replace('~0', '~')
+        if isinstance(value, list):
+            require(bool(re.fullmatch(r'0|[1-9][0-9]*', key)) and int(key) < len(value),
+                    'Structured proof JSON array index is absent or invalid')
+            value = value[int(key)]
+        else:
+            require(isinstance(value, dict) and key in value, 'Structured proof JSON member is absent')
+            value = value[key]
+    return value
+
+
 def validate_proof(proof: dict, layers: dict, source_digest: str):
     require(proof.get('layer') in layers and bool(proof.get('scope')), 'Named proof lacks execution layer or assertion scope')
     checked_reference(proof['source'])
@@ -150,11 +168,9 @@ def validate_proof(proof: dict, layers: dict, source_digest: str):
         value = json.loads(path.read_text())
         require(bool(proof.get('assertions')), 'Structured proof lacks exact result assertions')
         for assertion in proof['assertions']:
-            cursor = value
-            for key in assertion['pointer'].strip('/').split('/'):
-                key = key.replace('~1', '/').replace('~0', '~')
-                cursor = cursor[int(key)] if isinstance(cursor, list) else cursor[key]
-            require(cursor == assertion['expected'], 'Structured execution assertion did not match: ' + assertion['pointer'])
+            cursor = json_pointer_value(value, assertion['pointer'])
+            require(json.dumps(cursor, sort_keys=True) == json.dumps(assertion['expected'], sort_keys=True),
+                    'Structured execution assertion did not match: ' + assertion['pointer'])
     else:
         raise ValueError('Only measured named JUnit or structured execution proof can admit closure')
 

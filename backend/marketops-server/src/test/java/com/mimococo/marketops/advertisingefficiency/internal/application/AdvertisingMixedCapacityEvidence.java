@@ -29,7 +29,7 @@ final class AdvertisingMixedCapacityEvidence {
         for(String table:List.of("core.ad_native_object","core.ad_affected_set","core.ad_object_configuration_observation",
                 "core.fact_provenance","core.listing_price_observation","core.listing_health_observation","core.listing_stock_observation",
                 "ledger.ad_object_fact","ledger.ad_linked_sale_event","ledger.sales_fact","ledger.return_quality_evidence_snapshot",
-                "mart.metric_value","ops.ad_containment","ops.ad_bid_command","ops.ad_action_reservation","ops.ad_action_authorization",
+                "mart.metric_value","mart.calculation_run","ops.ad_containment","ops.ad_bid_command","ops.ad_action_reservation","ops.ad_action_authorization",
                 "ops.ad_outcome_baseline","ops.ad_outcome_observation","ops.ad_accepted_exception","core.ad_freshness_profile",
                 "core.ad_conversion_definition","core.ad_outcome_policy","core.ad_outcome_critical_unit_rule","core.ad_reporting_calendar")) {
             String rows=jdbc.sql("SELECT coalesce(jsonb_agg(to_jsonb(input) ORDER BY input.id),'[]'::jsonb)::text FROM "+table+" input WHERE input.organization_id=:org")
@@ -43,6 +43,9 @@ final class AdvertisingMixedCapacityEvidence {
         String metricReferences=jdbc.sql("SELECT coalesce(jsonb_agg(to_jsonb(input) ORDER BY input.id),'[]'::jsonb)::text FROM mart.metric_input_reference input JOIN mart.metric_value value ON value.id=input.metric_value_id WHERE value.organization_id=:org")
                 .param("org",graph.id("organization")).query(String.class).single();
         canonical.set("mart.metric_input_reference",mapper.readTree(metricReferences));
+        String metricEvaluations=jdbc.sql("SELECT coalesce(jsonb_agg(to_jsonb(input) ORDER BY input.metric_value_id,input.calculation_run_id),'[]'::jsonb)::text FROM mart.metric_value_evaluation input JOIN mart.metric_value value ON value.id=input.metric_value_id WHERE value.organization_id=:org")
+                .param("org",graph.id("organization")).query(String.class).single();
+        canonical.set("mart.metric_value_evaluation",mapper.readTree(metricEvaluations));
         String purposeEvidence=jdbc.sql("SELECT coalesce(jsonb_agg(to_jsonb(input) ORDER BY input.case_id,input.calculation_id,input.decision_purpose,input.evidence_kind),'[]'::jsonb)::text FROM mart.ad_case_purpose_evidence input WHERE input.organization_id=:org")
                 .param("org",graph.id("organization")).query(String.class).single();
         canonical.set("mart.ad_case_purpose_evidence",mapper.readTree(purposeEvidence));

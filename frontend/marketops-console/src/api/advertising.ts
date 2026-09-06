@@ -381,7 +381,7 @@ export interface AdvertisingContainment {
 }
 
 /**
- * One observation of what a bid change actually did.
+ * One observation after a bid change, without claiming causal incrementality.
  *
  * Completed, retained over 30 days, and settled stages retain their own
  * independent observations and revisions.
@@ -404,6 +404,7 @@ export interface AdvertisingOutcome {
   readonly settledCoverageRatio: number | undefined;
   readonly verdict: string;
   readonly guardState: string | undefined;
+  readonly inferenceScope: 'OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY' | 'UNKNOWN';
   readonly unresolvedReasonCodes: readonly string[];
   readonly settled: boolean;
   readonly axes: Readonly<Record<string, unknown>> | undefined;
@@ -637,6 +638,10 @@ export function parseAdvertisingOutcome(body: unknown): AdvertisingOutcome | und
     settledCoverageRatio: decimal(record.settledCoverageRatio),
     verdict,
     guardState: text(record.guardState),
+    inferenceScope:
+      record.inferenceScope === 'OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY'
+        ? 'OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY'
+        : 'UNKNOWN',
     unresolvedReasonCodes: strings(record.unresolvedReasonCodes),
     settled: outcomeStage.startsWith('SETTLED'),
     axes:

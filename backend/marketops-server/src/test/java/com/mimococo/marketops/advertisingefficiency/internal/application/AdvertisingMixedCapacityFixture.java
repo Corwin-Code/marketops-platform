@@ -28,6 +28,9 @@ final class AdvertisingMixedCapacityFixture {
         this.seed=seed;this.mapper=mapper;this.migration=migration;this.shared=shared;this.templateCommand=templateCommand;
     }
 
+    /** One declared synthetic clock matches PostgreSQL timestamp precision on every OS. */
+    static Instant preparationInstant(Instant at) { return at.truncatedTo(java.time.temporal.ChronoUnit.MICROS); }
+
     static String currentTemplate(String sql) {
         return golden(sql).replace("now() - interval '1 day'","now() - interval '150 days'")
                 .replace("now()-interval '1 day'","now()-interval '150 days'")

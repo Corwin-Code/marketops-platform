@@ -106,8 +106,35 @@ public class AdvertisingPolicyRepository {
             " AND status IN ('ACTIVE','RETIRED') AND effective_from <= :at"
                     + " AND (effective_to IS NULL OR effective_to > :at)";
 
+    /** The scope owned by this Profile includes its optional semantic-profile store restriction. */
+    private static String applicableFreshnessScope(String row) {
+        return "("+row+".scope_kind='ORGANIZATION'"
+                +" OR ("+row+".scope_kind='PLATFORM' AND "+row+".platform_code=:platformCode)"
+                +" OR ("+row+".scope_kind='STORE' AND "+row+".platform_code=:platformCode AND "+row+".store_ref_id=:storeId)"
+                +" OR ("+row+".scope_kind='SEMANTIC_PROFILE' AND "+row+".platform_code=:platformCode"
+                +" AND "+row+".semantic_profile_id=:semanticProfileId"
+                +" AND ("+row+".store_ref_id IS NULL OR "+row+".store_ref_id=:storeId)))";
+    }
+
+    /** Same unique applicable scope rule as the canonical frozen Outcome planner. */
+    private static String uniqueFreshnessScope() {
+        return """
+                 AND NOT EXISTS(SELECT 1 FROM core.ad_freshness_profile preferred
+                   WHERE preferred.organization_id=:organizationId AND preferred.id<>ad_freshness_profile.id
+                     AND preferred.evidence_kind=ad_freshness_profile.evidence_kind
+                     AND preferred.decision_purpose=ad_freshness_profile.decision_purpose
+                     AND preferred.status IN('ACTIVE','RETIRED') AND preferred.effective_from<=:at
+                     AND (preferred.effective_to IS NULL OR preferred.effective_to>:at)
+                     AND
+                """+applicableFreshnessScope("preferred")+"""
+                     AND CASE preferred.scope_kind WHEN 'SEMANTIC_PROFILE' THEN 0 WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END
+                       <=CASE ad_freshness_profile.scope_kind WHEN 'SEMANTIC_PROFILE' THEN 0 WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END)
+                """;
+    }
+
     /** Resolve the stage from the exact active bundle, or one unambiguous shadow definition. */
     private static String uniqueEffectiveScope(String table) {
+        if(table.equals("core.ad_freshness_profile")) return uniqueFreshnessScope();
         String rowName=table.substring(table.lastIndexOf('.')+1);
         String columns = "scope_kind,platform_code,store_ref_id,product_variant_ref_id,semantic_profile_id,sale_stage,purpose_tier,evidence_kind,decision_purpose";
         String same = java.util.Arrays.stream(columns.split(","))
@@ -121,7 +148,6 @@ public class AdvertisingPolicyRepository {
         String applicable="(preferred.scope_kind='ORGANIZATION' OR (preferred.scope_kind='PLATFORM' AND preferred.platform_code=:platformCode)"
                 + " OR (preferred.scope_kind='STORE' AND preferred.store_ref_id=:storeId)";
         if(table.equals("core.ad_allowable_cpa_definition")) applicable+=" OR (preferred.scope_kind='PRODUCT_VARIANT' AND preferred.product_variant_ref_id=:productVariantId)";
-        if(table.equals("core.ad_freshness_profile")) applicable+=" OR (preferred.scope_kind='SEMANTIC_PROFILE' AND preferred.semantic_profile_id=:semanticProfileId)";
         applicable+=")";
         String dimensions=java.util.Arrays.stream("sale_stage,purpose_tier,evidence_kind,decision_purpose".split(","))
                 .map(column->"to_jsonb(preferred)->'"+column+"' IS NOT DISTINCT FROM to_jsonb("+rowName+")->'"+column+"'")
@@ -340,27 +366,42 @@ public class AdvertisingPolicyRepository {
     public Optional<FreshnessProfile> resolveFreshness(
             UUID organizationId, String evidenceKind, String decisionPurpose,
             String platformCode, UUID storeId, UUID semanticProfileId, Instant at) {
-        return jdbc.sql("""
-                SELECT id, profile_version, evidence_kind, decision_purpose,
+        if (evidenceKind == null || decisionPurpose == null) return Optional.empty();
+        return Optional.ofNullable(resolveFreshnessProfiles(organizationId,
+                java.util.List.of(evidenceKind), java.util.List.of(decisionPurpose),
+                platformCode, storeId, semanticProfileId, at).get(decisionPurpose + ":" + evidenceKind));
+    }
+
+    /**
+     * Resolve the requested purpose/kind combinations in one database snapshot.
+     * The single resolver delegates here so ambiguity, narrow-scope refusal and
+     * the complete frozen authority digest have exactly one selection rule.
+     * Missing combinations remain absent; this is not a cache or a default.
+     */
+    public java.util.Map<String, FreshnessProfile> resolveFreshnessProfiles(
+            UUID organizationId, java.util.List<String> evidenceKinds,
+            java.util.List<String> decisionPurposes, String platformCode,
+            UUID storeId, UUID semanticProfileId, Instant at) {
+        if (evidenceKinds.isEmpty() || decisionPurposes.isEmpty()) return java.util.Map.of();
+        var resolved = jdbc.sql("""
+                SELECT DISTINCT ON (evidence_kind, decision_purpose)
+                       id, profile_version, evidence_kind, decision_purpose,
                        source_max_age_minutes, accepted_fact_max_age_minutes,
                        expected_publication_lag_minutes, correction_window_minutes,
                        requires_window_complete, requires_correction_window_closed,
                        minimum_coverage_ratio, minimum_confidence_state, provider_incident_blocks, effective_to, ops.ad_outcome_freshness_snapshot(id)->>'authorityDigest' AS authority_digest
                   FROM core.ad_freshness_profile
                  WHERE organization_id = :organizationId
-                   AND evidence_kind = :evidenceKind AND decision_purpose = :decisionPurpose
-                   AND (scope_kind = 'ORGANIZATION'
-                        OR (scope_kind = 'PLATFORM' AND platform_code = :platformCode)
-                        OR (scope_kind = 'STORE' AND store_ref_id = :storeId)
-                        OR (scope_kind = 'SEMANTIC_PROFILE' AND semantic_profile_id = :semanticProfileId))
-                """ + IN_FORCE + uniqueEffectiveScope("core.ad_freshness_profile") + """
-                 ORDER BY CASE scope_kind WHEN 'SEMANTIC_PROFILE' THEN 0 WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END,
+                   AND evidence_kind = ANY(CAST(:evidenceKinds AS text[]))
+                   AND decision_purpose = ANY(CAST(:decisionPurposes AS text[]))
+                   AND
+                """ + applicableFreshnessScope("ad_freshness_profile") + IN_FORCE + uniqueEffectiveScope("core.ad_freshness_profile") + """
+                 ORDER BY evidence_kind, decision_purpose, CASE scope_kind WHEN 'SEMANTIC_PROFILE' THEN 0 WHEN 'STORE' THEN 1 WHEN 'PLATFORM' THEN 2 ELSE 3 END,
                           effective_from DESC
-                 LIMIT 1
                 """)
                 .param("organizationId", organizationId)
-                .param("evidenceKind", evidenceKind)
-                .param("decisionPurpose", decisionPurpose)
+                .param("evidenceKinds", evidenceKinds.toArray(String[]::new))
+                .param("decisionPurposes", decisionPurposes.toArray(String[]::new))
                 .param("platformCode", platformCode)
                 .param("storeId", storeId)
                 .param("semanticProfileId", semanticProfileId)
@@ -378,7 +419,10 @@ public class AdvertisingPolicyRepository {
                         rs.getString("minimum_confidence_state"),
                         rs.getBoolean("provider_incident_blocks"), rs.getTimestamp("effective_to") == null
                                 ? null : rs.getTimestamp("effective_to").toInstant(), rs.getString("authority_digest")))
-                .optional();
+                .list();
+        return resolved.stream().collect(java.util.stream.Collectors.toUnmodifiableMap(
+                profile -> profile.decisionPurpose() + ":" + profile.evidenceKind(),
+                java.util.function.Function.identity()));
     }
 
     /**

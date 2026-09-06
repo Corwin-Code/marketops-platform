@@ -133,9 +133,18 @@ class AdvertisingFrozenOutcomeIT {
         return outcomes.due(graph.id("organization"),graph.id("object"),read,100).stream().filter(value->command.equals(value.commandId())).findFirst().orElseThrow();
     }
     String reservationState() { return seed.sql("SELECT state FROM ops.ad_action_reservation WHERE id=:id").param("id",graph.id("reservation")).query(String.class).single(); }
+    void assertAssociationMarker(UUID observation) {
+        assertThat(seed.sql("SELECT input_snapshot->>'inferenceScope' FROM ops.ad_outcome_axes WHERE observation_id=:id")
+                .param("id",observation).query(String.class).single()).isEqualTo("OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY");
+        var view=outcomes.forCommand(graph.id("organization"),command,List.of(graph.id("store"))).stream()
+                .filter(value->value.id().equals(observation)).findFirst().orElseThrow();
+        assertThat(view.inferenceScope()).isEqualTo("OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY");
+        assertThat(JsonMapper.builder().build().valueToTree(view).path("inferenceScope").asText()).isEqualTo(view.inferenceScope());
+    }
     @Test void actualCompanyAndEveryCriticalUnitReleaseOnlyEarlySafetyWithoutProfitSuccess() {
         observedSales("1000",null);coverage();
         var result=service.evaluate(due(),read).orElseThrow();
+        assertAssociationMarker(result.observationId());
         assertThat(result.evaluation().verdict()).isEqualTo(OutcomeEvaluation.Verdict.UNCHANGED);
         assertThat(reservationState()).isEqualTo("RELEASED");
         assertThat(seed.sql("SELECT dual_axis_verdict FROM ops.ad_outcome_axes WHERE observation_id=:id").param("id",result.observationId()).query(String.class).single())
@@ -169,6 +178,7 @@ class AdvertisingFrozenOutcomeIT {
         var original=service.evaluate(due(),read).orElseThrow();
         read=read.plusSeconds(60);observedSales("500",first);
         var revision=service.evaluate(due(),read).orElseThrow();
+        assertAssociationMarker(original.observationId());assertAssociationMarker(revision.observationId());
         assertThat(revision.revisionNo()).isEqualTo(2);assertThat(revision.stage()).isEqualTo("OPERATIONAL_REVISED");
         assertThat(revision.evaluation().verdict()).isEqualTo(OutcomeEvaluation.Verdict.REGRESSED);
         assertThat(revision.reopenedContainmentId()).isNotNull();
@@ -206,6 +216,7 @@ class AdvertisingFrozenOutcomeIT {
         assertThat(retained.evaluation().verdict()).isEqualTo(OutcomeEvaluation.Verdict.UNCHANGED);
         advanceSettlement("1100",false);
         var settled=service.evaluate(dueStage("SETTLED"),read).orElseThrow();
+        assertAssociationMarker(retained.observationId());assertAssociationMarker(settled.observationId());
         assertThat(settled.evaluation().verdict()).isEqualTo(OutcomeEvaluation.Verdict.IMPROVED);
         assertThat(axis(settled.observationId(),"observed_absolute_profit")).isEqualByComparingTo("200");
         assertThat(axis(settled.observationId(),"observed_profit_per_rub")).isEqualByComparingTo("2");

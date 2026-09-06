@@ -3,7 +3,12 @@
 This is a command plan, not an execution receipt or a PASS assessment. It was
 prepared by reading the five current workflows, Makefile, current verification
 scripts and W6/W9/W10 command receipts. Root selects the final checkpoint after
-V0070 and its diagnostics. No heavy command was executed to prepare this file.
+V0071 and the completed scope/precision/marker and mixed-load diagnostics.
+Those dirty-worktree diagnostics do not establish a final checkpoint or full
+verification PASS. No heavy command was executed to synchronize this plan.
+The source migration inventory contains V0001–V0071: the original 70 recorded
+hashes are preserved and V0071 is appended. Its final source Head remains null
+until checkpointing.
 
 Use one exclusive Maven/Docker/browser slot. Preserve backend reports, JAR and
 SBOM immediately after full verification, before any subsequent command can
@@ -180,94 +185,74 @@ and disables inherited Vite environment files. Record its SHA as an additional
 execution input. The current six test files, fixture classes and application
 sources all come from the checkpoint, including its accepted rework.
 
-Save the following reviewed block as an owned `/tmp` driver, hash it before
-execution, and invoke it through the collector with `--layer browser` and
-`--capture 'build/final-gate-r1/browser/**/*'`. Include the driver/adapter hashes
-in the final execution input record. The block uses only the local file Git
-transport and an exact unique Compose project. Run it with the root-prepared
-Java 21/Node 24 PATH and no other Maven/browser worker active.
+Prepare a fresh, reviewed `/tmp` wrapper and bind it to the final checkpoint
+HEAD/tree, complete source-before inventory path/SHA and current file/test
+counts. The prior `/tmp/slice3-final-browser-5fd53c0.sh` and its read-only review
+`/tmp/slice3-browser-execution-review.json` are historical preparation inputs
+bound to 5fd53c0. They are not current execution evidence and must not run
+unchanged against the new checkpoint. Preserve them and give the newly bound
+wrapper its own path and SHA. Record the wrapper, generated helper, Docker
+proxy and unchanged copied adapter hashes before execution.
+
+The wrapper must retain these controls:
+
+- Re-execute under `env -i` with the reviewed Java 21/Node 24/system PATH,
+  `--noprofile --norc`, fresh private fixture configuration and empty controlled
+  Maven/npm settings. No inherited database, Provider, signing, cloud or proxy
+  credentials may enter the child. Pass the exact build stamp through the
+  existing `mvnw` `MAVEN_CONFIG` contract and verify each backend build-info and
+  frontend bundle separately.
+- Clone only the exact local file Git source into a new private directory.
+  Check HEAD/tree and every executed-source file against the source-before
+  inventory before and after both suites. Require exact bytes except declared
+  CRLF normalization in `backend/marketops-server/mvnw.cmd` and
+  `scripts/bootstrap-repo.ps1`; each exception must match tracked `.gitattributes`,
+  normalize only CRLF/LF and record both original and clone hashes. Allow no
+  other path, content difference, fixture edit or untracked execution input
+  beyond the byte-identical copied adapter.
+- Admit only a local Unix-socket Docker daemon. Use a Docker proxy that requires
+  the exact new Compose project, disposable env-file and cloned Compose path.
+  Advertising containers/networks must be absent before creation; journal their
+  returned IDs and permit subsequent access/removal only for resources created
+  by this run. Capture safe before/after inventories and verify no pre-existing
+  resource was removed or renamed. Cleanup must verify owned containers,
+  networks and volumes have disappeared; a swallowed cleanup error cannot pass.
+- Check loopback application ports 8080, 8082 and 4173 without stopping existing
+  listeners. A free-port check is not a persistent reservation. Require strict
+  server binding and no existing-server reuse. Bind PostgreSQL only to loopback
+  on a newly selected port outside 5432/55436 and verify actual published ports,
+  image and owned project/container identities before admitting the fixture.
+- Run all six legacy spec files and the complete advertising suite, without
+  grep, test-name filters, exclusions or altered assertions. Reconcile actual
+  named results, parameter expansion and discovered files with current source;
+  do not assume the historical 25/12 counts remain current. A legacy assertion
+  failure must remain recorded while the advertising suite still runs if owned
+  teardown succeeds; an unsafe teardown must stop further execution.
+- Keep separate raw JSON/JUnit/HTML, screenshots, traces, logs and immediate
+  backend/frontend build captures for each suite. Preserve failed runs in fresh
+  candidate directories. Keep raw evidence private until secret-pattern review,
+  including archive contents, permits publication. A JWT-shape screen alone is
+  insufficient. Never archive generated env files, credential values or the
+  fixture HTTP identity response containing its synthetic access token.
+
+Run the reviewed wrapper through the collector with one exclusive
+Maven/Docker/browser slot. Set `SLICE3_BROWSER_DRIVER` to the newly reviewed
+wrapper and verify its recorded hash before invocation; the following is an
+invocation shape, not an execution receipt:
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
-umask 077
-cd "$SLICE3_REPO"
-mkdir -p "$SLICE3_PUBLIC/browser"
-browser_work="$(mktemp -d /tmp/slice3-final-browser.XXXXXX)"
-browser_source="$browser_work/source"
-browser_project="slice3-fg-legacy-$(basename "$browser_work" | tr '[:upper:].' '[:lower:]-')"
-browser_endpoint="$(docker context inspect --format '{{.Endpoints.docker.Host}}')"
-case "$browser_endpoint" in unix://*) ;; *) exit 2 ;; esac
-export DOCKER_HOST="$browser_endpoint"
-git clone --no-local --depth 1 --single-branch \
-  --branch feat/SLICE-V1-003-advertising-traffic-efficiency \
-  "file://$SLICE3_REPO" "$browser_source"
-test "$(git -C "$browser_source" rev-parse HEAD)" = "$SLICE3_SOURCE_HEAD"
-test "$(git -C "$browser_source" rev-parse 'HEAD^{tree}')" = "$SLICE3_SOURCE_TREE"
-compose=(docker compose --project-name "$browser_project" --env-file "$browser_source/.env.local" -f "$browser_source/infra/compose/docker-compose.yml")
-cleanup_browser() {
-  browser_status=$?
-  trap - EXIT INT TERM
-  set +e
-  "${compose[@]}" down --volumes --remove-orphans > "$SLICE3_PUBLIC/browser/legacy-cleanup.log" 2>&1
-  cleanup_status=$?
-  docker ps -aq --filter "label=com.docker.compose.project=$browser_project" > "$SLICE3_PUBLIC/browser/legacy-remaining-containers.txt"
-  docker volume ls -q --filter "label=com.docker.compose.project=$browser_project" > "$SLICE3_PUBLIC/browser/legacy-remaining-volumes.txt"
-  git -C "$browser_source" diff --exit-code > "$SLICE3_PUBLIC/browser/clone-tracked-source-diff.txt"
-  source_status=$?
-  if [ -d "$browser_source/frontend/marketops-console/test-results" ]; then cp -R "$browser_source/frontend/marketops-console/test-results" "$SLICE3_PUBLIC/browser/test-results"; fi
-  if [ -d "$browser_source/frontend/marketops-console/playwright-report" ]; then cp -R "$browser_source/frontend/marketops-console/playwright-report" "$SLICE3_PUBLIC/browser/playwright-report"; fi
-  rm -rf -- "$browser_work"
-  if [ "$browser_status" -ne 0 ]; then exit "$browser_status"; fi
-  if [ "$cleanup_status" -eq 0 ] && [ "$source_status" -eq 0 ] && [ ! -s "$SLICE3_PUBLIC/browser/legacy-remaining-containers.txt" ] && [ ! -s "$SLICE3_PUBLIC/browser/legacy-remaining-volumes.txt" ]; then exit 0; fi
-  exit 2
-}
-trap cleanup_browser EXIT INT TERM
-cd "$browser_source"
-python3 scripts/init_local_env.py --target all
-python3 - <<'PY'
-import socket
-from pathlib import Path
-for port in (8080, 8082, 4173):
-    with socket.socket() as sock:
-        sock.bind(('127.0.0.1', port))
-with socket.socket() as sock:
-    sock.bind(('127.0.0.1', 0))
-    port = sock.getsockname()[1]
-assert port not in (5432, 55436)
-path = Path('.env.local')
-path.write_text(path.read_text().replace('MARKETOPS_DB_PORT=5432', 'MARKETOPS_DB_PORT='+str(port)))
-PY
-"${compose[@]}" up -d --wait postgres
-"${compose[@]}" ps --format json > "$SLICE3_PUBLIC/browser/legacy-owned-services.json"
-export COMPOSE_PROJECT_NAME="$browser_project"
-export MARKETOPS_SOURCE_HEAD_SHA="$SLICE3_SOURCE_HEAD"
-adapter=docs/07-phase-evidence/SLICE-V1-003/rework-r1/workstreams/browser-w6/legacy-browser-r2/legacy-isolation-adapter.ts
-cp "$adapter" frontend/marketops-console/playwright.legacy-isolated.config.ts
-shasum -a 256 "$adapter" frontend/marketops-console/playwright.legacy-isolated.config.ts > "$SLICE3_PUBLIC/browser/adapter-sha256.txt"
-cd frontend/marketops-console
-npm ci --include=dev --include=optional
-npx playwright install chromium
-PLAYWRIGHT_JSON_OUTPUT_FILE="$SLICE3_PUBLIC/browser/legacy.json" \
-PLAYWRIGHT_JUNIT_OUTPUT_FILE="$SLICE3_PUBLIC/browser/legacy.xml" \
-npx playwright test --config=playwright.legacy-isolated.config.ts --reporter=list,json,junit,html
-cd "$browser_source"
-"${compose[@]}" down --volumes --remove-orphans
-PLAYWRIGHT_JSON_OUTPUT_FILE="$SLICE3_PUBLIC/browser/advertising.json" \
-PLAYWRIGHT_JUNIT_OUTPUT_FILE="$SLICE3_PUBLIC/browser/advertising.xml" \
-bash scripts/validation/advertising_browser_isolated.sh --reporter=list,json,junit,html
+: "${SLICE3_BROWSER_DRIVER:?new checkpoint-bound browser wrapper required}"
+python3 "$SLICE3_COLLECT" --layer browser --run-id final-browser-r1 \
+  --out "$SLICE3_RUNS/browser" --expect-head "$SLICE3_SOURCE_HEAD" --require-clean \
+  --capture 'build/final-gate-r1/browser/**/*' \
+  -- /bin/bash "$SLICE3_BROWSER_DRIVER"
 ```
 
-Before invoking this block, preserve a safe local Docker container/network
-inventory and reserve the free loopback application ports; do not stop an
-existing listener. Afterward compare only the owned/new namespace and verify
-the advertising script removed its random container/network. Record the clone's
-HEAD/tree and per-file byte equality with the collector's source-before inventory
-before execution; recheck tracked source after execution. Generated env files
-remain private in the disposable clone and are destroyed, never archived.
-The fixture HTTP identity response contains a token: do not archive it. Retain
-only safe synthetic identity metadata when needed. Browser rendering/HTTP proof
-does not stand in for canonical provider or calculation proof.
+The wrapper and collector must refuse an existing public/candidate output
+rather than overwrite it. Generated private configuration is destroyed after
+owned cleanup; raw failure evidence remains in its separate private directory.
+These are synthetic browser rendering/HTTP proofs. They provide no Provider,
+shared-environment, production-write or canonical calculation authority.
 
 ## Governance full
 
@@ -337,7 +322,10 @@ tests cover synthetic infrastructure semantics, not a cloud account or apply.
 
 Run against the exact full-verified JAR while `target` still holds that artifact.
 The script's JAR migration bytes must equal current canonical source, including
-every approved forward migration; it also refuses packaged test authority.
+every approved forward migration through V0071 (71 total); it also refuses
+packaged test authority. Verify V0001–V0070 against their preserved inventory
+hashes and V0071 against its appended source hash. The protected V0035 upgrade
+start remains fixed; 36 additional migrations reach V0071.
 It uses a local Unix Docker daemon, empty auth config, minimal image context,
 network-disabled build/run and no database connection.
 

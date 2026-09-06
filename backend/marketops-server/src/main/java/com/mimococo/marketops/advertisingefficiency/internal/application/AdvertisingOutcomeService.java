@@ -53,7 +53,8 @@ class AdvertisingOutcomeService {
         int revision = revised ? due.latestSettledRevision() + 1 : 1;
         UUID id = ids.newId();
         String input = json.writeValueAsString(Map.of("baseline", baseline, "observation", observed,
-                "dualAxis", assessment.dualAxis(), "salesPreservation", assessment.sales()));
+                "dualAxis", assessment.dualAxis(), "salesPreservation", assessment.sales(),
+                "inferenceScope", assessment.evaluation().inferenceScope().name()));
         outcomes.record(id, due, due.nextStage(), revision, revised ? due.latestSettledId() : null,
                 revised ? "canonical evidence for the frozen observation window was restated" : null,
                 from, to, baseline.profit().absoluteProfit(), observed.profit().absoluteProfit(), observed.traffic(),

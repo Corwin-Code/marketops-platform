@@ -316,14 +316,14 @@ public class AdvertisingOutcomeRepository {
                 """).param("id",view.id()).query((rs,n)->new com.mimococo.marketops.advertisingefficiency.AdvertisingOutcomeView.CriticalGuard(
                         rs.getObject("product_variant_id",UUID.class),rs.getObject("listing_variant_id",UUID.class),
                         rs.getString("guard_state"),rs.getBigDecimal("baseline_sales"),rs.getBigDecimal("observed_sales"))).list();
-        var axes = jdbc.sql("SELECT * FROM ops.ad_outcome_axes WHERE observation_id=:id").param("id",view.id())
-                .query((rs,n)->new com.mimococo.marketops.advertisingefficiency.AdvertisingOutcomeView.Axes(
+        return jdbc.sql("SELECT *,input_snapshot->>'inferenceScope' AS inference_scope FROM ops.ad_outcome_axes WHERE observation_id=:id").param("id",view.id())
+                .query((rs,n)->view.withAxes(new com.mimococo.marketops.advertisingefficiency.AdvertisingOutcomeView.Axes(
                         rs.getString("dual_axis_verdict"),rs.getString("sales_preservation_verdict"),rs.getString("business_outcome"),
                         rs.getBigDecimal("baseline_absolute_profit"),rs.getBigDecimal("observed_absolute_profit"),
                         rs.getBigDecimal("baseline_profit_per_rub"),rs.getBigDecimal("observed_profit_per_rub"),
                         rs.getBigDecimal("company_baseline_sales"),rs.getBigDecimal("company_observed_sales"),
-                        rs.getString("currency_code"),rs.getString("input_snapshot"),critical)).optional().orElse(null);
-        return view.withAxes(axes);
+                        rs.getString("currency_code"),rs.getString("input_snapshot"),critical),
+                        rs.getString("inference_scope"))).optional().orElseGet(()->view.withAxes(null));
     }
 
     private static com.mimococo.marketops.advertisingefficiency.AdvertisingOutcomeView

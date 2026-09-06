@@ -36,7 +36,11 @@ import tools.jackson.databind.ObjectMapper;
 /** Additive CV-D capacity: real application/PG clocks and workers, explicitly synthetic history inputs. */
 @SpringBootTest @ActiveProfiles("ci") @Import(AdvertisingMixedOrchestrationCapacityIT.Runtime.class)
 class AdvertisingMixedOrchestrationCapacityIT {
-    static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE=TestDatabase.isolatedContainer();
+    static final boolean PROFILE_SQL=Boolean.getBoolean("marketops.mixed.profileSql");
+    static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE=PROFILE_SQL
+            ? TestDatabase.isolatedContainer("postgres","-c","shared_preload_libraries=pg_stat_statements",
+                    "-c","pg_stat_statements.track=all","-c","track_functions=all")
+            : TestDatabase.isolatedContainer();
     static final int OBJECTS=1000;
     @Autowired DataSource application;
     @Autowired AdvertisingTargetedWorker targeted;
@@ -64,9 +68,10 @@ class AdvertisingMixedOrchestrationCapacityIT {
 
     @Test @Timeout(1200)
     void declaredPortfolioProcessesFreshMatureRevisionsAndRepairsDroppedCorrectionsWithExpiredControls() throws Exception {
-        Instant setupStarted=Instant.now();
+        Instant setupStarted=AdvertisingMixedCapacityFixture.preparationInstant(Instant.now());
         DataSource migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
         DataSource admin=new DriverManagerDataSource(DATABASE.getJdbcUrl(),DATABASE.getUsername(),DATABASE.getPassword());
+        if(PROFILE_SQL) JdbcClient.create(admin).sql("CREATE EXTENSION IF NOT EXISTS pg_stat_statements").update();
         seed=JdbcClient.create(migration);
         graph=AdvertisingR1Fixture.seedOutcome(migration,AdvertisingMixedCapacityFixture::currentTemplate);
         UUID templateCommand;
@@ -90,9 +95,12 @@ class AdvertisingMixedOrchestrationCapacityIT {
             fixture.spend(row,row.from(),earlyTo,earlyRead,100,null);
             var early=outcomeRows.due(graph.id("organization"),row.graph().id("object"),earlyRead,10).stream()
                     .filter(value->value.nextStage().equals("OPERATIONAL")).findFirst().orElseThrow();
-            outcomes.evaluate(early,earlyRead).orElseThrow();
+            var earlyResult=outcomes.evaluate(early,earlyRead).orElseThrow();
             assertThat(seed.sql("SELECT state FROM ops.ad_action_reservation WHERE id=:id").param("id",row.graph().id("reservation")).query(String.class).single())
-                    .as("historical early safety release before next shared-variant action").isEqualTo("RELEASED");
+                    .as("historical early safety release before next shared-variant action; ordinal=%s result=%s inputs=%s",
+                            n,earlyResult.evaluation(),seed.sql("SELECT input_snapshot::text FROM ops.ad_outcome_axes WHERE observation_id=:id")
+                                    .param("id",earlyResult.observationId()).query(String.class).single())
+                    .isEqualTo("RELEASED");
             for(String stage:List.of("RETAINED","SETTLED")) {
                 Instant stageRead=row.from().plus(Duration.ofDays(stage.equals("RETAINED")?30:60)).plusSeconds(1);
                 if(stageRead.isAfter(setupStarted)) continue;
@@ -125,15 +133,27 @@ class AdvertisingMixedOrchestrationCapacityIT {
                     AND NOT EXISTS(SELECT 1 FROM ops.ad_outcome_baseline b WHERE b.ad_native_object_id=obj.id AND b.id<>:baseBaseline)
                 """).param("at",Timestamp.from(accepted)).param("base",graph.id("object")).param("baseBaseline",graph.id("baseline")).update();
         var identities=AdvertisingMixedCapacityEvidence.capture(seed,graph,mapper,accepted,setupStarted,fixture.histories);
+        var diagnostic=new AdvertisingMixedCapacityDiagnostics(seed,JdbcClient.create(admin),mapper,
+                graph.id("organization"),identities,PROFILE_SQL);
+        diagnostic.container(DATABASE);
+        diagnostic.begin();
+        boolean diagnosticCompleted=false;
+        String diagnosticFailure=null;
+        try {
         long targetedStart=System.nanoTime();int handled=0,passes=0;
         while(queue.backlog(graph.id("organization")).pending()>0 && passes<8) {
             if(passes>0) Thread.sleep(Duration.ofSeconds(30));
-            handled+=targeted.runOnce(250);passes++;
+            long passStarted=System.nanoTime();
+            int passHandled=targeted.runOnce(250);handled+=passHandled;passes++;
+            diagnostic.pass(passes,passHandled,handled,(System.nanoTime()-passStarted)/1_000_000,
+                    queue.backlog(graph.id("organization")),slo.snapshot(graph.id("organization"),List.of(graph.id("store")),dbNow()));
         }
         long targetedMillis=(System.nanoTime()-targetedStart)/1_000_000;
+        diagnostic.targetedDrained(targetedMillis);
         assertThat(queue.backlog(graph.id("organization")).pending()).isZero();assertThat(handled).isGreaterThanOrEqualTo(OBJECTS);
         assertThat(sql("SELECT count(DISTINCT ad_native_object_id) FROM ops.ad_slo_observation WHERE organization_id=:org AND path_kind='TARGETED'").query(Integer.class).single()).isEqualTo(OBJECTS);
         var targetedMeasurement=slo.snapshot(graph.id("organization"),List.of(graph.id("store")),dbNow());
+        diagnostic.beforeAssertions("TARGETED_SLO",targetedMeasurement);
         assertThat((Long)targetedMeasurement.get("criticalSampleCount")).isGreaterThanOrEqualTo(200L);
         assertThat((Long)targetedMeasurement.get("criticalP95Millis")).isLessThanOrEqualTo(300000L);
         assertThat((Long)targetedMeasurement.get("maximumMillis")).isLessThanOrEqualTo(900000L);
@@ -165,6 +185,7 @@ class AdvertisingMixedOrchestrationCapacityIT {
         sql("UPDATE ops.ad_recalculation_request SET state='ABANDONED',failure_code='TEST_DROPPED_MIXED_CORRECTION',completed_at=clock_timestamp(),attempt_count=5 WHERE organization_id=:org AND state='PENDING'").update();
         long sweepStart=System.nanoTime();var sweep=reconciliation.sweep(graph.id("organization"),"RECOVERY").orElseThrow();
         long sweepMillis=(System.nanoTime()-sweepStart)/1_000_000;
+        diagnostic.beforeAssertions("RECOVERY_SWEEP",Map.of("wallMillis",sweepMillis,"result",sweep));
         assertThat(sweep.completed()).isTrue();assertThat(sweep.objectCount()).isEqualTo(OBJECTS);
         assertThat(sweep.failedObjectCount()).isZero();assertThat(sweep.repairedCount()).isGreaterThanOrEqualTo(40);
         assertThat(sql("SELECT count(DISTINCT ad_native_object_id) FROM ops.ad_recalculation_request WHERE organization_id=:org AND failure_code='TEST_DROPPED_MIXED_CORRECTION' AND state='COMPLETED'").query(Integer.class).single()).isEqualTo(40);
@@ -224,7 +245,15 @@ class AdvertisingMixedOrchestrationCapacityIT {
         receipt.put("postgresContainerResources",containerResources);
         receipt.put("scopeNotice","Historical synthetic constrained inputs; actual mature/revised Outcome and control-state processing. No admission/APPLY throughput or new multi-store scale claim.");
         receipt.put("productionWriteEnabled",false);receipt.put("realProviderAccess",false);receipt.put("finishedAt",Instant.now().toString());
+        receipt.put("diagnosticSqlProfilingEnabled",PROFILE_SQL);
         Files.writeString(Path.of("target/advertising-mixed-capacity-receipt.json"),mapper.writerWithDefaultPrettyPrinter().writeValueAsString(receipt));
+        diagnosticCompleted=true;
+        } catch(Exception | AssertionError failure) {
+            diagnosticFailure=failure.getClass().getName();
+            throw failure;
+        } finally {
+            diagnostic.finish(diagnosticCompleted,diagnosticFailure);
+        }
     }
 
     private List<String> writeGate(UUID command) {

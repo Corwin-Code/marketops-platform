@@ -7,11 +7,11 @@
     "sha256": "921d83417f5fc7e8b447d1b1ad9373b327e0120f994179133400a91f87f34fdb"
   },
   "historicalHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
-  "sourceHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+  "sourceHead": null,
   "worktreeModified": true,
   "preservedCount": 65,
-  "newRange": "0066-0070",
-  "migrationCount": 70,
+  "newRange": "0066-0071",
+  "migrationCount": 71,
   "migrations": [
     {
       "version": "0001",
@@ -712,7 +712,18 @@
       "gitBlobSha1": "ecc7b60339ef19076c851020d51a4ef7bad7cacc",
       "historicalW10ByteEqual": null,
       "scope": "FINAL_GATE_R1_FORWARD_MIGRATION"
+    },
+    {
+      "version": "0071",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0071__align_frozen_outcome_company_profile_scope.sql",
+      "bytes": 12604,
+      "lines": 132,
+      "sha256": "9bb4a05cb85e02619d27f157f02acebfbbc8f3665d01b8ebe0578fb0ee6d18a0",
+      "gitBlobSha1": "dbc48809b9bb4a2d157440bb436df2f33105d5fa",
+      "historicalW10ByteEqual": null,
+      "scope": "FINAL_GATE_R1_FORWARD_MIGRATION"
     }
   ],
-  "production_write_enabled": false
+  "production_write_enabled": false,
+  "previousInventorySourceHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a"
 }

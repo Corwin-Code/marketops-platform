@@ -264,6 +264,16 @@ for (const platform of ['OZON', 'WILDBERRIES']) {
       .getByRole('button', { name: 'Observe canonical early sales safety' })
       .click();
     await expect(verifier.page.getByLabel('Manual execution')).toContainText('NOT_YET_EVALUABLE');
+    const earlyOutcome = verifier.page.getByLabel('Manual execution').getByLabel('Outcome', {
+      exact: true,
+    });
+    await expect(earlyOutcome.getByLabel('Outcome inference scope')).toHaveAttribute(
+      'data-inference-scope',
+      'OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY',
+    );
+    await expect(earlyOutcome).toContainText(
+      'Observed association; causal incrementality not established.',
+    );
     await verifier.page.screenshot({
       path: testInfo.outputPath(`${platform}-independent-proof-early-safety-pending.png`),
       fullPage: true,
@@ -501,6 +511,9 @@ for (const scenario of [
       await expect(outcome).toHaveAttribute('data-state', 'loaded');
       for (const stage of ['OPERATIONAL', 'RETAINED', 'SETTLED', 'SETTLED_REVISED']) {
         await expect(outcome.locator(`[data-stage="${stage}"]`)).toHaveCount(1);
+        await expect(
+          outcome.locator(`[data-stage="${stage}"]`).getByLabel('Outcome inference scope'),
+        ).toHaveAttribute('data-inference-scope', 'UNKNOWN');
       }
       await expect(outcome.locator('[data-stage="SETTLED_REVISED"]')).toContainText('REGRESSED');
       await expect(outcome.locator('[data-stage="SETTLED_REVISED"]')).toContainText(

@@ -115,6 +115,15 @@ class AdvertisingOutcomeServiceTest {
         verify(evidence,times(1)).snapshot(eq(ID),eq(ID),eq(ID),eq("SETTLED"),anyList(),eq(due("SETTLED").windowStartsAt()),eq(due("SETTLED").windowEndsAt("SETTLED")),eq(NOW),anyMap());
         verify(repo).record(eq(ID),any(),eq("SETTLED_REVISED"),eq(3),eq(HERO),contains("restated"),any(),any(),any(),any(),any(),any(),any(),any(),anyString(),any());
         verify(repo,never()).reopenAfterRegression(any(),any(),any(),any());
+        assertThat(result.evaluation().inferenceScope().name()).isEqualTo("OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY");
+        var calls=mockingDetails(repo).getInvocations();
+        String input=calls.stream().filter(call->call.getMethod().getName().equals("recordAxes"))
+                .findFirst().orElseThrow().getArgument(11);
+        assertThat(json.readTree(input).path("inferenceScope").asText()).isEqualTo("OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY");
+        String digest=calls.stream().filter(call->call.getMethod().getName().equals("record"))
+                .findFirst().orElseThrow().getArgument(14);
+        assertThat(digest).isEqualTo(com.mimococo.marketops.shared.Digest.ofComponents(
+                List.of(ID.toString(),ID.toString(),"SETTLED","3",input)));
     }
     @Test void missingFrozenBaselineDoesNotManufacturePostActionBaseline() {
         var repo=mock(AdvertisingOutcomeRepository.class);var evidence=mock(AdvertisingOutcomeEvidenceService.class);

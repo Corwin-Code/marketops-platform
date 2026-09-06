@@ -163,7 +163,7 @@ class AdvertisingSealedAuthorityIT {
     }
 
     @Test void causeBoundKnownDangerCanBeSealedWithoutConversionOrCostEvidence() throws Exception {
-        graph=AdvertisingR1Fixture.seedOutcome(migration,sql->causeBound(sql,"0.4"));
+        graph=seedCauseBoundGraph("0.4");
         var constructor=com.mimococo.marketops.operationsworkflow.internal.application.AdvertisingImpactEvidenceService.class
                 .getDeclaredConstructor(JdbcClient.class,tools.jackson.databind.ObjectMapper.class);
         constructor.setAccessible(true);
@@ -186,7 +186,7 @@ class AdvertisingSealedAuthorityIT {
     }
 
     @Test void causeBoundStepCannotExceedExactOwnerPolicyRatio() throws Exception {
-        graph=AdvertisingR1Fixture.seedOutcome(migration,sql->causeBound(sql,"0.1"));
+        graph=seedCauseBoundGraph("0.1");
         try(var app=transaction()) {
             AdvertisingR1Fixture.seal(app,graph,proof(app,graph.id("ownerUser")));
             assertThatThrownBy(()->AdvertisingR1Fixture.createCommand(app,graph))
@@ -195,7 +195,7 @@ class AdvertisingSealedAuthorityIT {
     }
 
     @Test void causeBoundProtectionCannotTreatMissingDangerAsFreshEvidence() throws Exception {
-        graph=AdvertisingR1Fixture.seedOutcome(migration,sql->causeBound(sql,"0.4"));
+        graph=seedCauseBoundGraph("0.4");
         seed.sql("DELETE FROM mart.ad_case_purpose_evidence WHERE case_id=:id AND evidence_kind='SELLABILITY'")
                 .param("id",graph.id("caseId")).update();
         try(var app=transaction()) {
@@ -205,7 +205,7 @@ class AdvertisingSealedAuthorityIT {
     }
 
     @Test void causeBoundFinancialExceptionNeverIgnoresUnknownCriticalSafety() throws Exception {
-        graph=AdvertisingR1Fixture.seedOutcome(migration,sql->causeBound(sql,"0.4"));
+        graph=seedCauseBoundGraph("0.4");
         seed.sql("UPDATE mart.ad_case SET blocker_codes=ARRAY['CRITICAL_UNIT_COVERAGE_UNRESOLVED'] WHERE id=:id")
                 .param("id",graph.id("caseId")).update();
         try(var app=transaction()) {
@@ -214,9 +214,47 @@ class AdvertisingSealedAuthorityIT {
         }
     }
 
+    /** A protection-only variation must preserve the independent frozen Outcome authorities. */
+    private AdvertisingR1Fixture.Graph seedCauseBoundGraph(String ratio) throws Exception {
+        var result=AdvertisingR1Fixture.seedOutcome(migration,sql->causeBound(sql,ratio));
+        for(var stage:java.util.Map.of(
+                "OPERATIONAL",List.of("EARLY_COMPLETED_SALES_OUTCOME","COMPANY_COMPLETED_SALE"),
+                "RETAINED",List.of("FINAL_RETAINED_SALES_OUTCOME","COMPANY_RETAINED_SALE"),
+                "SETTLED",List.of("SETTLED_FINANCIAL_OUTCOME","SETTLEMENT")).entrySet()) {
+            var required=new java.util.ArrayList<>(List.of("OFFICIAL_AD_SPEND","OFFICIAL_AD_TRAFFIC",
+                    "AD_LINKED_SALE_EVENT","COST_AND_FEE","AD_OBJECT_CONFIGURATION","AFFECTED_SET",
+                    "SELLABILITY","AVAILABILITY","PRICE_AND_PROMOTION"));
+            required.add(stage.getValue().get(1));
+            assertThat(seed.sql("""
+                    SELECT evidence_kind FROM core.ad_freshness_profile
+                     WHERE organization_id=:org AND decision_purpose=:purpose
+                       AND profile_version=1 AND status='ACTIVE'
+                    """).param("org",result.id("organization")).param("purpose",stage.getValue().get(0))
+                    .query(String.class).list()).as("complete independent %s profiles",stage.getKey())
+                    .containsExactlyInAnyOrderElementsOf(required);
+            assertThat(seed.sql("""
+                    SELECT ARRAY(SELECT jsonb_object_keys(snapshot->'freshnessProfiles'))
+                      FROM ops.ad_outcome_stage_baseline
+                     WHERE outcome_baseline_id=:baseline AND stage=:stage
+                    """).param("baseline",result.id("baseline")).param("stage",stage.getKey())
+                    .query((row,index)->(String[])row.getArray(1).getArray()).single())
+                    .as("complete frozen %s profile snapshot",stage.getKey())
+                    .containsExactlyInAnyOrderElementsOf(required);
+        }
+        assertThat(seed.sql("""
+                SELECT evidence_kind FROM core.ad_freshness_profile
+                 WHERE organization_id=:org AND decision_purpose='PROTECTION_BID_WRITE'
+                """).param("org",result.id("organization")).query(String.class).list())
+                .contains("SELLABILITY").doesNotContain("COST_AND_FEE");
+        return result;
+    }
+
     private static String causeBound(String sql,String ratio) {
         String disabledPolicy="'RUB', 0.01, false, NULL,\n        CAST('{}' AS text[])";
         assertThat(sql).as("known synthetic target policy must be transformed explicitly").contains(disabledPolicy);
+        assertThat(sql).as("only the protection profile and its purpose evidence change kind")
+                .containsOnlyOnce("'COST_AND_FEE','PROTECTION_BID_WRITE'")
+                .containsOnlyOnce("'PROTECTION_BID_WRITE','COST_AND_FEE'");
         String result=sql.replace("MAX_CPC_BOUNDED","CAUSE_BOUND_PROTECTION_STEP")
                 .replace("PROVEN_ADVERTISING_LOSS","PROMOTED_VARIANT_NOT_SELLABLE")
                 .replace(disabledPolicy,
@@ -225,7 +263,8 @@ class AdvertisingSealedAuthorityIT {
                 .replace("'CURRENCY_MAJOR', 22.0000, 'PROMOTED_VARIANT_NOT_SELLABLE'",
                         "'CURRENCY_MAJOR', NULL, 'CONVERSION_NOT_WRITE_GRADE', 'PROMOTED_VARIANT_NOT_SELLABLE'")
                 .replace("UPDATE mart.ad_case SET max_cpc_amount=22", "UPDATE mart.ad_case SET max_cpc_state='NOT_AVAILABLE',max_cpc_amount=NULL,blocker_codes=ARRAY['AD_LINKED_CONVERSION_NOT_WRITE_GRADE']")
-                .replace("'COST_AND_FEE'", "'SELLABILITY'");
+                .replace("'COST_AND_FEE','PROTECTION_BID_WRITE'", "'SELLABILITY','PROTECTION_BID_WRITE'")
+                .replace("'PROTECTION_BID_WRITE','COST_AND_FEE'", "'PROTECTION_BID_WRITE','SELLABILITY'");
         StringBuilder nativeOnly=new StringBuilder();
         for(String statement:result.split(";")) {
             if(statement.contains("mart.ad_case_purpose_evidence")

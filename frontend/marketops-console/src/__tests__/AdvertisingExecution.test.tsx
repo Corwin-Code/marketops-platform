@@ -543,6 +543,79 @@ describe('the outcome history', () => {
     expect(outcome.querySelector('[data-stage="SETTLED"]')).not.toBeNull();
     expect(outcome.textContent).toContain('IMPROVED');
     expect(outcome.textContent).toContain('REGRESSED');
+    expect(within(outcome).getAllByText('Inference scope: Unknown.')).toHaveLength(2);
+  });
+
+  it('keeps an explicit association scope separate from the outcome verdict and sales guard', () => {
+    const observed = parseAdvertisingOutcome({
+      ...OPERATIONAL,
+      inferenceScope: 'OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY',
+    });
+    expect(observed).toMatchObject({
+      inferenceScope: 'OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY',
+      outcomeStage: 'OPERATIONAL',
+      verdict: 'IMPROVED',
+      guardState: 'SUFFICIENT',
+      observedMetricValue: 140,
+    });
+  });
+
+  it('does not infer an association scope from a favorable result, legacy absence or an unsupported claim', () => {
+    for (const inferenceScope of [
+      undefined,
+      null,
+      'UNKNOWN',
+      'CAUSAL_INCREMENTALITY_PROVEN',
+      ' OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY ',
+      'operational_association_not_causal_incrementality',
+      { scope: 'OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY' },
+    ]) {
+      expect(
+        parseAdvertisingOutcome({ ...SETTLED, verdict: 'IMPROVED', inferenceScope }),
+      ).toMatchObject({
+        inferenceScope: 'UNKNOWN',
+        outcomeStage: 'SETTLED',
+        verdict: 'IMPROVED',
+        guardState: 'SUFFICIENT',
+        settled: true,
+      });
+    }
+  });
+
+  it('shows observed association for an explicit scope while an unsupported claim remains Unknown', async () => {
+    render(
+      <AdvertisingOutcomeHistory
+        context={context(
+          outcomeRoutes([
+            {
+              ...OPERATIONAL,
+              inferenceScope: 'OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY',
+            },
+            { ...SETTLED, inferenceScope: 'CAUSAL_INCREMENTALITY_PROVEN' },
+          ]),
+        )}
+        commandId={OPERATIONAL.commandId}
+      />,
+    );
+    const outcome = await screen.findByLabelText('Outcome');
+    await waitFor(() => {
+      expect(outcome).toHaveAttribute('data-state', 'loaded');
+    });
+    const scopes = within(outcome).getAllByLabelText('Outcome inference scope');
+    expect(scopes).toHaveLength(2);
+    expect(scopes[0]).toHaveAttribute(
+      'data-inference-scope',
+      'OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY',
+    );
+    expect(scopes[0]).toHaveTextContent(
+      'Observed association; causal incrementality not established.',
+    );
+    expect(scopes[1]).toHaveAttribute('data-inference-scope', 'UNKNOWN');
+    expect(scopes[1]).toHaveTextContent('Inference scope: Unknown.');
+    expect(outcome.textContent).not.toContain('CAUSAL_INCREMENTALITY_PROVEN');
+    expect(outcome.querySelector('[data-stage="OPERATIONAL"]')).toHaveTextContent('IMPROVED');
+    expect(outcome.querySelector('[data-stage="SETTLED"]')).toHaveTextContent('REGRESSED');
+    expect(within(outcome).getAllByText(/completed-sales guard: SUFFICIENT/)).toHaveLength(2);
   });
 
   it('TC-UI-ADV-026 shows a restatement beside what it restates, never in place of it', async () => {

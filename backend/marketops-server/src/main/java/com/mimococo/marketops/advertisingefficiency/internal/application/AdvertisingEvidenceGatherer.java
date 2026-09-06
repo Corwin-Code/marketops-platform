@@ -223,16 +223,13 @@ class AdvertisingEvidenceGatherer {
                         .ifPresent(value -> cpas.put(variantId, value));
             }
         }
-        Map<String, AdvertisingPolicyRepository.FreshnessProfile> freshness = new HashMap<>();
-        for (String purpose : List.of("QUEUE_OBSERVATION", "TASK_ACTIVATION", "PROTECTION_RECOMMENDATION",
-                "OPTIMIZATION_RECOMMENDATION", "PROTECTION_BID_WRITE", "OPTIMIZATION_BID_WRITE")) {
-            for (String kind : List.of("OFFICIAL_AD_SPEND", "OFFICIAL_AD_TRAFFIC", "AD_LINKED_SALE_EVENT",
-                    "COST_AND_FEE", "AD_OBJECT_CONFIGURATION", "AFFECTED_SET", "SELLABILITY", "AVAILABILITY")) {
-                policies.resolveFreshness(organizationId, kind, purpose, object.platformCode(),
-                        object.storeId(), object.semanticProfileId(), asOf)
-                        .ifPresent(value -> freshness.put(purpose + ":" + kind, value));
-            }
-        }
+        Map<String, AdvertisingPolicyRepository.FreshnessProfile> freshness = policies.resolveFreshnessProfiles(
+                organizationId,
+                List.of("OFFICIAL_AD_SPEND", "OFFICIAL_AD_TRAFFIC", "AD_LINKED_SALE_EVENT", "COST_AND_FEE",
+                        "AD_OBJECT_CONFIGURATION", "AFFECTED_SET", "SELLABILITY", "AVAILABILITY"),
+                List.of("QUEUE_OBSERVATION", "TASK_ACTIVATION", "PROTECTION_RECOMMENDATION",
+                        "OPTIMIZATION_RECOMMENDATION", "PROTECTION_BID_WRITE", "OPTIMIZATION_BID_WRITE"),
+                object.platformCode(), object.storeId(), object.semanticProfileId(), asOf);
         var writeQualification = policies.resolveQualification(organizationId, object.platformCode(),
                 object.storeId(), "OPTIMIZATION_BID_WRITE", asOf);
         var taskQualification = policies.resolveQualification(organizationId, object.platformCode(),

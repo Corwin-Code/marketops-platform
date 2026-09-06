@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * One observation of what a bid change actually did.
+ * One observed association around a bid change, without a causal incrementality claim.
  *
  * <p>Completed, 30-day retained and settled sales are independent observation
  * stages. Late corrections append revisions to the affected stage.
@@ -35,6 +35,7 @@ import java.util.UUID;
  * @param guardState what the completed-sales guard said before anything was acted on
  * @param unresolvedReasonCodes why the verdict is not conclusive, when it is not
  * @param evaluatedAt when this observation was taken
+ * @param inferenceScope the persisted inference limit; missing or unsupported history is UNKNOWN
  */
 public record AdvertisingOutcomeView(
         UUID id,
@@ -56,7 +57,8 @@ public record AdvertisingOutcomeView(
         String guardState,
         List<String> unresolvedReasonCodes,
         Instant evaluatedAt,
-        Axes axes) {
+        Axes axes,
+        String inferenceScope) {
 
     public record CriticalGuard(UUID productVariantId, UUID listingVariantId, String guardState,
             BigDecimal baselineSales, BigDecimal observedSales) { }
@@ -65,6 +67,18 @@ public record AdvertisingOutcomeView(
             BigDecimal baselineProfitPerRub, BigDecimal observedProfitPerRub,
             BigDecimal companyBaselineSales, BigDecimal companyObservedSales,
             String currencyCode, String inputSnapshot, List<CriticalGuard> criticalGuards) { }
+
+    /** An older caller has no persisted inference marker to assert. */
+    public AdvertisingOutcomeView(UUID id,UUID commandId,UUID manualPacketId,String outcomeStage,int revisionNo,
+            UUID supersedesObservationId,String adjustmentReason,Instant windowStartsAt,Instant windowEndsAt,
+            String baselineMetricState,BigDecimal baselineMetricValue,String observedMetricState,BigDecimal observedMetricValue,
+            Long observedTrafficCount,BigDecimal settledCoverageRatio,String verdict,String guardState,
+            List<String> unresolvedReasonCodes,Instant evaluatedAt,Axes axes) {
+        this(id,commandId,manualPacketId,outcomeStage,revisionNo,supersedesObservationId,adjustmentReason,
+                windowStartsAt,windowEndsAt,baselineMetricState,baselineMetricValue,observedMetricState,observedMetricValue,
+                observedTrafficCount,settledCoverageRatio,verdict,guardState,unresolvedReasonCodes,evaluatedAt,axes,
+                AdvertisingOutcomeInferenceScope.UNKNOWN.name());
+    }
 
     public AdvertisingOutcomeView(UUID id, UUID commandId, String outcomeStage, int revisionNo,
             UUID supersedesObservationId, String adjustmentReason, Instant windowStartsAt,
@@ -78,10 +92,14 @@ public record AdvertisingOutcomeView(
     }
 
     public AdvertisingOutcomeView withAxes(Axes newAxes) {
+        return withAxes(newAxes,inferenceScope);
+    }
+
+    public AdvertisingOutcomeView withAxes(Axes newAxes,String storedInferenceScope) {
         return new AdvertisingOutcomeView(id,commandId,manualPacketId,outcomeStage,revisionNo,supersedesObservationId,
                 adjustmentReason,windowStartsAt,windowEndsAt,baselineMetricState,baselineMetricValue,
                 observedMetricState,observedMetricValue,observedTrafficCount,settledCoverageRatio,
-                verdict,guardState,unresolvedReasonCodes,evaluatedAt,newAxes);
+                verdict,guardState,unresolvedReasonCodes,evaluatedAt,newAxes,storedInferenceScope);
     }
 
     public AdvertisingOutcomeView {
@@ -89,6 +107,7 @@ public record AdvertisingOutcomeView(
         if((commandId == null) == (manualPacketId == null)) throw new IllegalArgumentException("exactly one intervention anchor is required");
         Objects.requireNonNull(outcomeStage, "outcomeStage");
         Objects.requireNonNull(verdict, "verdict");
+        inferenceScope = AdvertisingOutcomeInferenceScope.fromStored(inferenceScope).name();
         unresolvedReasonCodes =
                 List.copyOf(unresolvedReasonCodes == null ? List.of() : unresolvedReasonCodes);
     }

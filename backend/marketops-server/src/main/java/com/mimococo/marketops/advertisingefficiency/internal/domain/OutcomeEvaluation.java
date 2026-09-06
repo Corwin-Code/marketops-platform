@@ -30,7 +30,14 @@ public record OutcomeEvaluation(
         Verdict verdict,
         GuardState guardState,
         BigDecimal changeRatio,
-        List<String> unresolvedReasons) {
+        List<String> unresolvedReasons,
+        com.mimococo.marketops.advertisingefficiency.AdvertisingOutcomeInferenceScope inferenceScope) {
+
+    public OutcomeEvaluation(Stage stage, Verdict verdict, GuardState guardState,
+            BigDecimal changeRatio, List<String> unresolvedReasons) {
+        this(stage,verdict,guardState,changeRatio,unresolvedReasons,
+                com.mimococo.marketops.advertisingefficiency.AdvertisingOutcomeInferenceScope.OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY);
+    }
 
     /** Which of the two views of the same window this is. */
     public enum Stage {
@@ -69,6 +76,9 @@ public record OutcomeEvaluation(
         Objects.requireNonNull(stage, "stage");
         Objects.requireNonNull(verdict, "verdict");
         Objects.requireNonNull(guardState, "guardState");
+        if (inferenceScope != com.mimococo.marketops.advertisingefficiency.AdvertisingOutcomeInferenceScope.OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY) {
+            throw new IllegalArgumentException("an advertising observation establishes operational association only");
+        }
         unresolvedReasons = List.copyOf(
                 unresolvedReasons == null ? List.of() : unresolvedReasons);
         if ((verdict == Verdict.INDETERMINATE || verdict == Verdict.NOT_YET_EVALUABLE)

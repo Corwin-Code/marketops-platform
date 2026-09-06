@@ -30,6 +30,7 @@ class AdvertisingManualWorkflowIT {
     private static final String ISSUER_PASSWORD=UUID.randomUUID().toString();
     @Autowired DataSource application;
     @Autowired AdvertisingManualPacketRepository packets;
+    @Autowired com.mimococo.marketops.advertisingefficiency.internal.infrastructure.jdbc.AdvertisingOutcomeRepository outcomes;
     @Autowired AdvertisingResponsibilityIntake responsibilities;
     @Autowired com.mimococo.marketops.operationsworkflow.AdvertisingOutcomePlanning outcomePlanning;
     @Autowired ObjectMapper json;
@@ -269,6 +270,11 @@ class AdvertisingManualWorkflowIT {
                 .param("key",java.util.UUID.randomUUID().toString()).param("from",java.sql.Timestamp.from(from)).param("to",java.sql.Timestamp.from(to)).param("at",java.sql.Timestamp.from(at)).update();
         UUID observation=outcomePlanning.observeManual(graph.id("organization"),packet,at);
         assertThat(observation).isNotNull();
+        assertThat(seed.sql("SELECT input_snapshot->>'inferenceScope' FROM ops.ad_outcome_axes WHERE observation_id=:id")
+                .param("id",observation).query(String.class).single()).isEqualTo("OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY");
+        assertThat(outcomes.forManualPacket(graph.id("organization"),packet,java.util.List.of(graph.id("store"))))
+                .isNotEmpty().allSatisfy(value->assertThat(value.inferenceScope()).isEqualTo("OPERATIONAL_ASSOCIATION_NOT_CAUSAL_INCREMENTALITY"));
+
         assertThat(seed.sql("SELECT verdict FROM ops.ad_outcome_observation WHERE id=:id").param("id",observation).query(String.class).single()).isEqualTo("UNCHANGED");
         assertThat(seed.sql("SELECT state FROM ops.ad_action_reservation WHERE id=:id").param("id",row.reservationId()).query(String.class).single()).isEqualTo("RELEASED");
         assertThat(seed.sql("SELECT count(*) FROM ops.ad_outcome_critical_guard WHERE observation_id=:id AND guard_state='PASS'").param("id",observation).query(Integer.class).single()).isEqualTo(1);
