@@ -6,6 +6,13 @@ against five existing Findings. They neither add Findings nor amend the accepted
 Contract. The current user request authorizes completing their remaining scope
 under the existing R1 authority, with the PR Draft and production writes disabled.
 
+The final source-to-clause review also identified an unmet part of the existing
+DR007 verification requirement: independent manual observations lacked explicit
+source, completeness and actual observation time. The
+[manual evidence repair](MANUAL-EVIDENCE-COMPLETENESS-REWORK.md) is in progress
+under the same R1 authorization. Earlier `02e6172` product and `9d962df` tool
+results remain preserved; they are not measurements of that later repair.
+
 `controller-package/` preserves all 15 supplied files byte-for-byte. Its original
 manifest covers 12 substantive files, and its original SHA256SUMS covers those
 12 files plus the manifest. The separately supplied

@@ -100,7 +100,9 @@ public class AdvertisingOutcomeRepository {
                     stage.stage||CASE WHEN latest.id IS NULL THEN '' ELSE '_REVISED' END next_stage,
                     latest.id latest_settled_id,latest.revision_no latest_settled_revision
                 FROM ops.ad_manual_execution_packet p JOIN mart.ad_case k ON k.id=p.case_id
-                JOIN ops.ad_manual_configuration_verification proof ON proof.id=p.current_proof_id AND proof.proves_configuration
+                JOIN ops.ad_manual_configuration_verification proof ON proof.id=p.current_proof_id
+                    AND ops.ad_manual_observation_is_qualified(proof.id)
+                    AND proof.observed_at<=:now AND proof.recorded_at<=:now
                 JOIN ops.ad_outcome_baseline b ON b.id=p.outcome_baseline_id
                 JOIN ops.ad_outcome_stage_baseline stage ON stage.outcome_baseline_id=b.id
                 LEFT JOIN LATERAL(SELECT o.id,o.revision_no,o.evaluated_at,axes.input_snapshot,

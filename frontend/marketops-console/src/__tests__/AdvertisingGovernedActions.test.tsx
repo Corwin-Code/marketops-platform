@@ -7,7 +7,7 @@ import {
 import { AdvertisingManualShadow } from '../advertising/AdvertisingManualShadow';
 import { AdvertisingWorkflow } from '../advertising/AdvertisingWorkflow';
 import { parseAdvertisingManualPacket } from '../api/advertising';
-import { fetchAdvertisingManualOptions } from '../api/console';
+import { actOnAdvertisingManualPacket, fetchAdvertisingManualOptions } from '../api/console';
 import type { ConsoleRequest } from '../api/console';
 
 const packetBody = {
@@ -276,6 +276,131 @@ describe('governed human controls use exact server authority', () => {
     });
   });
 
+  it('does not invent independent observation details for a value-only request', async () => {
+    const { context, fetchImpl } = client(() => response(packetBody));
+    const packet = parseAdvertisingManualPacket(packetBody);
+    if (packet === undefined) throw new Error('packet fixture must parse');
+    const result = await actOnAdvertisingManualPacket(context, packet, 'INDEPENDENT_VERIFY', '20');
+    expect(result.ok).toBe(false);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['SCREENSHOT', 'INCOMPLETE', false],
+    ['DIRECT_OFFICIAL_CONSOLE', 'COMPLETE', true],
+  ] as const)(
+    'submits explicit %s %s evidence with the actual observation time and exact packet scope',
+    async (source, completeness, attested) => {
+      const { context, fetchImpl } = client(() => response({ ...packetBody, version: 5 }));
+      const packet = parseAdvertisingManualPacket({
+        ...packetBody,
+        packetDetails: {
+          semanticProfileId: 'profile-1',
+          verificationFieldPath: 'targetBid',
+          nativeObjectKey: 'native-key-1',
+        },
+        allowedActions: ['INDEPENDENT_VERIFY'],
+      });
+      if (packet === undefined) throw new Error('packet fixture must parse');
+      const reload = vi.fn();
+      render(<AdvertisingManualPacketControls context={context} packet={packet} reload={reload} />);
+      const submit = screen.getByRole('button', {
+        name: 'Record independent configuration observation',
+      });
+      expect(submit).toBeDisabled();
+      expect(screen.getByLabelText('Observation source')).toHaveValue('');
+      expect(screen.getByLabelText('Observation completeness')).toHaveValue('');
+      expect(screen.getByLabelText('Time actually observed (your local time)')).toHaveValue('');
+      fireEvent.change(screen.getByLabelText('Independently observed exact native value'), {
+        target: { value: '20' },
+      });
+      fireEvent.change(screen.getByLabelText('Observation source'), { target: { value: source } });
+      fireEvent.change(screen.getByLabelText('Observation completeness'), {
+        target: { value: completeness },
+      });
+      fireEvent.change(screen.getByLabelText('Observation evidence reference'), {
+        target: { value: 'fixture://observation-1' },
+      });
+      if (attested) {
+        const checkbox = screen.getByRole('checkbox', {
+          name: 'I observed this object and field directly in the official console',
+        });
+        expect(checkbox).not.toBeChecked();
+        fireEvent.click(checkbox);
+      } else {
+        expect(
+          screen.getByText(/does not establish the configuration or release a held reservation/u),
+        ).toBeInTheDocument();
+      }
+      expect(submit).toBeDisabled(); // Unknown actual observation time cannot be replaced by receipt time.
+      const localTime = '2026-09-04T00:15:23.456';
+      fireEvent.change(screen.getByLabelText('Time actually observed (your local time)'), {
+        target: { value: localTime },
+      });
+      if (attested) {
+        const checkbox = screen.getByRole('checkbox');
+        fireEvent.click(checkbox);
+        expect(submit).toBeDisabled();
+        fireEvent.click(checkbox);
+      }
+      expect(submit).toBeEnabled();
+      fireEvent.click(submit);
+      await waitFor(() => {
+        expect(reload).toHaveBeenCalledOnce();
+      });
+      const post = vi.mocked(fetchImpl).mock.calls[0];
+      expect(post?.[0]).toContain('/manual-packets/packet-1/independent-verification');
+      expect(JSON.parse(typeof post?.[1]?.body === 'string' ? post[1].body : '{}')).toEqual({
+        expectedVersion: 4,
+        observedValue: '20',
+        observedAt: new Date(localTime).toISOString(),
+        evidenceSource: source,
+        completeness,
+        exactNativeObjectId: 'object-1',
+        exactFieldPath: 'targetBid',
+        semanticProfileId: 'profile-1',
+        evidenceReference: 'fixture://observation-1',
+        directObservationAttested: attested,
+      });
+    },
+  );
+
+  it('does not infer missing packet verification scope or retain a direct attestation after changing source', () => {
+    const { context } = client(() => response(packetBody));
+    const packet = parseAdvertisingManualPacket({
+      ...packetBody,
+      allowedActions: ['INDEPENDENT_VERIFY'],
+    });
+    if (packet === undefined) throw new Error('packet fixture must parse');
+    render(<AdvertisingManualPacketControls context={context} packet={packet} reload={vi.fn()} />);
+    fireEvent.change(screen.getByLabelText('Independently observed exact native value'), {
+      target: { value: '20' },
+    });
+    fireEvent.change(screen.getByLabelText('Observation source'), {
+      target: { value: 'DIRECT_OFFICIAL_CONSOLE' },
+    });
+    fireEvent.change(screen.getByLabelText('Observation completeness'), {
+      target: { value: 'COMPLETE' },
+    });
+    fireEvent.change(screen.getByLabelText('Observation evidence reference'), {
+      target: { value: 'fixture://direct' },
+    });
+    fireEvent.change(screen.getByLabelText('Time actually observed (your local time)'), {
+      target: { value: '2026-09-04T00:15' },
+    });
+    fireEvent.click(screen.getByRole('checkbox'));
+    expect(
+      screen.getByRole('button', { name: 'Record independent configuration observation' }),
+    ).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('Observation source'), {
+      target: { value: 'SCREENSHOT' },
+    });
+    fireEvent.change(screen.getByLabelText('Observation source'), {
+      target: { value: 'DIRECT_OFFICIAL_CONSOLE' },
+    });
+    expect(screen.getByRole('checkbox')).not.toBeChecked();
+  });
+
   it('refreshes a new early outcome even when the verified packet version stays unchanged', async () => {
     let observed = false;
     let outcomeReads = 0;
@@ -285,11 +410,26 @@ describe('governed human controls use exact server authority', () => {
       state: 'MANUAL_CONFIGURATION_VERIFIED',
       configurationProven: true,
       currentProofId: 'proof-1',
+      packetDetails: { semanticProfileId: 'profile-1', verificationFieldPath: 'targetBid' },
       allowedActions: ['OBSERVE_EARLY_SAFETY'],
       verifications: [
         {
           id: 'proof-1',
-          evidenceGrade: 'INDEPENDENT_HUMAN_OBSERVATION',
+          evidenceGrade: 'INDEPENDENT_MANUAL_VERIFICATION',
+          qualifiedForCurrentProof: true,
+          observedFieldPath: 'targetBid',
+          observedValue: '20',
+          independentObservation: {
+            observedValue: '20',
+            observedAt: '2026-09-04T00:00:00Z',
+            evidenceSource: 'DIRECT_OFFICIAL_CONSOLE',
+            completeness: 'COMPLETE',
+            exactNativeObjectId: 'object-1',
+            exactFieldPath: 'targetBid',
+            semanticProfileId: 'profile-1',
+            evidenceReference: 'fixture://direct-observation',
+            directObservationAttested: true,
+          },
           conflictState: 'NONE',
           provesConfiguration: true,
           observedAt: '2026-09-04T00:00:00Z',

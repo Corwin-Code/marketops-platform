@@ -194,7 +194,10 @@ public class AdvertisingDisclosureRepository {
                     'observedConfiguration',jsonb_build_object('currentBid',cfg.observed_bid_amount,
                       'currentBudget',cfg.observed_budget_amount,'currentStatus',cfg.native_status_raw,
                       'currencyCode',cfg.bid_currency_code,'bidUnitCode',cfg.bid_unit_code,'observedAt',cfg.observed_at),
-                    'verificationPlan',p.verification_plan,'expectedImpact',p.expected_impact,
+                    'verificationPlan',p.verification_plan,'semanticProfileId',p.semantic_profile_id,
+                    'verificationFieldPath',CASE p.action_kind WHEN 'AD_BID_CHANGE' THEN 'targetBid'
+                      WHEN 'AD_BUDGET_CHANGE' THEN 'targetBudget' ELSE 'targetStatus' END,
+                    'expectedImpact',p.expected_impact,
                     'authoritySnapshot',p.authority_snapshot)::text
                 FROM ops.ad_manual_execution_packet p JOIN core.store s ON s.id=p.store_id
                 JOIN core.ad_native_object o ON o.id=p.ad_native_object_id

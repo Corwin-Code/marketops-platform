@@ -178,6 +178,7 @@ APPROVED_MIGRATIONS = (
     "V0070__record_canonical_metric_reevaluation_proofs.sql",
     "V0071__align_frozen_outcome_company_profile_scope.sql",
     "V0072__resolve_outcome_policy_with_explicit_scope_state.sql",
+    "V0073__require_complete_independent_manual_observation.sql",
 )
 
 DEFERRED_EVIDENCE_REGISTER = (
@@ -230,6 +231,15 @@ def approved_index_replacement(path: Path, text: str, line: str) -> bool:
     index retirement. R1 also distinguishes an accountable Advertising Case
     from its finite inert choices while preserving every non-advertising key.
     """
+    if path.name == "V0073__require_complete_independent_manual_observation.sql":
+        # Permit only the exact index and issue-time guard together. The shared
+        # execution reservation is untouched; historical uncertainty is appendable.
+        start = text.find("DROP INDEX ops.ad_manual_execution_packet_live_uq;")
+        end = text.find("\n\nALTER TABLE ops.ad_manual_configuration_verification", start)
+        return (line.strip().upper() == "DROP INDEX OPS.AD_MANUAL_EXECUTION_PACKET_LIVE_UQ;"
+                and start >= 0 and end > start
+                and hashlib.sha256("".join(text[start:end].split()).encode()).hexdigest()
+                == "903ec9e009e946e184189af4239a2ddc96a8e8575031edbb25d94bce2552e890")
     if path.name == "V0064__reconcile_expired_advertising_authority.sql":
         expected = """
         DROP INDEX ops.recommendation_live_uq;

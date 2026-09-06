@@ -10,7 +10,10 @@ import type {
   ConsoleFailure,
   ConsoleRequest,
 } from '../api/console';
-import type { AdvertisingManualPacket } from '../api/advertising';
+import type {
+  AdvertisingManualIndependentObservation,
+  AdvertisingManualPacket,
+} from '../api/advertising';
 import { AdvertisingProblem } from './AdvertisingQueue';
 
 const LABELS: Record<AdvertisingManualAction, string> = {
@@ -35,6 +38,43 @@ export function AdvertisingManualPacketControls({
   const [failure, setFailure] = useState<ConsoleFailure>();
   const [observed, setObserved] = useState('');
   const [configuration, setConfiguration] = useState('');
+  const [observedAt, setObservedAt] = useState('');
+  const [source, setSource] = useState<
+    AdvertisingManualIndependentObservation['evidenceSource'] | ''
+  >('');
+  const [completeness, setCompleteness] = useState<
+    AdvertisingManualIndependentObservation['completeness'] | ''
+  >('');
+  const [evidenceReference, setEvidenceReference] = useState('');
+  const [directAttested, setDirectAttested] = useState(false);
+  const exactFieldPath = packet.packetDetails?.verificationFieldPath;
+  const semanticProfileId = packet.packetDetails?.semanticProfileId;
+  const nativeObjectKey = packet.packetDetails?.nativeObjectKey;
+  const observation: AdvertisingManualIndependentObservation | undefined =
+    observed.trim().length > 0 &&
+    observedAt.length > 0 &&
+    Number.isFinite(Date.parse(observedAt)) &&
+    source !== '' &&
+    completeness !== '' &&
+    evidenceReference.trim().length > 0 &&
+    typeof semanticProfileId === 'string' &&
+    semanticProfileId.length > 0 &&
+    (exactFieldPath === 'targetBid' ||
+      exactFieldPath === 'targetBudget' ||
+      exactFieldPath === 'targetStatus') &&
+    (source !== 'DIRECT_OFFICIAL_CONSOLE' || completeness !== 'COMPLETE' || directAttested)
+      ? {
+          observedValue: observed.trim(),
+          observedAt: new Date(observedAt).toISOString(),
+          evidenceSource: source,
+          completeness,
+          exactNativeObjectId: packet.adNativeObjectId,
+          exactFieldPath,
+          semanticProfileId,
+          evidenceReference: evidenceReference.trim(),
+          directObservationAttested: source === 'DIRECT_OFFICIAL_CONSOLE' && directAttested,
+        }
+      : undefined;
   const actions = Object.keys(LABELS).filter((action): action is AdvertisingManualAction =>
     packet.allowedActions.includes(action),
   );
@@ -47,6 +87,7 @@ export function AdvertisingManualPacketControls({
       packet,
       action,
       action === 'OFFICIAL_VERIFY' ? configuration : observed,
+      action === 'INDEPENDENT_VERIFY' ? observation : undefined,
     );
     setBusy(false);
     if (result.ok) reload();
@@ -56,16 +97,107 @@ export function AdvertisingManualPacketControls({
     <section aria-label="Manual packet actions">
       {failure !== undefined && <AdvertisingProblem failure={failure} />}
       {actions.includes('INDEPENDENT_VERIFY') && (
-        <label>
-          Independently observed exact native value
-          <input
-            value={observed}
-            maxLength={128}
-            onChange={(event) => {
-              setObserved(event.target.value);
-            }}
-          />
-        </label>
+        <fieldset>
+          <legend>Record what you actually observed</legend>
+          <p>
+            Confirm this object:{' '}
+            {typeof nativeObjectKey === 'string' ? nativeObjectKey : packet.adNativeObjectId}.
+            Field:{' '}
+            {exactFieldPath === 'targetBid'
+              ? 'Bid'
+              : exactFieldPath === 'targetBudget'
+                ? 'Budget'
+                : exactFieldPath === 'targetStatus'
+                  ? 'Status'
+                  : 'Unavailable'}
+            .
+          </p>
+          <p>
+            Use the time you saw the configuration. This does not establish when the change was
+            applied.
+          </p>
+          <label>
+            Independently observed exact native value
+            <input
+              value={observed}
+              maxLength={128}
+              onChange={(event) => {
+                setObserved(event.target.value);
+              }}
+            />
+          </label>
+          <label>
+            Observation source
+            <select
+              value={source}
+              onChange={(event) => {
+                const value = event.target.value;
+                setSource(
+                  value === 'DIRECT_OFFICIAL_CONSOLE' || value === 'SCREENSHOT' ? value : '',
+                );
+                setDirectAttested(false);
+              }}
+            >
+              <option value="">Choose the source</option>
+              <option value="DIRECT_OFFICIAL_CONSOLE">Official console, observed directly</option>
+              <option value="SCREENSHOT">Screenshot</option>
+            </select>
+          </label>
+          <label>
+            Observation completeness
+            <select
+              value={completeness}
+              onChange={(event) => {
+                const value = event.target.value;
+                setCompleteness(value === 'COMPLETE' || value === 'INCOMPLETE' ? value : '');
+              }}
+            >
+              <option value="">Choose completeness</option>
+              <option value="COMPLETE">Complete: exact object, field and value are visible</option>
+              <option value="INCOMPLETE">Incomplete</option>
+            </select>
+          </label>
+          <label>
+            Time actually observed (your local time)
+            <input
+              type="datetime-local"
+              step="0.001"
+              value={observedAt}
+              onChange={(event) => {
+                setObservedAt(event.target.value);
+              }}
+            />
+          </label>
+          <p>If the actual observation time is unknown, this observation cannot be submitted.</p>
+          <label>
+            Observation evidence reference
+            <input
+              value={evidenceReference}
+              maxLength={512}
+              onChange={(event) => {
+                setEvidenceReference(event.target.value);
+              }}
+            />
+          </label>
+          {source === 'DIRECT_OFFICIAL_CONSOLE' && (
+            <label>
+              <input
+                type="checkbox"
+                checked={directAttested}
+                onChange={(event) => {
+                  setDirectAttested(event.target.checked);
+                }}
+              />
+              I observed this object and field directly in the official console
+            </label>
+          )}
+          {(source === 'SCREENSHOT' || completeness === 'INCOMPLETE') && (
+            <p>
+              A screenshot or incomplete observation records evidence and does not establish the
+              configuration or release a held reservation.
+            </p>
+          )}
+        </fieldset>
       )}
       {actions.includes('OFFICIAL_VERIFY') && (
         <label>
@@ -84,7 +216,7 @@ export function AdvertisingManualPacketControls({
           key={action}
           disabled={
             busy ||
-            (action === 'INDEPENDENT_VERIFY' && observed.trim().length === 0) ||
+            (action === 'INDEPENDENT_VERIFY' && observation === undefined) ||
             (action === 'OFFICIAL_VERIFY' && configuration.trim().length === 0)
           }
           onClick={() => {

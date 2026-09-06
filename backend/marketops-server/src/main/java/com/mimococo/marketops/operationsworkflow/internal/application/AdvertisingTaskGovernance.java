@@ -112,7 +112,9 @@ public class AdvertisingTaskGovernance {
             case "MANUAL_EXECUTION_VERIFIED" -> """
                     SELECT EXISTS(SELECT 1 FROM ops.ad_manual_configuration_verification v
                     JOIN ops.ad_manual_execution_packet p ON p.id=v.packet_id
-                    WHERE v.id=:id AND p.case_id=:case AND v.verifier_user_id=:actor AND v.proves_configuration)
+                    WHERE v.id=:id AND p.case_id=:case AND v.verifier_user_id=:actor
+                      AND p.current_proof_id=v.id AND p.state='MANUAL_CONFIGURATION_VERIFIED'
+                      AND ops.ad_manual_observation_is_qualified(v.id))
                     """;
             case "EXCEPTION_ENDORSED" -> """
                     SELECT EXISTS(SELECT 1 FROM ops.ad_accepted_exception

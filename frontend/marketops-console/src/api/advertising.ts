@@ -655,11 +655,61 @@ export function parseAdvertisingOutcome(body: unknown): AdvertisingOutcome | und
 /**
  * One observation about whether a manual change actually landed.
  *
- * `provesConfiguration` is the whole point. An executor saying they did it is a
- * report; only an official readback, an official export or a second person's
- * independent look proves anything, and the console must never render the two
- * the same way.
+ * Historical proof flags remain readable, while current qualification requires
+ * the complete accepted observation and the backend's current scope checks.
  */
+export interface AdvertisingManualIndependentObservation {
+  readonly observedValue: string;
+  readonly observedAt: string;
+  readonly evidenceSource: 'DIRECT_OFFICIAL_CONSOLE' | 'SCREENSHOT';
+  readonly completeness: 'COMPLETE' | 'INCOMPLETE';
+  readonly exactNativeObjectId: string;
+  readonly exactFieldPath: 'targetBid' | 'targetBudget' | 'targetStatus';
+  readonly semanticProfileId: string;
+  readonly evidenceReference: string;
+  readonly directObservationAttested: boolean;
+}
+
+function parseManualIndependentObservation(
+  body: unknown,
+): AdvertisingManualIndependentObservation | undefined {
+  if (typeof body !== 'object' || body === null) return undefined;
+  const record = body as Record<string, unknown>;
+  const observedValue = text(record.observedValue);
+  const observedAt = text(record.observedAt);
+  const exactNativeObjectId = text(record.exactNativeObjectId);
+  const semanticProfileId = text(record.semanticProfileId);
+  const evidenceReference = text(record.evidenceReference);
+  if (
+    observedValue === undefined ||
+    observedAt === undefined ||
+    !Number.isFinite(Date.parse(observedAt)) ||
+    exactNativeObjectId === undefined ||
+    semanticProfileId === undefined ||
+    evidenceReference === undefined ||
+    (record.evidenceSource !== 'DIRECT_OFFICIAL_CONSOLE' &&
+      record.evidenceSource !== 'SCREENSHOT') ||
+    (record.completeness !== 'COMPLETE' && record.completeness !== 'INCOMPLETE') ||
+    (record.exactFieldPath !== 'targetBid' &&
+      record.exactFieldPath !== 'targetBudget' &&
+      record.exactFieldPath !== 'targetStatus') ||
+    typeof record.directObservationAttested !== 'boolean'
+  ) {
+    return undefined;
+  }
+  return {
+    observedValue,
+    observedAt,
+    evidenceSource: record.evidenceSource,
+    completeness: record.completeness,
+    exactNativeObjectId,
+    exactFieldPath: record.exactFieldPath,
+    semanticProfileId,
+    evidenceReference,
+    directObservationAttested: record.directObservationAttested,
+  };
+}
+
 export interface AdvertisingManualVerification {
   readonly id: string;
   readonly evidenceGrade: string;
@@ -669,7 +719,9 @@ export interface AdvertisingManualVerification {
   readonly observedValue: string | undefined;
   readonly conflictState: string | undefined;
   readonly provesConfiguration: boolean;
+  readonly qualifiedForCurrentProof: boolean;
   readonly observedAt: string;
+  readonly independentObservation: AdvertisingManualIndependentObservation | undefined;
 }
 
 /**
@@ -716,6 +768,14 @@ export function parseAdvertisingManualVerification(
   if (id === undefined || evidenceGrade === undefined) {
     return undefined;
   }
+  const independentObservation = parseManualIndependentObservation(record.independentObservation);
+  const completeDirectObservation =
+    independentObservation?.evidenceSource === 'DIRECT_OFFICIAL_CONSOLE' &&
+    independentObservation.completeness === 'COMPLETE' &&
+    independentObservation.directObservationAttested &&
+    independentObservation.observedValue === text(record.observedValue) &&
+    independentObservation.exactFieldPath === text(record.observedFieldPath) &&
+    Date.parse(independentObservation.observedAt) === Date.parse(text(record.observedAt) ?? '');
   return {
     id,
     evidenceGrade,
@@ -724,9 +784,16 @@ export function parseAdvertisingManualVerification(
     observedFieldPath: text(record.observedFieldPath),
     observedValue: text(record.observedValue),
     conflictState: text(record.conflictState),
-    // Never defaulted true. An absent flag is not a proof.
     provesConfiguration: record.provesConfiguration === true,
+    // A partial screenshot, unknown source or legacy value alone cannot become current proof.
+    qualifiedForCurrentProof:
+      record.qualifiedForCurrentProof === true &&
+      record.provesConfiguration === true &&
+      (evidenceGrade === 'OFFICIAL_API_READBACK' ||
+        evidenceGrade === 'OFFICIAL_CONFIGURATION_EXPORT' ||
+        (evidenceGrade === 'INDEPENDENT_MANUAL_VERIFICATION' && completeDirectObservation)),
     observedAt: text(record.observedAt) ?? '',
+    independentObservation,
   };
 }
 
@@ -755,16 +822,17 @@ export function parseAdvertisingManualPacket(body: unknown): AdvertisingManualPa
     : [];
   if (Array.isArray(record.verifications) && verifications.length !== record.verifications.length)
     return undefined;
+  const packetDetails =
+    typeof record.packetDetails === 'object' && record.packetDetails !== null
+      ? (record.packetDetails as Record<string, unknown>)
+      : undefined;
   return {
     id,
     caseId: text(record.caseId),
     adNativeObjectId,
     actionKind,
     intendedState: text(record.intendedState),
-    packetDetails:
-      typeof record.packetDetails === 'object' && record.packetDetails !== null
-        ? (record.packetDetails as Record<string, unknown>)
-        : undefined,
+    packetDetails,
     reason: text(record.reason),
     evidenceReference: text(record.evidenceReference),
     blockerCodes: strings(record.blockerCodes),
@@ -782,8 +850,14 @@ export function parseAdvertisingManualPacket(body: unknown): AdvertisingManualPa
       verifications.some(
         (item) =>
           item.id === text(record.currentProofId) &&
-          item.provesConfiguration &&
-          item.conflictState === 'NONE',
+          item.qualifiedForCurrentProof &&
+          item.conflictState === 'NONE' &&
+          (item.evidenceGrade !== 'INDEPENDENT_MANUAL_VERIFICATION' ||
+            (item.independentObservation !== undefined &&
+              packetDetails !== undefined &&
+              item.independentObservation.exactNativeObjectId === adNativeObjectId &&
+              item.independentObservation.exactFieldPath === packetDetails.verificationFieldPath &&
+              item.independentObservation.semanticProfileId === packetDetails.semanticProfileId)),
       ),
     version: decimal(record.version),
     currentProofId: text(record.currentProofId),

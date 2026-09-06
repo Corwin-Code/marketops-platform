@@ -275,7 +275,8 @@ public class AdvertisingDisclosureService implements AdvertisingDisclosurePolicy
         // configuration fields cross this boundary; finance/impact JSON does not.
         result.set("packetDetails",allow(details,"organizationId","platformCode","storeId","marketplaceAccountId",
                 "storeTimezone","affectedSetId","affectedSetDigest","affectedProductVariantIds","affectedListingVariantIds",
-                "nativeObjectKind","nativeObjectKey","nativeCampaignKey","observedConfigurationId","observedConfiguration","verificationPlan"));
+                "nativeObjectKind","nativeObjectKey","nativeCampaignKey","observedConfigurationId","observedConfiguration","verificationPlan",
+                "semanticProfileId","verificationFieldPath"));
         result.put("intendedState", nativeIntendedState(view.intendedState()));
         result.put("reason", "MASKED");
         result.put("disclosureState", "MASKED");
@@ -285,7 +286,8 @@ public class AdvertisingDisclosureService implements AdvertisingDisclosurePolicy
         var verifications = result.putArray("verifications");
         for (var item : view.verifications()) {
             verifications.add(allow(mapper.valueToTree(item), "id", "evidenceGrade", "conflictState",
-                    "provesConfiguration", "observedAt", "observedFieldPath", "observedValue"));
+                    "provesConfiguration", "observedAt", "observedFieldPath", "observedValue",
+                    "independentObservation", "qualifiedForCurrentProof"));
         }
         return result;
     }

@@ -630,6 +630,7 @@ class MigrationContractTests(unittest.TestCase):
                 "V0070__record_canonical_metric_reevaluation_proofs.sql",
                 "V0071__align_frozen_outcome_company_profile_scope.sql",
                 "V0072__resolve_outcome_policy_with_explicit_scope_state.sql",
+                "V0073__require_complete_independent_manual_observation.sql",
             ),
             APPROVED_MIGRATIONS,
         )
@@ -700,6 +701,16 @@ class MigrationContractTests(unittest.TestCase):
         self.assertFalse(approved_index_replacement(path.with_name("V9999__unsafe.sql"), text, line))
         self.assertFalse(approved_index_replacement(path, text, "DROP INDEX ops.ad_case_responsibility;"))
         for removed in ("'caseId'", "'candidateId'", "'APPROVED',", "'ADVERTISING_REVIEW','AD_BID_CHANGE'"):
+            with self.subTest(removed=removed):
+                self.assertFalse(approved_index_replacement(path, text.replace(removed, ""), line))
+        path = root / "backend/marketops-server/src/main/resources/db/migration/V0073__require_complete_independent_manual_observation.sql"
+        text = path.read_text(encoding="utf-8")
+        line = "DROP INDEX ops.ad_manual_execution_packet_live_uq;"
+        self.assertTrue(approved_index_replacement(path, text, line))
+        self.assertFalse(approved_index_replacement(path.with_name("V9999__unsafe.sql"), text, line))
+        self.assertFalse(approved_index_replacement(path, text, "DROP TABLE ops.ad_manual_execution_packet;"))
+        for removed in ("CREATE UNIQUE INDEX", "execution_started_at IS NULL", "CREATE TRIGGER ad_manual_packet_issue_guard",
+                        "'MANUAL_EXECUTION_UNCERTAIN'", "pg_advisory_xact_lock", "other.id<>NEW.id"):
             with self.subTest(removed=removed):
                 self.assertFalse(approved_index_replacement(path, text.replace(removed, ""), line))
 

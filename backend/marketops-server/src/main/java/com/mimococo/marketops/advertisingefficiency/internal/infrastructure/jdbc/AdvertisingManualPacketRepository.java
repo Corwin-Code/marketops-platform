@@ -160,7 +160,15 @@ public class AdvertisingManualPacketRepository {
         return jdbc.sql("""
                 SELECT id, evidence_grade, executor_user_id, verifier_user_id,
                        observed_field_path, observed_value, conflict_state,
-                       proves_configuration, observed_at
+                       proves_configuration, observed_at, independent_observation,
+                       independent_observation->>'evidenceSource' observation_source,
+                       independent_observation->>'completeness' observation_completeness,
+                       independent_observation->>'exactNativeObjectId' observation_object,
+                       independent_observation->>'exactFieldPath' observation_field,
+                       independent_observation->>'semanticProfileId' observation_profile,
+                       independent_observation->>'evidenceReference' observation_reference,
+                       independent_observation->>'directObservationAttested' observation_attested,
+                       ops.ad_manual_observation_is_qualified(id) qualified_for_current_proof
                   FROM ops.ad_manual_configuration_verification
                  WHERE packet_id = :packetId
                  ORDER BY recorded_at DESC, id
@@ -176,8 +184,20 @@ public class AdvertisingManualPacketRepository {
                                 rs.getString("observed_value"),
                                 rs.getString("conflict_state"),
                                 rs.getBoolean("proves_configuration"),
-                                rs.getTimestamp("observed_at").toInstant()))
+                                rs.getTimestamp("observed_at").toInstant(),
+                                rs.getString("independent_observation") == null ? null : new ManualExecutionPacketView.IndependentObservation(
+                                        rs.getString("observed_value"),rs.getTimestamp("observed_at").toInstant(),
+                                        rs.getString("observation_source"),rs.getString("observation_completeness"),
+                                        optionalUuid(rs.getString("observation_object")),rs.getString("observation_field"),
+                                        optionalUuid(rs.getString("observation_profile")),rs.getString("observation_reference"),
+                                        rs.getString("observation_attested")==null ? null : Boolean.valueOf(rs.getString("observation_attested"))),
+                                rs.getBoolean("qualified_for_current_proof")))
                 .list();
+    }
+
+    private static UUID optionalUuid(String value) {
+        if(value==null) return null;
+        try { return UUID.fromString(value); } catch(IllegalArgumentException invalid) { return null; }
     }
 
     private static ManualExecutionPacketView withVerifications(

@@ -732,6 +732,7 @@ describe('the manual shadow', () => {
         {
           id: 'ffffffff-ffff-4fff-8fff-fffffffffff1',
           evidenceGrade: 'OFFICIAL_API_READBACK',
+          qualifiedForCurrentProof: true,
           executorUserId: PACKET.makerUserId,
           verifierUserId: null,
           observedFieldPath: 'dailyBudget',
@@ -755,6 +756,153 @@ describe('the manual shadow', () => {
     });
     expect(manual.querySelector('[data-proven="true"]')).not.toBeNull();
     expect(manual.textContent).toContain('has been established');
+  });
+
+  const independentObservation = {
+    observedValue: '5000.0000',
+    observedAt: '2026-09-04T01:00:00Z',
+    evidenceSource: 'DIRECT_OFFICIAL_CONSOLE',
+    completeness: 'COMPLETE',
+    exactNativeObjectId: PACKET.adNativeObjectId,
+    exactFieldPath: 'targetBudget',
+    semanticProfileId: 'manual-profile-1',
+    evidenceReference: 'fixture://independent-observation',
+    directObservationAttested: true,
+  };
+  const independentPacket = {
+    ...PACKET,
+    state: 'MANUAL_CONFIGURATION_VERIFIED',
+    configurationProven: true,
+    currentProofId: 'independent-1',
+    packetDetails: { semanticProfileId: 'manual-profile-1', verificationFieldPath: 'targetBudget' },
+    verifications: [
+      {
+        id: 'independent-1',
+        evidenceGrade: 'INDEPENDENT_MANUAL_VERIFICATION',
+        conflictState: 'NONE',
+        provesConfiguration: true,
+        qualifiedForCurrentProof: true,
+        observedFieldPath: 'targetBudget',
+        observedValue: '5000.0000',
+        observedAt: independentObservation.observedAt,
+        independentObservation,
+      },
+    ],
+  };
+
+  it.each([
+    [
+      'same-value incomplete screenshot',
+      {
+        evidenceSource: 'SCREENSHOT',
+        completeness: 'INCOMPLETE',
+        directObservationAttested: false,
+      },
+    ],
+    ['complete screenshot', { evidenceSource: 'SCREENSHOT' }],
+    ['incomplete direct observation', { completeness: 'INCOMPLETE' }],
+    ['unattested direct observation', { directObservationAttested: false }],
+    ['string attestation', { directObservationAttested: 'true' }],
+    ['unknown source', { evidenceSource: 'UNRECOGNIZED' }],
+    ['unknown completeness', { completeness: 'UNKNOWN' }],
+    ['missing actual time', { observedAt: null }],
+    ['different actual time', { observedAt: '2026-09-04T01:01:00Z' }],
+    ['different object', { exactNativeObjectId: 'another-object' }],
+    ['different field', { exactFieldPath: 'targetBid' }],
+    ['different profile', { semanticProfileId: 'another-profile' }],
+    ['different value', { observedValue: '6000' }],
+    ['missing evidence reference', { evidenceReference: '' }],
+  ] as const)(
+    'does not display %s as current proof even when legacy and current flags claim proof',
+    (_name, delta) => {
+      const parsed = parseAdvertisingManualPacket({
+        ...independentPacket,
+        verifications: [
+          {
+            ...independentPacket.verifications[0],
+            independentObservation: { ...independentObservation, ...delta },
+          },
+        ],
+      });
+      expect(parsed?.configurationProven).toBe(false);
+      expect(parsed?.verifications[0]?.provesConfiguration).toBe(true); // The historical proof flag stays legible.
+    },
+  );
+
+  it('requires explicit current qualification and the full envelope while retaining historical proof flags', () => {
+    expect(parseAdvertisingManualPacket(independentPacket)?.configurationProven).toBe(true);
+    for (const delta of [
+      { qualifiedForCurrentProof: false },
+      { qualifiedForCurrentProof: undefined },
+      { independentObservation: null },
+      { independentObservation: undefined },
+    ]) {
+      expect(
+        parseAdvertisingManualPacket({
+          ...independentPacket,
+          verifications: [{ ...independentPacket.verifications[0], ...delta }],
+        })?.configurationProven,
+      ).toBe(false);
+    }
+  });
+
+  it('shows an incomplete screenshot actual observation time without claiming configuration or application time', async () => {
+    const observed = {
+      ...independentPacket,
+      state: 'ACTION_REPORTED_CONFIGURATION_UNVERIFIED',
+      configurationProven: false,
+      currentProofId: null,
+      verifications: [
+        {
+          ...independentPacket.verifications[0],
+          evidenceGrade: 'UNVERIFIED_MANUAL_EVIDENCE',
+          provesConfiguration: false,
+          qualifiedForCurrentProof: false,
+          independentObservation: {
+            ...independentObservation,
+            evidenceSource: 'SCREENSHOT',
+            completeness: 'INCOMPLETE',
+            directObservationAttested: false,
+          },
+        },
+      ],
+    };
+    render(
+      <AdvertisingManualShadow
+        context={context(routes({ '/manual-packets': [observed] }))}
+        objectId={PACKET.adNativeObjectId}
+      />,
+    );
+    await screen.findByText(/Screenshot/u);
+    expect(screen.getByText(/a report, not a proof/u)).toBeInTheDocument();
+    expect(screen.getByText(independentObservation.observedAt)).toHaveAttribute(
+      'datetime',
+      independentObservation.observedAt,
+    );
+    expect(screen.getByText(/application time has not been established/u)).toBeInTheDocument();
+    expect(screen.queryByText('current configuration proof')).not.toBeInTheDocument();
+  });
+
+  it('labels a formerly proven bare-value record as historical and unqualified', async () => {
+    const legacy = {
+      ...independentPacket,
+      configurationProven: false,
+      verifications: [
+        {
+          ...independentPacket.verifications[0],
+          qualifiedForCurrentProof: false,
+          independentObservation: null,
+        },
+      ],
+    };
+    render(
+      <AdvertisingManualShadow
+        context={context(routes({ '/manual-packets': [legacy] }))}
+        objectId={PACKET.adNativeObjectId}
+      />,
+    );
+    await screen.findByText(/historical record; current evidence requirements are not met/u);
+    expect(screen.queryByText('current configuration proof')).not.toBeInTheDocument();
   });
 
   it('TC-UI-ADV-031 says nothing here reaches a marketplace by itself', async () => {

@@ -45,7 +45,10 @@ class AdvertisingManualWorkflowController {
     }
     @PostMapping("/manual-packets/{id}/independent-verification")
     ObjectNode independent(AuthenticatedActor actor,@PathVariable UUID id,@Valid @RequestBody Independent request) {
-        return manual.independent(actor,id,request.expectedVersion(),request.observedValue());
+        return manual.independent(actor,id,request.expectedVersion(),new AdvertisingManualWorkflowService.IndependentObservation(
+                request.observedValue(),request.observedAt(),request.evidenceSource(),request.completeness(),
+                request.exactNativeObjectId(),request.exactFieldPath(),request.semanticProfileId(),
+                request.evidenceReference(),request.directObservationAttested()));
     }
     @PostMapping("/manual-packets/{id}/official-verification")
     ObjectNode official(AuthenticatedActor actor,@PathVariable UUID id,@Valid @RequestBody Official request) {
@@ -57,6 +60,11 @@ class AdvertisingManualWorkflowController {
     ObjectNode observeEarly(AuthenticatedActor actor,@PathVariable UUID id) { return manual.observeEarlySafety(actor,id); }
     record Selection(@NotNull UUID policyId,UUID candidateId,@NotBlank String reason) { }
     record Version(@Min(0) long expectedVersion) { }
-    record Independent(@Min(0) long expectedVersion,@NotBlank String observedValue) { }
+    record Independent(@Min(0) long expectedVersion,@NotBlank String observedValue,
+            @NotNull java.time.Instant observedAt,
+            @NotNull AdvertisingManualWorkflowService.EvidenceSource evidenceSource,
+            @NotNull AdvertisingManualWorkflowService.ObservationCompleteness completeness,
+            @NotNull UUID exactNativeObjectId,@NotBlank String exactFieldPath,@NotNull UUID semanticProfileId,
+            @NotBlank String evidenceReference,@NotNull Boolean directObservationAttested) { }
     record Official(@Min(0) long expectedVersion,@NotNull UUID configurationObservationId) { }
 }

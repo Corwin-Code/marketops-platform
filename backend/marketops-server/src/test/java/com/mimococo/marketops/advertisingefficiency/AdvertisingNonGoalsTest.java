@@ -195,8 +195,12 @@ class AdvertisingNonGoalsTest {
             }
             List<String> allowed = new ArrayList<>(List.of(
                     "V0039__create_advertising_target_materiality_and_manual_shadow.sql",
-                    "V0060__govern_manual_proposals_packets_and_configuration_proof.sql"));
-            if (action.equals("AD_BUDGET_CHANGE")) allowed.add("AdvertisingManualWorkflowRepository.java");
+                    "V0060__govern_manual_proposals_packets_and_configuration_proof.sql",
+                    "V0073__require_complete_independent_manual_observation.sql"));
+            if (action.equals("AD_BUDGET_CHANGE")) {
+                allowed.add("AdvertisingManualWorkflowRepository.java");
+                allowed.add("AdvertisingDisclosureRepository.java");
+            }
             assertThat(carrying)
                     .describedAs("%s remains confined to governed human instructions and their checked read-only projection", action)
                     .extracting(path -> path.getFileName().toString())
@@ -222,6 +226,10 @@ class AdvertisingNonGoalsTest {
         assertThat(options.substring(sqlStart, sqlEnd).stripLeading()).startsWith("SELECT ")
                 .doesNotContainPattern("(?i)\\b(?:INSERT|UPDATE|DELETE|MERGE|CALL|CREATE|ALTER|DROP|TRUNCATE)\\b");
         assertThat(options).doesNotContain(".update(", ".execute(");
+        String disclosure = read(repositoryRoot().resolve(
+                "backend/marketops-server/src/main/java/com/mimococo/marketops/advertisingefficiency/internal/infrastructure/jdbc/AdvertisingDisclosureRepository.java"));
+        assertThat(disclosure).contains("WHEN 'AD_BUDGET_CHANGE' THEN 'targetBudget'")
+                .doesNotContain(".update(", ".execute(");
     }
 
     @Test
@@ -235,6 +243,13 @@ class AdvertisingNonGoalsTest {
         assertThat(manual).contains("CREATE TABLE core.ad_manual_policy", "CREATE TABLE ops.ad_manual_proposal",
                 "CREATE FUNCTION ops.select_ad_manual_packet", "CREATE FUNCTION ops.record_ad_manual_observation");
         assertThat(manual).doesNotContainPattern(
+                "(?i)INSERT\\s+INTO\\s+(?:ops|platform)\\.[a-z_]*(?:command|outbox)[a-z_]*");
+        String independent = read(repositoryRoot().resolve(
+                "backend/marketops-server/src/main/resources/db/migration/"
+                        + "V0073__require_complete_independent_manual_observation.sql"));
+        assertThat(independent).contains("CREATE FUNCTION ops.record_ad_manual_independent_observation",
+                "CREATE FUNCTION ops.ad_manual_observation_is_qualified");
+        assertThat(independent).doesNotContainPattern(
                 "(?i)INSERT\\s+INTO\\s+(?:ops|platform)\\.[a-z_]*(?:command|outbox)[a-z_]*");
     }
 

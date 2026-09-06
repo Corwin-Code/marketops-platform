@@ -4,6 +4,7 @@ import type {
   AdvertisingBrief,
   AdvertisingExposure,
   AdvertisingManualPacket,
+  AdvertisingManualIndependentObservation,
   AdvertisingOutcome,
   AdvertisingReservation,
   AdvertisingWorkflow,
@@ -2152,7 +2153,14 @@ export function actOnAdvertisingManualPacket(
   packet: AdvertisingManualPacket,
   action: AdvertisingManualAction,
   value: string,
+  independentObservation?: AdvertisingManualIndependentObservation,
 ): Promise<ConsoleOutcome<AdvertisingManualPacket>> {
+  if (action === 'INDEPENDENT_VERIFY' && independentObservation === undefined) {
+    return Promise.resolve({
+      ok: false,
+      failure: { kind: 'malformed', detail: 'Actual observation details are required.' },
+    });
+  }
   const routes: Record<AdvertisingManualAction, string> = {
     ENDORSE: 'endorsement',
     APPROVE: 'approval',
@@ -2170,7 +2178,7 @@ export function actOnAdvertisingManualPacket(
       method: 'POST',
       body: JSON.stringify({
         expectedVersion: packet.version,
-        ...(action === 'INDEPENDENT_VERIFY' ? { observedValue: value } : {}),
+        ...(action === 'INDEPENDENT_VERIFY' ? independentObservation : {}),
         ...(action === 'OFFICIAL_VERIFY' ? { configurationObservationId: value } : {}),
       }),
     },

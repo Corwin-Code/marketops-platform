@@ -130,6 +130,12 @@ public class AdvertisingManualWorkflowRepository {
                 .query(UUID.class).single();
     }
 
+    public UUID observeIndependent(UUID id, UUID packetId, long expectedVersion, String observation, String proof) {
+        return jdbc.sql("SELECT ops.record_ad_manual_independent_observation(:id,:packet,:version,CAST(:observation AS jsonb),:proof)")
+                .param("id",id).param("packet",packetId).param("version",expectedVersion)
+                .param("observation",observation).param("proof",proof).query(UUID.class).single();
+    }
+
     public Transaction transaction() {
         return jdbc.sql("SELECT pg_backend_pid() backend,txid_current() transaction_id")
                 .query((rs, n) -> new Transaction(rs.getInt("backend"), rs.getLong("transaction_id"))).single();

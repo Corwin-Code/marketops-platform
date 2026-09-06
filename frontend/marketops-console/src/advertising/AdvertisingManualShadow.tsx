@@ -131,20 +131,38 @@ export function AdvertisingManualShadow({
                   <li
                     key={verification.id}
                     data-grade={verification.evidenceGrade}
-                    data-proves={verification.provesConfiguration}
+                    data-proves={verification.qualifiedForCurrentProof}
                   >
                     {verification.evidenceGrade}
                     {' — '}
-                    {verification.provesConfiguration
+                    {verification.qualifiedForCurrentProof
                       ? verification.id === packet.currentProofId && packet.configurationProven
                         ? 'current configuration proof'
                         : 'historical observation; current proof must be checked'
-                      : 'a report, not a proof'}
+                      : verification.provesConfiguration
+                        ? 'historical record; current evidence requirements are not met'
+                        : 'a report, not a proof'}
                     {verification.observedValue === undefined ? null : (
                       <>
                         {' '}
                         ({verification.observedFieldPath ?? 'field'}: {verification.observedValue})
                       </>
+                    )}
+                    {verification.independentObservation !== undefined && (
+                      <p>
+                        {verification.independentObservation.evidenceSource === 'SCREENSHOT'
+                          ? 'Screenshot'
+                          : 'Official console, observed directly'}
+                        {' · '}
+                        {verification.independentObservation.completeness === 'COMPLETE'
+                          ? 'Complete'
+                          : 'Incomplete'}
+                        {' · Actually observed at '}
+                        <time dateTime={verification.independentObservation.observedAt}>
+                          {verification.independentObservation.observedAt}
+                        </time>
+                        . The application time has not been established by this observation.
+                      </p>
                     )}
                     {verification.conflictState === undefined ||
                     verification.conflictState === 'NONE' ? null : (

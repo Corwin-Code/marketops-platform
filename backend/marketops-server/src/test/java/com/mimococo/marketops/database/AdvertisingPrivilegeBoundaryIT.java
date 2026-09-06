@@ -105,6 +105,8 @@ class AdvertisingPrivilegeBoundaryIT extends PostgresContainerSupport {
             "ops.publish_ad_manual_policy(jsonb, text)",
             "ops.record_ad_bid_command_readback(uuid, uuid, uuid, bigint, text, text)",
             "ops.record_ad_manual_observation(uuid, uuid, bigint, text, text, uuid, text)",
+            "ops.record_ad_manual_independent_observation(uuid, uuid, bigint, jsonb, text)",
+            "ops.ad_manual_observation_is_qualified(uuid)",
             "ops.recover_expired_ad_bid_command_leases()",
             "ops.reenable_ad_containment(uuid, uuid, text)",
             "ops.release_ad_action_reservation(uuid, text)",
@@ -326,6 +328,9 @@ class AdvertisingPrivilegeBoundaryIT extends PostgresContainerSupport {
                         "ops.evaluate_ad_bid_write_gate_before_economic_cause(uuid)",
                         "ops.ad_listing_isolation_context(uuid, timestamp with time zone)",
                         "ops.ad_actor_has_organization_role_scope(uuid, uuid, text, text)",
+                        "ops.ad_manual_has_later_unresolved(uuid, timestamp with time zone)",
+                        "ops.reconcile_ad_manual_configuration_reservation(uuid, text)",
+                        "ops.apply_ad_manual_observation(uuid)",
                         "ops.take_ad_action_reservation_serialized(uuid, uuid, uuid, uuid, uuid, text, uuid[], text, uuid, text, text, text)",
                         "ops.consume_ad_control_invocation(text, text, uuid, uuid)")) {
                     assertThat(singleBoolean(connection, "SELECT has_function_privilege(current_user,'" + signature + "','EXECUTE')"))
@@ -339,6 +344,21 @@ class AdvertisingPrivilegeBoundaryIT extends PostgresContainerSupport {
                     assertThat((Throwable) refusal).describedAs(statement).isNotNull();
                     assertThat(refusal.getSQLState()).isEqualTo(INSUFFICIENT_PRIVILEGE);
                 }
+            }
+        }
+
+        @Test
+        @DisplayName("the retired value-only manual implementation cannot be reached by application or PUBLIC")
+        void retiredManualObservationImplementationHasNoApplicationOrPublicExecute() throws SQLException {
+            String signature="ops.record_ad_manual_observation_legacy(uuid, uuid, bigint, text, text, uuid, text)";
+            try(Connection connection=asApplicationRole(container)) {
+                assertThat(singleBoolean(connection,"SELECT to_regprocedure('"+signature+"') IS NOT NULL")).isTrue();
+                assertThat(singleBoolean(connection,"SELECT has_function_privilege(current_user,'"+signature+"','EXECUTE')")).isFalse();
+                assertThat(singleBoolean(connection,"SELECT EXISTS(SELECT 1 FROM pg_proc p CROSS JOIN LATERAL aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) acl WHERE p.oid='"+signature+"'::regprocedure AND acl.grantee=0 AND acl.privilege_type='EXECUTE')")).isFalse();
+                SQLException refusal=null;
+                try { execute(connection,"SELECT ops.record_ad_manual_observation_legacy(gen_random_uuid(),gen_random_uuid(),0,'INDEPENDENT','20',NULL,'fixture-obsolete-route')"); }
+                catch(SQLException failure) { refusal=failure; }
+                assertThat((Throwable)refusal).isNotNull();assertThat(refusal.getSQLState()).isEqualTo(INSUFFICIENT_PRIVILEGE);
             }
         }
 
@@ -367,7 +387,7 @@ class AdvertisingPrivilegeBoundaryIT extends PostgresContainerSupport {
                                 'lease_ad_bid_compensation', 'create_ad_bundle_draft', 'endorse_ad_bundle',
                                 'activate_ad_bundle', 'try_release_ad_reservation_after_outcome',
                                 'select_ad_manual_packet', 'decide_ad_manual_packet', 'start_ad_manual_execution',
-                                'record_ad_manual_observation', 'expire_ad_action_authority')
+                                'record_ad_manual_observation', 'record_ad_manual_independent_observation', 'expire_ad_action_authority')
                            AND NOT p.prosecdef
                         """);
                 assertThat(invoker).isEmpty();

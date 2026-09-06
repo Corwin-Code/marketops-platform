@@ -87,8 +87,21 @@ public record ManualExecutionPacketView(
             String observedValue,
             String conflictState,
             boolean provesConfiguration,
-            Instant observedAt) {
+            Instant observedAt,
+            IndependentObservation independentObservation,
+            boolean qualifiedForCurrentProof) {
+        public Verification(UUID id, String evidenceGrade, UUID executorUserId, UUID verifierUserId,
+                String observedFieldPath, String observedValue, String conflictState,
+                boolean provesConfiguration, Instant observedAt) {
+            this(id,evidenceGrade,executorUserId,verifierUserId,observedFieldPath,observedValue,
+                    conflictState,provesConfiguration,observedAt,null,false);
+        }
     }
+
+    /** The actual observation inputs are history; absence never means complete or observed now. */
+    public record IndependentObservation(String observedValue, Instant observedAt, String evidenceSource,
+            String completeness, UUID exactNativeObjectId, String exactFieldPath, UUID semanticProfileId,
+            String evidenceReference, Boolean directObservationAttested) { }
 
     public ManualExecutionPacketView {
         Objects.requireNonNull(id, "id");
@@ -108,7 +121,7 @@ public record ManualExecutionPacketView(
     public boolean configurationProven() {
         return "MANUAL_CONFIGURATION_VERIFIED".equals(state) && currentProofId != null
                 && verifications.stream().anyMatch(view -> currentProofId.equals(view.id())
-                        && view.provesConfiguration() && "NONE".equals(view.conflictState()));
+                        && view.provesConfiguration() && view.qualifiedForCurrentProof() && "NONE".equals(view.conflictState()));
     }
 
     /** Whether the packet may still be acted on. */

@@ -95,7 +95,7 @@ class AdvertisingManualShadowIT {
     @DisplayName("TC-AD-MANUAL-004/005/006 caller-named evidence grades cannot enter the canonical journal")
     void callerCannotChooseTheirOwnEvidenceGradeOrVerifier() {
         var fixture=seedFixture();
-        for(String grade:List.of("EXECUTOR_SELF_REPORT","INDEPENDENT_MANUAL_VERIFICATION",
+        for(String grade:List.of("EXECUTOR_SELF_REPORT","INDEPENDENT_MANUAL_VERIFICATION","UNVERIFIED_MANUAL_EVIDENCE",
                 "OFFICIAL_API_READBACK","OFFICIAL_CONFIGURATION_EXPORT")) {
             assertThatThrownBy(()->packets.recordVerification(UUID.randomUUID(),fixture.organizationId(),
                     UUID.randomUUID(),grade,fixture.executorUserId(),fixture.verifierUserId(),

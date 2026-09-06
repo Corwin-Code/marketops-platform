@@ -1,5 +1,29 @@
 import { expect, test } from '@playwright/test';
 import type { Browser, Page, APIRequestContext, Locator } from '@playwright/test';
+import type { AdvertisingManualIndependentObservation } from '../../src/api/advertising';
+
+interface ManualPacketResponse {
+  id: string;
+  version: number;
+  adNativeObjectId: string;
+  reservationId: string;
+  state: string;
+  configurationProven: boolean;
+  currentProofId: string | null;
+  packetDetails: {
+    semanticProfileId: string;
+    verificationFieldPath: 'targetBid' | 'targetBudget' | 'targetStatus';
+  };
+  verifications: {
+    id: string;
+    evidenceGrade: string;
+    provesConfiguration: boolean;
+    qualifiedForCurrentProof: boolean;
+    observedAt: string;
+    observedValue: string | null;
+    independentObservation: AdvertisingManualIndependentObservation | null;
+  }[];
+}
 
 type Role = 'MAKER' | 'OPS_LEAD' | 'OWNER';
 interface Fixture {
@@ -214,7 +238,9 @@ for (const platform of ['OZON', 'WILDBERRIES']) {
     await maker.page.getByRole('button', { name: 'Select exact manual proposal' }).click();
     const selected = await selectedResponse;
     expect(selected.ok()).toBe(true);
-    const packet = (await selected.json()) as { id: string; version: number };
+    const packet = (await selected.json()) as ManualPacketResponse;
+    expect(packet.packetDetails.semanticProfileId).toBeTruthy();
+    expect(packet.packetDetails.verificationFieldPath).toBe('targetBid');
     await expect(maker.page.getByLabel('Manual execution')).toContainText('DRAFT');
     await maker.page.screenshot({
       path: testInfo.outputPath(`${platform}-maker-manual-draft.png`),
@@ -232,7 +258,15 @@ for (const platform of ['OZON', 'WILDBERRIES']) {
     });
     const executor = await signIn(browser, request, 'MAKER', scenario);
     await executor.page.getByRole('button', { name: 'Begin approved human execution' }).click();
+    const reportedResponse = executor.page.waitForResponse(
+      (response) =>
+        response.url().endsWith(`/manual-packets/${packet.id}/report`) &&
+        response.request().method() === 'POST',
+    );
     await executor.page.getByRole('button', { name: 'Report execution without proof' }).click();
+    const reported = await reportedResponse;
+    expect(reported.ok()).toBe(true);
+    const reportedPacket = (await reported.json()) as ManualPacketResponse;
     await expect(executor.page.getByLabel('Manual execution')).toContainText(
       'a report, not a proof',
     );
@@ -243,22 +277,226 @@ for (const platform of ['OZON', 'WILDBERRIES']) {
       `${API}/api/v1/console/advertising/manual-packets/${packet.id}/independent-verification`,
       {
         headers: { Authorization: `Bearer ${executor.data.accessToken}` },
-        data: { expectedVersion: 4, observedValue: '20' },
+        data: {
+          expectedVersion: reportedPacket.version,
+          observedValue: '20',
+          observedAt: new Date().toISOString(),
+          evidenceSource: 'DIRECT_OFFICIAL_CONSOLE',
+          completeness: 'COMPLETE',
+          exactNativeObjectId: packet.adNativeObjectId,
+          exactFieldPath: packet.packetDetails.verificationFieldPath,
+          semanticProfileId: packet.packetDetails.semanticProfileId,
+          evidenceReference: `fixture://${platform}/executor-forbidden`,
+          directObservationAttested: true,
+        },
       },
     );
     expect([403, 409]).toContain(forbidden.status());
     const verifier = await signIn(browser, request, 'OPS_LEAD', scenario);
+    const manual = verifier.page.getByLabel('Manual execution', { exact: true });
+    const observationButton = verifier.page.getByRole('button', {
+      name: 'Record independent configuration observation',
+    });
+    await expect(observationButton).toBeDisabled();
+    await expect(verifier.page.getByLabel('Time actually observed (your local time)')).toHaveValue(
+      '',
+    );
     await verifier.page
       .getByRole('textbox', { name: 'Independently observed exact native value' })
       .fill('20');
     await verifier.page
-      .getByRole('button', { name: 'Record independent configuration observation' })
-      .click();
-    await expect(verifier.page.getByLabel('Manual execution')).toContainText(
-      'MANUAL_CONFIGURATION_VERIFIED',
+      .getByLabel('Observation source', { exact: true })
+      .selectOption('SCREENSHOT');
+    await verifier.page
+      .getByLabel('Observation completeness', { exact: true })
+      .selectOption('INCOMPLETE');
+    await verifier.page
+      .getByLabel('Observation evidence reference', { exact: true })
+      .fill(`fixture://${platform}/partial-screenshot`);
+    await expect(observationButton).toBeDisabled(); // Known value alone cannot invent the missing observation time.
+    const partialTime = await verifier.page.evaluate(() => {
+      const actual = new Date();
+      const local = new Date(actual.getTime() - actual.getTimezoneOffset() * 60_000);
+      return { iso: actual.toISOString(), local: local.toISOString().slice(0, 23) };
+    });
+    await verifier.page
+      .getByLabel('Time actually observed (your local time)')
+      .fill(partialTime.local);
+    const partialResponse = verifier.page.waitForResponse(
+      (response) =>
+        response.url().endsWith(`/manual-packets/${packet.id}/independent-verification`) &&
+        response.request().method() === 'POST',
     );
-    await expect(verifier.page.getByLabel('Manual execution')).toContainText(
-      'current configuration proof',
+    await observationButton.click();
+    const partial = await partialResponse;
+    expect(partial.ok()).toBe(true);
+    expect(partial.request().postDataJSON()).toEqual({
+      expectedVersion: reportedPacket.version,
+      observedValue: '20',
+      observedAt: partialTime.iso,
+      evidenceSource: 'SCREENSHOT',
+      completeness: 'INCOMPLETE',
+      exactNativeObjectId: packet.adNativeObjectId,
+      exactFieldPath: packet.packetDetails.verificationFieldPath,
+      semanticProfileId: packet.packetDetails.semanticProfileId,
+      evidenceReference: `fixture://${platform}/partial-screenshot`,
+      directObservationAttested: false,
+    });
+    const partialPacket = (await partial.json()) as ManualPacketResponse;
+    expect(partialPacket.state).toBe('ACTION_REPORTED_CONFIGURATION_UNVERIFIED');
+    expect(partialPacket.configurationProven).toBe(false);
+    expect(partialPacket.currentProofId).toBeNull();
+    const partialObservation = partialPacket.verifications.find(
+      (item) =>
+        item.independentObservation?.evidenceReference ===
+        `fixture://${platform}/partial-screenshot`,
+    );
+    expect(partialObservation).toMatchObject({
+      evidenceGrade: 'UNVERIFIED_MANUAL_EVIDENCE',
+      provesConfiguration: false,
+      qualifiedForCurrentProof: false,
+      observedValue: '20',
+    });
+    expect(Date.parse(partialObservation?.observedAt ?? '')).toBe(Date.parse(partialTime.iso));
+    expect(partialObservation?.independentObservation).toMatchObject({
+      observedValue: '20',
+      evidenceSource: 'SCREENSHOT',
+      completeness: 'INCOMPLETE',
+      exactNativeObjectId: packet.adNativeObjectId,
+      exactFieldPath: packet.packetDetails.verificationFieldPath,
+      semanticProfileId: packet.packetDetails.semanticProfileId,
+      directObservationAttested: false,
+    });
+    await expect(manual).toContainText('ACTION_REPORTED_CONFIGURATION_UNVERIFIED');
+    await expect(manual).toContainText('Nothing has established the resulting configuration yet.');
+    await expect(manual.getByText('current configuration proof', { exact: true })).toHaveCount(0);
+    await expect(manual.locator('time')).toHaveAttribute(
+      'datetime',
+      partialObservation?.independentObservation?.observedAt ?? 'missing-observation',
+    );
+    async function currentReservation(): Promise<{
+      id: string;
+      state: string;
+      configurationResolved: boolean;
+      earlyObservationComplete: boolean;
+    }> {
+      const reservations = await request.get(
+        `${API}/api/v1/console/advertising/reservations?holdingOnly=true`,
+        {
+          headers: { Authorization: `Bearer ${verifier.data.accessToken}` },
+        },
+      );
+      expect(reservations.ok()).toBe(true);
+      const rows = (await reservations.json()) as {
+        id: string;
+        state: string;
+        configurationResolved: boolean;
+        earlyObservationComplete: boolean;
+      }[];
+      const row = rows.find((item) => item.id === partialPacket.reservationId);
+      if (row === undefined) throw new Error('The exact manual reservation must remain held');
+      return row;
+    }
+    expect(await currentReservation()).toMatchObject({
+      state: 'ACTIVE',
+      configurationResolved: false,
+      earlyObservationComplete: false,
+    });
+    await verifier.page.screenshot({
+      path: testInfo.outputPath(`${platform}-partial-screenshot-remains-unverified-held.png`),
+      fullPage: true,
+    });
+
+    // The same value qualifies only after a separate, explicit complete direct observation.
+    await verifier.page
+      .getByLabel('Observation source', { exact: true })
+      .selectOption('DIRECT_OFFICIAL_CONSOLE');
+    await verifier.page
+      .getByLabel('Observation completeness', { exact: true })
+      .selectOption('COMPLETE');
+    await verifier.page
+      .getByLabel('Observation evidence reference', { exact: true })
+      .fill(`fixture://${platform}/direct-observation`);
+    await expect(
+      verifier.page.getByRole('checkbox', {
+        name: 'I observed this object and field directly in the official console',
+      }),
+    ).not.toBeChecked();
+    await expect(observationButton).toBeDisabled();
+    await verifier.page
+      .getByRole('checkbox', {
+        name: 'I observed this object and field directly in the official console',
+      })
+      .check();
+    const directTime = await verifier.page.evaluate(() => {
+      const actual = new Date();
+      const local = new Date(actual.getTime() - actual.getTimezoneOffset() * 60_000);
+      return { iso: actual.toISOString(), local: local.toISOString().slice(0, 23) };
+    });
+    await verifier.page
+      .getByLabel('Time actually observed (your local time)')
+      .fill(directTime.local);
+    const directResponse = verifier.page.waitForResponse(
+      (response) =>
+        response.url().endsWith(`/manual-packets/${packet.id}/independent-verification`) &&
+        response.request().method() === 'POST',
+    );
+    await observationButton.click();
+    const direct = await directResponse;
+    expect(direct.ok()).toBe(true);
+    expect(direct.request().postDataJSON()).toEqual({
+      expectedVersion: partialPacket.version,
+      observedValue: '20',
+      observedAt: directTime.iso,
+      evidenceSource: 'DIRECT_OFFICIAL_CONSOLE',
+      completeness: 'COMPLETE',
+      exactNativeObjectId: packet.adNativeObjectId,
+      exactFieldPath: packet.packetDetails.verificationFieldPath,
+      semanticProfileId: packet.packetDetails.semanticProfileId,
+      evidenceReference: `fixture://${platform}/direct-observation`,
+      directObservationAttested: true,
+    });
+    const directPacket = (await direct.json()) as ManualPacketResponse;
+    expect(directPacket.configurationProven).toBe(true);
+    const currentProof = directPacket.verifications.find(
+      (item) => item.id === directPacket.currentProofId,
+    );
+    expect(currentProof).toMatchObject({
+      evidenceGrade: 'INDEPENDENT_MANUAL_VERIFICATION',
+      provesConfiguration: true,
+      qualifiedForCurrentProof: true,
+      observedValue: '20',
+    });
+    expect(Date.parse(currentProof?.observedAt ?? '')).toBe(Date.parse(directTime.iso));
+    expect(currentProof?.independentObservation).toMatchObject({
+      evidenceSource: 'DIRECT_OFFICIAL_CONSOLE',
+      completeness: 'COMPLETE',
+      directObservationAttested: true,
+      exactNativeObjectId: packet.adNativeObjectId,
+      exactFieldPath: packet.packetDetails.verificationFieldPath,
+      semanticProfileId: packet.packetDetails.semanticProfileId,
+    });
+    expect(directPacket.verifications.find((item) => item.id === partialObservation?.id)).toEqual(
+      partialObservation,
+    );
+    await expect(manual).toContainText('MANUAL_CONFIGURATION_VERIFIED');
+    await expect(manual).toContainText('current configuration proof');
+    expect(await currentReservation()).toMatchObject({
+      id: partialPacket.reservationId,
+      state: 'ACTIVE',
+      configurationResolved: true,
+      earlyObservationComplete: false,
+    });
+    const readback = await request.get(
+      `${API}/api/v1/console/advertising/objects/${packet.adNativeObjectId}/manual-packets`,
+      {
+        headers: { Authorization: `Bearer ${verifier.data.accessToken}` },
+      },
+    );
+    expect(readback.ok()).toBe(true);
+    const readPackets = (await readback.json()) as ManualPacketResponse[];
+    expect(readPackets.find((item) => item.id === packet.id)?.verifications).toEqual(
+      directPacket.verifications,
     );
     await verifier.page
       .getByRole('button', { name: 'Observe canonical early sales safety' })

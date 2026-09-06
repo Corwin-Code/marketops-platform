@@ -95,8 +95,32 @@ public class AdvertisingManualWorkflowService {
         return observe(actor,packet,version,"REPORT",null,null);
     }
 
+    public enum EvidenceSource { DIRECT_OFFICIAL_CONSOLE, SCREENSHOT }
+    public enum ObservationCompleteness { COMPLETE, INCOMPLETE }
+    public record IndependentObservation(String observedValue, Instant observedAt, EvidenceSource evidenceSource,
+            ObservationCompleteness completeness, UUID exactNativeObjectId, String exactFieldPath,
+            UUID semanticProfileId, String evidenceReference, Boolean directObservationAttested) { }
+
+    /** A bare value cannot assert when, where or how completely the configuration was observed. */
     public ObjectNode independent(AuthenticatedActor actor, UUID packet, long version, String value) {
-        return observe(actor,packet,version,"INDEPENDENT",MetadataFieldPolicy.requireText("observedValue",value),null);
+        throw OperationRejectedException.of(ErrorCode.ACTION_NOT_PERMITTED);
+    }
+
+    public ObjectNode independent(AuthenticatedActor actor, UUID packet, long version, IndependentObservation observation) {
+        require(actor,packetScope(actor,packet),ActionScopeCode.ADVERTISING_MANUAL_VERIFY);
+        if (observation == null || observation.observedAt() == null || observation.evidenceSource() == null
+                || observation.completeness() == null || observation.exactNativeObjectId() == null
+                || observation.semanticProfileId() == null || observation.directObservationAttested() == null) {
+            throw OperationRejectedException.of(ErrorCode.VALIDATION_FAILED);
+        }
+        MetadataFieldPolicy.requireText("observedValue",observation.observedValue());
+        MetadataFieldPolicy.requireText("exactFieldPath",observation.exactFieldPath());
+        MetadataFieldPolicy.requireText("evidenceReference",observation.evidenceReference());
+        UUID verification=workflow.observeIndependent(UUID.randomUUID(),packet,version,
+                mapper.valueToTree(observation).toString(),proof("MANUAL_INDEPENDENT_VERIFY",packet,packet));
+        if(packets.packet(packet).map(view->view.configurationProven() && verification.equals(view.currentProofId())).orElse(false))
+            journal.recordManualAction(actor,packet,verification,"MANUAL_EXECUTION_VERIFIED","Complete direct configuration observation matched the exact manual packet");
+        return packet(actor,packet);
     }
 
     public ObjectNode official(AuthenticatedActor actor, UUID packet, long version, UUID configuration) {
@@ -109,7 +133,7 @@ public class AdvertisingManualWorkflowService {
         require(actor,packetScope(actor,packet),report?ActionScopeCode.ADVERTISING_MANUAL_EXECUTE:ActionScopeCode.ADVERTISING_MANUAL_VERIFY);
         UUID verification=workflow.observe(UUID.randomUUID(),packet,version,kind,value,configuration,
                 proof(report?"MANUAL_EXECUTION_REPORT":"MANUAL_INDEPENDENT_VERIFY",packet,packet));
-        if(!report && packets.packet(packet).map(view->view.configurationProven()).orElse(false))
+        if(!report && packets.packet(packet).map(view->view.configurationProven() && verification.equals(view.currentProofId())).orElse(false))
             journal.recordManualAction(actor,packet,verification,"MANUAL_EXECUTION_VERIFIED","Current configuration verified against the exact manual packet");
         return packet(actor,packet);
     }

@@ -10,8 +10,8 @@
   "sourceHead": null,
   "worktreeModified": true,
   "preservedCount": 65,
-  "newRange": "0066-0072",
-  "migrationCount": 72,
+  "newRange": "0066-0073",
+  "migrationCount": 73,
   "migrations": [
     {
       "version": "0001",
@@ -732,8 +732,23 @@
       "gitBlobSha1": "9892b0bac2164a121006ee057c5f43fefd5eff21",
       "historicalW10ByteEqual": null,
       "scope": "FINAL_GATE_R1_FORWARD_MIGRATION"
+    },
+    {
+      "version": "0073",
+      "path": "backend/marketops-server/src/main/resources/db/migration/V0073__require_complete_independent_manual_observation.sql",
+      "bytes": 63521,
+      "lines": 778,
+      "sha256": "7225d7c6ffafc74a68fdd1e46d757fc58dd5af0a7be99ce89c944c24577941f3",
+      "gitBlobSha1": "9ba580a8c10d7671cdd28be3be7bafcb0f67a948",
+      "historicalW10ByteEqual": null,
+      "scope": "FINAL_GATE_R1_FORWARD_MIGRATION"
     }
   ],
   "production_write_enabled": false,
-  "previousInventorySourceHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a"
+  "previousInventorySourceHead": "3ff042df66d5d6924b587cac96fc652b93bf5e7a",
+  "preceding72Inventory": {
+    "gitHead": "9d962df4cad0a61305e3ba7f2a04d3b72b108b2e",
+    "path": "docs/07-phase-evidence/SLICE-V1-003/rework-r1/final-gate-r1/MIGRATION-SOURCE-INVENTORY.json",
+    "sha256": "4497b602728a1e9d8fa2a19b38594789162b587781ec1cb654d1deef02fe3b0e"
+  }
 }

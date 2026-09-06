@@ -11,7 +11,18 @@ import java.sql.SQLException;
 import java.util.UUID;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import java.time.Instant;
+import java.sql.Timestamp;
+import tools.jackson.databind.node.ObjectNode;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.MediaType;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -24,6 +35,7 @@ import tools.jackson.databind.ObjectMapper;
 /** Actual PostgreSQL human lifecycle with a separate fictional identity issuer and no Provider route. */
 @SpringBootTest
 @ActiveProfiles("ci")
+@org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 @org.springframework.context.annotation.Import(AdvertisingManualWorkflowIT.Storage.class)
 class AdvertisingManualWorkflowIT {
     private static final org.testcontainers.postgresql.PostgreSQLContainer DATABASE=TestDatabase.isolatedContainer();
@@ -34,6 +46,8 @@ class AdvertisingManualWorkflowIT {
     @Autowired AdvertisingResponsibilityIntake responsibilities;
     @Autowired com.mimococo.marketops.operationsworkflow.AdvertisingOutcomePlanning outcomePlanning;
     @Autowired ObjectMapper json;
+    @Autowired MockMvc mvc;
+    @Autowired com.mimococo.marketops.advertisingefficiency.internal.application.AdvertisingManualWorkflowService manual;
     @Autowired com.mimococo.marketops.marketplaceintegration.RawCustody custody;
     private DataSource admin;
     private JdbcClient seed;
@@ -50,6 +64,7 @@ class AdvertisingManualWorkflowIT {
         registry.add("marketops.identity.invocation.username",()->"marketops_identity_issuer");
         registry.add("marketops.identity.invocation.password",()->ISSUER_PASSWORD);
     }
+    @AfterEach void clearAuthentication() { org.springframework.security.core.context.SecurityContextHolder.clearContext(); }
     @BeforeEach void fixture() throws Exception {
         var migration=new DriverManagerDataSource(DATABASE.getJdbcUrl(),TestDatabase.migrationRole(),TestDatabase.migrationPassword());
         admin=new DriverManagerDataSource(DATABASE.getJdbcUrl(),DATABASE.getUsername(),DATABASE.getPassword());
@@ -60,6 +75,7 @@ class AdvertisingManualWorkflowIT {
         }
         seedOutcomeAuthority();
         role("executorUser","MARKETPLACE_OPERATOR");
+        scope("executorUser","ADVERTISING_VIEW"); scope("verifierUser","ADVERTISING_VIEW");
         scope("executorUser","ADVERTISING_TASK_ACT"); scope("executorUser","ADVERTISING_MANUAL_EXECUTE");
         scope("verifierUser","ADVERTISING_MANUAL_ENDORSE"); scope("verifierUser","ADVERTISING_MANUAL_VERIFY");
         scope("verifierUser","ADVERTISING_DECISION_EVIDENCE_VIEW");
@@ -80,8 +96,8 @@ class AdvertisingManualWorkflowIT {
         assertThat(packets.packet(packet).orElseThrow().reservationId()).isNotNull();
         observation(packet,"executorUser","REPORT",null,null);
         assertThat(packets.packet(packet).orElseThrow().configurationProven()).isFalse();
-        assertThatThrownBy(()->observation(packet,"executorUser","INDEPENDENT","20",null)).isInstanceOf(SQLException.class);
-        UUID proof=observation(packet,"verifierUser","INDEPENDENT","20",null);
+        assertThatThrownBy(()->independentObservation(packet,"executorUser",completeDirectConsole(packet,"20",observedNow()))).isInstanceOf(SQLException.class);
+        UUID proof=independentObservation(packet,"verifierUser",completeDirectConsole(packet,"20",observedNow()));
         var verified=packets.packet(packet).orElseThrow();
         assertThat(verified.configurationProven()).isTrue(); assertThat(verified.currentProofId()).isEqualTo(proof);
         assertThat(seed.sql("SELECT early_observation_complete FROM ops.ad_action_reservation WHERE id=:id").param("id",verified.reservationId()).query(Boolean.class).single()).isFalse();
@@ -110,7 +126,7 @@ class AdvertisingManualWorkflowIT {
         assertThat(manualUnresolvedExposure()).isEqualTo(1);
         observation(packet,"executorUser","REPORT",null,null);
         assertThat(manualUnresolvedExposure()).isEqualTo(1);
-        observation(packet,"verifierUser","INDEPENDENT","20",null);
+        independentObservation(packet,"verifierUser",completeDirectConsole(packet,"20",observedNow()));
         assertThat(manualUnresolvedExposure()).isZero();
         UUID reservation=packets.packet(packet).orElseThrow().reservationId();
         assertThat(seed.sql("SELECT state FROM ops.ad_action_reservation WHERE id=:id").param("id",reservation)
@@ -138,7 +154,7 @@ class AdvertisingManualWorkflowIT {
     @Test void scopedStopMakesStartedManualWorkUncertainAndOnlyFactualVerificationCanContinue() throws Exception {
         UUID packet=selected();decide(packet,"verifierUser",false);decide(packet,"ownerUser",true);start(packet);
         observation(packet,"executorUser","REPORT",null,null);
-        UUID oldProof=observation(packet,"verifierUser","INDEPENDENT","20",null);
+        UUID oldProof=independentObservation(packet,"verifierUser",completeDirectConsole(packet,"20",observedNow()));
         var before=packets.packet(packet).orElseThrow();
         assertThat(before.configurationProven()).isTrue();UUID held=before.reservationId();
         UUID stop=stopManualStore();
@@ -153,7 +169,7 @@ class AdvertisingManualWorkflowIT {
                 .containsEntry("early_observation_complete",false);
         assertThatThrownBy(()->start(packet)).isInstanceOf(SQLException.class);
         observation(packet,"executorUser","REPORT",null,null);
-        UUID newProof=observation(packet,"verifierUser","INDEPENDENT","20",null);
+        UUID newProof=independentObservation(packet,"verifierUser",completeDirectConsole(packet,"20",observedNow()));
         var verified=packets.packet(packet).orElseThrow();
         assertThat(newProof).isNotEqualTo(oldProof);assertThat(verified.currentProofId()).isEqualTo(newProof);
         assertThat(verified.configurationProven()).isTrue();assertThat(verified.verifications()).hasSize(4);
@@ -188,6 +204,333 @@ class AdvertisingManualWorkflowIT {
         assertThat(seed.sql("SELECT count(*) FROM ops.ad_action_reservation WHERE organization_id=:org AND state='ACTIVE'")
                 .param("org",graph.id("organization")).query(Integer.class).single()).isZero();
         assertNoApiCommand();
+    }
+
+    @ParameterizedTest
+    @CsvSource({"AD_BID_CHANGE,targetBid,20", "AD_BUDGET_CHANGE,targetBudget,50", "AD_STATUS_CHANGE,targetStatus,native-paused"})
+    void theSameManualValueInAPartialScreenshotCannotReplaceACompleteIndependentConsoleObservation(
+            String action,String field,String value) throws Exception {
+        // These are explicit fictional Owner policy/configuration inputs, not extra API capabilities.
+        if(action.equals("AD_BUDGET_CHANGE")) {
+            currentConfiguration=configuration("30",rawProvenance,new BigDecimal("100"));
+        } else if(action.equals("AD_STATUS_CHANGE")) {
+            seed.sql("UPDATE platform.ad_semantic_profile SET status_semantics='{" +
+                    "\"native-running\":\"RUNNING\",\"native-paused\":\"PAUSED\"}'::jsonb WHERE id=:id")
+                    .param("id",graph.id("profile")).update();
+        }
+        UUID packet=startedPacket(action),held=packets.packet(packet).orElseThrow().reservationId();
+        Instant partialAt=observedNow();
+        ObjectNode partial=completeDirectConsole(packet,value,partialAt)
+                .put("evidenceSource","SCREENSHOT").put("completeness","INCOMPLETE").put("directObservationAttested",false);
+        UUID partialId=independentObservation(packet,"verifierUser",partial);
+        assertUnverifiedHeldWithoutOutcome(packet,held);
+        assertThat(verification(partialId)).containsEntry("evidence_grade","UNVERIFIED_MANUAL_EVIDENCE")
+                .containsEntry("observed_field_path",field).containsEntry("observed_value",value)
+                .containsEntry("proves_configuration",false).containsEntry("observed_at",Timestamp.from(partialAt));
+        String preserved=verificationBytes(partialId);
+        Instant completeAt=observedNow();
+        UUID completeId=independentObservation(packet,"verifierUser",completeDirectConsole(packet,value,completeAt));
+        assertThat(packets.packet(packet).orElseThrow().configurationProven()).isTrue();
+        assertThat(packets.packet(packet).orElseThrow().currentProofId()).isEqualTo(completeId);
+        assertThat(verification(completeId)).containsEntry("evidence_grade","INDEPENDENT_MANUAL_VERIFICATION")
+                .containsEntry("observed_field_path",field).containsEntry("observed_value",value)
+                .containsEntry("proves_configuration",true).containsEntry("observed_at",Timestamp.from(completeAt));
+        assertThat(seed.sql("SELECT independent_observation->>'evidenceSource' FROM ops.ad_manual_configuration_verification WHERE id=:id")
+                .param("id",completeId).query(String.class).single()).isEqualTo("DIRECT_OFFICIAL_CONSOLE");
+        var metadata=json.readTree(seed.sql("SELECT independent_observation::text FROM ops.ad_manual_configuration_verification WHERE id=:id")
+                .param("id",completeId).query(String.class).single());
+        assertThat(metadata.path("exactNativeObjectId").asString()).isEqualTo(graph.id("object").toString());
+        assertThat(metadata.path("semanticProfileId").asString()).isEqualTo(graph.id("profile").toString());
+        assertThat(metadata.path("evidenceReference").asString()).isEqualTo("fixture://complete-direct-console/"+packet);
+        assertThat(Instant.parse(metadata.path("observedAt").asString())).isEqualTo(completeAt);
+        assertThat(seed.sql("SELECT recorded_at FROM ops.ad_manual_configuration_verification WHERE id=:id")
+                .param("id",completeId).query(Timestamp.class).single().toInstant()).isAfterOrEqualTo(completeAt);
+        assertThat(verificationBytes(partialId)).isEqualTo(preserved);
+        assertThat(seed.sql("SELECT state,early_observation_complete FROM ops.ad_action_reservation WHERE id=:id")
+                .param("id",held).query().singleRow()).containsEntry("state","ACTIVE").containsEntry("early_observation_complete",false);
+        assertNoManualOutcomeOrApiCommand();
+    }
+
+    @ParameterizedTest @CsvSource({"SCREENSHOT,COMPLETE,true", "DIRECT_OFFICIAL_CONSOLE,INCOMPLETE,true", "DIRECT_OFFICIAL_CONSOLE,COMPLETE,false"})
+    void sourceCompletenessAndDirectAttestationEachRemainNecessaryEvenWhenTheValueMatches(
+            String source,String completeness,boolean attested) throws Exception {
+        UUID packet=startedPacket("AD_BID_CHANGE"),held=packets.packet(packet).orElseThrow().reservationId();
+        UUID id=independentObservation(packet,"verifierUser",completeDirectConsole(packet,"20",observedNow())
+                .put("evidenceSource",source).put("completeness",completeness).put("directObservationAttested",attested));
+        assertThat(verification(id)).containsEntry("evidence_grade","UNVERIFIED_MANUAL_EVIDENCE").containsEntry("proves_configuration",false);
+        assertUnverifiedHeldWithoutOutcome(packet,held);
+    }
+
+    @ParameterizedTest @ValueSource(strings={"observedValue","observedAt","evidenceSource","completeness","exactNativeObjectId",
+            "exactFieldPath","semanticProfileId","evidenceReference","directObservationAttested"})
+    void theAppRoleCannotOmitAnyIndependentObservationMetadata(String missing) throws Exception {
+        UUID packet=startedPacket("AD_BID_CHANGE"),held=packets.packet(packet).orElseThrow().reservationId();
+        ObjectNode envelope=completeDirectConsole(packet,"20",observedNow());envelope.remove(missing);
+        String before=packetAndHistoryBytes(packet);
+        assertThatThrownBy(()->independentObservation(packet,"verifierUser",envelope))
+                .isInstanceOfSatisfying(SQLException.class,failure->assertThat(failure.getSQLState()).isEqualTo("23514"));
+        assertThat(packetAndHistoryBytes(packet)).isEqualTo(before);assertUnverifiedHeldWithoutOutcome(packet,held);
+    }
+
+    @ParameterizedTest @ValueSource(strings={"OTHER_OBJECT","OTHER_PROFILE","OTHER_FIELD","FUTURE","BEFORE_START","RELATIVE_TIME"})
+    void independentObservationMustDescribeThisPacketFieldProfileAndActualExecutionTime(String fault) throws Exception {
+        UUID packet=startedPacket("AD_BID_CHANGE"),held=packets.packet(packet).orElseThrow().reservationId();
+        ObjectNode envelope=completeDirectConsole(packet,"20",observedNow());
+        switch(fault) {
+            case "OTHER_OBJECT" -> envelope.put("exactNativeObjectId",UUID.randomUUID().toString());
+            case "OTHER_PROFILE" -> envelope.put("semanticProfileId",UUID.randomUUID().toString());
+            case "OTHER_FIELD" -> envelope.put("exactFieldPath","targetBudget");
+            case "FUTURE" -> envelope.put("observedAt",observedNow().plusSeconds(60).toString());
+            case "BEFORE_START" -> envelope.put("observedAt",packets.packet(packet).orElseThrow().executionStartedAt().minusSeconds(1).toString());
+            case "RELATIVE_TIME" -> envelope.put("observedAt","now");
+            default -> throw new AssertionError(fault);
+        }
+        String before=packetAndHistoryBytes(packet);
+        assertThatThrownBy(()->independentObservation(packet,"verifierUser",envelope))
+                .isInstanceOfSatisfying(SQLException.class,failure->assertThat(failure.getSQLState()).isEqualTo("23514"));
+        assertThat(packetAndHistoryBytes(packet)).isEqualTo(before);assertUnverifiedHeldWithoutOutcome(packet,held);
+    }
+
+    @ParameterizedTest @ValueSource(strings={"SELF_VERIFIER","REVOKED_SCOPE"})
+    void completeMetadataCannotReplaceDistinctCurrentVerifierAuthority(String fault) throws Exception {
+        UUID packet=startedPacket("AD_BID_CHANGE"),held=packets.packet(packet).orElseThrow().reservationId();
+        if(fault.equals("SELF_VERIFIER"))authorizeExecutorForVerification();
+        if(fault.equals("REVOKED_SCOPE"))seed.sql("UPDATE iam.user_scope_grant SET status='REVOKED' WHERE user_id=:id AND action_code='ADVERTISING_MANUAL_VERIFY'")
+                .param("id",graph.id("verifierUser")).update();
+        String before=packetAndHistoryBytes(packet);
+        assertThatThrownBy(()->independentObservation(packet,fault.equals("SELF_VERIFIER")?"executorUser":"verifierUser",
+                completeDirectConsole(packet,"20",observedNow())))
+                .isInstanceOfSatisfying(SQLException.class,failure->assertThat(failure.getSQLState()).isEqualTo("MO064"));
+        assertThat(packetAndHistoryBytes(packet)).isEqualTo(before);assertUnverifiedHeldWithoutOutcome(packet,held);
+    }
+
+    @ParameterizedTest @ValueSource(strings={"MISMATCH","UNKNOWN"})
+    void anOlderCompleteConsoleValueCannotClearAnAlreadyKnownLaterConfiguration(String state) throws Exception {
+        UUID packet=startedPacket("AD_BID_CHANGE"),held=packets.packet(packet).orElseThrow().reservationId();
+        Instant observed=observedNow();
+        UUID later=configuration(state.equals("MISMATCH")?"19":null,rawProvenance);
+        assertThat(seed.sql("SELECT observed_at FROM core.ad_object_configuration_observation WHERE id=:id")
+                .param("id",later).query(Timestamp.class).single().toInstant()).isAfterOrEqualTo(observed);
+        String originalConfiguration=seed.sql("SELECT to_jsonb(c)::text FROM core.ad_object_configuration_observation c WHERE id=:id")
+                .param("id",later).query(String.class).single();
+        UUID evidence=independentObservation(packet,"verifierUser",completeDirectConsole(packet,"20",observed));
+        assertThat(verification(evidence)).containsEntry("proves_configuration",false);
+        assertThat(packets.packet(packet).orElseThrow().state()).isEqualTo("MANUAL_EXECUTION_UNCERTAIN");
+        assertUnverifiedHeldWithoutOutcome(packet,held);
+        assertThat(seed.sql("SELECT to_jsonb(c)::text FROM core.ad_object_configuration_observation c WHERE id=:id")
+                .param("id",later).query(String.class).single()).isEqualTo(originalConfiguration);
+    }
+
+    @Test void anOlderCompleteValueCannotEraseAKnownLaterUnverifiedManualObservation() throws Exception {
+        UUID packet=startedPacket("AD_BID_CHANGE"),held=packets.packet(packet).orElseThrow().reservationId();
+        Instant earlier=observedNow();
+        UUID later=independentObservation(packet,"verifierUser",completeDirectConsole(packet,"20",observedNow())
+                .put("evidenceSource","SCREENSHOT").put("completeness","INCOMPLETE").put("directObservationAttested",false));
+        String preserved=verificationBytes(later);
+        UUID older=independentObservation(packet,"verifierUser",completeDirectConsole(packet,"20",earlier));
+        assertThat(verification(older)).containsEntry("proves_configuration",false);
+        assertThat(verificationBytes(later)).isEqualTo(preserved);assertUnverifiedHeldWithoutOutcome(packet,held);
+    }
+
+    @Test void anOlderOfficialConfigurationCannotClearAKnownLaterPartialManualObservation() throws Exception {
+        UUID packet=startedPacket("AD_BID_CHANGE"),held=packets.packet(packet).orElseThrow().reservationId();
+        UUID configurationId=configuration("20",rawProvenance);
+        Instant officialAt=seed.sql("SELECT observed_at FROM core.ad_object_configuration_observation WHERE id=:id")
+                .param("id",configurationId).query(Timestamp.class).single().toInstant();
+        Instant partialAt=observedNow();assertThat(partialAt).isAfter(officialAt);
+        UUID partial=independentObservation(packet,"verifierUser",completeDirectConsole(packet,"20",partialAt)
+                .put("evidenceSource","SCREENSHOT").put("completeness","INCOMPLETE").put("directObservationAttested",false));
+        String partialBefore=verificationBytes(partial);
+        UUID official=observation(packet,"verifierUser","OFFICIAL",null,configurationId);
+        assertThat(verification(official)).containsEntry("evidence_grade","OFFICIAL_API_READBACK")
+                .containsEntry("observed_at",Timestamp.from(officialAt)).containsEntry("proves_configuration",false);
+        assertThat(verificationBytes(partial)).isEqualTo(partialBefore);
+        assertThat(packets.packet(packet).orElseThrow().state()).isEqualTo("MANUAL_EXECUTION_UNCERTAIN");
+        assertUnverifiedHeldWithoutOutcome(packet,held);
+    }
+
+    @Test void anOlderPartialScreenshotIsAppendedWithoutDowngradingTheNewerCompleteProof() throws Exception {
+        UUID packet=startedPacket("AD_BID_CHANGE"),held=packets.packet(packet).orElseThrow().reservationId();
+        Instant olderAt=observedNow(),newerAt=observedNow();
+        assertThat(newerAt).isAfter(olderAt);
+        UUID current=independentObservation(packet,"verifierUser",completeDirectConsole(packet,"20",newerAt));
+        assertThat(packets.packet(packet).orElseThrow().configurationProven()).isTrue();
+        String currentBytes=verificationBytes(current),reservationBefore=reservationBytes(held);
+        int journalBefore=seed.sql("SELECT count(*) FROM ops.work_task_event WHERE organization_id=:org AND action_kind='MANUAL_EXECUTION_VERIFIED'")
+                .param("org",graph.id("organization")).query(Integer.class).single();
+        submitHttp(packet,"verifierUser",completeDirectConsole(packet,"20",olderAt)
+                .put("evidenceSource","SCREENSHOT").put("completeness","INCOMPLETE").put("directObservationAttested",false))
+                .andExpect(status().isOk());
+        UUID historical=packets.packet(packet).orElseThrow().verifications().stream()
+                .filter(item->!item.id().equals(current)).findFirst().orElseThrow().id();
+        assertThat(verification(historical)).containsEntry("evidence_grade","UNVERIFIED_MANUAL_EVIDENCE")
+                .containsEntry("observed_at",Timestamp.from(olderAt)).containsEntry("proves_configuration",false);
+        var view=packets.packet(packet).orElseThrow();
+        assertThat(view.state()).isEqualTo("MANUAL_CONFIGURATION_VERIFIED");assertThat(view.configurationProven()).isTrue();
+        assertThat(view.currentProofId()).isEqualTo(current);assertThat(view.verifications()).hasSize(2);
+        assertThat(verificationBytes(current)).isEqualTo(currentBytes);assertThat(reservationBytes(held)).isEqualTo(reservationBefore);
+        assertThat(seed.sql("SELECT count(*) FROM ops.work_task_event WHERE organization_id=:org AND action_kind='MANUAL_EXECUTION_VERIFIED'")
+                .param("org",graph.id("organization")).query(Integer.class).single()).isEqualTo(journalBefore);
+        assertNoManualOutcomeOrApiCommand();
+    }
+
+    @Test void staleNewSubmissionAfterHistoricalStartIsRefusedWhileFreshSameValueAndScopeCanProveConfiguration() throws Exception {
+        // Historical start is explicit synthetic INPUT. This test proves new submission admission,
+        // not that the application reconstructed an execution performed two hours earlier.
+        seed.sql("UPDATE platform.ad_semantic_profile SET created_at=clock_timestamp()-interval '1 day' WHERE id=:id")
+                .param("id",graph.id("profile")).update();
+        UUID policy=syntheticHistoricalManualPolicy();
+        UUID packet=selectedWithPolicy("AD_BID_CHANGE",policy);decide(packet,"verifierUser",false);decide(packet,"ownerUser",true);start(packet);
+        UUID held=packets.packet(packet).orElseThrow().reservationId();
+        Instant now=observedNow(),started=now.minusSeconds(7200),stale=now.minusSeconds(3601);
+        seed.sql("UPDATE ops.ad_manual_execution_packet SET execution_started_at=:started,issued_at=:issued,created_at=:issued WHERE id=:id")
+                .param("started",Timestamp.from(started)).param("issued",Timestamp.from(started.minusSeconds(30))).param("id",packet).update();
+        assertThat(stale).isAfter(started);
+        String before=packetAndHistoryBytes(packet);
+        assertThatThrownBy(()->independentObservation(packet,"verifierUser",completeDirectConsole(packet,"20",stale)))
+                .isInstanceOfSatisfying(SQLException.class,failure->assertThat(failure.getSQLState()).isEqualTo("23514"));
+        assertThat(packetAndHistoryBytes(packet)).isEqualTo(before);assertUnverifiedHeldWithoutOutcome(packet,held);
+        UUID proof=independentObservation(packet,"verifierUser",completeDirectConsole(packet,"20",observedNow()));
+        assertThat(packets.packet(packet).orElseThrow().configurationProven()).isTrue();
+        assertThat(packets.packet(packet).orElseThrow().currentProofId()).isEqualTo(proof);assertNoManualOutcomeOrApiCommand();
+    }
+
+    @Test void oldSqlAndServiceValueOnlyRoutesCannotCreateAnIndependentProof() throws Exception {
+        UUID packet=startedPacket("AD_BID_CHANGE"),held=packets.packet(packet).orElseThrow().reservationId();
+        String before=packetAndHistoryBytes(packet);
+        assertThatThrownBy(()->observation(packet,"verifierUser","INDEPENDENT","20",null))
+                .isInstanceOfSatisfying(SQLException.class,failure->assertThat(failure.getSQLState()).isEqualTo("MO097"));
+        assertThatThrownBy(()->manual.independent(actor("verifierUser"),packet,packets.packet(packet).orElseThrow().version(),"20"))
+                .isInstanceOfSatisfying(com.mimococo.marketops.shared.OperationRejectedException.class,
+                        failure->assertThat(failure.errorCode()).isEqualTo(com.mimococo.marketops.shared.ErrorCode.ACTION_NOT_PERMITTED));
+        assertThat(packetAndHistoryBytes(packet)).isEqualTo(before);assertUnverifiedHeldWithoutOutcome(packet,held);
+    }
+
+    @Test void actualHttpPartialScreenshotAndCompleteConsoleHaveDifferentProofResultsForTheSameValue() throws Exception {
+        UUID packet=startedPacket("AD_BID_CHANGE"),held=packets.packet(packet).orElseThrow().reservationId();
+        ObjectNode partial=completeDirectConsole(packet,"20",observedNow()).put("evidenceSource","SCREENSHOT")
+                .put("completeness","INCOMPLETE").put("directObservationAttested",false);
+        var partialResponse=submitHttp(packet,"verifierUser",partial).andExpect(status().isOk()).andReturn().getResponse();
+        var partialBody=json.readTree(partialResponse.getContentAsByteArray());
+        assertThat(partialBody.path("configurationProven").asBoolean()).isFalse();
+        assertThat(partialBody.path("state").asString()).isEqualTo("ACTION_REPORTED_CONFIGURATION_UNVERIFIED");
+        assertUnverifiedHeldWithoutOutcome(packet,held);
+        String preserved=packetAndHistoryBytes(packet);
+        ObjectNode bare=json.createObjectNode().put("observedValue","20");
+        submitHttp(packet,"verifierUser",bare).andExpect(status().isBadRequest());
+        assertThat(packetAndHistoryBytes(packet)).isEqualTo(preserved);
+        Instant actualObserved=observedNow();
+        var completeResponse=submitHttp(packet,"verifierUser",completeDirectConsole(packet,"20",actualObserved))
+                .andExpect(status().isOk()).andReturn().getResponse();
+        var completeBody=json.readTree(completeResponse.getContentAsByteArray());
+        assertThat(completeBody.path("configurationProven").asBoolean()).isTrue();
+        assertThat(completeBody.path("state").asString()).isEqualTo("MANUAL_CONFIGURATION_VERIFIED");
+        var current=packets.packet(packet).orElseThrow();assertThat(current.configurationProven()).isTrue();
+        assertThat(verification(current.currentProofId())).containsEntry("observed_at",Timestamp.from(actualObserved));
+        assertThat(current.reservationId()).isEqualTo(held);assertNoManualOutcomeOrApiCommand();
+    }
+
+    @ParameterizedTest @ValueSource(strings={"FUTURE","SELF_VERIFIER","MISSING_ATTESTATION"})
+    void actualHttpRefusesInvalidObservationTimeSelfVerificationAndMissingAttestation(String fault) throws Exception {
+        UUID packet=startedPacket("AD_BID_CHANGE"),held=packets.packet(packet).orElseThrow().reservationId();
+        ObjectNode envelope=completeDirectConsole(packet,"20",observedNow());
+        if(fault.equals("SELF_VERIFIER"))authorizeExecutorForVerification();
+        if(fault.equals("FUTURE"))envelope.put("observedAt",observedNow().plusSeconds(60).toString());
+        if(fault.equals("MISSING_ATTESTATION"))envelope.remove("directObservationAttested");
+        String before=packetAndHistoryBytes(packet);
+        submitHttp(packet,fault.equals("SELF_VERIFIER")?"executorUser":"verifierUser",envelope)
+                .andExpect(fault.equals("SELF_VERIFIER")?status().isForbidden():status().isBadRequest());
+        assertThat(packetAndHistoryBytes(packet)).isEqualTo(before);assertUnverifiedHeldWithoutOutcome(packet,held);
+    }
+
+    private UUID startedPacket(String action) throws Exception {
+        UUID packet=selected(true,action);decide(packet,"verifierUser",false);decide(packet,"ownerUser",true);start(packet);return packet;
+    }
+    private UUID syntheticHistoricalManualPolicy() {
+        UUID policy=UUID.randomUUID();
+        seed.sql("""
+                INSERT INTO core.ad_manual_policy(id,organization_id,store_id,semantic_profile_id,policy_version,cause_code,
+                  outcome_policy_id,action_kind,candidate_basis,currency_code,verification_mode,configuration_max_age_seconds,
+                  packet_lease_seconds,effective_from,effective_to,approved_by_user_id,approved_at,evidence_reference)
+                VALUES(:id,:org,:store,:profile,1,'PROVEN_ADVERTISING_LOSS',:outcome,'AD_BID_CHANGE','MAX_CPC_BOUNDED','RUB',
+                  'INDEPENDENT_OR_OFFICIAL',3600,1800,clock_timestamp()-interval '3 hours',clock_timestamp()+interval '1 hour',
+                  :owner,clock_timestamp()-interval '3 hours','fixture://historical-owner-manual-policy')
+                """).param("id",policy).param("org",graph.id("organization")).param("store",graph.id("store"))
+                .param("profile",graph.id("profile")).param("outcome",graph.id("outcome")).param("owner",graph.id("ownerUser")).update();
+        return policy;
+    }
+    private Instant observedNow() { return seed.sql("SELECT clock_timestamp()").query(Timestamp.class).single().toInstant(); }
+    private ObjectNode completeDirectConsole(UUID packet,String value,Instant observed) {
+        String field=seed.sql("SELECT CASE action_kind WHEN 'AD_BID_CHANGE' THEN 'targetBid' WHEN 'AD_BUDGET_CHANGE' THEN 'targetBudget' ELSE 'targetStatus' END FROM ops.ad_manual_execution_packet WHERE id=:id")
+                .param("id",packet).query(String.class).single();
+        return json.createObjectNode().put("observedValue",value).put("observedAt",observed.toString())
+                .put("evidenceSource","DIRECT_OFFICIAL_CONSOLE").put("completeness","COMPLETE")
+                .put("exactNativeObjectId",graph.id("object").toString()).put("exactFieldPath",field)
+                .put("semanticProfileId",graph.id("profile").toString())
+                .put("evidenceReference","fixture://complete-direct-console/"+packet).put("directObservationAttested",true);
+    }
+    private UUID independentObservation(UUID packet,String actor,ObjectNode envelope) throws Exception {
+        UUID id=UUID.randomUUID();
+        try(Connection connection=application.getConnection()) {
+            connection.setAutoCommit(false);
+            String proof=AdvertisingR1Fixture.proof(admin,connection,graph,graph.id(actor),"MANUAL_INDEPENDENT_VERIFY",packet,packet);
+            query(connection,"SELECT ops.record_ad_manual_independent_observation(?,?,?,?::jsonb,?)",id,packet,
+                    packets.packet(packet).orElseThrow().version(),envelope.toString(),proof);connection.commit();
+        }
+        return id;
+    }
+    private java.util.Map<String,Object> verification(UUID id) {
+        return seed.sql("SELECT evidence_grade,observed_field_path,observed_value,observed_at,proves_configuration FROM ops.ad_manual_configuration_verification WHERE id=:id")
+                .param("id",id).query().singleRow();
+    }
+    private String verificationBytes(UUID id) {
+        return seed.sql("SELECT to_jsonb(v)::text FROM ops.ad_manual_configuration_verification v WHERE id=:id")
+                .param("id",id).query(String.class).single();
+    }
+    private String reservationBytes(UUID id) {
+        return seed.sql("SELECT to_jsonb(r)::text FROM ops.ad_action_reservation r WHERE id=:id")
+                .param("id",id).query(String.class).single();
+    }
+    private String packetAndHistoryBytes(UUID id) {
+        return seed.sql("SELECT jsonb_build_object('packet',to_jsonb(p),'history',coalesce((SELECT jsonb_agg(to_jsonb(v) ORDER BY v.recorded_at,v.id) FROM ops.ad_manual_configuration_verification v WHERE v.packet_id=p.id),'[]'::jsonb))::text FROM ops.ad_manual_execution_packet p WHERE p.id=:id")
+                .param("id",id).query(String.class).single();
+    }
+    private void assertUnverifiedHeldWithoutOutcome(UUID packet,UUID held) {
+        var view=packets.packet(packet).orElseThrow();assertThat(view.configurationProven()).isFalse();
+        assertThat(view.currentProofId()).isNull();assertThat(view.reservationId()).isEqualTo(held);
+        assertThat(seed.sql("SELECT state,configuration_resolved,unknown_or_mismatch_open,early_observation_complete FROM ops.ad_action_reservation WHERE id=:id")
+                .param("id",held).query().singleRow()).containsEntry("state","ACTIVE").containsEntry("configuration_resolved",false)
+                .containsEntry("unknown_or_mismatch_open",!"MANUAL_EXECUTION_IN_PROGRESS".equals(view.state()))
+                .containsEntry("early_observation_complete",false);
+        // Before an observation, the started packet itself contributes unresolved exposure.
+        // An observed incomplete/conflicted configuration additionally opens the reservation flag.
+        assertThat(manualUnresolvedExposure()).isEqualTo(1);
+        assertNoManualOutcomeOrApiCommand();
+    }
+    private void assertNoManualOutcomeOrApiCommand() {
+        assertNoApiCommand();
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_outcome_observation WHERE organization_id=:org")
+                .param("org",graph.id("organization")).query(Integer.class).single()).isZero();
+    }
+    private void authorizeExecutorForVerification() {
+        role("executorUser","OPS_LEAD");scope("executorUser","ADVERTISING_MANUAL_VERIFY");
+        scope("executorUser","ADVERTISING_DECISION_EVIDENCE_VIEW");
+    }
+    private com.mimococo.marketops.identityaccess.AuthenticatedActor actor(String user) {
+        String issuer=seed.sql("SELECT issuer FROM iam.identity_provider WHERE id=:id").param("id",graph.id("provider")).query(String.class).single();
+        Instant at=observedNow();
+        var roles=seed.sql("SELECT role_code FROM iam.user_role_assignment WHERE user_id=:id AND status='ACTIVE'")
+                .param("id",graph.id(user)).query(String.class).list().stream()
+                .map(com.mimococo.marketops.identityaccess.BusinessRoleCode::valueOf).collect(java.util.stream.Collectors.toSet());
+        return new com.mimococo.marketops.identityaccess.AuthenticatedActor(graph.id(user),graph.id("organization"),graph.id("provider"),issuer,
+                "Synthetic independent observation actor","a".repeat(64),"b".repeat(64),at,at.plusSeconds(1800),true,roles);
+    }
+    private org.springframework.test.web.servlet.ResultActions submitHttp(UUID packet,String user,ObjectNode envelope) throws Exception {
+        envelope.put("expectedVersion",packets.packet(packet).orElseThrow().version());
+        var authentication=new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(actor(user),null,java.util.List.of());
+        return mvc.perform(post("/api/v1/console/advertising/manual-packets/"+packet+"/independent-verification")
+                .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication(authentication))
+                .contentType(MediaType.APPLICATION_JSON).content(envelope.toString()));
     }
 
     private UUID stopManualStore() throws Exception {
@@ -249,16 +592,93 @@ class AdvertisingManualWorkflowIT {
     }
 
     @Test void realManualPlannerAndActualSalesEvidenceReleaseOnlyAfterIndependentConfigurationAndEarlySafety() throws Exception {
+        actualEarlySafetyRelease();
+    }
+    @Test void aLaterCanonicalMismatchAfterActualReleaseIsRetainedAndReopensTheSameUnknownReservation() throws Exception {
+        ReleasedManual prior=actualEarlySafetyRelease();
+        String oldProof=verificationBytes(prior.proof()),outcomesBefore=manualOutcomeHistoryBytes(prior.packet());
+        UUID actualConfiguration=configuration("19",rawProvenance);
+        assertThat(seed.sql("SELECT observed_bid_amount FROM core.ad_object_configuration_observation WHERE id=:id")
+                .param("id",actualConfiguration).query(BigDecimal.class).single()).isEqualByComparingTo("19");
+        var packet=packets.packet(prior.packet()).orElseThrow();
+        assertThat(packet.state()).isEqualTo("MANUAL_EXECUTION_UNCERTAIN");assertThat(packet.currentProofId()).isNull();
+        assertThat(packet.configurationProven()).isFalse();assertThat(packet.reservationId()).isEqualTo(prior.reservation());
+        assertThat(seed.sql("SELECT state,configuration_resolved,unknown_or_mismatch_open,early_observation_complete,regression_open,released_at,release_reason FROM ops.ad_action_reservation WHERE id=:id")
+                .param("id",prior.reservation()).query().singleRow()).containsEntry("state","ACTIVE")
+                .containsEntry("configuration_resolved",false).containsEntry("unknown_or_mismatch_open",true)
+                .containsEntry("early_observation_complete",false).containsEntry("regression_open",false)
+                .containsEntry("released_at",null).containsEntry("release_reason",null);
+        UUID blockingHolder=JdbcClient.create(application).sql("SELECT reservation_id FROM ops.ad_overlapping_reservation(:org,ARRAY[:variant]::uuid[],:other)")
+                .param("org",graph.id("organization")).param("variant",graph.id("productVariant")).param("other",UUID.randomUUID())
+                .query(UUID.class).single();
+        assertThat(blockingHolder).isEqualTo(prior.reservation());assertThat(manualUnresolvedExposure()).isEqualTo(1);
+        assertThat(verificationBytes(prior.proof())).isEqualTo(oldProof);
+        assertThat(manualOutcomeHistoryBytes(prior.packet())).isEqualTo(outcomesBefore);assertNoApiCommand();
+    }
+
+    @Test void aLaterCanonicalMismatchCannotStealANewerOverlappingManualReservationOrDiscardTheFact() throws Exception {
+        ReleasedManual prior=actualEarlySafetyRelease();
+        UUID policy=packets.packet(prior.packet()).orElseThrow().manualPolicyId();
+        // A fresh proposal/Planner/Owner lifecycle acquires the next reservation after actual release.
+        // Reuse the same immutable Owner policy; do not publish a conflicting replacement policy.
+        UUID next=selectedWithPolicy("AD_BID_CHANGE",policy);decide(next,"verifierUser",false);decide(next,"ownerUser",true);start(next);
+        UUID held=packets.packet(next).orElseThrow().reservationId();assertThat(held).isNotEqualTo(prior.reservation());
+        assertThat(seed.sql("SELECT state FROM ops.ad_action_reservation WHERE id=:id").param("id",held).query(String.class).single()).isEqualTo("ACTIVE");
+        String originalReservationBytes=reservationBytes(prior.reservation());
+        var originalRelease=seed.sql("SELECT state,released_at,release_reason FROM ops.ad_action_reservation WHERE id=:id")
+                .param("id",prior.reservation()).query().singleRow();
+        var newHolder=seed.sql("SELECT id,organization_id,ad_native_object_id,affected_set_id,intervention_kind,intervention_reference_id,reserved_at FROM ops.ad_action_reservation WHERE id=:id")
+                .param("id",held).query().singleRow();
+        String outcomesBefore=manualOutcomeHistoryBytes(prior.packet()),oldProof=verificationBytes(prior.proof());
+        UUID actualConfiguration=configuration("19",rawProvenance);
+        assertThat(seed.sql("SELECT observed_bid_amount FROM core.ad_object_configuration_observation WHERE id=:id")
+                .param("id",actualConfiguration).query(BigDecimal.class).single()).isEqualByComparingTo("19");
+        var priorPacket=packets.packet(prior.packet()).orElseThrow();
+        assertThat(priorPacket.state()).isEqualTo("MANUAL_EXECUTION_UNCERTAIN");assertThat(priorPacket.currentProofId()).isNull();
+        assertThat(priorPacket.configurationProven()).isFalse();assertThat(priorPacket.reservationId()).isEqualTo(prior.reservation());
+        assertThat(seed.sql("SELECT state,released_at,release_reason FROM ops.ad_action_reservation WHERE id=:id")
+                .param("id",prior.reservation()).query().singleRow()).isEqualTo(originalRelease);
+        assertThat(reservationBytes(prior.reservation())).isEqualTo(originalReservationBytes);
+        assertThat(seed.sql("SELECT id,organization_id,ad_native_object_id,affected_set_id,intervention_kind,intervention_reference_id,reserved_at FROM ops.ad_action_reservation WHERE id=:id")
+                .param("id",held).query().singleRow()).isEqualTo(newHolder);
+        assertThat(seed.sql("SELECT state,unknown_or_mismatch_open FROM ops.ad_action_reservation WHERE id=:id").param("id",held).query().singleRow())
+                .containsEntry("state","ACTIVE").containsEntry("unknown_or_mismatch_open",true);
+        String digest=seed.sql("SELECT affected_set_digest FROM core.ad_affected_set WHERE id=:id").param("id",graph.id("affectedSet")).query(String.class).single();
+        assertThat(seed.sql("SELECT containment_kind,scope_kind,cause_class,review_owner_user_id FROM ops.ad_containment WHERE organization_id=:org AND state='ACTIVE'")
+                .param("org",graph.id("organization")).query().listOfRows()).anySatisfy(hold->assertThat(hold)
+                .containsEntry("containment_kind","EMERGENCY_ENTITY_HOLD").containsEntry("scope_kind","AFFECTED_SET")
+                .containsEntry("cause_class","EXECUTION_INTEGRITY").containsEntry("review_owner_user_id",graph.id("verifierUser")));
+        String[] blocked=JdbcClient.create(application).sql("SELECT ops.ad_active_containment(:org,:object,:store,:platform,'ad-bid-change',:digest)")
+                .param("org",graph.id("organization")).param("object",graph.id("object")).param("store",graph.id("store"))
+                .param("platform",graph.platform()).param("digest",digest)
+                .query((row,index)->(String[])row.getArray(1).getArray()).single();
+        assertThat(blocked).contains("EMERGENCY_ENTITY_HOLD");
+        assertThat(seed.sql("SELECT count(*) FROM ops.ad_action_reservation WHERE organization_id=:org AND state='ACTIVE'")
+                .param("org",graph.id("organization")).query(Integer.class).single()).isEqualTo(1);
+        assertThat(verificationBytes(prior.proof())).isEqualTo(oldProof);
+        assertThat(manualOutcomeHistoryBytes(prior.packet())).isEqualTo(outcomesBefore);
+        assertThat(manualOutcomeHistoryBytes(next)).isEqualTo("[]");assertNoApiCommand();
+    }
+
+    private String manualOutcomeHistoryBytes(UUID packet) {
+        return seed.sql("SELECT coalesce(jsonb_agg(to_jsonb(o) ORDER BY o.id),'[]'::jsonb)::text FROM ops.ad_outcome_observation o WHERE o.manual_packet_id=:id")
+                .param("id",packet).query(String.class).single();
+    }
+
+    private record ReleasedManual(UUID packet,UUID reservation,UUID baseline,UUID proof,UUID outcome) { }
+    private ReleasedManual actualEarlySafetyRelease() throws Exception {
         java.time.Instant now=java.time.Instant.now();
         companyWindow(now.minusSeconds(61*86400L),now.plusSeconds(300),now.minusSeconds(1),"0");
         UUID packet=selected(true);decide(packet,"verifierUser",false);decide(packet,"ownerUser",true);start(packet);
         observation(packet,"executorUser","REPORT",null,null);
-        observation(packet,"verifierUser","INDEPENDENT","20",null);
+        independentObservation(packet,"verifierUser",completeDirectConsole(packet,"20",observedNow()));
         UUID baseline=seed.sql("SELECT outcome_baseline_id FROM ops.ad_manual_execution_packet WHERE id=:id").param("id",packet).query(UUID.class).single();
         var row=packets.packet(packet).orElseThrow();
         java.time.Instant landed=seed.sql("SELECT observed_at FROM ops.ad_manual_configuration_verification WHERE id=:id")
                 .param("id",row.currentProofId()).query(java.sql.Timestamp.class).single().toInstant();
+        String preservedLanding=verificationBytes(row.currentProofId());
         java.time.Instant from=landed.plusSeconds(1800),to=from.plusSeconds(24*3600),at=to.plusSeconds(60);
+        assertThat(at).isAfter(landed.plusSeconds(3600));
         assertThat(outcomePlanning.observeManual(graph.id("organization"),packet,landed.plusSeconds(60))).isNotNull();
         assertThat(seed.sql("SELECT state FROM ops.ad_action_reservation WHERE id=:id").param("id",row.reservationId()).query(String.class).single()).isNotEqualTo("RELEASED");
         companyWindow(from,to,at,"1000");
@@ -279,7 +699,10 @@ class AdvertisingManualWorkflowIT {
         assertThat(seed.sql("SELECT state FROM ops.ad_action_reservation WHERE id=:id").param("id",row.reservationId()).query(String.class).single()).isEqualTo("RELEASED");
         assertThat(seed.sql("SELECT count(*) FROM ops.ad_outcome_critical_guard WHERE observation_id=:id AND guard_state='PASS'").param("id",observation).query(Integer.class).single()).isEqualTo(1);
         assertThat(seed.sql("SELECT outcome_baseline_id FROM ops.ad_manual_execution_packet WHERE id=:id").param("id",packet).query(UUID.class).single()).isEqualTo(baseline);
+        assertThat(verificationBytes(row.currentProofId())).isEqualTo(preservedLanding);
+        assertThat(seed.sql("SELECT ops.ad_manual_observation_is_qualified(:id)").param("id",row.currentProofId()).query(Boolean.class).single()).isTrue();
         assertThat(seed.sql("SELECT count(*) FROM ops.ad_bid_command WHERE organization_id=:id").param("id",graph.id("organization")).query(Integer.class).single()).isZero();
+        return new ReleasedManual(packet,row.reservationId(),baseline,row.currentProofId(),observation);
     }
     @Test void insufficientCompanyHistoryFreezesAnExplicitIncompletePlanAndCannotBeSelected() throws Exception {
         seed.sql("""
@@ -437,15 +860,18 @@ class AdvertisingManualWorkflowIT {
     }
 
     private UUID selected() throws Exception { return selected(true); }
-    private UUID publishedPolicy() throws Exception {
+    private UUID publishedPolicy() throws Exception { return publishedPolicy("AD_BID_CHANGE"); }
+    private UUID publishedPolicy(String action) throws Exception {
         UUID policy=UUID.randomUUID();
         var content=json.createObjectNode().put("id",policy.toString()).put("organization_id",graph.id("organization").toString())
                 .put("store_id",graph.id("store").toString()).put("semantic_profile_id",graph.id("profile").toString())
-                .put("outcome_policy_id",graph.id("outcome").toString()).put("policy_version",1).put("cause_code","PROVEN_ADVERTISING_LOSS").put("action_kind","AD_BID_CHANGE")
-                .put("candidate_basis","MAX_CPC_BOUNDED").put("currency_code","RUB").put("verification_mode","INDEPENDENT_OR_OFFICIAL")
+                .put("outcome_policy_id",graph.id("outcome").toString()).put("policy_version",1).put("cause_code","PROVEN_ADVERTISING_LOSS").put("action_kind",action).put("currency_code","RUB").put("verification_mode","INDEPENDENT_OR_OFFICIAL")
                 .put("configuration_max_age_seconds",3600).put("packet_lease_seconds",1800)
                 .put("effective_from",java.time.Instant.now().minusSeconds(60).toString()).put("effective_to",java.time.Instant.now().plusSeconds(3600).toString())
                 .put("evidence_reference","fixture://owner-human-plan");
+        if(action.equals("AD_BID_CHANGE")) content.put("candidate_basis","MAX_CPC_BOUNDED");
+        else if(action.equals("AD_BUDGET_CHANGE")) content.put("target_budget",50);
+        else content.put("target_status","native-paused");
         try(Connection connection=application.getConnection()) {
             connection.setAutoCommit(false);
             String proof=AdvertisingR1Fixture.proof(admin,connection,graph,graph.id("ownerUser"),"MANUAL_POLICY_PUBLISH",policy,graph.id("store"));
@@ -453,12 +879,15 @@ class AdvertisingManualWorkflowIT {
         }
         return policy;
     }
-    private UUID selected(boolean actualPlanner) throws Exception {
-        UUID policy=publishedPolicy();
+    private UUID selected(boolean actualPlanner) throws Exception { return selected(actualPlanner,"AD_BID_CHANGE"); }
+    private UUID selected(boolean actualPlanner,String action) throws Exception {
+        return selectedWithPolicy(action,publishedPolicy(action));
+    }
+    private UUID selectedWithPolicy(String action,UUID policy) throws Exception {
         UUID proposal=UUID.randomUUID(),packet=UUID.randomUUID(),baseline=UUID.randomUUID();
         try(Connection connection=application.getConnection()) {
             connection.setAutoCommit(false);
-            query(connection,"SELECT ops.generate_ad_manual_proposal(?,?,?,?)",proposal,graph.id("caseId"),policy,graph.id("candidate"));
+            query(connection,"SELECT ops.generate_ad_manual_proposal(?,?,?,?)",proposal,graph.id("caseId"),policy,action.equals("AD_BID_CHANGE")?graph.id("candidate"):null);
             connection.commit();
             baseline=outcomePlanning.prepareManual(graph.id("organization"),proposal,java.time.Instant.now());
             assertThat(baseline).isNotNull();
@@ -503,16 +932,17 @@ class AdvertisingManualWorkflowIT {
         seed.sql("INSERT INTO iam.user_scope_grant(id,organization_id,user_id,action_code,organization_ref_id,status,effective_from,reason,created_at,updated_at) VALUES(gen_random_uuid(),:org,:user,:action,:org,'ACTIVE',now()-interval '1 hour','synthetic scope',now(),now()) ON CONFLICT DO NOTHING")
                 .param("org",graph.id("organization")).param("user",graph.id(user)).param("action",action).update();
     }
-    private UUID configuration(String amount,UUID provenance) {
+    private UUID configuration(String amount,UUID provenance) { return configuration(amount,provenance,null); }
+    private UUID configuration(String amount,UUID provenance,BigDecimal budget) {
         UUID id=UUID.randomUUID();
         seed.sql("""
                 INSERT INTO core.ad_object_configuration_observation(id,organization_id,ad_native_object_id,provenance_id,
                     semantic_profile_id,lineage_generation,observed_bid_amount,bid_currency_code,bid_unit_code,observed_status,
-                    native_status_raw,observed_bidding_mode,evidence_grade,observed_at,source_time,created_at)
-                VALUES(:id,:org,:object,:provenance,:profile,1,:amount,'RUB','CURRENCY_MAJOR','RUNNING','native-running','MANUAL_BID',
-                    'OFFICIAL_API_READBACK',clock_timestamp(),clock_timestamp(),clock_timestamp())
+                    native_status_raw,observed_bidding_mode,evidence_grade,observed_at,source_time,created_at,observed_budget_amount)
+                VALUES(:id,:org,:object,:provenance,:profile,1,:amount,:currency,'CURRENCY_MAJOR','RUNNING','native-running','MANUAL_BID',
+                    'OFFICIAL_API_READBACK',clock_timestamp(),clock_timestamp(),clock_timestamp(),:budget)
                 """).param("id",id).param("org",graph.id("organization")).param("object",graph.id("object"))
-                .param("provenance",provenance).param("profile",graph.id("profile")).param("amount",new BigDecimal(amount)).update();
+                .param("provenance",provenance).param("profile",graph.id("profile")).param("amount",amount==null?null:new BigDecimal(amount)).param("currency",amount==null?null:"RUB").param("budget",budget).update();
         return id;
     }
     private UUID rawConfigurationProvenance() {

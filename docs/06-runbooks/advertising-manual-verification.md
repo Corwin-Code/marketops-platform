@@ -51,7 +51,8 @@ do not choose a broader or later favorable version to bypass the binding.
 | --- | --- |
 | `OFFICIAL_API_READBACK` | Actual replayable Raw custody and matching account/object/native field/current observation. |
 | `OFFICIAL_CONFIGURATION_EXPORT` | Actual replayable official export with the same exact binding. |
-| `INDEPENDENT_MANUAL_VERIFICATION` | A different scope-authorized person observes the exact native field/value. |
+| `INDEPENDENT_MANUAL_VERIFICATION` | A different scope-authorized person explicitly attests a complete direct official-console observation of the exact native field/value at the actual observation time. |
+| `UNVERIFIED_MANUAL_EVIDENCE` | A screenshot, incomplete observation or direct observation without explicit attestation; it cannot prove configuration. |
 | `EXECUTOR_SELF_REPORT` | Establishes only that execution was reported. |
 
 A self-report moves to `ACTION_REPORTED_CONFIGURATION_UNVERIFIED`. It does not
@@ -61,10 +62,36 @@ cannot become official proof. Independent verification by the executor is
 refused. Independent proof establishes only the observed configuration; it does
 not verify API idempotency or an exact provider application timestamp.
 
-A conflicting or superseded configuration is `MANUAL_EXECUTION_UNCERTAIN`.
-Keep the complete affected set reserved and investigate the actual current
-configuration. Do not overwrite uncertainty with the intended target or reissue
-another intervention against overlapping variants.
+The independent-verification form requires `observedValue`, `observedAt`,
+`evidenceSource`, `completeness`, `exactNativeObjectId`, `exactFieldPath`,
+`semanticProfileId`, `evidenceReference` and `directObservationAttested`, together
+with the packet's current `expectedVersion`. Record the time the field was
+actually observed; the server never substitutes submission time. Copy the exact
+object, field and profile from the packet. The immutable policy's freshness
+limit applies when the observation is submitted. A screenshot remains unverified
+even if its visible value matches the intended value. Only a complete direct
+official-console observation with explicit attestation can qualify at this
+manual evidence tier. Missing metadata, stale or future observations and a wrong
+object, field or profile are refused.
+
+History retains its original `provesConfiguration` value. Current authority also
+requires `qualifiedForCurrentProof`: historical value-only records without the
+observation envelope cannot establish a new release or Outcome. A valid proof's
+actual observation time remains durable for later mature Outcome evaluation;
+it is not replaced with the later evaluation time.
+
+A conflicting or superseded current configuration is `MANUAL_EXECUTION_UNCERTAIN`.
+An older observation stays in history without replacing a newer qualified proof.
+A later unknown or mismatch cannot be cleared with an older favorable value.
+If the original reservation has been released, later uncertainty reopens that
+same reservation when no newer intervention overlaps it. If another intervention
+already holds the overlapping scope, its reservation remains in place and an
+Execution Integrity hold blocks the complete affected set. Both factual histories
+remain readable. New instructions remain blocked by an issued or unresolved
+packet; execution still requires the shared reservation.
+
+Investigate the actual current configuration. Do not overwrite uncertainty with
+the intended target or reissue another intervention against overlapping variants.
 
 ## Observe safety and business results separately
 

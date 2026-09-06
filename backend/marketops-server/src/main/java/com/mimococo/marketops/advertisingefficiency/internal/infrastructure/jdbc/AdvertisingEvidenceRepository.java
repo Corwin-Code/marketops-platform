@@ -602,7 +602,8 @@ public class AdvertisingEvidenceRepository {
                         WHERE command.outcome_baseline_id=baseline.id AND readback.match_state='MATCHES_TARGET' AND readback.observed_at<=:at
                     UNION ALL SELECT proof.observed_at FROM ops.ad_manual_execution_packet packet
                         JOIN ops.ad_manual_configuration_verification proof ON proof.id=packet.current_proof_id
-                        WHERE packet.outcome_baseline_id=baseline.id AND proof.proves_configuration AND proof.observed_at<=:at)
+                        WHERE packet.outcome_baseline_id=baseline.id AND ops.ad_manual_observation_is_qualified(proof.id)
+                            AND proof.observed_at<=:at AND proof.recorded_at<=:at)
                     landed ON landed.at IS NOT NULL
                 LEFT JOIN LATERAL(SELECT g.* FROM ops.ad_outcome_critical_guard g WHERE g.outcome_baseline_id=baseline.id
                     AND g.product_variant_id=unit.product_variant_id AND g.listing_variant_id=unit.listing_variant_id
