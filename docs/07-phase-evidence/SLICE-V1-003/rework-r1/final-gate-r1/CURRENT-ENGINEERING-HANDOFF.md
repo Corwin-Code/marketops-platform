@@ -17,6 +17,15 @@ keeps these exact failures, byte-preserved history and bounded repair tests dist
 The purpose-evidence batch, native fixture clock and safe diagnostic replay changes
 require a new clean source checkpoint and complete verification.
 
+The subsequent `a5a308c` checkpoint passed all 13 remote CI contexts. Its local
+verification exposed a reproducible-JAR collection ambiguity and then a random
+correlation-ID collision in a log-redaction assertion. The
+[checkpoint verification record](CHECKPOINT-A5A308C-VERIFICATION.md) preserves
+each actual run disposition. Two same-class log tests now use explicit fixture
+correlation IDs while retaining every leak assertion. These changed test inputs
+require complete validation on a new exact source checkpoint; engineering closure
+remains pending.
+
 See [the phase-transition correction](GOVERNANCE-PHASE-TRANSITION-REWORK.md),
 [the current execution manifest](EXECUTION-MANIFEST.json) and the preserved H
 materializations in the portable final-records index.
