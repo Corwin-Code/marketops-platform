@@ -62,9 +62,15 @@ class AdvertisingOutcomeInferenceScopeIT {
         // stored instants or their epoch value; no generic SELECT NOW surrogate is used.
         try(var connection=fixture.application.getConnection()) {
             connection.setAutoCommit(false);
-            try(var statement=connection.createStatement()) {
+            try(var statement=connection.createStatement();
+                    var zoneStatement=connection.prepareStatement("SELECT pg_catalog.set_config('TimeZone', ?, true)")) {
                 for(String zone:List.of("UTC","Europe/Moscow")) {
-                    statement.execute("SET LOCAL TIME ZONE '"+zone+"'");
+                    zoneStatement.setString(1,zone);
+                    try(var setting=zoneStatement.executeQuery()) {
+                        assertThat(setting.next()).isTrue();
+                        assertThat(setting.getString(1)).isEqualTo(zone);
+                        assertThat(setting.next()).isFalse();
+                    }
                     try(var query=connection.prepareStatement("""
                             SELECT window_starts_at,window_ends_at,evaluated_at,
                               extract(epoch FROM window_starts_at),extract(epoch FROM window_ends_at),
